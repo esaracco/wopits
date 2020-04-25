@@ -17,7 +17,7 @@
 
     public function create ()
     {
-      global $User;
+      $User = new Wpt_user ();
 
       $ret = [];
       //FIXME
@@ -40,9 +40,7 @@
           'classcolor' => $this->data->classcolor,
           'title' => $this->data->title,
           'content' => $this->data->content,
-          'creationdate' => time (),
-          'deadline' => ($this->data->deadline) ?
-            $User->getUnixDate ($this->data->deadline) : null
+          'creationdate' => time ()
         ]);
 
         mkdir ("$dir/postit/$postitId");
@@ -74,7 +72,8 @@
       $stmt = $this->query ('
         SELECT
           users.id AS userId,
-          postits.id AS postitId
+          postits.id AS postitId,
+          postits.timezone
         FROM postits
           INNER JOIN cells ON cells.id = postits.cells_id
           INNER JOIN walls ON walls.id = cells.walls_id
@@ -84,13 +83,11 @@
 
       while ($item = $stmt->fetch ())
       {
-        $U = new Wpt_user (['userId' => $item['userId']]);
-
-        $this->setTimezone ($U);
         $this->query ("
           UPDATE postits SET obsolete = 1
           WHERE id = '{$item['postitId']}'
-            AND DATE(FROM_UNIXTIME(deadline)) <= '{$U->getDate($time)}'");
+            AND DATE(FROM_UNIXTIME(deadline)) <=
+              '{$U->getDate($time, $item['timezone'])}'");
       }
     }
 

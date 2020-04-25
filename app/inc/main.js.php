@@ -999,7 +999,7 @@
 
           $popup.find(".creator").text (d.user_fullname);
           $popup.find(".creationdate").text (
-            wpt_getUserDate (d.creationdate, "Y-MM-DD HH:mm"));
+            wpt_getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
 
           if (wpt_checkAccess("<?=WPT_RIGHTS['walls']['admin']?>"))
           {

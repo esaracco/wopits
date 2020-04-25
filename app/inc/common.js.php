@@ -659,9 +659,9 @@ function wpt_getAccessIcon (access)
 }
 
 // FUNCTION wpt_getUserDate ()
-function wpt_getUserDate (dt, fmt)
+function wpt_getUserDate (dt, tz, fmt)
 {
-  return moment.unix(dt).tz(wpt_userData.settings.timezone)
+  return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
            .format(fmt||"Y-MM-DD");
 }
 

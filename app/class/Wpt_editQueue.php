@@ -162,7 +162,7 @@
 
     public function removeFrom ()
     {
-      global $User;
+      $User = new Wpt_user ();
 
       $item = $this->item;
       $update = (!empty ($this->data));
@@ -241,8 +241,8 @@
     
                   if ($deadline && !is_numeric ($deadline))
                     $deadline = $User->getUnixDate ($deadline);
-  
-                  $this->executeQuery ('UPDATE postits', [
+
+                  $data = [
                     'cells_id' => $this->data->cellId,
                     'width' => $this->data->width,
                     'height' => $this->data->height,
@@ -255,7 +255,14 @@
                     'obsolete' => (empty ($this->data->obsolete)) ?
                                     0 : $this->data->obsolete,
                     'deadline' => ($deadline == 0) ? null : $deadline
-                  ],
+                  ];
+
+                  // Set deadline timezone with user timezone only if deadline
+                  // has changed
+                  if ($this->data->updatetz)
+                    $data['timezone'] = $User->getTimezone ();
+
+                  $this->executeQuery ('UPDATE postits', $data,
                   ['id' => $this->data->id]);
 
                   if (!empty ($plugs))

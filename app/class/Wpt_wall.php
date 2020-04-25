@@ -407,7 +407,7 @@
         $stmt1 = $this->prepare ('
           SELECT
             id, width, height, top, `left`, classcolor, title, content, tags,
-            creationdate, deadline, obsolete, attachmentscount
+            creationdate, deadline, timezone, obsolete, attachmentscount
           FROM postits
           WHERE cells_id = ?');
         $data['cells'] = [];

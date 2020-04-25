@@ -23,9 +23,9 @@
 
     protected function setTimezone ($U = null)
     {
-      global $User;
+      $User = $U ?? new Wpt_user ();
 
-      $this->query ("SET time_zone='".($U??$User)->getTimezone()."'"); 
+      $this->query ("SET time_zone='".$User->getTimezone()."'"); 
     }
 
     protected function executeQuery ($sql, $data, $where = null)

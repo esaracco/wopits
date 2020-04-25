@@ -170,6 +170,7 @@ CREATE TABLE postits
   content TEXT,
   tags VARCHAR(255),
   deadline INT UNSIGNED,
+  timezone VARCHAR (30),
   obsolete TINYINT(1) NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id),

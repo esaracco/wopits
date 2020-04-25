@@ -44,10 +44,10 @@
       return $ret;
     }
 
-    public function getDate ($dt, $fmt = '%Y-%m-%d')
+    public function getDate ($dt, $tz = null, $fmt = '%Y-%m-%d')
     {
       $oldTZ = date_default_timezone_get ();
-      $newTZ = $this->getTimezone ();
+      $newTZ = $tz ?? $this->getTimezone ();
 
       if ($newTZ != $oldTZ)
       {

@@ -1113,12 +1113,12 @@
               p = $p[0],
               postitId = p.dataset.id.split("-")[1],
               title = $p.find(".postit-header span.title").html (),
-              deadline = (p.dataset.deadlineepoch) ?
-                p.dataset.deadlineepoch :
-                $p.find(".dates .end span").text().trim (),
               classcolor = p.className.match(/(color\-[a-z]+)/);
         let tags = [],
-            data = {};
+            data = {},
+            deadline = (p.dataset.deadlineepoch) ?
+              p.dataset.deadlineepoch :
+              $p.find(".dates .end span").text().trim ();
 
         if (p.dataset.todelete)
           data = {id: postitId, todelete: true};
@@ -1128,6 +1128,9 @@
             {
               tags.push (this.dataset.tag);
             });
+
+          if (deadline == _defaultString)
+            deadline = "";
 
           data = {
             id: postitId,
@@ -1139,7 +1142,8 @@
             title: (title == _defaultString) ? "" : title,
             content: $p.find(".postit-edit").html (),
             tags: (tags.length)?","+tags.join (",")+",":null,
-            deadline: (deadline == _defaultString) ? "" : deadline,
+            deadline: deadline,
+            updatetz: p.dataset.updatetz||null,
             obsolete: $p.hasClass("obsolete"),
             attachmentscount: $p.find(".attachmentscount span").text (),
             plugs: $p.wpt_postit ("serializePlugs")
@@ -1154,7 +1158,7 @@
     },
 
     // METHOD setDeadline ()
-    setDeadline: function (deadline)
+    setDeadline: function (deadline, timezone)
     {
       const plugin = this,
             $postit = plugin.element,
@@ -1164,7 +1168,8 @@
       if (!deadline || isNaN (deadline))
         human = deadline||_defaultString;
       else
-        human = (deadline) ? wpt_getUserDate (deadline) : _defaultString;
+        human = (deadline) ?
+          wpt_getUserDate (deadline, timezone) : _defaultString;
 
       $date.find("span").text (human);
 
@@ -1173,6 +1178,7 @@
       {
         $postit[0].removeAttribute ("data-deadline");
         $postit[0].removeAttribute ("data-deadlineepoch");
+        $postit[0].removeAttribute ("data-updatetz");
         $date.find("i.fa-times-circle").hide ();
       }
       else
@@ -1404,6 +1410,7 @@
       $datePicker
         .on("change", function()
         {
+          $postit[0].dataset.updatetz = true;
           $postit.removeClass ("obsolete");
           $("#popup-layer").trigger ("click");
         });
@@ -1522,7 +1529,7 @@
       plugin
         .setCreationDate (d.creationdate?wpt_getUserDate (d.creationdate):'');
 
-      plugin.setDeadline (d.deadline);
+      plugin.setDeadline (d.deadline, d.timezone);
 
       if (!d.obsolete)
         $postit.removeClass ("obsolete");
@@ -1701,6 +1708,8 @@
             $postit.remove ();
             $("#postitsSearchPopup").wpt_postitsSearch ("replay");
           }
+          else if (data && data.updatetz)
+          $postit[0].removeAttribute ("data-updatetz");
         },
         // error cb
         () => plugin.cancelEdit ());
