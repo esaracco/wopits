@@ -450,16 +450,21 @@
                       const $popup = $("#postitUpdatePopup"),
                             title =
                               $postit.find(".postit-header span.title").html ();
+
+                      wpt_sharer.set ("postit-data", {
+                        title: title != _defaultString ? title : "",
+                        content: $postit.find(".postit-edit").html()||""
+                      });
     
                       $("#postitUpdatePopupTitle")
-                        .val (title != _defaultString ? title : "");
+                        .val (wpt_sharer.get("postit-data").title);
           
                       //FIXME
                       $(".tox-toolbar__overflow").show ();
                       $(".tox-mbtn--active").removeClass ("tox-mbtn--active");
 
                       tinymce.activeEditor.setContent (
-                        $postit.find(".postit-edit").html()||"");
+                        wpt_sharer.get("postit-data").content);
 
                       wpt_openModal ($popup);
     

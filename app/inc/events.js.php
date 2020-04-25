@@ -357,6 +357,75 @@ $(function()
         setTimeout (() => $popup.find("[autofocus]").focus (), 150);
     });  
 
+
+  // EVENT hide.bs.modal on popups
+  $(".modal").on("hide.bs.modal",
+    function (e)
+    {
+      const $popup = $(this),
+            $wall = wpt_sharer.getCurrent ("wall"),
+            $postit = wpt_sharer.getCurrent("postit");
+
+      // Need wall
+      if (!$wall.length) return;
+
+      switch (e.target.id)
+      {
+        case "postitUpdatePopup":
+
+          const data = wpt_sharer.get ("postit-data");
+
+          // Return if we are closing the postit modal from the confirmation
+          // popup
+          if (data && data.closing) return;
+
+          const title = $("#postitUpdatePopupTitle").val (),
+                content = tinymce.activeEditor.getContent (),
+                cb_close = () =>
+                  {
+                    wpt_sharer.set ("postit-data", {closing: true});
+
+                    //FIXME
+                    $(".tox-toolbar__overflow").hide ();
+                    $(".tox-menu").hide ();
+    
+                    $popup.modal ("hide");
+    
+                    $popup.find("input").val ("");
+                    $postit.wpt_postit ("unedit");
+
+                    wpt_sharer.unset ("postit-data");
+                  };
+
+          // If there is pending changes, ask confirmation to user
+          if (data && (data.title != title || data.content != content))
+          {
+            e.preventDefault ();
+
+            data.cb_close = cb_close;
+            data.cb_confirm = () =>
+              {
+                $postit.wpt_postit ("setTitle", title);
+                $postit.wpt_postit ("setContent", content);
+              };
+            wpt_sharer.set ("postit-data", data);
+
+            wpt_cleanPopupDataAttr ($_confirmPopup);
+            $_confirmPopup.find(".modal-body").html (
+              "<?=_("Save changes?")?>");
+            $_confirmPopup.find(".modal-title").html (
+              '<i class="fas fa-save fa-lg fa-fw"></i> <?=_("Changes")?>');
+
+            $_confirmPopup[0].dataset.popuptype = "save-postits-changes";
+            wpt_openModal ($_confirmPopup);
+          }
+          else
+            cb_close ();
+          break;
+      }
+
+    });
+
   // EVENT hidden.bs.modal on popups
   $(".modal").on("hidden.bs.modal",
     function(e)
@@ -416,16 +485,6 @@ $(function()
           $postit.wpt_postit ("unsetCurrent");
           break;
 
-        case "postitUpdatePopup":
-
-          //FIXME
-          $(".tox-toolbar__overflow").hide ();
-          $(".tox-menu").hide ();
-
-          $popup.find("input").val ("");
-          $postit.wpt_postit ("unedit");
-          break;
-
         case "postitAttachmentsPopup":
 
           wpt_fixDownloadingHack ();
@@ -439,6 +498,11 @@ $(function()
 
           switch (type)
           {
+            case "save-postits-changes":
+
+              wpt_sharer.get("postit-data").cb_close ();
+              break;
+
             case "reload-app":
 
               const tz = $popup[0].dataset.popupoldtimezone;
@@ -487,6 +551,8 @@ $(function()
 
             $postit.wpt_postit("setTitle",$("#postitUpdatePopupTitle").val ());
             $postit.wpt_postit("setContent",tinymce.activeEditor.getContent());
+
+            wpt_sharer.unset ("postit-data");
             break;
 
           case "groupAccessPopup":
@@ -515,6 +581,11 @@ $(function()
               case "logout":
 
                 $("<div/>").wpt_login ("logout");
+                break;
+
+              case "save-postits-changes":
+
+                wpt_sharer.get("postit-data").cb_confirm ();
                 break;
 
               // Delete account
