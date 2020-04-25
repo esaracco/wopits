@@ -3,7 +3,7 @@
   //
   // - If you intend to deploy wopits, use "app/deploy/config.php" instead.
   // - If you are using wopits "as is" from the Git repository, duplicate this
-  //   fil to "site-config.php" and customize it according to your needs.
+  //   file to "site-config.php" and customize it.
 
   // Database
   define ('WPT_DSN', 'mysql:host=localhost;dbname=wopits-example;port=3306');
