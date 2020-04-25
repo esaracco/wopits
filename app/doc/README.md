@@ -1,4 +1,4 @@
-wopits - _The world of post-its_
+wopits - _a WOrld of Post-ITS_
 ================================================
 
 <p align="center"><img src="https://www.wopits.com/img/wopits.png"/></p>
