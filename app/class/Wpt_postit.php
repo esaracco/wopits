@@ -67,6 +67,7 @@
 
     public function checkDeadline ()
     {
+      $User = new Wpt_user ();
       $time = time ();
 
       $stmt = $this->query ('
@@ -87,7 +88,7 @@
           UPDATE postits SET obsolete = 1
           WHERE id = '{$item['postitId']}'
             AND DATE(FROM_UNIXTIME(deadline)) <=
-              '{$U->getDate($time, $item['timezone'])}'");
+              '{$User->getDate($time, $item['timezone'])}'");
       }
     }
 
