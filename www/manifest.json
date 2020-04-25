@@ -1,0 +1,21 @@
+{
+  "short_name": "wopits",
+  "name": "wopits - Let your ideas shine!",
+  "theme_color": "#fff",
+  "background_color": "#fff",
+  "display": "standalone",
+  "Scope": "/",
+  "icons": [
+    {
+      "src": "/img/wopits-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/wopits-315x315.png",
+      "type": "image/png",
+      "sizes": "315x315"
+    }
+  ],
+  "start_url": "/index.php"
+}

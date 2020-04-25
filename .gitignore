@@ -1,0 +1,11 @@
+site-config.php
+app/deploy/config.php
+app/dkim/dkim.*
+wopits.sql
+html-minifier
+data
+*.jar
+*~
+.*.swp
+*.old
+*.new

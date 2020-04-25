@@ -1,0 +1,17 @@
+[Unit]
+Description=wopits WebSocket server
+After=mysqld.service
+##StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+##RestartSec=1
+User=wopits
+# This group must be the same as the group of the wopits DocumentRoot "data/"
+# directory
+Group=www-data
+ExecStart=/var/www/wopits.domain.fr/app/websocket/server.php
+
+[Install]
+WantedBy=multi-user.target

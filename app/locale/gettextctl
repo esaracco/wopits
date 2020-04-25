@@ -1,0 +1,142 @@
+#!/bin/bash
+
+#
+# gettext translation management
+#
+
+umask 002
+
+ret=0
+
+DOMAIN="wopits"
+LOCALES=(en fr)
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+LOCALEDIR=${SCRIPT_DIR}
+PHPFILES="${SCRIPT_DIR}/../../"
+
+DATE=$(date "+%Y-%m-%d %H:%M\+0200")
+
+#
+# Build main POT
+#
+
+if [ "x$1" == "xcreate" ]
+then
+  
+  OPTIONS=" --default-domain=${DOMAIN} --from-code=UTF-8 --force-po --indent --add-location --no-wrap --sort-output --foreign-user -L PHP"
+
+  $(/bin/mkdir -p $LOCALEDIR/)
+  $(/bin/rm -f ${LOCALEDIR}/${DOMAIN}.pot)
+  $(/bin/touch ${LOCALEDIR}/${DOMAIN}.pot)
+  
+  for f in $(find ${PHPFILES} \( -name locale -o -name libs -o -name img -o -name data \) -prune -o -name "*.php" -print)
+  do
+  
+    xgettext ${OPTIONS} -j $f --output=${LOCALEDIR}/${DOMAIN}.pot 2>&1
+
+  done
+  
+  # Build locales directories
+  for i in ${!LOCALES[@]}
+  do
+
+    loc=${LOCALES[$i]}
+    
+    $(/bin/mkdir -p $LOCALEDIR/${loc}/LC_MESSAGES)
+    f="$LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po"
+
+    if [ ! -f "${f}" ]
+    then
+    
+      $(/bin/cp ${LOCALEDIR}/${DOMAIN}.pot ${f})
+
+    fi
+  
+  done
+  
+  $(find $LOCALEDIR/ -type f -name "*.po" -exec \
+	perl -pi -e 's/PACKAGE VERSION/wopits/' {} \;)
+  	
+  eval "find $LOCALEDIR/ -type f -name '*.po' -exec perl -pi -e 's/YEAR-MO-DA HO:MI\+ZONE/"${DATE}"/' {} \;"
+  
+  $(find $LOCALEDIR/ -type f -name "*.po" -exec \
+  	perl -pi -e 's/FULL NAME \<EMAIL\@ADDRESS\>/Emmanuel Saracco \<translate\@wopits.com\>/' {} \;)
+  $(find $LOCALEDIR/ -type f -name "*.po" -exec perl -pi -e 's/charset=CHARSET/charset=UTF-8/' {} \;)
+
+#
+# Compile and install PO
+#
+
+elif [ "x$1" == "xcompile" ]
+then
+
+  # Si l'on doit compiler uniquement une locale donnee
+  if [ "$#" -gt "1" -a "$2" != "2>&1" ]
+  then
+
+    LOCALES=($2)
+
+  fi
+
+  for i in ${!LOCALES[@]}
+  do
+  
+    loc=${LOCALES[$i]}
+    
+    if [ -f "$LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po" ];
+    then
+
+      $(/bin/rm -f $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.mo)
+      # Fusionner les .po
+      msgfmt -o $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.mo \
+        -c $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po 2>&1
+        
+    fi
+
+  done
+
+#
+# Merge PO
+#
+
+elif [ "x$1" == "xmerge" ]
+then
+
+  for i in ${!LOCALES[@]}
+  do
+  
+    loc=${LOCALES[$i]}
+    
+    if [ -f "$LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po" ];
+    then
+    
+      # Backup previous PO
+      $(/bin/cp -f $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po \
+        ${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.old)
+      
+      # Merge all PO
+      msgmerge --quiet \
+        $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po.old \
+      	${LOCALEDIR}/${DOMAIN}.pot > \
+        ${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.new 2>&1
+
+      # Only replace old PO if changes occured
+      if [ -s "${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.new" ]
+      then
+
+        $(/bin/cp -f ${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.new \
+	  $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po)
+      
+      fi
+        
+    fi
+    
+  done
+
+else
+  ret=1
+fi
+
+exit $ret

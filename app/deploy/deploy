@@ -1,0 +1,605 @@
+#!/usr/bin/php
+<?php
+  putenv ('DEPLOY=1');
+
+  $siteConf = realpath (__DIR__.'/../../site-config.php');
+  $deployConf = __DIR__.'/config.php';
+  $appConf = realpath (__DIR__.'/../config.php');
+  if (!file_exists ($siteConf))
+    $siteConf = realpath (__DIR__.'/../../site-config.template.php');
+
+  // Check for configuration files
+  if (!file_exists ($deployConf) ||
+      !file_exists ($appConf) ||
+      !file_exists ($siteConf))
+    exit (
+      "\nIn order to deploy wopits, the following configuration files are ".
+      "required:\n\n".
+      "  - \e[1m$deployConf\e[0m\n".
+      "  - \e[1m$appConf\e[0m\n".
+      "  - \e[1m".($siteConf==''?realpath (__DIR__.'/../..').
+                   '/site-config.template.php':'')."\e[0m\n\n".
+      "\e[1;31mDeployment has been aborted!\n\e[0m");
+
+  require ($appConf);
+  require ($deployConf);
+
+  $options = getopt ('hve:');
+
+  $Deploy = new Deploy ([
+    'haveTemplateConf' => (strpos ($siteConf, '.template.') !== false),
+    'verbose' => isset ($options['v']),
+    'env' => @$options['e']
+  ]);
+
+  $Deploy->checkRights ();
+  $Deploy->checkMinifiers ();
+  $Deploy->initWorkingPath ();
+  $Deploy->createLocales (); 
+  $Deploy->createJS (); 
+  $Deploy->minifyJS (); 
+  $Deploy->createCSS (); 
+  $Deploy->minifyCSS (); 
+  $Deploy->synchronize ();
+
+  exit (0);
+
+  class Deploy
+  {
+    private $opts = [];
+    private $props = [];
+
+    public function __construct ($options)
+    {
+      $cliUser = posix_getpwuid (posix_geteuid());
+
+      $this->opt = $options;
+
+      if ($cliUser['uid'] == 0)
+        $this->help ("This script should not be executed by root!");
+
+      $this->_checkConfig ();
+
+      $env = ENV[$this->opt['env']];
+      $this->props = [
+        'deployUser' => $cliUser['name'],
+        'srcAppPath' => preg_replace ('#^(.*)/app/deploy$#', '$1', __DIR__),
+        'appConfPath' => "{$env['build-path']}/app/config.php",
+        'siteConfPath' => "{$env['build-path']}/site-config.php",
+        'minify' => ['js' => false, 'css' => false, 'html' => false],
+        'isRemoteTarget' => ($env['target']['type'] == 'remote'),
+        'targetUser' => null,
+        'targetHost' => null,
+        'targetPath' => $env['target']['path']
+      ];
+
+      if ($this->props['isRemoteTarget'])
+      {
+        preg_match ('/^(.+)@(.+):(.+)$/', $env['target']['path'], $m);
+
+        list ($dum,
+          $this->props['deployUser'],
+          $this->props['targetHost'],
+          $this->props['targetPath']) = $m;
+      }
+    }
+
+    private function _checkConfig ()
+    {
+      $env = @ENV[$this->opt['env']];
+
+      if (empty ($this->opt['env']))
+        $this->help ("Which environment should we deploy?");
+      elseif (empty ($env))
+        $this->help ("Unknown environment `{$this->opt['env']}`!");
+      elseif (empty ($env['www-system-user']))
+        $this->help ("Conf `www-system-user` is empty!");
+      elseif (empty ($env['build-path']))
+        $this->help ("Conf `build-path` is empty!");
+      elseif (empty ($env['target']))
+        $this->help ("Conf `target` section is empty!");
+      elseif (!preg_match ('/^local|remote$/', $env['target']['type']))
+        $this->help ("Conf `target->type` is not valid!");
+      elseif (empty ($env['target']['path']))
+        $this->help ("Conf `target->path` is empty!");
+      elseif (empty ($env['websocket']))
+        $this->help ("Conf `websocket` section is empty!");
+      elseif (empty ($env['websocket']['server']))
+        $this->help ("Conf `websocket->server` section is empty!");
+      elseif (!preg_match ('/^\d+$/', $env['websocket']['server']['port']))
+        $this->help ("Conf `websockiet->server->port` is not valid!");
+      elseif (empty ($env['db']))
+        $this->help ("Conf `db` is empty!");
+      elseif (empty ($env['emails']))
+        $this->help ("Conf `emails` section is empty!");
+      elseif (empty ($env['emails']['from']))
+        $this->help ("Conf `emails->from` is empty!");
+      elseif (empty ($env['emails']['contact']))
+        $this->help ("Conf `emails->contact` is empty!");
+      elseif ($env['target']['type'] == 'remote' &&
+              !preg_match('/^(.+)@(.+):(.+)$/', $env['target']['path']))
+        $this->help ("Conf remote `target->path` ".
+                     "(`{$env['target']['path']}`) is not valid!");
+      elseif (!empty ($env['dkim']))
+      {
+        if (empty ($env['dkim']['domain']))
+          $this->help ("Conf DKIM domain `dkim->domain` is empty!");
+        elseif (empty ($env['dkim']['selector']))
+          $this->help ("Conf DKIM selector `dkim->selector` is empty!");
+      }
+    }
+
+    public function checkRights ()
+    {
+      $r = $this->_exec (
+        "touch {$this->props['targetPath']}/.test",
+        $this->props['isRemoteTarget'], true);
+
+      if ($r)
+        $this->help (
+          "Either target directory `{$this->props['targetPath']}` ".
+          "does not exists or user `{$this->props['deployUser']}` does not ".
+          "have full rights on it!");
+    }
+
+    public function initWorkingPath ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // check for working path
+      if (is_dir ($env['build-path']))
+      {
+        echo "Working path \e[1m{$env['build-path']}\e[0m".
+               " will be deleted.\n";
+        if (readline ('Continue? [N/y] : ') == 'y')
+          $this->_exec ("rm -rf {$env['build-path']}");
+        else
+          exit ("\e[1;31mDeployment has been aborted!\n\e[0m");
+      }
+
+      // Prepare working directory
+      echo "Preparing working directory \e[1m{$env['build-path']}\e[0m...\n";
+      $this->_exec ("mkdir -p {$env['build-path']}/app/dkim");
+      $this->_exec ("mkdir -p {$env['build-path']}/www/css/themes");
+      $this->_exec ("mkdir -p {$env['build-path']}/www/js");
+      $this->_exec ("mkdir -p {$env['build-path']}/www/js");
+      $this->_exec ("mkdir -p {$env['build-path']}/app/websocket");
+
+      $this->_exec ("mkdir -p {$env['build-path']}/app/inc");
+      $this->_exec (
+        'cp -a '.__DIR__."/../inc/popups {$env['build-path']}/app/inc/");
+    }
+  
+    public function checkMinifiers ()
+    {
+      // Check minifiers
+      if (!empty (ENV['minifiers']))
+      {
+        foreach (['js', 'css', 'html'] as $type)
+        {
+          $min = '';
+          if (!isset (ENV['minifiers'][$type]) ||
+              !(( $min = (preg_split('/\s/', ENV['minifiers'][$type]))[0] ) &&
+              file_exists ($min)))
+          {
+            $lb = strtoupper ($type);
+            $txt = (isset (ENV['minifiers'][$type])) ?
+              "has not been found" : "has not been filled";
+      
+            echo "$lb minifier \e[1m$min\e[0m $txt.".
+                 " $lb files will not be minified.\n";
+            if (readline ('Continue? [N/y] : ') != 'y')
+              exit ("\e[1;31mDeployment has been aborted!\e[0m\n");
+          }
+          else
+            $this->props['minify'][$type] = true;
+        }
+      }
+    }
+
+    public function createLocales ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Copying gettext locale files
+      echo "Copying gettext locales...\n ";
+      foreach (array_keys (WPT_LOCALES) as $l)
+      {
+        $dest = $env['build-path']."/app/locale/$l/LC_MESSAGES";
+    
+        echo " $l";
+
+        $this->_exec ("mkdir -p $dest");
+        $this->_exec ('cp -a '.__DIR__.
+                       "/../locale/$l/LC_MESSAGES/wopits.mo $dest");
+      }
+      echo "\n";
+    }
+
+    public function createJS ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Create localized main JS files
+      echo "Creating localized main JS...\n ";
+      foreach (array_keys (WPT_LOCALES) as $l)
+      {
+        $js = $env['build-path']."/www/js/all-$l.js";
+
+        echo " ".basename($js);
+    
+        $this->_exec ('php '.__DIR__."/../../www/js/all.js.php $l > $js");
+      }
+      echo "\n";
+    }
+
+    public function minifyJS ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Minifying main JS files
+      if ($this->props['minify']['js'])
+      {
+        echo "Minifying JS...\n ";
+        foreach (array_keys (WPT_LOCALES) as $l)
+        {
+          $js = "{$env['build-path']}/www/js/all-$l.js";
+    
+          echo " ".basename($js);
+          $this->_execMinifier (ENV['minifiers']['js'], $js, "$js-tmp");
+          rename ("$js-tmp", $js);
+        }
+        echo "\n";
+      }
+    }
+
+    public function createCSS ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Create main CSS file
+      echo "Creating main CSS...\n";
+
+      $css = $env['build-path']."/www/css/all.css";
+
+      echo "  ".basename($css)."\n";
+
+      $this->_exec ('php '.__DIR__."/../../www/css/all.css.php > $css");
+    
+      // create theme CSS
+      echo "Creating theme CSS files...\n ";
+      foreach (WPT_THEMES as $t)
+      {
+        $css = "{$env['build-path']}/www/css/themes/$t.css";
+
+        echo " ".basename($css);
+
+        $this->_exec ('php '.__DIR__."/../../www/css/themes/$t.css.php > $css");
+      }
+      echo "\n";
+    }
+
+    public function minifyCSS ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Minify CSS
+      if ($this->props['minify']['css'])
+      {
+        // Minifying main CSS file
+        echo "Minifying main CSS...\n ";
+
+        $css = $env['build-path']."/www/css/all.css";
+    
+        echo " ".basename($css);
+        echo "\n";
+
+        $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
+        rename ("$css-tmp", $css);
+    
+        // Minifying theme CSS
+        echo "Minifying theme CSS...\n ";
+        foreach (WPT_THEMES as $t)
+        {
+          $css = "{$env['build-path']}/www/css/themes/$t.css";
+
+          echo " ".basename($css);
+
+          $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
+          rename ("$css-tmp", $css);
+        }
+        echo "\n";
+      }
+    }
+
+    public function minifyHTML ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      // Minify HTML
+      if ($this->props['minify']['html'])
+      {
+        echo "Minifying HTML...\n ";
+        foreach (['www/index.php', 'www/login.php',
+                  'app/header-common.php'] as $f)
+        {
+          echo " ".basename($f);
+
+          $f = "{$env['build-path']}/$f";
+          $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
+          rename ("$f-tmp", $f);
+        }
+
+        $path = "{$env['build-path']}/app/inc/popups/";
+        foreach (scandir ($path) as $f)
+        {
+          if (substr ($f, -4) !== '.php')
+            continue;
+
+          echo " $f";
+
+          $f = "$path/$f";
+          $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
+          rename ("$f-tmp", $f);
+        }
+        echo "\n";
+      }
+    }
+
+    public function synchronize ()
+    {
+      $env = ENV[$this->opt['env']];
+
+      $this->_exec (
+        'cp -a '.__DIR__.'/../libs '."{$env['build-path']}/app/");
+
+      $this->_exec (
+        'cp -a '.__DIR__.'/../websocket/*.php '.
+        "{$env['build-path']}/app/websocket/");
+
+      foreach (['libs', 'img', '*.php', '*.json', '*.ico', 'robots.txt'] as $d)
+        $this->_exec (
+          'cp -a '.__DIR__."/../../www/$d {$env['build-path']}/www/");
+    
+      $phps = new RecursiveIteratorIterator
+        (
+          new RecursiveCallbackFilterIterator
+            (
+              new RecursiveDirectoryIterator
+                (
+                  realpath(__DIR__.'/../../'),
+                  RecursiveDirectoryIterator::SKIP_DOTS
+                ),
+                function ($fileInfo, $key, $iterator)
+                {
+                  return $fileInfo->isReadable () &&
+                    (!preg_match ('#/(locale|doc|img|libs|deploy|data|\.git)$#',
+                        $fileInfo->getPath ()));
+                }
+            )
+        );
+
+      foreach ($phps as $php => $obj)
+      {
+        if (preg_match ('/\.(example|template)\./', $php) ||
+            !preg_match ('/[^css,js].php$/', $php)) continue;
+
+        $dest = str_replace ($this->props['srcAppPath'],
+                             $env['build-path'], $php);
+    
+        // Copy tmp file on dest rep
+        $this->_exec ("mkdir -p ".dirname($dest));
+        $this->_exec ("cp -a $php $dest-tmp");
+    
+        // Remove DEV specific
+        $this->_exec ("perl -pi -e 's/^.*PROD\-remove.*$//g' $dest-tmp");
+    
+        // Clean PHP code
+        $this->_exec ("php -w $dest-tmp > $dest");
+        //$this->_exec ("cat $dest-tmp > $dest");
+        $this->_exec ("rm -f $dest-tmp");
+
+        // Prepend first exec line on CLI scripts
+        if (strpos ($dest, '/crons/') !== false ||
+            strpos ($dest, '/websocket/') !== false)
+        {
+          $tmp = file_get_contents ($dest);
+          file_put_contents ($dest, "#!/usr/bin/php\n$tmp");
+        }
+      }
+
+      if ($this->opt['haveTemplateConf'])
+        $this->_exec ('cp -a '.__DIR__.
+         "/../../site-config.template.php ".
+           "{$env['build-path']}/site-config.php");
+      else
+        $this->_exec ('cp -a '.__DIR__.
+         "/../../site-config.php {$env['build-path']}/");
+
+      $this->minifyHTML (); 
+    
+      // Set cron scripts executable
+      $this->_exec ("chmod 755 {$env['build-path']}/app/crons/*.php");
+
+      // Set websocket client / server executable
+      $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
+    
+      if (!empty ($env['dkim']))
+      {
+        $this->_exec ("perl -pi -e 's/(.WPT_USE_DKIM.),[^\)]+\)/$1, true)/' ".
+                       $this->props['siteConfPath']);
+        $tmp = $this->_quotePerlValue ($env['dkim']['domain']);
+        $this->_exec (
+          "perl -pi -e 's/(.WPT_DKIM_DOMAIN.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+        $tmp = $this->_quotePerlValue ($env['dkim']['selector']);
+        $this->_exec (
+          "perl -pi -e 's/(.WPT_DKIM_SELECTOR.),.[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+      }
+      else
+        $this->_exec ("perl -pi -e 's/(.WPT_USE_DKIM.),[^\)]+\)/$1, false)/' ".
+                       $this->props['siteConfPath']);
+
+      $this->_exec ("perl -pi -e 's/(.WPT_DEV_MODE.),\s*true/$1, false/' ".
+                     $this->props['appConfPath']);
+    
+      if (!empty ($env['version']))
+      {
+        $tmp = $this->_quotePerlValue ($env['version']);
+        $this->_exec("perl -pi -e 's/(.WPT_VERSION.),[^\)]+\)/$1, \"$tmp\")/' ".
+                       $this->props['appConfPath']);
+      }
+    
+      $tmp = $this->_quotePerlValue ($env['websocket']['server']['port']);
+      $this->_exec ("perl -pi -e 's/(.WPT_WS_PORT.),[^\)]+\)/$1, \"$tmp\")/' ".
+                     $this->props['siteConfPath']);
+
+      $tmp = $this->_quotePerlValue ($env['db']['user']);
+      $this->_exec ("perl -pi -e 's/(.WPT_DB_USER.),[^\)]+\)/$1, \"$tmp\")/' ".
+                     $this->props['siteConfPath']);
+      $tmp = $this->_quotePerlValue ($env['db']['password']);
+      $this->_exec (
+        "perl -pi -e 's/(.WPT_DB_PASSWORD.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+      $tmp = $this->_quotePerlValue ($env['db']['dsn']);
+      $this->_exec ("perl -pi -e 's/(.WPT_DSN.),[^\)]+\)/$1, \"$tmp\")/' ".
+                     $this->props['siteConfPath']);
+    
+      $tmp = $this->_quotePerlValue ($env['emails']['from']);
+      $this->_exec (
+        "perl -pi -e 's/(.WPT_EMAIL_FROM.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+      $tmp = $this->_quotePerlValue ($env['emails']['contact']);
+      $this->_exec (
+        "perl -pi -e 's/(.WPT_EMAIL_CONTACT.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+
+      echo "Directory \e[1m{$this->props['targetPath']}".
+           "\e[0m will be updated".(
+             ($this->props['isRemoteTarget'])?
+               " on \e[1m".$this->props['targetHost']."\e[0m":'').".\n";
+      if (readline ('Continue? [N/y] : ') == 'y')
+      {
+        $rsyncOptions =
+          ' -ac --delete '.
+          ' --exclude=data '.
+          ' --exclude=app/dkim/*private '.
+          ' --exclude=.* '.
+          ' --exclude=*.example.* '.
+          ' --exclude=*.template.* ';
+
+        if ($this->props['isRemoteTarget'])
+          $this->_exec (
+            "rsync $rsyncOptions ".
+            "-e ssh {$env['build-path']}/ ".
+            "{$this->props['deployUser']}@".
+            "{$this->props['targetHost']}:{$this->props['targetPath']}/");
+        else
+          $this->_exec (
+            "rsync $rsyncOptions ".
+            "{$env['build-path']}/ {$this->props['targetPath']}/");
+    
+        echo "\n\e[1;32mDeployment has been successfully done in \e[0m".
+             "\e[1m{$this->props['targetPath']}\e[0m\e[0;32m\e[0m.\n";
+
+        echo "\n\e[1mIMPORTANT\e[0m:\n\n";
+
+        if ($this->props['isRemoteTarget'])
+          echo "\e[93m1.\e[0m Go to the remote target ".
+               "{$this->props['targetHost']}. If this is the very first deployment, read the following instructions (\e[1mexecute commands as root\e[0m), if not, got to 2/:\n\n";
+        else
+          echo "\e[93m1.\e[0m If this is the very first deployment, read the following instructions (\e[1mexecute commands as root\e[0m), if not, got to 2/:\n\n";
+
+        echo "# cd {$this->props['targetPath']}\n".
+             "# mkdir -p data/{walls,users}\n".
+             "# chown -R {$env['www-system-user']}:{$env['www-system-user']} data\n".
+             "# chmod -R 2770 data\n\n";
+
+        if (!empty ($env['dkim']))
+          echo "* Copy your DKIM key `".realpath(__DIR__.'/../dkim')."/dkim.private` in the same path on the target and then:\n\n".
+               "# cd {$this->props['targetPath']}\n".
+               "# chown {$env['www-system-user']} app/dkim/dkim.private\n".
+               "# chmod 400 app/dkim/dkim.private\n\n";
+
+        echo "* Create a service in order to run the WebSocket server `{$this->props['targetPath']}/app/websocket/server.php` as a daemon (read the `README.md` file for details).\n\n";
+
+        echo "\e[93m2.\e[0m At each deployment you must \e[1mreload apache\e[0m, \e[1mrestart the WebSocket daemon\e[0m and \e[1mbroadcast new release announce\e[0m to all connected clients:\n\n# systemctl restart apache2\n# systemctl restart wopits\n$ {$this->props['targetPath']}/app/websocket/client.php -n\n\n";
+      }
+      else
+        exit ("\e[1;31mDeployment has been aborted!\e[0m\n".
+              "New \e[1m{$this->opt['env']}\e[0m release still in the tmp ".
+              "directory \e[1m{$env['build-path']}\e[0m\n");
+    }
+
+    private function _execMinifier ($min, $src, $dest)
+    {
+      if (preg_match ('/(.*)\.jar(\s|$)/i', $min, $m))
+      {
+        $options = '';
+
+        // CLI args for JS minifiera "closure-compiler"
+        if (stripos ($m[1], 'closure-compiler') !== false)
+          $options =
+            ' --language_out ECMASCRIPT_2015 ';
+        // CLI args for CSS minifier "closure-stylesheets"
+        elseif (stripos ($m[1], 'closure-stylesheets') !== false)
+          $options = 
+            ' --allowed-unrecognized-property hyphens '.
+            ' --allowed-unrecognized-property -o-hyphens '.
+            ' --allowed-unrecognized-property -webkit-hyphens '.
+            ' --allowed-unrecognized-property -ms-hyphens ';
+        // CLIE args for HTML minifier "htmlcompressor"
+        elseif (stripos ($m[1], 'htmlcompressor') !== false)
+          $options = ' --preserve-php ';
+
+        $min = "java -jar $min $options";
+      }
+
+      $this->_exec ("$min $src > $dest");
+    }
+
+    private function _quotePerlValue ($val)
+    {
+      return str_replace ('@', '\@', preg_quote ($val));
+    }
+  
+    private function _exec ($cmd, $onRemote = false, $noExit = false)
+    {
+      if ($onRemote)
+        $cmd =
+          "ssh {$this->props['deployUser']}@{$this->props['targetHost']} $cmd";
+  
+      if ($this->opt['verbose'])
+        echo "\n[$cmd]\n";
+  
+      exec ("$cmd 2>&1", $o, $r);
+  
+      if ($r)
+      {
+        if ($noExit)
+          return $r;
+        else
+        {
+          fwrite (STDERR,
+            "\n[\e[0;31mKO\e[0m] \e[1m".(($o)?$o[0]:'')."\e[0m\n".
+            "Execution of command \e[1m$cmd\e[0m failed!\n".
+            "\e[1;31mDeployment has been aborted!\e[0m\n");
+  
+          exit ($r);
+        }
+      }
+    }
+
+    private function help ($msg)
+    {
+      if ($msg)
+        echo "\n\e[1m$msg\e[0m\n\n";
+
+      exit ("Usage: ./deploy [OPTION]...\n".
+            "Synchronize wopits plateforms.\n\n".
+            "  -e\tenvironment to synchronize\n".
+            "  -v\tdisplay executed commands\n");
+    }
+  }
+?>
