@@ -389,11 +389,10 @@ $(function()
                     $(".tox-toolbar__overflow").hide ();
                     $(".tox-menu").hide ();
     
-                    $popup.modal ("hide");
-    
                     $popup.find("input").val ("");
                     $postit.wpt_postit ("unedit");
 
+                    $popup.modal ("hide");
                     wpt_sharer.unset ("postit-data");
                   };
 
@@ -414,7 +413,7 @@ $(function()
             $_confirmPopup.find(".modal-body").html (
               "<?=_("Save changes?")?>");
             $_confirmPopup.find(".modal-title").html (
-              '<i class="fas fa-save fa-lg fa-fw"></i> <?=_("Changes")?>');
+              '<i class="fas fa-save fa-lg fa-fw"></i> <?=_("Save")?>');
 
             $_confirmPopup[0].dataset.popuptype = "save-postits-changes";
             wpt_openModal ($_confirmPopup);
