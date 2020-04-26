@@ -83,13 +83,16 @@ If you are using the Git repository as your Apache DocumentRoot, create a `data/
 # chown -R [Apache user]:[Apache user] data
 # chmod 2770 data
 ```
-- At each deployment you must reload apache, restart the WebSocket daemon and broadcast new release announce to all connected clients:
+- At each deployment you must broadcast new release announce to all connected clients, reload apache and restart the WebSocket daemon.
 ```bash
+$ /var/www/wopits.domain.com/app/websocket/client.php -n
 # systemctl restart apache2
 # systemctl restart wopits
-$ /var/www/wopits.domain.com/app/websocket/client.php -n
 ```
-
+The post-deployment script will do this for you (execute it as root):
+```bash
+/var/www/wopits.domain.com/app/deploy/bin/post-deploy.php
+```
 #### DKIM
 
 > The use of DKIM for sending emails is not mandatory, but highly recommended if your SMTP server does not already manage it.

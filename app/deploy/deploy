@@ -131,6 +131,7 @@
 
     public function checkRights ()
     {
+      // Create test flag
       $r = $this->_exec (
         "touch {$this->props['targetPath']}/.test",
         $this->props['isRemoteTarget'], true);
@@ -140,6 +141,11 @@
           "Either target directory `{$this->props['targetPath']}` ".
           "does not exists or user `{$this->props['deployUser']}` does not ".
           "have full rights on it!");
+      // Remove test flag
+      else
+        $r = $this->_exec (
+          "rm -f {$this->props['targetPath']}/.test",
+          $this->props['isRemoteTarget'], true);
     }
 
     public function initWorkingPath ()
@@ -160,14 +166,17 @@
       // Prepare working directory
       echo "Preparing working directory \e[1m{$env['build-path']}\e[0m...\n";
       $this->_exec ("mkdir -p {$env['build-path']}/app/dkim");
+      $this->_exec ("mkdir -p {$env['build-path']}/app/websocket");
       $this->_exec ("mkdir -p {$env['build-path']}/www/css/themes");
       $this->_exec ("mkdir -p {$env['build-path']}/www/js");
-      $this->_exec ("mkdir -p {$env['build-path']}/www/js");
-      $this->_exec ("mkdir -p {$env['build-path']}/app/websocket");
+
+      $this->_exec ("mkdir -p {$env['build-path']}/app/deploy/bin");
+      $this->_exec ('cp -a '.__DIR__.
+        "/bin/post-deploy.php {$env['build-path']}/app/deploy/bin");
 
       $this->_exec ("mkdir -p {$env['build-path']}/app/inc");
-      $this->_exec (
-        'cp -a '.__DIR__."/../inc/popups {$env['build-path']}/app/inc/");
+      $this->_exec ('cp -a '.__DIR__.
+        "/../inc/popups {$env['build-path']}/app/inc/");
     }
   
     public function checkMinifiers ()
@@ -451,6 +460,16 @@
                        $this->props['appConfPath']);
       }
     
+      $tmp = $this->_quotePerlValue ($env['cmd']['apache-restart']);
+      $this->_exec (
+        "perl -pi -e 's/(.WPT_APACHE_RESTART.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+
+      $tmp = $this->_quotePerlValue ($env['cmd']['wopits-restart']);
+      $this->_exec (
+        "perl -pi -e 's/(.WPT_WOPITS_RESTART.),[^\)]+\)/$1, \"$tmp\")/' ".
+          $this->props['siteConfPath']);
+
       $tmp = $this->_quotePerlValue ($env['websocket']['server']['port']);
       $this->_exec ("perl -pi -e 's/(.WPT_WS_PORT.),[^\)]+\)/$1, \"$tmp\")/' ".
                      $this->props['siteConfPath']);
@@ -524,7 +543,8 @@
 
         echo "* Create a service in order to run the WebSocket server `{$this->props['targetPath']}/app/websocket/server.php` as a daemon (read the `README.md` file for details).\n\n";
 
-        echo "\e[93m2.\e[0m At each deployment you must \e[1mreload apache\e[0m, \e[1mrestart the WebSocket daemon\e[0m and \e[1mbroadcast new release announce\e[0m to all connected clients:\n\n# systemctl restart apache2\n# systemctl restart wopits\n$ {$this->props['targetPath']}/app/websocket/client.php -n\n\n";
+        echo "\e[93m2.\e[0m At each deployment you must execute the following post-deployment script as root:\n\n".
+             "# {$this->props['targetPath']}/app/deploy/bin/post-deploy.php\n\n";
       }
       else
         exit ("\e[1;31mDeployment has been aborted!\e[0m\n".

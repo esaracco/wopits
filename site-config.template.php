@@ -5,6 +5,11 @@
   // - If you are using wopits "as is" from the Git repository, duplicate this
   //   file to "site-config.php" and customize it.
 
+  // System command to reload apache
+  define ('WPT_APACHE_RESTART', 'systemctl reload apache2');
+  // System command to restart wopits daemon
+  define ('WPT_WOPITS_RESTART', 'systemctl restart wopits-example');
+
   // Database
   define ('WPT_DSN', 'mysql:host=localhost;dbname=wopits-example;port=3306');
   define ('WPT_DB_USER', 'wopits-example');

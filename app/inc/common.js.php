@@ -407,7 +407,7 @@ class Wpt_WebSocket
 
             // mainupgrade
             case "mainupgrade":
-              wpt_checkForAppUpgrade (data.version);
+              setTimeout (()=>wpt_checkForAppUpgrade (data.version), 5000);
               break;
 
             // reload

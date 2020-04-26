@@ -54,6 +54,13 @@
         'user' => 'wopits-prod',
         'password' => 'ChangeMe1',
       ],
+      // System commands
+      'cmd' => [
+        // System command to reload apache
+        'apache-restart' => 'systemctl reload apache2',
+        // System command to restart wopits daemon
+        'wopits-restart' => 'systemctl restart wopits1',
+      ],
       // Emails
       'emails' => [
         'from' => 'contact@wopits.com',
@@ -100,6 +107,13 @@
         'dsn' => 'mysql:host=localhost;dbname=wopits-preprod;port=3306',
         'user' => 'wopits-preprod',
         'password' => 'ChangeMe2',
+      ],
+      // System commands
+      'cmd' => [
+        // System command to reload apache
+        'apache-restart' => 'systemctl reload apache2',
+        // System command to restart wopits daemon
+        'wopits-restart' => 'systemctl restart wopits2',
       ],
       // Emails
       'emails' => [
