@@ -1011,6 +1011,8 @@
     // METHOD hidePlugs ()
     hidePlugs: function ()
     {
+      if (!this.settings.wall) return;
+
       this.settings.wall
         .find(".postit .postit-menu [data-action='plug']").hide ();
 
@@ -1026,6 +1028,8 @@
     // METHOD showPlugs ()
     showPlugs: function ()
     {
+      if (!this.settings.wall) return;
+
       this.settings.wall
         .find(".postit .postit-menu [data-action='plug']").show ();
 
