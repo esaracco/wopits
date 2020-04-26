@@ -329,6 +329,15 @@
           });
     },
 
+    // METHOD removePostitsPlugs ()
+    removePostitsPlugs: function ()
+    {
+      this.element.find(".postit.with-plugs").each (function ()
+        {
+          $(this).wpt_postit ("removePlugs", true);
+        });
+    },
+
     // METHOD hidePostitsPlugs ()
     hidePostitsPlugs: function ()
     {
@@ -611,7 +620,7 @@
 
       $(".modal.show").modal ("hide");
 
-      plugin.hidePostitsPlugs ();
+      plugin.removePostitsPlugs ();
 
       $activeTab.remove ();
       $("#"+activeTabId).remove ();
