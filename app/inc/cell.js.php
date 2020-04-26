@@ -139,7 +139,6 @@
                 return e.stopImmediatePropagation ();
   
               const cellOffset = $cell.offset (),
-                    $popup = $("#confirmPopup"),
                     $filters = wpt_sharer.getCurrent ("filters"),
                     pTop = e.pageY - cellOffset.top,
                     pLeft = e.pageX - cellOffset.left,

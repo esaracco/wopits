@@ -4,8 +4,6 @@
   echo $Plugin->getHeader ();
 ?>
 
-  let $_confirmationPopup;
-
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -15,8 +13,6 @@
     {
       const plugin = this,
             $settings = plugin.element;
-
-      $_confirmationPopup = $("#confirmPopup");
 
       $("a.dot-theme")
         .on("click", function ()
@@ -31,17 +27,20 @@
         {
           const timezone = $(this).val ();
 
-          wpt_cleanPopupDataAttr ($_confirmationPopup);
-          $_confirmationPopup.find(".modal-body").html (
-            "<?=_("Reload wopits to apply the new timezone?")?>");
-          $_confirmationPopup.find(".modal-title").html (
-            '<i class="fas fa-sync-alt fa-fw"></i> <?=_("Confirmation")?>');
+          wpt_openConfirmPopup ({
+            type: "reload-app",
+            icon: "sync-alt",
+            content: `<?=_("Reload wopits to apply the new timezone?")?>`,
+            cb_ok: () =>
+              $("#settingsPopup").wpt_settings ("applyTimezone", timezone),
+            cb_cancel: () =>
+              {
+                const tz = $(this)[0].dataset.timezone;
 
-          $_confirmationPopup[0].dataset.popuptype = "reload-app";
-          $_confirmationPopup[0].dataset.popupoldtimezone =
-            $(this)[0].dataset.timezone;
-          $_confirmationPopup[0].dataset.popupnewtimezone = timezone;
-          wpt_openModal ($_confirmationPopup);
+                if (tz !== undefined)
+                  $("#settingsPopup select.timezone").val (tz);
+              }
+          });
         });
 
       $settings.find(".locale-picker > div").each (function ()
@@ -57,15 +56,12 @@
             {
               if (!$(this).hasClass ("selected"))
               {
-                wpt_cleanPopupDataAttr ($_confirmationPopup);
-                $_confirmationPopup.find(".modal-body").html (
-                  "<?=_("Reload wopits to apply the new language?")?>");
-                $_confirmationPopup.find(".modal-title").html (
-                  '<i class="fas fa-sync-alt fa-fw"></i> <?=_("Confirmation")?>');
-
-                $_confirmationPopup[0].dataset.popuptype = "reload-app";
-                $_confirmationPopup[0].dataset.popupnewlocale = locale;
-                wpt_openModal ($_confirmationPopup);
+                wpt_openConfirmPopup ({
+                  type: "reload-app",
+                  icon: "sync-alt",
+                  content: `<?=_("Reload wopits to apply the new language?")?>`,
+                  cb_ok: () => $("#settingsPopup").wpt_settings ("applyLocale", locale)
+                  });
               }
             })
             .append ("<img src='/img/locale/"+locale+"-24.png'>");

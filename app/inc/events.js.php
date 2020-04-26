@@ -2,8 +2,7 @@ $(function()
 {
   "use strict";
 
-  const $_confirmPopup = $("#confirmPopup"),
-        $_walls = wpt_sharer.getCurrent ("walls");
+  const $_walls = wpt_sharer.getCurrent ("walls");
   let unloadDone = false;
 
   // EVENT onbeforeunload
@@ -363,11 +362,7 @@ $(function()
     function (e)
     {
       const $popup = $(this),
-            $wall = wpt_sharer.getCurrent ("wall"),
             $postit = wpt_sharer.getCurrent("postit");
-
-      // Need wall
-      if (!$wall.length) return;
 
       switch (e.target.id)
       {
@@ -381,7 +376,7 @@ $(function()
 
           const title = $("#postitUpdatePopupTitle").val (),
                 content = tinymce.activeEditor.getContent (),
-                cb_close = () =>
+                cb_cancel = () =>
                   {
                     wpt_sharer.set ("postit-data", {closing: true});
 
@@ -401,25 +396,22 @@ $(function()
           {
             e.preventDefault ();
 
-            data.cb_close = cb_close;
-            data.cb_confirm = () =>
-              {
-                $postit.wpt_postit ("setTitle", title);
-                $postit.wpt_postit ("setContent", content);
-              };
+            wpt_openConfirmPopup ({
+              type: "save-postits-changes",
+              icon: "save",
+              content: `<?=_("Save changes?")?>`,
+              cb_ok: () =>
+                {
+                  $postit.wpt_postit ("setTitle", title);
+                  $postit.wpt_postit ("setContent", content);
+                },
+              cb_cancel: cb_cancel
+            });
+
             wpt_sharer.set ("postit-data", data);
-
-            wpt_cleanPopupDataAttr ($_confirmPopup);
-            $_confirmPopup.find(".modal-body").html (
-              "<?=_("Save changes?")?>");
-            $_confirmPopup.find(".modal-title").html (
-              '<i class="fas fa-save fa-lg fa-fw"></i> <?=_("Save")?>');
-
-            $_confirmPopup[0].dataset.popuptype = "save-postits-changes";
-            wpt_openModal ($_confirmPopup);
           }
           else
-            cb_close ();
+            cb_cancel ();
           break;
       }
 
@@ -444,9 +436,6 @@ $(function()
       if (e.target.id == "infoPopup" &&
             (type == 'app-upgrade' || type == 'app-reload'))
         return location.href = '/r.php?u';
-
-      // Need wall
-      if (!$wall.length) return;
 
       switch (e.target.id)
       {
@@ -491,30 +480,11 @@ $(function()
           break;
 
         case "confirmPopup":
+          wpt_sharer.get("confirmPopup").cb_cancel ();
+          // No break
         case "usersSearchPopup":
         case "groupAccessPopup":
         case "groupPopup":
-
-          switch (type)
-          {
-            case "save-postits-changes":
-
-              wpt_sharer.get("postit-data").cb_close ();
-              break;
-
-            case "reload-app":
-
-              const tz = $popup[0].dataset.popupoldtimezone;
-
-              if (tz !== undefined)
-                $("#settingsPopup select.timezone").val (tz);
-              break;
-
-            case "delete-wall":
-
-              $wall.wpt_wall ("unedit");
-              break;
-          }
 
           $(".modal").find("li.list-group-item.active")
             .removeClass ("active todelete");
@@ -572,61 +542,10 @@ $(function()
             $popup.find("input.upload").trigger ("click");
             break;
 
-          // Manage all confirmations
+          // Manage confirmations
           case "confirmPopup":
 
-            switch (type)
-            {
-              case "logout":
-
-                $("<div/>").wpt_login ("logout");
-                break;
-
-              case "save-postits-changes":
-
-                wpt_sharer.get("postit-data").cb_confirm ();
-                break;
-
-              // Delete account
-              case "delete-account":
-
-                $("#accountPopup").wpt_account ("delete");
-                break;
-
-              // Delete profil photo
-              case "delete-account-picture":
-
-                $("#accountPopup").wpt_account ("deletePicture");
-                break;
-
-              // Manage application reload
-              case "reload-app":
-
-                if ($popup[0].dataset.popupnewlocale)
-                  $("#settingsPopup").wpt_settings (
-                    "applyLocale",
-                    $popup[0].dataset.popupnewlocale
-                  );
-                else if ($popup[0].dataset.popupnewtimezone)
-                  $("#settingsPopup").wpt_settings (
-                    "applyTimezone",
-                    $popup[0].dataset.popupnewtimezone
-                  );
-                break;
-
-              // Manage walls close confirmation
-              case "close-walls":
-
-                $wall.wpt_wall ("closeAllWalls");
-                break;
-
-              // DELETE wall
-              case "delete-wall":
-
-                $wall.wpt_wall ("delete");
-                break;
-              }
-
+            wpt_sharer.get("confirmPopup").cb_ok ();
             break;
 
           // Manage all one field UPDATE
@@ -701,14 +620,12 @@ $(function()
     {
       wpt_closeMainMenu ();
 
-      wpt_cleanPopupDataAttr ($_confirmPopup);
-      $_confirmPopup.find(".modal-body").html (
-        "<?=_("Do you really want to logout from wopits?")?>");
-      $_confirmPopup.find(".modal-title").html (
-        '<i class="fas fa-power-off fa-lg fa-fw"></i><?=_("Logout")?>');
-
-      $_confirmPopup[0].dataset.popuptype = "logout";
-      wpt_openModal ($_confirmPopup);
+      wpt_openConfirmPopup ({
+        type: "logout",
+        icon: "power-off",
+        content: `<?=_("Do you really want to logout from wopits?")?>`,
+        cb_ok: () => $("<div/>").wpt_login ("logout")
+      });
     });
 
 });

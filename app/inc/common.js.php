@@ -747,6 +747,31 @@ function wpt_openInputPopup (args)
   $popup.modal ("show");
 }
 
+function wpt_openConfirmPopup (args)
+{
+  const $popup = $("#confirmPopup");
+
+  wpt_sharer.set ("confirmPopup", {
+    cb_ok: args.cb_ok,
+    cb_cancel: () =>
+      {
+        if (args.cb_cancel)
+          args.cb_cancel ();
+        wpt_sharer.unset ("confirmPopup");
+      }
+  });
+
+  wpt_cleanPopupDataAttr ($popup);
+
+  $popup.find(".modal-title").html (
+    `<i class="fas fa-${args.icon} fa-fw"></i> <?=_("Confirmation")?>`);
+  $popup.find(".modal-body").html (args.content);
+
+  $popup[0].dataset.popuptype = args.type;
+
+  wpt_openModal ($popup);
+}
+
 // FUNCTION wpt_openConfirmPopover ()
 function wpt_openConfirmPopover (args)
 {

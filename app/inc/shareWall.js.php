@@ -5,7 +5,6 @@
 ?>
 
   let $_groupPopup,
-      $_confirmPopup,
       $_groupAccessPopup,
       $_usersSearchPopup;
 
@@ -49,7 +48,6 @@
       const plugin = this,
             $share = plugin.element;
 
-      $_confirmPopup = $("#confirmPopup");
       $_groupPopup = $("#groupPopup");
       $_groupAccessPopup = $("#groupAccessPopup");
       $_usersSearchPopup = $("#usersSearchPopup");

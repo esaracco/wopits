@@ -24,16 +24,12 @@
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
-          const $popup = $("#confirmPopup");
-
-          wpt_cleanPopupDataAttr ($popup);
-          $popup.find(".modal-body").html (
-            "<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>");
-           $popup.find(".modal-title").html (
-             '<i class="fas fa-sad-tear fa-fw"></i> <?=_("Confirmation")?>');
-
-           $popup[0].dataset.popuptype = "delete-account";
-           wpt_openModal ($popup);
+          wpt_openConfirmPopup ({
+            type: "delete-account",
+            icon: "sad-tear",
+            content: `<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>`,
+            cb_ok: () => $("#accountPopup").wpt_account ("delete")
+          });
         });
 
       $account.find(".user-picture")
@@ -43,18 +39,12 @@
 
           // If delete img
           if (e.target.tagName == "SPAN")
-          {
-            const $popup = $("#confirmPopup");
-
-            wpt_cleanPopupDataAttr ($popup);
-            $popup.find(".modal-body").html (
-              "<?=_("Delete your profile photo?")?>");
-           $popup.find(".modal-title").html (
-             '<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>');
-
-           $popup[0].dataset.popuptype = "delete-account-picture";
-           wpt_openModal ($popup);
-          }
+            wpt_openConfirmPopup ({
+              type: "delete-account-picture",
+              icon: "trash",
+              content: `<?=_("Delete your profile photo?")?>`,
+              cb_ok: () => $("#accountPopup").wpt_account ("deletePicture")
+            });
           else
             $account.find(".upload").trigger ("click");
         });

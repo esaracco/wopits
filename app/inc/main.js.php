@@ -576,15 +576,12 @@
     // METHOD openCloseAllWallsPopup ()
     openCloseAllWallsPopup: function ()
     {
-      const $popup = $("#confirmPopup");
-
-      wpt_cleanPopupDataAttr ($popup);
-      $popup.find(".modal-body").html ("<?=_("Close the walls?")?>");
-      $popup.find(".modal-title").html (
-        '<i class="fas fa-times fa-fw"></i> '+"<?=_("Confirmation")?>");
- 
-      $popup[0].dataset.popuptype = "close-walls";
-      wpt_openModal ($popup);
+      wpt_openConfirmPopup ({
+        type: "close-walls",
+        icon: "times",
+        content: `<?=_("Close the walls?")?>`,
+        cb_ok: () => this.closeAllWalls ()
+      });
     },
 
     // METHOD closeAllWalls ()
@@ -646,19 +643,15 @@
     // METHOD openDeletePopup ()
     openDeletePopup: function ()
     {
-      const plugin = this;
-
-      plugin.edit (() =>
+      this.edit (() =>
         {
-          const $popup = $("#confirmPopup");
-    
-          wpt_cleanPopupDataAttr ($popup);
-          $popup.find(".modal-body").html ("<?=_("Delete this wall?")?>");
-          $popup.find(".modal-title").html (
-            '<i class="fas fa-trash fa-fw"></i> '+"<?=_("Confirmation")?>");
-     
-          $popup[0].dataset.popuptype = "delete-wall";
-          wpt_openModal ($popup);
+          wpt_openConfirmPopup ({
+            type: "delete-wall",
+            icon: "trash",
+            content: `<?=_("Delete this wall?")?>`,
+            cb_ok: () => this.delete (),
+            cb_cancel: () => this.unedit ()
+          });
         }, null, true);
     },
 
@@ -669,6 +662,7 @@
 
       this.element[0].dataset.todelete = true;
 
+      //FIXME 2x
       this.unedit (() =>
         $("#settingsPopup")
           .wpt_settings ("removeWallBackground", this.settings.id));
