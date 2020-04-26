@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-25 18:49+0200\n"
-"PO-Revision-Date: 2020-04-25 18:49+0200\n"
+"POT-Creation-Date: 2020-04-26 17:30+0200\n"
+"PO-Revision-Date: 2020-04-26 17:32+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@leroulard.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -216,11 +216,11 @@ msgstr ""
 "sur <i class='fas fa-crosshairs'></i> ou sur <kbd>Affichage</kbd>&rarr;"
 "<kbd>Vue standard</kbd>.</p>"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1147
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1190
 msgid "A new release of wopits is available!"
 msgstr "Une nouvelle version de wopits est disponible!"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1901
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1899
 msgid "A problem occured while downloading..."
 msgstr "Un problème est survenu durant le téléchargement..."
 
@@ -278,11 +278,11 @@ msgstr "Compte"
 msgid "Add"
 msgstr "Ajouter"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:207
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:205
 msgid "Add a <b>dedicated</b> group"
 msgstr "Ajouter un groupe <b>dédié</b>"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:202
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:200
 msgid "Add a <b>generic</b> group"
 msgstr "Ajouter un groupe <b>générique</b>"
 
@@ -290,7 +290,7 @@ msgstr "Ajouter un groupe <b>générique</b>"
 msgid "Add column"
 msgstr "Ajouter une colonne"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:88
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:86
 #, php-format
 msgid "Add or remove users in the group « %s »."
 msgstr "Ajouter ou retirer des utilisateurs dans le groupe « %s »."
@@ -308,6 +308,14 @@ msgstr "Ajouter une ligne"
 msgid "All available walls are opened."
 msgstr "Tous les murs disponibles sont ouverts."
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:363
+msgid ""
+"Another session was detected. Both sessions will be closed. Please log in "
+"again."
+msgstr ""
+"Une autre session a été détectée. Les deux sessions vont être fermées. "
+"Veuillez vous identifier à nouveau."
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:67
 msgid "Arrows"
 msgstr "Flèches"
@@ -324,17 +332,13 @@ msgstr "Retour à la vue standard"
 msgid "Bad email address"
 msgstr "Mauvaise adresse email"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1065
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1125
 msgid "Can not read file"
 msgstr "Impossible de lire le fichier"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:21
 msgid "Cancel"
 msgstr "Abandonner"
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:417
-msgid "Changes"
-msgstr "Changements"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:65
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/chatroom.js.php:46
@@ -360,8 +364,8 @@ msgstr "Salon"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/usersSearch.php:27
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:33
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitAttachments.php:17
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:845
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:772
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:839
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:832
 msgid "Close"
 msgstr "Fermer"
 
@@ -373,11 +377,11 @@ msgstr "Fermer les murs..."
 msgid "Close the walls?"
 msgstr "Fermer les murs?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:846
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:840
 msgid "Close this wall?"
 msgstr "Fermer ce mur?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:228
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:224
 #, php-format
 msgid "Color of the wall «&nbsp;%s&nbsp;»:"
 msgstr "Couleur du mur «&nbsp;%s&nbsp;»:"
@@ -390,11 +394,7 @@ msgstr "Couleurs:"
 msgid "Column title"
 msgstr "Titre colonne"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:584
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:658
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:38
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:64
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:33
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:802
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -404,9 +404,9 @@ msgstr "Contenu"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:37
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:47
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:950
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/cell.js.php:155
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:221
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:944
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/cell.js.php:154
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:219
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/login.js.php:156
 msgid "Create"
 msgstr "Créer"
@@ -416,7 +416,7 @@ msgstr "Créer"
 msgid "Create a account"
 msgstr "Créer un compte"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/cell.js.php:156
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/cell.js.php:155
 msgid "Create a new postit-it here?"
 msgstr "Créer un nouveau post-it ici?"
 
@@ -449,7 +449,7 @@ msgstr "Date limite"
 msgid "Dedicated"
 msgstr "Dédiés"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:231
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:227
 msgid "Default walls color:"
 msgstr "Couleur des murs par défaut:"
 
@@ -457,12 +457,11 @@ msgstr "Couleur des murs par défaut:"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:428
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:554
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:853
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1866
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:53
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1864
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:125
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:180
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:365
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:111
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:372
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:109
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -478,19 +477,19 @@ msgstr "Supprimer les relations"
 msgid "Delete this column?"
 msgstr "Supprimer cette colonne?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1867
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1865
 msgid "Delete this file?"
 msgstr "Supprimer ce fichier?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:24
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
 msgid "Delete this group"
 msgstr "Supprimer ce groupe"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:105
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:103
 msgid "Delete this group?"
 msgstr "Supprimer ce groupe?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:366
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:373
 msgid "Delete this picture?"
 msgstr "Supprimer cette image?"
 
@@ -502,11 +501,11 @@ msgstr "Supprimer ce post-it?"
 msgid "Delete this row?"
 msgstr "Supprimer cette ligne?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:656
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:651
 msgid "Delete this wall?"
 msgstr "Supprimer ce mur?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:51
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:45
 msgid "Delete your profile photo?"
 msgstr "Supprimer votre photo de profil?"
 
@@ -518,7 +517,7 @@ msgstr "Navigateur obsolète"
 msgid "Description"
 msgstr "Description"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:707
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:638
 msgid "Do you really want to logout from wopits?"
 msgstr "Voulez-vous vraiment vous déconnecter de wopits?"
 
@@ -533,7 +532,7 @@ msgid ""
 msgstr ""
 "Soit vous n'avez plus le droit d'accéder à ce mur, soit il a été supprimé"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:216
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:206
 msgid "Email"
 msgstr "Email"
 
@@ -555,7 +554,7 @@ msgstr "Erreur durant le traitement des données de l'image"
 msgid "File format detection error"
 msgstr "Erreur de détection du format du fichier"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1043
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1103
 #, php-format
 msgid "File size is too large (%sM max)!"
 msgstr "Le fichier est trop volumineux (%sM max)!"
@@ -573,7 +572,7 @@ msgstr "Mot de passe oublié?"
 msgid "Full access (admin)"
 msgstr "Accès complet (admin)"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:212
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:202
 msgid "Full name"
 msgstr "Nom"
 
@@ -601,7 +600,7 @@ msgstr "Groupes <b>liés</b> à ce mur:"
 msgid "Help"
 msgstr "Aide"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:106
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:104
 msgid ""
 "If you delete this <b>generic</b> group, it will no longer be available for "
 "the current wall or for your other walls.<p/>Delete it anyway?"
@@ -618,7 +617,7 @@ msgstr ""
 "Si vous avez besoin d'un hébergement professionnel ou de fonctionnalités "
 "spécifiques, n'hésitez pas à contacter %s."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:826
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:886
 msgid "Information"
 msgstr "Information"
 
@@ -634,7 +633,7 @@ msgstr "Laissez briller vos idées!"
 msgid "Link"
 msgstr "Lier"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:24
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
 msgid "Link this group"
 msgstr "Lier ce groupe"
 
@@ -646,7 +645,7 @@ msgstr "Documents liés"
 msgid "Log in"
 msgstr "Se connecter"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:205
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:195
 msgid "Login"
 msgstr "Identifiant"
 
@@ -654,11 +653,7 @@ msgstr "Identifiant"
 msgid "Login must contain at least 3 characters"
 msgstr "L'identifiant doit contenir au moins 3 caractères"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:709
-msgid "Logout"
-msgstr "Déconnexion"
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:453
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:488
 msgid ""
 "Maintenance operation in progress. Please reload this page or try again "
 "later."
@@ -667,8 +662,8 @@ msgstr ""
 "plus tard."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/usersSearch.php:5
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:24
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:399
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:397
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
 
@@ -686,9 +681,9 @@ msgstr ""
 "partagées avec des tiers."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1495
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:957
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1009
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1022
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1017
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1069
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1082
 msgid "Network error.<br>Please try again later."
 msgstr "Erreur réseau.<br>Veuillez réessayer plus tard."
 
@@ -696,7 +691,7 @@ msgstr "Erreur réseau.<br>Veuillez réessayer plus tard."
 msgid "New"
 msgstr "Nouveau"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1797
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1795
 msgid "New page"
 msgstr "Nouvelle page"
 
@@ -708,11 +703,11 @@ msgstr "Confirmation du nouveau mot de passe:"
 msgid "New passwords must match"
 msgstr "Les nouveaux mots de passe doivent correspondre"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1149
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1192
 msgid "New release"
 msgstr "Nouvelle version"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:943
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:937
 msgid "New wall"
 msgstr "Nouveau mur"
 
@@ -722,7 +717,7 @@ msgid "Next"
 msgstr "Suivant"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/confirm.php:15
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:772
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:832
 msgid "No"
 msgstr "Non"
 
@@ -730,11 +725,11 @@ msgstr "Non"
 msgid "No content."
 msgstr "Aucun contenu."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1436
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1430
 msgid "No description."
 msgstr "Aucune description."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:414
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:412
 msgid "No group is yet linked with this wall."
 msgstr "Aucun groupe n'est encore lié à ce mur."
 
@@ -838,7 +833,7 @@ msgstr "Consultation uniquement"
 msgid "Relationship name"
 msgstr "Nom de la relation"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1118
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:423
 msgid "Reload needed"
 msgstr "Rechargement nécessaire"
 
@@ -846,7 +841,7 @@ msgstr "Rechargement nécessaire"
 msgid "Reload wopits to apply the new language?"
 msgstr "Recharger wopits pour utiliser la nouvelle langue?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:36
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/settings.js.php:33
 msgid "Reload wopits to apply the new timezone?"
 msgstr "Recharger wopits pour appliquer le nouveau fuseau horaire?"
 
@@ -859,7 +854,7 @@ msgstr "Se souvenir de moi"
 msgid "Rename"
 msgstr "Renommer"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1827
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1825
 msgid "Rename relation"
 msgstr "Renommer la relation"
 
@@ -885,14 +880,14 @@ msgstr "Titre ligne"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:45
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:20
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:32
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:594
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:772
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:629
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:832
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:210
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:241
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:239
 msgid "Save"
 msgstr "Enregistrer"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:415
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/events.js.php:402
 msgid "Save changes?"
 msgstr "Enregistrer les changements?"
 
@@ -933,7 +928,7 @@ msgstr "Gestion des partages"
 msgid "Someone is editing this element"
 msgstr "Quelqu'un modifie cet élément"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1733
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1731
 msgid ""
 "Sorry, but the entire column was deleted while you were editing the post-it!"
 msgstr "Désolé, mais la colonne a été supprimée pendant l'édition du post-it!"
@@ -946,7 +941,7 @@ msgstr "Désolé, votre tentative de connexion a échoué!"
 msgid "Standard view"
 msgstr "Vue standard"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:839
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:899
 msgid "System error. Please report it to the administrator."
 msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
 
@@ -954,7 +949,7 @@ msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
 msgid "Tags:"
 msgstr "Étiquettes:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1162
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1205
 msgid "Thank you for using wopits!"
 msgstr "Merci d'utiliser wopits!"
 
@@ -967,12 +962,12 @@ msgstr ""
 "Veuillez recharger cette page et recommencer afin de vérifier que vous "
 "n'êtes pas un robot."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1147
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1190
 #, php-format
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr "L'application sera mise à jour, de la v%s1 à la v%s2."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:31
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:30
 msgid ""
 "The deletion of your account will result in the deletion of all your walls "
 "and associated items.<p/>Do you really want to permanently delete your "
@@ -982,7 +977,7 @@ msgstr ""
 "tous les éléments associés.<p/>Voulez-vous vraiment supprimer définitivement "
 "votre compte wopits?"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1950
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1948
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:167
 msgid "The file is already linked to the post-it"
 msgstr "Le fichier est déjà associé au post-it"
@@ -995,7 +990,7 @@ msgstr "Les utilisateurs suivants ont ce mur ouvert:"
 msgid "The new password:"
 msgstr "Le nouveau mot de passe:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1021
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1081
 msgid "The server is taking too long to respond.<br>Please, try again later."
 msgstr "Le serveur répond trop lentement.<br>Veuillez réessayer plus tard."
 
@@ -1003,11 +998,11 @@ msgstr "Le serveur répond trop lentement.<br>Veuillez réessayer plus tard."
 msgid "The wall has been deleted"
 msgstr "Le mur a été supprimé"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1178
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1172
 msgid "The wall is again editable"
 msgstr "Le mur est de nouveau modifiable"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1138
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1132
 msgid "The wall is read only"
 msgstr "Le mur est en lecture seule"
 
@@ -1040,11 +1035,11 @@ msgstr "Cet élément a été supprimé"
 msgid "This login already exists"
 msgstr "Cet identifiant existe déjà"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:203
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:201
 msgid "This new group will also be available for all your other walls."
 msgstr "Ce nouveau groupe sera également disponible pour tous vos autres murs."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:208
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:206
 msgid "This new group will be available only for the current wall."
 msgstr "Ce nouveau groupe ne sera disponible que pour le mur courant."
 
@@ -1081,11 +1076,11 @@ msgstr ""
 "Contrairement à d'autres applications vous offrant un service gratuit, vous "
 "n'êtes pas considéré ici comme une marchandise ou un produit."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:398
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:396
 msgid "Unlink this dedicated group"
 msgstr "Délier ce groupe dédié"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:398
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:396
 msgid "Unlink this group"
 msgstr "Délier ce groupe"
 
@@ -1094,15 +1089,15 @@ msgstr "Délier ce groupe"
 msgid "Unsecured password"
 msgstr "Mot de passe non sécurisé"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:235
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:233
 msgid "Update this group"
 msgstr "Modifier ce groupe"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1164
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1207
 msgid "Upgrade done"
 msgstr "Mise à jour terminée"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1162
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1205
 msgid "Upgrade done."
 msgstr "La mise à jour est terminée."
 
@@ -1120,7 +1115,7 @@ msgid "Users of this group will have the following access to the current wall:"
 msgstr "Les utilisateurs de ce groupe auront l'accès suivant au mur en cours:"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:58
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1804
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1802
 msgid "View"
 msgstr "Affichage"
 
@@ -1137,17 +1132,18 @@ msgid "Walls management"
 msgstr "Gestion des murs"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:28
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:365
 msgid "Warning"
 msgstr "Avertissement"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1493
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:930
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:977
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:639
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:990
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1037
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:646
 msgid "Warning!"
 msgstr "Attention!"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1116
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:421
 msgid ""
 "We are sorry for the inconvenience, but due to a maintenance operation, the "
 "application must be reloaded"
@@ -1175,7 +1171,7 @@ msgstr ""
 "Lorsque vous supprimez votre compte, vos murs et toutes vos données "
 "personnelles sont complètement effacés."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:947
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:941
 msgid "With grid"
 msgstr "Avec quadrillage"
 
@@ -1184,7 +1180,7 @@ msgid "Wrong current password"
 msgstr "Mauvais mot de passe actuel"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/confirm.php:14
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:772
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:832
 msgid "Yes"
 msgstr "Oui"
 
@@ -1208,7 +1204,7 @@ msgstr ""
 "Pour des raisons de sécurité, nous vous conseillons de le modifier le plus "
 "rapidement possible."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:413
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:411
 msgid "You cannot manage any of the existing groups."
 msgstr "Vous ne pouvez gérer aucun des groupes existants."
 
@@ -1225,7 +1221,7 @@ msgstr "Vous devez avoir un accès administrateur pour effectuer cette action"
 msgid "You must have write access to perform this action"
 msgstr "Vous devez avoir un accès en écriture pour effectuer cette action"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:312
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:302
 msgid "Your account has been updated"
 msgstr "Votre compte a été modifié"
 
@@ -1278,11 +1274,11 @@ msgstr "Zoom +"
 msgid "Zoom -"
 msgstr "Zoom -"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1177
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1171
 msgid "Zoom disabled"
 msgstr "Zoom désactivé"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1137
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1131
 msgid "Zoom enabled"
 msgstr "Zoom activé"
 
@@ -1297,7 +1293,7 @@ msgstr "mot de passe actuel"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/resetPassword.php:17
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:31
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:42
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:218
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:208
 msgid "email"
 msgstr "email"
 
@@ -1307,7 +1303,7 @@ msgstr "confirmation email"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:26
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:36
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:213
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:203
 msgid "full name"
 msgstr "nom"
 
@@ -1352,12 +1348,12 @@ msgid "password confirmation"
 msgstr "confirmation mot de passe"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/usersSearch.js.php:18
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:207
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:197
 msgid "username"
 msgstr "utilisateur"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:24
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:399
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:397
 msgid "users in this group"
 msgstr "utilisateurs dans ce groupe"
 
@@ -1366,7 +1362,7 @@ msgid "wall description"
 msgstr "description du mur"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:24
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:945
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:939
 msgid "wall name"
 msgstr "nom du mur"
 
@@ -1378,6 +1374,15 @@ msgstr ""
 "wopits est un monde dans lequel vous pouvez gérer toutes sortes de projets "
 "en utilisant simplement des post-its pour les partager et collaborer "
 "simultanément avec d'autres utilisateurs."
+
+#~ msgid "Another session was opened. It has been automatically closed."
+#~ msgstr "Une autre session était ouverte. Elle été automatiquement fermée."
+
+#~ msgid "Logout"
+#~ msgstr "Déconnexion"
+
+#~ msgid "Changes"
+#~ msgstr "Changements"
 
 #~ msgid "Pending changes"
 #~ msgstr "Modifications en attente"

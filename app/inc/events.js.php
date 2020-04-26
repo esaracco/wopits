@@ -432,13 +432,25 @@ $(function()
       if (openedModals)
         $("body").addClass ("modal-open");
 
-      // Reload app
-      if (e.target.id == "infoPopup" &&
-            (type == 'app-upgrade' || type == 'app-reload'))
-        return location.href = '/r.php?u';
-
       switch (e.target.id)
       {
+        case "infoPopup":
+
+          switch (type)
+          {
+            // Reload app
+            case "app-upgrade":
+            case "app-reload":
+
+              return location.href = '/r.php?u';
+              break;
+
+            case "app-logout":
+              $("<div/>").wpt_login ("logout");
+              break;
+          }
+          break;
+
         case "plugPopup":
 
           const from = wpt_sharer.get ("link-from");

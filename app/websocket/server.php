@@ -106,10 +106,16 @@ class Wopits implements MessageComponentInterface
         if (isset ($client->settings->activeWall))
           $this->_pushWallsUsersCount ([$client->settings->activeWall]);
   
-        if (!isset ($this->usersUnique[$userId]))
-          $this->usersUnique[$userId] = [];
-  
-        $this->usersUnique[$userId][$connId] = 1;
+        // Close all sessions if multiple sessions has been detected
+        if (isset ($this->usersUnique[$userId]))
+        {
+          $this->clients[$this->usersUnique[$userId]]->conn->send (
+            '{"action": "sessionexists"}');
+          $this->clients[$connId]->conn->send (
+            '{"action": "sessionexists"}');
+        }
+        else
+          $this->usersUnique[$userId] = $connId;
       }
       else
         throw new Exception ("UNAUTHORIZED login attempt!");
@@ -561,7 +567,7 @@ class Wopits implements MessageComponentInterface
       // Debug // PROD-remove
       elseif ($msg->route == 'debug') // PROD-remove
       { // PROD-remove
-        error_log (print_r ($data, true)); // PROD-remove
+        _debug ($data); // PROD-remove
       }// PROD-remove
 
       $ret['action'] = $action;
@@ -654,10 +660,7 @@ class Wopits implements MessageComponentInterface
         unset ($this->chatUsers[$_wallId][$connId]);
 
       unset ($this->clients[$connId]);
-      unset ($this->usersUnique[$userId][$connId]);
-
-      if (empty ($this->usersUnique[$userId]))
-        unset ($this->usersUnique[$userId]);
+      unset ($this->usersUnique[$userId]);
 
       $this->_log ($conn, 'info',
         "CLOSE connection (".count($this->clients)." connected clients)");
@@ -857,6 +860,11 @@ class Wopits implements MessageComponentInterface
       $msg);
   }
 }
+
+function _debug ($data) // PROD-remove
+{ // PROD-remove
+  error_log (print_r ($data, true)); // PROD-remove
+} // PROD-remove
 
 echo "wopits WebSocket server is listening on port ".WPT_WS_PORT."\n\n";
 

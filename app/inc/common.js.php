@@ -352,11 +352,30 @@ class Wpt_WebSocket
         {
           switch (data.action)
           {
+            // sessionexists
+            case "sessionexists":
+              var $popup = $("#infoPopup");
+
+              $(".modal").modal ("hide");
+
+              wpt_cleanPopupDataAttr ($popup);
+
+              $popup.find(".modal-body").html ("<?=_("Another session was detected. Both sessions will be closed. Please log in again.")?>");
+              $popup.find(".modal-title").html (
+                '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
+              $popup[0].dataset.popuptype = "app-logout";
+              wpt_openModal ($popup);
+
+              setTimeout (() => $("<div/>").wpt_login ("logout"), 3000);
+              break;
+
+            // refreshwall
             case "refreshwall":
               if ($wall.length && data.wall)
                 $wall.wpt_wall ("refresh", data.wall);
               break;
 
+            // viewcount
             case "viewcount":
               if ($wall.length)
                 $wall.wpt_wall ("refreshUsersview", data.count);
@@ -365,16 +384,19 @@ class Wpt_WebSocket
                   "viewcount-wall-"+data.wall.id, data.count);
               break;
 
+            // chat
             case "chat":
                 $("#wall-"+data.wall.id+" .chatroom")
                   .wpt_chatroom ("addMsg", data);
               break;
 
+            // chatcount
             case "chatcount":
                 $("#wall-"+data.wall.id+" .chatroom")
                   .wpt_chatroom ("refreshUserscount", data.count);
               break;
 
+            // deletedwall
             case "deletedwall":
               if (!isResponse)
               {
@@ -383,12 +405,25 @@ class Wpt_WebSocket
               }
               break;
 
+            // mainupgrade
             case "mainupgrade":
               wpt_checkForAppUpgrade (data.version);
               break;
 
+            // reload
             case "reload":
-              setTimeout (() => wpt_reloadApp (), 3000);
+              var $popup = $("#infoPopup");
+
+              $(".modal").modal ("hide");
+
+              wpt_cleanPopupDataAttr ($popup);
+
+              $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded")?>");
+              $popup.find(".modal-title").html (
+                '<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>');
+
+              $popup[0].dataset.popuptype = "app-reload";
+              wpt_openModal ($popup);
               break;
           }
         }
@@ -1127,23 +1162,6 @@ function wpt_waitForDOMUpdate (cb)
   setTimeout (
     () => window.requestAnimationFrame (
             () => window.requestAnimationFrame (cb)), 150);
-}
-
-// FUNCTION wpt_reloadApp ()
-function wpt_reloadApp ()
-{
-  const $popup = $("#infoPopup");
-
-  $(".modal").modal ("hide");
-
-  wpt_cleanPopupDataAttr ($popup);
-
-  $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded")?>");
-  $popup.find(".modal-title").html (
-    '<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>');
-
-  $popup[0].dataset.popuptype = "app-reload";
-  wpt_openModal ($popup);
 }
 
 // FUNCTION wpt_checkForAppUpgrade ()
