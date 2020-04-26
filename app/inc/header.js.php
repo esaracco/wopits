@@ -276,6 +276,7 @@
                                 "fixSize", oldW, $header.outerWidth ());
   
                               plugin.unedit ();
+
                             }, 500);
                         },
                         // error cb
@@ -291,7 +292,7 @@
         $(`<ul class="navbar-nav mr-auto submenu"></ul>`).prependTo ($header);
 
       if (settings.picture)
-        $header.append (plugin.getImg (settings.picture));
+        $header.append (plugin.getImgTemplate (settings.picture));
     },
 
     // METHOD addUploadLayer ()
@@ -322,8 +323,8 @@
         this.element.find(".btn-menu").trigger ("click");
     },
 
-    // METHOD getImg ()
-    getImg: function (src)
+    // METHOD getImgTemplate ()
+    getImgTemplate: function (src)
     {
       const plugin = this,
             $header = plugin.element,
@@ -349,7 +350,13 @@
             _ffBugTrick ($header);
 
             plugin.edit (() => _ffTriggerBug.run = true);
+          })
+        .find("img")
+          .on("load", function (e)
+          {
+            plugin.settings.wall.wpt_wall ("repositionPostitsPlugs");
           });
+
 
       // Create img delete button
       const $deleteButton = $(`<button type="button" class="close img-delete"><i class="fas fa-times fa-sm"></i></button>`)
@@ -396,7 +403,7 @@
       if (src)
       {
         if (!$img.length)
-          $header.append (plugin.getImg (src));
+          $header.append (plugin.getImgTemplate (src));
         else if (src != $img.attr("src"))
           $img.attr ("src", src);
       }
