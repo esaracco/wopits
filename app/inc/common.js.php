@@ -545,6 +545,12 @@ function wpt_quoteRegex (str)
   return (str+"").replace (/(\W)/g, '\\$1');
 }
 
+// FUNCTION wpt_convertEntities ()
+function wpt_convertEntities (str)
+{
+  return $("<div/>").html(str).text ();
+}
+
 // FUNCTION wpt_htmlQuotes ()
 function wpt_htmlQuotes (str)
 {

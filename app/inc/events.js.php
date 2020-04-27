@@ -374,7 +374,8 @@ $(function()
           // popup
           if (data && data.closing) return;
 
-          const title = $("#postitUpdatePopupTitle").val (),
+          const $div = $("<div/>"),
+                title = $("#postitUpdatePopupTitle").val (),
                 content = tinymce.activeEditor.getContent (),
                 cb_cancel = () =>
                   {
@@ -392,7 +393,9 @@ $(function()
                   };
 
           // If there is pending changes, ask confirmation to user
-          if (data && (data.title != title || data.content != content))
+          if (data && (
+            wpt_convertEntities(data.title) != wpt_convertEntities(title) ||
+            wpt_convertEntities(data.content) != wpt_convertEntities(content)))
           {
             e.preventDefault ();
 
