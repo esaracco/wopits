@@ -33,7 +33,7 @@
       {
         case 'common':
           if (getParam ('item') == 'timezones')
-            $ret = Wpt_common::getAllTimezones ();
+            $ret = timezone_identifiers_list ();
           break;
 
         case 'postit':

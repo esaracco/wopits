@@ -222,12 +222,6 @@
       setcookie (WPT_COOKIE, '', time () - 86400, '/', null, true, true);
     }
 
-    public static function browserIsIE ()
-    {
-      return (isset ($_SERVER['HTTP_USER_AGENT'])) ?
-        (strpos ($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) : false;
-    }
-
     public static function setCookie ($value)
     {
       setcookie (WPT_COOKIE, $value, mktime (0, 0, 0, 1, 1, 2035),
@@ -308,11 +302,6 @@
       }
     
       return 'fa-file';
-    }
-
-    public static function getAllTimezones ()
-    {
-      return timezone_identifiers_list ();
     }
 
     public static function checkRealFileType ($filename, $name = null,
