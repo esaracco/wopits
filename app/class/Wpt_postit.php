@@ -92,6 +92,37 @@
       }
     }
 
+    public function addRemovePlugs ($plugs, $postitId = null)
+    {
+      if (!$postitId)
+        $postitId = $this->postitId;
+
+      $this
+        ->prepare('
+          DELETE FROM postits_plugs
+          WHERE walls_id = ?
+            AND start = ? AND end NOT IN ('.
+              implode(",",array_map([$this, 'quote'],
+                array_keys($plugs))).')')
+        ->execute ([$this->wallId, $postitId]);
+
+      $stmt = $this->prepare ('
+        INSERT INTO postits_plugs (
+          walls_id, start, end, label
+        ) VALUES (
+          :walls_id, :start, :end, :label
+        ) ON DUPLICATE KEY UPDATE label = :label_1');
+
+      foreach ($plugs as $_id => $_label)
+        $stmt->execute ([
+          ':walls_id' => $this->wallId,
+          ':start' => $postitId,
+          ':end' => $_id,
+          ':label' => $_label,
+          ':label_1' => $_label
+        ]);
+    }
+
     public function deleteAttachment ($args)
     {
       $ret = [];
@@ -147,18 +178,12 @@
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
-      if (!is_object ($this->data) ||
-          !$this->data->size ||
-          !preg_match ('#\.([a-z0-9]+)$#i', $this->data->name, $m1) ||
-          !preg_match ('#data:([^;]+);base64,(.*)#', $this->data->content, $m2))
-      {
-        $ret['error'] = _("Empty file or bad file format");
-      }
+      list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
+
+      if ($error)
+        $ret['error'] = $error;
       else
       {
-        $ext = $m1[1];
-        $content = $m2[2];
-
         $rdir = 'postit/'.$this->postitId;
         $file = Wpt_common::getSecureSystemName (
           "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
@@ -171,7 +196,7 @@
             $file, base64_decode(str_replace(' ', '+', $content)));
 
           // Fix wrong MIME type for images
-          if (preg_match ('/(jpe?g|gif|png)/', $ext))
+          if (preg_match ('/(jpe?g|gif|png)/i', $ext))
             list ($file, $this->data->type, $this->data->name) =
               Wpt_common::checkRealFileType ($file, $this->data->name);
 
@@ -276,7 +301,124 @@
 
       return $ret;
     }
+
+    public function addPicture ()
+    {
+      $ret = [];
+      $dir = $this->getWallDir ();
+      $wdir = $this->getWallDir ('web');
+      $currentDate = time ();
+
+      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      if (!$r['ok'])
+        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+
+      list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
+
+      if ($error)
+        $ret['error'] = $error;
+      else
+      {
+        $rdir = 'postit/'.$this->postitId;
+        $file = Wpt_common::getSecureSystemName (
+          "$dir/$rdir/picture-".hash('sha1', $this->data->content).".$ext");
+
+        $exists = file_exists ($file);
+
+        file_put_contents (
+          $file, base64_decode(str_replace(' ', '+', $content)));
+
+        list ($file, $this->data->type, $width, $height) =
+          Wpt_common::resizePicture ($file, 800, 0, false);
+
+        $ret = [
+          'postits_id' => $this->postitId,
+          'walls_id' => $this->wallId,
+          'users_id' => $this->userId,
+          'creationdate' => $currentDate,
+          'name' => $this->data->name,
+          'size' => filesize ($file),
+          'type' => $this->data->type,
+          'link' => "$wdir/$rdir/".basename($file)
+        ];
+
+        try
+        {
+          $this->beginTransaction ();
+
+          if ($exists)
+            $this
+              ->prepare('DELETE FROM postits_pictures WHERE link = ?')
+              ->execute ([$ret['link']]);
+
+          $this->executeQuery ('INSERT INTO postits_pictures', $ret);
   
+          $ret['id'] = $this->lastInsertId ();
+          $ret['icon'] = Wpt_common::getImgFromMime ($this->data->type);
+          $ret['width'] = $width;
+          $ret['height'] = $height;
+          $ret['link'] =
+            "/api/wall/{$this->wallId}/cell/{$this->cellId}".
+            "/postit/{$this->postitId}/picture/{$ret['id']}";
+
+          $this->commit ();
+        }
+        catch (Exception $e)
+        {
+          $this->rollback ();
+
+          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+          $ret['error'] = 1;
+        }
+      }
+
+      return $ret;
+    }
+
+    public function getPicture ($args)
+    {
+      $picId = $args['pictureId'];
+
+      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);
+      if (!$r['ok'])
+        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+
+      $stmt = $this->prepare ('SELECT * FROM postits_pictures WHERE id = ?');
+      $stmt->execute ([$picId]);
+      $data = $stmt->fetch ();
+
+      $data['path'] = WPT_ROOT_PATH.$data['link'];
+
+      Wpt_common::download ($data);
+    }
+
+    public function deletePictures ($data)
+    {
+      $pics = (preg_match_all (
+        "#/postit/\d+/picture/(\d+)#", $data->content, $m)) ? $m[1] : [];
+
+      $stmt = $this->prepare ('
+        SELECT id, link
+        FROM postits_pictures
+        WHERE postits_id = ?');
+      $stmt->execute ([$data->id]);
+
+      $toDelete = [];
+      while ( ($pic = $stmt->fetch ()) )
+      {
+        if (!in_array ($pic['id'], $pics))
+        {
+          $toDelete[] = $pic['id'];
+          exec ('rm -f '.WPT_ROOT_PATH.$pic['link']);
+        }
+      }
+
+      if (!empty ($toDelete))
+        $this->query ('
+          DELETE FROM postits_pictures
+          WHERE id IN ('.implode(',', $toDelete).')');
+    }
+
     public function deletePostit ()
     {
       $ret = [];

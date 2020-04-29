@@ -218,6 +218,27 @@ CREATE TABLE postits_attachments
 )
 ENGINE=INNODB;
 
+DROP TABLE IF EXISTS postits_pictures;
+CREATE TABLE postits_pictures
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  -- FIXME -> INT
+  postits_id BIGINT UNSIGNED NOT NULL,
+  walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
+  users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
+  `type` VARCHAR(50) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  link VARCHAR(2000) NOT NULL,
+  size INT NOT NULL,
+  creationdate INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (id),
+  CONSTRAINT `postits_pictures-postits_id-fk` FOREIGN KEY (postits_id)
+    REFERENCES postits(id) ON DELETE CASCADE,
+  INDEX `postits_pictures-link-idx` (link)
+)
+ENGINE=INNODB;
+
 DROP TABLE IF EXISTS edit_queue;
 CREATE TABLE edit_queue
 (

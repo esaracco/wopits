@@ -119,10 +119,9 @@
           if (viewcount !== undefined)
             plugin.refreshUsersview (viewcount); 
 
-          // Refresh postits relations
-          //FIXME setTimeout ?
           setTimeout (()=>
           {
+            // Refresh postits relations
             plugin.refreshPostitsPlugs (settings.postits_plugs);
 
           }, 0);
@@ -573,9 +572,13 @@
       _refreshing = false;
       plugin.fixSize ();
 
-      // Refresh postits relations
-      plugin.refreshPostitsPlugs (d.postits_plugs);
-      plugin.checkPostitsPlugsMenu ();
+      setTimeout (() =>
+        {
+          // Refresh postits relations
+          plugin.refreshPostitsPlugs (d.postits_plugs);
+          plugin.checkPostitsPlugsMenu ();
+
+        }, 0);
 
       // Replay postits search
       setTimeout (() =>

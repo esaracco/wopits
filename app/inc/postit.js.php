@@ -27,6 +27,26 @@
           }
       };
 
+
+  function _getMaxEditModalWidth (content)
+  {
+    let maxW = 0;
+
+    (content.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
+      {
+        if (img.indexOf('src="api/wall/') != -1)
+        {
+          const tmp = img.match (/width="(\d+)"/),
+                w = tmp ? Number (img.match (/width="(\d+)"/)[1]) : 0;
+
+          if (w > maxW)
+            maxW = w;
+        }
+      });
+
+    return maxW;
+  }
+
   Plugin.prototype =
   {
     // METHOD init ()
@@ -391,6 +411,7 @@
               action = $btn[0].dataset.action;
             }
 
+            // Open modal with read rights only
             if (!writeAccess)
             {
               const content = $postit.find(".postit-edit").html (),
@@ -407,8 +428,9 @@
               $popup.find(".modal-title").html (
                 `<i class="fas fa-sticky-note"></i> ${title}`);
 
-              wpt_openModal ($popup);
+              wpt_openModal ($popup, _getMaxEditModalWidth (content));
             }
+            // Open modal with write rights
             else
             {
               if (wpt_sharer.get ("link-from"))
@@ -416,9 +438,7 @@
 
               plugin.edit (null, () =>
                 {
-                  const action = $btn[0].dataset.action;
-    
-                  switch (action)
+                  switch ($btn[0].dataset.action)
                   {
                     case "delete":
 
@@ -449,24 +469,29 @@
     
                       const $popup = $("#postitUpdatePopup"),
                             title =
-                              $postit.find(".postit-header span.title").html ();
+                              $postit.find(".postit-header span.title").html (),
+                            content = $postit.find(".postit-edit").html()||"";
 
                       wpt_sharer.set ("postit-data", {
-                        title: title != _defaultString ? title : "",
-                        content: $postit.find(".postit-edit").html()||""
+                        title: title != _defaultString ? title : ""
                       });
     
                       $("#postitUpdatePopupTitle")
                         .val (wpt_sharer.get("postit-data").title);
-          
+
                       //FIXME
                       $(".tox-toolbar__overflow").show ();
                       $(".tox-mbtn--active").removeClass ("tox-mbtn--active");
 
-                      tinymce.activeEditor.setContent (
-                        wpt_sharer.get("postit-data").content);
+                      // Check if post-it content has pictures
+                      if (content.match (/\/postit\/\d+\/picture\/\d+/))
+                        $postit[0].dataset.hadpictures = true;
+                      else
+                        $postit[0].removeAttribute ("data-hadpictures");
 
-                      wpt_openModal ($popup);
+                      tinymce.activeEditor.setContent (content);
+
+                      wpt_openModal ($popup, _getMaxEditModalWidth (content));
     
                       break;
     
@@ -475,16 +500,14 @@
                       $(".tag-picker").wpt_tagPicker ("open", e);
                       break;
     
-                    // OPEN post-it color picker
+                    // OPEN color picker
                     case "color-picker":
                       $(".color-picker").wpt_colorPicker ("open", e);
                       break;
     
-                    // OPEN postit date picker
+                    // OPEN date picker
                     case "date-picker":
-
                       plugin.openDatePicker ();
-
                       break;
                   }
               });
@@ -1155,7 +1178,9 @@
             updatetz: p.dataset.updatetz||null,
             obsolete: $p.hasClass("obsolete"),
             attachmentscount: $p.find(".attachmentscount span").text (),
-            plugs: $p.wpt_postit ("serializePlugs")
+            plugs: $p.wpt_postit ("serializePlugs"),
+            hadpictures: !!p.dataset.hadpictures,
+            hasuploadedpictures: !!p.dataset.hasuploadedpictures
           };
         }
 
@@ -1221,8 +1246,15 @@
     // METHOD setContent ()
     setContent: function (content)
     {
-      this.element.find("div.postit-edit").html (
-        content.trim().replace (/^<(br|p)\/>/ig, ""));
+      //FIXME Optimize with postit versioning
+      const $postit = this.element,
+            c1 = $postit.find("div.postit-edit").html (),
+//FIXME
+//            c2 = content.trim().replace (/^<(br|p)\/>/ig, "");
+            c2 = content;
+
+      if (c1 !== c2)
+        $postit.find("div.postit-edit").html (c2);
     },
 
     // METHOD setPosition ()
@@ -1718,7 +1750,10 @@
             $("#postitsSearchPopup").wpt_postitsSearch ("replay");
           }
           else if (data && data.updatetz)
-          $postit[0].removeAttribute ("data-updatetz");
+            $postit[0].removeAttribute ("data-updatetz");
+
+          $postit[0].removeAttribute ("data-hasuploadedpictures");
+          $postit[0].removeAttribute ("data-hadpictures");
         },
         // error cb
         () => plugin.cancelEdit ());
@@ -1787,10 +1822,77 @@
           content_style: "p {margin: 0}",
           language: (locale != "en_US") ? locale : null,
           branding: false,
-          plugins: "fullscreen autoresize link image",
+          plugins: "autoresize link image charmap hr searchreplace visualchars fullscreen insertdatetime",
 
           // "image" plugin options
           image_description: false,
+          automatic_uploads: true,
+          file_picker_types: "image",
+          file_picker_callback: function (cb, value, meta)
+          {
+            const input = document.createElement ("input");
+            input.setAttribute ("type", "file");
+            input.setAttribute ("accept", ".jpeg,.jpg,.gif,.png");
+
+            input.onchange = function ()
+              {
+                function __error_cb (d)
+                {
+                  if (!$(".tox-alert-dialog").length)
+                    tinymce.activeEditor.windowManager.alert (d.error||d);
+                }
+
+                wpt_getUploadedFiles (
+                  this.files,
+                  (e, file) =>
+                    {
+                      if (wpt_checkUploadFileSize (e.total, __error_cb) &&
+                          e.target.result)
+                      {
+                        const wallId = wpt_sharer.getCurrent("wall")
+                                         .wpt_wall("getId"),
+                              $postit = wpt_sharer.getCurrent ("postit"),
+                              postitId = $postit.wpt_postit ("getId"),
+                              cellId = $postit.wpt_postit ("getCellId"),
+                              data = {
+                                name: file.name,
+                                size: file.size,
+                                type: file.type,
+                                content: e.target.result
+                              };
+
+                        wpt_request_ws (
+                          "PUT",
+                          "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
+                            "/picture",
+                          data,
+                          // success cb
+                          (d) =>
+                            {
+                              const $f = $(".tox-dialog");
+
+                              $postit[0].dataset.hasuploadedpictures = true;
+
+                              //FIXME
+                              // If uploaded img is too large TinyMCE plugin
+                              // take too much time to gather informations
+                              // about it. If user close popup before that,
+                              // img is inserted without width/height
+                              $f.find("input:eq(1)").val (d.width);
+                              $f.find("input:eq(2)").val (d.height);
+
+                              cb (d.link);
+                            },
+                            __error_cb
+                        );
+                      }
+                    },
+                    null,
+                    __error_cb);
+              };
+
+            input.click ();
+          },
 
           // "link" plugin options
           default_link_target: "_blank",
@@ -1798,8 +1900,6 @@
           link_title: false,
           target_list: [{title: "<?=_("New page")?>", value: "_blank"}],
 
-      //    plugins: "lists fullscreen autoresize",
-      //    toolbar: "numlist bullist",
           visual: false,
           mobile: {menubar: "edit view format insert"},
           menubar: "edit view format insert",
@@ -1882,54 +1982,6 @@
             //      location.href)
             location.href = location.href.replace (/#.*$/, "")+"#downloading";
             return location.href = $(this)[0].dataset.url;
-
-            // This one works with Firefox, chrome and edge with no
-            // "downloading" hack needed but... beurk!
-/*
-            const fdata = $(this)[0].dataset,
-                  req = new XMLHttpRequest ();
-
-            wpt_loader ("show");
-
-            req.onreadystatechange = (e) =>
-              {
-                if (req.readyState == 4)
-                {
-                  wpt_loader ("hide");
-
-                  if (req.status != 200)
-                    wpt_displayMsg ({
-                      type: "warning",
-                      msg: "<?=_("A problem occured while downloading...")?>"
-                    });
-                }
-              };
-
-            req.open ("GET", fdata.url);
-            req.responseType = "blob";
-
-            req.onload = (e) =>
-            {
-              const blob = req.response,
-                    fname = fdata.fname,
-                    contentType = req.getResponseHeader ("Content-Type");
-
-              if (window.navigator.msSaveOrOpenBlob)
-                window.navigator.msSaveOrOpenBlob (
-                  new Blob([blob], {type: contentType}), fname);
-              else
-              {
-                const el =
-                  document.querySelector ("#postitAttachmentsPopup .download");
-
-                el.href = window.URL.createObjectURL (blob);
-                el.download = fname;
-                el.click ();
-              }
-            };
-
-            req.send ();
-*/
           });
     
         $_attachmentsPopup.find("input.upload").on("change",

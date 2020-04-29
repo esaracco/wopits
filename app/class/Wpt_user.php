@@ -414,19 +414,14 @@
       if (!$this->userId)
         return ['error' => _("Access forbidden")];
 
-      if (!is_object ($this->data) ||
-          !preg_match ('#\.([a-z0-9]+)$#i', $this->data->name, $m1) ||
-          !preg_match ('#data:([^;]+);base64,(.*)#', $this->data->content, $m2))
-      {
-        $ret['error'] = _("File format detection error");
-      }
+      list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
+
+      if ($error)
+        $ret['error'] = $error;
       else
       {
         try
         {
-          $ext = $m1[1];
-          $content = $m2[2];
-
           $dir = $this->getUserDir ();
           $wdir = $this->getUserDir ('web');
 

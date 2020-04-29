@@ -37,11 +37,18 @@
           break;
 
         case 'postit':
-          $ret = (new Wpt_postit([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId')
-          ]))->getAttachment (['attachmentId' => getParam ('itemId')]);
+          $Postit = new Wpt_postit ([
+              'wallId' => getParam ('wallId'),
+              'cellId' => getParam ('cellId'),
+              'postitId' => getParam ('postitId')
+            ]);
+          $item = getParam ('item');
+          if ($item == 'attachment')
+            $ret = $Postit->getAttachment ([
+              'attachmentId' => getParam ('itemId')]);
+          elseif ($item == 'picture')
+            $ret = $Postit->getPicture ([
+              'pictureId' => getParam ('itemId')]);
           break;
 
         case 'user':

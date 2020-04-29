@@ -328,19 +328,28 @@
       return [$filename, $mime, $name];
     }
 
-    public static function resizePicture ($filename, $newWidth ,$newHeight = 0)
+    public static function resizePicture ($filename,
+                                          $newWidth , $newHeight = 0,
+                                          $force = true)
     {
       $imagick = new Imagick ($filename);
 
       list ($filename, $mime) =
         self::checkRealFileType ($filename, null, $imagick);
 
-      $imagick->scaleimage ($newWidth, $newHeight);
+      $dim = $imagick->getImageGeometry ();
 
-      $imagick->writeImage ($filename);
+      if ($force || !$force && $dim['width'] > $newWidth)
+      {
+        $imagick->scaleimage ($newWidth, $newHeight);
 
-      $imagick->destroy ();
+        $imagick->writeImage ($filename);
 
-      return [$filename, $mime];
+        $dim = $imagick->getImageGeometry ();
+
+        $imagick->destroy ();
+      }
+
+      return [$filename, $mime, $dim['width'], $dim['height']];
     }
   }

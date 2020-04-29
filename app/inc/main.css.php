@@ -128,6 +128,7 @@
 
 .alert {
   box-shadow: 0 0 20px #cecece;
+  z-index:60000 !important;
 }
 
 .alert ul {
@@ -363,6 +364,10 @@ select.timezone {
 
 .modal {
   z-index:5017;
+}
+
+.modal-body {
+  overflow: auto;
 }
 
 /*FIXME*/

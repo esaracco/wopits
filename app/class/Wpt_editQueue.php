@@ -132,34 +132,6 @@
         ->execute ([$GLOBALS['sessionId']]);
     }
 
-    private function _addRemovePostitPlugs ($plugs, $postitId)
-    {
-      $this
-      ->prepare('
-        DELETE FROM postits_plugs
-        WHERE walls_id = ?
-          AND start = ? AND end NOT IN ('.
-            implode(",",array_map([$this, 'quote'],
-              array_keys($plugs))).')')
-      ->execute ([$this->wallId, $postitId]); 
-
-      $stmt = $this->prepare ('
-       INSERT INTO postits_plugs (
-         walls_id, start, end, label
-       ) VALUES (
-         :walls_id, :start, :end, :label
-       ) ON DUPLICATE KEY UPDATE label = :label_1');
-   
-      foreach ($plugs as $_id => $_label)
-        $stmt->execute ([
-          ':walls_id' => $this->wallId,
-          ':start' => $postitId,
-          ':end' => $_id,
-          ':label' => $_label,
-          ':label_1' => $_label
-        ]);
-    }
-
     public function removeFrom ()
     {
       $User = new Wpt_user ();
@@ -202,71 +174,83 @@
   
             case 'postit':
   
-              require_once (__DIR__.'/Wpt_postit.php');
-  
-              if (!empty ($this->data->todelete))
+              if (!empty ($this->data->todelete) || $update)
               {
+                require_once (__DIR__.'/Wpt_postit.php');
+
                 $Postit = new Wpt_postit ([
                   'userId' => $this->userId,
                   'wallId' => $this->wallId,
-                  'postitId' => $this->data->id
+                  'postitId' => $this->data->id ?? null
                  ]);
-                $Postit->deletePostit ();
-              }
-              elseif ($update)
-              {
-                // Postits plugs update only
-                if (isset ($this->data->updateplugs))
-                {
-                  foreach ($this->data->plugs as $postit)
-                  {
-                    $plugs = (array) $postit->plugs;
 
-                    if (!empty ($plugs))
-                      $this->_addRemovePostitPlugs ($plugs, $postit->id);
-                     else
-                       $this
-                         ->prepare('
-                           DELETE FROM postits_plugs
-                           WHERE walls_id = ? AND start = ?')
-                         ->execute ([$this->wallId, $postit->id]);
-                  }
+                // DELETE the postit
+                if (!empty ($this->data->todelete))
+                {
+                  $Postit->deletePostit ();
                 }
-                // Full postit update
-                else
+                // UPDATE the postit
+                elseif ($update)
                 {
                   $plugs = (array) $this->data->plugs;
-                  $deadline = (empty($this->data->deadline)) ?
-                                null : $this->data->deadline;
-    
-                  if ($deadline && !is_numeric ($deadline))
-                    $deadline = $User->getUnixDate ($deadline);
 
-                  $data = [
-                    'cells_id' => $this->data->cellId,
-                    'width' => $this->data->width,
-                    'height' => $this->data->height,
-                    'top' => $this->data->top,
-                    'left' => $this->data->left,
-                    'classcolor' => $this->data->classcolor,
-                    'title' => $this->data->title,
-                    'content' => $this->data->content,
-                    'tags' => $this->data->tags,
-                    'obsolete' => (empty ($this->data->obsolete)) ?
-                                    0 : $this->data->obsolete,
-                    'deadline' => ($deadline == 0) ? null : $deadline
-                  ];
+                  // Postits plugs update only
+                  if (isset ($this->data->updateplugs))
+                  {
+                    foreach ($this->data->plugs as $_postit)
+                    {
+                      $plugs = (array) $_postit->plugs;
 
-                  // Set deadline timezone with user timezone only if deadline
-                  // has changed
-                  if ($this->data->updatetz)
-                    $data['timezone'] = $User->getTimezone ();
+                      if (!empty ($plugs))
+                        $Postit->addRemovePlugs ($plugs, $_postit->id);
+                       else
+                         $this
+                           ->prepare('
+                             DELETE FROM postits_plugs
+                             WHERE walls_id = ? AND start = ?')
+                           ->execute ([$this->wallId, $_postit->id]);
+                    }
+                  }
+                  // Full postit update
+                  else
+                  {
+                    $deadline = (empty($this->data->deadline)) ?
+                                  null : $this->data->deadline;
 
-                  $this->executeQuery ('UPDATE postits', $data,
-                  ['id' => $this->data->id]);
+                    if ($deadline && !is_numeric ($deadline))
+                      $deadline = $User->getUnixDate ($deadline);
 
-                  if (!empty ($plugs))
-                    $this->_addRemovePostitPlugs ($plugs, $this->data->id);
+                    $data = [
+                      'cells_id' => $this->data->cellId,
+                      'width' => $this->data->width,
+                      'height' => $this->data->height,
+                      'top' => $this->data->top,
+                      'left' => $this->data->left,
+                      'classcolor' => $this->data->classcolor,
+                      'title' => $this->data->title,
+                      'content' => $this->data->content,
+                      'tags' => $this->data->tags,
+                      'obsolete' => (empty ($this->data->obsolete)) ?
+                                      0 : $this->data->obsolete,
+                      'deadline' => ($deadline == 0) ? null : $deadline
+                    ];
+
+                    // Set deadline timezone with user timezone only if
+                    // deadline has changed
+                    if ($this->data->updatetz)
+                      $data['timezone'] = $User->getTimezone ();
+
+                    $this->executeQuery ('UPDATE postits', $data,
+                      ['id' => $this->data->id]);
+
+                    // Delete postit content pictures if necessary
+                    if ($this->data->hadpictures ||
+                        $this->data->hasuploadedpictures)
+                      $Postit->deletePictures ($this->data);
+
+                    if (!empty ($plugs))
+                      $Postit->addRemovePlugs ($plugs);
+                  }
                 }
               }
   

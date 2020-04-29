@@ -505,12 +505,13 @@ class Wopits implements MessageComponentInterface
             break;
         }
       }
-      // ROUTE Postit attachments
+      // ROUTE Postit attachments and pictures
       elseif (preg_match (
-                '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/attachment/?(\d+)?$#',
+                '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/'.
+                '(attachment|picture)/?(\d+)?$#',
                 $msg->route, $m))
       {
-        @list (,$wallId, $cellId, $postitId, $attachmentId) = $m;
+        @list (,$wallId, $cellId, $postitId, $item, $itemId) = $m;
 
         $Postit = new Wpt_postit ([
             'wallId' => $wallId,
@@ -522,19 +523,25 @@ class Wopits implements MessageComponentInterface
         {
           // GET
           case 'GET':
-            $ret = $Postit->getAttachment (['attachmentId' => $attachmentId]);
+            if ($item == 'attachment')
+              $ret = $Postit->getAttachment (['attachmentId' => $itemId]);
+            elseif ($item == 'picture')
+              $ret = $Postit->getPicture (['pictureId' => $itemId]);
             break;
 
           // PUT
           case 'PUT':
             $Postit->data = $data;
-            $ret = $Postit->addAttachment ();
+            if ($item == 'attachment')
+              $ret = $Postit->addAttachment ();
+            elseif ($item == 'picture')
+              $ret = $Postit->addPicture ();
             break;
 
           // DELETE
           case 'DELETE':
             $ret = $Postit->deleteAttachment ([
-              'attachmentId' => $attachmentId
+              'attachmentId' => $itemId
             ]);
             break;
         }

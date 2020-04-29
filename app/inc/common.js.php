@@ -855,9 +855,41 @@ function wpt_openConfirmPopover (args)
     });
 }
 
-// FUNCTION wpt_openModal ()
-function wpt_openModal ($modal)
+function wpt_resizeModal ($modal, w)
 {
+  const wW = $(window).width (),
+        cW = Number ($modal[0].dataset.customwidth)||0,
+        oW = w;
+
+  if (cW)
+    w = cW;
+
+  if (w < 500)
+    w = 500;
+
+  if (w > wW || wW <= 800)
+    w = "100%";
+  else if (w != 500)
+    w += wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
+           wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
+
+  if (!cW)
+    $modal[0].dataset.customwidth = oW;
+
+  $modal
+    .find(".modal-dialog")
+      .css ({
+        width: w,
+        "min-width": w,
+        "max-width": w
+      });
+}
+
+// FUNCTION wpt_openModal ()
+function wpt_openModal ($modal, w)
+{
+  $modal[0].removeAttribute ("data-customwidth");
+
   $modal.modal({
     backdrop: true,
     show: true
@@ -872,6 +904,17 @@ function wpt_openModal ($modal)
     top: 0,
     left: 0
   });
+
+  if (w)
+    wpt_resizeModal ($modal, w);
+  else
+    $modal
+      .find(".modal-dialog")
+        .css ({
+          width: "",
+          "min-width": "",
+          "max-width": ""
+        });
 }
 
 // FUNCTION wpt_infoPopup ()
@@ -1096,17 +1139,21 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
 }
 
 // FUNCTION wpt_checkUploadFileSize ()
-function wpt_checkUploadFileSize (size)
+function wpt_checkUploadFileSize (size, cb_msg)
 {
+  const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>);
   let ret = true;
 
   if (size / 1024000 > <?=WPT_UPLOAD_MAX_SIZE?>)
   {
     ret = false;
 
-    wpt_displayMsg ({
+    if (cb_msg)
+      cb_msg (msg);
+    else
+      wpt_displayMsg ({
         type: "danger",
-        msg: "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>)
+        msg: msg
       });
   }
 
@@ -1114,22 +1161,27 @@ function wpt_checkUploadFileSize (size)
 }
 
 // FUNCTION wpt_getUploadedFiles ()
-function wpt_getUploadedFiles (files, success_cb, error_cb)
+function wpt_getUploadedFiles (files, success_cb, error_cb, cb_msg)
 {
   const reader = new FileReader ();
 
   reader.onprogress = (e) =>
     {
-      if (!wpt_checkUploadFileSize (e.total))
+      if (!wpt_checkUploadFileSize (e.total, cb_msg))
         reader.abort ();
     }
 
   reader.onerror = (e) =>
     {
-      wpt_displayMsg ({
-        type: "danger",
-        msg: "<?=_("Can not read file")?> ("+e.target.error.code+")"
-      });
+      const msg = "<?=_("Can not read file")?> ("+e.target.error.code+")";
+
+      if (cb_msg)
+        cb_msg (msg);
+      else
+        wpt_displayMsg ({
+          type: "danger",
+          msg: msg
+        });
     }
 
   reader.onloadend = ((f) => (evt) => success_cb (evt, f))(files[0]);

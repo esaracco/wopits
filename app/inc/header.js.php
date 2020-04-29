@@ -221,7 +221,7 @@
   
          // Upload component
         const $upload = $(
-          "<input type='file' class='upload' accept='.jpg,.gif,.png'>")
+          "<input type='file' class='upload' accept='.jpeg,.jpg,.gif,.png'>")
           .on("click", function (e)
             {
               //FIXME

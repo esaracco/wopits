@@ -3,47 +3,56 @@ $(function()
   "use strict";
 
   const $_walls = wpt_sharer.getCurrent ("walls");
-  let unloadDone = false;
-
-  // EVENT onbeforeunload
-  window.onbeforeunload = function ()
-    {
-      // Nothing if unload has already been done
-      if (unloadDone) return;
-
-      unloadDone = true;
-
-      $(".chatroom").each (function ()
-        {
-          const $chatroom = $(this);
-
-          if ($chatroom.css("display") == "table")
-            $chatroom.wpt_chatroom ("leave");
-        });
-    };
-
-  // EVENT visibilitychange
-  document.addEventListener ("visibilitychange", function ()
-    {
-      const isHidden = (document.visibilityState == "hidden");
-
-      // Nothing if unload has already been done or hidden state
-      if (isHidden && unloadDone) return;
-
-      unloadDone = isHidden;
-
-      $(".chatroom").each (function ()
-        {
-          const $chatroom = $(this);
-
-          if ($chatroom.css("display") == "table")
-            $chatroom.wpt_chatroom ((isHidden) ? "leave": "join");
-        });
-    });
 
   // EVENT resize on window
   if (!document.querySelector ("body.login-page"))
   {
+    let unloadDone = false;
+
+    // EVENT onbeforeunload
+    window.onbeforeunload = function ()
+      {
+        // Nothing if unload has already been done
+        if (unloadDone) return;
+
+        unloadDone = true;
+
+        // Close TinyMCE and modals (to unedit editing items)
+        tinymce.activeEditor.windowManager.close ();
+        $(".modal.show").modal ("hide");
+
+        $(".chatroom").each (function ()
+          {
+            const $chatroom = $(this);
+
+            if ($chatroom.css("display") == "table")
+              $chatroom.wpt_chatroom ("leave");
+          });
+      };
+
+    // EVENT visibilitychange
+    document.addEventListener ("visibilitychange", function ()
+      {
+        const isHidden = (document.visibilityState == "hidden");
+
+        // Nothing if unload has already been done or hidden state
+        if (isHidden && unloadDone) return;
+
+        unloadDone = isHidden;
+
+        // Close TinyMCE and modals (to unedit editing items)
+        tinymce.activeEditor.windowManager.close ();
+        $(".modal.show").modal ("hide");
+
+        $(".chatroom").each (function ()
+          {
+            const $chatroom = $(this);
+
+            if ($chatroom.css("display") == "table")
+              $chatroom.wpt_chatroom ((isHidden) ? "leave": "join");
+          });
+      });
+
     $(window)
       .on("resize orientationchange", function()
       {
@@ -55,12 +64,16 @@ $(function()
         if ($wall.length)
         {
           const $zoom = $(".tab-content.walls"),
+                $modal = $(".modal.m-fullscreen[data-customwidth]"),
                 $chatroom = wpt_sharer.getCurrent ("chatroom"),
                 $filters = wpt_sharer.getCurrent ("filters"),
                 $arrows = wpt_sharer.getCurrent ("arrows");
 
           // Fix plugs labels position
           $wall.wpt_wall ("repositionPostitsPlugs");
+
+          if ($modal.length)
+            wpt_resizeModal ($modal);
    
           // Fix chatroom position if it is out of bounds
           if ($chatroom.is (":visible"))
@@ -390,12 +403,16 @@ $(function()
 
                     $popup.modal ("hide");
                     wpt_sharer.unset ("postit-data");
+
+                    tinymce.activeEditor.resetContent ();
                   };
 
           // If there is pending changes, ask confirmation to user
           if (data && (
-            wpt_convertEntities(data.title) != wpt_convertEntities(title) ||
-            wpt_convertEntities(data.content) != wpt_convertEntities(content)))
+            // Content change detection
+            tinymce.activeEditor.isDirty () ||
+            // Title change detection
+            wpt_convertEntities(data.title) != wpt_convertEntities(title)))
           {
             e.preventDefault ();
 
@@ -407,6 +424,8 @@ $(function()
                 {
                   $postit.wpt_postit ("setTitle", title);
                   $postit.wpt_postit ("setContent", content);
+
+                  $postit[0].removeAttribute ("data-uploadedpictures");
                 },
               cb_cancel: cb_cancel
             });
@@ -536,6 +555,7 @@ $(function()
             $postit.wpt_postit("setTitle",$("#postitUpdatePopupTitle").val ());
             $postit.wpt_postit("setContent",tinymce.activeEditor.getContent());
 
+            $postit[0].removeAttribute ("data-uploadedpictures");
             wpt_sharer.unset ("postit-data");
             break;
 
