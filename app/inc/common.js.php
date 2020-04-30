@@ -285,7 +285,6 @@ class Wpt_WebSocket
   // METHOD constructor ()
   constructor ()
   {
-    this.timeoutId = 0;
     this.responseQueue = {};
     this._retries = 0;
     this._msgId = 0;
@@ -303,13 +302,6 @@ class Wpt_WebSocket
   _connect (url, onopen_cb, opencb_init)
   {
     wpt_loader ("show", true);
-
-    clearTimeout (this.timeoutId);
-    this.timeoutId = setTimeout (() =>
-      {
-        if (!this.ready ())
-          this.displayNetworkErrorMsg ();
-      }, 5000);
 
     this.cnx = new WebSocket (url);
 
@@ -448,17 +440,18 @@ class Wpt_WebSocket
       {
         wpt_loader ("hide");
 
-        console.error (e);
+        if (this._retries < 30)
+          this.tryToReconnect ({
+            success_cb: () =>
+              {
+                const $wall = wpt_sharer.getCurrent ("wall");
 
-        this.tryToReconnect ({
-          success_cb: () =>
-            {
-              const $wall = wpt_sharer.getCurrent ("wall");
-
-              if ($wall.length)
-                $wall.wpt_wall ("refresh");
-            }
-        });
+                if ($wall.length)
+                  $wall.wpt_wall ("refresh");
+              }
+          });
+        else
+          this.displayNetworkErrorMsg ();
       };
   }
 
@@ -485,7 +478,7 @@ class Wpt_WebSocket
   // METHOD displayNetworkErrorMsg ()
   displayNetworkErrorMsg ()
   {
-    $("body").html (`<div class="global-error"><?=_("Maintenance operation in progress. Please reload this page or try again later.")?></div>`);
+    $("body").html (`<div class="global-error"><?=_("Either the network is unavailable or maintenance operation is in progress. Please reload this page or try again later.")?></div>`);
   }
 
   // METHOD ready ()
@@ -499,7 +492,7 @@ class Wpt_WebSocket
   {
     if (!this.ready ())
     {
-      if (this._connected && this._retries < 5)
+      if (this._connected && this._retries < 30)
         this.tryToReconnect ({
           msg: msg,
           success_cb: success_cb,
@@ -519,6 +512,11 @@ class Wpt_WebSocket
     };
  
     this.cnx.send (JSON.stringify (msg));
+  }
+
+  ping ()
+  {
+    this.cnx.send ('{"route":"ping","data":""}');
   }
 
   // METHOD pushResponse ()

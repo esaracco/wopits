@@ -1392,7 +1392,7 @@
 
             // Keep WS connection and database persistent connection alive
             // -> 20mn
-            setInterval (()=> wpt_request_ws ("GET", "ping"), 20*60*1000);
+            setInterval (()=> wpt_WebSocket.ping(), 20*60*1000);
 
           });
 
