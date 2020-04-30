@@ -865,11 +865,17 @@ function wpt_resizeModal ($modal, w)
   if (w < 500)
     w = 500;
 
-  if (w > wW || wW <= 800)
+  if (wW <= 800)
     w = "100%";
-  else if (w != 500)
-    w += wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
-           wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
+  else
+  {
+    if (w != 500)
+      w += wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
+             wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
+
+    if (w > wW)
+      w = "100%";
+  }
 
   if (!cW)
     $modal[0].dataset.customwidth = oW;
