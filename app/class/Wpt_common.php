@@ -89,13 +89,7 @@
       )
     )
     {
-      // if PHP session has expired
-      if ($scriptName != '/index.php')
-        echo json_encode (['expired_session' => true]);
-      // if no auth
-      else
-        header ("Location: /login.php");
-
+      header ("Location: /login.php");
       exit;
     }
   }

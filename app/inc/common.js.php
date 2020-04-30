@@ -1049,10 +1049,6 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
     {
       wpt_loader ("hide");
 
-      // If PHP session has expired, redirect on login page
-      if (d.expired_session)
-        return location.href = '/index.php';
-
       if (d.error)
       {
         if (error_cb)
@@ -1101,10 +1097,6 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
     })
     .done (function (d)
      {
-       // If PHP session has expired, redirect on login page
-       if (d.expired_session)
-         return location.href = '/index.php';
-
        if (d.error)
        {
          if (error_cb)
