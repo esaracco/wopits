@@ -5,7 +5,7 @@
       __DIR__.'/../site-config.php');
 
   define ('WPT_DEV_MODE', true);
-  define ('WPT_VERSION', '0.2alpha3');
+  define ('WPT_VERSION', '0.2alpha4');
 
   define ('WPT_COOKIE', 'wopits');
 
