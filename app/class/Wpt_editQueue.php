@@ -15,13 +15,6 @@
       $this->itemId = @$args['itemId'];
     }
 
-    public function purge ()
-    {
-      $timeout = WPT_TIMEOUTS['file_upload'] + 30;
-      $this->query ('
-        DELETE FROM edit_queue WHERE ('.time()." - updatedate) > $timeout");
-    }
-
     public function addTo ()
     {
       $currentDate = time ();

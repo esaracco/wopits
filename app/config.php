@@ -44,9 +44,7 @@
 
   // Edit queue timeout (seconds)
   define ('WPT_TIMEOUTS', [
-    'menu' => 5,
-    'file_upload' => 300,
-    'default' => 10
+    'ajax' => 10
   ]);
 
   // Modules

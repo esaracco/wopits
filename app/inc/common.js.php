@@ -1084,7 +1084,7 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
 function wpt_request_ajax (method, service, args, success_cb, error_cb)
 {
   const msgArgs = {type: "danger", title: "<?=_("Warning!")?>"},
-        timeout = <?=WPT_TIMEOUTS['default'] * 1000?>;
+        timeout = <?=WPT_TIMEOUTS['ajax'] * 1000?>;
 
   wpt_loader ("show");
 
