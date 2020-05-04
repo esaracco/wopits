@@ -193,18 +193,11 @@
     // METHOD logout ()
     logout: function (args)
     {
+      location.href = "/login.php";
+
       wpt_request_ajax (
         "POST",
-        "user/logout",
-        null,
-        // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
-          else
-            return location.href = "/r.php";
-        });
+        "user/logout");
     },
 
     // METHOD createUser ()

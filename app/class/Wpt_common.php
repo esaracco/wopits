@@ -68,7 +68,7 @@
 
     // If user is not auth
     if (
-      (!isset ($_SESSION['userId']) | !isset ($_SESSION['userToken']))
+      (!isset ($_SESSION['userId']) || !isset ($_SESSION['userToken']))
       &&
       $scriptName != '/login.php'
       &&
@@ -76,14 +76,14 @@
         $scriptName == '/index.php'
         ||
         (
-          (strpos ($scriptName, '/app/api') !== false)
+          (strpos ($scriptName, '/api') !== false)
           &&
           // Those pages are used for the login process where user do not
           // need to be auth
           (
-            $scriptName != '/app/api/user/resetPassword' &&
-            $scriptName != '/app/api/user/login' &&
-            $scriptName != '/app/api/user'
+            $scriptName != '/api/user/resetPassword' &&
+            $scriptName != '/api/user/login' &&
+            $scriptName != '/api/user'
           )
         )
       )

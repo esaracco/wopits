@@ -358,7 +358,7 @@ class Wpt_WebSocket
               $popup[0].dataset.popuptype = "app-logout";
               wpt_openModal ($popup);
 
-              setTimeout (() => $("<div/>").wpt_login ("logout"), 3000);
+              setTimeout (() => $popup.modal ("hide"), 3000);
               break;
 
             // refreshwall
