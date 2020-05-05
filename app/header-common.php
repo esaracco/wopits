@@ -49,7 +49,7 @@
     <link rel="stylesheet" href="css/themes/<?=$theme?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="theme-<?=$theme?>" media="none">
   <?php } ?>
 
-  <script src="libs/jquery-3.4.1.min.js"></script>
+  <script src="libs/jquery-3.5.1.min.js"></script>
   <script src="libs/jquery-ui-1.12.1/jquery-ui.min.js"></script>
   <script src="libs/bootstrap-4.4.1/js/bootstrap.bundle.min.js"></script>
   <script src="libs/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
