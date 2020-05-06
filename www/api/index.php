@@ -13,7 +13,6 @@
   $class = getParam ('class');
   $data = json_decode (urldecode (file_get_contents("php://input")));
 
-  // $class has been checked by getParam()
   if (preg_match ('/^postit|user|wall$/', $class))
     require_once (__DIR__."/../../app/class/Wpt_$class.php");
 
