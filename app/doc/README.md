@@ -29,7 +29,7 @@ INSTALLATION
 
 ### System optimization
 - http://socketo.me/docs/deploy#evented-io-extensions
-- https://github.com/andreybolonin/RatchetBundle
+- https://github.com/andreybolonin/RatchetBundle/blob/master/README.md
 
 To allow PHP to use more than 1024 file descriptors and to be more performant at network level, do the following:
 
