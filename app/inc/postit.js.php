@@ -120,6 +120,9 @@
 
         if (from)
         {
+          e.stopImmediatePropagation ();
+          e.preventDefault ();
+
           if (from.id != id &&
               ($postit[0].dataset.plugs||"").indexOf(from.id) == -1)
           {
