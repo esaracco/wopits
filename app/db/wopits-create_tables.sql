@@ -205,7 +205,7 @@ CREATE TABLE postits_attachments
   postits_id BIGINT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
   users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
-  `type` VARCHAR(50) NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INT NOT NULL,
