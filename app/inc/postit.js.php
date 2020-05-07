@@ -1901,7 +1901,7 @@
           default_link_target: "_blank",
           link_assume_external_targets: true,
           link_title: false,
-          target_list: [{title: "<?=_("New page")?>", value: "_blank"}],
+          target_list: false,
 
           visual: false,
           mobile: {menubar: "edit view format insert"},
