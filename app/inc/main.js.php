@@ -687,7 +687,10 @@
 
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.settings.id+"/"+type);
+        "wall/"+this.settings.id+"/"+type,
+        null,
+        () => wpt_sharer.getCurrent("walls")
+                [(type == "col")?"scrollLeft":"scrollTop"](30000));
     },
 
     // METHOD addRow ()
