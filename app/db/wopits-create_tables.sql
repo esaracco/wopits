@@ -156,8 +156,7 @@ ENGINE=INNODB;
 DROP TABLE IF EXISTS postits;
 CREATE TABLE postits
 (
-  -- FIXME -> INT AUTO_INCREMENT
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   cells_id INT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED NOT NULL,
   height SMALLINT UNSIGNED NOT NULL,
@@ -183,8 +182,8 @@ DROP TABLE IF EXISTS postits_plugs;
 CREATE TABLE postits_plugs
 (
   walls_id INT UNSIGNED NOT NULL,
-  start BIGINT UNSIGNED NOT NULL,
-  end BIGINT UNSIGNED NOT NULL,
+  start INT UNSIGNED NOT NULL,
+  end INT UNSIGNED NOT NULL,
   label VARCHAR(255),
 
   PRIMARY KEY (walls_id, start, end),
@@ -201,8 +200,7 @@ DROP TABLE IF EXISTS postits_attachments;
 CREATE TABLE postits_attachments
 (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  -- FIXME -> INT
-  postits_id BIGINT UNSIGNED NOT NULL,
+  postits_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
   users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
   `type` VARCHAR(255) NOT NULL,
@@ -222,8 +220,7 @@ DROP TABLE IF EXISTS postits_pictures;
 CREATE TABLE postits_pictures
 (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  -- FIXME -> INT
-  postits_id BIGINT UNSIGNED NOT NULL,
+  postits_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
   users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
   `type` VARCHAR(50) NOT NULL,
@@ -242,7 +239,7 @@ ENGINE=INNODB;
 DROP TABLE IF EXISTS edit_queue;
 CREATE TABLE edit_queue
 (
-  item_id BIGINT UNSIGNED NOT NULL,
+  item_id INT UNSIGNED NOT NULL,
   users_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL,
   session_id INT UNSIGNED NOT NULL,

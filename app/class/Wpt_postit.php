@@ -17,11 +17,7 @@
 
     public function create ()
     {
-      $User = new Wpt_user ();
-
       $ret = [];
-      //FIXME
-      $postitId = $this->data->id;
       $dir = $this->getWallDir ();
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
@@ -31,7 +27,6 @@
       try
       {
         $this->executeQuery ('INSERT INTO postits', [
-          'id' => $postitId,
           'cells_id' => $this->cellId,
           'width' => $this->data->width,
           'height' => $this->data->height,
@@ -42,6 +37,8 @@
           'content' => $this->data->content,
           'creationdate' => time ()
         ]);
+
+        $postitId = $this->lastInsertId ();
 
         mkdir ("$dir/postit/$postitId");
 

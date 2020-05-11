@@ -262,10 +262,6 @@
       args["cell"]  = $cell;
       args["cellId"] = plugin.settings.id;
 
-      //FIXME Use a auto increment for post-its
-      if (!noinsert)
-        args["id"] = wpt_buildId ();
-
       // CREATE post-it
       $postit.wpt_postit (args);
 

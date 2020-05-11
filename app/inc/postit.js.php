@@ -1503,8 +1503,6 @@
             $postit = plugin.element,
             data = plugin.serialize()[0];
 
-      data["id"] = plugin.settings.id;
-
       wpt_request_ws (
         "PUT",
         "wall/"+plugin.getWallId()+

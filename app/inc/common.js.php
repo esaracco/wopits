@@ -502,7 +502,7 @@ class Wpt_WebSocket
       return;
     }
     
-    msg['_msgId'] = wpt_buildId ();
+    msg['_msgId'] = ++this._msgId;
 
     //console.log ("SEND "+msg['_msgId']+"\n");
 
@@ -702,16 +702,6 @@ function wpt_getUserDate (dt, tz, fmt)
 {
   return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
            .format(fmt||"Y-MM-DD");
-}
-
-//FIXME
-// FUNCTION wpt_buildId ()
-function wpt_buildId ()
-{
-  const min = 0,
-        max = 1000;
-
-  return moment.now()+""+(Math.floor (Math.random()*(max - min + 1)) + min);
 }
 
 // FUNCTION wpt_loader ()
