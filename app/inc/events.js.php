@@ -19,7 +19,6 @@ $(function()
 
         // Close TinyMCE and modals (to unedit editing items)
         tinymce.activeEditor.windowManager.close ();
-        $(".modal.show").modal ("hide");
 
         $(".chatroom").each (function ()
           {
@@ -42,7 +41,6 @@ $(function()
 
         // Close TinyMCE and modals (to unedit editing items)
         tinymce.activeEditor.windowManager.close ();
-        $(".modal.show").modal ("hide");
 
         $(".chatroom").each (function ()
           {
