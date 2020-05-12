@@ -259,6 +259,10 @@
       flush ();
     
       readfile ($args['path']);
+
+      if ($args['unlink']??false)
+        unlink ($args['path']);
+
       exit;
     }
 

@@ -23,6 +23,8 @@
 
   // Max upload file size in Mb
   define ('WPT_UPLOAD_MAX_SIZE', 10);
+  // Max size for wopits export/import file in Mb
+  define ('WPT_IMPORT_UPLOAD_MAX_SIZE', 500);
 
   // Users groups types
   define ('WPT_GTYPES', [

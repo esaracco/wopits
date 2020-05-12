@@ -507,7 +507,6 @@ $(function()
 
         case "postitAttachmentsPopup":
 
-          wpt_fixDownloadingHack ();
           $postit.wpt_postit ("unedit");
           break;
 
@@ -572,7 +571,7 @@ $(function()
           case "postitAttachmentsPopup":
 
             $popup[0].dataset.noclosure = true;
-            $popup.find("input.upload").trigger ("click");
+            $postit.wpt_postit ("uploadAttachment");
             break;
 
           // Manage confirmations

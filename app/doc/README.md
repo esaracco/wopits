@@ -18,7 +18,7 @@ INSTALLATION
 > Even deployment is not required: you can directly use the directory `www/` of the Git repository as Apache DocumentRoot.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install Apache, MariaDB or MySQL and PHP 7 (with `php-mysql` and `php-imagick`).
+- Install Apache, MariaDB or MySQL and PHP 7 (with `php-mysql`, `php-imagick` and `php-zip`).
 - Configure Apache by customizing `/app/doc/apache/wopits-example.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
 - Create a database and a user (using the `app/db/wopits-create_db.example.sql` file if necessary). Then create tables using `app/db/wopits-create_tables.sql`:

@@ -343,13 +343,6 @@
       return $ret;
     }
 
-    protected function getUserDir ($type = null)
-    {
-      return ($type) ?
-        WPT_DATA_WPATH."/users/{$this->userId}" :
-        Wpt_common::getSecureSystemName ("/users/{$this->userId}");
-    }
-
     public function getPicture ($args)
     {
       $userId = $args['userId'];
@@ -432,7 +425,7 @@
             $imgPath, base64_decode(str_replace(' ', '+', $content)));
 
           if (!file_exists ($imgPath))
-            throw new Exception ("Error downloading file");
+            throw new Exception (_("An error occured while uploading file."));
 
           $stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?');
           $stmt->execute ([$this->userId]);
@@ -492,8 +485,8 @@
           if (!isset ($data['about']) &&
               $dbl = $this->_isDuplicate ([$field => $value]))
             $ret['error_msg'] = ($dbl == 'username') ?
-              _("This login already exists") :
-              _("This email already exists");
+              _("This login already exists.") :
+              _("This email already exists.");
           else
           {
             $this
@@ -528,7 +521,7 @@
             ':id' => $this->userId
           ]);
           if (!$stmt->fetch ())
-            throw new Exception (_("Wrong current password"));
+            throw new Exception (_("Wrong current password."));
   
           $count = $this->executeQuery ('UPDATE users',
            ['password' => hash ('sha1', $pwd->new)],
@@ -602,8 +595,8 @@
                      'username' => $this->data->username,
                      'email' => $this->data->email]))
           throw new Exception (($dbl == 'username') ?
-            _("This login already exists") :
-            _("This email already exists"));
+            _("This login already exists.") :
+            _("This email already exists."));
 
         // Create user
         $this->executeQuery ('INSERT INTO users', [
@@ -628,7 +621,7 @@
           'msg' => sprintf(_("Your new account \"%s\" has been created on wopits!\n\nFeel free to contact us for feature request, and enjoy ;-)"), $this->data->username)
           ]);
 
-        mkdir ($this->getUserDir());
+        mkdir ("{$this->getUserDir()}/tmp", 02770, true);
 
         $this->_createToken ();
       }

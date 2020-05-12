@@ -967,7 +967,7 @@ function wpt_displayMsg (args)
 
   if (!($previous.length && $previous.find("span").text () == args.msg))
   {
-    $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<strong>"+args.title+"</strong> ":""}<span>${args.msg}</span></div>`);
+    $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<b>"+args.title+"</b><br>":""}<span>${args.msg}</span></div>`);
 
     if (!args.noclosure)
       setTimeout (() =>
@@ -976,7 +976,7 @@ function wpt_displayMsg (args)
 
           $div.hide("fade", function(){$div.remove ()})
   
-        }, 2000);
+        }, 3000);
   }
 }
 
@@ -1009,15 +1009,50 @@ function wpt_fixMainHeight ()
       (document.querySelector(".nav-tabs.walls").offsetHeight + 70))+"px";
 }
 
-//FIXME Hack to fix Firefox WebSocket closing on file download with
-//      location.href
-// FUNCTION wpt_fixDownloadingHack ()
-function wpt_fixDownloadingHack ()
+function wpt_download (args)
 {
-  const loc = location.href;
-    
-  if (loc.indexOf ("#downloading") != -1)
-    location.href = loc.replace (/#downloading/, "#");
+  const req = new XMLHttpRequest ();
+
+  wpt_loader ("show");
+
+  req.onreadystatechange = (e) =>
+    {
+      if (req.readyState == 4)
+      {
+        wpt_loader ("hide");
+
+        if (req.status != 200)
+          wpt_displayMsg ({
+            type: "warning",
+            msg: args.msg ||
+                   "<?=_("An error occured while uploading file.")?>"
+          });
+      }
+    };
+
+  req.open ("GET", args.url);
+  req.responseType = "blob";
+
+  req.onload = (e) =>
+  {
+    const blob = req.response,
+          fname = args.fname,
+          contentType = req.getResponseHeader ("Content-Type");
+
+    if (window.navigator.msSaveOrOpenBlob)
+      window.navigator.msSaveOrOpenBlob (
+        new Blob([blob], {type: contentType}), fname);
+    else
+    {
+      const el = document.createElement ("a");
+
+      el.href = window.URL.createObjectURL (blob);
+      el.download = fname;
+      el.click ();
+    }
+  };
+
+  req.send ();
 }
 
 // FUNCTION wpt_enableTooltips ()
@@ -1053,7 +1088,7 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
         {
           msgArgs["msg"] = (isNaN (d.error)) ?
             d.error :
-            "<?=_("Network error.<br>Please try again later.")?>";
+            "<?=_("Unknown error.<br>Please try again later.")?>";
 
           wpt_displayMsg (msgArgs);
         }
@@ -1101,7 +1136,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
          {
            msgArgs["msg"] = (isNaN (d.error)) ?
              d.error :
-             "<?=_("Network error.<br>Please try again later.")?>";
+             "<?=_("Unknown error.<br>Please try again later.")?>";
 
            wpt_displayMsg (msgArgs);
          }
@@ -1114,7 +1149,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
        // No user msg for internal works
        msgArgs["msg"] = (textStatus == "timeout") ?
          "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>" :
-         "<?=_("Network error.<br>Please try again later.")?>";
+         "<?=_("Unknown error.<br>Please try again later.")?>";
 
        wpt_displayMsg (msgArgs);
 
@@ -1125,17 +1160,18 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
 }
 
 // FUNCTION wpt_checkUploadFileSize ()
-function wpt_checkUploadFileSize (size, cb_msg)
+function wpt_checkUploadFileSize (args)
 {
-  const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>);
+  const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+        maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
   let ret = true;
 
-  if (size / 1024000 > <?=WPT_UPLOAD_MAX_SIZE?>)
+  if (args.size / 1024000 > maxSize)
   {
     ret = false;
 
-    if (cb_msg)
-      cb_msg (msg);
+    if (args.cb_msg)
+      args.cb_msg (msg);
     else
       wpt_displayMsg ({
         type: "danger",

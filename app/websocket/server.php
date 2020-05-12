@@ -376,6 +376,12 @@ class Wopits implements MessageComponentInterface
             break;
         }
       }
+      // ROUTE wall import
+      elseif ($msg->route == 'wall/import')
+      {
+        if ($msg->method == 'PUT')
+          $ret = (new Wpt_wall (['data' => $data]))->import ();
+      }
       // ROUTE Wall and usersview
       elseif (preg_match ('#^wall/?(\d+)?/?(usersview|infos)?$#',
                 $msg->route, $m))

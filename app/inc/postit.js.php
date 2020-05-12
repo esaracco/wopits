@@ -1421,6 +1421,75 @@
       this.setAttachmentsCount (this.getAttachmentsCount () - 1);
     },
 
+    // METHOD uploadAttachment ()
+    uploadAttachment: function ()
+    {
+      $(`<input type="file">`)
+        .on("change", function (e, data)
+        {
+          const $upload = $(this);
+
+          if (e.target.files && e.target.files.length)
+          {
+            wpt_getUploadedFiles (e.target.files,
+              (e, file) =>
+              {
+                $upload.val ("");
+
+                if ($_attachmentsPopup.find(
+                      ".list-group li[data-fname='"+
+                      wpt_htmlQuotes(file.name)+"']").length)
+                  return wpt_displayMsg ({
+                           type: "warning",
+                           msg: "<?=_("The file is already linked to the post-it")?>"
+                         });
+
+                if (wpt_checkUploadFileSize ({size: e.total}) &&
+                    e.target.result)
+                {
+                  const $postit = wpt_sharer.getCurrent ("postit"),
+                        wallId = $_attachmentsPopup[0].dataset.wallid,
+                        cellId = $postit.wpt_postit ("getCellId"),
+                        postitId = $_attachmentsPopup[0].dataset.postitid,
+                        data = {
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            content: e.target.result
+                          };
+
+                  wpt_request_ws (
+                    "PUT",
+                    "wall/"+wallId+"/cell/"+cellId+"/postit/"+
+                      postitId+"/attachment",
+                    data,
+                    // success cb
+                    (d) =>
+                    {
+                      const $body = $_attachmentsPopup.find("ul.list-group");
+
+                      $_attachmentsPopup.find(".modal-body").scrollTop (0);
+
+                      if (d.error_msg)
+                        return wpt_displayMsg ({
+                                 type: "warning",
+                                 msg: d.error_msg
+                               });
+    
+                      if (!$body.find("li").length)
+                        $body.html ("");
+    
+                      $body.prepend (
+                        $postit.wpt_postit ("getAttachmentTemplate", d));
+
+                      $postit.wpt_postit ("incAttachmentsCount");
+                    });
+                }
+              });
+          }
+        }).trigger ("click");
+    },
+
     // METHOD setCurrent ()
     setCurrent: function ()
     {
@@ -1529,7 +1598,7 @@
             type: "danger",
             title: "<?=_("Warning!")?>",
             msg: (isNaN (d.error)) ?
-              d.error : "<?=_("Network error.<br>Please try again later.")?>"
+              d.error : "<?=_("Unknown error.<br>Please try again later.")?>"
           });
 
           $postit.remove ();
@@ -1620,9 +1689,9 @@
             plugin.decAttachmentsCount ();
   
             if (!$_attachmentsPopup
-                   .find(".modal-body > ul li:first-child").length)
+                   .find("ul.list-group li:first-child").length)
             {
-              $_attachmentsPopup.find(".modal-body > ul").html (
+              $_attachmentsPopup.find("ul.list-group").html (
                 "<?=_("This post-it has no attachment")?>");
             }
           }
@@ -1831,23 +1900,22 @@
           file_picker_types: "image",
           file_picker_callback: function (cb, value, meta)
           {
-            const input = document.createElement ("input");
-            input.setAttribute ("type", "file");
-            input.setAttribute ("accept", ".jpeg,.jpg,.gif,.png");
-
-            input.onchange = function ()
+            $(`<input type="file" accept=".jpeg,.jpg,.gif,.png">`)
+              .on("change", function ()
               {
                 function __error_cb (d)
                 {
                   if (!$(".tox-alert-dialog").length)
                     tinymce.activeEditor.windowManager.alert (d.error||d);
                 }
-
                 wpt_getUploadedFiles (
                   this.files,
                   (e, file) =>
                     {
-                      if (wpt_checkUploadFileSize (e.total, __error_cb) &&
+                      if (wpt_checkUploadFileSize ({
+                            size: e.total,
+                            cb_msg: __error_cb
+                          }) &&
                           e.target.result)
                       {
                         const wallId = wpt_sharer.getCurrent("wall")
@@ -1890,9 +1958,7 @@
                     },
                     null,
                     __error_cb);
-              };
-
-            input.click ();
+              }).trigger ("click");
           },
 
           // "link" plugin options
@@ -1979,76 +2045,8 @@
         $(document).on("click", "#postitAttachmentsPopup .modal-body li",
           function (e)
           {
-            //FIXME Hack to fix Firefox WebSocket closing on file download with
-            //      location.href)
-            location.href = location.href.replace (/#.*$/, "")+"#downloading";
-            return location.href = $(this)[0].dataset.url;
-          });
-    
-        $_attachmentsPopup.find("input.upload").on("change",
-          function (e, data)
-          {
-            const $upload = $(this);
-
-            if (e.target.files && e.target.files.length)
-            {
-              wpt_getUploadedFiles (e.target.files,
-                (e, file) =>
-                {
-                  $upload.val ("");
-
-                  if ($_attachmentsPopup.find(
-                        ".list-group li[data-fname='"+
-                        wpt_htmlQuotes(file.name)+"']").length)
-                    return wpt_displayMsg ({
-                             type: "warning",
-                             msg: "<?=_("The file is already linked to the post-it")?>"
-                           });
-
-                  if (wpt_checkUploadFileSize (e.total) && e.target.result)
-                  {
-                    const $postit = wpt_sharer.getCurrent ("postit"),
-                          wallId = $_attachmentsPopup[0].dataset.wallid,
-                          cellId = $postit.wpt_postit ("getCellId"),
-                          postitId = $_attachmentsPopup[0].dataset.postitid,
-                          data = {
-                              name: file.name,
-                              size: file.size,
-                              type: file.type,
-                              content: e.target.result
-                            };
-
-                    wpt_request_ws (
-                      "PUT",
-                      "wall/"+wallId+"/cell/"+cellId+"/postit/"+
-                        postitId+"/attachment",
-                      data,
-                      // success cb
-                      (d) =>
-                      {
-                        const $body =
-                                $_attachmentsPopup.find(".modal-body > ul");
-
-                        $_attachmentsPopup.find(".modal-body").scrollTop (0);
-
-                        if (d.error_msg)
-                          return wpt_displayMsg ({
-                                   type: "warning",
-                                   msg: d.error_msg
-                                 });
-      
-                        if (!$body.find("li").length)
-                          $body.html ("");
-      
-                        $body.prepend (
-                          $postit.wpt_postit ("getAttachmentTemplate", d));
-
-                        $postit.wpt_postit ("incAttachmentsCount");
-                      });
-                  }
-                });
-            }
-          });
+            wpt_download ($(this)[0].dataset);
+          });    
       });
 
 <?php echo $Plugin->getFooter ()?>

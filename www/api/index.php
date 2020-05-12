@@ -58,10 +58,13 @@
           break;
 
         case 'wall':
-          if (getParam ('item') == 'file')
-            $ret = (new Wpt_wall ([
-              'wallId' => getParam ('wallId')
-            ]))->getHeaderPicture (['headerId' => getParam ('headerId')]);
+          $Wall = new Wpt_wall (['wallId' => getParam ('wallId')]);
+          $item = getParam ('item');
+          if ($item == 'file')
+            $ret = $Wall->getHeaderPicture ([
+              'headerId' => getParam ('headerId')]);
+          elseif ($item == 'export')
+            $ret = $Wall->export ();
           break;
       }
       break;

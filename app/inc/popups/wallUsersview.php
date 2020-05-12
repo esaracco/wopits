@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <?=_("The following users have this wall open:")?>
+        <?=_("The following users are viewing this wall:")?>
         <div class="list-group mt-3"></div>
       </div>
       <div class="modal-footer">

@@ -168,6 +168,7 @@
                   '[data-action="add-row"] a,'+
                   '[data-action="close-walls"] a,'+
                   '[data-action="view-properties"] a,'+
+                  '[data-action="export"] a,'+
                   '[data-action="search"] a').addClass ("disabled");
     
                 break;
@@ -176,6 +177,7 @@
     
                 $menu.find(
                   '[data-action="view-properties"] a,'+
+                  '[data-action="export"] a,'+
                   '[data-action="search"] a,'+
                   '[data-action="close-walls"] a').removeClass ("disabled");
     
@@ -896,6 +898,76 @@
       });
     },
 
+    // METHOD export ()
+    export: function ()
+    {
+      wpt_openConfirmPopup ({
+        type: "export-wall",
+        icon: "file-export",
+        content: `<?=_("Depending on its content, the export size can be substantial. Furthermore you can only import it later on %s.<br>Do you confirm your request?")?>`.replace("%s", location.hostname),
+        cb_ok: () => wpt_download ({
+          url: "/wall/"+this.settings.id+"/export",
+          fname: "wopits-wall-export-"+this.settings.id+".zip",
+          msg: "<?=_("An error occurred while exporting wall data.")?>"
+        })
+      });
+    },
+
+    // METHOD import ()
+    import: function ()
+    {
+      $(`<input type="file" accept=".zip">`)
+        .on("change", function (e, data)
+          {
+            const $upload = $(this);
+
+            if (e.target.files && e.target.files.length)
+            {
+              wpt_getUploadedFiles (e.target.files,
+                (e, file) =>
+                {
+                  $upload.val ("");
+
+                  if (wpt_checkUploadFileSize ({
+                        size: e.total,
+                        maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
+                      }) &&
+                      e.target.result)
+                  {
+                    const data = {
+                              name: file.name,
+                              size: file.size,
+                              type: file.type,
+                              content: e.target.result
+                            };
+
+                    wpt_request_ws (
+                      "PUT",
+                      "wall/import",
+                      data,
+                      // success cb
+                      (d) =>
+                      {
+                        if (d.error_msg)
+                          return wpt_displayMsg ({
+                                   type: "warning",
+                                   msg: d.error_msg
+                                 });
+
+                        $("<div/>").wpt_wall ("open", d.wallId);
+
+                        wpt_displayMsg ({
+                          type: "success",
+                          title: "<?=_("Import completed")?>",
+                          msg: "<?=_("The file has been successfully imported!")?>"
+                        });
+                      });
+                  }
+                });
+            }
+          }).trigger ("click");
+    },
+
     // METHOD restorePreviousSession ()
     restorePreviousSession: function ()
     {
@@ -1567,6 +1639,18 @@
               case "search":
 
                 $("#postitsSearchPopup").wpt_postitsSearch ("open");
+
+                break;
+
+              case "export":
+
+                $wall.wpt_wall ("export");
+
+                break;
+
+              case "import":
+
+                $("<div/>").wpt_wall ("import");
 
                 break;
 

@@ -126,6 +126,10 @@
   z-index:60000;
 }
 
+.alert b {
+  font-size:0.9rem;
+}
+
 .alert {
   box-shadow: 0 0 20px #cecece;
   z-index:60000 !important;
@@ -193,6 +197,10 @@ i.settings {
 
 #main-menu ul.dropdown-menu {
   overflow-x: hidden;
+}
+
+#main-menu a {
+  font-size:0.9rem;
 }
 
 .menu {
@@ -452,6 +460,19 @@ select.timezone {
   color: #6c757d;
   pointer-events: none;
   background-color: transparent;
+}
+
+.dropdown-item i.fa-file-import {
+  margin-left:-5px;
+  margin-right:5px;
+}
+
+#main-menu .dropdown-item {
+  font-size:0.9rem;
+}
+
+#main-menu .dropdown-divider {
+  margin:0.20rem 0;
 }
 
 .wall {

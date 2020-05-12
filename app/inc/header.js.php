@@ -38,31 +38,6 @@
   }
 
   //FIXME
-  // to bypass FF bug when file manager is triggered from a third
-  // callback
-  // -> This trick does not work with edge!
-  function _ffBugTrick ($item)
-  {
-    if (!_navigatorIsEdge ())
-    {
-      clearInterval (_ffTriggerBug.i);
-      _ffTriggerBug = {
-        run: false,
-        i: setInterval (() =>
-          { 
-            if (_ffTriggerBug.run)
-            { 
-              clearInterval (_ffTriggerBug.i);
-              $item.find(".upload").trigger ("click");
-            }
-          }, 150)
-      };
-    }
-    else
-      $item.find(".upload").trigger ("click");
-  }
-
-  //FIXME
   // METHOD _simulateClick ()
   function _simulateClick (x, y)
   {
@@ -166,7 +141,7 @@
                  // (touch device version)
                  plugin.addUploadLayer ();
   
-                 _ffBugTrick ($cell);
+                 plugin.uploadPicture ($cell);
   
                  plugin.edit (() => _ffTriggerBug.run = true);
               break;
@@ -218,75 +193,6 @@
         });
   
         $part.prependTo ($header);
-  
-         // Upload component
-        const $upload = $(
-          "<input type='file' class='upload' accept='.jpeg,.jpg,.gif,.png'>")
-          .on("click", function (e)
-            {
-              //FIXME
-              // we need this to cancel edit if no img is selected by user
-              // (desktop version)
-              if (_useFocusTrick ())
-                $(window).on("focus", function ()
-                  {
-                    $(window).off ("focus");
-  
-                    if (!_realEdit)
-                      plugin.unedit ();
-                  });
-            })
-          .on("change",function(e, data)
-            {
-              if (e.target.files && e.target.files.length)
-              {
-                _realEdit = true;
-  
-                wpt_getUploadedFiles (e.target.files,
-                  (e, file) =>
-                  {
-                    if (wpt_checkUploadFileSize (e.total) && e.target.result)
-                    {
-                      const oldW = $header.outerWidth (),
-                            headerId = settings.id,
-                            data = {
-                              name: file.name,
-                              size: file.size,
-                              type: file.type,
-                              content: e.target.result
-                            };
-  
-                      $upload.val ("");
-    
-                      wpt_request_ws (
-                        "PUT",
-                        "wall/"+settings.wallId+
-                        "/header/"+headerId+"/picture",
-                        data,
-                        // success cb
-                        (d) =>
-                        {
-                          if (d.error_msg)
-                            return plugin.unedit ({data: d});
-    
-                          plugin.setImg (d.img);
-                          setTimeout(() =>
-                            {
-                              $wall.wpt_wall (
-                                "fixSize", oldW, $header.outerWidth ());
-  
-                              plugin.unedit ();
-
-                            }, 500);
-                        },
-                        // error cb
-                        (d) => plugin.unedit ({data: d}));
-                    }
-                  },
-                  // error cb
-                  () => plugin.unedit ());
-              }
-            }).appendTo ($part);
       }
       else
         $(`<ul class="navbar-nav mr-auto submenu"></ul>`).prependTo ($header);
@@ -309,6 +215,109 @@
               {bubble_cb: () => _simulateClick (e.pageX, e.pageY)});
           })
           .show ();
+    },
+
+  //FIXME
+  // to bypass FF bug when file manager is triggered from a third
+  // callback
+  // -> This trick does not fully work with edge!
+  // METHOD uploadPicture ()
+  uploadPicture: function ($item)
+  {
+    const plugin = this,
+          $header = plugin.element,
+          settings = plugin.settings;
+
+    function __upload__ ()
+    {
+      $(`<input type='file' accept='.jpeg,.jpg,.gif,.png'>`)
+        .on("click", function (e)
+          {
+            //FIXME
+            // we need this to cancel edit if no img is selected by user
+            // (desktop version)
+            if (_useFocusTrick ())
+              $(window).on("focus", function ()
+                {
+                  $(window).off ("focus");
+
+                  if (!_realEdit)
+                    plugin.unedit ();
+                });
+          })
+        .on("change",function(e, data)
+          {
+            const $upload = $(this);
+
+            if (e.target.files && e.target.files.length)
+            {
+              _realEdit = true;
+
+              wpt_getUploadedFiles (e.target.files,
+                (e, file) =>
+                {
+                  if (wpt_checkUploadFileSize ({size: e.total}) &&
+                      e.target.result)
+                  {
+                    const oldW = $header.outerWidth (),
+                          headerId = settings.id,
+                          data = {
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            content: e.target.result
+                          };
+
+                    $upload.val ("");
+  
+                    wpt_request_ws (
+                      "PUT",
+                      "wall/"+settings.wallId+
+                      "/header/"+headerId+"/picture",
+                      data,
+                      // success cb
+                      (d) =>
+                      {
+                        if (d.error_msg)
+                          return plugin.unedit ({data: d});
+  
+                        plugin.setImg (d.img);
+                        setTimeout(() =>
+                          {
+                            settings.wall.wpt_wall (
+                              "fixSize", oldW, $header.outerWidth ());
+
+                            plugin.unedit ();
+
+                          }, 500);
+                      },
+                      // error cb
+                      (d) => plugin.unedit ({data: d}));
+                  }
+                },
+                // error cb
+                () => plugin.unedit ());
+            }
+          }).trigger ("click");
+      }
+
+      if (!_navigatorIsEdge ())
+      {
+        clearInterval (_ffTriggerBug.i);
+        _ffTriggerBug = {
+          run: false,
+          i: setInterval (() =>
+            { 
+              if (_ffTriggerBug.run)
+              { 
+                clearInterval (_ffTriggerBug.i);
+                __upload__ ();
+              }
+            }, 150)
+        };
+      }
+      else
+        __upload__ ();
     },
 
     // METHOD removeUploadLayer ()
@@ -347,7 +356,7 @@
             // (touch device version)
             plugin.addUploadLayer ();
 
-            _ffBugTrick ($header);
+            plugin.uploadPicture ($header);
 
             plugin.edit (() => _ffTriggerBug.run = true);
           })

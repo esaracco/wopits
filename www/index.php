@@ -31,11 +31,14 @@
         <li class="nav-item dropdown">
           <a id="dropdownWall" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-fw fas fa-border-all"></i> <?=_("Wall")?></a>
           <ul class="dropdown-menu border-0 shadow">
-            <li data-action="new"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("New")?></a></li>
+            <li data-action="new"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("New...")?></a></li>
             <li data-action="open"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-folder-open"></i> <?=_("Open...")?></a></li>
-            <li data-action="close-walls"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-times"></i> <?=_("Close the walls...")?></a></li>
+            <li data-action="close-walls"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-times"></i> <?=_("Close the walls")?></a></li>
             <li class="dropdown-divider"></li>
             <li data-action="share"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-share"></i> <?=_("Share...")?></a></li>
+            <li class="dropdown-divider"></li>
+            <li data-action="export"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-file-export"></i> <?=_("Export")?></a></li>
+            <li data-action="import"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-file-import"></i> <?=_("Import...")?></a></li>
             <li class="dropdown-divider"></li>
             <li data-action="delete"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li>
           </ul>

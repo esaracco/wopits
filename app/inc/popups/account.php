@@ -16,8 +16,7 @@
 
         <div class="main">
 
-        <div class="user-picture"><?=($user['picture']) ? '<button type="button" class="close img-delete"><span>&times;</span></button><img src="'.$user['picture'].'">' : '<i class="fas fa-camera-retro fa-3x"></i>'?></div>
-        <input type="file" class="upload" accept=".jpg,.gif,.png">
+        <div class="user-picture mb-3"><?=($user['picture']) ? '<button type="button" class="close img-delete"><span>&times;</span></button><img src="'.$user['picture'].'">' : '<i class="fas fa-camera-retro fa-3x"></i>'?></div>
 
         <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user fa-fw"></i></span></div>

@@ -74,7 +74,7 @@
         {
           // If item is already edited by other user, error
           if ($r['session_id'] != $GLOBALS['sessionId'])
-            $ret['error_msg'] = _("Someone is editing this element");
+            $ret['error_msg'] = _("Someone is editing this element.");
           // If current user is editing this element, update date
           else
             $this
@@ -93,7 +93,7 @@
               $stmt->execute ([$this->itemId]) &&
               !$stmt->fetch ())
           {
-            $ret['error_msg'] = _("This item has been deleted");
+            $ret['error_msg'] = _("This item has been deleted.");
           }
           else
           {
@@ -160,7 +160,7 @@
                    ['id' => $this->wallId]);
                 else
                   $ret['error_msg']=
-                    _("A wall with the same name already exists");
+                    _("A wall with the same name already exists.");
               }
   
               break;
@@ -310,8 +310,8 @@
         return (isset ($r['id'])) ? $r :
                  ['ok' => 0,
                   'error_msg' => ($needAdminAccess) ?
-                  _("You must have admin access to perform this action") :
-                  _("You must have write access to perform this action")];
+                  _("You must have admin access to perform this action.") :
+                  _("You must have write access to perform this action.")];
 
       return $r;
     }

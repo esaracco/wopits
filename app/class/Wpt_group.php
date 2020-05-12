@@ -166,7 +166,7 @@
 
         // If duplicated entry
         if (stripos ($msg, "duplicate") !== false)
-          $ret['error_msg'] = _("This group already exists");
+          $ret['error_msg'] = _("This group already exists.");
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$msg);
@@ -202,7 +202,7 @@
         //FIXME
         // duplicated entry
         if (stripos ($msg, "duplicate") !== false)
-          $ret['error_msg'] = _("This group already exists");
+          $ret['error_msg'] = _("This group already exists.");
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$msg);
@@ -317,7 +317,7 @@
       // only wall creator and wall delegate admin can view groups
       else
         $ret = ['error_msg' =>
-                  _("You must have admin access to perform this action")];
+                  _("You must have admin access to perform this action.")];
 
       return $ret;
     }

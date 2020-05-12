@@ -9,8 +9,7 @@
       </div>
       <div class="modal-body">
         <a class="download"></a>
-        <input type="file" class="upload" accept="">
-        <ul class="list-group"></ul>
+        <div><ul class="list-group"></ul></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><?=_("Add")?></button>

@@ -46,41 +46,42 @@
               cb_ok: () => $("#accountPopup").wpt_account ("deletePicture")
             });
           else
-            $account.find(".upload").trigger ("click");
-        });
-
-      $account.find(".upload")
-        .on("change",function(e, data)
           {
-            const $upload = $(this);
-
-            if (e.target.files && e.target.files.length)
-            {
-              wpt_getUploadedFiles (e.target.files,
-                (e, file) =>
+            $(`<input type="file" accept=".jpg,.gif,.png">`)
+              .on("change",function(e, data)
                 {
-                  if (wpt_checkUploadFileSize (e.total) && e.target.result)
+                  const $upload = $(this);
+      
+                  if (e.target.files && e.target.files.length)
                   {
-                    const data = {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            content: e.target.result
-                          };
-
-                    $upload.val ("");
-
-                    wpt_request_ws (
-                      "PUT",
-                      "user/picture",
-                      data,
-                      // success cb
-                      (d) => $account.find(".user-picture").html (
-                               _getUserPictureTemplate (d.src)));
+                    wpt_getUploadedFiles (e.target.files,
+                      (e, file) =>
+                      {
+                        if (wpt_checkUploadFileSize ({size: e.total}) &&
+                            e.target.result)
+                        {
+                          const data = {
+                                  name: file.name,
+                                  size: file.size,
+                                  type: file.type,
+                                  content: e.target.result
+                                };
+      
+                          $upload.val ("");
+      
+                          wpt_request_ws (
+                            "PUT",
+                            "user/picture",
+                            data,
+                            // success cb
+                            (d) => $account.find(".user-picture").html (
+                                     _getUserPictureTemplate (d.src)));
+                        }
+                      });
                   }
-                });
-            }
-          });
+                }).trigger ("click");
+          }
+        });
 
       $("#account").on("click", function (e)
         {

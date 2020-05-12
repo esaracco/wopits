@@ -96,6 +96,9 @@
         $this->help ("Which environment should we deploy?");
       elseif (empty ($env))
         $this->help ("Unknown environment `{$this->opt['env']}`!");
+      elseif (empty ($env['secret-key']) ||
+              stripos ($env['secret-key'], 'ChangeMe') !== false)
+        $this->help ("Conf `secret-key` must be set!");
       elseif (empty ($env['www-system-user']))
         $this->help ("Conf `www-system-user` is empty!");
       elseif (empty ($env['build-path']))
@@ -181,16 +184,16 @@
 
       // Prepare working directory
       echo "Preparing working directory \e[1m{$env['build-path']}\e[0m...\n";
-      $this->_exec ("mkdir -p {$env['build-path']}/app/dkim");
-      $this->_exec ("mkdir -p {$env['build-path']}/app/websocket");
-      $this->_exec ("mkdir -p {$env['build-path']}/www/css/themes");
-      $this->_exec ("mkdir -p {$env['build-path']}/www/js");
+      foreach (['app/dkim',
+                'app/websocket',
+                'app/deploy/bin',
+                'app/inc',
+                'www/css/themes',
+                'www/js'] as $v)
+        $this->_exec ("mkdir -p {$env['build-path']}/$v");
 
-      $this->_exec ("mkdir -p {$env['build-path']}/app/deploy/bin");
       $this->_exec ('cp -a '.__DIR__.
         "/bin/post-deploy.php {$env['build-path']}/app/deploy/bin");
-
-      $this->_exec ("mkdir -p {$env['build-path']}/app/inc");
       $this->_exec ('cp -a '.__DIR__.
         "/../inc/popups {$env['build-path']}/app/inc/");
     }
@@ -421,7 +424,7 @@
     
         // Clean PHP code
         $this->_exec ("php -w $dest-tmp > $dest");
-        //$this->_exec ("cat $dest-tmp > $dest");
+//        $this->_exec ("cat $dest-tmp > $dest");
         $this->_exec ("rm -f $dest-tmp");
 
         // Prepend first exec line on CLI scripts
@@ -449,66 +452,30 @@
       // Set websocket client / server executable
       $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
     
+      $this->_updateConf ('WPT_DEV_MODE', false, $this->appConfPath);
+      if (!empty ($env['version']))
+        $this->_updateConf ('WPT_VERSION', $env['version'], $this->appConfPath);
+
+      foreach (['WPT_SECRET_KEY' => $env['secret-key'],
+                'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
+                'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
+                'WPT_WS_PORT' => $env['websocket']['server']['port'],
+                'WPT_DB_USER' => $env['db']['user'],
+                'WPT_DB_PASSWORD' => $env['db']['password'],
+                'WPT_DSN' => $env['db']['dsn'],
+                'WPT_EMAIL_FROM' => $env['emails']['from'],
+                'WPT_EMAIL_CONTACT' => $env['emails']['contact']] as $k => $v)
+        $this->_updateConf ($k, $v);
+
       if (!empty ($env['dkim']))
       {
-        $this->_exec ("perl -pi -e 's/(.WPT_USE_DKIM.),[^\)]+\)/$1, true)/' ".
-                       $this->siteConfPath);
-        $tmp = $this->_quotePerlValue ($env['dkim']['domain']);
-        $this->_exec (
-          "perl -pi -e 's/(.WPT_DKIM_DOMAIN.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
-        $tmp = $this->_quotePerlValue ($env['dkim']['selector']);
-        $this->_exec (
-          "perl -pi -e 's/(.WPT_DKIM_SELECTOR.),.[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
+        foreach (['WPT_USE_DKIM' => true,
+                  'WPT_DKIM_DOMAIN' => $env['dkim']['domain'],
+                  'WPT_DKIM_SELECTOR' => $env['dkim']['selector']] as $k => $v)
+        $this->_updateConf ($k, $v);
       }
       else
-        $this->_exec ("perl -pi -e 's/(.WPT_USE_DKIM.),[^\)]+\)/$1, false)/' ".
-                       $this->siteConfPath);
-
-      $this->_exec ("perl -pi -e 's/(.WPT_DEV_MODE.),\s*true/$1, false/' ".
-                     $this->appConfPath);
-    
-      if (!empty ($env['version']))
-      {
-        $tmp = $this->_quotePerlValue ($env['version']);
-        $this->_exec("perl -pi -e 's/(.WPT_VERSION.),[^\)]+\)/$1, \"$tmp\")/' ".
-                       $this->appConfPath);
-      }
-    
-      $tmp = $this->_quotePerlValue ($env['cmd']['apache-restart']);
-      $this->_exec (
-        "perl -pi -e 's/(.WPT_APACHE_RESTART.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
-
-      $tmp = $this->_quotePerlValue ($env['cmd']['wopits-restart']);
-      $this->_exec (
-        "perl -pi -e 's/(.WPT_WOPITS_RESTART.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
-
-      $tmp = $this->_quotePerlValue ($env['websocket']['server']['port']);
-      $this->_exec ("perl -pi -e 's/(.WPT_WS_PORT.),[^\)]+\)/$1, \"$tmp\")/' ".
-                     $this->siteConfPath);
-
-      $tmp = $this->_quotePerlValue ($env['db']['user']);
-      $this->_exec ("perl -pi -e 's/(.WPT_DB_USER.),[^\)]+\)/$1, \"$tmp\")/' ".
-                     $this->siteConfPath);
-      $tmp = $this->_quotePerlValue ($env['db']['password']);
-      $this->_exec (
-        "perl -pi -e 's/(.WPT_DB_PASSWORD.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
-      $tmp = $this->_quotePerlValue ($env['db']['dsn']);
-      $this->_exec ("perl -pi -e 's/(.WPT_DSN.),[^\)]+\)/$1, \"$tmp\")/' ".
-                     $this->siteConfPath);
-    
-      $tmp = $this->_quotePerlValue ($env['emails']['from']);
-      $this->_exec (
-        "perl -pi -e 's/(.WPT_EMAIL_FROM.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
-      $tmp = $this->_quotePerlValue ($env['emails']['contact']);
-      $this->_exec (
-        "perl -pi -e 's/(.WPT_EMAIL_CONTACT.),[^\)]+\)/$1, \"$tmp\")/' ".
-          $this->siteConfPath);
+        $this->_updateConf ('WPT_USE_DKIM', false);
 
       echo "Directory \e[1m{$this->targetPath}".
            "\e[0m will be updated".(
@@ -629,6 +596,19 @@
           exit ($r);
         }
       }
+    }
+
+    private function _updateConf ($k, $v, $conf = null)
+    {
+      if (!$conf)
+        $conf = $this->siteConfPath;
+
+      $tmp = 
+        (!$v || preg_match('/^\s*(true|false|1|0|on|off|yes|no)\s*$/i', $v)) ?
+          intval (filter_var ($v, FILTER_VALIDATE_BOOLEAN)) :
+          '\\"'.$this->_quotePerlValue ($v).'\\"';
+
+      $this->_exec ("perl -pi -e 's/(.$k.),[^\)]+\)/$1, $tmp)/' $conf");
     }
 
     private function help ($msg)
