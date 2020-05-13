@@ -35,9 +35,10 @@
             <li data-action="open"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-folder-open"></i> <?=_("Open...")?></a></li>
             <li data-action="import"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-file-import"></i> <?=_("Import...")?></a></li>
             <li class="dropdown-divider"></li>
-            <li data-action="share"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-share"></i> <?=_("Share...")?></a></li>
             <li data-action="clone"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-clone"></i> <?=_("Clone")?></a></li>
             <li data-action="export"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-file-export"></i> <?=_("Export")?></a></li>
+            <li class="dropdown-divider"></li>
+            <li data-action="share"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-share"></i> <?=_("Share...")?></a></li>
             <li class="dropdown-divider"></li>
             <li data-action="close-walls"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-times"></i> <?=_("Close the walls")?></a></li>
             <li data-action="delete"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li>

@@ -1181,8 +1181,7 @@
         `<i class="fas fa-cog fa-spin fa-fw"></i>` :
          wpt_getAccessIcon (this.settings.access);
 
-      if (!noicon &&
-          this.settings.access != "<?=WPT_RIGHTS['walls']['admin']?>")
+      if (!noicon && this.settings.ownerid != wpt_userData.id)
         html = `<i class="fas fa-user-slash notowner" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
 
       $div.find('span.icon').html (html);

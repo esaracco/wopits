@@ -794,7 +794,7 @@
       $stmt = $this->prepare ("
         SELECT
           id,
-          users_id,
+          users_id AS ownerid,
           width,
           creationdate,
           name,
@@ -808,7 +808,7 @@
 
         SELECT
           walls.id,
-          users_groups.users_id,
+          walls.users_id AS ownerid,
           walls.width,
           walls.creationdate,
           walls.name AS name,
