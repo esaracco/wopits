@@ -1109,7 +1109,9 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
 function wpt_request_ajax (method, service, args, success_cb, error_cb)
 {
   const msgArgs = {type: "danger", title: "<?=_("Warning!")?>"},
-        timeout = <?=WPT_TIMEOUTS['ajax'] * 1000?>;
+        // No timeout for file transfert
+        timeout = (service.match(/attachment|picture$/)) ?
+                    0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
 
   wpt_loader ("show");
 

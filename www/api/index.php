@@ -21,8 +21,43 @@
     // PUT
     case 'PUT':
 
-      if ($class == 'user')
-        $ret = (new Wpt_user(['data' => $data]))->create ();
+      switch ($class)
+      {
+        case 'user':
+          $User = new Wpt_user(['data' => $data]);
+          if (getParam ('action') == 'picture')
+            $ret = $User->updatePicture ();
+          else
+            $ret = $User->create ();
+          break;
+
+        case 'wall':
+          $item = getParam ('item');
+          $Wall = new Wpt_wall (['data' => $data]);
+          if ($item == 'import')
+            $ret = $Wall->import ();
+          elseif ($item == 'header')
+          {
+            $Wall->wallId = getParam ('wallId');
+            $ret = $Wall->addHeaderPicture ([
+              'headerId' => getParam ('itemId')]);
+          }
+          break;
+
+        case 'postit':
+          $item = getParam ('item');
+          $Postit = new Wpt_postit ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId'),
+            'data' => $data
+          ]);
+          if ($item == 'attachment')
+            $ret = $Postit->addAttachment ();
+          elseif ($item == 'picture')
+            $ret = $Postit->addPicture ();
+          break;
+      }
       break;
 
     // GET

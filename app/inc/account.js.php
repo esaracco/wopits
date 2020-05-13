@@ -69,7 +69,7 @@
       
                           $upload.val ("");
       
-                          wpt_request_ws (
+                          wpt_request_ajax (
                             "PUT",
                             "user/picture",
                             data,

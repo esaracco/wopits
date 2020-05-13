@@ -376,12 +376,6 @@ class Wopits implements MessageComponentInterface
             break;
         }
       }
-      // ROUTE wall import
-      elseif ($msg->route == 'wall/import')
-      {
-        if ($msg->method == 'PUT')
-          $ret = (new Wpt_wall (['data' => $data]))->import ();
-      }
       // ROUTE Wall and usersview
       elseif (preg_match ('#^wall/?(\d+)?/?(usersview|infos)?$#',
                 $msg->route, $m))
@@ -490,16 +484,6 @@ class Wopits implements MessageComponentInterface
 
         switch ($msg->method)
         {
-          // PUT
-          case 'PUT':
-            $ret = (new Wpt_wall ([
-              'wallId' => $wallId,
-              'data' => $data
-            ]))->addHeaderPicture ([
-              'headerId' => $headerId
-            ]);
-            break;
-
           // DELETE
           case 'DELETE':
             $ret = (new Wpt_wall ([
@@ -535,15 +519,6 @@ class Wopits implements MessageComponentInterface
               $ret = $Postit->getPicture (['pictureId' => $itemId]);
             break;
 
-          // PUT
-          case 'PUT':
-            $Postit->data = $data;
-            if ($item == 'attachment')
-              $ret = $Postit->addAttachment ();
-            elseif ($item == 'picture')
-              $ret = $Postit->addPicture ();
-            break;
-
           // DELETE
           case 'DELETE':
             $ret = $Postit->deleteAttachment ([
@@ -555,20 +530,8 @@ class Wopits implements MessageComponentInterface
       // ROUTE User profil picture
       elseif ($msg->route == 'user/picture')
       {
-        $User = new Wpt_user (['data' => $data]);
-        
-        switch ($msg->method)
-        {
-          // PUT
-          case 'PUT':
-            $ret = $User->updatePicture ();
-            break;
-
-          // DELETE
-          case 'DELETE':
-            $ret = $User->deletePicture ();
-            break;
-        }
+        if ($msg->method == 'DELETE')
+          $ret = (new Wpt_user (['data' => $data]))->deletePicture ();
       }
       // ROUTE ping
       // Keep WS connection and database persistent connection alive

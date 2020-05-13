@@ -515,9 +515,9 @@
 
                     // Update postit content pictures src with new ids
                     $content = preg_replace (
-                      "#{$wall->id}/cell/{$cell->id}".
+                      "#wall/{$wall->id}/cell/{$cell->id}".
                       "/postit/{$postit->id}/picture/{$item->id}#s",
-                      "{$this->wallId}/cell/{$cellId}".
+                      "wall/{$this->wallId}/cell/{$cellId}".
                       "/postit/{$postitId}/picture/{$this->lastInsertId()}",
                        $content);
 
