@@ -37,6 +37,7 @@
             <li class="dropdown-divider"></li>
             <li data-action="share"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-share"></i> <?=_("Share...")?></a></li>
             <li class="dropdown-divider"></li>
+            <li data-action="clone"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-clone"></i> <?=_("Clone")?></a></li>
             <li data-action="export"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-file-export"></i> <?=_("Export")?></a></li>
             <li data-action="import"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-file-import"></i> <?=_("Import...")?></a></li>
             <li class="dropdown-divider"></li>

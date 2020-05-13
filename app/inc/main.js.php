@@ -168,6 +168,7 @@
                   '[data-action="add-row"] a,'+
                   '[data-action="close-walls"] a,'+
                   '[data-action="view-properties"] a,'+
+                  '[data-action="clone"] a,'+
                   '[data-action="export"] a,'+
                   '[data-action="search"] a').addClass ("disabled");
     
@@ -177,6 +178,7 @@
     
                 $menu.find(
                   '[data-action="view-properties"] a,'+
+                  '[data-action="clone"] a,'+
                   '[data-action="export"] a,'+
                   '[data-action="search"] a,'+
                   '[data-action="close-walls"] a').removeClass ("disabled");
@@ -895,6 +897,42 @@
         load: true,
         restoring: restoring,
         wallId: wallId
+      });
+    },
+
+    // METHOD clone ()
+    clone: function ()
+    {
+      const plugin = this;
+
+      wpt_openConfirmPopup ({
+        type: "clone-wall",
+        icon: "clone",
+        content: `<?=_("Depending on its content, the cloning of the current wall can take a long time.<br>Do you confirm your request?")?>`,
+        cb_ok: () =>
+          {
+            wpt_request_ws (
+            "PUT",
+            "wall/"+plugin.settings.id+"/clone",
+            null,
+            // success cb
+            (d) =>
+              {
+                if (d.error_msg)
+                  return wpt_displayMsg ({
+                           type: "warning",
+                           msg: d.error_msg
+                         });
+
+                $("<div/>").wpt_wall ("open", d.wallId);
+
+                wpt_displayMsg ({
+                  type: "success",
+                  title: "<?=_("Cloning completed")?>",
+                  msg: "<?=_("The wall has been successfully cloned!")?>"
+                });
+            });
+          }
       });
     },
 
@@ -1639,6 +1677,12 @@
               case "search":
 
                 $("#postitsSearchPopup").wpt_postitsSearch ("open");
+
+                break;
+
+              case "clone":
+
+                $wall.wpt_wall ("clone");
 
                 break;
 

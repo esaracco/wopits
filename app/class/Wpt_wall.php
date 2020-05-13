@@ -308,12 +308,22 @@
       return $data;
     }
 
-    public function import ()
+    public function clone ()
+    {
+      return $this->import ($this->export (true));;
+    }
+
+    public function import ($exportFile = null)
     {
       $ret = [];
-      $errorMsg = _("An error occured while processing import.");
+      $error = null;
+      $errorMsg = ($exportFile) ?
+        _("An error occured while cloning the wall.") :
+        _("An error occured while processing import.");
       $sumErrorMsg = _("The file to import was not recognized. Was it really generated from this website?");
-      list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
+
+      if (!$exportFile)
+        list (, $content, $error) = $this->getUploadedFileInfos ($this->data);
 
       $zip = new ZipArchive ();
 
@@ -335,8 +345,11 @@
             escapeshellarg(Wpt_common::getSecureSystemName($importPath)));
         mkdir ($importPath);
 
-        file_put_contents (
-          $zipPath1, base64_decode(str_replace(' ', '+', $content)));
+        if (!$exportFile)
+          file_put_contents (
+            $zipPath1, base64_decode(str_replace(' ', '+', $content)));
+        else
+          $zipPath1 = $exportFile;
 
         // Extract first ZIP
         if ($zip->open ($zipPath1) !== true ||
@@ -557,6 +570,9 @@
 
         @$zip->close ();
 
+        if ($exportFile)
+          unlink ($exportFile);
+
         if (file_exists ($importPath))
           exec ('rm -rf '.
             escapeshellarg(Wpt_common::getSecureSystemName($importPath)));
@@ -565,7 +581,7 @@
       return $ret;
     }
 
-    public function export ()
+    public function export ($clone = false)
     {
       // If a user is in more than one groups for the same wall, with
       // different rights, take the more powerful right (ORDER BY access)
@@ -700,13 +716,15 @@
       $zip->addFromString ("README", _("Warning: if you modify the content of this archive, you will no longer be able to import it with wopits!"));
       $zip->close ();
 
-      return Wpt_common::download ([
-        'type' => 'application/zip',
-        'name' => basename ($zipPath2),
-        'size' => filesize ($zipPath2),
-        'path' => $zipPath2,
-        'unlink' => true
-      ]);
+      return ($clone) ?
+        $zipPath2 :
+        Wpt_common::download ([
+          'type' => 'application/zip',
+          'name' => basename ($zipPath2),
+          'size' => filesize ($zipPath2),
+          'path' => $zipPath2,
+          'unlink' => true
+        ]);
     }
 
     public function getWall ()

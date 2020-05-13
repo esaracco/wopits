@@ -376,11 +376,13 @@ class Wopits implements MessageComponentInterface
             break;
         }
       }
-      // ROUTE Wall and usersview
-      elseif (preg_match ('#^wall/?(\d+)?/?(usersview|infos)?$#',
+      // ROUTE Wall, usersview and cloning
+      elseif (preg_match ('#^wall/?(\d+)?/?(usersview|infos|clone)?$#',
                 $msg->route, $m))
       {
         @list (,$wallId, $type) = $m;
+
+        $Wall = new Wpt_wall (['wallId' => $wallId, 'data' => $data]);
 
         switch ($msg->method)
         {
@@ -388,33 +390,29 @@ class Wopits implements MessageComponentInterface
           case 'GET':
             // Return wall active users list
             if ($type == 'usersview')
-              $ret = (new Wpt_wall ([
-                'wallId' => $wallId,
-              ]))->getUsersview (
+            {
+              unset ($Wall->data);
+              $ret = $Wall->getUsersview (
                 array_keys ($this->activeWallsUnique[$wallId]));
+            }
             elseif ($type == 'infos')
-              $ret = (new Wpt_wall ([
-                'wallId' => $wallId,
-                'data' => $data
-              ]))->getWallInfos ();
+              $ret = $Wall->getWallInfos ();
             // If wallId return wall data, else return all user's walls
             else
             {
               if ($wallId)
                 $action = 'refreshwall';
   
-              $ret = (new Wpt_wall ([
-                'wallId' => $wallId,
-                'data' => $data]))->getWall ();
+              $ret = $Wall->getWall ();
             }
             break;
 
           // PUT
           case 'PUT':
-            $ret = (new Wpt_wall ([
-              'wallId' => $wallId,
-              'data' => $data
-            ]))->createWall ();
+            if ($type == 'clone')
+              $ret = $Wall->clone ();
+            else
+              $ret = $Wall->createWall ();
             break;
         }
       }
