@@ -1177,10 +1177,15 @@
     {
       const $div = $('a[href="#wall-'+this.settings.id+'"]');
 
-      $div.find('span.icon').html (
-          (!!noicon) ? "<i class='fas fa-cog fa-spin fa-fw'></i>" :
-                       wpt_getAccessIcon (this.settings.access));
+      let html = (noicon) ?
+        `<i class="fas fa-cog fa-spin fa-fw"></i>` :
+         wpt_getAccessIcon (this.settings.access);
 
+      if (!noicon &&
+          this.settings.access != "<?=WPT_RIGHTS['walls']['admin']?>")
+        html = `<i class="fas fa-user-slash notowner" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
+
+      $div.find('span.icon').html (html);
       $div.find('span.val').text (wpt_noHTML (name));
     },
 

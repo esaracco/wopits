@@ -227,8 +227,8 @@ i.settings {
 }
 
 .nav-tabs.walls > a {
-    float:none;
-    display:inline-block;
+  float:none;
+  display:inline-block;
 }
 
 .nav-tabs.walls > a:last-child {
@@ -240,13 +240,6 @@ i.settings {
   color:#000;
   opacity:0.3;
 }
-
-/*FIXME*/
-/*
-.nav-tabs.walls .nav-item {
-  white-space:nowrap;
-}
-*/
 
 .nav-tabs.walls a.active button.close {
   display:block;
@@ -460,11 +453,6 @@ select.timezone {
   color: #6c757d;
   pointer-events: none;
   background-color: transparent;
-}
-
-.dropdown-item i.fa-file-import {
-  margin-left:-5px;
-  margin-right:5px;
 }
 
 #main-menu .dropdown-item {
@@ -1164,6 +1152,14 @@ div.postit div.attachmentscount span.wpt-badge {
 .list-group-item i {
   margin-right:5px;
   color: silver;
+}
+
+.nav-item .icon i.notowner {
+  font-size:0.7rem;
+  position:absolute;
+  margin-left:-14px;
+  margin-top:-4px;
+  opacity:0.6;
 }
 
 .list-group-item i.fa {
