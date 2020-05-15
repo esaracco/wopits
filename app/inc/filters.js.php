@@ -19,7 +19,7 @@
             cList = $(".color-picker").wpt_colorPicker ("getColorsList");
 
       let tags = '';
-      for (let i = 0, ilen = tList.length; i < ilen; i++)
+      for (let i = 0, iLen = tList.length; i < iLen; i++)
       {
         const t = tList[i];
 
@@ -28,7 +28,7 @@
       }
 
       let colors = '';
-      for (let i = 0, ilen = cList.length; i < ilen; i++)
+      for (let i = 0, iLen = cList.length; i < iLen; i++)
         colors += `<div class="${cList[i]}">&nbsp;</div>`;
 
       $filters

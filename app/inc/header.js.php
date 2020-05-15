@@ -19,7 +19,7 @@
     const $img = $header.find("img");
 
     return {
-      id: $header[0].dataset.id.split("-")[1],
+      id: $header[0].dataset.id.substring (7),
       width: $header.outerWidth (),
       height: $header.outerHeight (),
       title: $header.find(".title").text (),

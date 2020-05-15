@@ -1265,7 +1265,7 @@
         mkdir ("$dir/postit");
   
         // INSERT col headers
-        for ($i = 0; $i < count($wall['headers']['cols']); $i++)
+        for ($i = 0, $iLen = count($wall['headers']['cols']); $i < $iLen; $i++)
         {
           $col = $wall['headers']['cols'][$i];
   
@@ -1282,7 +1282,7 @@
         }
   
         // INSERT row headers
-        for ($i = 0; $i < count($wall['headers']['rows']); $i++)
+        for ($i = 0, $iLen = count($wall['headers']['rows']); $i < $iLen; $i++)
         {
           $row = $wall['headers']['rows'][$i];
 
@@ -1298,7 +1298,7 @@
         }
   
         // INSERT cells
-        for ($i = 0; $i < count($wall['cells']); $i++)
+        for ($i = 0, $iLen = count($wall['cells']); $i < $iLen; $i++)
         {
           $cell = $wall['cells'][$i];
   
@@ -1364,7 +1364,7 @@
         if ($newTransaction)
           $this->beginTransaction ();
 
-        for ($i = 0; $i < count($this->data->cells); $i++)
+        for ($i = 0, $iLen = count($this->data->cells); $i < $iLen; $i++)
         {
           $cell = $this->data->cells[$i];
   
@@ -1374,7 +1374,7 @@
            ],
            ['id' => $cell->id]);
   
-          for ($j = 0; $j < count($cell->postits); $j++)
+          for ($j = 0, $jLen = count($cell->postits); $j < $jLen; $j++)
           {
             $postit = $cell->postits[$j];
   
@@ -1416,7 +1416,8 @@
 
         foreach (['cols', 'rows'] as $type)
         {
-          for ($i = 0; $i < count ($this->data->headers->$type); $i++)
+          for ($i = 0, $iLen = count ($this->data->headers->$type);
+                 $i < $iLen; $i++)
           {
             $header = $this->data->headers->$type[$i];
   

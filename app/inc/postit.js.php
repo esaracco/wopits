@@ -1146,7 +1146,7 @@
       {
         const $p = $(this),
               p = $p[0],
-              postitId = p.dataset.id.split("-")[1],
+              postitId = p.dataset.id.substring (7),
               title = $p.find(".postit-header span.title").html (),
               classcolor = p.className.match(/(color\-[a-z]+)/);
         let tags = [],

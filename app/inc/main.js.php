@@ -37,7 +37,7 @@
       plugin.setName (settings.name, true);
 
       // Prepare rows array for display
-      for (let i = 0, ilen = settings.cells.length; i < ilen; i++)
+      for (let i = 0, iLen = settings.cells.length; i < iLen; i++)
       {
         const cell = settings.cells[i],
               rowIdx = cell.row;
@@ -63,12 +63,14 @@
       wpt_waitForDOMUpdate (() =>
         {
           // Create wall columns headers
-          for (let i = 0, ilen = settings.headers.cols.length; i < ilen; i++)
+          const hcols = settings.headers.cols;
+          for (let i = 0, iLen = hcols.length; i < iLen; i++)
           {
-            const header = settings.headers.cols[i];
+            const header = hcols[i],
+                  $th = $("<th/>");
 
-            $wall.find("thead tr").append ("<th></th>");
-            $wall.find("thead tr th:last-child").wpt_header ({
+            $wall.find("thead tr").append ($th);
+            $th.wpt_header ({
               access: access,
               type: "col",
               id: header.id,
@@ -79,18 +81,19 @@
             });
           }
 
-          for (let i = 0, ilen = rows.length; i < ilen; i++)
+          const hrows = settings.headers.rows;
+          for (let i = 0, iLen = rows.length; i < iLen; i++)
           {
             const row = rows[i];
 
-            plugin.addRow (settings.headers.rows[i], row);
+            plugin.addRow (hrows[i], row);
 
-            for (let j = 0, jlen = row.length; j < jlen; j++)
+            for (let j = 0, jLen = row.length; j < jLen; j++)
             {
               const cell = row[j],
                     $cell = $wall.find("td[data-id='cell-"+cell.id+"']");
 
-              for (let k = 0, klen = cell.postits.length; k < klen; k++)
+              for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
               {
                 cell.postits[k]["access"] = access;
                 $cell.wpt_cell ("addPostit", cell.postits[k], true);
@@ -417,7 +420,7 @@
       //FIXME
       $wall.css ("width", d.width + 1);
 
-      for (let i = 0, ilen = d.headers.cols.length; i < ilen; i++)
+      for (let i = 0, iLen = d.headers.cols.length; i < iLen; i++)
       {
         const header = d.headers.cols[i],
               $header = $wall.find('thead th[data-id="header-'+header.id+'"]');
@@ -439,7 +442,7 @@
       }
 
       // Remove deleted rows
-      for (let i = 0, ilen = d.headers.rows.length; i < ilen; i++)
+      for (let i = 0, iLen = d.headers.rows.length; i < iLen; i++)
         rowsHeadersIds[d.headers.rows[i].id] = true;
 
       $wall.find("tbody th").each (function ()
@@ -457,7 +460,7 @@
         });
 
       // Remove deleted columns
-      for (let i = 0, ilen = d.headers.cols.length; i < ilen; i++)
+      for (let i = 0, iLen = d.headers.cols.length; i < iLen; i++)
         colsHeadersIds[d.headers.cols[i].id] = true;
 
       $wall.find("thead th").each (function ()
@@ -481,13 +484,13 @@
           }
         });
 
-      for (let i = 0, ilen = d.cells.length; i < ilen; i++)
+      for (let i = 0, iLen = d.cells.length; i < iLen; i++)
       {
         const cell = d.cells[i],
               irow = cell.row;
 
         // Get all postits ids for this cell
-        for (let j = 0, jlen = cell.postits.length; j < jlen; j++)
+        for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
           postitsIds[cell.postits[j].id] = true;
 
         if (rows[irow] == undefined)
@@ -496,7 +499,7 @@
         rows[irow][cell.col] = cell;
       }
 
-      for (let i = 0, ilen = rows.length; i < ilen; i++)
+      for (let i = 0, iLen = rows.length; i < iLen; i++)
       {
         const row = rows[i],
               header = d.headers.rows[i];
@@ -509,7 +512,7 @@
             .wpt_header ("update", header);
         }
 
-        for (let j = 0, jlen = row.length; j < jlen; j++)
+        for (let j = 0, jLen = row.length; j < jLen; j++)
         {
           const cell = row[j];
           let $cell = $wall.find('td[data-id="cell-'+cell.id+'"]'),
@@ -539,7 +542,7 @@
               });
           }
 
-          for (let k = 0, klen = cell.postits.length; k < klen; k++)
+          for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
           {
             const postit = cell.postits[k],
                   $postit = $wall.find('.postit[data-id="postit-'+
@@ -1465,7 +1468,7 @@
       $wall.find("tbody td:not(.ui-droppable)").each (function ()
         {
           $(this).wpt_cell ({
-            id: this.dataset.id.split("-")[1],
+            id: this.dataset.id.substring (5),
             access: plugin.settings.access,
             wall: $wall,
             wallId: wallId
