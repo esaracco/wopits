@@ -132,7 +132,7 @@
        if (writeAccess)
          $cell
           // EVENT MOUSEDOWN on cell
-          .on("dblclick",function(e)
+          .on("click",function(e)
             {
               // Only left click on cell
               if (e.which != 1 || e.target.tagName != 'TD')
