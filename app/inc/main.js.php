@@ -105,6 +105,9 @@
 
           $wall.show ("fade");
 
+          $wall[0].dataset.cols = hcols.length;
+          $wall[0].dataset.rows = hrows.length;
+
           plugin.setName (settings.name);
           plugin.setDescription (settings.description);
 
@@ -403,10 +406,14 @@
             rowsHeadersIds = {},
             colsHeadersIds = {},
             postitsIds = {},
-            rows = [];
+            rows = [],
+            rowsCount = d.headers.rows.length,
+            colsCount = d.headers.cols.length;
 
       _refreshing = true;
 
+      $wall[0].dataset.cols = colsCount;
+      $wall[0].dataset.rows = rowsCount;
       $wall[0].dataset.oldwidth = d.width;
 
       if (d.shared)
@@ -420,7 +427,7 @@
       //FIXME
       $wall.css ("width", d.width + 1);
 
-      for (let i = 0, iLen = d.headers.cols.length; i < iLen; i++)
+      for (let i = 0; i < colsCount; i++)
       {
         const header = d.headers.cols[i],
               $header = $wall.find('thead th[data-id="header-'+header.id+'"]');
@@ -442,7 +449,7 @@
       }
 
       // Remove deleted rows
-      for (let i = 0, iLen = d.headers.rows.length; i < iLen; i++)
+      for (let i = 0; i < rowsCount; i++)
         rowsHeadersIds[d.headers.rows[i].id] = true;
 
       $wall.find("tbody th").each (function ()
@@ -460,7 +467,7 @@
         });
 
       // Remove deleted columns
-      for (let i = 0, iLen = d.headers.cols.length; i < iLen; i++)
+      for (let i = 0; i < colsCount; i++)
         colsHeadersIds[d.headers.cols[i].id] = true;
 
       $wall.find("thead th").each (function ()
@@ -505,7 +512,7 @@
               header = d.headers.rows[i];
 
         if (!$wall.find('td[data-id="cell-'+row[0].id+'"]').length)
-          plugin.addRow (header, row);
+          plugin.addRow (header, row, false);
         else
         {
           $wall.find('tbody th[data-id="header-'+header.id+'"]')
@@ -690,18 +697,26 @@
     // METHOD createColRow ()
     createColRow: function (type)
     {
-      const plugin = this;
+      const wall = this.element[0];
+
+      if (Number (wall.dataset.rows) *
+            Number (wall.dataset.cols) >= <?=WPT_MAX_CELLS?>)
+        return wpt_infoPopup ("<?=_("For performance reasons, a wall cannot contain more than %s cells")?>.".replace("%s", <?=WPT_MAX_CELLS?>));
 
       wpt_request_ws (
         "PUT",
         "wall/"+this.settings.id+"/"+type,
         null,
-        () => wpt_sharer.getCurrent("walls")
-                [(type == "col")?"scrollLeft":"scrollTop"](30000));
+        () =>
+          {
+            wpt_sharer.getCurrent("walls")
+              [(type == "col")?"scrollLeft":"scrollTop"](30000);
+            wall.dataset[type+"s"] = Number (wall.dataset[type+"s"]) + 1;
+          });
     },
 
     // METHOD addRow ()
-    addRow: function (header, row)
+    addRow: function (header, row, attachEvents = true)
     {
       const plugin = this,
             $wall = plugin.element;
@@ -724,7 +739,8 @@
         picture: header.picture
       });
 
-      plugin.attachTableEvent ();
+      if (attachEvents)
+        plugin.attachTableEvent ();
 
       plugin.fixSize ();
     },
@@ -748,7 +764,8 @@
       wpt_request_ws (
         "DELETE",
         "wall/"+plugin.settings.id+"/row/"+rowIdx,
-        {wall: {width: $wall.outerWidth ()}});
+        {wall: {width: $wall.outerWidth ()}},
+        () => $wall[0].dataset.rows = Number ($wall[0].dataset.rows) - 1);
     },
 
     // METHOD deleteCol ()
@@ -786,7 +803,8 @@
       wpt_request_ws (
         "DELETE",
         "wall/"+plugin.settings.id+"/col/"+(idx - 1),
-        data);
+        data,
+        () => $wall[0].dataset.cols = Number ($wall[0].dataset.cols) - 1);
     },
 
     // METHOD addNew ()
@@ -796,17 +814,37 @@
             $tabs = $(".nav-tabs.walls"),
             method = (args.load) ? "GET" : "PUT",
             service = (args.load) ? "wall/"+args.wallId : "wall",
-            data = (args.load) ?
-              null :
-              {
-                name: args.name,
-                grid: !!args.grid,
-                width: wpt_sharer.getCurrent("walls").width (),
-                height: wpt_sharer.getCurrent("walls").height (),
-                //TODO Let this be customizable by user
-                colsCount: 3,
-                rowsCount: 3
-              };
+            data = (args.load) ? null : {name: args.name, grid: !!args.grid};
+
+       if (data)
+       {
+         if (data.grid)
+         {
+           data["colsCount"] = args.dim.colsCount;
+           data["rowsCount"] = args.dim.rowsCount;
+         }
+         else
+         {
+           const w = Number (args.dim.width),
+                 h = Number (args.dim.height);
+
+           if (w)
+             data["width"] = w + 52;
+           else
+             data["width"] = $(window).width () - 50;
+
+           if (data.height < 300)
+             data.height = 300;
+
+           if (h)
+             data["height"] = h;
+           else
+             data["height"] = $(window).height ();
+
+           if (data.width < 300)
+             data.width = 300;
+         }
+       }
 
       wpt_sharer.reset ();
 
@@ -1057,21 +1095,9 @@
     // METHOD openNamePopup ()
     openNamePopup: function ()
     {
-      const $popup = $("#updateOneInputPopup");
+      const $popup = $("#createWallPopup");
 
-      wpt_cleanPopupDataAttr ($("#updateOneInputPopup"));
-
-      $popup.find(".modal-title").html (
-        "<i class='fas fa-signature fa-lg fa-fw'></i><?=_("New wall")?>");
-
-      $popup.find("input").attr("placeholder", "<?=_("wall name")?>")
-
-      $("<div><input type='checkbox' checked='checked' id='w-grid'> <label for='w-grid'><?=_("With grid")?></label></div>")
-        .insertAfter ($popup.find(".input-group"));
-
-      $popup.find(".btn-primary").html ("<?=_("Create")?>");
-  
-      $popup[0].dataset.popuptype = "name-wall";
+      wpt_cleanPopupDataAttr ($popup);
       $popup[0].dataset.noclosure = true;
       wpt_openModal ($popup);
     },
@@ -1104,7 +1130,8 @@
 
     displayWallProperties: function (args)
     {
-      const plugin = this;
+      const plugin = this,
+            $wall = plugin.element;
 
       wpt_request_ws (
         "GET",
@@ -1123,6 +1150,8 @@
           $popup.find(".creationdate").text (
             wpt_getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
 
+          $popup.find(".size").hide ();
+
           if (wpt_checkAccess("<?=WPT_RIGHTS['walls']['admin']?>"))
           {
             const $input = $popup.find(".name input");
@@ -1138,6 +1167,18 @@
               $input.attr ("autofocus", "autofocus");
             else
               $input.removeAttr ("autofocus");
+
+            if ($wall[0].dataset.rows == 1 && $wall[0].dataset.cols == 1)
+            {
+              const $div = $popup.find(".wall-size"),
+                    $cell = $wall.find ("td");
+
+              $popup.find("[name='wall-width']")
+                .val (Math.floor ($cell.outerWidth ()));
+              $popup.find("[name='wall-height']")
+                .val (Math.floor ($cell.outerHeight ()));
+              $popup.find(".size").show ();
+            }
           }
           else
           {
@@ -1527,6 +1568,18 @@
           .on("click", function ()
           {
             wpt_sharer.getCurrent("wall").wpt_wall ("zoom", {type: "normal"});
+          });
+
+        $("#createWallPopup #w-grid").on("change", function ()
+          {
+            const el = $(this)[0],
+                  $popup = $(this).closest (".modal");
+
+            $popup.find("span.required").remove ();
+            $popup.find(".cols-rows input,.width-height input").val ("");
+            $popup.find(".cols-rows,.width-height").hide ();
+
+            $popup.find(el.checked?".cols-rows":".width-height").show ("fade");
           });
 
         $(document)

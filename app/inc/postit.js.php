@@ -27,7 +27,6 @@
           }
       };
 
-
   function _getMaxEditModalWidth (content)
   {
     let maxW = 0;

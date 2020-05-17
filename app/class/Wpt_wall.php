@@ -1209,21 +1209,40 @@
     {
       $ret = [];
       $noGrid = !$this->data->grid;
-      $colsCount = ($noGrid) ? 1 : $this->data->colsCount;
-      $rowsCount = ($noGrid) ? 1 : $this->data->rowsCount;
+
+      if ($noGrid)
+      {
+        $colsCount = 1;
+        $rowsCount = 1;
+
+        if (!$this->data->width)
+          $this->data->width = 300;
+        if (!$this->data->height)
+          $this->data->height = 300;
+      }
+      else
+      {
+        $colsCount = intval (trim ($this->data->colsCount));
+        $rowsCount = intval (trim ($this->data->rowsCount));
+
+        if (!$colsCount)
+          $colsCount = 3;
+        if (!$rowsCount)
+          $rowsCount = 3;
+      }
 
       if ($this->checkWallName ($this->data->name))
         return ['error_msg' => _("A wall with the same name already exists.")];
 
       $wall = [
         'name' => $this->data->name,
-        'width' => ($noGrid) ? $this->data->width - 50 : 951,
+        'width' => ($noGrid) ? $this->data->width : $colsCount * 300,
         'headers' => ['cols' => [], 'rows' => []],
         'cells' => []
       ];
 
       $cellWidth = ($noGrid) ? $this->data->width : 300;
-      $cellHeight = ($noGrid) ? $this->data->height - 100 : 200;
+      $cellHeight = ($noGrid) ? $this->data->height : 200;
 
       for ($i = 0; $i < $colsCount; $i++)
         $wall['headers']['cols'][] =

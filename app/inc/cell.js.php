@@ -134,6 +134,18 @@
        if (writeAccess)
        {
          $cell
+          // Get touch coords on touch devices
+          .on("touchstart", function (e)
+            {
+              _coords = e;
+            })
+          .on("click", function (e)
+            {
+              const currentPlug = wpt_sharer.get("link-from");
+
+              if (currentPlug)
+                currentPlug.obj.wpt_postit ("cancelPlugAction");
+            })
           // EVENT MOUSEDOWN on cell
           .doubletap(function(e)
             {
@@ -142,10 +154,10 @@
   
               const cellOffset = $cell.offset (),
                     $filters = wpt_sharer.getCurrent ("filters"),
-                    pTop = ((_coords) ?
+                    pTop = ((_coords && _coords.changedTouches) ?
                       _coords.changedTouches[0].clientY :
                       e.pageY) - cellOffset.top,
-                    pLeft = ((_coords) ?
+                    pLeft = ((_coords && _coords.changedTouches) ?
                       _coords.changedTouches[0].clientX :
                       e.pageX) - cellOffset.left,
                     $mark = $(`<div class="postit-mark"><i class="fas fa-sticky-note"></i></div>`).css ({
@@ -179,8 +191,6 @@
               });
 
             });
-
-          $cell[0].addEventListener("touchstart", (e) => _coords = e);
         }
 
         let w, h;

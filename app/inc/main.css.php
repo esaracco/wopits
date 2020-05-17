@@ -371,6 +371,20 @@ select.timezone {
   overflow: auto;
 }
 
+.wall-size * {
+  font-size:0.8rem;
+  max-width:250px;
+}
+
+.wall-size .input-group-text {
+  border:none;
+}
+
+.wall-size .form-control:first-of-type {
+  border-top-left-radius:.2rem;
+  border-bottom-left-radius:.2rem;
+}
+
 /*FIXME*/
 #postitAttachmentsPopup,
 #shareWallPopup {

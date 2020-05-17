@@ -74,11 +74,36 @@ class Wpt_accountForms extends Wpt_forms
   {
     for (let i = 0, iLen = fields.length; i < iLen; i++)
     {
-      const $f = $(fields[i]),
-            val = $f.val();
+      const $f = $(fields[i]);
+      let val = $f.val ();
 
       switch ($f.attr("name"))
       {
+        case "wall-width":
+        case "wall-height":
+
+          val = Number (val);
+
+          if (val > 0)
+          {
+            if (val < 300)
+              return this.focusBadField ($f, "<?=_("The size of a wall cannot be less than %s")?>".replace("%s", "300x300"));
+            else if (val > 20000)
+              return this.focusBadField ($f, "<?=_("The size of a wall cannot be greater than %s")?>".replace("%s", "20000x20000"));
+          }
+          break;
+
+        case "wall-cols":
+        case "wall-rows":
+
+          const $form = $f.closest("form"),
+                cols = Number ($form.find("input[name='wall-cols']").val ()) || 3,
+                rows = Number ($form.find("input[name='wall-rows']").val ()) || 3;
+
+          if (cols * rows > <?=WPT_MAX_CELLS?>)
+            return this.focusBadField ($f, "<?=_("For performance reasons, a wall cannot contain more than %s cells")?>".replace("%s", <?=WPT_MAX_CELLS?>));
+          break;
+
         case "email":
 
           if (!this._checkEmail (val))
@@ -615,6 +640,14 @@ function wpt_cleanPopupDataAttr ($popup)
       $popup.find("input").val ("");
       break;
  
+    case "createWallPopup":
+
+      $popup.find("input").val ("");
+      $popup.find(".cols-rows,.width-height").hide ();
+      $popup.find(".cols-rows").show ();
+      $popup.find("#w-grid")[0].checked = true;
+      break;
+
     case "groupPopup":
 
       $popup.find("input").val (""); 
@@ -1291,11 +1324,6 @@ function wpt_checkForAppUpgrade (version)
       wpt_openModal ($popup);
     }
   }
-}
-
-function wpt_debug (data)
-{
-  wpt_request_ws ("GET", "debug", data);
 }
 
 // GLOBAL VARS

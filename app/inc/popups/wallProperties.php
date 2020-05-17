@@ -26,6 +26,19 @@
            <div class="ro"></div>
           </dd>
         </div>
+        <!-- Wall size -->
+        <div class="size">
+          <dt><?=_("Size")?></dt>
+          <dd class="wall-size">
+            <div class="input-group input-group-sm width-height">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><?=_("Width/Height")?>:</span>
+              </div>
+              <input type="number" name="wall-width" step="50" min="300" max="20000" class="form-control">
+              <input type="number" name="wall-height" step="50" min="300" max="20000" class="form-control">
+            </div>
+          </dd>
+        </div>
         <!-- Wall description -->
         <div class="description">
           <dt><?=_("Description")?></dt>

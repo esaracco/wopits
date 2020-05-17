@@ -580,10 +580,38 @@ $(function()
             wpt_sharer.get("confirmPopup").cb_ok ();
             break;
 
+          // Create new wall
+          case "createWallPopup":
+
+            var Form = new Wpt_accountForms (),
+                $inputs = $popup.find("input");
+
+            $popup[0].dataset.noclosure = true;
+
+            if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
+            {
+              const data = {
+                      name: $popup.find("input").val(),
+                      grid: $popup.find("#w-grid")[0].checked
+                    };
+
+              if (data.grid)
+                data.dim = {
+                  colsCount: $popup.find(".cols-rows input:eq(0)").val(),
+                  rowsCount: $popup.find(".cols-rows input:eq(1)").val()
+                };
+              else
+                data.dim = {
+                  width: $popup.find(".width-height input:eq(0)").val(),
+                  height: $popup.find(".width-height input:eq(1)").val()
+                };
+
+              $("<div/>").wpt_wall ("addNew", data, $popup);
+            }
+            break;
+
           // Manage all one field UPDATE
           case "updateOneInputPopup":
-
-            const val = wpt_noHTML ($popup.find("input").val());
 
             switch (type)
             {
@@ -591,18 +619,8 @@ $(function()
               case "set-col-row-name":
 
                 wpt_sharer.set ("no-unedit", true);
-                $header.wpt_header ("setTitle", val, true);
-//                $header.wpt_header ("unedit");
-                break;
-
-              // Create new wall
-              case "name-wall":
-
-                if ((new Wpt_forms()).checkRequired ($popup.find("input")))
-                  $("<div/>").wpt_wall ("addNew", {
-                    name: val,
-                    grid: $popup.find("#w-grid")[0].checked
-                  }, $popup);
+                $header.wpt_header (
+                  "setTitle", $popup.find("input").val(), true);
                 break;
             }
             break;
@@ -611,20 +629,24 @@ $(function()
           //TODO wpt_wall() method
           case "wallPropertiesPopup":
 
-            const name =
-                    wpt_noHTML ($popup.find(".name input").val ()),
-                  description =
-                    wpt_noHTML ($popup.find(".description textarea").val ());
+            var Form = new Wpt_accountForms (),
+                $inputs = $popup.find("input:visible"),
+                name =
+                  wpt_noHTML ($popup.find(".name input").val ()),
+                description =
+                  wpt_noHTML ($popup.find(".description textarea").val ());
 
             $popup[0].dataset.noclosure = true;
 
-            if ((new Wpt_forms()).checkRequired ($popup.find(".name input")))
+            if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
             {
-              const oldName = $wall.wpt_wall ("getName");
+              const oldName = $wall.wpt_wall ("getName"),
+                    $cell = $wall.find("td"),
+                    oldW = $cell.outerWidth ();
 
               $wall.wpt_wall ("setName", name);
               $wall.wpt_wall ("setDescription", description);
-   
+
               $wall.wpt_wall ("unedit",
                 () =>
                 {
@@ -637,6 +659,35 @@ $(function()
                   //FIXME
                   $wall.wpt_wall ("edit");
                 });
+
+              if ($inputs[1] && $inputs[1].value != oldW ||
+                  $inputs[2] && $inputs[2].value != $cell.outerHeight ())
+              {
+                const w = Number ($inputs[1].value) + 1,
+                      h = Number ($inputs[2].value);
+
+                function __resize (args)
+                {
+                  $wall.find("thead th:eq(1),td").css ("width", args.newW);
+                  $wall.find(".ui-resizable-s").css ("width", args.newW + 2);
+
+                  if (args.newH)
+                  {
+                    $wall.find("tbody th,td").css ("height", args.newH);
+                    $wall.find(".ui-resizable-e").css ("height", args.newH+2);
+                  }
+
+                  $wall.wpt_wall ("fixSize", args.oldW, args.newW);
+                }
+
+                __resize ({newW: w, oldW: oldW, newH: h});
+                if ($wall.find("td").outerWidth () != w)
+                  __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
+
+                $cell.wpt_cell ("edit");
+                $cell.wpt_cell ("reorganize");
+                $cell.wpt_cell ("unedit");
+              }
             }
             return;
         }

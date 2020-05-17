@@ -41,6 +41,9 @@
     ]
   ]);
 
+  // Max cells in a wall (for performance reasons)
+  define ('WPT_MAX_CELLS', 400);
+
   // Themes
   define ('WPT_THEMES', ['blue', 'green', 'red', 'orange']);
 
@@ -125,6 +128,7 @@
       'groupAccess',
       'postitsSearch',
       'changePassword',
+      'createWall',
       'openWall',
       'wallProperties',
       'wallUsersview',
