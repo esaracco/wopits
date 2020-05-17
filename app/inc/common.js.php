@@ -1293,6 +1293,11 @@ function wpt_checkForAppUpgrade (version)
   }
 }
 
+function wpt_debug (data)
+{
+  wpt_request_ws ("GET", "debug", data);
+}
+
 // GLOBAL VARS
 const wpt_sharer = new Wpt_sharer (),
       wpt_storage = new Wpt_storage (),

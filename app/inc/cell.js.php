@@ -17,6 +17,8 @@
             $wall = settings.wall,
             writeAccess = wpt_checkAccess (
                             "<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
+      // Coords of touchstart on touch devices
+      let _coords = null;
 
       if (writeAccess)
         $cell
@@ -130,24 +132,30 @@
         });
 
        if (writeAccess)
+       {
          $cell
           // EVENT MOUSEDOWN on cell
-          .on("click",function(e)
+          .doubletap(function(e)
             {
-              // Only left click on cell
-              if (e.which != 1 || e.target.tagName != 'TD')
+              if (e.target.tagName != 'TD')
                 return e.stopImmediatePropagation ();
   
               const cellOffset = $cell.offset (),
                     $filters = wpt_sharer.getCurrent ("filters"),
-                    pTop = e.pageY - cellOffset.top,
-                    pLeft = e.pageX - cellOffset.left,
+                    pTop = ((_coords) ?
+                      _coords.changedTouches[0].clientY :
+                      e.pageY) - cellOffset.top,
+                    pLeft = ((_coords) ?
+                      _coords.changedTouches[0].clientX :
+                      e.pageX) - cellOffset.left,
                     $mark = $(`<div class="postit-mark"><i class="fas fa-sticky-note"></i></div>`).css ({
                       top: (pTop + 16 > cellOffset.top) ?
                              pTop - 16 : pTop - 8,
                       left: (pLeft < 14) ?
                         pLeft : pLeft - 12})
                       .appendTo ($cell);
+
+              _coords = null;
 
               wpt_openConfirmPopover ({
                 item: $mark,
@@ -171,6 +179,9 @@
               });
 
             });
+
+          $cell[0].addEventListener("touchstart", (e) => _coords = e);
+        }
 
         let w, h;
 

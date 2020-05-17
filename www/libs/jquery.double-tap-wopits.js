@@ -34,6 +34,8 @@
             clearTimeout(action);
             if(delta<500 && delta>0){
                 if(onDoubleTapCallback != null && typeof onDoubleTapCallback == 'function'){
+                    // HACK esaracco - disable safari iOS zoom on dblclick
+                    event.preventDefault ();
                     onDoubleTapCallback(event);
                 }
             }else{
