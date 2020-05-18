@@ -254,18 +254,15 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
-            $action = ($item == 'wall' && isset ($data->todelete)) ?
-                        'deletedwall' : 'refreshwall';
-  
+            $push = true;
             $ret = (new Wpt_editQueue ([
               'wallId' => $wallId,
               'data' => $data,
               'item' => $item,
               'itemId' => $itemId
             ]))->removeFrom ();
-
-            if (empty ($ret['wall']['removed']))
-              $push = true;
+            $action = (empty ($ret['wall']['removed'])) ?
+                        'refreshwall' : 'deletedwall';
             break;
         }
       }
@@ -716,7 +713,8 @@ class Wopits implements MessageComponentInterface
         {
           foreach ($this->openedWalls[$wallId] as $_connId => $_userId)
           {
-            if ( ($client = $this->clients[$_connId] ?? null) )
+            if ( ($client = $this->clients[$_connId] ?? null) &&
+                 isset ($this->chatUsers[$wallId]))
               $client->conn->send (
                 json_encode ([
                   'action' => 'chatcount',
