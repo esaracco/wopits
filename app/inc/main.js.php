@@ -684,14 +684,15 @@
     // METHOD delete ()
     delete: function ()
     {
-      this.close ();
-
       this.element[0].dataset.todelete = true;
 
       //FIXME 2x
       this.unedit (() =>
-        $("#settingsPopup")
-          .wpt_settings ("removeWallBackground", this.settings.id));
+        {
+          this.close ();
+          $("#settingsPopup")
+            .wpt_settings ("removeWallBackground", this.settings.id);
+        });
     },
 
     // METHOD createColRow ()

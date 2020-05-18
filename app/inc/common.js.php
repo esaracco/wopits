@@ -415,6 +415,8 @@ class Wpt_WebSocket
 
             // deletedwall
             case "deletedwall":
+            // unlinkedwall
+            case "unlinkedwall":
               if (!isResponse)
               {
                 wpt_displayMsg ({type: "warning", msg: data.wall.removed}); 

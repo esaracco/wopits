@@ -146,9 +146,10 @@
               if (!empty ($this->data->todelete))
               {
                 $Wall = new Wpt_wall (['wallId' => $this->wallId]);
-                $Wall->deleteWall ();
+                $ret = $Wall->deleteWall ();
   
-                $ret = ['wall' => ['id' => $this->wallId]];
+                if (!isset ($ret['error']))
+                  $ret = ['wall' => ['id' => $this->wallId]];
               }
               elseif ($update)
               {

@@ -254,15 +254,18 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
-            $push = true;
             $ret = (new Wpt_editQueue ([
               'wallId' => $wallId,
               'data' => $data,
               'item' => $item,
               'itemId' => $itemId
             ]))->removeFrom ();
-            $action = (empty ($ret['wall']['removed'])) ?
-                        'refreshwall' : 'deletedwall';
+            if (!isset ($ret['error_msg']) && !isset ($ret['error']))
+            {
+              $push = true;
+              $action = (empty ($ret['wall']['removed'])) ?
+                          'refreshwall' : 'deletedwall';
+            }
             break;
         }
       }
@@ -334,7 +337,7 @@ class Wopits implements MessageComponentInterface
         $Group = new Wpt_group ([
           'wallId' => $wallId,
           'data' => $data,
-         'groupId' => $groupId
+          'groupId' => $groupId
         ]);
 
         switch ($msg->method)
@@ -353,7 +356,14 @@ class Wopits implements MessageComponentInterface
             if ($type == 'link')
               $ret = $Group->link ();
             elseif ($type == 'unlink')
+            {
               $ret = $Group->unlink ();
+              if (!isset ($ret['error']))
+              {
+                $push = true;
+                $action = 'unlinkedwall';
+              }
+            }
             break;
 
           // PUT

@@ -338,6 +338,11 @@
             WHERE groups_id = ?
               AND walls_id = ?')
           ->execute ([$this->groupId, $this->wallId]);
+
+        $ret['wall'] = [
+          'id' => $this->wallId,
+          'removed' => _("You no longer have the right to access this wall.")
+        ];
       }
       catch (Exception $e)
       {
