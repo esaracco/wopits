@@ -145,20 +145,28 @@
   
               if (!empty ($this->data->todelete))
               {
-                $Wall = new Wpt_wall (['wallId' => $this->wallId]);
-                $ret = $Wall->deleteWall ();
+                $ret = $this->deleteWall ();
   
                 if (!isset ($ret['error']))
-                  $ret = ['wall' => ['id' => $this->wallId]];
+                  $ret = ['wall' => [
+                    'id' => $this->wallId,
+                    // This message will be broadcast to users who have this
+                    // wall opened
+                    'removed' => _("This wall has been deleted!")]
+                  ];
               }
               elseif ($update)
               {
                 if (!$this->checkWallName ($this->data->name))
-                  $this->executeQuery ('UPDATE walls', [
-                    'name' => $this->data->name,
-                    'description' => $this->data->description
-                   ],
-                   ['id' => $this->wallId]);
+                {
+                  $this->setBasicProperties ();
+
+                  $ret = ['wall' => [
+                    'id' => $this->wallId,
+                    'partial' => 'wall',
+                    'wall' => $this->getWall (true)
+                  ]];
+                }
                 else
                   $ret['error_msg']=
                     _("A wall with the same name already exists.");
@@ -182,6 +190,14 @@
                 if (!empty ($this->data->todelete))
                 {
                   $Postit->deletePostit ();
+
+                  $ret = ['wall' => [
+                    'id' => $this->wallId,
+                    'partial' => 'postit',
+                    'action' => 'delete',
+                    'postit' => ['id' => $this->data->id],
+                    'postits_plugs' => $Postit->getPlugs (true)
+                  ]];
                 }
                 // UPDATE the postit
                 elseif ($update)
@@ -204,6 +220,14 @@
                              WHERE walls_id = ? AND start = ?')
                            ->execute ([$this->wallId, $_postit->id]);
                     }
+
+                    //FIXME
+                    $ret = ['wall' => [
+                      'id' => $this->wallId,
+                      'partial' => 'plugs',
+                      'action' => 'update',
+                      'postits_plugs' => $Postit->getPlugs (true)
+                    ]];
                   }
                   // Full postit update
                   else
@@ -242,8 +266,18 @@
                         $this->data->hasuploadedpictures)
                       $Postit->deletePictures ($this->data);
 
+                    $ret = ['wall' => [
+                      'id' => $this->wallId,
+                      'partial' => 'postit',
+                      'action' => 'update',
+                      'postit' => $Postit->getPostit ()
+                    ]];
+
                     if (!empty ($plugs))
+                    {
                       $Postit->addRemovePlugs ($plugs);
+                      $ret['wall']['postits_plugs'] = $Postit->getPlugs ();
+                    }
                   }
                 }
               }
@@ -252,11 +286,10 @@
   
             case 'cell':
   
-              $Wall = new Wpt_wall ([
-                'wallId' => $this->wallId,
-                'data' => $this->data
-               ]);
-              $Wall->updateCells ( ($item != 'wall') );
+              $this->updateCells ();
+
+              //FIXME
+              $ret['wall'] = $this->getWall ();
   
              break;
   
@@ -264,23 +297,17 @@
   
               if ($update)
               {
-                $Wall = new Wpt_wall ([
-                  'wallId' => $this->wallId,
-                  'data' => $this->data
-                 ]);
-                $Wall->updateHeaders (false);
-                // We need to update cells here because they may have been
-                // reorganized depending of new headers width
-                $Wall->updateCells (true);
+                $this->updateHeaders ();
+                $this->updateCells ();
+
+                //FIXME
+                $ret['wall'] = $this->getWall ();
               }
   
               break;
           }
   
           $this->commit ();
-  
-          if ($update)
-            $ret['wall'] = $this->getWall ();
         }
         catch (Exception $e)
         {

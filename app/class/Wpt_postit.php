@@ -24,25 +24,33 @@
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
+      $data = [
+        'cells_id' => $this->cellId,
+        'width' => $this->data->width,
+        'height' => $this->data->height,
+        'top' => $this->data->top,
+        'left' => $this->data->left,
+        'classcolor' => $this->data->classcolor,
+        'title' => $this->data->title,
+        'content' => $this->data->content,
+        'creationdate' => time ()
+      ];
+
       try
       {
-        $this->executeQuery ('INSERT INTO postits', [
-          'cells_id' => $this->cellId,
-          'width' => $this->data->width,
-          'height' => $this->data->height,
-          'top' => $this->data->top,
-          'left' => $this->data->left,
-          'classcolor' => $this->data->classcolor,
-          'title' => $this->data->title,
-          'content' => $this->data->content,
-          'creationdate' => time ()
-        ]);
+        $this->executeQuery ('INSERT INTO postits', $data);
 
-        $postitId = $this->lastInsertId ();
+        $this->postitId = $this->lastInsertId ();
 
-        mkdir ("$dir/postit/$postitId");
+        mkdir ("$dir/postit/".$this->postitId);
 
-        $ret['wall'] = $this->getWall ();
+        $data['id'] = $this->postitId;
+        $ret = ['wall' => [
+          'id' => $this->wallId,
+          'partial' => 'postit',
+          'action' => 'insert',
+          'postit' => $data
+        ]];
       }
       catch (Exception $e)
       {
@@ -60,6 +68,32 @@
       }
 
       return $ret;
+    }
+
+    public function getPlugs ($all = false)
+    {
+      // Get postits plugs
+      $stmt = $this->prepare ('
+        SELECT start, end, label
+        FROM postits_plugs
+        WHERE '.(($all)?'walls_id':'start').' = ?');
+      $stmt->execute ([($all)?$this->wallId:$this->postitId]);
+
+      return $stmt->fetchAll ();
+    }
+
+    public function getPostit ()
+    {
+      $stmt = $this->prepare ('
+        SELECT
+          id, cells_id, width, height, top, `left`, classcolor, title,
+          content, tags, creationdate, deadline, timezone, obsolete,
+          attachmentscount
+        FROM postits
+        WHERE id = ?');
+      $stmt->execute ([$this->postitId]);
+
+      return $stmt->fetch ();
     }
 
     public function checkDeadline ()

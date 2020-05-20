@@ -531,17 +531,13 @@
     // METHOD edit ()
     edit: function (success_cb, error_cb)
     {
-      const plugin = this,
-            $wall = plugin.settings.wall,
-            headerId = plugin.settings.id;
+      this.setCurrent ();
 
-      plugin.setCurrent ();
-
-      _originalObject = _serializeOne (plugin.element);
+      _originalObject = _serializeOne (this.element);
 
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.settings.wallId+"/editQueue/header/"+headerId,
+        "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
         null,
         // success cb
         (d) =>
@@ -551,12 +547,8 @@
           {
             wpt_raiseError (() =>
               {
-                plugin.cancelEdit ();
-
-                if (d.deletewall)
-                  $wall.wpt_wall ("close");
-                else
-                  $wall.wpt_wall ("refresh", d.wall);
+                error_cb && error_cb ();
+                this.cancelEdit ();
 
               }, d.error_msg);
           }
@@ -568,8 +560,9 @@
         {
           wpt_raiseError (() =>
             {
-              if (error_cb) error_cb ();
-              plugin.cancelEdit ();
+              error_cb && error_cb ();
+              this.cancelEdit ();
+
             }, (d && d.error) ? d.error : null);
         });
     },
@@ -667,15 +660,13 @@
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+$wall.wpt_wall("getId")+"/editQueue/header/"+plugin.settings.id,
+        "wall/"+plugin.settings.wallId+"/editQueue/header/"+plugin.settings.id,
         data,
         // success cb
-        (d) =>
-        {
-          plugin.cancelEdit (args.bubble_cb);
-        },
+        (d) => plugin.cancelEdit (args.bubble_cb),
         // error cb
-        () => plugin.cancelEdit (args.bubble_cb));
+        () => plugin.cancelEdit (args.bubble_cb)
+      );
     },
 
     // METHOD getId ()

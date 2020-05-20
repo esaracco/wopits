@@ -326,59 +326,32 @@
     // METHOD edit ()
     edit: function (error_cb)
     {
-      const plugin = this,
-            $wall = plugin.settings.wall,
-            cellId = plugin.settings.id;
-
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.settings.wallId+"/editQueue/cell/"+cellId,
+        "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
         null,
         // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-          {
-            wpt_raiseError (() =>
-              {
-                if (error_cb)
-                  error_cb ();
-
-                if (d.deletewall)
-                  $wall.wpt_wall ("close");
-                else
-                  $wall.wpt_wall ("refresh"); 
-
-              }, d.error_msg);
-          }
-        },
+        (d) => d.error_msg &&
+                 wpt_raiseError (() => error_cb && error_cb (), d.error_msg),
         // error cb
-        (d) =>
-        {
-          wpt_raiseError (() =>
-            {
-              if (error_cb)
-                error_cb ();
-
-            }, (d && d.error) ? d.error : null);
-        });
+        (d) => wpt_raiseError (() => error_cb && error_cb (),
+                               (d && d.error) ? d.error : null)
+      );
     },
 
     // METHOD unedit ()
     unedit: function ()
     {
-      const plugin = this,
-            $cell = plugin.element,
-            $wall = plugin.settings.wall,
-            data = {
-              cells: plugin.serialize (),
-              wall: {width: $wall.outerWidth () - 1}
+      const data = {
+              cells: this.serialize (),
+              wall: {width: this.settings.wall.outerWidth () - 1}
             };
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.settings.wallId+"/editQueue/cell/"+plugin.settings.id,
-        data);
+        "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
+        data
+      );
     }
   };
   

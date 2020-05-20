@@ -710,8 +710,7 @@
 
       if (settings.creationdate)
         setTimeout (
-          () => plugin.update (settings),
-          (!!settings.isNewCell) ? 150 : 0);
+          () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
 
       $postit.show ();
     },
@@ -1573,21 +1572,19 @@
 
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.getWallId()+
-        "/cell/"+plugin.getCellId()+"/postit",
+        "wall/"+plugin.settings.wallId+
+        "/cell/"+plugin.settings.cellId+"/postit",
         data,
         // success cb
         (d) =>
         {
           if (d.error_msg)
-          {
             wpt_displayMsg ({
               type: "warning",
               msg: d.error_msg
             });
 
-            $postit.remove ();
-          }
+          $postit.remove ();
         },
         // error cb
         (d) =>
@@ -1614,10 +1611,11 @@
       // Change postit cell
       if (cell && cell.id != plugin.settings.cellId)
       {
-        plugin.settings.cell = cell.obj;
+        plugin.settings.cell =
+          cell.obj || this.settings.wall.find("[data-id='cell-"+cell.id+"']");
         plugin.settings.cellId = cell.id;
 
-        $postit.appendTo (cell.obj);
+        $postit.appendTo (plugin.settings.cell);
       }
 
       if (!d.ignoreResize)
@@ -1701,16 +1699,12 @@
     // METHOD edit ()
     edit: function (args, success_cb, error_cb)
     {
-      const plugin = this,
-            $postit = plugin.element,
-            $wall = plugin.settings.wall,
-            postitId = plugin.settings.id,
-            data = {cellId: plugin.getCellId ()};
+      const data = {cellId: this.settings.cellId};
 
       if (!args)
         args = {};
 
-      plugin.setCurrent ();
+      this.setCurrent ();
 
       if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
       {
@@ -1719,11 +1713,11 @@
         return;
       }
 
-      _originalObject = plugin.serialize()[0];
+      _originalObject = this.serialize()[0];
 
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.getWallId()+"/editQueue/postit/"+postitId,
+        "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
         data,
         // success cb
         (d) =>
@@ -1735,15 +1729,8 @@
           {
             wpt_raiseError (() =>
               {
-                if (error_cb)
-                  error_cb ();
-
-                plugin.cancelEdit ();
-
-                if (d.deletewall)
-                  $wall.wpt_wall ("close");
-                else
-                  $wall.wpt_wall ("refresh");
+                error_cb && error_cb ();
+                this.cancelEdit ();
 
               }, d.error_msg);
           }
@@ -1755,11 +1742,12 @@
         {
           wpt_raiseError (() =>
             {
-              if (error_cb)
-                error_cb ();
-              plugin.cancelEdit  ();
+              error_cb && error_cb ();
+              this.cancelEdit  ();
+
             }, (d && d.error) ? d.error : null);
-        });
+        }
+      );
     },
 
     // METHOD unedit ()
@@ -1963,6 +1951,7 @@
           // "link" plugin options
           default_link_target: "_blank",
           link_assume_external_targets: true,
+          link_default_protocol: "https",
           link_title: false,
           target_list: false,
 

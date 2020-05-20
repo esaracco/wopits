@@ -969,8 +969,7 @@ function wpt_infoPopup (msg, notheme)
 // FUNCTION wpt_raiseError ()
 function wpt_raiseError (error_cb, msg)
 {
-  if (error_cb)
-    error_cb ();
+  error_cb && error_cb ();
 
   wpt_displayMsg ({
     type: (msg)?"warning" : "danger",
@@ -1135,8 +1134,7 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
     {
       wpt_loader ("hide");
 
-      if (error_cb)
-        error_cb ();
+      error_cb && error_cb ();
     });
 }
 
@@ -1190,8 +1188,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
 
        wpt_displayMsg (msgArgs);
 
-       if (error_cb)
-         error_cb ();
+       error_cb && error_cb ();
      })
     .always (function (){wpt_loader ("hide")});
 }

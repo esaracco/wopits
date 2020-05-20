@@ -216,7 +216,8 @@
                              '[data-action="filters"] a,'+
                              '[data-action="arrows"] a,'+
                              '[data-action="add-col"] a,'+
-                             '[data-action="add-row"] a').addClass("disabled");
+                             '[data-action="add-row"] a')
+                    .addClass("disabled");
                 break;
     
               // Deactivate normal view item
@@ -229,7 +230,8 @@
                              '[data-action="filters"] a,'+
                              '[data-action="arrows"] a,'+
                              '[data-action="add-col"] a,'+
-                             '[data-action="add-row"] a').removeClass("disabled");
+                             '[data-action="add-row"] a')
+                    .removeClass("disabled");
 
                 break;
             }
@@ -281,7 +283,7 @@
 
     // METHOD refreshPostitsPlugs ()
     //FIXME //TODO Optimize
-    refreshPostitsPlugs: function (plugs)
+    refreshPostitsPlugs: function (plugs, partial = false)
     {
       const plugin = this,
             $wall = plugin.element,
@@ -323,19 +325,22 @@
         });
 
         // Remove obsolete plugs
-        $wall.find(".postit.with-plugs").each (function ()
-          {
-            ($(this)[0].dataset.plugs||"").split (",").forEach ((id) =>
-              {
-                if (!idsNew[id])
+        if (!partial)
+        {
+          $wall.find(".postit.with-plugs").each (function ()
+            {
+              ($(this)[0].dataset.plugs||"").split (",").forEach ((id) =>
                 {
-                  const $p = $wall.find(".postit[data-id='postit-"+id+"']");
+                  if (!idsNew[id])
+                  {
+                    const $p = $wall.find(".postit[data-id='postit-"+id+"']");
 
-                  if ($p.length)
-                    $p.wpt_postit("removePlugs", true);
-                }
-              });
-          });
+                    if ($p.length)
+                      $p.wpt_postit("removePlugs", true);
+                  }
+                });
+            });
+        }
     },
 
     // METHOD removePostitsPlugs ()
@@ -400,180 +405,247 @@
     {
       const plugin = this,
             $wall = plugin.element,
-            wallId = plugin.settings.id,
             $filters = wpt_sharer.getCurrent ("filters"),
-            $arrows = wpt_sharer.getCurrent ("arrows"),
-            rowsHeadersIds = {},
-            colsHeadersIds = {},
-            postitsIds = {},
-            rows = [],
-            rowsCount = d.headers.rows.length,
-            colsCount = d.headers.cols.length;
+            $arrows = wpt_sharer.getCurrent ("arrows");
 
-      _refreshing = true;
-
-      $wall[0].dataset.cols = colsCount;
-      $wall[0].dataset.rows = rowsCount;
-      $wall[0].dataset.oldwidth = d.width;
-
-      if (d.shared)
-        $wall[0].dataset.shared = 1;
-      else
-        $wall[0].removeAttribute ("data-shared");
-
-      plugin.setName (d.name);
-      plugin.setDescription (d.description);
-
-      //FIXME
-      $wall.css ("width", d.width + 1);
-
-      for (let i = 0; i < colsCount; i++)
+      function __refreshWallBasicProperties (d)
       {
-        const header = d.headers.cols[i],
-              $header = $wall.find('thead th[data-id="header-'+header.id+'"]');
-
-        if (!$header.length)
-        {
-          $wall.find("thead tr").append ("<th></th>");
-          $wall.find("thead tr th:last-child").wpt_header ({
-            type: "col",
-            id: header.id,
-            wall: $wall,
-            wallId: wallId,
-            title: header.title,
-            picture: header.picture
-          });
-        }
+        if (d.shared)
+          $wall[0].dataset.shared = 1;
         else
-          $header.wpt_header ("update", header);
+          $wall[0].removeAttribute ("data-shared");
+
+        plugin.setName (d.name);
+        plugin.setDescription (d.description);
       }
 
-      // Remove deleted rows
-      for (let i = 0; i < rowsCount; i++)
-        rowsHeadersIds[d.headers.rows[i].id] = true;
-
-      $wall.find("tbody th").each (function ()
+      // Partial wall update
+      if (d.partial)
+      {
+        switch (d.partial)
         {
-          const $header = $(this);
+          // Postits
+          case "postit":
 
-          if (!rowsHeadersIds[$header.wpt_header ("getId")])
-          {
-            const $cell =
-              $wall.find("tbody tr:eq("+$header.parent().index()+")");
-
-            $cell.wpt_cell ("removePostitsPlugs");
-            $cell.remove ();
-          }
-        });
-
-      // Remove deleted columns
-      for (let i = 0; i < colsCount; i++)
-        colsHeadersIds[d.headers.cols[i].id] = true;
-
-      $wall.find("thead th").each (function ()
-        {
-          const $header = $(this),
-                idx = $header.index ();
-
-          if (idx > 0)
-          {
-            if (!colsHeadersIds[$header.wpt_header ("getId")])
+            const $postit = $wall.find("[data-id='postit-"+d.postit.id+"']");
+            switch (d.action)
             {
-              $wall.find("thead th:eq("+idx+")").remove ();
-              $wall.find("tbody tr").each(function()
-                {
-                  const $cell = $(this).find("td:eq("+(idx-1)+")");
+              // Insert postit
+              case "insert":
+                $("td[data-id='cell-"+d.postit.cells_id+"']")
+                  .wpt_cell ("addPostit", d.postit, true);
+                break;
 
-                  $cell.wpt_cell ("removePostitsPlugs");
-                  $cell.remove();
-                });
+              // Update postit
+              case "update":
+                $postit.wpt_postit (
+                  "update", d.postit, {id: d.postit.cells_id});
+                break;
+
+              // Remove postit
+              case "delete":
+                $postit.wpt_postit ("removePlugs", true);
+                $postit.remove ();
+                break;
             }
-          }
-        });
 
-      for (let i = 0, iLen = d.cells.length; i < iLen; i++)
-      {
-        const cell = d.cells[i],
-              irow = cell.row;
+            break;
 
-        // Get all postits ids for this cell
-        for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
-          postitsIds[cell.postits[j].id] = true;
+          // Wall
+          case "wall":
+            __refreshWallBasicProperties (d.wall);
 
-        if (rows[irow] == undefined)
-          rows[irow] = [];
+            break;
 
-        rows[irow][cell.col] = cell;
-      }
-
-      for (let i = 0, iLen = rows.length; i < iLen; i++)
-      {
-        const row = rows[i],
-              header = d.headers.rows[i];
-
-        if (!$wall.find('td[data-id="cell-'+row[0].id+'"]').length)
-          plugin.addRow (header, row, false);
-        else
-        {
-          $wall.find('tbody th[data-id="header-'+header.id+'"]')
-            .wpt_header ("update", header);
+          //FIXME
+          // plugs
+          case "plugs": break;
         }
+      }
+      // Full wall update
+      else
+      {
+        const wallId = plugin.settings.id,
+              access = plugin.settings.access,
+              rowsHeadersIds = {},
+              colsHeadersIds = {},
+              rowsCount = d.headers.rows.length,
+              colsCount = d.headers.cols.length,
+              postitsIds = {},
+              rows = [];
 
-        for (let j = 0, jLen = row.length; j < jLen; j++)
+        _refreshing = true;
+
+        $wall[0].dataset.cols = colsCount;
+        $wall[0].dataset.rows = rowsCount;
+        $wall[0].dataset.oldwidth = d.width;
+
+        __refreshWallBasicProperties (d);
+
+        //FIXME
+        $wall.css ("width", d.width + 1);
+
+        for (let i = 0; i < colsCount; i++)
         {
-          const cell = row[j];
-          let $cell = $wall.find('td[data-id="cell-'+cell.id+'"]'),
-              isNewCell = false;
+          const header = d.headers.cols[i],
+                $header =
+                  $wall.find('thead th[data-id="header-'+header.id+'"]');
 
-          // If new cell, add it
-          if (!$cell.length)
+          if (!$header.length)
           {
-            isNewCell = true;
-            $cell = $(_getCellTemplate (cell));
-            $wall.find("tbody tr:eq("+cell.row+")").append ($cell);
+            $wall.find("thead tr").append ("<th></th>");
+            $wall.find("thead tr th:last-child").wpt_header ({
+              type: "col",
+              id: header.id,
+              wall: $wall,
+              wallId: wallId,
+              title: header.title,
+              picture: header.picture
+            });
           }
           else
+            $header.wpt_header ("update", header);
+        }
+
+        // Remove deleted rows
+        for (let i = 0; i < rowsCount; i++)
+          rowsHeadersIds[d.headers.rows[i].id] = true;
+
+        $wall.find("tbody th").each (function ()
           {
-            $cell.wpt_cell ("update", cell);
+            const $header = $(this);
 
-            // Remove deleted post-its
-            $cell.find(".postit").each (function ()
+            if (!rowsHeadersIds[$header.wpt_header ("getId")])
+            {
+              const $cell =
+                $wall.find("tbody tr:eq("+$header.parent().index()+")");
+
+              $cell.wpt_cell ("removePostitsPlugs");
+              $cell.remove ();
+            }
+          });
+
+        // Remove deleted columns
+        for (let i = 0; i < colsCount; i++)
+          colsHeadersIds[d.headers.cols[i].id] = true;
+
+        $wall.find("thead th").each (function ()
+          {
+            const $header = $(this),
+                  idx = $header.index ();
+
+            if (idx > 0)
+            {
+              if (!colsHeadersIds[$header.wpt_header ("getId")])
               {
-                const $postit = $(this);
+                $wall.find("thead th:eq("+idx+")").remove ();
+                $wall.find("tbody tr").each(function()
+                  {
+                    const $cell = $(this).find("td:eq("+(idx-1)+")");
 
-                if (!postitsIds[$postit.wpt_postit ("getId")])
-                {
-                  $postit.wpt_postit ("removePlugs", true);
-                  $postit.remove ();
-                }
-              });
+                    $cell.wpt_cell ("removePostitsPlugs");
+                    $cell.remove();
+                  });
+              }
+            }
+          });
+
+        for (let i = 0, iLen = d.cells.length; i < iLen; i++)
+        {
+          const cell = d.cells[i],
+                irow = cell.row;
+
+          // Get all postits ids for this cell
+          for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
+            postitsIds[cell.postits[j].id] = true;
+
+          if (rows[irow] == undefined)
+            rows[irow] = [];
+
+          rows[irow][cell.col] = cell;
+        }
+
+        for (let i = 0, iLen = rows.length; i < iLen; i++)
+        {
+          const row = rows[i],
+                header = d.headers.rows[i];
+
+          if (!$wall.find('td[data-id="cell-'+row[0].id+'"]').length)
+            plugin.addRow (header, row);
+          else
+          {
+            $wall.find('tbody th[data-id="header-'+header.id+'"]')
+              .wpt_header ("update", header);
           }
 
-          for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
+          for (let j = 0, jLen = row.length; j < jLen; j++)
           {
-            const postit = cell.postits[k],
-                  $postit = $wall.find('.postit[data-id="postit-'+
-                              cell.postits[k].id+'"]');
+            const cell = row[j];
+            let $cell = $wall.find('td[data-id="cell-'+cell.id+'"]'),
+                isNewCell = false;
 
-            // If new postit, add it
-            if (!$postit.length)
+            // If new cell, add it
+            if (!$cell.length)
             {
-              postit.isNewCell = isNewCell;
-              $cell.wpt_cell ("addPostit", postit, true);
+              isNewCell = true;
+
+              $cell = $(_getCellTemplate (cell));
+
+              $wall.find("tbody tr:eq("+cell.row+")").append ($cell);
+
+              // Init cell
+              $cell.wpt_cell ({
+                id: cell.id,
+                access: access,
+                wall: $wall,
+                wallId: wallId
+              });
             }
-            // else update it
             else
             {
-              if (d.ignoreResize)
-                postit.ignoreResize = true;
+              $cell.wpt_cell ("update", cell);
 
-              $postit.wpt_postit ("update", postit, {id: cell.id, obj: $cell});
+              // Remove deleted post-its
+              $cell.find(".postit").each (function ()
+                {
+                  const $postit = $(this);
+
+                  if (!postitsIds[$postit.wpt_postit ("getId")])
+                  {
+                    $postit.wpt_postit ("removePlugs", true);
+                    $postit.remove ();
+                  }
+                });
+            }
+
+            for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
+            {
+              const postit = cell.postits[k],
+                    $postit = $wall.find('.postit[data-id="postit-'+
+                                cell.postits[k].id+'"]');
+
+              // If new postit, add it
+              if (!$postit.length)
+              {
+                postit.isNewCell = isNewCell;
+                $cell.wpt_cell ("addPostit", postit, true);
+              }
+              // else update it
+              else
+              {
+                if (d.ignoreResize)
+                  postit.ignoreResize = true;
+
+                $postit.wpt_postit (
+                  "update", postit, {id: cell.id, obj: $cell});
+              }
             }
           }
         }
-      }
 
-      plugin.attachTableEvent ();
+        _refreshing = false;
+        plugin.fixSize ();
+      }
 
       // If filters tool is visible
       if ($filters.is (":visible"))
@@ -583,16 +655,17 @@
       if ($arrows.is (":visible"))
         $arrows.wpt_arrows ("reset");
 
-      _refreshing = false;
-      plugin.fixSize ();
+      if (d.postits_plugs)
+        setTimeout (() =>
+          {
+            // Refresh postits relations
+            plugin.refreshPostitsPlugs (
+              d.postits_plugs, d.partial && d.partial != "plugs");
+            plugin.checkPostitsPlugsMenu ();
 
-      setTimeout (() =>
-        {
-          // Refresh postits relations
-          plugin.refreshPostitsPlugs (d.postits_plugs);
-          plugin.checkPostitsPlugsMenu ();
-
-        }, 0);
+          }, 0);
+      else
+        plugin.repositionPostitsPlugs ();
 
       // Replay postits search
       setTimeout (() =>
@@ -717,10 +790,11 @@
     },
 
     // METHOD addRow ()
-    addRow: function (header, row, attachEvents = true)
+    addRow: function (header, row)
     {
       const plugin = this,
-            $wall = plugin.element;
+            $wall = plugin.element,
+            wallId = plugin.settings.id;
       let tds = "";
 
       for (let i = 0; i < row.length; i++)
@@ -735,13 +809,21 @@
         type: "row",
         id: header.id,
         wall: $wall,
-        wallId: plugin.settings.id,
+        wallId: wallId,
         title: header.title,
         picture: header.picture
       });
 
-      if (attachEvents)
-        plugin.attachTableEvent ();
+      // Init cells
+      $row.find("td").each (function ()
+        {
+          $(this).wpt_cell ({
+            id: this.dataset.id.substring (5),
+            access: plugin.settings.access,
+            wall: $wall,
+            wallId: wallId
+          });
+        });
 
       plugin.fixSize ();
     },
@@ -791,7 +873,6 @@
 
           $cell.wpt_cell ("removePostitsPlugs");
           $cell.remove ();
-
         });
 
       $wall.find("tbody th").each(function()
@@ -1408,16 +1489,13 @@
     // METHOD edit ()
     edit: function (success_cb, error_cb, todelete = false)
     {
-      const plugin = this,
-            $wall = plugin.element,
-            wallId = plugin.settings.id,
-            data = {todelete: todelete};
+      const data = {todelete: todelete};
 
-      _originalObject = plugin.serialize ();
+      _originalObject = this.serialize ();
 
       wpt_request_ws (
         "PUT",
-        "wall/"+wallId+"/editQueue/wall/"+wallId,
+        "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
         data,
         // success cb
         (d) =>
@@ -1429,53 +1507,34 @@
             plugin.close ();
           }
           else if (d.error_msg)
-          {
-            wpt_raiseError (() =>
-            {
-              if (error_cb)
-                error_cb ();
-
-              if (d.deletewall)
-                $wall.wpt_wall ("close");
-              else
-                $wall.wpt_wall ("refresh");
-
-            }, d.error_msg);
-          }
+            wpt_raiseError (() => error_cb && error_cb (), d.error_msg);
           else if (success_cb)
             success_cb (d);
         },
         // error cb
-        (d) =>
-        {
-          wpt_raiseError (() =>
-            {
-              if (error_cb)
-                error_cb ();
-
-            }, (d && d.error) ? d.error : null);
-        });
+        (d) => wpt_raiseError (() => error_cb && error_cb (),
+                               (d && d.error) ? d.error : null)
+      );
     },
 
     serialize: function ()
     {
-      return {name: this.getName (),
-              description: this.getDescription ()};
+      return {
+        name: this.getName (),
+        description: this.getDescription ()
+      };
     },
 
     // METHOD unedit ()
     unedit: function (success_cb, error_cb)
     {
-      const plugin = this,
-            $wall = plugin.element,
-            wallId = plugin.settings.id;
       let data = null;
 
-      if ($wall[0].dataset.todelete)
+      if (this.element[0].dataset.todelete)
         data = {todelete: true};
       else
       {
-        const tmp = plugin.serialize ();
+        const tmp = this.serialize ();
 
         // Update wall only if it has changed
         data = (wpt_updatedObject (_originalObject, tmp)) ? tmp : null;
@@ -1483,39 +1542,23 @@
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+wallId+"/editQueue/wall/"+wallId,
+        "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
         data,
         // success cb
         (d) =>
         {
           if (d.error_msg)
           {
-            if (error_cb) error_cb ();
+            error_cb && error_cb ();
+
             wpt_displayMsg ({type: "warning", msg: d.error_msg});
           }
           else if (success_cb)
             success_cb ();
         },
         // error cb
-        error_cb);
-    },
-
-    // METHOD attachTableEvent ()
-    attachTableEvent: function ()
-    {
-      const plugin = this,
-            $wall = plugin.element,
-            wallId = plugin.settings.id;
-
-      $wall.find("tbody td:not(.ui-droppable)").each (function ()
-        {
-          $(this).wpt_cell ({
-            id: this.dataset.id.substring (5),
-            access: plugin.settings.access,
-            wall: $wall,
-            wallId: wallId
-          });
-        });
+        error_cb
+      );
     }
 
   });

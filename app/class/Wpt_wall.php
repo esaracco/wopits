@@ -59,6 +59,8 @@
           return [
             'ok' => 0,
             'id' => $this->wallId,
+            // This message will be broadcast to users who have this
+            // wall opened
             'error_msg' => _("The wall has been deleted."),
             'action' => 'deletedwall'
           ];
@@ -311,6 +313,15 @@
     public function clone ()
     {
       return $this->import ($this->export (true));;
+    }
+
+    public function setBasicProperties ()
+    {
+      $this->executeQuery ('UPDATE walls', [
+        'name' => $this->data->name,
+        'description' => $this->data->description
+      ],
+      ['id' => $this->wallId]);
     }
 
     public function import ($exportFile = null)
@@ -727,7 +738,7 @@
         ]);
     }
 
-    public function getWall ()
+    public function getWall ($basic = false)
     {
       $ret = [];
 
@@ -839,7 +850,7 @@
           'removed' => _("Either you no longer have the right to access this wall, or it has been deleted")
         ];
       }
-      else
+      elseif (!$basic)
       {
         // Get headers
         $stmt = $this->prepare ('
@@ -889,7 +900,6 @@
           FROM postits_plugs
           WHERE walls_id = ?');
         $stmt->execute ([$this->wallId]); 
-
         $data['postits_plugs'] = $stmt->fetchAll ();
   
         // Check if the wall is shared with other users
@@ -1113,43 +1123,38 @@
         $this->beginTransaction ();
 
         $stmt = $this->prepare('
-        SELECT * FROM headers
+        SELECT `order` FROM headers
         WHERE walls_id = :walls_id
           AND `type` = :type ORDER BY `order` DESC LIMIT 1');
         $stmt->execute ([
           ':walls_id' => $this->wallId,
           ':type' => $item
         ]);
-        $header = $stmt->fetch ();
+        $order = $stmt->fetch()['order'];
   
-        $this->executeQuery ('INSERT INTO headers',
-          [
-            'walls_id' => $this->wallId,
-            'type' => $item,
-            'order' => $header['order'] + 1,
-            'width' => ($item == 'col') ? $header['width'] : null,
-            'height' => $header['height'],
-            'title' => ' '
-          ]);
+        $this->executeQuery ('INSERT INTO headers', [
+          'walls_id' => $this->wallId,
+          'type' => $item,
+          'order' => $order + 1,
+          'width' => ($item == 'col') ? 300 : 51,
+          'height' => ($item == 'row') ? 200 : 42,
+          'title' => ' '
+        ]);
 
         mkdir ("$dir/header/".$this->lastInsertId());
   
         if ($item == 'col')
         {
           $stmt = $this->prepare("
-            SELECT * FROM cells
-            WHERE walls_id = :walls_id
-            AND $item = :item");
-          $stmt->execute ([
-            ':walls_id' => $this->wallId,
-            ':item' => $header['order']]);
+            SELECT row, col FROM cells
+            WHERE walls_id = ? AND $item = ?");
+          $stmt->execute ([$this->wallId, $order]);
         }
         else
         {
           $stmt = $this->prepare('
-            SELECT * FROM cells
-            WHERE walls_id = ?
-            ORDER BY row DESC, col ASC');
+            SELECT row, col FROM cells
+            WHERE walls_id = ? ORDER BY row DESC, col ASC');
           $stmt->execute ([$this->wallId]);
         }
   
@@ -1157,16 +1162,16 @@
         while ($e = $stmt->fetch ())
         {
           $data = [ 
-            'walls_id' => $this->wallId,
-            'height' => $e['height']
+            'width' => 300,
+            'height' => 200,
+            'walls_id' => $this->wallId
           ];
   
           // Col
           if ($item == 'col')
           {
-            $data['width'] = $header['width'];
             $data['row'] = $e['row'];
-            $data['col'] = $header['order'] + 1;
+            $data['col'] = $order + 1;
           }
           // Row
           else
@@ -1176,7 +1181,6 @@
             elseif ($e['row'] != $r)
               break 1;
   
-            $data['width'] = $e['width'];
             $data['row'] = $e['row'] + 1;
             $data['col'] = $e['col'];
           }
@@ -1186,9 +1190,8 @@
   
         if ($item == 'col')
           $this
-            ->prepare('
-              UPDATE walls SET width = width + ? WHERE id = ?')
-            ->execute ([$header['width'], $this->wallId]);
+            ->prepare('UPDATE walls SET width = width + 300 WHERE id = ?')
+            ->execute ([$this->wallId]);
 
         $this->commit ();
 
@@ -1374,7 +1377,7 @@
       return $ret;
     }
 
-    public function updateCells ($updateWallWidth = true)
+    public function updateCells ()
     {
       $newTransaction = (!PDO::inTransaction ());
 
@@ -1407,10 +1410,9 @@
           }
         }
   
-        if ($updateWallWidth)
-          $this->executeQuery ('UPDATE walls',
-            ['width' => $this->data->wall->width],
-            ['id' => $this->wallId]);
+        $this->executeQuery ('UPDATE walls',
+          ['width' => $this->data->wall->width],
+          ['id' => $this->wallId]);
 
         if ($newTransaction)
           $this->commit ();
@@ -1424,7 +1426,7 @@
       }
     }
 
-    public function updateHeaders ($updateWallWidth = true)
+    public function updateHeaders ()
     {
       $newTransaction = (!PDO::inTransaction ());
 

@@ -70,7 +70,7 @@
 
         if (walls.length)
         {
-          let creationDate = '';
+          let dt = '';
 
           walls.forEach ((item) =>
           { 
@@ -78,13 +78,12 @@
             {
               const owner = (item.ownerid != wpt_userData.id) ?
                 `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
+              let dt1 = wpt_getUserDate (item.creationdate);
 
-              item.creationdate = wpt_getUserDate (item.creationdate);
-
-              if (item.creationdate != creationDate)
+              if (dt1 != dt)
               {
-                creationDate = item.creationdate;
-                body += `<li href="" class="list-group-item title">${creationDate}</li>`;
+                dt = dt1;
+                body += `<li href="" class="list-group-item title">${dt1}</li>`;
               }
   
               body += `<li href="#" data-id="${item.id}" class="list-group-item list-group-item-action"> ${wpt_getAccessIcon(item.access)} ${item.name}${owner}</li>`;  
