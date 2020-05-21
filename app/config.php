@@ -47,8 +47,9 @@
   // Themes
   define ('WPT_THEMES', ['blue', 'green', 'red', 'orange']);
 
-  // Edit queue timeout (seconds)
+  // Timeouts (seconds)
   define ('WPT_TIMEOUTS', [
+    // AJAX requests
     'ajax' => 10
   ]);
 

@@ -915,6 +915,9 @@
     public function getUsersview (array $usersIds)
     {
       $ret = ['list' => []];
+      // No quotes needed. $usersIds contains trusted values (from the
+      // WebSocket server)
+      $ids = implode ("','", $usersIds);
 
       $stmt = $this->prepare ("
        SELECT
@@ -931,7 +934,7 @@
            ON walls_groups.groups_id = users_groups.groups_id
          INNER JOIN walls ON walls.id = walls_groups.walls_id
        WHERE walls.id = :walls_id_1
-         AND users_groups.users_id IN ('".implode("','",$usersIds)."')
+         AND users_groups.users_id IN ('$ids')
        UNION
        SELECT
          users.id,
@@ -943,7 +946,7 @@
        FROM users
          INNER JOIN walls ON walls.users_id = users.id
        WHERE walls.id = :walls_id_2
-         AND users.id IN ('".implode("','",$usersIds)."')
+         AND users.id IN ('$ids')
        ORDER BY access, fullname");
       $stmt->execute ([
         ':walls_id_1' => $this->wallId,
@@ -958,9 +961,10 @@
       while ($item = $stmt->fetch ())
       {
         if (!isset ($tmp[$item['id']]))
+        {
           $ret['list'][] = $item;
-
-        $tmp[$item['id']] = 1;
+          $tmp[$item['id']] = 1;
+        }
       }
 
       return $ret;

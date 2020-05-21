@@ -30,7 +30,7 @@ class Session
     $token = $wpt->getQueryParams($conn)['token'];
     $User = new Wpt_user ();
 
-    if ($r = $User->loadByToken ($token, $headers['X-Forwarded-For'][0]))
+    if ( ($r = $User->loadByToken ($token, $headers['X-Forwarded-For'][0])) )
     {
       $this->conn = $conn;
       $this->sessionId = $conn->resourceId;
@@ -102,7 +102,6 @@ class Wopits implements MessageComponentInterface
         $this->_log ($conn, 'info',
           "OPEN connection (".count($this->clients)." connected clients)");
   
-        //FIXME Should not be necessary here
         if (isset ($client->settings->activeWall))
           $this->_pushWallsUsersCount ([$client->settings->activeWall]);
   
@@ -130,7 +129,7 @@ class Wopits implements MessageComponentInterface
     // Common wopits client
     if (!isset ($this->internals[$connId]))
     {
-      $data = json_decode (urldecode ($msg->data));
+      $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
       $push = false;
       $action = '';
@@ -239,27 +238,24 @@ class Wopits implements MessageComponentInterface
                 '(wall|cell|header|postit|group)/(\d+)$#', $msg->route, $m))
       {
         list (,$wallId, $item, $itemId) = $m;
+
+        $EditQueue = new Wpt_editQueue ([
+          'wallId' => $wallId,
+          'data' => $data,
+          'item' => $item,
+          'itemId' => $itemId
+        ]);
   
         switch ($msg->method)
         {
           // PUT
           case 'PUT':
-            $ret = (new Wpt_editQueue ([
-              'wallId' => $wallId,
-              'data' => $data,
-              'item' => $item,
-              'itemId' => $itemId
-            ]))->addTo ();
+            $ret = $EditQueue->addTo ();
             break;
 
           // DELETE
           case 'DELETE':
-            $ret = (new Wpt_editQueue ([
-              'wallId' => $wallId,
-              'data' => $data,
-              'item' => $item,
-              'itemId' => $itemId
-            ]))->removeFrom ();
+            $ret = $EditQueue->removeFrom ();
             if (!isset ($ret['error_msg']) && !isset ($ret['error']))
             {
               $push = true;
@@ -276,53 +272,36 @@ class Wopits implements MessageComponentInterface
       {
         @list (,$groupId, $type, $userId) = $m;
 
+        $Group = new Wpt_group ([
+          'data' => $data,
+          'groupId' => $groupId
+        ]);
+
         switch ($msg->method)
         {
           // GET
           case 'GET':
-            $ret = (new Wpt_group ([
-              'groupId' => $groupId
-            ]))->getUsers ();
+            $ret = $Group->getUsers ();
             break;
 
           // POST
           // For both generic and dedicated groups
           case 'POST':
-            $ret = (new Wpt_group ([
-              'data' => $data,
-              'groupId' => $groupId
-            ]))->update ();
+            $ret = $Group->update ();
             break;
 
           // PUT
           case 'PUT':
-            if ($userId)
-              $ret = (new Wpt_group ([
-                'data' => $data,
-                'groupId' => $groupId
-              ]))->addUser ([
-                'userId' => $userId
-              ]);
-            else
-              $ret = (new Wpt_group ([
-                'data' => $data
-              ]))->create ([
-                'type' => WPT_GTYPES['generic']
-              ]);
+            $ret = ($userId) ?
+                     $Group->addUser (['userId' => $userId]) :
+                     $Group->create (['type' => WPT_GTYPES['generic']]);
             break;
 
           // DELETE
           case 'DELETE':
-            if ($userId)
-              $ret = (new Wpt_group ([
-                'groupId' => $groupId
-              ]))->removeUser ([
-                'userId' => $userId
-              ]);
-            else
-              $ret = (new Wpt_group ([
-                'groupId' => $groupId
-              ]))->delete ();
+            $ret = ($userId) ?
+                     $Group->removeUser (['userId' => $userId]) :
+                     $Group->delete ();
             break;
         }
       }
@@ -344,10 +323,9 @@ class Wopits implements MessageComponentInterface
         {
           // GET
           case 'GET':
-            if ($type == 'getUsers')
-              $ret = $Group->getUsers ();
-            else
-              $ret = $Group->getGroup ();
+            $ret = ($type == 'getUsers') ?
+                     $Group->getUsers () :
+                     $Group->getGroup ();
             break;
 
           // POST
@@ -368,18 +346,16 @@ class Wopits implements MessageComponentInterface
 
           // PUT
           case 'PUT':
-            if ($userId) 
-              $ret = $Group-> addUser (['userId' => $userId]);
-            else
-              $ret = $Group->create (['type' => WPT_GTYPES['dedicated']]);
+            $ret = ($userId) ?
+                     $Group->addUser (['userId' => $userId]) :
+                     $Group->create (['type' => WPT_GTYPES['dedicated']]);
             break;
 
           // DELETE
           case 'DELETE':
-            if ($userId)
-              $ret = $Group->removeUser (['userId' => $userId]);
-            else
-              $ret = $Group->delete ();
+            $ret = ($userId) ?
+                     $Group->removeUser (['userId' => $userId]) :
+                     $Group->delete ();
             break;
         }
       }
@@ -416,10 +392,7 @@ class Wopits implements MessageComponentInterface
 
           // PUT
           case 'PUT':
-            if ($type == 'clone')
-              $ret = $Wall->clone ();
-            else
-              $ret = $Wall->createWall ();
+            $ret = ($type == 'clone') ? $Wall->clone () : $Wall->createWall ();
             break;
         }
       }
@@ -487,18 +460,11 @@ class Wopits implements MessageComponentInterface
       {
         list (,$wallId, $headerId) = $m;
 
-        switch ($msg->method)
-        {
-          // DELETE
-          case 'DELETE':
-            $ret = (new Wpt_wall ([
-              'wallId' => $wallId,
-              'data' => $data
-            ]))->deleteHeaderPicture ([
-              'headerId' => $headerId
-            ]);
-            break;
-        }
+        if ($msg->method == 'DELETE')
+          $ret = (new Wpt_wall ([
+            'wallId' => $wallId,
+            'data' => $data
+          ]))->deleteHeaderPicture (['headerId' => $headerId]);
       }
       // ROUTE Postit attachments and pictures
       elseif (preg_match (
@@ -509,10 +475,10 @@ class Wopits implements MessageComponentInterface
         @list (,$wallId, $cellId, $postitId, $item, $itemId) = $m;
 
         $Postit = new Wpt_postit ([
-            'wallId' => $wallId,
-            'cellId' => $cellId,
-            'postitId' => $postitId
-          ]);
+          'wallId' => $wallId,
+          'cellId' => $cellId,
+          'postitId' => $postitId
+        ]);
 
         switch ($msg->method)
         {
@@ -526,9 +492,7 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
-            $ret = $Postit->deleteAttachment ([
-              'attachmentId' => $itemId
-            ]);
+            $ret = $Postit->deleteAttachment (['attachmentId' => $itemId]);
             break;
         }
       }
@@ -553,16 +517,19 @@ class Wopits implements MessageComponentInterface
 
       $ret['action'] = $action;
 
-      $clients = ($action == 'chat') ? $this->openedWalls : $this->activeWalls;
-
       // Boadcast results if needed
-      if ($push && isset ($clients[$wallId]))
+      if ($push)
       {
-        foreach ($clients[$wallId] as $_connId => $_userId)
-          if ($_connId != $connId)
-            $this->clients[$_connId]->conn->send (json_encode ($ret));
+        $clients = ($action == 'chat') ? $this->openedWalls:$this->activeWalls;
+
+        if (isset ($clients[$wallId]))
+        {
+          foreach ($clients[$wallId] as $_connId => $_userId)
+            if ($_connId != $connId)
+              $this->clients[$_connId]->conn->send (json_encode ($ret));
+        }
       }
-  
+
       // Respond to the sender
       $ret['_msgId'] = $msg->_msgId ?? null;
       $conn->send (json_encode ($ret));
