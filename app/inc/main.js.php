@@ -915,8 +915,8 @@
            else
              data["width"] = $(window).width () - 50;
 
-           if (data.height < 300)
-             data.height = 300;
+           if (data.height < 200)
+             data.height = 200;
 
            if (h)
              data["height"] = h;

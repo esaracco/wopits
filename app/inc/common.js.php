@@ -86,7 +86,8 @@ class Wpt_accountForms extends Wpt_forms
 
           if (val > 0)
           {
-            if (val < 300)
+            if ($f.attr("name") == "wall-width" && val < 300 ||
+                $f.attr("name") == "wall-height" && val < 200)
               return this.focusBadField ($f, "<?=_("The size of a wall cannot be less than %s")?>".replace("%s", "300x200"));
             else if (val > 20000)
               return this.focusBadField ($f, "<?=_("The size of a wall cannot be greater than %s")?>".replace("%s", "20000x20000"));
