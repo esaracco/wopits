@@ -30,8 +30,7 @@
             classes: {"ui-droppable-hover" : "droppable-hover"},
             drop: function (e, ui)
               {
-                if (wpt_sharer.get("revertData").revert)
-                  return;
+                if (wpt_sharer.get("revertData").revert) return;
 
                 const $target = $(this),
                       $postit = ui.draggable,
@@ -40,8 +39,8 @@
   
                 $postit.wpt_postit ("setPosition", {
                   cellId: settings.id,
-                  top: ptop<0?0:ptop,
-                  left: pleft<0?0:pleft
+                  top: (ptop < 0) ? 0 : ptop,
+                  left: (pleft < 0) ? 0 : pleft
                 });
   
                 $postit.appendTo ($target);
@@ -78,8 +77,7 @@
                 }
               });
 
-              $cell.wpt_cell ("edit",
-                () =>  wpt_sharer.get("revertData").revert = true);
+              plugin.edit (() =>  wpt_sharer.get("revertData").revert = true);
             },
           stop:function(e, ui)
             {
@@ -99,7 +97,7 @@
                 $wall.wpt_wall ("fixSize",
                   ui.originalSize.width, ui.size.width + 3);
 
-                $cell.wpt_cell ("update", {
+                plugin.update ({
                   width: ui.size.width + 3,
                   height: ui.size.height
                 });
@@ -126,7 +124,7 @@
                     $(this).wpt_cell ("reorganize");
                   });
 
-                $cell.wpt_cell ("unedit");
+                plugin.unedit ();
               }
             }
         });
@@ -210,7 +208,7 @@
           h = $tdPrev ? $tdPrev.css ("height") : settings.height;
         }
 
-        $cell.wpt_cell ("update", {width: w, height: h});
+        plugin.update ({width: w, height: h});
     },
 
     // METHOD removePostitsPlugs ()
@@ -237,7 +235,7 @@
               cell = $cell[0],
               bbox = cell.getBoundingClientRect ();
 
-        $cell.find("div.postit").each (function ()
+        $cell.find(".postit").each (function ()
         {
           $(this).wpt_postit ("fixPosition",
             bbox,
@@ -256,15 +254,16 @@
       wpt_sharer.getCurrent("wall").find("tbody td").each (function ()
       {
         const $cell = $(this),
-              cellId = $cell.wpt_cell ("getId");
+              $postits = $cell.find(".postit");
 
         cells.push ({
-          id: cellId,
+          id: $cell[0].dataset.id.substring (5),
           width: $cell.outerWidth (),
           height: $cell.outerHeight (),
           row: $cell.parent().index (),
           col: $cell.index () - 1,
-          postits: $("<div/>").wpt_postit ("serialize", cellId)
+          postits: $postits.length ?
+                     $cell.find(".postit").wpt_postit ("serialize") : null
         });
       });
 
@@ -276,7 +275,7 @@
     {
       const plugin = this,
             $cell = plugin.element,
-            $postit = $("<div></div>");
+            $postit = $("<div/>");
 
       args["wall"] = plugin.settings.wall;
       args["wallId"] = plugin.settings.wallId;

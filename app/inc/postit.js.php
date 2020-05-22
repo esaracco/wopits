@@ -29,14 +29,14 @@
 
   function _getMaxEditModalWidth (content)
   {
-    let maxW = 0;
+    let maxW = 0,
+        tmp;
 
     (content.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
       {
-        if (img.indexOf('src="api/wall/') != -1)
+        if ( (tmp = img.match (/width="(\d+)"/)) )
         {
-          const tmp = img.match (/width="(\d+)"/),
-                w = tmp ? Number (img.match (/width="(\d+)"/)[1]) : 0;
+          const w = Number (tmp[1]);
 
           if (w > maxW)
             maxW = w;
@@ -171,7 +171,6 @@
                 });
 
                 $start.wpt_postit ("applyTheme");
-
                 $start.wpt_postit ("addPlugLabel", line);
 
                 $start[0].dataset.undo = "add";
@@ -189,7 +188,7 @@
           }
           else
           {
-            $postit.wpt_postit ("cancelPlugAction");
+            plugin.cancelPlugAction ();
 
             if (from.id != id)
               wpt_displayMsg ({
@@ -254,6 +253,9 @@
                 });
 
                 plugin.cancelEdit ();
+
+                // Update postits relationships arrows
+                plugin.repositionPlugs ();
               }
               else
               {
@@ -262,9 +264,6 @@
 
                 plugin.unedit ();
               }
-
-              // Update postits relationships arrows
-              plugin.repositionPlugs ();
             }
         })
         // RESIZABLE post-it
@@ -306,6 +305,9 @@
                 });
 
                 plugin.cancelEdit ();
+
+                // Update postits relationships arrows
+                plugin.repositionPlugs ();
               }
               else
               {
@@ -317,9 +319,6 @@
 
                   }, 150);
               }
-
-              // Update postits relationships arrows
-              plugin.repositionPlugs ();
             }
           });
         }
@@ -458,10 +457,6 @@
                     // OPEN Popup of attachments
                     case "attachments":
     
-                      $_attachmentsPopup[0].dataset.wallid =
-                        $wall.wpt_wall ("getId");
-                      $_attachmentsPopup[0].dataset.postitid = settings.id;
-                      
                       plugin.displayAttachments ();
     
                       break;                 
@@ -499,17 +494,23 @@
     
                     // OPEN tags picker
                     case "tag-picker":
+
                       $(".tag-picker").wpt_tagPicker ("open", e);
+
                       break;
     
                     // OPEN color picker
                     case "color-picker":
+
                       $(".color-picker").wpt_colorPicker ("open", e);
+
                       break;
     
                     // OPEN date picker
                     case "date-picker":
+
                       plugin.openDatePicker ();
+
                       break;
                   }
               });
@@ -646,19 +647,10 @@
         .on("click", function ()
           {
             if (writeAccess)
-            {
               $postit.find(".postit-menu [data-action='attachments']")
                 .trigger ("click");
-            }
             else
-            {
-              plugin.edit (null, () =>
-              {
-                $_attachmentsPopup[0].dataset.postitid = settings.id;
-                      
-                plugin.displayAttachments ();
-              });
-            }
+              plugin.edit (null, () => plugin.displayAttachments ());
           });
   
       const $tags = $(`<div class="postit-tags">${settings.tags?$(".tag-picker").wpt_tagPicker ("getHTMLFromString", settings.tags):''}</div>`);
@@ -851,8 +843,10 @@
               })
             });
             plug.labelObj.find("a span").html (
-              (label == "...")?'<i class="fas fa-ellipsis-h"></i>':label);
+              (label == ""  || label == "...") ?
+                '<i class="fas fa-ellipsis-h"></i>' : label);
 
+            // Update postits relationships arrows
             plugin.repositionPlugs ();
           }
         });
@@ -1074,9 +1068,13 @@
           plug.obj.position ();
 
           if (plug.label)
-            plug.labelObj.css (
-              $("svg.leader-line[data-id='"+
-                plug.startId+"-"+plug.endId+"'] text").position ());
+          {
+            const p = $("svg.leader-line[data-id='"+
+              plug.startId+"-"+plug.endId+"'] text")[0].getBoundingClientRect();
+
+            plug.labelObj[0].style.top = p.top+"px";
+            plug.labelObj[0].style.left = p.left+"px";
+          }
         });
     },
 
@@ -1116,14 +1114,14 @@
     // METHOD serializePlugs ()
     serializePlugs: function ()
     {
-      const settings = this.settings,
-            postitId = settings.id;
+      const settings = this.settings;
       let ret = {};
 
-      (settings._plugs||[]).forEach ((plug) =>
+      settings._plugs !== undefined &&
+        settings._plugs.forEach ((plug) =>
         {
-          // Take in account only this postit plugs
-          if (plug.startId == postitId)
+          // Take in account only plugs from this postit
+          if (plug.startId == settings.id)
             ret[plug.endId] = (plug.label == "...") ?
               "" : plug.labelObj.find("a span").text ();
         });
@@ -1132,52 +1130,46 @@
     },
 
     // METHOD serialize ()
-    serialize: function (cellId)
+    serialize: function ()
     {
-      const plugin = this,
-            postits = [],
-            $search = (cellId) ?
-              $('td[data-id="cell-'+cellId+'"]').find(".postit") :
-              plugin.element;
+      const postits = [];
 
-      $search.each (function ()
+      this.element.each (function ()
       {
         const $p = $(this),
               p = $p[0],
-              postitId = p.dataset.id.substring (7),
-              title = $p.find(".postit-header span.title").html (),
-              classcolor = p.className.match(/(color\-[a-z]+)/);
-        let tags = [],
-            data = {},
-            deadline = (p.dataset.deadlineepoch) ?
-              p.dataset.deadlineepoch :
-              $p.find(".dates .end span").text().trim ();
+              postitId = p.dataset.id.substring (7);
+        let data = {};
 
         if (p.dataset.todelete)
           data = {id: postitId, todelete: true};
         else
         {
+          const title = $p.find(".postit-header span.title").html (),
+                classcolor = p.className.match(/(color\-[a-z]+)/);
+          let tags = [],
+              deadline = (p.dataset.deadlineepoch) ?
+                p.dataset.deadlineepoch :
+                $p.find(".dates .end span").text().trim ();
+
           $p.find(".postit-tags i").each (function ()
             {
               tags.push (this.dataset.tag);
             });
 
-          if (deadline == _defaultString)
-            deadline = "";
-
           data = {
             id: postitId,
             width: $p.outerWidth (),
             height: $p.outerHeight (),
-            top: p.offsetTop<0?0:p.offsetTop,
-            left: p.offsetLeft<0?0:p.offsetLeft,
+            top: (p.offsetTop < 0) ? 0 : p.offsetTop,
+            left: (p.offsetLeft < 0) ? 0 : p.offsetLeft,
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == _defaultString) ? "" : title,
             content: $p.find(".postit-edit").html (),
-            tags: (tags.length)?","+tags.join (",")+",":null,
-            deadline: deadline,
-            updatetz: p.dataset.updatetz||null,
-            obsolete: $p.hasClass("obsolete"),
+            tags: (tags.length) ? ","+tags.join(",")+"," : null,
+            deadline: (deadline == _defaultString) ? "" : deadline,
+            updatetz: p.dataset.updatetz || null,
+            obsolete: $p.hasClass ("obsolete"),
             attachmentscount: $p.find(".attachmentscount span").text (),
             plugs: $p.wpt_postit ("serializePlugs"),
             hadpictures: !!p.dataset.hadpictures,
@@ -1370,13 +1362,13 @@
     {
       const plugin = this,
             $postit = plugin.element,
-            postitId = $_attachmentsPopup[0].dataset.postitid,
             writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
 
       wpt_request_ws (
         "GET",
-        "wall/"+plugin.getWallId()+
-        "/cell/"+plugin.getCellId()+"/postit/"+postitId+"/attachment",
+        "wall/"+plugin.settings.wallId+
+          "/cell/"+plugin.settings.cellId+
+            "/postit/"+plugin.settings.id+"/attachment",
         null,
         // success cb
         (d) =>
@@ -1422,6 +1414,9 @@
     // METHOD uploadAttachment ()
     uploadAttachment: function ()
     {
+      const plugin = this,
+            $postit = plugin.element;
+
       $(`<input type="file">`)
         .on("change", function (e, data)
         {
@@ -1436,7 +1431,7 @@
 
                 if ($_attachmentsPopup.find(
                       ".list-group li[data-fname='"+
-                      wpt_htmlQuotes(file.name)+"']").length)
+                        wpt_htmlQuotes(file.name)+"']").length)
                   return wpt_displayMsg ({
                            type: "warning",
                            msg: "<?=_("The file is already linked to the post-it")?>"
@@ -1445,21 +1440,18 @@
                 if (wpt_checkUploadFileSize ({size: e.total}) &&
                     e.target.result)
                 {
-                  const $postit = wpt_sharer.getCurrent ("postit"),
-                        wallId = $_attachmentsPopup[0].dataset.wallid,
-                        cellId = $postit.wpt_postit ("getCellId"),
-                        postitId = $_attachmentsPopup[0].dataset.postitid,
-                        data = {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            content: e.target.result
-                          };
+                  const data = {
+                          name: file.name,
+                          size: file.size,
+                          type: file.type,
+                          content: e.target.result
+                        };
 
                   wpt_request_ajax (
                     "PUT",
-                    "wall/"+wallId+"/cell/"+cellId+"/postit/"+
-                      postitId+"/attachment",
+                    "wall/"+plugin.settings.wallId+
+                      "/cell/"+plugin.settings.cellId+"/postit/"+
+                        plugin.settings.id+"/attachment",
                     data,
                     // success cb
                     (d) =>
@@ -1477,10 +1469,9 @@
                       if (!$body.find("li").length)
                         $body.html ("");
     
-                      $body.prepend (
-                        $postit.wpt_postit ("getAttachmentTemplate", d));
+                      $body.prepend (plugin.getAttachmentTemplate (d));
 
-                      $postit.wpt_postit ("incAttachmentsCount");
+                      plugin.incAttachmentsCount ();
                     });
                 }
               });
@@ -1671,9 +1662,9 @@
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.getWallId()+
-        "/cell/"+plugin.getCellId()+"/postit/"+plugin.settings.id+
-          "/attachment/"+$attachment[0].dataset.id,
+        "wall/"+plugin.settings.wallId+
+          "/cell/"+plugin.settings.cellId+"/postit/"+plugin.settings.id+
+            "/attachment/"+$attachment[0].dataset.id,
         null,
         // success cb
         (d) =>
@@ -1782,7 +1773,7 @@
 
         // Update postit only if it has changed
         if (todelete || wpt_updatedObject (_originalObject, data))
-          data["cellId"] = plugin.getCellId ();
+          data["cellId"] = plugin.settings.cellId;
         else
           data = null;
       }

@@ -260,7 +260,6 @@
                       e.target.result)
                   {
                     const oldW = $header.outerWidth (),
-                          headerId = settings.id,
                           data = {
                             name: file.name,
                             size: file.size,
@@ -273,7 +272,7 @@
                     wpt_request_ajax (
                       "PUT",
                       "wall/"+settings.wallId+
-                      "/header/"+headerId+"/picture",
+                      "/header/"+settings.id+"/picture",
                       data,
                       // success cb
                       (d) =>
