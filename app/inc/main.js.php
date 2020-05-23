@@ -299,8 +299,7 @@
                 $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
                 label = plug.label||"...";
 
-          idsNew[startId] = 1;
-          idsNew[endId] = 1;
+          idsNew[startId+""+endId] = 1;
 
           if (($start[0].dataset.plugs||"").indexOf (endId) == -1)
           {
@@ -318,7 +317,7 @@
               $start.wpt_postit ("hidePlugs");
           }
           else
-            $start.wpt_postit ("updatePlugLabel",{
+            $start.wpt_postit ("updatePlugLabel", {
               endId: endId,
               label: label
             });
@@ -326,21 +325,15 @@
 
         // Remove obsolete plugs
         if (!partial)
-        {
           $wall.find(".postit.with-plugs").each (function ()
-            {
-              ($(this)[0].dataset.plugs||"").split (",").forEach ((id) =>
-                {
-                  if (!idsNew[id])
-                  {
-                    const $p = $wall.find(".postit[data-id='postit-"+id+"']");
-
-                    if ($p.length)
-                      $p.wpt_postit("removePlugs", true);
-                  }
-                });
-            });
-        }
+          {
+            $(this).wpt_postit("getSettings")._plugs.forEach ((plug)=>
+              {
+                if (!idsNew[plug.startId+""+plug.endId])
+                  $wall.find(".postit[data-id='postit-"+plug.endId+"']")
+                    .wpt_postit("removePlug", plug, true);
+              });
+          });
     },
 
     // METHOD removePostitsPlugs ()

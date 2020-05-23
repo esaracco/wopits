@@ -909,9 +909,8 @@
     // METHOD defragPlugsArray ()
     defragPlugsArray: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
-            settings = plugin.settings;
+      const $postit = this.element,
+            settings = this.settings;
       let activePlugs = "",
           i = settings._plugs.length;
 
@@ -922,12 +921,13 @@
         if (!plug.obj)
           settings._plugs.splice (i, 1);
         else
-          activePlugs += ","+plug.endId;
+          activePlugs +=
+            ","+((plug.endId == settings.id) ? plug.startId : plug.endId);
       }
 
       $postit[0].dataset.plugs = activePlugs.substring (1);
 
-      if (!plugin.havePlugs ())
+      if (!this.havePlugs ())
         $postit.removeClass ("with-plugs");
     },
 
@@ -970,7 +970,7 @@
         for (const id in toDefrag)
           toDefrag[id].wpt_postit ("defragPlugsArray");
 
-        if(!noedit)
+        if (!noedit)
           wpt_sharer.set("plugs-to-save", toDefrag);
       }
 
@@ -983,9 +983,10 @@
       const plugin = this,
             $postit = plugin.element,
             settings = plugin.settings,
-            postitId = settings.id;
-      let tmp = {},
-          toDefrag = {};
+            postitId = settings.id,
+            tmp = {},
+            toDefrag = {};
+      let ret = "";
 
       plugin.resetPlugsUndo ();
 
@@ -1019,11 +1020,10 @@
       settings._plugs = [];
       $postit.removeClass ("with-plugs");
 
-      let ret = "";
       for (const id in tmp)
         ret += ","+id+";"+tmp[id];
 
-      return ret.replace (/^,/, "");
+      return ret.substring (1);
     },
 
     // METHOD hidePlugs ()
