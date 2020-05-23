@@ -58,6 +58,21 @@
           "background-color": (settings["background-color"]) ?
                                 settings["background-color"] : "auto"
         })
+        .draggable({
+          //FIXME "distance" is deprecated -> is there any alternative?
+          distance: 10,
+          cursor: "grab",
+          start: function ()
+            {
+              wpt_sharer.set ("wall-dragging", true);
+              plugin.hidePostitsPlugs ();
+            },
+          stop: function ()
+            {
+              plugin.showPostitsPlugs ();
+              wpt_sharer.unset ("wall-dragging", true);
+            }
+        })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
       wpt_waitForDOMUpdate (() =>
@@ -297,7 +312,7 @@
                 endId = plug.end,
                 $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                 $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
-                label = plug.label||"...";
+                label = plug.label || "...";
 
           idsNew[startId+""+endId] = 1;
 
@@ -359,10 +374,11 @@
     {
       this.repositionPostitsPlugs ();
 
-      this.element.find(".postit").each (function ()
-        {
-          $(this).wpt_postit ("showPlugs");
-        });
+      wpt_waitForDOMUpdate (()=>
+        this.element.find(".postit").each (function ()
+          {
+            $(this).wpt_postit ("showPlugs");
+          }));
     },
 
     // METHOD refresh ()

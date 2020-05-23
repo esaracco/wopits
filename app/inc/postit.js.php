@@ -220,15 +220,20 @@
           stack: ".postit",
           drag:function(e, ui)
           {
-            // Update postits relationships arrows
-            plugin.repositionPlugs ();
-
             if (wpt_sharer.get("revertData").revert)
               return false;
+
+// TODO - 1 - Hide plugs instead of moving them with postits (performance
+//            issue with some touch devices)
+              plugin.repositionPlugs ();
           },
           start: function(e, ui)
             {
               const p = $postit.position ();
+
+// TODO - 1 - Hide plugs instead of moving them with postits (performance
+//            issue with some touch devices)
+//              plugin.hidePlugs ();
   
               wpt_sharer.set ("revertData", {
                 revert: false,
@@ -236,10 +241,12 @@
                 left: p.left
               });
   
-              plugin.edit (
-                {ignoreResize: true},
+              plugin.edit ({
+                  ignoreResize: true
+                },
                 null,
-                () => wpt_sharer.get("revertData").revert = true);
+                () => wpt_sharer.get("revertData").revert = true
+              );
             },
           stop: function(e, ui)
             {
@@ -253,17 +260,20 @@
                 });
 
                 plugin.cancelEdit ();
-
-                // Update postits relationships arrows
-                plugin.repositionPlugs ();
               }
               else
               {
-                // If the has been dropped into another cell
+                // If the postit has been dropped into another cell
                 plugin.settings.cellId = $postit.parent().wpt_cell ("getId");
 
                 plugin.unedit ();
               }
+
+              // Update postits relationships arrows
+              plugin.repositionPlugs ();
+// TODO - 1 - Hide plugs instead of moving them with postits (performance
+//            issue with some touch devices)
+//              wpt_waitForDOMUpdate (() => plugin.showPlugs ());
             }
         })
         // RESIZABLE post-it
@@ -828,10 +838,9 @@
     // METHOD updatePlugLabel ()
     updatePlugLabel: function (args)
     {
-      const plugin = this,
-            label = wpt_noHTML (args.label);
+      const label = wpt_noHTML (args.label);
 
-      plugin.settings._plugs.forEach ((plug) =>
+      this.settings._plugs.forEach ((plug) =>
         {
           if (plug.endId == args.endId)
           {
@@ -839,7 +848,7 @@
             plug.obj.setOptions({
               middleLabel: LeaderLine.captionLabel ({
                 text: label,
-                fontSize:"13px"
+                fontSize: "13px"
               })
             });
             plug.labelObj.find("a span").html (
@@ -847,7 +856,7 @@
                 '<i class="fas fa-ellipsis-h"></i>' : label);
 
             // Update postits relationships arrows
-            plugin.repositionPlugs ();
+            this.repositionPlugs ();
           }
         });
     },
@@ -855,8 +864,7 @@
     // METHOD addPlugLabel ()
     addPlugLabel: function (plug, $svg)
     {
-      const plugin = this,
-            labelId = plug.startId+"-"+plug.endId;
+      const labelId = plug.startId+"-"+plug.endId;
 
       if ($svg === undefined)
         $svg = $("svg.leader-line[data-id='"+labelId+"']");
@@ -867,7 +875,7 @@
       if (pos)
       {
         const writeAccess = wpt_checkAccess (
-                "<?=WPT_RIGHTS['walls']['rw']?>", plugin.settings.access),
+                "<?=WPT_RIGHTS['walls']['rw']?>", this.settings.access),
               menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
         plug.labelObj = $(`
@@ -878,13 +886,12 @@
     // METHOD addPlug ()
     addPlug: function (plug)
     {
-      const plugin = this,
-            $start = plugin.element,
+      const $start = this.element,
             $end = $(plug.obj.end),
             dataPlugsStart = $start[0].dataset.plugs||"",
             dataPlugsEnd = $end[0].dataset.plugs||"";
 
-      plugin.resetPlugsUndo ();
+      this.resetPlugsUndo ();
 
       $start[0].dataset.plugs =
         (dataPlugsStart) ? dataPlugsStart+","+plug.endId : plug.endId;
@@ -895,10 +902,10 @@
       // Associate SVG line to plug and set its label
       const $svg = $("svg.leader-line:last-child");
       $svg[0].dataset.id = plug.startId+"-"+plug.endId;
-      plugin.addPlugLabel (plug, $svg);
+      this.addPlugLabel (plug, $svg);
 
       // Register plug on start point postit (current plugin)
-      plugin.settings._plugs.push (plug);
+      this.settings._plugs.push (plug);
       $start.addClass ("with-plugs");
 
       // Register plug on end point postit
@@ -980,15 +987,14 @@
     // METHOD removePlugs ()
     removePlugs: function (noedit)
     {
-      const plugin = this,
-            $postit = plugin.element,
-            settings = plugin.settings,
+      const $postit = this.element,
+            settings = this.settings,
             postitId = settings.id,
             tmp = {},
             toDefrag = {};
       let ret = "";
 
-      plugin.resetPlugsUndo ();
+      this.resetPlugsUndo ();
 
       (settings._plugs||[]).forEach ((plug)=>
         {
@@ -1031,8 +1037,7 @@
     {
       if (!this.settings.wall) return;
 
-      this.settings.wall
-        .find(".postit .postit-menu [data-action='plug']").hide ();
+      this.element.find(".postit-menu [data-action='plug']").hide ();
 
       this.settings._plugs.forEach ((plug) =>
         {
@@ -1048,8 +1053,7 @@
     {
       if (!this.settings.wall) return;
 
-      this.settings.wall
-        .find(".postit .postit-menu [data-action='plug']").show ();
+      this.element.find(".postit-menu [data-action='plug']").show ();
 
       this.settings._plugs.forEach ((plug) =>
         {
@@ -1187,8 +1191,7 @@
     // METHOD setDeadline ()
     setDeadline: function (deadline, timezone)
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             $date = $postit.find(".dates .end");
       let human;
 

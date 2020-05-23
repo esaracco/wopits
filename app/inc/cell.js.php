@@ -136,6 +136,9 @@
           .on("touchstart", function (e)
             {
               _coords = e;
+
+              // Fix issue with some touch devices
+              $(".navbar-nav,.dropdown-menu").collapse ("hide");
             })
           .on("click", function (e)
             {

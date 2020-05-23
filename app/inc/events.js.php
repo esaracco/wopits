@@ -140,36 +140,51 @@ $(function()
     });
 
   // EVENT walls scroll
-  let _timeoutScroll;
-  $_walls.on("scroll", function()
+  let _timeoutScroll,
+      _scrollDiff = null;
+  $_walls.on("scroll", function(e)
     {
       const $wall = wpt_sharer.getCurrent ("wall");
 
       if ($wall.length)
       {
-        const $arrows = wpt_sharer.getCurrent ("arrows");
-        const $filters = wpt_sharer.getCurrent ("filters");
+        const $arrows = wpt_sharer.getCurrent ("arrows"),
+              $filters = wpt_sharer.getCurrent ("filters");
 
-        if (!$wall.hasClass ("plugs-hidden"))
+        if (!wpt_sharer.get ("wall-dragging"))
         {
-          $wall.wpt_wall ("hidePostitsPlugs"); 
-          $wall.addClass ("plugs-hidden");
-        }
+          const scroll = {
+            top: $(this).scrollTop (),
+            left: $(this).scrollLeft ()
+          };
 
-        // Fix postits plugs position
-        if (!$filters || !$filters.hasClass ("plugs-hidden"))
-        {
-          clearTimeout (_timeoutScroll);
-          _timeoutScroll = setTimeout (() =>
+          if (_scrollDiff === null)
+            _scrollDiff = {
+              top: scroll.top,
+              left: scroll.left
+            };
+
+          if (!wpt_sharer.get ("plugs-hidden") &&
+              (Math.abs(scroll.top - _scrollDiff.top) > 1 ||
+               Math.abs(scroll.left - _scrollDiff.left) > 1))
           {
-            setTimeout (()=>
-              {
-                $wall.wpt_wall ("showPostitsPlugs");
-                $wall.removeClass ("plugs-hidden");
+            $wall.wpt_wall ("hidePostitsPlugs");
+            wpt_sharer.set ("plugs-hidden", true);
+          }
 
-              }, 0);
+          // Fix postits plugs position
+          if (!$filters || !$filters.hasClass ("plugs-hidden"))
+          {
+            clearTimeout (_timeoutScroll);
+            _timeoutScroll = setTimeout (() =>
+            {
+              _scrollDiff = null;
 
-          }, 150);
+              $wall.wpt_wall ("showPostitsPlugs");
+              wpt_sharer.unset ("plugs-hidden");
+
+            }, 150);
+          }
         }
 
         // Fix arrows tool appearence
