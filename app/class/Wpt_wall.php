@@ -1400,17 +1400,20 @@
            ],
            ['id' => $cell->id]);
   
-          for ($j = 0, $jLen = count($cell->postits); $j < $jLen; $j++)
+          if (!empty ($cell->postits))
           {
-            $postit = $cell->postits[$j];
-  
-            $this->executeQuery ('UPDATE postits', [
-              'width' => $postit->width,
-              'height' => $postit->height,
-              'top' => $postit->top,
-              'left' => $postit->left
-            ],
-            ['id' => $postit->id]);
+            for ($j = 0, $jLen = count($cell->postits); $j < $jLen; $j++)
+            {
+              $postit = $cell->postits[$j];
+
+              $this->executeQuery ('UPDATE postits', [
+                'width' => $postit->width,
+                'height' => $postit->height,
+                'top' => $postit->top,
+                'left' => $postit->left
+              ],
+              ['id' => $postit->id]);
+            }
           }
         }
   
