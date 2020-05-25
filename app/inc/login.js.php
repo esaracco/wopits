@@ -161,6 +161,7 @@
         });
     },
 
+    // METHOD resetCreateUserForm ()
     resetCreateUserForm: function ()
     {
       const $popup = $("#createAccountPopup");
@@ -203,8 +204,6 @@
     // METHOD createUser ()
     createUser: function (args)
     {
-      const plugin = this;
-
       wpt_request_ajax (
         "PUT",
         "user",
@@ -216,7 +215,7 @@
           {
             wpt_displayMsg ({type: "warning", msg: d.error_msg});
 
-            plugin.resetCreateUserForm ();
+            this.resetCreateUserForm ();
           }
           else
             return location.href = "/";

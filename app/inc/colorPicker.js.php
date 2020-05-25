@@ -53,8 +53,7 @@
     // METHOD open ()
     open: function (args)
     {
-      const plugin = this,
-            $picker = plugin.element,
+      const $picker = this.element,
             wW = $(window).outerWidth (),
             wH = $(window).outerHeight ();
       let x = args.pageX + 5,
@@ -68,7 +67,7 @@
 
       wpt_openPopupLayer (() =>
         {
-          plugin.close ();
+          this.close ();
           wpt_sharer.getCurrent ("postit").wpt_postit ("unedit");
         });
 

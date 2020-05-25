@@ -87,8 +87,7 @@
     // METHOD toggle ()
     toggle: function ()
     {
-      const plugin = this,
-            $filters = plugin.element,
+      const $filters = this.element,
             $wall = wpt_sharer.getCurrent ("wall");
 
       if ($filters.is (":visible"))
@@ -98,13 +97,13 @@
           .find(".tags div.selected,"+
                 ".colors div.selected").removeClass ("selected");
 
-        plugin.showPlugs ();
+        this.showPlugs ();
       }
       else
         $filters
           .css({top: "60px", left: "5px", display: "table"});
 
-      plugin.apply ();
+      this.apply ();
     },
 
     // METHOD reset ()

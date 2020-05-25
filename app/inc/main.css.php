@@ -830,6 +830,7 @@ EOC;
   bottom:15px;
   left:10px;
   cursor:pointer;
+  z-index: 5010;
 }
 
 .chatroom .textarea,

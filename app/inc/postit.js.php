@@ -779,8 +779,7 @@
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs: function ()
     {
-      const plugin = this,
-            settings = plugin.settings,
+      const settings = this.settings,
             shadowColor = $(".bg-dark").css ("background-color");
 
       settings._plugColor = $(".wall th:eq(0)").css ("background-color");
@@ -824,10 +823,9 @@
     // METHOD checkPlugsMenu ()
     checkPlugsMenu: function ()
     {
-      const plugin = this,
-            $menu = plugin.element.find (".postit-menu");
+      const $menu = this.element.find (".postit-menu");
 
-      if (plugin.havePlugs ())
+      if (this.havePlugs ())
         $menu.find("li[data-action='delete-plugs'] .dropdown-item")
           .removeClass ("disabled");
       else
@@ -840,9 +838,11 @@
     {
       const label = wpt_noHTML (args.label);
 
-      this.settings._plugs.forEach ((plug) =>
-        {
-          if (plug.endId == args.endId)
+      for (let i = 0, iLen = this.settings._plugs.length; i < iLen; i++)
+      {
+        const plug = this.settings._plugs[i];
+
+        if (plug.endId == args.endId)
           {
             plug.label = label;
             plug.obj.setOptions({
@@ -857,8 +857,10 @@
 
             // Update postits relationships arrows
             this.repositionPlugs ();
+
+            break;
           }
-        });
+      }
     },
 
     // METHOD addPlugLabel ()
@@ -1363,15 +1365,14 @@
     // METHOD displayAttachments ()
     displayAttachments: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
 
       wpt_request_ws (
         "GET",
-        "wall/"+plugin.settings.wallId+
-          "/cell/"+plugin.settings.cellId+
-            "/postit/"+plugin.settings.id+"/attachment",
+        "wall/"+this.settings.wallId+
+          "/cell/"+this.settings.cellId+
+            "/postit/"+this.settings.id+"/attachment",
         null,
         // success cb
         (d) =>
@@ -1385,7 +1386,7 @@
           else
           {
             for (let i = 0, flen = d.length; i < flen; i++)
-              body += plugin.getAttachmentTemplate (d[i], !writeAccess);
+              body += this.getAttachmentTemplate (d[i], !writeAccess);
           }
 
           if (writeAccess)
@@ -1536,8 +1537,7 @@
     // METHOD removeDatePicker ()
     removeDatePicker: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             $datePicker = $postit.find(".date-picker");
 
       if ($datePicker.length)
@@ -1545,7 +1545,7 @@
         const v = $datePicker.val ();
 
         $postit[0].dataset.deadline = v;
-        plugin.setDeadline ((v) ? v : _defaultString);
+        this.setDeadline ((v) ? v : _defaultString);
 
         if (v)
           $postit[0].removeAttribute ("data-deadlineepoch");
@@ -1560,14 +1560,13 @@
     // METHOD insert ()
     insert: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
-            data = plugin.serialize()[0];
+      const $postit = this.element,
+            data = this.serialize()[0];
 
       wpt_request_ws (
         "PUT",
-        "wall/"+plugin.settings.wallId+
-        "/cell/"+plugin.settings.cellId+"/postit",
+        "wall/"+this.settings.wallId+
+        "/cell/"+this.settings.cellId+"/postit",
         data,
         // success cb
         (d) =>
@@ -1598,18 +1597,17 @@
     // METHOD update ()
     update: function (d, cell)
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             tz = wpt_userData.settings.timezone;
 
       // Change postit cell
-      if (cell && cell.id != plugin.settings.cellId)
+      if (cell && cell.id != this.settings.cellId)
       {
-        plugin.settings.cell =
+        this.settings.cell =
           cell.obj || this.settings.wall.find("[data-id='cell-"+cell.id+"']");
-        plugin.settings.cellId = cell.id;
+        this.settings.cellId = cell.id;
 
-        $postit.appendTo (plugin.settings.cell);
+        $postit.appendTo (this.settings.cell);
       }
 
       if (!d.ignoreResize)
@@ -1620,18 +1618,17 @@
           height: d.height
         });
 
-      plugin.setClassColor (d.classcolor);
+      this.setClassColor (d.classcolor);
 
-      plugin.setTitle (d.title);
+      this.setTitle (d.title);
 
-      plugin.setContent (d.content);
+      this.setContent (d.content);
 
-      plugin.setAttachmentsCount (d.attachmentscount);
+      this.setAttachmentsCount (d.attachmentscount);
 
-      plugin
-        .setCreationDate (d.creationdate?wpt_getUserDate (d.creationdate):'');
+      this.setCreationDate (d.creationdate?wpt_getUserDate (d.creationdate):'');
 
-      plugin.setDeadline (d.deadline, d.timezone);
+      this.setDeadline (d.deadline, d.timezone);
 
       if (!d.obsolete)
         $postit.removeClass ("obsolete");
@@ -1645,7 +1642,7 @@
 
       $(".tag-picker").wpt_tagPicker ("refreshPostitDataTag", $postit);
 
-      plugin.repositionPlugs ();
+      this.repositionPlugs ();
     },
 
     // METHOD delete ()
@@ -1659,14 +1656,13 @@
     // METHOD deleteAttachment ()
     deleteAttachment: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             $attachment = $_attachmentsPopup.find("li.todelete");
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.settings.wallId+
-          "/cell/"+plugin.settings.cellId+"/postit/"+plugin.settings.id+
+        "wall/"+this.settings.wallId+
+          "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
             "/attachment/"+$attachment[0].dataset.id,
         null,
         // success cb
@@ -1677,7 +1673,7 @@
           else
           {
             $attachment.remove ();
-            plugin.decAttachmentsCount ();
+            this.decAttachmentsCount ();
   
             if (!$_attachmentsPopup
                    .find("ul.list-group li:first-child").length)
@@ -1747,16 +1743,15 @@
     // METHOD unedit ()
     unedit: function ()
     {
-      const plugin = this,
-            $postit = plugin.element,
+      const $postit = this.element,
             plugsToSave = wpt_sharer.get ("plugs-to-save");
       let data = null,
           todelete;
 
-      plugin.unsetCurrent ();
+      this.unsetCurrent ();
 
       if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
-        return plugin.cancelEdit ();
+        return this.cancelEdit ();
 
       // Update postits plugs dependencies
       if (plugsToSave)
@@ -1771,24 +1766,24 @@
       // Postit update
       else
       {
-        data = plugin.serialize()[0];
+        data = this.serialize()[0];
         todelete = !!data.todelete;
 
         // Update postit only if it has changed
         if (todelete || wpt_updatedObject (_originalObject, data))
-          data["cellId"] = plugin.settings.cellId;
+          data["cellId"] = this.settings.cellId;
         else
           data = null;
       }
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.getWallId()+"/editQueue/postit/"+plugin.settings.id,
+        "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
         data,
         // success cb
         (d) =>
         {
-          plugin.cancelEdit ();
+          this.cancelEdit ();
 
           if (d.error_msg)
             wpt_displayMsg ({
@@ -1807,7 +1802,7 @@
           $postit[0].removeAttribute ("data-hadpictures");
         },
         // error cb
-        () => plugin.cancelEdit ());
+        () => this.cancelEdit ());
     },
 
     // METHOD cancelEdit ()

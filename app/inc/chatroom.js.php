@@ -129,22 +129,22 @@
     // METHOD toggle ()
     toggle: function ()
     {
-      const plugin = this,
-            $chatroom = plugin.element;
+      const $chatroom = this.element,
+            wallId = this.settings.wallId;
 
       if ($chatroom.is (":visible"))
       {
-        plugin.closeUsersTooltip (true);
+        this.closeUsersTooltip (true);
 
         wpt_request_ws (
           "DELETE",
-          "wall/"+plugin.settings.wallId+"/chat");
+          "wall/"+wallId+"/chat");
 
         $chatroom.hide ();
       }
       else
       {
-        const $alert = $("#wall-"+plugin.settings.wallId+" .chatroom-alert");
+        const $alert = $("#wall-"+wallId+" .chatroom-alert");
 
         if ($alert.length)
           $alert.remove ();
@@ -156,7 +156,7 @@
 
         wpt_request_ws (
           "PUT",
-          "wall/"+plugin.settings.wallId+"/chat");
+          "wall/"+wallId+"/chat");
       }
     },
 
@@ -187,15 +187,14 @@
     // METHOD refreshUserscount ()
     refreshUserscount: function (args)
     {
-      const plugin = this,
-            $chatroom = plugin.element,
+      const $chatroom = this.element,
             $tooltip = $chatroom.find(".usersviewcounts");
 
       if ($chatroom.is(":visible"))
       {
         const userId = wpt_userData.id;
 
-        plugin.closeUsersTooltip (true);
+        this.closeUsersTooltip (true);
 
         $chatroom.find("h2 .wpt-badge").html (args.userscount);
   

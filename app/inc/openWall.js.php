@@ -37,8 +37,7 @@
     // METHOD search ()
     search: function (str)
     {
-      const plugin = this,
-            walls = [];
+      const walls = [];
 
       wpt_userData.walls.forEach ((wall) =>
       {
@@ -49,13 +48,12 @@
           walls.push (wall);
       });
 
-      plugin.displayWalls (walls);
+      this.displayWalls (walls);
     },
 
     displayWalls: function (walls)
     {
-      const plugin = this,
-            $openWall = plugin.element;
+      const $openWall = this.element;
       let body = "";
 
       walls = walls || wpt_userData.walls;

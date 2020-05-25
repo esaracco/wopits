@@ -105,40 +105,6 @@ $(function()
       });
   }
 
-  // EVENT click on arrows tool (x)
-  $(document).on("click", ".arrows .goto-box-x i", function (e)
-    {
-      const $btn = $(this),
-            sleft = $_walls.scrollLeft ();
-
-      e.stopImmediatePropagation ();
-
-      if($btn[0].className.indexOf("right") != -1)
-      {
-        $_walls.scrollLeft (sleft +
-          ($btn.hasClass("full-right") ? 100000 : 100));
-      }
-      else
-        $_walls.scrollLeft (sleft -
-          ($btn.hasClass("full-left") ? 100000 : 100));
-    });
-
-  // EVENT click on arrows tool (y)
-  $(document).on("click", ".arrows .goto-box-y i", function (e)
-    {
-      const $btn = $(this),
-            stop = $_walls.scrollTop ();
-
-      e.stopImmediatePropagation ();
-
-      if($btn[0].className.indexOf("up") != -1)
-        $_walls.scrollTop (stop -
-          ($btn.hasClass("full-up") ? 100000 : 100));
-      else
-        $_walls.scrollTop (stop +
-          ($btn.hasClass("full-down") ? 100000 : 100));
-    });
-
   // EVENT walls scroll
   let _timeoutScroll,
       _scrollDiff = null;
@@ -189,39 +155,7 @@ $(function()
 
         // Fix arrows tool appearence
         if ($arrows.is (":visible"))
-        {
-          const bounding = $wall[0].getBoundingClientRect ();
-
-          if ($_walls.scrollLeft() <= 0)
-            $arrows.find(".goto-box-x i.left,.goto-box-x i.full-left")
-              .addClass ("readonly");
-          else
-            $arrows.find(".goto-box-x i.left,.goto-box-x i.full-left")
-              .removeClass ("readonly");
-    
-          if (bounding.right > (window.innerWidth ||
-                                document.documentElement.clientWidth))
-            $arrows.find(".goto-box-x i.right,.goto-box-x i.full-right")
-              .removeClass ("readonly");
-          else
-            $arrows.find(".goto-box-x i.right,.goto-box-x i.full-right")
-              .addClass ("readonly");
-    
-          if ($_walls.scrollTop() <= 0)
-            $arrows.find(".goto-box-y i.up,.goto-box-y i.full-up")
-              .addClass ("readonly");
-          else
-            $arrows.find(".goto-box-y i.up,.goto-box-y i.full-up")
-              .removeClass ("readonly");
-    
-          if (bounding.bottom > (window.innerHeight ||
-                                document.documentElement.clientHeight))
-            $arrows.find(".goto-box-y i.down,.goto-box-y i.full-down")
-              .removeClass ("readonly");
-          else
-            $arrows.find(".goto-box-y i.down,.goto-box-y i.full-down")
-              .addClass ("readonly");
-        }
+          $arrows.wpt_arrows ("update");
       }
     });
 
@@ -260,7 +194,7 @@ $(function()
   $(document).on("hidden.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
-      wpt_sharer.getCurrent ("walls").wpt_wall ("hidePostitsPlugs");
+      $_walls.wpt_wall ("hidePostitsPlugs");
     });
 
   // EVENT shown.bs.tab on walls tabs
@@ -276,8 +210,7 @@ $(function()
       wpt_sharer.reset ();
 
       // New wall
-      const $menu = $("#main-menu"),
-            $wall = wpt_sharer.getCurrent ("wall");
+      const $wall = wpt_sharer.getCurrent ("wall");
 
       // Need wall
       if (!$wall.length) return;
@@ -294,9 +227,12 @@ $(function()
           .scrollLeft(0)
           .scrollTop (0);
 
+      const $menu = $("#main-menu"),
+            $chatroom = wpt_sharer.getCurrent ("chatroom"),
+            chatRoomVisible = $chatroom.is (":visible"),
+            $arrows = wpt_sharer.getCurrent ("arrows");
+
       // Manage chatroom checkbox menu
-      const $chatroom = wpt_sharer.getCurrent ("chatroom"),
-            chatRoomVisible = $chatroom.is (":visible");
       $menu
         .find("li[data-action='chatroom'] input")[0].checked = chatRoomVisible;
       if (chatRoomVisible)
@@ -310,7 +246,6 @@ $(function()
         wpt_sharer.getCurrent("filters").is (":visible");
 
       // Manage arrows checkbox menu
-      const $arrows = wpt_sharer.getCurrent("arrows");
       $menu.find("li[data-action='arrows'] input")[0].checked =
         $arrows.is (":visible");
       $arrows.wpt_arrows ("reset");
@@ -350,7 +285,7 @@ $(function()
     function(e)
     {
       const $popup = $(this),
-            $dialog = $popup.find(".modal-dialog"),
+            $dialog = $popup.find (".modal-dialog"),
             $postit = wpt_sharer.getCurrent ("postit"),
             modalsCount = $(".modal:visible").length;
 
@@ -372,7 +307,7 @@ $(function()
       if (!modalsCount && $postit.length)
         $postit.wpt_postit ("setPopupColor", $(this));
       else
-        $(this).find(".modal-header,.modal-title,.modal-footer").each (
+        $popup.find(".modal-header,.modal-title,.modal-footer").each (
           function ()
           {
             this.className = this.className.replace (/color\-[a-z]+/, "");
@@ -388,7 +323,7 @@ $(function()
     function (e)
     {
       const $popup = $(this),
-            $postit = wpt_sharer.getCurrent("postit");
+            $postit = wpt_sharer.getCurrent ("postit");
 
       switch (e.target.id)
       {
@@ -460,8 +395,8 @@ $(function()
             $wall = wpt_sharer.getCurrent ("wall"),
             type = $popup[0].dataset.popuptype,
             openedModals = $(".modal:visible").length,
-            $postit = wpt_sharer.getCurrent("postit"),
-            $header = wpt_sharer.getCurrent("header");
+            $postit = wpt_sharer.getCurrent ("postit"),
+            $header = wpt_sharer.getCurrent ("header");
 
       // Prevent child popups from removing scroll to their parent
       if (openedModals)

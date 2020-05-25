@@ -91,7 +91,6 @@
     // METHOD removeGroupUser ()
     removeGroupUser: function (args)
     {
-      const plugin = this;
       let service = "group/"+args.groupId+"/removeUser/"+args.userId;
 
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
@@ -104,11 +103,11 @@
         // success cb
         (d) =>
         {
-          plugin.displayUsers (args);
+          this.displayUsers (args);
 
-          args["str"] = plugin.element.find("input").val ();
+          args["str"] = this.element.find("input").val ();
 
-          plugin.search (args);
+          this.search (args);
 
           $("#shareWallPopup").wpt_shareWall ("displayGroups");
         });
@@ -117,7 +116,6 @@
     // METHOD addGroupUser ()
     addGroupUser: function (args)
     {
-      const plugin = this;
       let service = "group/"+args.groupId+"/addUser/"+args.userId;
 
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
@@ -130,11 +128,11 @@
         // success cb
         (d) =>
         {
-          plugin.displayUsers (args);
+          this.displayUsers (args);
 
-          args["str"] = plugin.element.find("input").val ();
+          args["str"] = this.element.find("input").val ();
 
-          plugin.search (args);
+          this.search (args);
 
           $("#shareWallPopup").wpt_shareWall ("displayGroups");
         });
@@ -143,8 +141,7 @@
   // METHOD displayUsers ()
     displayUsers: function (args)
     {
-      const plugin = this,
-            $ac = plugin.element,
+      const $ac = this.element,
             delegateAdminId = $ac[0].dataset.delegateadminid || 0;
       let service = "group/"+args.groupId+"/getUsers";
 
@@ -191,8 +188,7 @@
     // METHOD search ()
     search: function (args)
     {
-      const plugin = this,
-            $ac = plugin.element,
+      const $ac = this.element,
             wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
             groupId = $ac[0].dataset.groupid;
       let service = "group/"+groupId+"/searchUsers/"+args.str;
@@ -221,7 +217,7 @@
             $ac.find("input").addClass ("autocomplete");
           }
           else
-            plugin.reset ();
+            this.reset ();
           
           $ac.find(".result .content").html (html)
         }

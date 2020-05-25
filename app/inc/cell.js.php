@@ -276,14 +276,13 @@
     // METHOD addPostit ()
     addPostit: function (args, noinsert)
     {
-      const plugin = this,
-            $cell = plugin.element,
+      const $cell = this.element,
             $postit = $("<div/>");
 
-      args["wall"] = plugin.settings.wall;
-      args["wallId"] = plugin.settings.wallId;
+      args["wall"] = this.settings.wall;
+      args["wallId"] = this.settings.wallId;
       args["cell"]  = $cell;
-      args["cellId"] = plugin.settings.id;
+      args["cellId"] = this.settings.id;
 
       // CREATE post-it
       $postit.wpt_postit (args);
@@ -291,7 +290,7 @@
       // Add postit on cell
       $cell.append ($postit);
 
-      plugin.reorganize ();
+      this.reorganize ();
 
       // If we are refreshing wall and postit has been already created by
       // another user, do not add it again in DB

@@ -404,14 +404,13 @@
     // METHOD setImg ()
     setImg: function (src)
     {
-      const plugin = this,
-            $header = plugin.element,
+      const $header = this.element,
             $img = $header.find(".img img");
 
       if (src)
       {
         if (!$img.length)
-          $header.append (plugin.getImgTemplate (src));
+          $header.append (this.getImgTemplate (src));
         else if (src != $img.attr("src"))
           $img.attr ("src", src);
       }
@@ -422,14 +421,13 @@
     // METHOD deleteImg ()
     deleteImg: function ()
     {
-      const plugin = this,
-            $header = plugin.element,
-            $wall = plugin.settings.wall,
+      const $header = this.element,
+            $wall = this.settings.wall,
             oldW = $header.outerWidth ();
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.settings.wallId+"/header/"+plugin.settings.id+"/picture",
+        "wall/"+this.settings.wallId+"/header/"+this.settings.id+"/picture",
         null,
         // success cb
         (d) =>
@@ -438,7 +436,7 @@
             wpt_raiseError (null, d.error_msg);
           else
           {
-            if (plugin.settings.type == "col")
+            if (this.settings.type == "col")
               $header.find(".img").remove ();
             else
               wpt_headerRemoveContentKeepingWallSize ({
@@ -446,7 +444,7 @@
                 cb: () => $header.find(".img").remove ()
               });
 
-            plugin.unedit ();
+            this.unedit ();
           }
         }
       );
@@ -582,15 +580,14 @@
     // METHOD cancelEdit ()
     cancelEdit: function (bubble_event_cb)
     {
-      const plugin = this,
-            $header = plugin.element,
+      const $header = this.element,
             $wall = wpt_sharer.getCurrent ("wall");
 
       clearInterval (_ffTriggerBug.i);
 
       _realEdit = false;
 
-      plugin.unsetCurrent ();
+      this.unsetCurrent ();
 
       $wall.wpt_wall ("closeAllMenus");
 
@@ -624,11 +621,10 @@
     // METHOD unedit ()
     unedit: function (args = {})
     {
-      const plugin = this,
-            $wall = wpt_sharer.getCurrent("wall");
+      const $wall = this.settings.wall;
       let data = null;
 
-      plugin.removeUploadLayer ();
+      this.removeUploadLayer ();
 
       $wall.find("tbody td").each (function ()
         {
@@ -650,21 +646,21 @@
       }
 
       // Update header only if it has changed
-      if (wpt_updatedObject(_originalObject, _serializeOne (plugin.element)))
+      if (wpt_updatedObject(_originalObject, _serializeOne (this.element)))
         data = {
-          headers: plugin.serialize (),
+          headers: this.serialize (),
           cells: $("<div/>").wpt_cell ("serialize"),
           wall: {width: $wall.outerWidth ()}
         };
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.settings.wallId+"/editQueue/header/"+plugin.settings.id,
+        "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
         data,
         // success cb
-        (d) => plugin.cancelEdit (args.bubble_cb),
+        (d) => this.cancelEdit (args.bubble_cb),
         // error cb
-        () => plugin.cancelEdit (args.bubble_cb)
+        () => this.cancelEdit (args.bubble_cb)
       );
     },
 

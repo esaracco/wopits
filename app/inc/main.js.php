@@ -69,6 +69,12 @@
             },
           stop: function ()
             {
+              const $arrows = wpt_sharer.getCurrent ("arrows");
+
+              // Fix arrows tool appearence
+              if ($arrows.is (":visible"))
+                $arrows.wpt_arrows ("update");
+
               plugin.showPostitsPlugs ();
               wpt_sharer.unset ("wall-dragging", true);
             }
@@ -300,8 +306,7 @@
     //FIXME //TODO Optimize
     refreshPostitsPlugs: function (plugs, partial = false)
     {
-      const plugin = this,
-            $wall = plugin.element,
+      const $wall = this.element,
             hidePlugs =
               wpt_sharer.getCurrent("filters").hasClass ("plugs-hidden");
       let idsNew = {};
@@ -709,8 +714,7 @@
     // METHOD close ()
     close: function ()
     {
-      const plugin = this,
-            activeTabId = "wall-"+plugin.settings.id,
+      const activeTabId = "wall-"+this.settings.id,
             $activeTab = $('a[href="#'+activeTabId+'"]'),
             newActiveTabId = ($activeTab.prev().length) ?
               $activeTab.prev().attr("href") :
@@ -719,7 +723,7 @@
 
       $(".modal.show").modal ("hide");
 
-      plugin.removePostitsPlugs ();
+      this.removePostitsPlugs ();
 
       $activeTab.remove ();
       $("#"+activeTabId).remove ();
@@ -729,10 +733,10 @@
       {
         $(".nav.walls").hide ();
 
-        plugin.zoom ({type: "normal", "noalert": true});
+        this.zoom ({type: "normal", "noalert": true});
         $("#dropdownView,#dropdownEdit").addClass ("disabled");
   
-        plugin.menu ({from: "wall", type: "no-wall"});
+        this.menu ({from: "wall", type: "no-wall"});
 
         $("#welcome").show ("fade");
       }
@@ -840,11 +844,10 @@
     // METHOD deleteRow ()
     deleteRow: function (rowIdx)
     {
-      const plugin = this,
-            $wall = plugin.element,
+      const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
 
-      plugin.closeAllMenus ();
+      this.closeAllMenus ();
 
       $tr.find("td").wpt_cell ("removePostitsPlugs");
 
@@ -855,7 +858,7 @@
 
       wpt_request_ws (
         "DELETE",
-        "wall/"+plugin.settings.id+"/row/"+rowIdx,
+        "wall/"+this.settings.id+"/row/"+rowIdx,
         {wall: {width: $wall.outerWidth ()}},
         () => $wall[0].dataset.rows = Number ($wall[0].dataset.rows) - 1);
     },
@@ -1035,8 +1038,6 @@
     // METHOD clone ()
     clone: function ()
     {
-      const plugin = this;
-
       wpt_openConfirmPopup ({
         type: "clone-wall",
         icon: "clone",
@@ -1045,7 +1046,7 @@
           {
             wpt_request_ws (
             "PUT",
-            "wall/"+plugin.settings.id+"/clone",
+            "wall/"+this.settings.id+"/clone",
             null,
             // success cb
             (d) =>
@@ -1170,9 +1171,7 @@
     // METHOD openOpenWallPopup ()
     openOpenWallPopup: function ()
     {
-      const plugin = this;
-
-      plugin.refreshUserWallsData (() =>
+      this.refreshUserWallsData (() =>
         {
           const $popup = $("#openWallPopup");
 
@@ -1195,11 +1194,9 @@
 
     displayWallUsersview: function ()
     {
-      const plugin = this;
-
       wpt_request_ws (
         "GET",
-        "wall/"+plugin.settings.id+"/usersview",
+        "wall/"+this.settings.id+"/usersview",
         null,
         (d) =>
         {
@@ -1221,12 +1218,11 @@
 
     displayWallProperties: function (args)
     {
-      const plugin = this,
-            $wall = plugin.element;
+      const $wall = this.element;
 
       wpt_request_ws (
         "GET",
-        "wall/"+plugin.settings.id+"/infos",
+        "wall/"+this.settings.id+"/infos",
         null,
         // success cb
         (d) =>
@@ -1293,12 +1289,10 @@
     // METHOD openPropertiesPopup ()
     openPropertiesPopup: function (args)
     {
-      const plugin = this;
-
       if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
-        plugin.edit (() => plugin.displayWallProperties (args));
+        this.edit (() => this.displayWallProperties (args));
       else
-        plugin.displayWallProperties ();
+        this.displayWallProperties ();
     },
 
     // METHOD getName ()
@@ -1513,7 +1507,7 @@
           {
             wpt_displayMsg ({type: "warning", msg: d.removed});
 
-            plugin.close ();
+            this.close ();
           }
           else if (d.error_msg)
             wpt_raiseError (() => error_cb && error_cb (), d.error_msg);

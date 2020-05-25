@@ -232,8 +232,7 @@
     // METHOD deletePicture ()
     deletePicture: function ()
     {
-      const plugin = this,
-            $account = plugin.element;
+      const $account = this.element;
 
       wpt_request_ws (
         "DELETE",
@@ -270,8 +269,7 @@
     // METHOD updateField ()
     updateField: function (args)
     {
-      const plugin = this,
-            $account = plugin.element;
+      const $account = this.element;
 
       wpt_request_ws (
         "POST",
@@ -299,7 +297,7 @@
               wpt_displayMsg (
                 {
                   target: $account.find (".modal-body"),
-                  type: "info",
+                  type: "success",
                   msg: "<?=_("Your account has been updated")?>"
                 });
 

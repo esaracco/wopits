@@ -250,9 +250,8 @@
     // METHOD linkGroup ()
     linkGroup: function (args)
     {
-      const plugin = this,
-            wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
-            $group = plugin.element.find("li.todelete"),
+      const wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
+            $group = this.element.find("li.todelete"),
             data = {
               type:
                 $group.parent().hasClass("gtype-<?=WPT_GTYPES['dedicated']?>") ?
@@ -271,15 +270,14 @@
           if (d.error_msg)
             wpt_raiseError (null, d.error_msg);
           else
-            plugin.displayGroups ();
+            this.displayGroups ();
         });
     },
 
     // METHOD unlinkGroup ()
     unlinkGroup: function (args)
     {
-      const plugin = this,
-            wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId");
+      const wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId");
 
       wpt_request_ws (
         "POST",
@@ -291,15 +289,14 @@
           if (d.error_msg)
             wpt_raiseError (null, d.error_msg);
           else
-            plugin.displayGroups ();
+            this.displayGroups ();
         });
     },
 
     // METHOD deleteGroup ()
     deleteGroup: function ()
     {
-      const plugin = this,
-            $group = plugin.element.find("li.todelete"),
+      const $group = this.element.find("li.todelete"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES['dedicated']?>) ?
               "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+
                 "/group/"+$group[0].dataset.id :
@@ -315,15 +312,14 @@
           if (d.error_msg)
             wpt_raiseError (null, d.error_msg);
           else
-            plugin.displayGroups ();
+            this.displayGroups ();
         });
     },
 
     // METHOD createGroup ()
     createGroup: function (type, args)
     {
-      const plugin = this,
-            service = (type == <?=WPT_GTYPES['dedicated']?>) ?
+      const service = (type == <?=WPT_GTYPES['dedicated']?>) ?
               "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+"/group" :
               "group";
 
@@ -338,7 +334,7 @@
             wpt_displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
-            plugin.displayGroups ();
+            this.displayGroups ();
             $_groupPopup.modal ("hide");
           }
         });
@@ -347,8 +343,6 @@
     // METHOD updateGroup ()
     updateGroup: function (args)
     {
-      const plugin = this;
-
       wpt_request_ws (
         "POST",
         "group/"+args.groupId,
@@ -360,7 +354,7 @@
             wpt_displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
-            plugin.displayGroups ();
+            this.displayGroups ();
             $_groupPopup.modal ("hide");
           }
         });

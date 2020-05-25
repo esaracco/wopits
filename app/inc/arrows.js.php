@@ -35,17 +35,101 @@
     // METHOD toggle ()
     toggle: function ()
     {
-      const plugin = this,
-            $arrows = plugin.element;
+      const $arrows = this.element;
 
       if ($arrows.is (":visible"))
         $arrows.hide ();
       else
       {
         $arrows.show ();
-        plugin.reset ();
+        this.reset ();
       }
     },
+
+    // METHOD update ()
+    update: function ()
+    {
+      const $arrows = this.element,
+            bounding = wpt_sharer.getCurrent("wall")[0].getBoundingClientRect();
+
+      if (this.settings.walls.scrollLeft() <= 0)
+        $arrows.find(".goto-box-x i.left,.goto-box-x i.full-left")
+          .addClass ("readonly");
+      else
+        $arrows.find(".goto-box-x i.left,.goto-box-x i.full-left")
+          .removeClass ("readonly");
+
+      if (bounding.right > (window.innerWidth ||
+                            document.documentElement.clientWidth))
+        $arrows.find(".goto-box-x i.right,.goto-box-x i.full-right")
+          .removeClass ("readonly");
+      else
+        $arrows.find(".goto-box-x i.right,.goto-box-x i.full-right")
+          .addClass ("readonly");
+
+      if (this.settings.walls.scrollTop() <= 0)
+        $arrows.find(".goto-box-y i.up,.goto-box-y i.full-up")
+          .addClass ("readonly");
+      else
+        $arrows.find(".goto-box-y i.up,.goto-box-y i.full-up")
+          .removeClass ("readonly");
+
+      if (bounding.bottom > (window.innerHeight ||
+                            document.documentElement.clientHeight))
+        $arrows.find(".goto-box-y i.down,.goto-box-y i.full-down")
+          .removeClass ("readonly");
+      else
+        $arrows.find(".goto-box-y i.down,.goto-box-y i.full-down")
+          .addClass ("readonly");
+    }
   };
+
+/////////////////////////// AT LOAD INIT //////////////////////////////
+
+  $(function ()
+    {
+      if (!document.querySelector ("body.login-page"))
+      {
+        const $walls = wpt_sharer.getCurrent ("walls");
+
+        // EVENT click on arrows tool
+        $(document).on("click", ".arrows .goto-box-x i,"+
+                                ".arrows .goto-box-y i", function (e)
+          {
+            const $btn = $(this),
+                  $wall = wpt_sharer.getCurrent ("wall");
+
+            e.stopImmediatePropagation ();
+
+            $wall.wpt_wall ("hidePostitsPlugs");
+
+            if ($btn.closest("div").hasClass ("goto-box-y"))
+            {
+              const sTop = $walls.scrollTop ();
+
+              if($btn[0].className.indexOf("up") != -1)
+                $walls.scrollTop (sTop -
+                  ($btn.hasClass("full-up") ? 100000 : 100));
+              else
+                $walls.scrollTop (sTop +
+                  ($btn.hasClass("full-down") ? 100000 : 100));
+            }
+            else
+            {
+              const sLeft = $walls.scrollLeft ();
+
+              if($btn[0].className.indexOf("right") != -1)
+                $walls.scrollLeft (sLeft +
+                  ($btn.hasClass("full-right") ? 100000 : 100));
+              else
+                $walls.scrollLeft (sLeft -
+                  ($btn.hasClass("full-left") ? 100000 : 100));
+            }
+
+            $wall.wpt_wall ("showPostitsPlugs");
+
+          });
+      }
+    });
 
 <?php echo $Plugin->getFooter ()?>
