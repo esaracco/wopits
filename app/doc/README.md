@@ -73,9 +73,9 @@ If you are using the Git repository as your Apache DocumentRoot, create a `data/
 ### Deployment
 
 - Move to `app/deploy/`.
-- Duplicate `config.example.php` in `config.php` and customize it.
+- Create a new file `config.php` in this directory by duplicating `config.example.php`, and customize it.
 - In order to minify JS, CSS or HTML, you will need to customize the `minifiers` section. Read `config.example.php` for more information.
-- Deploy the application by executing `./deploy -e[yourenv]`. If the target is located on remote, the SSH user must have full rights on the remote DocumentRoot.
+- Deploy the application by executing `./deploy -e[yourenv]`. `yourenv` should have been defined in the new `config.php` you just created previously. If the target is located on remote, the SSH user must have full rights on the remote DocumentRoot.
 - The very first time the deployment script has been executed, you will have to log as root and execute the following commands before creating a service for the wopits WebSocket daemon:
 ```bash
 # cd [DocumentRoot]
