@@ -29,6 +29,13 @@
   define ('WPT_SMTP_PORT', 25);
 */
 
+  // About popup
+  // Display/hide about popup informations
+  // "Warning" section
+  define ('WPT_ABOUT_WARNING', false);
+  // "Privacy policy" section
+  define ('WPT_ABOUT_PRIVACY', false);
+
   // Emails
   define ('WPT_EMAIL_FROM', 'noreply@domain.com');
   define ('WPT_EMAIL_CONTACT', 'contact@domain.com');

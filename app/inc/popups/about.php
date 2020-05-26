@@ -23,7 +23,7 @@
           <?=sprintf(_("If you need professional hosting or special features, don't hesitate to contact %s."), '<a href="https://www.easter-eggs.com" target="_blank">Easter-eggs</a>')?>
         </p>
 
-        <?php if ($_SERVER['HTTP_HOST'] == 'www.wopits.com'):?>
+        <?php if (WPT_ABOUT_WARNING):?>
           <div class="mt-4 warning">
             <h2 class="bg-warning"><?=_("Warning")?></h2>
   
@@ -32,7 +32,9 @@
             <p class="mb2"><?=_("Of course we are doing everything to ensure a quality service, but the best solution is hosting on your own servers or with a professional host. wopits is a free project, anyone can get it and install it!")?></p>
   
           </div>
+        <?php endif?>
   
+        <?php if (WPT_ABOUT_PRIVACY):?>
           <div class="mt-4 warning">
             <h2 class="bg-info"><?=_("Privacy policy")?></h2>
   

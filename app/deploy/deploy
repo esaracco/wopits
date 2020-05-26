@@ -467,6 +467,19 @@
                 'WPT_EMAIL_CONTACT' => $env['emails']['contact']] as $k => $v)
         $this->_updateConf ($k, $v);
 
+      if (!empty ($env['about']))
+      {
+        foreach (['WPT_ABOUT_WARNING' => boolval(@$env['about']['warning']),
+                  'WPT_ABOUT_PRIVACY' => boolval(@$env['about']['privacy'])]
+                    as $k => $v)
+        $this->_updateConf ($k, $v);
+      }
+      else
+      {
+        $this->_updateConf ('WPT_ABOUT_WARNING', false);
+        $this->_updateConf ('WPT_ABOUT_PRIVACY', false);
+      }
+
       if (!empty ($env['dkim']))
       {
         foreach (['WPT_USE_DKIM' => true,

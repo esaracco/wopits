@@ -64,6 +64,14 @@
         // System command to restart wopits daemon
         'wopits-restart' => 'systemctl restart wopits1',
       ],
+      // About popup
+      // Display/hide about popup informations
+      'about' => [
+        // "Warning" section
+        'warning' => true,
+        // "Privacy policy" section
+        'privacy' => true
+      ],
       // Emails
       'emails' => [
         'from' => 'contact@wopits.com',
@@ -120,6 +128,14 @@
         'apache-restart' => 'systemctl reload apache2',
         // System command to restart wopits daemon
         'wopits-restart' => 'systemctl restart wopits2',
+      ],
+      // About popup
+      // Display/hide about popup informations
+      'about' => [
+        // "Warning" section
+        'warning' => false,
+        // "Privacy policy" section
+        'privacy' => true
       ],
       // Emails
       'emails' => [
