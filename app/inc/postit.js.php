@@ -578,16 +578,23 @@
 
               case "delete-plugs":
 
-                plugin.edit (null, () =>
-                  {
-                    const removedIds = plugin.removePlugs (),
-                          $undo = $menu.find("[data-action='undo-plug'] a");
+                wpt_openConfirmPopover ({
+                  item: $postit.find("[data-action='menu']"),
+                  placement: "left",
+                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                  content: "<?=_("Delete all relationships from this post-it?")?>",
+                  cb_close: null,
+                  cb_ok: () => plugin.edit (null, () =>
+                    {
+                      const removedIds = plugin.removePlugs (),
+                            $undo = $menu.find("[data-action='undo-plug'] a");
 
-                    plugin.unedit ();
+                      plugin.unedit ();
 
-                    $postit[0].dataset.undo = "delete|"+removedIds;
-                    $undo.removeClass ("disabled");
-                    $undo.find("span").text ("« <?=_("Delete")?> »");
+                      $postit[0].dataset.undo = "delete|"+removedIds;
+                      $undo.removeClass ("disabled");
+                      $undo.find("span").text ("« <?=_("Delete")?> »");
+                    })
                   });
 
                 break;
@@ -1965,6 +1972,7 @@
             switch ($item[0].dataset.action)
             {
               case "rename":
+
                 $postit.wpt_postit ("edit", null, ()=>
                   {
                     wpt_openConfirmPopover ({
@@ -1984,16 +1992,26 @@
                         }
                     });
                   });
+
                   break;
 
               case "delete":
-                $postit.wpt_postit ("edit", null, ()=>
-                  {
-                    $postit.wpt_postit ("removePlug", startId+"-"+endId);
-                    $postit.wpt_postit ("resetPlugsUndo");
-                    $postit.wpt_postit ("unedit");
+
+                wpt_openConfirmPopover ({
+                  item: $label,
+                  placement: "left",
+                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                  content: "<?=_("Delete this relationship?")?>",
+                  cb_close: null,
+                  cb_ok: () => $postit.wpt_postit ("edit", null, ()=>
+                    {
+                      $postit.wpt_postit ("removePlug", startId+"-"+endId);
+                      $postit.wpt_postit ("resetPlugsUndo");
+                      $postit.wpt_postit ("unedit");
+                    })
                   });
-                break;
+
+                  break;
             }
           });
 
