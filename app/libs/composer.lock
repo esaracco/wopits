@@ -1,10 +1,9 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "1690a509bd1646b075fadfe7abd8332a",
     "content-hash": "cf8db639bf57bbff4e6f32f6f28768ac",
     "packages": [
         {
@@ -58,7 +57,7 @@
                 "sockets",
                 "websocket"
             ],
-            "time": "2020-01-27 23:08:40"
+            "time": "2020-01-27T23:08:40+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -101,7 +100,7 @@
                 "event-dispatcher",
                 "event-emitter"
             ],
-            "time": "2017-07-23 21:35:13"
+            "time": "2017-07-23T21:35:13+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -172,7 +171,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2019-07-01 23:21:34"
+            "time": "2019-07-01T23:21:34+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -217,20 +216,20 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-07-02 15:55:56"
+            "time": "2018-07-02T15:55:56+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.1.5",
+            "version": "v6.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "a8bf068f64a580302026e484ee29511f661b2ad3"
+                "reference": "c2796cb1cb99d7717290b48c4e6f32cb6c60b7b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/a8bf068f64a580302026e484ee29511f661b2ad3",
-                "reference": "a8bf068f64a580302026e484ee29511f661b2ad3",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/c2796cb1cb99d7717290b48c4e6f32cb6c60b7b3",
+                "reference": "c2796cb1cb99d7717290b48c4e6f32cb6c60b7b3",
                 "shasum": ""
             },
             "require": {
@@ -279,7 +278,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2020-03-14 14:23:48"
+            "time": "2020-05-27T12:24:03+00:00"
         },
         {
             "name": "psr/http-message",
@@ -329,7 +328,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06 14:39:51"
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -369,7 +368,7 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
-            "time": "2019-03-08 08:55:37"
+            "time": "2019-03-08T08:55:37+00:00"
         },
         {
             "name": "ratchet/pawl",
@@ -418,7 +417,7 @@
                 "websocket",
                 "websocket client"
             ],
-            "time": "2019-01-14 14:09:36"
+            "time": "2019-01-14T14:09:36+00:00"
         },
         {
             "name": "ratchet/rfc6455",
@@ -466,7 +465,7 @@
                 "rfc6455",
                 "websocket"
             ],
-            "time": "2019-12-15 10:18:18"
+            "time": "2019-12-15T10:18:18+00:00"
         },
         {
             "name": "react/cache",
@@ -506,7 +505,7 @@
                 "promise",
                 "reactphp"
             ],
-            "time": "2019-07-11 13:45:28"
+            "time": "2019-07-11T13:45:28+00:00"
         },
         {
             "name": "react/dns",
@@ -550,7 +549,7 @@
                 "dns-resolver",
                 "reactphp"
             ],
-            "time": "2019-08-15 09:06:31"
+            "time": "2019-08-15T09:06:31+00:00"
         },
         {
             "name": "react/event-loop",
@@ -592,7 +591,7 @@
                 "asynchronous",
                 "event-loop"
             ],
-            "time": "2020-01-01 18:39:52"
+            "time": "2020-01-01T18:39:52+00:00"
         },
         {
             "name": "react/promise",
@@ -638,7 +637,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2019-01-07 21:25:54"
+            "time": "2019-01-07T21:25:54+00:00"
         },
         {
             "name": "react/promise-timer",
@@ -691,7 +690,7 @@
                 "timeout",
                 "timer"
             ],
-            "time": "2019-03-27 18:10:32"
+            "time": "2019-03-27T18:10:32+00:00"
         },
         {
             "name": "react/socket",
@@ -739,7 +738,7 @@
                 "reactphp",
                 "stream"
             ],
-            "time": "2020-03-12 12:15:14"
+            "time": "2020-03-12T12:15:14+00:00"
         },
         {
             "name": "react/stream",
@@ -785,7 +784,7 @@
                 "stream",
                 "writable"
             ],
-            "time": "2019-01-01 16:15:09"
+            "time": "2019-01-01T16:15:09+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -839,7 +838,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2020-02-06 08:18:51"
+            "time": "2020-02-06T08:18:51+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -898,7 +897,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2020-01-13 11:15:53"
+            "time": "2020-01-13T11:15:53+00:00"
         },
         {
             "name": "symfony/polyfill-php70",
@@ -957,7 +956,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2020-01-13 11:15:53"
+            "time": "2020-01-13T11:15:53+00:00"
         },
         {
             "name": "symfony/routing",
@@ -1033,7 +1032,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2020-02-04 08:04:52"
+            "time": "2020-02-04T08:04:52+00:00"
         }
     ],
     "packages-dev": [],
