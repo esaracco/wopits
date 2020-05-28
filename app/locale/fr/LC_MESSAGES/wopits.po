@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-28 07:01+0200\n"
-"PO-Revision-Date: 2020-05-28 07:03+0200\n"
+"POT-Creation-Date: 2020-05-28 10:38+0200\n"
+"PO-Revision-Date: 2020-05-28 10:35+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -267,9 +267,9 @@ msgstr "À propos de vous"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:345
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:415
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:461
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:396
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:420
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:453
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:399
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:423
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:456
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:22
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:54
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:73
@@ -333,7 +333,7 @@ msgstr "Une erreur est survenue durant l'importation."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1063
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:210
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:473
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:476
 msgid "An error occured while uploading file."
 msgstr "Une erreur est survenue durant le dépôt du fichier."
 
@@ -343,7 +343,7 @@ msgstr "Une erreur est survenue durant le dépôt du fichier."
 msgid "An error occurred while exporting wall data."
 msgstr "Une erreur est survenue durant l'export des données du mur."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:279
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:282
 msgid ""
 "Another account with the same email as your LDAP account email already "
 "exists on wopits!"
@@ -489,7 +489,7 @@ msgstr "Créez vos murs de post-its, et laissez briller vos idées!"
 msgid "Creation date"
 msgstr "Date de création"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:664
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:667
 msgid "Creation of your account"
 msgstr "Création de votre compte"
 
@@ -641,7 +641,7 @@ msgstr "Les emails doivent correspondre"
 msgid "Empty file or bad file format"
 msgstr "Fichier vide ou mauvais format de fichier"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:503
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:506
 msgid "Error processing image data"
 msgstr "Erreur durant le traitement des données de l'image"
 
@@ -824,6 +824,14 @@ msgstr "Aucun contenu."
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1662
 msgid "No description."
 msgstr "Aucune description."
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:270
+msgid ""
+"No email address is configured in your LDAP account. Please fix the problem "
+"before logging in again on wopits!"
+msgstr ""
+"Aucune adresse email n'est configurée dans votre compte LDAP. Veuillez "
+"corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits!"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:406
 msgid "No group is yet linked with this wall."
@@ -1044,7 +1052,7 @@ msgstr "Étiquettes:"
 msgid "Thank you for using wopits!"
 msgstr "Merci d'utiliser wopits!"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:629
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:632
 msgid ""
 "The account creation forms were filled out too quickly. Please reload this "
 "page and try again to verify that you are not a robot..."
@@ -1134,8 +1142,8 @@ msgstr "Le mur est en lecture seule"
 msgid "Theme"
 msgstr "Thème"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:534
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:641
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:537
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:644
 msgid "This email already exists."
 msgstr "Cette email existe déjà."
 
@@ -1157,8 +1165,8 @@ msgstr "Cet élément a été supprimé"
 msgid "This item has been deleted."
 msgstr "Cet élément a été supprimé."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:533
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:640
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:536
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:643
 msgid "This login already exists."
 msgstr "Cet identifiant existe déjà."
 
@@ -1326,7 +1334,7 @@ msgstr "Largeur/Hauteur"
 msgid "With grid"
 msgstr "Avec quadrillage"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:569
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:572
 msgid "Wrong current password."
 msgstr "Mauvais mot de passe actuel."
 
@@ -1389,7 +1397,7 @@ msgid "Your account has been updated"
 msgstr "Votre compte a été modifié"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:264
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:310
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:313
 msgid "Your connection attempt failed!"
 msgstr "Votre tentative de connexion a échoué!"
 
@@ -1397,7 +1405,7 @@ msgstr "Votre tentative de connexion a échoué!"
 msgid "Your current password:"
 msgstr "Votre mot de passe actuel:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:665
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:668
 #, php-format
 msgid ""
 "Your new account \"%s\" has been created on wopits!\n"

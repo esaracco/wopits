@@ -66,7 +66,8 @@
   // Example: !!tobechanged!!
   define ('WPT_LDAP_BINDPW', "");
   // Filter for users search. Use "{uid}" to tell wopits to replace this string
-  // by the user login to search
+  // by the user login to search.
+  // -> Must return InetOrgPerson.
   // Example: (&(objectClass=people)(uid={uid}))
   define ('WPT_LDAP_FILTER', "");
   // Base DN for users search

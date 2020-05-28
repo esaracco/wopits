@@ -86,7 +86,8 @@
         'binddn' => 'uid=wopits,ou=sysaccounts,o=domain.com',
         'bindpw' => 'ChangeMe1',
         // Filter for users search. Use "{uid}" to tell wopits to replace this
-        // string by the user login to search
+        // string by the user login to search.
+        // -> Must return InetOrgPerson.
         'filter' => '(&(objectClass=people)(uid={uid}))',
         // Base DN for users search
         'basedn' => 'o=domain.com'

@@ -266,6 +266,9 @@
         // If user has been found in LDAP, try to bind with its password.
         if ($Ldap->bind ($ldapData['dn'], $this->data->password))
         {
+          if  (empty ($ldapData['mail']))
+            return ['error_msg' => _("No email address is configured in your LDAP account. Please fix the problem before logging in again on wopits!")];
+
           $stmt = $this->prepare ('
             SELECT id, settings FROM users WHERE username = ?');
           $stmt->execute ([$this->data->username]);
@@ -281,7 +284,7 @@
             $this->data = (object)[
               'email' => $ldapData['mail'],
               'username' => $this->data->username,
-              'fullname' => $ldapData['cn'],
+              'fullname' => $ldapData['cn']??'',
               'password' => $this->data->password
             ];
             if (empty ($this->create ()))
