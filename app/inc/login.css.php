@@ -41,6 +41,14 @@ html {
   border-radius: 5px;
 }
 
+.ldap .user-card {
+  height: 370px;
+}
+
+.ldap .div-logo {
+  margin-bottom:60px;
+}
+
 .brand-logo-container {
   position: absolute;
   height: 100px;
@@ -59,7 +67,11 @@ html {
 }
 
 .form-container {
+<?php if (!WPT_USE_LDAP):?>
   margin-top: 120px;
+<?php else:?>
+  margin-top: 40px;
+<?php endif?>
 }
 
 #login button {

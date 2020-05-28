@@ -18,29 +18,43 @@
 
         <div class="user-picture mb-3"><?=($user['picture']) ? '<button type="button" class="close img-delete"><span>&times;</span></button><img src="'.$user['picture'].'">' : '<i class="fas fa-camera-retro fa-3x"></i>'?></div>
 
+        <?php if (WPT_USE_LDAP):?>
+          <div class="mb-2 ldap-msg">
+            <?=_("You are connected with your LDAP account.")?>
+         </div>
+        <?php endif?>
+
         <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user fa-fw"></i></span></div>
           <input type="text" name="username" class="form-control" value="<?=htmlentities($user['username'])?>" placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="none" readonly>
-          <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
+          <?php if (!WPT_USE_LDAP):?>
+            <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
+          <?php endif?>
         </div>
 
-        <div class="input-group mb-1">
-          <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key fa-fw"></i></span></div>
-          <input type="password" name="password" class="form-control" value="******" placeholder="<?=_("password")?>" readonly>
-          <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
-        </div>
+        <?php if (!WPT_USE_LDAP):?>
+          <div class="input-group mb-1">
+            <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key fa-fw"></i></span></div>
+            <input type="password" name="password" class="form-control" value="******" placeholder="<?=_("password")?>" readonly>
+            <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
+          </div>
+        <?php endif?>
 
         <div class="input-group mb-1">
+          <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-envelope fa-fw"></i></span></div>
+          <input type="email" name="email" class="form-control" value="<?=$user['email']?>" placeholder="<?=_("email")?>" readonly>
+          <?php if (!WPT_USE_LDAP):?>
+            <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
+          <?php endif?>
+        </div>
+
+        <div class="input-group mb-3">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-signature fa-fw"></i></span></div>
           <input type="text" name="fullname" class="form-control" value="<?=htmlentities($user['fullname'])?>" placeholder="<?=_("full name")?>" autocorrect="off" readonly>
           <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
         </div>
 
-        <div class="input-group mb-3">
-          <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-envelope fa-fw"></i></span></div>
-          <input type="email" name="email" class="form-control" value="<?=$user['email']?>" placeholder="<?=_("email")?>" readonly>
-          <div class="input-group-append"><button type="button" class="btn btn-change-input"><i class="fas fa-edit fa-fw"></i></button></div>
-        </div>
+
 
         <div class="input-group mb-3">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-address-card fa-fw"></i></span></div>
@@ -50,7 +64,9 @@
 
         </form>
 
-        <a href="#" data-action="delete-account"><?=_("Delete my account")?></a>
+        <?php if (!WPT_USE_LDAP):?>
+          <a href="#" data-action="delete-account"><?=_("Delete my account")?></a>
+        <?php endif?>
 
       </div>
       <div class="modal-footer">

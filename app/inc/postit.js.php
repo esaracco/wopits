@@ -1820,7 +1820,7 @@
       this.unsetCurrent ();
 
       if (!this.settings.wall)
-        wpt_raiseError (null, "<?=_("Sorry, but the entire column was deleted while you were editing the post-it!")?>");
+        wpt_raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
     },
 
     // METHOD openMenu ()

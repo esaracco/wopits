@@ -7,44 +7,84 @@
 
   // Your wopits secret key for data integrity check
   // -> Set it once and for all and don't change it anymore!
-  define ('WPT_SECRET_KEY', '!!tobechanged!!');
+  // Example: !!tobechanged!!
+  define ('WPT_SECRET_KEY', "");
 
   // System command to reload apache
-  define ('WPT_APACHE_RESTART', 'systemctl reload apache2');
+  // Example: systemctl reload apache2
+  define ('WPT_APACHE_RESTART', "");
   // System command to restart wopits daemon
-  define ('WPT_WOPITS_RESTART', 'systemctl restart wopits-example');
+  // Example: systemctl restart wopits-example
+  define ('WPT_WOPITS_RESTART', "");
 
   // Database
-  define ('WPT_DSN', 'mysql:host=localhost;dbname=wopits-example;port=3306');
-  define ('WPT_DB_USER', 'wopits-example');
-  define ('WPT_DB_PASSWORD', '!!tobechanged!!');
+  // Example: mysql:host=localhost;dbname=wopits-example;port=3306
+  define ('WPT_DSN', "");
+  // Example: wopits-example
+  define ('WPT_DB_USER', "");
+  // Example: !!tobechanged!!
+  define ('WPT_DB_PASSWORD', "");
 
    // Websockets server
-  define ('WPT_WS_PORT', 8080);
+  // Example: 8080
+  define ('WPT_WS_PORT', "");
 
   // SMTP
 /*TODO //FIXME For the moment, the mailer can only be the localhost
   -> Do not change those values
-  define ('WPT_SMTP_HOST', 'localhost');
-  define ('WPT_SMTP_PORT', 25);
+  define ('WPT_SMTP_HOST', "localhost");
+  define ('WPT_SMTP_PORT', "25");
 */
 
   // About popup
   // Display/hide about popup informations
   // "Warning" section
-  define ('WPT_ABOUT_WARNING', false);
+  // Example: false
+  define ('WPT_ABOUT_WARNING', "");
   // "Privacy policy" section
-  define ('WPT_ABOUT_PRIVACY', false);
+  // Example: false
+  define ('WPT_ABOUT_PRIVACY', "");
 
   // Emails
-  define ('WPT_EMAIL_FROM', 'noreply@domain.com');
-  define ('WPT_EMAIL_CONTACT', 'contact@domain.com');
+  // Example: noreply@domain.com
+  define ('WPT_EMAIL_FROM', "");
+  // Example: contact@domain.com
+  define ('WPT_EMAIL_CONTACT', "");
+
+  // LDAP
+  // If true, LDAP will be used for users authentication. Users who are not
+  // registered in LDAP will not be able to create account on wopits.
+  // Example: true
+  define ('WPT_USE_LDAP', "");
+  // LDAP host
+  // Example: ldaps://ldap.domain.com:636
+  define ('WPT_LDAP_HOST', "");
+  // DN for LDAP wopits authentication
+  // Example: uid=wopits,ou=sysaccounts,o=domain.com
+  define ('WPT_LDAP_BINDDN', "");
+  // Password for LDAP wopits user authentication
+  // Example: !!tobechanged!!
+  define ('WPT_LDAP_BINDPW', "");
+  // Filter for users search. Use "{uid}" to tell wopits to replace this string
+  // by the user login to search
+  // Example: (&(objectClass=people)(uid={uid}))
+  define ('WPT_LDAP_FILTER', "");
+  // Base DN for users search
+  // Example: o=domain.com
+  define ('WPT_LDAP_BASEDN', "");
 
   // DKIM
   // I you want to use DKIM and have well configured it
-  define ('WPT_USE_DKIM', true);
+  // Example: true
+  define ('WPT_USE_DKIM', "");
   // Domain
-  define ('WPT_DKIM_DOMAIN', 'domain.com');
+  // Example: domain.com
+  define ('WPT_DKIM_DOMAIN', "");
   // Selector
-  define ('WPT_DKIM_SELECTOR', 'mail');
+  // Example: mail
+  define ('WPT_DKIM_SELECTOR', "");
+
+  // Control dev mode or prod mode
+  // Example: false
+  define ('WPT_DEV_MODE', "");
 ?>

@@ -2,11 +2,9 @@
 <?php
   putenv ('DEPLOY=1');
 
-  $siteConf = realpath (__DIR__.'/../../site-config.php');
+  $siteConf = realpath (__DIR__.'/../../site-config.template.php');
   $deployConf = __DIR__.'/config.php';
   $appConf = realpath (__DIR__.'/../config.php');
-  if (!file_exists ($siteConf))
-    $siteConf = realpath (__DIR__.'/../../site-config.template.php');
 
   // Check for configuration files
   if (!file_exists ($deployConf) ||
@@ -27,7 +25,6 @@
   $options = getopt ('hve:');
 
   $Deploy = new Deploy ([
-    'haveTemplateConf' => (strpos ($siteConf, '.template.') !== false),
     'verbose' => isset ($options['v']),
     'env' => @$options['e']
   ]);
@@ -50,7 +47,6 @@
     private $isFirstDeployment = false;
     private $deployUser;
     private $srcAppPath;
-    private $appConfPath;
     private $siteConfPath;
     private $minify = ['js' => false, 'css' => false, 'html' => false];
     private $isRemoteTarget;
@@ -72,7 +68,6 @@
       $env = ENV[$this->opt['env']];
       $this->deployUser = $cliUser['name'];
       $this->srcAppPath = preg_replace ('#^(.*)/app/deploy$#', '$1', __DIR__);
-      $this->appConfPath = "{$env['build-path']}/app/config.php";
       $this->siteConfPath = "{$env['build-path']}/site-config.php";
       $this->isRemoteTarget = ($env['target']['type'] == 'remote');
       $this->targetPath = $env['target']['path'];
@@ -94,51 +89,66 @@
 
       if (empty ($this->opt['env']))
         $this->help ("Which environment should we deploy?");
-      elseif (empty ($env))
+      if (empty ($env))
         $this->help ("Unknown environment `{$this->opt['env']}`!");
-      elseif (empty ($env['secret-key']) ||
+      if (empty ($env['secret-key']) ||
               stripos ($env['secret-key'], 'ChangeMe') !== false)
         $this->help ("Conf `secret-key` must be set!");
-      elseif (empty ($env['www-system-user']))
+      if (empty ($env['www-system-user']))
         $this->help ("Conf `www-system-user` is empty!");
-      elseif (empty ($env['build-path']))
+      if (empty ($env['build-path']))
         $this->help ("Conf `build-path` is empty!");
-      elseif (empty ($env['target']))
+      if (empty ($env['target']))
         $this->help ("Conf `target` section is empty!");
-      elseif (!preg_match ('/^local|remote$/', $env['target']['type']))
+      if (!preg_match ('/^local|remote$/', $env['target']['type']))
         $this->help ("Conf `target->type` is not valid!");
-      elseif (empty ($env['target']['path']))
+      if (empty ($env['target']['path']))
         $this->help ("Conf `target->path` is empty!");
-      elseif (empty ($env['websocket']))
+      if (empty ($env['websocket']))
         $this->help ("Conf `websocket` section is empty!");
-      elseif (empty ($env['websocket']['server']))
+      if (empty ($env['websocket']['server']))
         $this->help ("Conf `websocket->server` section is empty!");
-      elseif (!preg_match ('/^\d+$/', $env['websocket']['server']['port']))
+      if (!preg_match ('/^\d+$/', $env['websocket']['server']['port']))
         $this->help ("Conf `websocket->server->port` is not valid!");
-      elseif (empty ($env['db']))
+      if (empty ($env['db']))
         $this->help ("Conf `db` is empty!");
-      elseif (empty ($env['cmd']))
+      if (empty ($env['cmd']))
         $this->help ("Conf `cmd` is empty!");
-      elseif (empty ($env['cmd']['apache-restart']))
+      if (empty ($env['cmd']['apache-restart']))
         $this->help ("Conf `cmd->apache-restart` is empty!");
-      elseif (empty ($env['cmd']['wopits-restart']))
+      if (empty ($env['cmd']['wopits-restart']))
         $this->help ("Conf `cmd->wopits-restart` is empty!");
-      elseif (empty ($env['emails']))
+      if (empty ($env['emails']))
         $this->help ("Conf `emails` section is empty!");
-      elseif (empty ($env['emails']['from']))
+      if (empty ($env['emails']['from']))
         $this->help ("Conf `emails->from` is empty!");
-      elseif (empty ($env['emails']['contact']))
+      if (empty ($env['emails']['contact']))
         $this->help ("Conf `emails->contact` is empty!");
-      elseif ($env['target']['type'] == 'remote' &&
+      if ($env['target']['type'] == 'remote' &&
               !preg_match('/^(.+)@(.+):(.+)$/', $env['target']['path']))
         $this->help ("Conf remote `target->path` ".
                      "(`{$env['target']['path']}`) is not valid!");
-      elseif (!empty ($env['dkim']))
+      if (!empty ($env['dkim']))
       {
         if (empty ($env['dkim']['domain']))
-          $this->help ("Conf DKIM domain `dkim->domain` is empty!");
-        elseif (empty ($env['dkim']['selector']))
-          $this->help ("Conf DKIM selector `dkim->selector` is empty!");
+          $this->help ("Conf `dkim->domain` is empty!");
+        if (empty ($env['dkim']['selector']))
+          $this->help ("Conf `dkim->selector` is empty!");
+      }
+      if (!empty ($env['ldap']))
+      {
+        if (empty ($env['ldap']['host']))
+          $this->help ("Conf `ldap->host` is empty!");
+        if (empty ($env['ldap']['binddn']))
+          $this->help ("Conf `ldap->binddn` is empty!");
+        if (empty ($env['ldap']['bindpw']))
+          $this->help ("Conf `ldap->bindpw` is empty!");
+        if (empty ($env['ldap']['filter']))
+          $this->help ("Conf `ldap->filter` is empty!");
+        if (strpos($env['ldap']['filter'], '{uid}') === false)
+          $this->help ("Conf `ldap->filter` must contains the '{uid}' string!");
+        if (empty ($env['ldap']['basedn']))
+          $this->help ("Conf `ldap->basedn` is empty!");
       }
     }
 
@@ -436,13 +446,9 @@
         }
       }
 
-      if ($this->opt['haveTemplateConf'])
-        $this->_exec ('cp -a '.__DIR__.
-         "/../../site-config.template.php ".
-           "{$env['build-path']}/site-config.php");
-      else
-        $this->_exec ('cp -a '.__DIR__.
-         "/../../site-config.php {$env['build-path']}/");
+      $this->_exec ('cp -a '.__DIR__.
+       "/../../site-config.template.php ".
+         "{$env['build-path']}/site-config.php");
 
       $this->minifyHTML (); 
     
@@ -452,11 +458,8 @@
       // Set websocket client / server executable
       $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
     
-      $this->_updateConf ('WPT_DEV_MODE', false, $this->appConfPath);
-      if (!empty ($env['version']))
-        $this->_updateConf ('WPT_VERSION', $env['version'], $this->appConfPath);
-
-      foreach (['WPT_SECRET_KEY' => $env['secret-key'],
+      foreach (['WPT_DEV_MODE' => false,
+                'WPT_SECRET_KEY' => $env['secret-key'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
                 'WPT_WS_PORT' => $env['websocket']['server']['port'],
@@ -489,6 +492,23 @@
       }
       else
         $this->_updateConf ('WPT_USE_DKIM', false);
+
+      if (!empty ($env['ldap']))
+      {
+        foreach (['WPT_USE_LDAP' => true,
+                  'WPT_LDAP_HOST' => $env['ldap']['host'],
+                  'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
+                  'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
+                  'WPT_LDAP_FILTER' => $env['ldap']['filter'],
+                  'WPT_LDAP_BASEDN' => $env['ldap']['basedn']] as $k => $v)
+        $this->_updateConf ($k, $v);
+      }
+      else
+        $this->_updateConf ('WPT_USE_LDAP', false);
+
+      $dest = "{$env['build-path']}/site-config.php";
+      $this->_exec ("php -w $dest > $dest-tmp");
+      rename ("$dest-tmp", $dest);
 
       echo "Directory \e[1m{$this->targetPath}".
            "\e[0m will be updated".(
@@ -581,7 +601,7 @@
 
     private function _quotePerlValue ($val)
     {
-      return str_replace ('@', '\@', preg_quote ($val));
+      return str_replace (['@', '/'], ['\@', '\\/'], preg_quote ($val));
     }
   
     private function _exec ($cmd, $onRemote = false, $noExit = false)
@@ -611,17 +631,15 @@
       }
     }
 
-    private function _updateConf ($k, $v, $conf = null)
+    private function _updateConf ($k, $v)
     {
-      if (!$conf)
-        $conf = $this->siteConfPath;
-
       $tmp = 
         (!$v || preg_match('/^\s*(true|false|1|0|on|off|yes|no)\s*$/i', $v)) ?
           intval (filter_var ($v, FILTER_VALIDATE_BOOLEAN)) :
           '\\"'.$this->_quotePerlValue ($v).'\\"';
 
-      $this->_exec ("perl -pi -e 's/(.$k.),[^\)]+\)/$1, $tmp)/' $conf");
+      $this->_exec (
+        "perl -pi -e 's/(.$k.),\s*\"\"\)/$1, $tmp)/' ".$this->siteConfPath);
     }
 
     private function help ($msg)

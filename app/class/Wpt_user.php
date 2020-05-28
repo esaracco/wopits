@@ -1,6 +1,8 @@
 <?php
 
   require_once (__DIR__.'/Wpt_wall.php');
+  if (WPT_USE_LDAP)
+    require_once (__DIR__.'/Wpt_ldap.php');
 
   class Wpt_user extends Wpt_wall
   {
@@ -247,33 +249,76 @@
     public function login ($remember = false)
     {
       $ret = [];
+      $data = null;
 
-      $stmt = $this->prepare ('
-        SELECT id, settings FROM users
-        WHERE username = :username AND password = :password');
-      $stmt->execute ([
-        ':username' => $this->data->username,
-        ':password' => hash ('sha1', $this->data->password)
-      ]);
-      $data = $stmt->fetch ();
+      // If we must use LDAP, get user infos in LDAP and bind with its
+      // password.
+      if (WPT_USE_LDAP)
+      {
+        $Ldap = new Wpt_ldap ();
 
-      // Use not found
-      if (!$data)
-        $ret['error_msg'] =
-          _("Sorry, your connection attempt failed!");
+        if (!$Ldap->connect ())
+          return ['error_msg' => _("Can't contact LDAP server!")];
+
+        if (!($ldapData = $Ldap->getUserData ($this->data->username)))
+          return ['error_msg' => _("Your connection attempt failed!")];
+
+        // If user has been found in LDAP, try to bind with its password.
+        if ($Ldap->bind ($ldapData['dn'], $this->data->password))
+        {
+          $stmt = $this->prepare ('
+            SELECT id, settings FROM users WHERE username = ?');
+          $stmt->execute ([$this->data->username]);
+          $data = $stmt->fetch ();
+
+          // If user account has not been yet created on wopits, silently
+          // create it (user will not receive creation email).
+          if (!$data)
+          {
+            if ($this->_isDuplicate (['email' => $ldapData['mail']]))
+              return ['error_msg' => _("Another account with the same email as your LDAP account email already exists on wopits!")];
+
+            $this->data = (object)[
+              'email' => $ldapData['mail'],
+              'username' => $this->data->username,
+              'fullname' => $ldapData['cn'],
+              'password' => $this->data->password
+            ];
+            if (empty ($this->create ()))
+              $data = ['id' => $this->userId];
+          }
+          // Update local password with LDAP password.
+          else
+            $this->executeQuery ('UPDATE users',
+              ['password' => hash ('sha1', $this->data->password)],
+              ['id' => $data['id']]);
+        }
+      }
       else
       {
-        $this->userId = $data['id'];
+        $stmt = $this->prepare ('
+          SELECT id, settings FROM users WHERE username = ? AND password = ?');
+        $stmt->execute ([
+          $this->data->username,
+          hash ('sha1', $this->data->password)
+        ]);
+        $data = $stmt->fetch ();
+      }
 
-        try
-        {
-          $this->_createToken ($data['settings']??null, $remember);
-        }
-        catch (Exception $e)
-        {
-          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = 1;
-        }
+      // User not found
+      if (empty ($data))
+        return ['error_msg' => _("Your connection attempt failed!")];
+
+      $this->userId = $data['id'];
+
+      try
+      {
+        $this->_createToken ($data['settings']??null, $remember);
+      }
+      catch (Exception $e)
+      {
+        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+        $ret['error'] = 1;
       }
 
       return $ret;
@@ -523,7 +568,7 @@
           if (!$stmt->fetch ())
             throw new Exception (_("Wrong current password."));
   
-          $count = $this->executeQuery ('UPDATE users',
+          $this->executeQuery ('UPDATE users',
            ['password' => hash ('sha1', $pwd->new)],
            ['id' => $this->userId]);
         }
@@ -572,25 +617,22 @@
       $ret = [];
       $currentDate = time ();
 
-      if (empty ($_SESSION['_check']) ||
-          $this->data->_check != $_SESSION['_check'] ||
-          (time() - $this->data->_check) < 10)
+      // Check for SPAM only if standard auth mode
+      if (!WPT_USE_LDAP)
       {
-        $this->logout ();
-        error_log ("SPAM detection");
-        return ['error' => _("The account creation forms were filled out too quickly. Please reload this page and try again to verify that you are not a robot...")];
+        if (empty ($_SESSION['_check']) ||
+            $this->data->_check != $_SESSION['_check'] ||
+            (time() - $this->data->_check) < 10)
+        {
+          $this->logout ();
+          error_log ("SPAM detection");
+          return ['error' => _("The account creation forms were filled out too quickly. Please reload this page and try again to verify that you are not a robot...")];
+        }
       }
 
       try
       {
         // Check for duplicate (username or email)
-        $stmt = $this->prepare ('
-          SELECT username, email
-          FROM users WHERE username = :username OR email = :email');
-        $stmt->execute ([
-          ':username' => $this->data->username,
-          ':email' => $this->data->email
-        ]);
         if ($dbl = $this->_isDuplicate ([
                      'username' => $this->data->username,
                      'email' => $this->data->email]))
@@ -615,11 +657,13 @@
         // All is OK, user is logged
         $_SESSION['userId'] = $this->userId;
 
-        Wpt_common::mail ([
-          'email' => $this->data->email,
-          'subject' => _("Creation of your account"),
-          'msg' => sprintf(_("Your new account \"%s\" has been created on wopits!\n\nFeel free to contact us for feature request, and enjoy ;-)"), $this->data->username)
-          ]);
+        // Send account creation email only in standard auth mode
+        if (!WPT_USE_LDAP)
+          Wpt_common::mail ([
+            'email' => $this->data->email,
+            'subject' => _("Creation of your account"),
+            'msg' => sprintf(_("Your new account \"%s\" has been created on wopits!\n\nFeel free to contact us for feature request, and enjoy ;-)"), $this->data->username)
+            ]);
 
         mkdir ("{$this->getUserDir()}/tmp", 02770, true);
 
@@ -630,7 +674,9 @@
         $msg = $e->getMessage ();
 
         error_log (__METHOD__.':'.__LINE__.':'.$msg);
-        $ret['error_msg'] = $msg;
+
+        if (!WPT_USE_LDAP)
+          $ret['error_msg'] = $msg;
       }
 
       return $ret;

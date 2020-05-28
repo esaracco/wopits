@@ -37,12 +37,12 @@
       include (__DIR__."/../app/inc/popups/$popup.php");
   ?>
   
-  <div class="main-login">
+  <div class="main-login<?=WPT_USE_LDAP?' ldap':''?>">
 
     <div class="container h-100" id="login">
       <div class="d-flex justify-content-center h-100">
         <div class="user-card">
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center div-logo">
             <div class="brand-logo-container">
               <img src="img/wopits-192x192.png" class="brand-logo" alt="Logo">
             </div>
@@ -50,6 +50,13 @@
           <div class="d-flex justify-content-center form-container">
             <form>
               <input type="hidden" name="_check" value="<?=$_SESSION['_check']?>">
+
+              <?php if (WPT_USE_LDAP):?>
+                <div class="ldap-msg mb-3">
+                  <?=_("Log in with your LDAP account.")?>
+                </div>
+              <?php endif?>
+
               <div class="input-group mb-1">
                 <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user"></i></span></div>
                 <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="none" autofocus>
@@ -67,16 +74,20 @@
               <div class="d-flex justify-content-center mt-3 login-container">
                 <button data-type="login" type="button" name="button" class="btn btn-success"><?=_("Log in")?></button>
               </div>
-              <div class="d-flex justify-content-center mt-3 login-container">
-                <button data-type="create" type="button" name="button" class="btn btn-secondary"><?=_("Create a account")?></button>
-              </div>
+              <?php if (!WPT_USE_LDAP):?>
+                <div class="d-flex justify-content-center mt-3 login-container">
+                  <button data-type="create" type="button" name="button" class="btn btn-secondary"><?=_("Create a account")?></button>
+                </div>
+              <?php endif?>
             </form>
           </div>
-          <div class="mt-4">
-            <div class="d-flex justify-content-center links">
-              <a data-type="forgot" href="#"><?=_("Forgot your password?")?></a>
+          <?php if (!WPT_USE_LDAP):?>
+            <div class="mt-4">
+              <div class="d-flex justify-content-center links">
+                <a data-type="forgot" href="#"><?=_("Forgot your password?")?></a>
+              </div>
             </div>
-          </div>
+          <?php endif?>
         </div>
       </div>
     </div>

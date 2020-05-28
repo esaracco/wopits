@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-26 10:13+0200\n"
+"POT-Creation-Date: 2020-05-28 07:01+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -144,7 +144,7 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:47
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:61
 msgid "About you"
 msgstr ""
 
@@ -164,9 +164,9 @@ msgstr ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:345
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:415
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:461
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:351
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:375
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:408
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:396
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:420
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:453
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:22
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:54
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:73
@@ -230,7 +230,7 @@ msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1063
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:210
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:428
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:473
 msgid "An error occured while uploading file."
 msgstr ""
 
@@ -238,6 +238,12 @@ msgstr ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:643
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:719
 msgid "An error occurred while exporting wall data."
+msgstr ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:279
+msgid ""
+"Another account with the same email as your LDAP account email already "
+"exists on wopits!"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:381
@@ -266,6 +272,10 @@ msgstr ""
 msgid "Can not read file"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:261
+msgid "Can't contact LDAP server!"
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:21
 msgid "Cancel"
 msgstr ""
@@ -289,13 +299,13 @@ msgstr ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitsSearch.php:23
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userView.php:30
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:40
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:57
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:73
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/updateOneInput.php:17
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitUpdate.php:24
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:37
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallUsersview.php:15
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/groupAccess.php:41
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:50
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:52
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:50
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:59
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:61
@@ -354,7 +364,7 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:71
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:79
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:5
 msgid "Create a account"
 msgstr ""
@@ -372,7 +382,7 @@ msgstr ""
 msgid "Creation date"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:620
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:664
 msgid "Creation of your account"
 msgstr ""
 
@@ -400,9 +410,9 @@ msgstr ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:459
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:584
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:596
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:889
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2004
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2031
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:888
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2003
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2030
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:100
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:155
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:380
@@ -414,7 +424,7 @@ msgstr ""
 msgid "Delete all relationships from this post-it?"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:53
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:68
 msgid "Delete my account"
 msgstr ""
 
@@ -426,7 +436,7 @@ msgstr ""
 msgid "Delete this column?"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2032
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2031
 msgid "Delete this file?"
 msgstr ""
 
@@ -446,7 +456,7 @@ msgstr ""
 msgid "Delete this post-it?"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2005
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2004
 msgid "Delete this relationship?"
 msgstr ""
 
@@ -516,7 +526,7 @@ msgstr ""
 msgid "Empty file or bad file format"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:458
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:503
 msgid "Error processing image data"
 msgstr ""
 
@@ -540,7 +550,7 @@ msgstr ""
 msgid "For performance reasons, a wall cannot contain more than %s cells"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:77
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:87
 msgid "Forgot your password?"
 msgstr ""
 
@@ -621,8 +631,12 @@ msgstr ""
 msgid "Linked documents"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:68
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:75
 msgid "Log in"
+msgstr ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:56
+msgid "Log in with your LDAP account."
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:196
@@ -644,7 +658,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:41
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:43
 msgid ""
 "Neither the data you create nor your account information is shared with any "
 "third parties."
@@ -763,7 +777,7 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:37
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:39
 msgid "Privacy policy"
 msgstr ""
 
@@ -797,16 +811,16 @@ msgstr ""
 msgid "Reload wopits to apply the new timezone?"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:64
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:71
 msgid "Remember me"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:889
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:888
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:97
 msgid "Rename"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1982
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1981
 msgid "Rename relation"
 msgstr ""
 
@@ -815,11 +829,11 @@ msgid "Required field"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/resetPassword.php:5
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:710
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:709
 msgid "Reset"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:711
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:710
 msgid "Reset deadline?"
 msgstr ""
 
@@ -884,15 +898,6 @@ msgstr ""
 msgid "Someone is editing this element."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1824
-msgid ""
-"Sorry, but the entire column was deleted while you were editing the post-it!"
-msgstr ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:263
-msgid "Sorry, your connection attempt failed!"
-msgstr ""
-
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:67
 msgid "Standard view"
 msgstr ""
@@ -909,7 +914,7 @@ msgstr ""
 msgid "Thank you for using wopits!"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:581
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:629
 msgid ""
 "The account creation forms were filled out too quickly. Please reload this "
 "page and try again to verify that you are not a robot..."
@@ -927,11 +932,15 @@ msgid ""
 "wopits account?"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1823
+msgid "The entire column was deleted while you were editing the post-it!"
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1133
 msgid "The file has been successfully imported!"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1449
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1448
 msgid "The file is already linked to the post-it"
 msgstr ""
 
@@ -987,8 +996,8 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:489
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:599
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:534
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:641
 msgid "This email already exists."
 msgstr ""
 
@@ -1001,7 +1010,7 @@ msgstr ""
 msgid "This group does not currently contain any users."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:649
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:648
 msgid "This item has been deleted"
 msgstr ""
 
@@ -1010,8 +1019,8 @@ msgstr ""
 msgid "This item has been deleted."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:488
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:598
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:533
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:640
 msgid "This login already exists."
 msgstr ""
 
@@ -1023,8 +1032,8 @@ msgstr ""
 msgid "This new group will be available only for the current wall."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1393
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1690
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1392
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1689
 msgid "This post-it has no attachment"
 msgstr ""
 
@@ -1044,7 +1053,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:108
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:110
 msgid "Unable to retrieve your account information"
 msgstr ""
 
@@ -1052,14 +1061,14 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1598
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1597
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1126
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1175
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1188
 msgid "Unknown error.<br>Please try again later."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:39
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:41
 msgid ""
 "Unlike other applications offering you a free service, you are not "
 "considered here as a commodity or as a product."
@@ -1104,7 +1113,7 @@ msgid "Users of this group will have the following access to the current wall:"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:62
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1958
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1957
 msgid "View"
 msgstr ""
 
@@ -1125,7 +1134,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1596
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1595
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1103
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1145
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:643
@@ -1152,7 +1161,7 @@ msgid ""
 "server."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:43
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:45
 msgid ""
 "When you delete your account, your walls and all your personnal data are "
 "permanently erased."
@@ -1167,7 +1176,7 @@ msgstr ""
 msgid "With grid"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:524
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:569
 msgid "Wrong current password."
 msgstr ""
 
@@ -1176,11 +1185,15 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:23
+msgid "You are connected with your LDAP account."
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1314
 msgid "You are not the creator of this wall"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:85
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:87
 #, php-format
 msgid ""
 "You are receiving this email because you requested the reset of your wopits "
@@ -1217,11 +1230,16 @@ msgstr ""
 msgid "Your account has been updated"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:264
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:310
+msgid "Your connection attempt failed!"
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:12
 msgid "Your current password:"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:621
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:665
 #, php-format
 msgid ""
 "Your new account \"%s\" has been created on wopits!\n"
@@ -1246,7 +1264,7 @@ msgid ""
 "<b>number</b></li></ul>"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:84
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:86
 msgid "Your password reset"
 msgstr ""
 
@@ -1276,7 +1294,7 @@ msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/resetPassword.php:17
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:31
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:41
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:45
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:209
 msgid "email"
 msgstr ""
@@ -1286,7 +1304,7 @@ msgid "email confirmation"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:26
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:35
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:53
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:204
 msgid "full name"
 msgstr ""
@@ -1299,9 +1317,9 @@ msgstr ""
 msgid "group name"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:55
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:62
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:17
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:23
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:29
 msgid "login"
 msgstr ""
 
@@ -1319,9 +1337,9 @@ msgid ""
 "access groups"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:59
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/login.php:66
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:21
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:29
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:38
 msgid "password"
 msgstr ""
 

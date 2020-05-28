@@ -23,10 +23,9 @@ CREATE TABLE users
   settings VARCHAR(2000) NOT NULL DEFAULT '{}',
 
   PRIMARY KEY (id),
-  UNIQUE KEY `users_email_uidx` (email),
-  INDEX `users-username-idx` (username),
+  UNIQUE KEY `users-email-uidx` (email),
+  UNIQUE KEY `users-username-uidx` (username),
   INDEX `users-password-idx` (password),
-  INDEX `users-email-idx` (email),
   FULLTEXT INDEX `users-searchdata-idx` (searchdata)
 )
 ENGINE=INNODB;

@@ -14,6 +14,11 @@
   background-color: #343a40;
 }
 
+.ldap-msg {
+  color:#a5a5a5;
+  text-align:center;
+}
+
 .global-error {
   position:fixed;
   left:50%;

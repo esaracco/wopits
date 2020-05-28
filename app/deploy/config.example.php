@@ -78,6 +78,20 @@
         'contact' => 'contact@wopits.com'
       ],
       // DKIM
+      // (let this section empty if you do not want to use LDAP)
+      // If you use LDAP for authentication, users who are not registered in
+      // LDAP will not be able to create a account on wopits.
+      'ldap' => [
+        'host' => 'ldaps://ldap.domain.com:636',
+        'binddn' => 'uid=wopits,ou=sysaccounts,o=domain.com',
+        'bindpw' => 'ChangeMe1',
+        // Filter for users search. Use "{uid}" to tell wopits to replace this
+        // string by the user login to search
+        'filter' => '(&(objectClass=people)(uid={uid}))',
+        // Base DN for users search
+        'basedn' => 'o=domain.com'
+      ],
+      // DKIM
       // (let this section empty if you do not want to use DKIM)
       'dkim' => [
         // Your wopits domain
@@ -92,8 +106,6 @@
       // Your wopits secret key for data integrity check
       // -> Set it once and for all and don't change it anymore!
       'secret-key' => 'ChangeMe2',
-      // you can force wopit version here
-      'version' => '0.2',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory

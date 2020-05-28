@@ -1147,7 +1147,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
         timeout = (service.match(/attachment|picture$/)) ?
                     0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
 
-  wpt_loader ("show");
+  wpt_loader ("show", true);
 
   //console.log ("AJAX: "+method+" "+service);
 
@@ -1191,7 +1191,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
 
        error_cb && error_cb ();
      })
-    .always (function (){wpt_loader ("hide")});
+    .always (function (){wpt_loader ("hide", true)});
 }
 
 // FUNCTION wpt_checkUploadFileSize ()
