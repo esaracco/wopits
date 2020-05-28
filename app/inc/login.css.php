@@ -67,11 +67,11 @@ html {
 }
 
 .form-container {
-<?php if (!WPT_USE_LDAP):?>
   margin-top: 120px;
-<?php else:?>
+}
+
+.ldap .form-container {
   margin-top: 40px;
-<?php endif?>
 }
 
 #login button {
