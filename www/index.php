@@ -3,7 +3,7 @@
 
   <!-- LOADER -->
   <div id="popup-loader" class="layer">
-    <div id="loader"><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span></div>
+    <div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div>
   </div>
 
   <!-- upload LAYER -->

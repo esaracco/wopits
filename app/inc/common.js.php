@@ -741,7 +741,7 @@ function wpt_getUserDate (dt, tz, fmt)
 }
 
 // FUNCTION wpt_loader ()
-function wpt_loader (action, force = false)
+function wpt_loader (action, force = false, xhr = null)
 {
   const $layer = $("#popup-loader");
 
@@ -750,9 +750,34 @@ function wpt_loader (action, force = false)
     clearTimeout ($layer[0].dataset.timeoutid);
 
     if (action == "show")
-      $layer[0].dataset.timeoutid = setTimeout (() => $layer.show (), 500);
+    {
+      $layer[0].dataset.timeoutid = setTimeout (() =>
+        {
+          if (xhr)
+          {
+            // Abort upload on user request
+            $layer.find("button").off("click").on("click", function ()
+              {
+                xhr.abort ();
+              });
+
+            $layer.find (".progress,button").show ();
+          }
+
+          $layer.show ();
+
+        }, 500);
+    }
     else
+    {
       $layer.hide ();
+
+      $layer.find("button").hide ();
+      $layer.find(".progress").css ({
+        display: "none",
+        background: "orange"
+      });
+    }
   }
 }
 
@@ -1142,17 +1167,45 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
 // FUNCTION wpt_request_ajax ()
 function wpt_request_ajax (method, service, args, success_cb, error_cb)
 {
-  const msgArgs = {type: "danger", title: "<?=_("Warning!")?>"},
-        // No timeout for file transfert
-        timeout = (service.match(/attachment|picture$/)) ?
-                    0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
-
-  wpt_loader ("show", true);
+  const fileUpload = !!service.match(/attachment|picture|import|export$/),
+        // No timeout for file upload
+        timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
+  let msgArgs = {type: "danger", title: "<?=_("Warning!")?>"};
 
   //console.log ("AJAX: "+method+" "+service);
 
-  $.ajax (
+  const xhr = $.ajax (
     {
+      // Progressbar for file upload
+      xhr: function ()
+      {
+        const xhr = new window.XMLHttpRequest ();
+
+        function __progress (e)
+        {
+          if (e.lengthComputable)
+            {
+              const percentComplete = e.loaded / e.total,
+                    display = parseInt(percentComplete*100)+"%";
+
+              $("#loader .progress")
+                .text(display)
+                .css ("width", display);
+
+              if (percentComplete == 1)
+              {
+                $("#loader .progress")
+                  .html(`<i class="fas fa-grin-alt"></i>`)
+                  .css ("background", "#12da12");
+              }
+            }
+        }
+
+        xhr.upload.addEventListener ("progress", __progress, false);
+        xhr.addEventListener ("progress", __progress, false);
+
+        return xhr;
+      },
       type: method,
       timeout: timeout,
       async: true,
@@ -1182,16 +1235,36 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
      })
     .fail (function (jqXHR, textStatus, errorThrown)
      {
-       // No user msg for internal works
-       msgArgs["msg"] = (textStatus == "timeout") ?
-         "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>" :
-         "<?=_("Unknown error.<br>Please try again later.")?>";
+       switch (textStatus)
+       {
+         case "timeout":
+           msgArgs["msg"] = "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>";
+           break;
+         case "abort":
+           var msg = "<?=_("Upload has been canceled.")?>";
+           if ($(".tox-dialog").length)
+           {
+             msgArgs = null;
+             tinymce.activeEditor.windowManager.alert (msg);
+           }
+           else
+             msgArgs = {
+               type: "warning",
+               msg: msg
+             };
+           break;
+         default:
+          msgArgs["msg"] ="<?=_("Unknown error.<br>Please try again later.")?>";
+       }
 
-       wpt_displayMsg (msgArgs);
+       if (msgArgs)
+         wpt_displayMsg (msgArgs);
 
        error_cb && error_cb ();
      })
     .always (function (){wpt_loader ("hide", true)});
+
+    wpt_loader ("show", true, fileUpload && xhr);
 }
 
 // FUNCTION wpt_checkUploadFileSize ()
@@ -1220,7 +1293,10 @@ function wpt_checkUploadFileSize (args)
 // FUNCTION wpt_getUploadedFiles ()
 function wpt_getUploadedFiles (files, success_cb, error_cb, cb_msg)
 {
-  const reader = new FileReader ();
+  const reader = new FileReader (),
+        file = files[0];
+
+  reader.readAsDataURL (file);
 
   reader.onprogress = (e) =>
     {
@@ -1241,8 +1317,7 @@ function wpt_getUploadedFiles (files, success_cb, error_cb, cb_msg)
         });
     }
 
-  reader.onloadend = ((f) => (evt) => success_cb (evt, f))(files[0]);
-  reader.readAsDataURL (files[0]);
+  reader.onloadend = ((f) => (evt) => success_cb (evt, f))(file);
 }
 
 // FUNCTION wpt_headerRemoveContentKeepingWallSize ()

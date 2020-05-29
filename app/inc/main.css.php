@@ -105,14 +105,32 @@
   white-space:nowrap;
   z-index:60000;
   box-shadow: 0 0 25px 5px #b1b1b1;
-}
-
-#loader * {
   color:#fff;
 }
 
 #loader span {
   font-size:14px;
+}
+
+#loader .progress {
+  display:none;
+  height:14px;
+  color:#fff;
+  font-weight:bold;
+  font-size:10px;
+  padding-left:3px;
+  background:orange;
+  margin-bottom:5px;
+}
+
+#loader button {
+  display:none;
+  background: #e2747f !important;
+  border-color: #da4e5b !important;
+}
+
+#loader button:hover {
+  background:#da4e5b !important;
 }
 
 #normal-display-btn {

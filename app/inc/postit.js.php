@@ -1888,7 +1888,7 @@
               {
                 function __error_cb (d)
                 {
-                  if (!$(".tox-alert-dialog").length)
+                  if (d && !$(".tox-alert-dialog").length)
                     tinymce.activeEditor.windowManager.alert (d.error||d);
                 }
                 wpt_getUploadedFiles (

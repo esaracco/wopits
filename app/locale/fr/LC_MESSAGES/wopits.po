@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 14:11+0200\n"
-"PO-Revision-Date: 2020-05-29 14:12+0200\n"
+"POT-Creation-Date: 2020-05-29 20:57+0200\n"
+"PO-Revision-Date: 2020-05-29 17:09+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -233,7 +233,7 @@ msgstr ""
 msgid "A error occured while processing file."
 msgstr "Une erreur est survenue durant le traitement du fichier."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1305
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1380
 msgid "A new release of wopits is available!"
 msgstr "Une nouvelle version de wopits est disponible!"
 
@@ -331,7 +331,7 @@ msgstr "Une erreur est survenue durant le clonage du fichier."
 msgid "An error occured while processing import."
 msgstr "Une erreur est survenue durant l'importation."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1063
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1088
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:210
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:501
 msgid "An error occured while uploading file."
@@ -376,7 +376,7 @@ msgstr "Retour à la vue standard"
 msgid "Bad email address"
 msgstr "Mauvaise adresse email"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1233
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1309
 msgid "Can not read file"
 msgstr "Impossible de lire le fichier"
 
@@ -422,7 +422,7 @@ msgstr "Clonage terminé"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:33
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitAttachments.php:16
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:993
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:862
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:887
 msgid "Close"
 msgstr "Fermer"
 
@@ -455,7 +455,7 @@ msgstr "Titre colonne"
 msgid "Columns/Rows"
 msgstr "Colonnes/Lignes"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:832
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:857
 msgid "Confirmation"
 msgstr "Confirmation"
 
@@ -650,7 +650,7 @@ msgstr "Erreur durant le traitement des données de l'image"
 msgid "Export"
 msgstr "Exporter"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1200
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1273
 #, php-format
 msgid "File size is too large (%sM max)!"
 msgstr "Le fichier est trop volumineux (%sM max)!"
@@ -729,7 +729,7 @@ msgstr "Importation terminée"
 msgid "Import..."
 msgstr "Importer..."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:965
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:990
 msgid "Information"
 msgstr "Information"
 
@@ -796,7 +796,7 @@ msgstr "Confirmation du nouveau mot de passe:"
 msgid "New passwords must match"
 msgstr "Les nouveaux mots de passe doivent correspondre"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1307
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1382
 msgid "New release"
 msgstr "Nouvelle version"
 
@@ -814,7 +814,7 @@ msgid "Next"
 msgstr "Suivant"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/confirm.php:15
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:862
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:887
 msgid "No"
 msgstr "Non"
 
@@ -986,7 +986,7 @@ msgstr "Titre ligne"
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:20
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:32
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:669
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:862
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:887
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:185
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:239
 msgid "Save"
@@ -1041,7 +1041,11 @@ msgstr "Quelqu'un édite cet élément."
 msgid "Standard view"
 msgstr "Vue standard"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:977
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:6
+msgid "Stop"
+msgstr "Arrêter"
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1002
 msgid "System error. Please report it to the administrator."
 msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
 
@@ -1049,7 +1053,7 @@ msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
 msgid "Tags:"
 msgstr "Étiquettes:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1320
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1395
 msgid "Thank you for using wopits!"
 msgstr "Merci d'utiliser wopits!"
 
@@ -1062,7 +1066,7 @@ msgstr ""
 "Veuillez recharger cette page et recommencer afin de vérifier que vous "
 "n'êtes pas un robot."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1305
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1380
 #, php-format
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr "L'application sera mise à jour, de la v%s1 à la v%s2."
@@ -1109,7 +1113,7 @@ msgstr "Les utilisateurs suivants consultent ce mur:"
 msgid "The new password:"
 msgstr "Le nouveau mot de passe:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1187
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1241
 msgid "The server is taking too long to respond.<br>Please, try again later."
 msgstr "Le serveur répond trop lentement.<br>Veuillez réessayer plus tard."
 
@@ -1209,9 +1213,9 @@ msgid "Undo"
 msgstr "Annuler"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1597
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1126
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1175
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1188
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1151
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1228
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1257
 msgid "Unknown error.<br>Please try again later."
 msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard."
 
@@ -1240,13 +1244,17 @@ msgstr "Mot de passe non sécurisé"
 msgid "Update this group"
 msgstr "Modifier ce groupe"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1322
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1397
 msgid "Upgrade done"
 msgstr "Mise à jour terminée"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1320
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1395
 msgid "Upgrade done."
 msgstr "La mise à jour est terminée."
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1244
+msgid "Upload has been canceled."
+msgstr "Le dépôt a été abandonné."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:83
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:5
@@ -1284,8 +1292,8 @@ msgid "Warning"
 msgstr "Avertissement"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1595
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1103
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1145
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1128
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1173
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:643
 msgid "Warning!"
 msgstr "Attention!"
@@ -1340,7 +1348,7 @@ msgid "Wrong current password."
 msgstr "Mauvais mot de passe actuel."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/confirm.php:14
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:862
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:887
 msgid "Yes"
 msgstr "Oui"
 
