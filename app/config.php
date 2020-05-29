@@ -4,7 +4,7 @@
       __DIR__.'/../site-config.template.php' ://PROD-remove
       __DIR__.'/../site-config.php');
 
-  define ('WPT_VERSION', '0.9alpha1');
+  define ('WPT_VERSION', '0.10alpha1');
 
   define ('WPT_COOKIE', 'wopits');
 
