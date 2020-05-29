@@ -143,10 +143,8 @@
           $this->help ("Conf `ldap->binddn` is empty!");
         if (empty ($env['ldap']['bindpw']))
           $this->help ("Conf `ldap->bindpw` is empty!");
-        if (empty ($env['ldap']['filter']))
-          $this->help ("Conf `ldap->filter` is empty!");
-        if (strpos($env['ldap']['filter'], '{uid}') === false)
-          $this->help ("Conf `ldap->filter` must contains the '{uid}' string!");
+        if (empty ($env['ldap']['objectclass']))
+          $this->help ("Conf `ldap->objectclass` is empty!");
         if (empty ($env['ldap']['basedn']))
           $this->help ("Conf `ldap->basedn` is empty!");
       }
@@ -439,7 +437,8 @@
 
         // Prepend first exec line on CLI scripts
         if (strpos ($dest, '/crons/') !== false ||
-            strpos ($dest, '/websocket/') !== false)
+            strpos ($dest, '/websocket/') !== false ||
+            strpos ($dest, '/ldap/') !== false)
         {
           $tmp = file_get_contents ($dest);
           file_put_contents ($dest, "#!/usr/bin/php\n$tmp");
@@ -457,7 +456,7 @@
 
       // Set websocket client / server executable
       $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
-    
+
       foreach (['WPT_DEV_MODE' => false,
                 'WPT_SECRET_KEY' => $env['secret-key'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
@@ -495,16 +494,22 @@
 
       if (!empty ($env['ldap']))
       {
+        // Set LDAP users synchronization scripts executable
+        $this->_exec ("chmod 755 {$env['build-path']}/app/ldap/*.php");
+
         foreach (['WPT_USE_LDAP' => true,
-                  'WPT_LDAP_HOST' => $env['ldap']['host'],
-                  'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
-                  'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
-                  'WPT_LDAP_FILTER' => $env['ldap']['filter'],
-                  'WPT_LDAP_BASEDN' => $env['ldap']['basedn']] as $k => $v)
+                'WPT_LDAP_HOST' => $env['ldap']['host'],
+                'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
+                'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
+                'WPT_LDAP_OBJECTCLASS' => $env['ldap']['objectclass'],
+                'WPT_LDAP_BASEDN' => $env['ldap']['basedn']] as $k => $v)
         $this->_updateConf ($k, $v);
       }
       else
+      {
         $this->_updateConf ('WPT_USE_LDAP', false);
+        $this->_exec ("rm -rf {$env['build-path']}/app/ldap");
+      }
 
       $dest = "{$env['build-path']}/site-config.php";
       $this->_exec ("php -w $dest > $dest-tmp");

@@ -246,6 +246,51 @@
           AND users.lastconnectiondate - ut.creationdate > 30');
     }
 
+    public function createUpdateLdapUser ($args)
+    {
+      $fromScript = isset ($args['fromScript']);
+      $data = null;
+
+      $stmt = $this->prepare ('
+        SELECT id, settings FROM users WHERE username = ?');
+      $stmt->execute ([$args['username']]);
+      $data = $stmt->fetch ();
+
+      // If user account has not been yet created on wopits, silently
+      // create it (user will not receive creation email).
+      if (!$data)
+      {
+        if ($this->_isDuplicate (['email' => $args['mail']]))
+          return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email %s already exists on wopits!"), $args['mail'])];
+
+        $this->data = (object)[
+          'email' => $args['mail'],
+          'username' => $args['username'],
+          'fullname' => $args['cn']??'',
+          'password' => $args['password']
+        ];
+        if (empty ($this->create (!$fromScript)))
+        {
+          $data = ['id' => $this->userId];
+
+          if ($fromScript)
+            echo "CREATE {$args['username']}, {$args['mail']}\n";
+        }
+      }
+      // Update local password with LDAP password.
+      else
+      {
+        $this->executeQuery ('UPDATE users',
+          ['password' => hash ('sha1', $args['password'])],
+          ['id' => $data['id']]);
+
+        if ($fromScript)
+          echo "UPDATE {$args['username']}, {$args['mail']}\n";
+      }
+
+      return $data;
+    }
+
     public function login ($remember = false)
     {
       $ret = [];
@@ -269,32 +314,12 @@
           if  (empty ($ldapData['mail']))
             return ['error_msg' => _("No email address is configured in your LDAP account. Please fix the problem before logging in again on wopits!")];
 
-          $stmt = $this->prepare ('
-            SELECT id, settings FROM users WHERE username = ?');
-          $stmt->execute ([$this->data->username]);
-          $data = $stmt->fetch ();
-
-          // If user account has not been yet created on wopits, silently
-          // create it (user will not receive creation email).
-          if (!$data)
-          {
-            if ($this->_isDuplicate (['email' => $ldapData['mail']]))
-              return ['error_msg' => _("Another account with the same email as your LDAP account email already exists on wopits!")];
-
-            $this->data = (object)[
-              'email' => $ldapData['mail'],
-              'username' => $this->data->username,
-              'fullname' => $ldapData['cn']??'',
-              'password' => $this->data->password
-            ];
-            if (empty ($this->create ()))
-              $data = ['id' => $this->userId];
-          }
-          // Update local password with LDAP password.
-          else
-            $this->executeQuery ('UPDATE users',
-              ['password' => hash ('sha1', $this->data->password)],
-              ['id' => $data['id']]);
+          $data = $this->createUpdateLdapUser ([
+            'username' => $this->data->username,
+            'password' => $this->data->password,
+            'mail' => $ldapData['mail'],
+            'cn' => $ldapData['cn']
+          ]);
         }
       }
       else
@@ -592,9 +617,7 @@
       session_regenerate_id ();
 
       $token = hash ('sha1',
-        $this->userId.
-        $this->data->username.
-        $this->data->password);
+        $this->userId.$this->data->username.$this->data->password);
 
       $this
         ->prepare('DELETE FROM users_tokens WHERE users_id = ?')
@@ -615,10 +638,9 @@
       $_SESSION['userToken'] = $token;
     }
 
-    public function create ()
+    public function create ($createToken = true)
     {
       $ret = [];
-      $currentDate = time ();
 
       // Check for SPAM only if standard auth mode
       if (!WPT_USE_LDAP)
@@ -636,14 +658,14 @@
       try
       {
         // Check for duplicate (username or email)
-        if ($dbl = $this->_isDuplicate ([
-                     'username' => $this->data->username,
-                     'email' => $this->data->email]))
+        if ( ($dbl = $this->_isDuplicate ([
+                'username' => $this->data->username,
+                'email' => $this->data->email])) )
           throw new Exception (($dbl == 'username') ?
-            _("This login already exists.") :
-            _("This email already exists."));
+            _("This login already exists.") : _("This email already exists."));
 
         // Create user
+        $currentDate = time ();
         $this->executeQuery ('INSERT INTO users', [
           'email' => $this->data->email,
           'password' => hash ('sha1', $this->data->password),
@@ -670,7 +692,8 @@
 
         mkdir ("{$this->getUserDir()}/tmp", 02770, true);
 
-        $this->_createToken ();
+        if ($createToken)
+          $this->_createToken ();
       }
       catch (Exception $e)
       {
@@ -688,7 +711,7 @@
     private function _generatePassword ()
     {
       // Randomize letters pool order
-      // -> No "I", "l" nor "0" to limit end-user reading errors
+      // -> No "I", "l" nor "0" to prevent user reading errors
       $chars =
         str_split ('abcdefghijkmnpqrstuxyzABCDEFGHJKLMNPQRSTUXYZ23456789');
       shuffle ($chars);

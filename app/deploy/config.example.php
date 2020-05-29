@@ -17,7 +17,7 @@
     //
     'minifiers' => [
       // WARNING : the JS minifier must understand ECMAScript 6!
-      'js' => __DIR__.'/bin/closure-compiler-v20200112.jar',
+      'js' => __DIR__.'/bin/closure-compiler-v20200517.jar',
       'css' => __DIR__.'/bin/closure-stylesheets.jar',
       'html' => __DIR__.'/bin/htmlcompressor-1.5.3.jar'
       // WARNING : use only the following options with html-minifier!
@@ -85,10 +85,10 @@
         'host' => 'ldaps://ldap.domain.com:636',
         'binddn' => 'uid=wopits,ou=sysaccounts,o=domain.com',
         'bindpw' => 'ChangeMe1',
-        // Filter for users search. Use "{uid}" to tell wopits to replace this
-        // string by the user login to search.
-        // -> Must return InetOrgPerson.
-        'filter' => '(&(objectClass=people)(uid={uid}))',
+        // The object class where to search for users.
+        // Must inherit from InetOrgPerson and the following attributes are
+        // required: "dn", "uid", "cn" and "mail".
+        'objectclass' => 'people',
         // Base DN for users search
         'basedn' => 'o=domain.com'
       ],

@@ -1275,7 +1275,7 @@
       {
         $this->beginTransaction ();
 
-//FIXME //TODO factorisation avec import()
+        //FIXME //TODO factorization with import()
         $this->executeQuery ('INSERT INTO walls', [
           'users_id' => $this->userId,
           'width' => $wall['width'],

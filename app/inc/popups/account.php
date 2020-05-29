@@ -20,7 +20,7 @@
 
         <?php if (WPT_USE_LDAP):?>
           <div class="mb-2 ldap-msg">
-            <?=_("You are connected with your LDAP account.")?>
+            <?=_("You are connected with your LDAP account")?>
          </div>
         <?php endif?>
 

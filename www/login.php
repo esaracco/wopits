@@ -53,7 +53,7 @@
 
               <?php if (WPT_USE_LDAP):?>
                 <div class="ldap-msg mb-3">
-                  <?=_("Log in with your LDAP account.")?>
+                  <?=_("Log in with your LDAP account")?>
                 </div>
               <?php endif?>
 

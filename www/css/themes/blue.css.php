@@ -147,6 +147,7 @@ span.wpt-badge {
   border-color: #53a9ff;
 }
 
+.login-page .ldap-msg,
 .login-page .links a,
 .login-page .custom-checkbox label {
   color: #c5c3c3 !important;

@@ -65,14 +65,14 @@
   // Password for LDAP wopits user authentication
   // Example: !!tobechanged!!
   define ('WPT_LDAP_BINDPW', "");
-  // Filter for users search. Use "{uid}" to tell wopits to replace this string
-  // by the user login to search.
-  // -> Must return InetOrgPerson.
-  // Example: (&(objectClass=people)(uid={uid}))
-  define ('WPT_LDAP_FILTER', "");
   // Base DN for users search
   // Example: o=domain.com
   define ('WPT_LDAP_BASEDN', "");
+  // The object class where to search for users.
+  // Must inherit from InetOrgPerson and the following attributes are required:
+  // "dn", "uid", "cn" and "mail".
+  // Example: people
+  define ('WPT_LDAP_OBJECTCLASS', "");
 
   // DKIM
   // I you want to use DKIM and have well configured it
