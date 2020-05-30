@@ -314,7 +314,7 @@ class Wpt_WebSocket
     this.responseQueue = {};
     this._retries = 0;
     this._msgId = 0;
-    this._send_cb = [];
+    this._send_cb = {};
     this._connected = false;
   }
 
@@ -454,7 +454,7 @@ class Wpt_WebSocket
 
           delete (data._msgId);
 
-          this._send_cb[msgId].success (data);
+          this._send_cb[msgId](data);
 
           delete this._send_cb[msgId];
         }
@@ -530,14 +530,11 @@ class Wpt_WebSocket
       return;
     }
     
-    msg['_msgId'] = ++this._msgId;
+    msg["_msgId"] = ++this._msgId;
 
     //console.log ("SEND "+msg['_msgId']+"\n");
 
-    this._send_cb[msg['_msgId']] = {
-      success: success_cb,
-      error: error_cb
-    };
+    this._send_cb[msg["_msgId"]] = success_cb;
  
     this.cnx.send (JSON.stringify (msg));
   }

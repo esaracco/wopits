@@ -20,42 +20,41 @@
 
     public function checkWallAccess ($requiredRole)
     {
-      // admin has full access
-      $in = WPT_RIGHTS['walls']['admin'];
+      $wr = WPT_RIGHTS['walls'];
+      // Wall admin has full access
+      $in = $wr['admin'];
 
-      // If access need only write right, allow admin and rw roles
-      if ($requiredRole == WPT_RIGHTS['walls']['rw'])
-        $in .= ','.WPT_RIGHTS['walls']['rw'];
+      // If access needs only write right, allow admin and rw roles
+      if ($requiredRole == $wr['rw'])
+        $in .= ','.$wr['rw'];
       // If access need at least read right, allow admin, ro and rw roles
-      elseif ($requiredRole == WPT_RIGHTS['walls']['ro'])
-        $in .= ','.WPT_RIGHTS['walls']['ro'].','.WPT_RIGHTS['walls']['rw'];
+      elseif ($requiredRole == $wr['ro'])
+        $in .= ','.$wr['ro'].','.$wr['rw'];
 
       $stmt = $this->prepare ("
         SELECT 1
         FROM walls
-        WHERE id = :walls_id_1
-          AND users_id = :users_id_1
+        WHERE id = ?
+          AND users_id = ?
         UNION
         SELECT 1
         FROM walls_groups
           INNER JOIN users_groups
             ON users_groups.groups_id = walls_groups.groups_id
-        WHERE walls_groups.walls_id = :walls_id_2
-          AND users_groups.users_id = :users_id_2
+        WHERE walls_groups.walls_id = ?
+          AND users_groups.users_id = ?
           AND walls_groups.access IN($in)
         LIMIT 1");
       $stmt->execute ([
-        ':walls_id_1' => $this->wallId,
-        ':users_id_1' => $this->userId,
-        ':walls_id_2' => $this->wallId,
-        ':users_id_2' => $this->userId
+        $this->wallId, $this->userId,
+        $this->wallId, $this->userId
       ]);
 
-      if ( !($ret = $stmt->fetch ()) )
+      if ( !($allowed = $stmt->fetch ()) )
       {
         $stmt1 = $this->prepare ('SELECT 1 FROM walls WHERE id = ?');
         $stmt1->execute ([$this->wallId]);
-        if (!$stmt1->rowCount ())
+        if (!$stmt1->fetch ())
           return [
             'ok' => 0,
             'id' => $this->wallId,
@@ -66,7 +65,7 @@
           ];
       }
       
-      return ['ok' => $stmt->rowCount ()];
+      return ['ok' => $allowed];
     }
 
     public function checkWallName ($name)

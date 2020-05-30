@@ -338,8 +338,8 @@
         return (isset ($r['id'])) ? $r :
                  ['ok' => 0,
                   'error_msg' => ($needAdminAccess) ?
-                  _("You must have admin access to perform this action.") :
-                  _("You must have write access to perform this action.")];
+                    _("You must have admin access to perform this action.") :
+                    _("You must have write access to perform this action.")];
 
       return $r;
     }

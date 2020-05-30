@@ -11,7 +11,7 @@
   define ('WPT_SECRET_KEY', "");
 
   // System command to reload apache
-  // Example: systemctl reload apache2
+  // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
   define ('WPT_APACHE_RESTART', "");
   // System command to restart wopits daemon
   // Example: systemctl restart wopits-example
