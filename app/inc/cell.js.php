@@ -327,6 +327,9 @@
     // METHOD edit ()
     edit: function (error_cb)
     {
+      if (!this.settings.wall[0].dataset.shared)
+        return;
+
       wpt_request_ws (
         "PUT",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
@@ -343,15 +346,13 @@
     // METHOD unedit ()
     unedit: function ()
     {
-      const data = {
-              cells: this.serialize (),
-              wall: {width: this.settings.wall.outerWidth () - 1}
-            };
-
       wpt_request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
-        data
+        {
+          cells: this.serialize (),
+          wall: {width: this.settings.wall.outerWidth () - 1}
+        }
       );
     }
   };

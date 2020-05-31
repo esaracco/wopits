@@ -32,11 +32,6 @@
     return navigator.userAgent.match (/edg/i);
   }
 
-  function _useFocusTrick ()
-  {
-    return (!$.support.touch && !_navigatorIsEdge ());
-  }
-
   //FIXME
   // METHOD _simulateClick ()
   function _simulateClick (x, y)
@@ -136,14 +131,20 @@
           switch (action)
           {
             case "add-picture":
-              //FIXME
-                 // we need this to cancel edit if no img is selected by user
-                 // (touch device version)
-                 plugin.addUploadLayer ();
+              if (settings.wall[0].dataset.shared)
+              {
+                //FIXME
+                // we need this to cancel edit if no img is selected by user
+                // (touch device version)
+                plugin.addUploadLayer ();
   
-                 plugin.uploadPicture ($cell);
-  
-                 plugin.edit (() => _ffTriggerBug.run = true);
+                plugin.edit (() => _ffTriggerBug.run = true);
+
+                plugin.uploadPicture ($cell);
+              }
+              else
+                plugin.edit (() => plugin.uploadPicture ($cell));
+                
               break;
   
             case "delete":
@@ -201,12 +202,19 @@
         $header.append (plugin.getImgTemplate (settings.picture));
     },
 
+    // METHOD useFocusTrick ()
+    useFocusTrick: function ()
+    {
+      return (this.settings.wall[0].dataset.shared &&
+              !$.support.touch && !_navigatorIsEdge ());
+    },
+
     // METHOD addUploadLayer ()
     addUploadLayer: function ()
     {
       const plugin = this;
 
-      if (!_useFocusTrick ())
+      if (!plugin.useFocusTrick ())
         $("#upload-layer")
           .off("mousedown")
           .on("mousedown", function (e)
@@ -236,7 +244,7 @@
             //FIXME
             // we need this to cancel edit if no img is selected by user
             // (desktop version)
-            if (_useFocusTrick ())
+            if (plugin.useFocusTrick ())
               $(window).on("focus", function ()
                 {
                   $(window).off ("focus");
@@ -300,7 +308,9 @@
           }).trigger ("click");
       }
 
-      if (!_navigatorIsEdge ())
+      if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
+        __upload__ ();
+      else
       {
         clearInterval (_ffTriggerBug.i);
         _ffTriggerBug = {
@@ -315,8 +325,6 @@
             }, 150)
         };
       }
-      else
-        __upload__ ();
     },
 
     // METHOD removeUploadLayer ()
@@ -350,21 +358,25 @@
           {
             e.stopImmediatePropagation ();
 
-            //FIXME
-            // we need this to cancel edit if no img is selected by user
-            // (touch device version)
-            plugin.addUploadLayer ();
+            if (plugin.settings.wall[0].dataset.shared)
+            {
+              //FIXME
+              // we need this to cancel edit if no img is selected by user
+              // (touch device version)
+              plugin.addUploadLayer ();
 
-            plugin.uploadPicture ($header);
+              plugin.edit (() => _ffTriggerBug.run = true);
 
-            plugin.edit (() => _ffTriggerBug.run = true);
+              plugin.uploadPicture ($header);
+            }
+            else
+              plugin.edit (() => plugin.uploadPicture ($header));
           })
         .find("img")
           .on("load", function (e)
           {
             plugin.settings.wall.wpt_wall ("repositionPostitsPlugs");
           });
-
 
       // Create img delete button
       const $deleteButton = $(`<button type="button" class="close img-delete"><i class="fas fa-times fa-sm"></i></button>`)
@@ -532,6 +544,9 @@
 
       _originalObject = _serializeOne (this.element);
 
+      if (!this.settings.wall[0].dataset.shared)
+        return success_cb && success_cb ();
+
       wpt_request_ws (
         "PUT",
         "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
@@ -581,7 +596,7 @@
     cancelEdit: function (bubble_event_cb)
     {
       const $header = this.element,
-            $wall = wpt_sharer.getCurrent ("wall");
+            $wall = this.settings.wall;
 
       clearInterval (_ffTriggerBug.i);
 
@@ -602,7 +617,7 @@
     // METHOD serialize ()
     serialize: function ()
     {
-      const $wall = wpt_sharer.getCurrent ("wall"),
+      const $wall = this.settings.wall,
             headers = {cols: [], rows: []};
 
       $wall.find("thead th:not(:eq(0))").each (function()

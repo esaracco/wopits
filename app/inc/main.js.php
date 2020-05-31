@@ -1492,14 +1492,15 @@
     // METHOD edit ()
     edit: function (success_cb, error_cb, todelete = false)
     {
-      const data = {todelete: todelete};
-
       _originalObject = this.serialize ();
+
+      if (!this.settings.shared)
+        return success_cb && success_cb ();
 
       wpt_request_ws (
         "PUT",
         "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
-        data,
+        {todelete: todelete},
         // success cb
         (d) =>
         {

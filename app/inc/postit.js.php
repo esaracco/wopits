@@ -1703,14 +1703,11 @@
 
       this.setCurrent ();
 
-      if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
-      {
-        if (success_cb)
-          success_cb ();
-        return;
-      }
-
       _originalObject = this.serialize()[0];
+
+      if (!this.settings.wall[0].dataset.shared ||
+          !wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
+        return success_cb && success_cb ();
 
       wpt_request_ws (
         "PUT",
