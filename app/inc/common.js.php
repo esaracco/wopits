@@ -312,6 +312,7 @@ class Wpt_WebSocket
   constructor ()
   {
     this.responseQueue = {};
+    this._sendQueue = [];
     this._retries = 0;
     this._msgId = 0;
     this._send_cb = {};
@@ -451,12 +452,31 @@ class Wpt_WebSocket
         if (isResponse)
         {
           const msgId = data._msgId;
+          let i = this._sendQueue.length;
+
+          // Remove request from sending queue
+          while (i--)
+          {
+            if (this._sendQueue[i].msg._msgId == msgId)
+            {
+              this._sendQueue.splice (i, 1);
+              break;
+            }
+          }
 
           delete (data._msgId);
 
           this._send_cb[msgId](data);
 
           delete this._send_cb[msgId];
+
+          // Send next message pending in sending queue
+          if (this._sendQueue.length)
+          {
+            const msg = this._sendQueue[this._sendQueue.length - 1];
+
+            this.send (msg.msg, msg.success_cb, msg.error_cb);
+          }
         }
 
         wpt_loader ("hide");
@@ -518,6 +538,8 @@ class Wpt_WebSocket
   // METHOD send ()
   send (msg, success_cb, error_cb)
   {
+    const toSend = (!this._sendQueue.length || msg._msgId);
+
     if (!this.ready ())
     {
       if (this._connected && this._retries < 30)
@@ -529,14 +551,30 @@ class Wpt_WebSocket
 
       return;
     }
-    
-    msg["_msgId"] = ++this._msgId;
 
-    //console.log ("SEND "+msg['_msgId']+"\n");
+    // Put message in message queue if not already in
+    if (msg._msgId === undefined)
+    {
+      msg["_msgId"] = ++this._msgId;
 
-    this._send_cb[msg["_msgId"]] = success_cb;
+      // If some messages have already been sent without response, queued the
+      // new message to send it after the others.
+      this._sendQueue.push ({
+        msg: msg,
+        success_cb: success_cb,
+        error_cb: error_cb
+      });
+    }
+
+    // If first message or request for sending a message in queue
+    if (toSend)
+    {
+      //console.log ("SEND "+msg['_msgId']+"\n");
+
+      this._send_cb[msg["_msgId"]] = success_cb;
  
-    this.cnx.send (JSON.stringify (msg));
+      this.cnx.send (JSON.stringify (msg));
+    }
   }
 
   ping ()
