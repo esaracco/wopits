@@ -362,9 +362,9 @@ class Wpt_WebSocket
         const data = JSON.parse (e.data||"{}"),
               $wall = (data.wall && data.wall.id) ?
                 $(".wall[data-id='wall-"+data.wall.id+"']") : [],
-              isResponse = (this._send_cb[data._msgId] !== undefined);
+              isResponse = (this._send_cb[data.msgId] !== undefined);
 
-        //console.log ("RECEIVED "+data._msgId+"\n");
+        //console.log ("RECEIVED "+data.msgId+"\n");
         //console.log (data);
 
         if (data.action)
@@ -449,38 +449,41 @@ class Wpt_WebSocket
           }
         }
 
-        if (isResponse)
+        let nextMsg = null;
+
+        if (data.msgId)
         {
-          const msgId = data._msgId;
+          const msgId = data.msgId;
           let i = this._sendQueue.length;
 
           // Remove request from sending queue
           while (i--)
           {
-            if (this._sendQueue[i].msg._msgId == msgId)
+            if (this._sendQueue[i].msg.msgId == msgId)
             {
+              if (this._sendQueue[i+1])
+                nextMsg = this._sendQueue[i+1];
+
               this._sendQueue.splice (i, 1);
               break;
             }
           }
 
-          delete (data._msgId);
+          delete (data.msgId);
 
-          this._send_cb[msgId](data);
-
-          delete this._send_cb[msgId];
-
-          // Send next message pending in sending queue
-          if (this._sendQueue.length)
+          if (isResponse)
           {
-            const msg = this._sendQueue[this._sendQueue.length - 1];
+            this._send_cb[msgId](data);
 
-            this.send (msg.msg, msg.success_cb, msg.error_cb);
+            delete this._send_cb[msgId];
           }
         }
 
         wpt_loader ("hide");
 
+        // Send next message pending in sending queue
+        if (nextMsg)
+          this.send (nextMsg.msg, nextMsg.success_cb, nextMsg.error_cb);
       };
 
     // EVENT error
@@ -538,8 +541,6 @@ class Wpt_WebSocket
   // METHOD send ()
   send (msg, success_cb, error_cb)
   {
-    const toSend = (!this._sendQueue.length || msg._msgId);
-
     if (!this.ready ())
     {
       if (this._connected && this._retries < 30)
@@ -552,10 +553,12 @@ class Wpt_WebSocket
       return;
     }
 
+    const send = !!msg.msgId;
+
     // Put message in message queue if not already in
-    if (msg._msgId === undefined)
+    if (!msg.msgId)
     {
-      msg["_msgId"] = ++this._msgId;
+      msg["msgId"] = ++this._msgId;
 
       // If some messages have already been sent without response, queued the
       // new message to send it after the others.
@@ -567,11 +570,11 @@ class Wpt_WebSocket
     }
 
     // If first message or request for sending a message in queue
-    if (toSend)
+    if (send || this._sendQueue.length == 1)
     {
-      //console.log ("SEND "+msg['_msgId']+"\n");
+      //console.log ("SEND "+msg.msgId+"\n");
 
-      this._send_cb[msg["_msgId"]] = success_cb;
+      this._send_cb[msg.msgId] = success_cb;
  
       this.cnx.send (JSON.stringify (msg));
     }

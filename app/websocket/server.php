@@ -531,7 +531,7 @@ class Wopits implements MessageComponentInterface
       }
 
       // Respond to the sender
-      $ret['_msgId'] = $msg->_msgId ?? null;
+      $ret['msgId'] = $msg->msgId ?? null;
       $conn->send (json_encode ($ret));
     }
     // Internal wopits client (broadcast msg to all clients)
