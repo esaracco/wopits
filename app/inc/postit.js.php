@@ -1963,26 +1963,36 @@
                   $popup = $("#plugPopup"),
                   $wall = wpt_sharer.getCurrent ("wall"),
                   [startId, endId] = $label[0].dataset.id.split ("-"),
-                  $postit = $wall.find(".postit[data-id='postit-"+startId+"']"),
+                  $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                   defaultLabel = wpt_htmlQuotes ($label.find("span").text ());
 
             switch ($item[0].dataset.action)
             {
               case "rename":
 
-                $postit.wpt_postit ("edit", null, ()=>
+                $start.wpt_postit ("edit", null, ()=>
                   {
                     wpt_openConfirmPopover ({
                       type: "update",
                       item: $label,
                       title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Rename relation")?>`,
                       content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}">`,
-                      cb_close: () => $postit.wpt_postit ("unedit"),
+                      cb_close: () =>
+                        {
+                          let toSave = {};
+
+                          toSave[startId] = $start;
+                          toSave[endId] =
+                            $wall.find(".postit[data-id='postit-"+endId+"']");
+
+                          wpt_sharer.set("plugs-to-save", toSave);
+                          $start.wpt_postit ("unedit");
+                        },
                       cb_ok: ($popover) =>
                         {
                           const label = $popover.find("input").val().trim();
           
-                          $postit.wpt_postit ("updatePlugLabel", {
+                          $start.wpt_postit ("updatePlugLabel", {
                             label: label,
                             endId: endId
                           });
@@ -2000,11 +2010,11 @@
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: "<?=_("Delete this relationship?")?>",
                   cb_close: null,
-                  cb_ok: () => $postit.wpt_postit ("edit", null, ()=>
+                  cb_ok: () => $start.wpt_postit ("edit", null, ()=>
                     {
-                      $postit.wpt_postit ("removePlug", startId+"-"+endId);
-                      $postit.wpt_postit ("resetPlugsUndo");
-                      $postit.wpt_postit ("unedit");
+                      $start.wpt_postit ("removePlug", startId+"-"+endId);
+                      $start.wpt_postit ("resetPlugsUndo");
+                      $start.wpt_postit ("unedit");
                     })
                   });
 
