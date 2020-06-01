@@ -235,7 +235,7 @@
       }
       else
       {
-        html = (`<li class="${args._msgId?"current":""}"><span>${args._msgId?'<i class="fas fa-user fa-sm"></i>':args.username}</span> ${args.msg}</li>`);
+        html = (`<li class="${args.msgId?"current":""}"><span>${args.msgId?'<i class="fas fa-user fa-sm"></i>':args.username}</span> ${args.msg}</li>`);
       }
 
       $area.find("ul").append (html);

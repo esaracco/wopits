@@ -245,7 +245,7 @@ class Wopits implements MessageComponentInterface
           'item' => $item,
           'itemId' => $itemId
         ]);
-  
+
         switch ($msg->method)
         {
           // PUT
@@ -256,7 +256,7 @@ class Wopits implements MessageComponentInterface
           // DELETE
           case 'DELETE':
             $ret = $EditQueue->removeFrom ();
-            if (!isset ($ret['error_msg']) && !isset ($ret['error']))
+            if ($data && !isset ($ret['error_msg']) && !isset ($ret['error']))
             {
               $push = true;
               $action = (empty ($ret['wall']['removed'])) ?

@@ -1536,12 +1536,18 @@
 
       if (this.element[0].dataset.todelete)
         data = {todelete: true};
+      // Update wall only if it has changed
       else
       {
-        const tmp = this.serialize ();
+        data = this.serialize ();
 
-        // Update wall only if it has changed
-        data = (wpt_updatedObject (_originalObject, tmp)) ? tmp : null;
+        if (!wpt_updatedObject (_originalObject, data))
+        {
+          if (!this.settings.shared)
+            return success_cb && success_cb ();
+          else
+            data = null;
+        }
       }
 
       wpt_request_ws (

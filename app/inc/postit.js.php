@@ -1774,8 +1774,11 @@
         todelete = !!data.todelete;
 
         // Update postit only if it has changed
-        if (todelete || wpt_updatedObject (_originalObject, data))
+        if (todelete || wpt_updatedObject (_originalObject,
+                                           data, {hadpictures: 1}))
           data["cellId"] = this.settings.cellId;
+        else if (!this.settings.wall[0].dataset.shared)
+          return this.cancelEdit ();
         else
           data = null;
       }
@@ -1801,9 +1804,6 @@
           }
           else if (data && data.updatetz)
             $postit[0].removeAttribute ("data-updatetz");
-
-          $postit[0].removeAttribute ("data-hasuploadedpictures");
-          $postit[0].removeAttribute ("data-hadpictures");
         },
         // error cb
         () => this.cancelEdit ());
@@ -1815,6 +1815,9 @@
       $("body").css("cursor", "auto");
 
       this.unsetCurrent ();
+
+      this.element[0].removeAttribute ("data-hasuploadedpictures");
+      this.element[0].removeAttribute ("data-hadpictures");
 
       if (!this.settings.wall)
         wpt_raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
@@ -1964,7 +1967,19 @@
                   $wall = wpt_sharer.getCurrent ("wall"),
                   [startId, endId] = $label[0].dataset.id.split ("-"),
                   $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
+                  $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
                   defaultLabel = wpt_htmlQuotes ($label.find("span").text ());
+
+            function __unedit ()
+            {
+              let toSave = {};
+
+              toSave[startId] = $start;
+              toSave[endId] = $end
+
+              wpt_sharer.set ("plugs-to-save", toSave);
+              $start.wpt_postit ("unedit");
+            }
 
             switch ($item[0].dataset.action)
             {
@@ -1977,48 +1992,36 @@
                       item: $label,
                       title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Rename relation")?>`,
                       content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}">`,
-                      cb_close: () =>
-                        {
-                          let toSave = {};
-
-                          toSave[startId] = $start;
-                          toSave[endId] =
-                            $wall.find(".postit[data-id='postit-"+endId+"']");
-
-                          wpt_sharer.set("plugs-to-save", toSave);
-                          $start.wpt_postit ("unedit");
-                        },
+                      cb_close: __unedit,
                       cb_ok: ($popover) =>
+                        $start.wpt_postit ("updatePlugLabel", {
+                          label: $popover.find("input").val().trim(),
+                          endId: endId
+                        })
+                    });
+                  });
+
+                break;
+
+              case "delete":
+
+                $start.wpt_postit ("edit", null, ()=>
+                  {
+                    wpt_openConfirmPopover ({
+                      item: $label,
+                      placement: "left",
+                      title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                      content: "<?=_("Delete this relationship?")?>",
+                      cb_close: __unedit,
+                      cb_ok: () =>
                         {
-                          const label = $popover.find("input").val().trim();
-          
-                          $start.wpt_postit ("updatePlugLabel", {
-                            label: label,
-                            endId: endId
-                          });
+                          $start.wpt_postit ("removePlug", startId+"-"+endId);
+                          $start.wpt_postit ("resetPlugsUndo");
                         }
                     });
                   });
 
-                  break;
-
-              case "delete":
-
-                wpt_openConfirmPopover ({
-                  item: $label,
-                  placement: "left",
-                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                  content: "<?=_("Delete this relationship?")?>",
-                  cb_close: null,
-                  cb_ok: () => $start.wpt_postit ("edit", null, ()=>
-                    {
-                      $start.wpt_postit ("removePlug", startId+"-"+endId);
-                      $start.wpt_postit ("resetPlugsUndo");
-                      $start.wpt_postit ("unedit");
-                    })
-                  });
-
-                  break;
+                break;
             }
           });
 

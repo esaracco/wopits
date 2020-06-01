@@ -641,11 +641,6 @@
 
       this.removeUploadLayer ();
 
-      $wall.find("tbody td").each (function ()
-        {
-          $(this).wpt_cell ("reorganize");
-        });
-
       if (args.data)
       {
         const msg = (args.data.error) ?
@@ -662,11 +657,20 @@
 
       // Update header only if it has changed
       if (wpt_updatedObject(_originalObject, _serializeOne (this.element)))
+      {
         data = {
           headers: this.serialize (),
           cells: $("<div/>").wpt_cell ("serialize"),
           wall: {width: $wall.outerWidth ()}
         };
+
+        $wall.find("tbody td").each (function ()
+          {
+            $(this).wpt_cell ("reorganize");
+          });
+      }
+      else if (!this.settings.wall[0].dataset.shared)
+        return this.cancelEdit (args.bubble_cb);
 
       wpt_request_ws (
         "DELETE",

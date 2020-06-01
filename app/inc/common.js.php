@@ -641,16 +641,16 @@ function wpt_closeMainMenu ()
 }
 
 // FUNCTION wpt_updatedObject ()
-function wpt_updatedObject (obj1, obj2)
+function wpt_updatedObject (obj1, obj2, ignore = {})
 {
   for (const key in obj2)
   {
     if (obj1[key] !== null && typeof obj1[key] === "object")
     {
-      if (wpt_updatedObject (obj1[key], obj2[key]))
+      if (wpt_updatedObject (obj1[key], obj2[key], ignore))
         return true;
     }
-    else if (obj1[key] != obj2[key])
+    else if (obj1[key] != obj2[key] && !ignore[key])
       return true;
   }
 
