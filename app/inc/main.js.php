@@ -1560,7 +1560,7 @@
         // success cb
         (d) =>
         {
-          if (!data.todelete && d.error_msg)
+          if (!(data && data.todelete) && d.error_msg)
           {
             error_cb && error_cb ();
 
