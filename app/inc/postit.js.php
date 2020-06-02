@@ -111,7 +111,7 @@
       if (settings.obsolete)
         $postit.addClass ("obsolete");
 
-      $postit.find(".postit-edit,.postit-header")
+      $postit.find(".postit-edit,.postit-header,.dates")
       .on("click", function (e)
       {
         const id = plugin.settings.id,
@@ -198,11 +198,9 @@
           }
         }
       })
-      // EVENT dblclick (see also double tap event)
-      .on("dblclick",function(e)
-        {
-          $postit.find(".postit-menu [data-action='edit']").trigger ("click");
-        });
+      // EVENT doubletap
+      .doubletap (() =>
+        $postit.find(".postit-menu [data-action='edit']").trigger ("click"));
 
       if (writeAccess)
       {
@@ -332,12 +330,6 @@
             }
           });
         }
-  
-      // EVENT doubletap (see also click event)
-      // -> Only for touch devices
-      if (writeAccess && $.support.touch)
-        $postit.doubletap ((e) =>
-          $postit.find(".postit-menu [data-action='edit']").trigger ("click"));
   
       const $header = $(`
         <i class="far fa-caret-square-down" data-action="menu"></i>`)
