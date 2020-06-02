@@ -683,7 +683,10 @@ class Wopits implements MessageComponentInterface
 
           foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
             if ($_userId == $userId)
+            {
               $this->clients[$_connId]->conn->send (json_encode ($_ret));
+              break;
+            }
         }
     }
   }
