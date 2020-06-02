@@ -554,6 +554,10 @@ class Wopits implements MessageComponentInterface
       unset ($this->clients[$connId]);
       unset ($this->usersUnique[$userId]);
 
+      //FIXME
+      //https://github.com/ratchetphp/Ratchet/issues/662#issuecomment-454886034
+      gc_collect_cycles ();
+
       $this->_log ($conn, 'info',
         "CLOSE connection (".count($this->clients)." connected clients)");
     }
