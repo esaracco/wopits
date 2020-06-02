@@ -366,7 +366,7 @@
             $wall = wpt_sharer.getCurrent ("wall"),
             $body = $share.find (".modal-body");
 
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+"/group",
         null,

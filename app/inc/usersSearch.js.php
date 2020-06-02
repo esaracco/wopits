@@ -138,7 +138,7 @@
         });
     },
 
-  // METHOD displayUsers ()
+    // METHOD displayUsers ()
     displayUsers: function (args)
     {
       const $ac = this.element,
@@ -148,7 +148,7 @@
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
         service = "wall/"+args.wallId+"/"+service;
 
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         service,
         null,
@@ -191,18 +191,19 @@
       const $ac = this.element,
             wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
             groupId = $ac[0].dataset.groupid;
-      let service = "group/"+groupId+"/searchUsers/"+args.str;
+      let service = "group/"+groupId+"/searchUsers/"+args.str,
+          data = null;
 
       if (!args.str)
         return;
 
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
-        service = "wall/"+wallId+"/"+service;
+        data = {wallId: wallId};
 
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         service,
-        null,
+        data,
         // success cb
         (d) =>
         {

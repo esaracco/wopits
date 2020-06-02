@@ -13,7 +13,7 @@
   $class = getParam ('class');
   $data = json_decode (urldecode (file_get_contents("php://input")));
 
-  if (preg_match ('/^postit|user|wall$/', $class))
+  if (preg_match ('/^postit|user|wall|group$/', $class))
     require_once (__DIR__."/../../app/class/Wpt_$class.php");
 
   switch ($_SERVER['REQUEST_METHOD'])
@@ -24,23 +24,46 @@
       switch ($class)
       {
         case 'user':
+          $action = getParam ('action');
           $User = new Wpt_user(['data' => $data]);
-          if (getParam ('action') == 'picture')
-            $ret = $User->updatePicture ();
-          else
-            $ret = $User->create ();
+
+          switch ($action)
+          {
+            case 'picture':
+              $ret = $User->updatePicture ();
+              break;
+
+            default:
+              $ret = $User->create ();
+          }
           break;
 
         case 'wall':
           $item = getParam ('item');
-          $Wall = new Wpt_wall (['data' => $data]);
-          if ($item == 'import')
-            $ret = $Wall->import ();
-          elseif ($item == 'header')
-          {
-            $Wall->wallId = getParam ('wallId');
+          $action = getParam ('action');
+          $Wall = new Wpt_wall ([
+            'wallId' => getParam ('wallId'),
+            'data' => $data
+          ]);
+
+          if ($item == 'header')
             $ret = $Wall->addHeaderPicture ([
               'headerId' => getParam ('itemId')]);
+          else
+          {
+            switch ($action)
+            {
+              case 'import':
+                $ret = $Wall->import ();
+                break;
+
+              case 'clone':
+                $ret = $Wall->clone ();
+                break;
+
+              default:
+                $ret = $Wall->createWall ();
+            }
           }
           break;
 
@@ -52,10 +75,17 @@
             'postitId' => getParam ('postitId'),
             'data' => $data
           ]);
-          if ($item == 'attachment')
-            $ret = $Postit->addAttachment ();
-          elseif ($item == 'picture')
-            $ret = $Postit->addPicture ();
+
+          switch ($item)
+          {
+            case 'attachment':
+              $ret = $Postit->addAttachment ();
+              break;
+
+            case 'picture':
+              $ret = $Postit->addPicture ();
+              break;
+          }
           break;
       }
       break;
@@ -71,35 +101,81 @@
           break;
 
         case 'postit':
+          $item = getParam ('item');
           $Postit = new Wpt_postit ([
               'wallId' => getParam ('wallId'),
               'cellId' => getParam ('cellId'),
               'postitId' => getParam ('postitId')
             ]);
-          $item = getParam ('item');
-          if ($item == 'attachment')
-            $ret = $Postit->getAttachment ([
-              'attachmentId' => getParam ('itemId')]);
-          elseif ($item == 'picture')
-            $ret = $Postit->getPicture ([
-              'pictureId' => getParam ('itemId')]);
+
+          switch ($item)
+          {
+            case 'attachment':
+              $ret = $Postit->getAttachment ([
+                'attachmentId' => getParam ('itemId')]);
+              break;
+
+            case 'picture':
+              $ret = $Postit->getPicture ([
+                'pictureId' => getParam ('itemId')]);
+              break;
+          }
           break;
 
         case 'user':
-          if (getParam ('item') == 'file')
+          if (getParam ('action') == 'getFile')
             $ret = (new Wpt_user())->getPicture ([
               'userId' => getParam ('userId')
             ]);
           break;
 
         case 'wall':
+          $action = getParam ('action');
           $Wall = new Wpt_wall (['wallId' => getParam ('wallId')]);
-          $item = getParam ('item');
-          if ($item == 'file')
-            $ret = $Wall->getHeaderPicture ([
-              'headerId' => getParam ('headerId')]);
-          elseif ($item == 'export')
-            $ret = $Wall->export ();
+
+          switch ($action)
+          {
+            case 'infos':
+              $ret = $Wall->getWallInfos ();
+              break;
+
+            case 'getFile':
+              $ret = $Wall->getHeaderPicture ([
+                'headerId' => getParam ('headerId')]);
+              break;
+
+            case 'export':
+              $ret = $Wall->export ();
+              break;
+
+            default:
+              $ret = $Wall->getWall ();
+          }
+          break;
+
+        case 'group':
+          $action = getParam ('action');
+          $wallId = getParam ('wallId');
+          if (!$wallId && $data && $data->wallId)
+            $wallId = $data->wallId;
+          $Group = new Wpt_group ([
+            'wallId' => $wallId,
+            'groupId' => getParam ('groupId')
+          ]);
+
+          switch ($action)
+          {
+            case 'searchUsers':
+              $ret = $Group->searchUser (['search' => getParam ('search')]);
+              break;
+
+            case 'getUsers':
+              $ret = $Group->getUsers ();
+              break;
+
+            default:
+              $ret = $Group->getGroup ();
+          }
           break;
       }
       break;
@@ -110,6 +186,7 @@
       if ($class == 'user')
       {
         $User = new Wpt_user (['data' => $data]);
+
         switch (getParam ('action'))
         {
           case 'login':

@@ -406,7 +406,7 @@
       if (data)
         __refresh (data);
       else
-        wpt_request_ws (
+        wpt_request_ajax (
           "GET",
           "wall/"+plugin.settings.id,
           null,
@@ -945,7 +945,7 @@
       if (args.restoring)
         $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
-      wpt_request_ws (
+      wpt_request_ajax (
         method,
         service,
         data,
@@ -1044,7 +1044,7 @@
         content: `<?=_("Depending on its content, the cloning of the current wall can take a long time.<br>Do you confirm your request?")?>`,
         cb_ok: () =>
           {
-            wpt_request_ws (
+            wpt_request_ajax (
             "PUT",
             "wall/"+this.settings.id+"/clone",
             null,
@@ -1154,7 +1154,7 @@
     // METHOD refreshUserWallsData ()
     refreshUserWallsData: function (success_cb)
     {
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         "wall",
         null,
@@ -1192,8 +1192,10 @@
       wpt_openModal ($popup);
     },
 
+    // METHOD displayWallUsersview()
     displayWallUsersview: function ()
     {
+      //TODO We should use ajax instead of ws
       wpt_request_ws (
         "GET",
         "wall/"+this.settings.id+"/usersview",
@@ -1216,11 +1218,12 @@
       );
     },
 
+    // METHOD displayWallProperties ()
     displayWallProperties: function (args)
     {
       const $wall = this.element;
 
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         "wall/"+this.settings.id+"/infos",
         null,

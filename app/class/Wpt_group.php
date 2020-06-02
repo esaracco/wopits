@@ -4,7 +4,7 @@
 
   class Wpt_group extends Wpt_wall
   {
-    private $groupId;
+    public $groupId;
 
     public function __construct ($args)
     {

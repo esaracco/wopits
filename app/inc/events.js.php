@@ -576,7 +576,7 @@ $(function()
             break;
 
           // UPDATE wall name and description
-          //TODO Must be a wpt_wall() method
+          //TODO Should be a wpt_wall() method
           case "wallPropertiesPopup":
 
             var Form = new Wpt_accountForms (),

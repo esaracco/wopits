@@ -267,7 +267,7 @@ class Wopits implements MessageComponentInterface
       }
       // ROUTE Generic groups
       elseif (preg_match (
-                '#^group/?(\d+)?/?(getUsers|addUser|removeUser)?/?(\d+)?$#',
+                '#^group/?(\d+)?/?(addUser|removeUser)?/?(\d+)?$#',
                 $msg->route, $m))
       {
         @list (,$groupId, $type, $userId) = $m;
@@ -279,11 +279,6 @@ class Wopits implements MessageComponentInterface
 
         switch ($msg->method)
         {
-          // GET
-          case 'GET':
-            $ret = $Group->getUsers ();
-            break;
-
           // POST
           // For both generic and dedicated groups
           case 'POST':
@@ -308,7 +303,7 @@ class Wopits implements MessageComponentInterface
       // ROUTE Dedicated groups
       elseif (preg_match (
                 '#^wall/(\d+)/group/?(\d+)?/?'.
-                '(getUsers|addUser|removeUser|link|unlink)?/?(\d+)?$#',
+                '(addUser|removeUser|link|unlink)?/?(\d+)?$#',
                 $msg->route, $m))
       {
         @list (, $wallId, $groupId, $type, $userId) = $m;
@@ -321,13 +316,6 @@ class Wopits implements MessageComponentInterface
 
         switch ($msg->method)
         {
-          // GET
-          case 'GET':
-            $ret = ($type == 'getUsers') ?
-                     $Group->getUsers () :
-                     $Group->getGroup ();
-            break;
-
           // POST
           // For both generic and dedicated groups
           case 'POST':
@@ -359,57 +347,18 @@ class Wopits implements MessageComponentInterface
             break;
         }
       }
-      // ROUTE Wall, usersview and cloning
-      elseif (preg_match ('#^wall/?(\d+)?/?(usersview|infos|clone)?$#',
+      // ROUTE Wall users view
+      //TODO We should use ajax instead of ws
+      elseif (preg_match ('#^wall/(\d+)/usersview$#',
                 $msg->route, $m))
       {
-        @list (,$wallId, $type) = $m;
+        @list (,$wallId) = $m;
 
-        $Wall = new Wpt_wall (['wallId' => $wallId, 'data' => $data]);
+        $Wall = new Wpt_wall (['wallId' => $wallId]);
 
-        switch ($msg->method)
-        {
-          // GET
-          case 'GET':
-            // Return wall active users list
-            if ($type == 'usersview')
-            {
-              unset ($Wall->data);
-              $ret = $Wall->getUsersview (
-                array_keys ($this->activeWallsUnique[$wallId]));
-            }
-            elseif ($type == 'infos')
-              $ret = $Wall->getWallInfos ();
-            // If wallId return wall data, else return all user's walls
-            else
-            {
-              if ($wallId)
-                $action = 'refreshwall';
-  
-              $ret = $Wall->getWall ();
-            }
-            break;
-
-          // PUT
-          case 'PUT':
-            $ret = ($type == 'clone') ? $Wall->clone () : $Wall->createWall ();
-            break;
-        }
-      }
-      // ROUTE Users search
-      elseif (preg_match (
-                '#^(wall|group)/(\d+)/?(group/(\d+))?/searchUsers/(.+)#',
-                $msg->route, $m))
-      {
-        list (,$class, $id,,$groupId, $search) = $m;
-
-        $isGroup = ($class == 'group');
-
-        $ret = (new Wpt_group ([
-          'wallId' => ($isGroup) ? null : $id,
-          'groupId' => ($isGroup) ? $id : $groupId
-        ]))->searchUser (['search' => $search]);
-          
+        if ($msg->method == 'GET')
+          $ret = $Wall->getUsersview (
+            array_keys ($this->activeWallsUnique[$wallId]));
       }
       // ROUTE Postit creation
       elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/postit$#', $msg->route, $m))
@@ -466,35 +415,20 @@ class Wopits implements MessageComponentInterface
             'data' => $data
           ]))->deleteHeaderPicture (['headerId' => $headerId]);
       }
-      // ROUTE Postit attachments and pictures
+      // ROUTE Postit attachments
       elseif (preg_match (
                 '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/'.
-                '(attachment|picture)/?(\d+)?$#',
+                'attachment/?(\d+)?$#',
                 $msg->route, $m))
       {
-        @list (,$wallId, $cellId, $postitId, $item, $itemId) = $m;
+        @list (,$wallId, $cellId, $postitId, $itemId) = $m;
 
-        $Postit = new Wpt_postit ([
-          'wallId' => $wallId,
-          'cellId' => $cellId,
-          'postitId' => $postitId
-        ]);
-
-        switch ($msg->method)
-        {
-          // GET
-          case 'GET':
-            if ($item == 'attachment')
-              $ret = $Postit->getAttachment (['attachmentId' => $itemId]);
-            elseif ($item == 'picture')
-              $ret = $Postit->getPicture (['pictureId' => $itemId]);
-            break;
-
-          // DELETE
-          case 'DELETE':
-            $ret = $Postit->deleteAttachment (['attachmentId' => $itemId]);
-            break;
-        }
+        if ($msg->method == 'DELETE')
+          $ret = (new Wpt_postit ([
+            'wallId' => $wallId,
+            'cellId' => $cellId,
+            'postitId' => $postitId
+          ]))->deleteAttachment (['attachmentId' => $itemId]);
       }
       // ROUTE User profil picture
       elseif ($msg->route == 'user/picture')

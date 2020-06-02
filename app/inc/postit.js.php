@@ -964,6 +964,8 @@
     {
       let toDefrag = {};
 
+      this.resetPlugsUndo ();
+
       if (typeof plug !== "object")
         plug = this.getPlugById (plug);
 
@@ -1375,7 +1377,7 @@
       const $postit = this.element,
             writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
 
-      wpt_request_ws (
+      wpt_request_ajax (
         "GET",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+
