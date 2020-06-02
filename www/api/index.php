@@ -96,8 +96,18 @@
       switch ($class)
       {
         case 'common':
-          if (getParam ('item') == 'timezones')
-            $ret = timezone_identifiers_list ();
+          $item = getParam ('item');
+
+          switch ($item)
+          {
+            case 'timezones':
+              $ret = timezone_identifiers_list ();
+              break;
+
+            // To prevent PHP timeout
+            case 'ping':
+              $ret = [];
+          }
           break;
 
         case 'postit':

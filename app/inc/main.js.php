@@ -1560,7 +1560,7 @@
         // success cb
         (d) =>
         {
-          if (d.error_msg)
+          if (!data.todelete && d.error_msg)
           {
             error_cb && error_cb ();
 
@@ -1608,9 +1608,17 @@
             // Load previously opened walls
             $("<div/>").wpt_wall ("restorePreviousSession");
 
-            // Keep WS connection and database persistent connection alive
-            // -> 20mn
-            setInterval (()=> wpt_WebSocket.ping(), 20*60*1000);
+            // Keep WS connection and database persistent connection alive and
+            // prevent PHP timeout
+            // -> 15mn
+            setInterval (()=>
+              {
+                // WebSocket ping
+                wpt_WebSocket.ping();
+                // AJAX ping
+                $.get ("/api/common/ping");
+
+              }, 15*60*1000);
 
           });
 

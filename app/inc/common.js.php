@@ -426,6 +426,17 @@ class Wpt_WebSocket
               }
               break;
 
+            // unlinkeduser
+            // If user has been unlinked from group and do not have any
+            // right on the wall.
+            case "unlinkeduser":
+              if (!isResponse)
+              {
+                wpt_displayMsg ({type: "warning", msg: data.wall.unlinked});
+                $wall.wpt_wall ("close");
+              }
+              break;
+
             // mainupgrade
             case "mainupgrade":
               setTimeout (()=>wpt_checkForAppUpgrade (data.version), 5000);

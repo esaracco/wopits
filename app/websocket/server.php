@@ -294,9 +294,14 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
+
             $ret = ($userId) ?
-                     $Group->removeUser (['userId' => $userId]) :
-                     $Group->delete ();
+              $this->_removeUserFromGroup ([
+                'obj' => $Group,
+                'userId' => $userId,
+                'wallIds' => $Group->getWallsByGroup (),
+                'ret' => &$ret
+              ]) : $Group->delete ();
             break;
         }
       }
@@ -341,9 +346,14 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
+
             $ret = ($userId) ?
-                     $Group->removeUser (['userId' => $userId]) :
-                     $Group->delete ();
+              $this->_removeUserFromGroup ([
+                'obj' => $Group,
+                'userId' => $userId,
+                'wallIds' => [$wallId],
+                'ret' => &$ret
+              ]) : $Group->delete ();
             break;
         }
       }
@@ -534,8 +544,8 @@ class Wopits implements MessageComponentInterface
 
       if (isset ($client->settings->openedWalls))
       {
-        foreach ($client->settings->openedWalls as $wallId)
-          $this->_unsetOpenedWalls ($wallId, $connId);
+        foreach ($client->settings->openedWalls as $_wallId)
+          $this->_unsetOpenedWalls ($_wallId, $connId);
       }
 
       foreach ($client->openedChats as $_wallId => $_dum)
@@ -593,44 +603,44 @@ class Wopits implements MessageComponentInterface
 
     if ($haveOld)
     {
-      foreach ($oldSettings->openedWalls as $oldWallId)
-        $this->_unsetOpenedWalls ($oldWallId, $connId);
+      foreach ($oldSettings->openedWalls as $_oldWallId)
+        $this->_unsetOpenedWalls ($_oldWallId, $connId);
 
       foreach ($diff = array_diff ($oldSettings->openedWalls,
-                                   $newSettings->openedWalls??[]) as $wallId)
-        $this->_unsetChatUsers ($wallId, $connId);
+                                   $newSettings->openedWalls??[]) as $_wallId)
+        $this->_unsetChatUsers ($_wallId, $connId);
     }
 
     // Associate new wall to user
     if (isset ($newSettings->openedWalls))
     {
-      foreach ($newSettings->openedWalls as $newWallId)
+      foreach ($newSettings->openedWalls as $_newWallId)
       {
-        if (!isset ($this->openedWalls[$newWallId]))
-          $this->openedWalls[$newWallId] = [];
+        if (!isset ($this->openedWalls[$_newWallId]))
+          $this->openedWalls[$_newWallId] = [];
 
-        $this->openedWalls[$newWallId][$connId] = $userId;
+        $this->openedWalls[$_newWallId][$connId] = $userId;
       }
     }
 
     if ($haveOld)
     {
       foreach ($diff = array_diff ($oldSettings->openedWalls,
-                                   $newSettings->openedWalls??[]) as $wallId)
+                                   $newSettings->openedWalls??[]) as $_wallId)
       {
-        $this->_unsetChatUsers ($wallId, $connId);
+        $this->_unsetChatUsers ($_wallId, $connId);
 
-        if (isset ($this->openedWalls[$wallId]))
+        if (isset ($this->openedWalls[$_wallId]))
         {
-          foreach ($this->openedWalls[$wallId] as $_connId => $_userId)
+          foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
           {
             if ( ($client = $this->clients[$_connId] ?? null) &&
-                 isset ($this->chatUsers[$wallId]))
+                 isset ($this->chatUsers[$_wallId]))
               $client->conn->send (
                 json_encode ([
                   'action' => 'chatcount',
-                  'count' => count ($this->chatUsers[$wallId]) - 1,
-                  'wall' => ['id' => $wallId]
+                  'count' => count ($this->chatUsers[$_wallId]) - 1,
+                  'wall' => ['id' => $_wallId]
                 ]));
           }
         }
@@ -649,6 +659,34 @@ class Wopits implements MessageComponentInterface
   {
     (new Wpt_dao ())->ping ();
   }
+
+  private function _removeUserFromGroup ($args)
+  {
+    $Group = $args['obj'];
+    $userId = $args['userId'];
+    $wallIds = $args['wallIds'];
+
+    $args['ret'] = $Group->removeUser (['userId' => $userId]);
+
+    if (!isset ($args['ret']['error']))
+    {
+      foreach ($wallIds as $_wallId)
+        if (!empty ($this->openedWalls[$_wallId]))
+        {
+          $_ret = $args['ret'];
+          $_ret['action'] = 'unlinkeduser';
+          $_ret['wall']['id'] = $_wallId;
+
+          foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
+            if ($_userId == $userId)
+            {
+              $this->clients[$_connId]->conn->send (json_encode ($_ret));
+              unset ($this->openedWalls[$_wallId][$_connId]);
+            }
+        }
+    }
+  }
+
 
   private function _unsetChatUsers ($wallId, $connId)
   {

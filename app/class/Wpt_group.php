@@ -48,6 +48,25 @@
       return ['users' => $stmt->fetchAll ()];
     }
 
+    public function getWallsByGroup ($groupId = null)
+    {
+      $ret = [];
+
+      if (!$this->_checkGroupAccess ())
+        return ['error' => _("Access forbidden")];
+
+      $stmt = $this->prepare ('
+        SELECT walls_id
+        FROM walls_groups
+        WHERE walls_groups.groups_id = ?');
+      $stmt->execute ([$groupId ?? $this->groupId]);
+
+      while ($item = $stmt->fetch ())
+        $ret[] = $item['walls_id'];
+
+      return $ret;
+    }
+
     public function getUsers ()
     {
       if (!$this->_checkGroupAccess ())
@@ -126,6 +145,11 @@
           ->execute ([$this->groupId]);
 
         $this->commit ();
+
+        $ret['wall'] = [
+          'id' => $this->wallId,
+          'unlinked' => _("You have been removed from a group associated with this wall.")
+        ];
       }
       catch (Exception $e) 
       {
