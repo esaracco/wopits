@@ -129,9 +129,9 @@
         $stmt->execute ([$this->userId]);
         while ($r = $stmt->fetch ())
         {
-          $this->query ("
+          $this->exec ("
             DELETE FROM postits_attachments WHERE id = {$r['id']}");
-          $this->query ("
+          $this->exec ("
             UPDATE postits SET attachmentscount = attachmentscount - 1
             WHERE id = {$r['postits_id']}");
         }
@@ -233,13 +233,13 @@
 
     public function purgeTokens ()
     {
-      $this->query ('
+      $this->exec ('
         DELETE FROM users_tokens
         WHERE expiredate IS NOT NULL
           AND expiredate <= '.time());
 
       // Purge common sessions tokens
-      $this->query ('
+      $this->exec ('
         DELETE ut.* FROM users_tokens AS ut
           INNER JOIN users ON users.id = ut.users_id
         WHERE ut.expiredate IS NULL

@@ -115,7 +115,7 @@
 
       while ($item = $stmt->fetch ())
       {
-        $this->query ("
+        $this->exec ("
           UPDATE postits SET obsolete = 1
           WHERE id = '{$item['postitId']}'
             AND DATE(FROM_UNIXTIME(deadline)) <=
@@ -131,11 +131,9 @@
       $this
         ->prepare('
           DELETE FROM postits_plugs
-          WHERE walls_id = ?
-            AND start = ? AND end NOT IN ('.
-              implode(",",array_map([$this, 'quote'],
-                array_keys($plugs))).')')
-        ->execute ([$this->wallId, $postitId]);
+          WHERE start = ? AND end NOT IN ('.
+            implode(",",array_map([$this, 'quote'], array_keys($plugs))).')')
+        ->execute ([$postitId]);
 
       $stmt = $this->prepare ('
         INSERT INTO postits_plugs (
@@ -445,7 +443,7 @@
       }
 
       if (!empty ($toDelete))
-        $this->query ('
+        $this->exec ('
           DELETE FROM postits_pictures
           WHERE id IN ('.implode(',', $toDelete).')');
     }

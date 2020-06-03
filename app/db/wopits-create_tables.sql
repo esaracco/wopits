@@ -243,7 +243,6 @@ CREATE TABLE edit_queue
   walls_id INT UNSIGNED NOT NULL,
   session_id INT UNSIGNED NOT NULL,
   item ENUM('wall', 'wall-delete', 'cell', 'header', 'postit', 'group') NOT NULL,
-  updatedate INT UNSIGNED NOT NULL,
 
   CONSTRAINT `edit_queue-users_id-fk` FOREIGN KEY (users_id)
     REFERENCES users(id) ON DELETE CASCADE,

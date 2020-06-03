@@ -53,9 +53,8 @@
             $stmt = $this->prepare ('
               SELECT start, end
               FROM postits_plugs
-              WHERE walls_id = ?
-                AND (start = ? OR end = ?)');
-            $stmt->execute ([$this->wallId, $this->itemId, $this->itemId]);
+              WHERE start = ? OR end = ?');
+            $stmt->execute ([$this->itemId, $this->itemId]);
             while ($plug = $stmt->fetch ())
               $editIds[] = ($plug['start'] == $this->itemId) ?
                              $plug['end'] : $plug['start'];
@@ -75,14 +74,6 @@
           // If item is already edited by other user, error
           if ($r['session_id'] != $GLOBALS['sessionId'])
             $ret['error_msg'] = _("Someone is editing this element.");
-          // If current user is editing this element, update date
-          else
-            $this
-              ->prepare('
-                UPDATE edit_queue
-                SET updatedate = '.time().'
-                WHERE users_id = ?')
-              ->execute ([$this->userId]);
         }
         // If item is free for editing
         else
@@ -103,8 +94,7 @@
                 'item_id' => $id,
                 'users_id' => $this->userId,
                 'session_id' => $GLOBALS['sessionId'],
-                'item' => $item,
-                'updatedate' => $currentDate
+                'item' => $item
               ]);
           }
         }
@@ -216,9 +206,8 @@
                        else
                          $this
                            ->prepare('
-                             DELETE FROM postits_plugs
-                             WHERE walls_id = ? AND start = ?')
-                           ->execute ([$this->wallId, $_postit->id]);
+                             DELETE FROM postits_plugs WHERE start = ?')
+                           ->execute ([$_postit->id]);
                     }
 
                     //FIXME
