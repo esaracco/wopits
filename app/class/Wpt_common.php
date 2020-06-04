@@ -135,7 +135,7 @@
 
     public static function unaccent ($str)
     {
-      return iconv ('utf-8', 'ascii//TRANSLIT', $str);
+      return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
     }
 
     public static function mail ($args)
