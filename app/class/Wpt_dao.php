@@ -2,6 +2,8 @@
 
   class Wpt_dao extends PDO
   {
+    protected $isMySQL;
+
     function __construct ()
     {
       if (!getenv('DEPLOY'))//PROD-remove
@@ -12,6 +14,8 @@
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
           ]);
+
+      $this->isMySQL = ($this->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql');
     }
 
     // Dummy access to the DB, to preserve persistent connexion
@@ -20,33 +24,44 @@
       $this->query ("SELECT 1");
     }
 
+    protected function getFieldQuote ()
+    {
+      return ($this->isMySQL) ? '`' : '"';
+    }
+
     protected function setTimezone ($U = null)
     {
       $User = $U ?? new Wpt_user ();
 
-      $this->exec ("SET time_zone='".$User->getTimezone()."'"); 
+      $this->exec (($this->isMySQL) ?
+        // MySQL
+        "SET time_zone='".$User->getTimezone()."'":
+        // PostgreSQL
+        "SET timezone TO '".$User->getTimezone()."'");
     }
 
     protected function executeQuery ($sql, $data, $where = null)
     {
+      $q = $this->getFieldQuote ();
+
       preg_match ('/^\s*(INSERT|UPDATE)\s*/', $sql, $m);
 
       if ($m[1] == 'INSERT')
       {
-        $fields = '`'.implode ("`,`", array_keys($data)).'`';
+        $fields = $q.implode("$q,$q", array_keys($data)).$q;
         $sql .=
           " ($fields) VALUES (".
-          preg_replace ('/(`([a-z_]+)`)/', ':$2', $fields).')';
+          preg_replace ("/($q([a-z_]+)$q)/", ':$2', $fields).')';
       }
       elseif ($m[1] == 'UPDATE')
       {
         $fields = '';
         foreach ($data as $k => $v)
-          $fields .= "`$k` = :$k,";
+          $fields .= "$q$k$q = :$k,";
         $sql .= ' SET '.substr ($fields, 0, -1).' WHERE ';
 
         foreach ($where as $k => $v)
-          $sql .= " `$k` = :$k AND ";
+          $sql .= "$q$k$q = :$k AND ";
         $sql = substr ($sql, 0, -4);
 
         $data = array_merge ($data, $where);

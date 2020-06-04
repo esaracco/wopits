@@ -1166,10 +1166,10 @@
 
           data = {
             id: postitId,
-            width: $p.outerWidth (),
-            height: $p.outerHeight (),
-            top: (p.offsetTop < 0) ? 0 : p.offsetTop,
-            left: (p.offsetLeft < 0) ? 0 : p.offsetLeft,
+            width: Math.trunc($p.outerWidth ()),
+            height: Math.trunc($p.outerHeight ()),
+            top: Math.trunc((p.offsetTop < 0) ? 0 : p.offsetTop),
+            left: Math.trunc((p.offsetLeft < 0) ? 0 : p.offsetLeft),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == _defaultString) ? "" : title,
             content: $p.find(".postit-edit").html (),

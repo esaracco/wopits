@@ -859,7 +859,7 @@
       wpt_request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/row/"+rowIdx,
-        {wall: {width: $wall.outerWidth ()}},
+        {wall: {width: Math.trunc($wall.outerWidth ())}},
         () => $wall[0].dataset.rows = Number ($wall[0].dataset.rows) - 1);
     },
 
@@ -869,11 +869,11 @@
       const plugin = this,
             $wall = plugin.element,
             $header = $wall.find("thead tr th:eq("+idx+")"),
-            oldW = $wall.outerWidth () - 1,
-            newW = oldW - $header.outerWidth (),
+            oldW = Math.trunc($wall.outerWidth () - 1),
+            newW = Math.trunc(oldW - $header.outerWidth ()),
             data = {
               wall: {width: oldW},
-              width: $header.outerWidth ()
+              width: Math.trunc($header.outerWidth ())
             };
 
       plugin.closeAllMenus ();
@@ -1616,7 +1616,7 @@
                 // WebSocket ping
                 wpt_WebSocket.ping();
                 // AJAX ping
-                $.get ("/api/common/ping");
+                $.get ("/api/user/ping");
 
               }, 15*60*1000);
 

@@ -1105,7 +1105,6 @@ span.wpt-badge {
   background-color: #343a40;
   color:white;
   position: absolute;
-  text-decoration:none;
   border-radius: 50%;
   font-size:0.8em;
   height: 1.5em;
@@ -1130,10 +1129,7 @@ div.usersviewcounts {
   color:#555;
 }
 
-div.usersviewcounts span.wpt-badge {
-  font-size:0.6rem;
-}
-
+div.usersviewcounts span.wpt-badge,
 .chatroom .usersviewcounts span.wpt-badge {
   font-size:0.6rem;
 }
@@ -1153,7 +1149,6 @@ div.postit div.attachmentscount {
 }
 
 div.postit div.attachmentscount span.wpt-badge {
-  top: 5px;
   left:12px;
 }
 

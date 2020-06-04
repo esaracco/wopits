@@ -1,5 +1,5 @@
 --
--- Create wopits tables.
+-- Create wopits tables for MySQL.
 --
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -103,7 +103,7 @@ CREATE TABLE walls_groups
 (
   walls_id INT UNSIGNED NOT NULL,
   groups_id INT UNSIGNED NOT NULL,
-  access ENUM('1', '2', '3') NOT NULL, -- ADMIN(1), RW(2), RO(3)
+  access TINYINT NOT NULL, -- ADMIN(1), RW(2), RO(3)
 
   CONSTRAINT `walls_groups-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,

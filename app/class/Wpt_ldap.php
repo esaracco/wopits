@@ -97,7 +97,7 @@ class Wpt_ldap
   public function getUserData ($uid)
   {
     $filter = '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')'.
-              '(uid='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
+              '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
     $ret = null;
 
     if ( !($s = ldap_search ($this->ldap,

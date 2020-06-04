@@ -17,6 +17,7 @@
 
     public function addTo ()
     {
+      $q = $this->getFieldQuote ();
       $currentDate = time ();
       $item = $this->item;
       $editIds = [$this->itemId];
@@ -50,10 +51,10 @@
           // with it
           if ($item == 'postit')
           {
-            $stmt = $this->prepare ('
-              SELECT start, end
+            $stmt = $this->prepare ("
+              SELECT start, ${q}end$q
               FROM postits_plugs
-              WHERE start = ? OR end = ?');
+              WHERE start = ? OR ${q}end$q = ?");
             $stmt->execute ([$this->itemId, $this->itemId]);
             while ($plug = $stmt->fetch ())
               $editIds[] = ($plug['start'] == $this->itemId) ?

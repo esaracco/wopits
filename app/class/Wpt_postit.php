@@ -72,11 +72,13 @@
 
     public function getPlugs ($all = false)
     {
+      $q = $this->getFieldQuote ();
+
       // Get postits plugs
-      $stmt = $this->prepare ('
-        SELECT start, end, label
+      $stmt = $this->prepare ("
+        SELECT start, ${q}end$q, label
         FROM postits_plugs
-        WHERE '.(($all)?'walls_id':'start').' = ?');
+        WHERE ".(($all)?'walls_id':'start')." = ?");
       $stmt->execute ([($all)?$this->wallId:$this->postitId]);
 
       return $stmt->fetchAll ();
@@ -84,13 +86,14 @@
 
     public function getPostit ()
     {
-      $stmt = $this->prepare ('
+      $q = $this->getFieldQuote ();
+      $stmt = $this->prepare ("
         SELECT
-          id, cells_id, width, height, top, `left`, classcolor, title,
+          id, cells_id, width, height, top, ${q}left$q, classcolor, title,
           content, tags, creationdate, deadline, timezone, obsolete,
           attachmentscount
         FROM postits
-        WHERE id = ?');
+        WHERE id = ?");
       $stmt->execute ([$this->postitId]);
 
       return $stmt->fetch ();
@@ -100,11 +103,15 @@
     {
       $User = new Wpt_user ();
       $time = time ();
+      $toDate = $this->isMySQL ?
+        // MySQL
+        ' DATE(FROM_UNIXTIME(deadline)) ' :
+        // PostgreSQL
+        ' to_timestamp(deadline) ';
 
       $stmt = $this->query ('
         SELECT
-          users.id AS userId,
-          postits.id AS postitId,
+          postits.id AS postitid,
           postits.timezone
         FROM postits
           INNER JOIN cells ON cells.id = postits.cells_id
@@ -117,30 +124,37 @@
       {
         $this->exec ("
           UPDATE postits SET obsolete = 1
-          WHERE id = '{$item['postitId']}'
-            AND DATE(FROM_UNIXTIME(deadline)) <=
-              '{$User->getDate($time, $item['timezone'])}'");
+          WHERE id = '{$item['postitid']}'
+            AND $toDate <= '{$User->getDate($time, $item['timezone'])}'");
       }
     }
 
     public function addRemovePlugs ($plugs, $postitId = null)
     {
+      $q = $this->getFieldQuote ();
+
+      $duplicate = ($this->isMySQL) ?
+        // MySQL
+        ' ON DUPLICATE KEY UPDATE ' :
+        // PostgreSQL
+        ' ON CONFLICT (walls_id, start, "end") DO UPDATE SET ';
+
       if (!$postitId)
         $postitId = $this->postitId;
 
       $this
-        ->prepare('
+        ->prepare("
           DELETE FROM postits_plugs
-          WHERE start = ? AND end NOT IN ('.
-            implode(",",array_map([$this, 'quote'], array_keys($plugs))).')')
+          WHERE start = ? AND ${q}end$q NOT IN (".
+            implode(",",array_map([$this, 'quote'], array_keys($plugs))).")")
         ->execute ([$postitId]);
 
-      $stmt = $this->prepare ('
+      $stmt = $this->prepare ("
         INSERT INTO postits_plugs (
-          walls_id, start, end, label
+          walls_id, start, ${q}end$q, label
         ) VALUES (
           :walls_id, :start, :end, :label
-        ) ON DUPLICATE KEY UPDATE label = :label_1');
+        ) $duplicate label = :label_1");
 
       foreach ($plugs as $_id => $_label)
         $stmt->execute ([

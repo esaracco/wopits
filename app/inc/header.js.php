@@ -20,8 +20,8 @@
 
     return {
       id: $header[0].dataset.id.substring (7),
-      width: $header.outerWidth (),
-      height: $header.outerHeight (),
+      width: Math.trunc($header.outerWidth ()),
+      height: Math.trunc($header.outerHeight ()),
       title: $header.find(".title").text (),
       picture: ($img.length) ? $img.attr("src") : null
     };
@@ -661,7 +661,7 @@
         data = {
           headers: this.serialize (),
           cells: $("<div/>").wpt_cell ("serialize"),
-          wall: {width: $wall.outerWidth ()}
+          wall: {width: Math.trunc($wall.outerWidth ())}
         };
 
         $wall.find("tbody td").each (function ()

@@ -77,7 +77,7 @@
           AND name = :name
           AND users_id = :users_id');
       $stmt->execute ([
-        ':id' => $this->wallId??0,
+        ':id' => $this->wallId?$this->wallId:'0',
         ':name' => $name,
         ':users_id' => $this->userId
       ]);
@@ -739,6 +739,7 @@
 
     public function getWall ($basic = false)
     {
+      $q = $this->getFieldQuote ();
       $ret = [];
 
       // Return all walls
@@ -852,11 +853,11 @@
       elseif (!$basic)
       {
         // Get headers
-        $stmt = $this->prepare ('
-          SELECT id, `type`, `order`, width, height, title, picture
+        $stmt = $this->prepare ("
+          SELECT id, ${q}type$q, ${q}order$q, width, height, title, picture
           FROM headers
           WHERE walls_id = ?
-          ORDER BY `type`, `order` ASC');
+          ORDER BY ${q}type$q, ${q}order$q ASC");
         $stmt->execute ([$this->wallId]);
         $data['headers'] = ['cols' => [], 'rows' => []];
         while ($row = $stmt->fetch ())
@@ -876,12 +877,12 @@
           WHERE walls_id = ?');
         $stmt->execute ([$this->wallId]);
         // Get postits
-        $stmt1 = $this->prepare ('
+        $stmt1 = $this->prepare ("
           SELECT
-            id, width, height, top, `left`, classcolor, title, content, tags,
-            creationdate, deadline, timezone, obsolete, attachmentscount
+            id, width, height, top, ${q}left$q, classcolor, title, content,
+            tags, creationdate, deadline, timezone, obsolete, attachmentscount
           FROM postits
-          WHERE cells_id = ?');
+          WHERE cells_id = ?");
         $data['cells'] = [];
         while ($row = $stmt->fetch ())
         {
@@ -894,19 +895,19 @@
         }
 
         // Get postits plugs
-        $stmt = $this->prepare ('
-          SELECT start, end, label
+        $stmt = $this->prepare ("
+          SELECT start, ${q}end$q, label
           FROM postits_plugs
-          WHERE walls_id = ?');
+          WHERE walls_id = ?");
         $stmt->execute ([$this->wallId]); 
         $data['postits_plugs'] = $stmt->fetchAll ();
-  
-        // Check if the wall is shared with other users
-        $stmt = $this->prepare ('
-          SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1');
-        $stmt->execute ([$this->wallId]);
-        $data['shared'] = boolval ($stmt->fetch ());
-      }
+       }
+
+      // Check if the wall is shared with other users
+      $stmt = $this->prepare ('
+        SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1');
+      $stmt->execute ([$this->wallId]);
+      $data['shared'] = boolval ($stmt->fetch ());
 
       return $data;
     }
@@ -992,10 +993,11 @@
 
     public function deleteWallColRow ($args)
     {
-      $ret = [];
+      $q = $this->getFieldQuote ();
       $item = $args['item'];
       $itemPos = $args['itemPos'];
       $dir = $this->getWallDir ();
+      $ret = [];
 
       if ($item != 'col' && $item != 'row')
         return ['error' => _("Access forbidden")];
@@ -1009,10 +1011,10 @@
         $this->beginTransaction ();
 
         // Delete headers documents
-        $stmt = $this->prepare('
+        $stmt = $this->prepare("
           SELECT id FROM headers
           WHERE walls_id = :walls_id
-            AND `type` = :type AND `order` = :order');
+            AND ${q}type$q = :type AND ${q}order$q = :order");
         $stmt->execute ([
           ':walls_id' => $this->wallId,
           ':type' => $item,
@@ -1024,11 +1026,11 @@
 
         // Delete header
         $this
-          ->prepare('
+          ->prepare("
             DELETE FROM headers
             WHERE walls_id = :walls_id
-              AND `type` = :type
-              AND `order` = :order')
+              AND ${q}type$q = :type
+              AND ${q}order$q = :order")
           ->execute ([
             ':walls_id' => $this->wallId,
             ':type' => $item,
@@ -1037,12 +1039,12 @@
 
         // Reordonate headers
         $this
-          ->prepare('
+          ->prepare("
             UPDATE headers SET
-              `order` = `order` - 1
+              ${q}order$q = ${q}order$q - 1
             WHERE walls_id = :walls_id
-              AND `type` = :type
-              AND `order` > :order')
+              AND ${q}type$q = :type
+              AND ${q}order$q > :order")
           ->execute ([
               ':walls_id' => $this->wallId,
               ':type' => $item,
@@ -1110,9 +1112,10 @@
 
     public function createWallColRow ($args)
     {
-      $ret = [];
+      $q = $this->getFieldQuote ();
       $item = $args['item'];
       $dir = $this->getWallDir ();
+      $ret = [];
 
       if ($item != 'col' && $item != 'row')
         return ['error' => _("Access forbidden")];
@@ -1125,10 +1128,10 @@
       {
         $this->beginTransaction ();
 
-        $stmt = $this->prepare('
-        SELECT `order` FROM headers
+        $stmt = $this->prepare("
+        SELECT ${q}order$q FROM headers
         WHERE walls_id = :walls_id
-          AND `type` = :type ORDER BY `order` DESC LIMIT 1');
+          AND ${q}type$q = :type ORDER BY ${q}order$q DESC LIMIT 1");
         $stmt->execute ([
           ':walls_id' => $this->wallId,
           ':type' => $item

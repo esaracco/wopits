@@ -14,13 +14,14 @@
   // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
   define ('WPT_APACHE_RESTART', "");
   // System command to restart wopits daemon
-  // Example: systemctl restart wopits-example
+  // Example: systemctl restart wopits
   define ('WPT_WOPITS_RESTART', "");
 
   // Database
-  // Example: mysql:host=localhost;dbname=wopits-example;port=3306
+  // Example: mysql:host=localhost;dbname=wopits;port=3306
+  //          pgsql:host=localhost;dbname=wopits;port=5433
   define ('WPT_DSN', "");
-  // Example: wopits-example
+  // Example: wopits
   define ('WPT_DB_USER', "");
   // Example: !!tobechanged!!
   define ('WPT_DB_PASSWORD', "");

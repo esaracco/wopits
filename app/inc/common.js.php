@@ -332,15 +332,6 @@ class Wpt_WebSocket
 
     this.cnx = new WebSocket (url);
 
-    // EVENT close
-    this.cnx.onclose = (e) =>
-    {
-      //FIXME Hack to fix Firefox WebSocket closing on file download with
-      //      location.href
-      if (location.href.indexOf ("#downloading") != -1)
-        this.tryToReconnect ();
-    };
-
     // EVENT open
     this.cnx.onopen = (e) =>
       {
@@ -1234,19 +1225,20 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
         {
           if (e.lengthComputable)
             {
-              const percentComplete = e.loaded / e.total,
-                    display = parseInt(percentComplete*100)+"%";
+              const $progress = $("#loader .progress"),
+                    percentComplete = e.loaded / e.total,
+                    display = Math.trunc(percentComplete*100)+"%";
 
-              $("#loader .progress")
-                .text(display)
-                .css ("width", display);
+              $progress.text(display).css ("width", display);
 
-              if (percentComplete == 1)
-              {
-                $("#loader .progress")
-                  .html(`<i class="fas fa-grin-alt"></i>`)
-                  .css ("background", "#12da12");
-              }
+              if (percentComplete < 0.5)
+                $progress.css ("background", "#ea6966");
+              else if (percentComplete < 0.9)
+                $progress.css ("background", "#f5b240");
+              else if (percentComplete < 1)
+                $progress.css ("background", "#6ece4b");
+              else
+                $progress.text ("<?=_("Upload completed!")?>");
             }
         }
 

@@ -133,6 +133,11 @@
       return $slocale;
     }
 
+    public static function unaccent ($str)
+    {
+      return iconv ('utf-8', 'ascii//TRANSLIT', $str);
+    }
+
     public static function mail ($args)
     {
       require_once (__DIR__.'/../libs/vendor/autoload.php');

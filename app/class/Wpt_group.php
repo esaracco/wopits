@@ -26,7 +26,7 @@
         SELECT id, fullname
         FROM users
         WHERE id <> :users_id
-          AND searchdata COLLATE utf8_general_ci LIKE :search
+          AND searchdata LIKE :search
           AND id NOT IN
           (
             SELECT users_id FROM users_groups
@@ -40,7 +40,7 @@
         LIMIT 10');
       $stmt->execute ([
         ':users_id' => $this->userId,
-        ':search' => "%{$args['search']}%",
+        ':search' => '%'.Wpt_common::unaccent($args['search']).'%',
         ':groups_id_1' => $this->groupId,
         ':groups_id_2' => $this->groupId
       ]);
@@ -239,6 +239,7 @@
 
     public function getGroup ()
     {
+      $q = $this->getFieldQuote ();
       $isCreator = $this->isWallCreator ($this->userId);
       $ret = [];
 
@@ -270,10 +271,10 @@
   
         // NOT INT
 
-        $stmt = $this->prepare ('
+        $stmt = $this->prepare ("
           SELECT
             userscount,
-            `type`,
+            ${q}type$q,
             id,
             name,
             description
@@ -282,12 +283,12 @@
             (
               (
                 users_id = :users_id_1 AND
-                `type` = '.WPT_GTYPES['generic'].'
+                ${q}type$q = ".WPT_GTYPES['generic']."
               )
               OR
               (
                 users_id = :users_id_2 AND
-                `type` = '.WPT_GTYPES['dedicated'].' AND
+                ${q}type$q = ".WPT_GTYPES['dedicated']." AND
                 walls_id = :walls_id_1
               )
             )
@@ -300,7 +301,7 @@
               WHERE groups.users_id = :users_id_3
                 AND walls_groups.walls_id = :walls_id_2
             )
-          ORDER BY name');
+          ORDER BY name");
         $stmt->execute ([
           ':users_id_1' => $this->userId,
           ':users_id_2' => $this->userId,

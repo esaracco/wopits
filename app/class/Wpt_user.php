@@ -231,19 +231,31 @@
       }
     }
 
+    public function ping ()
+    {
+      $this->executeQuery ('UPDATE users',
+      ['updatedate' => time ()],
+      ['id' => $this->userId]);
+    }
+
     public function purgeTokens ()
     {
-      $this->exec ('
-        DELETE FROM users_tokens
-        WHERE expiredate IS NOT NULL
-          AND expiredate <= '.time());
+      $current = time ();
 
-      // Purge common sessions tokens
-      $this->exec ('
-        DELETE ut.* FROM users_tokens AS ut
-          INNER JOIN users ON users.id = ut.users_id
-        WHERE ut.expiredate IS NULL
-          AND users.lastconnectiondate - ut.creationdate > 30');
+      $this->exec ("
+        DELETE FROM users_tokens
+        WHERE token IN (
+          SELECT token
+          WHERE expiredate IS NOT NULL
+            AND expiredate <= $current
+
+          UNION
+
+          SELECT token
+          FROM users_tokens AS ut
+            INNER JOIN users ON users.id = ut.users_id
+          WHERE ut.expiredate IS NULL
+            AND $current - users.updatedate > 30)");
     }
 
     public function createUpdateLdapUser ($args)
@@ -552,32 +564,32 @@
         if (!isset ($this->data->password))
         {
           $data = (array) $this->data;
-          $field = array_keys ($data)[0];
+          $field = preg_replace('/^[^a-z]+$/', '', array_keys($data)[0]);
           $value = $data[$field];
   
           if (!isset ($data['about']) &&
-              $dbl = $this->_isDuplicate ([$field => $value]))
+              ($dbl = $this->_isDuplicate ([$field => $value])) )
             $ret['error_msg'] = ($dbl == 'username') ?
               _("This login already exists.") :
               _("This email already exists.");
           else
           {
             $this
-              ->prepare ("
-                UPDATE users SET
-                  $field = :$field,
-                  searchdata = CONCAT(username,',',fullname)
-                WHERE id = :id")
-              ->execute ([
-                $field => $value,
-                'id' => $this->userId
-              ]);
-    
+              ->prepare ("UPDATE users SET $field = :$field WHERE id = :id")
+              ->execute ([$field => $value, 'id' => $this->userId]);
+
             $stmt = $this->prepare ('
               SELECT username, fullname, email, about, picture
               FROM users where id = ?');
             $stmt->execute ([$this->userId]);
             $ret = $stmt->fetch ();
+
+            $this
+              ->prepare('UPDATE users SET searchdata = ? WHERE id = ?')
+              ->execute ([
+                Wpt_common::unaccent ($ret['username'].','.$ret['fullname']),
+                $this->userId
+              ]);
           }
         }
         else
@@ -585,14 +597,8 @@
           $pwd = $this->data->password;
 
           $stmt = $this->prepare ('
-            SELECT id
-            FROM users
-            WHERE password = :password
-              AND id = :id');
-          $stmt->execute ([
-            ':password' => hash ('sha1', $pwd->current),
-            ':id' => $this->userId
-          ]);
+            SELECT id FROM users WHERE password = ? AND id = ?');
+          $stmt->execute ([hash ('sha1', $pwd->current), $this->userId]);
           if (!$stmt->fetch ())
             throw new Exception (_("Wrong current password."));
   
@@ -671,7 +677,8 @@
           'password' => hash ('sha1', $this->data->password),
           'username' => $this->data->username,
           'fullname' => $this->data->fullname,
-          'searchdata' => "{$this->data->username},{$this->data->fullname}",
+          'searchdata' => Wpt_common::unaccent (
+                            "{$this->data->username},{$this->data->fullname}"),
           'creationdate' => $currentDate,
           'updatedate' => $currentDate,
           'lastconnectiondate' => $currentDate
@@ -737,7 +744,7 @@
       $keys = array_keys ($args);
       $data = [];
 
-      $where = ' 1 AND ( ';
+      $where = ' ( ';
       foreach ($args as $k => $v)
       {
         $where .= " $k = :$k OR ";

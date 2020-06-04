@@ -261,8 +261,8 @@
 
         cells.push ({
           id: $cell[0].dataset.id.substring (5),
-          width: $cell.outerWidth (),
-          height: $cell.outerHeight (),
+          width: Math.trunc($cell.outerWidth ()),
+          height: Math.trunc($cell.outerHeight ()),
           row: $cell.parent().index (),
           col: $cell.index () - 1,
           postits: $postits.length ?
@@ -351,7 +351,7 @@
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
         {
           cells: this.serialize (),
-          wall: {width: this.settings.wall.outerWidth () - 1}
+          wall: {width: Math.trunc(this.settings.wall.outerWidth () - 1)}
         }
       );
     }

@@ -14,16 +14,36 @@ If you do not want to bother installing it on your own, just create an account o
 INSTALLATION
 ------------
 
-> You will only need Apache, MySQL and PHP 7 to make it work!
+> You will only need Apache, MySQL or PostgreSQL and PHP 7 to make it work!
 > Even deployment is not required (although recommended): you can directly use the directory `www/` of the Git repository as Apache DocumentRoot.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install Apache, MariaDB or MySQL and PHP 7 (with `php-gettext`, `php-mysql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication.
-- Configure Apache by customizing `/app/doc/apache/wopits-example.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
+- Install Apache, MySQL or PostgreSQL and PHP 7 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
-- Create a database and a user (using the `app/db/wopits-create_db.example.sql` file if necessary). Then create tables using `app/db/wopits-create_tables.sql`:
+- Create a database and a user (using the `app/db/*/wopits-create_db.example.sql` file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
+- With **MySQL**:
 ```bash
-# mysql [your database] < app/db/wopits-create_tables.sql
+$ sudo -uroot mysql < app/db/mysql/wopits-create_db.example.sql
+$ mysql wopits -uwopits -p < app/db/mysql/wopits-create_tables.sql
+```
+- With **PostgreSQL**:
+Edit the `pg_hba.conf` like this:
+
+1. Change:
+```bash
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+```
+2. To:
+```bash
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+```
+3. Then:
+```bash
+$ sudo -upostgres psql < app/db/postgresql/wopits-create_db.example.sql
+$ psql wopits -Uwopits -W < app/db/postgresql/wopits-create_tables.sql
 ```
 - If you intend to use wopits Git repository "as is" as your Apache DocumentRoot, duplicate `site-config.template.php` in `site-config.php` and customize it.
 
@@ -31,9 +51,9 @@ INSTALLATION
 
 First of all, install wopits on a decently sized server with at least 16GB of RAM, good bandwidth and high-performance I/O disks.
 
-#### MySQL
+#### MySQL / PostgreSQL
 
-It is important to optimize the MySQL configuration as much as possible. Default settings will give poor results.
+It is important to optimize the SGBD configuration as much as possible. Default settings will give poor results.
 
 #### PHP
 
@@ -64,15 +84,14 @@ BUILD & DEPLOYMENT
 
 In order to run the WebSocket server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
 
- 1. Create `/etc/systemd/system/wopits.service` (using the `app/doc/systemd/wopits-example.service` template file).
+ 1. Create `/etc/systemd/system/wopits.service` (using the `app/doc/systemd/wopits.service` template file).
  2. Execute `systemctl start wopits` and `systemctl enable wopits`.
  3. To see the daemon logs, use `journalctl -f -u wopits`.
 
 **Make sure that the WebSocket server daemon's group can write to the `data/` directory** of the wopits DocumentRoot. **It must be the same as the wopits `data/` directory group** (which has been chmoded with 2770).
 
 > ***Do not forget to restart this daemon after each deployment!***
-
-### Directly from the Git repository
+### From the Git repository
 
 If you are using the Git repository as your Apache DocumentRoot, create a `data/` directory and give the Apache user all rights on it:
 ```bash

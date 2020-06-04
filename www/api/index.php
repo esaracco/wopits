@@ -96,18 +96,8 @@
       switch ($class)
       {
         case 'common':
-          $item = getParam ('item');
-
-          switch ($item)
-          {
-            case 'timezones':
-              $ret = timezone_identifiers_list ();
-              break;
-
-            // To prevent PHP timeout
-            case 'ping':
-              $ret = [];
-          }
+          if (getParam ('item') == 'timezones')
+            $ret = timezone_identifiers_list ();
           break;
 
         case 'postit':
@@ -133,10 +123,18 @@
           break;
 
         case 'user':
-          if (getParam ('action') == 'getFile')
-            $ret = (new Wpt_user())->getPicture ([
-              'userId' => getParam ('userId')
-            ]);
+          $action = getParam ('action');
+          $User = new Wpt_user ();
+          switch ($action)
+          {
+            case 'ping':
+              $ret = $User->ping ();
+              break;
+            
+            case 'getFile':
+              $ret = $User->getPicture (['userId' => getParam ('userId')]);
+              break;
+          }
           break;
 
         case 'wall':
