@@ -15,7 +15,9 @@
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
           ]);
 
-      $this->isMySQL = ($this->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql');
+      if (!getenv('DEPLOY'))//PROD-remove
+        $this->isMySQL =
+          ($this->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql');
     }
 
     // Dummy access to the DB, to preserve persistent connexion
