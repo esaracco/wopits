@@ -74,7 +74,7 @@ $(function()
             wpt_resizeModal ($modal);
    
           // Fix chatroom position if it is out of bounds
-          if ($chatroom.is (":visible"))
+          if ($chatroom && $chatroom.is (":visible"))
             $chatroom.wpt_chatroom ("fixPosition");
    
           // Fix chatroom position if it is out of bounds

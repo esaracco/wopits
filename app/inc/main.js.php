@@ -719,7 +719,11 @@
             newActiveTabId = ($activeTab.prev().length) ?
               $activeTab.prev().attr("href") :
                 ($activeTab.next().length) ?
-                  $activeTab.next().attr("href") : null;
+                  $activeTab.next().attr("href") : null,
+            $chatroom = wpt_sharer.getCurrent ("chatroom");
+
+      if ($chatroom.is (":visible"))
+        $chatroom.wpt_chatroom ("leave");
 
       $(".modal.show").modal ("hide");
 

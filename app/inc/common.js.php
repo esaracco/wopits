@@ -396,12 +396,14 @@ class Wpt_WebSocket
 
             // chat
             case "chat":
+              if ($wall.length)
                 $("#wall-"+data.wall.id+" .chatroom")
                   .wpt_chatroom ("addMsg", data);
               break;
 
             // chatcount
             case "chatcount":
+              if ($wall.length)
                 $("#wall-"+data.wall.id+" .chatroom")
                   .wpt_chatroom ("refreshUserscount", data.count);
               break;

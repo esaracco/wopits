@@ -194,6 +194,9 @@
       {
         const userId = wpt_userData.id;
 
+        if (!args)
+          args = {userscount: 0, userslist: []};
+
         this.closeUsersTooltip (true);
 
         $chatroom.find("h2 .wpt-badge").html (args.userscount);
