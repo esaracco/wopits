@@ -87,6 +87,17 @@ CREATE TABLE walls_groups
 );
 CREATE INDEX "walls_groups-access-idx" ON walls_groups (access);
 
+DROP TABLE IF EXISTS _perf_walls_users CASCADE;
+CREATE TABLE _perf_walls_users
+(
+  groups_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
+  walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
+  users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  -- ADMIN(1), RW(2), RO(3)
+  access SMALLINT NOT NULL
+);
+CREATE INDEX "_perf_walls_users-access-idx" ON _perf_walls_users (access);
+
 DROP TABLE IF EXISTS headers CASCADE;
 CREATE TABLE headers
 (

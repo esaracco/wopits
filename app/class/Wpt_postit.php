@@ -22,7 +22,9 @@
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
       if (!$r['ok'])
-        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+        return (isset ($r['id'])) ? $r :
+          ['error_msg' =>
+             _("You must have write access to perform this action.")];
 
       $data = [
         'cells_id' => $this->cellId,

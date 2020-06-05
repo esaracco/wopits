@@ -32,29 +32,16 @@
         $in .= ','.$wr['ro'].','.$wr['rw'];
 
       $stmt = $this->prepare ("
-        SELECT 1
-        FROM walls
-        WHERE id = ?
-          AND users_id = ?
-        UNION
-        SELECT 1
-        FROM walls_groups
-          INNER JOIN users_groups
-            ON users_groups.groups_id = walls_groups.groups_id
-        WHERE walls_groups.walls_id = ?
-          AND users_groups.users_id = ?
-          AND walls_groups.access IN($in)
+        SELECT 1 FROM _perf_walls_users
+        WHERE users_id = ? AND walls_id = ? AND access IN($in)
         LIMIT 1");
-      $stmt->execute ([
-        $this->wallId, $this->userId,
-        $this->wallId, $this->userId
-      ]);
+      $stmt->execute ([$this->userId, $this->wallId]);
 
       if ( !($allowed = $stmt->fetch ()) )
       {
-        $stmt1 = $this->prepare ('SELECT 1 FROM walls WHERE id = ?');
-        $stmt1->execute ([$this->wallId]);
-        if (!$stmt1->fetch ())
+        $stmt = $this->prepare ('SELECT 1 FROM walls WHERE id = ?');
+        $stmt->execute ([$this->wallId]);
+        if (!$stmt->fetch ())
           return [
             'ok' => 0,
             'id' => $this->wallId,
@@ -87,36 +74,23 @@
 
     protected function isWallCreator ($userId)
     {
-      // get wall creator id
       $stmt = $this->prepare ('
-        SELECT 1
-        FROM walls
-        WHERE id = :id
-          AND users_id = :users_id');
-      $stmt->execute ([
-        ':id' => $this->wallId,
-        ':users_id' => $userId
-      ]);
+        SELECT 1 FROM walls WHERE id = ? AND users_id = ?');
+      $stmt->execute ([$this->wallId, $userId]);
 
       return $stmt->fetch ();
     }
 
     protected function isWallDelegateAdmin ($userId)
     {
-      // get wall creator id
       $stmt = $this->prepare ('
-        SELECT 1
-        FROM walls_groups
-          INNER JOIN users_groups
-            ON users_groups.groups_id = walls_groups.groups_id
-        WHERE walls_groups.walls_id = :walls_id
-          AND users_groups.users_id = :users_id
-          AND walls_groups.access = '.WPT_RIGHTS['walls']['admin'].'
+        SELECT 1 FROM _perf_walls_users
+        WHERE access = '.WPT_RIGHTS['walls']['admin'].'
+          AND groups_id IS NOT NULL
+          AND walls_id = ?
+          AND users_id = ?
         LIMIT 1');
-      $stmt->execute ([
-        ':walls_id' => $this->wallId,
-        ':users_id' => $userId
-      ]);
+      $stmt->execute ([$this->wallId, $userId]);
 
       return $stmt->fetch ();
     }
@@ -418,6 +392,7 @@
           {
             $this->beginTransaction ();
 
+            //FIXME //TODO factorization with createWall()
             $this->executeQuery ('INSERT INTO walls', [
               'users_id' => $this->userId,
               'width' => $wall->width,
@@ -565,6 +540,14 @@
               }
             }
     
+            // Performance helper:
+            // Link wall creator to wall with admin access.
+            $this->executeQuery ('INSERT INTO _perf_walls_users', [
+              'walls_id' => $this->wallId,
+              'users_id' => $this->userId,
+             'access' => WPT_RIGHTS['walls']['admin']
+            ]);
+
             $this->commit ();
           }
           catch (Exception $e)
@@ -742,7 +725,7 @@
       $q = $this->getFieldQuote ();
       $ret = [];
 
-      // Return all walls
+      // Return walls list
       if (!$this->wallId)
       {
         $stmt = $this->prepare ("
@@ -1122,7 +1105,9 @@
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
       if (!$r['ok'])
-        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+        return (isset ($r['id'])) ? $r :
+          ['error' =>
+             _("You must have admin access to perform this action.")];
 
       try
       {
@@ -1338,6 +1323,14 @@
             'col' => $cell['col']
           ]);
         }
+
+        // Performance helper:
+        // Link wall creator to wall with admin access.
+        $this->executeQuery ('INSERT INTO _perf_walls_users', [
+          'walls_id' => $this->wallId,
+          'users_id' => $this->userId,
+          'access' => WPT_RIGHTS['walls']['admin']
+        ]);
 
         $this->commit ();
 

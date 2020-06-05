@@ -113,6 +113,22 @@ CREATE TABLE walls_groups
 )
 ENGINE=INNODB;
 
+DROP TABLE IF EXISTS _perf_walls_users;
+CREATE TABLE _perf_walls_users
+(
+  walls_id INT UNSIGNED NOT NULL,
+  groups_id INT UNSIGNED,
+  users_id INT NOT NULL,
+  access TINYINT NOT NULL, -- ADMIN(1), RW(2), RO(3)
+
+  CONSTRAINT `_perf_walls_users-walls_id-fk` FOREIGN KEY (walls_id)
+    REFERENCES walls(id) ON DELETE CASCADE,
+  CONSTRAINT `_perf_walls_users-groups_id-fk` FOREIGN KEY (groups_id)
+    REFERENCES groups(id) ON DELETE CASCADE,
+  INDEX `_perf_walls_users-access-idx` (access)
+)
+ENGINE=INNODB;
+
 DROP TABLE IF EXISTS headers;
 CREATE TABLE headers
 (

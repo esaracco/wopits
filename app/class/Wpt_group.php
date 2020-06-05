@@ -100,6 +100,21 @@
           'users_id' => $groupUserId
         ]);
 
+        // Performance helper:
+        // Link user to group's walls with specific access.
+        $stmt = $this->prepare ('
+          SELECT walls_id, access FROM walls_groups WHERE groups_id = ?');
+        $stmt->execute ([$this->groupId]);
+        while ( ($item = $stmt->fetch ()) )
+        {
+          $this->executeQuery ('INSERT INTO _perf_walls_users', [
+            'groups_id' => $this->groupId,
+            'walls_id' => $item['walls_id'],
+            'users_id' => $groupUserId,
+            'access' => $item['access']
+          ]);
+        }
+
         $this
           ->prepare('
             UPDATE groups SET userscount = userscount + 1
@@ -134,8 +149,15 @@
         $this
           ->prepare('
             DELETE FROM users_groups
-            WHERE groups_id = ?
-              AND users_id = ?')
+            WHERE groups_id = ? AND users_id = ?')
+          ->execute ([$this->groupId, $groupUserId]);
+
+        // Performance helper:
+        // Unlink user to group's walls.
+        $this
+          ->prepare('
+            DELETE FROM _perf_walls_users
+            WHERE groups_id = ? AND users_id = ?')
           ->execute ([$this->groupId, $groupUserId]);
 
         $this
@@ -357,20 +379,33 @@
 
       try
       {
+        $this->beginTransaction ();
+
+        // Unlink group from wall
         $this
           ->prepare('
-            DELETE FROM walls_groups
-            WHERE groups_id = ?
-              AND walls_id = ?')
+            DELETE FROM walls_groups WHERE groups_id = ? AND walls_id = ?')
+          ->execute ([$this->groupId, $this->wallId]);
+
+        // Performance helper:
+        // Unlink group's users to wall.
+        $this
+          ->prepare('
+            DELETE FROM _perf_walls_users
+            WHERE groups_id = ? AND walls_id = ?')
           ->execute ([$this->groupId, $this->wallId]);
 
         $ret['wall'] = [
           'id' => $this->wallId,
           'removed' => _("You no longer have the right to access this wall.")
         ];
+
+        $this->commit ();
       }
       catch (Exception $e)
       {
+        $this->rollback ();
+
         error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
         $ret['error'] = 1;
       }
@@ -382,20 +417,44 @@
     {
       $ret = [];
 
-      // only wall creator can link a group
+      // Only wall creator can link a group
       if (!$this->isWallCreator ($this->userId))
         return ['error' => _("Access forbidden")];
 
       try
       {
+        $this->beginTransaction ();
+
+        // Link group to wall with specific access
         $this->executeQuery ('INSERT INTO walls_groups', [
           'groups_id' => $this->groupId,
           'walls_id' => $this->wallId,
           'access' => $this->data->access
         ]);
+
+        // Performance helper:
+        // Link group's users to wall with specific access.
+        $stmt = $this->prepare ("
+          INSERT INTO _perf_walls_users (
+            groups_id,
+            walls_id,
+            users_id,
+            access
+          )
+          SELECT
+            {$this->groupId} AS groups_id,
+            {$this->wallId} AS walls_id,
+            users_id,
+            {$this->data->access} AS access
+          FROM users_groups WHERE groups_id = ?");
+        $stmt->execute ([$this->groupId]);
+
+        $this->commit ();
       }
       catch (Exception $e)
       {
+        $this->rollback ();
+
         error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
         $ret['error'] = 1;
       }
@@ -429,39 +488,11 @@
 
     private function _checkGroupAccess ()
     {
-      $sql = "
-        SELECT 1
-        FROM groups
-        WHERE groups.id = :groups_id_1
-        AND users_id = :users_id_1";
-
-      $d = [
-        ':groups_id_1' => $this->groupId,
-        ':users_id_1' => $this->userId,
-      ];
-
-      if ($this->wallId)
-      {
-        $sql .= "
-          UNION
- 
-          SELECT 1
-          FROM walls_groups
-            INNER JOIN users_groups
-              ON walls_groups.groups_id = users_groups.groups_id
-            INNER JOIN groups
-              ON groups.id = walls_groups.groups_id
-          WHERE walls_groups.walls_id = :walls_id_2
-            AND groups.type = ".WPT_GTYPES['dedicated']."
-            AND users_groups.users_id = :users_id_3
-            AND walls_groups.access = '".WPT_RIGHTS['walls']['admin']."'";
-
-        $d[':walls_id_2'] = $this->wallId;
-        $d[':users_id_3'] = $this->userId;
-      }
-
-      $stmt = $this->prepare ("$sql LIMIT 1");
-      $stmt->execute ($d);
+      $stmt = $this->prepare ('
+        SELECT 1 FROM _perf_walls_users
+        WHERE access = '.WPT_RIGHTS['walls']['admin'].' AND users_id = ?
+        LIMIT 1');
+      $stmt->execute ([$this->userId]);
 
       return $stmt->fetch ();
     }
