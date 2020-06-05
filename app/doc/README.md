@@ -22,25 +22,33 @@ INSTALLATION
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
 - Create a database and a user (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/mysql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
+
 - With **MySQL**:
+
 ```bash
 $ sudo -uroot mysql < app/db/mysql/wopits-create_db.example.sql
 $ mysql wopits -uwopits -p < app/db/mysql/wopits-create_tables.sql
 ```
 - With **PostgreSQL**:
+
 Edit the `pg_hba.conf` like this:
 
 1. Change (depending of your needs):
+
 ```bash
 # "local" is for Unix domain socket connections only
 local   all             all                                     peer
 ```
+
 2. To:
+
 ```bash
 # "local" is for Unix domain socket connections only
 local   all             all                                     md5
 ```
+
 3. Then:
+
 ```bash
 $ sudo -upostgres app/db/postgresql/wopits-create_db.example.sh
 $ psql wopits -Uwopits -W < app/db/postgresql/wopits-create_tables.sql
