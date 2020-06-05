@@ -1334,7 +1334,7 @@ a.download {
   display:none;
 }
 
-input.upload {
+input[type="file"] {
   width:0;
   height:0;
   overflow:hidden;

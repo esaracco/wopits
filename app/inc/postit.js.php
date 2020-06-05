@@ -1432,8 +1432,6 @@
             wpt_getUploadedFiles (e.target.files,
               (e, file) =>
               {
-                $upload.val ("");
-
                 if ($_attachmentsPopup.find(
                       ".list-group li[data-fname='"+
                         wpt_htmlQuotes(file.name)+"']").length)
@@ -1451,6 +1449,8 @@
                           type: file.type,
                           content: e.target.result
                         };
+
+                  $upload.remove ();
 
                   wpt_request_ajax (
                     "PUT",
@@ -1481,7 +1481,7 @@
                 }
               });
           }
-        }).trigger ("click");
+        }).appendTo("#postitUpdatePopup").trigger ("click");
     },
 
     // METHOD setCurrent ()
@@ -1880,6 +1880,8 @@
             $(`<input type="file" accept=".jpeg,.jpg,.gif,.png">`)
               .on("change", function ()
               {
+                const $upload = $(this);
+
                 function __error_cb (d)
                 {
                   if (d && !$(".tox-alert-dialog").length)
@@ -1907,6 +1909,8 @@
                                 content: e.target.result
                               };
 
+                        $upload.remove ();
+
                         wpt_request_ajax (
                           "PUT",
                           "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
@@ -1928,6 +1932,12 @@
                               $f.find("input:eq(2)").val (d.height);
 
                               cb (d.link);
+
+                              setTimeout(()=>
+                              {
+                                if (!$f.find("input:eq(0)").val ())
+                                  __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser (Safari?) when it comes to uploading post-its images...")?>");
+                              }, 0);
                             },
                             __error_cb
                         );
@@ -1935,7 +1945,7 @@
                     },
                     null,
                     __error_cb);
-              }).trigger ("click");
+              }).appendTo("body").trigger ("click");
           },
 
           // "link" plugin options

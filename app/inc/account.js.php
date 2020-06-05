@@ -67,7 +67,7 @@
                                   content: e.target.result
                                 };
       
-                          $upload.val ("");
+                          $upload.remove ();
       
                           wpt_request_ajax (
                             "PUT",
@@ -79,7 +79,7 @@
                         }
                       });
                   }
-                }).trigger ("click");
+                }).appendTo($("body")).trigger("click");
           }
         });
 

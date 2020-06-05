@@ -238,7 +238,7 @@
 
     function __upload__ ()
     {
-      $(`<input type='file' accept='.jpeg,.jpg,.gif,.png'>`)
+      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png">`)
         .on("click", function (e)
           {
             //FIXME
@@ -275,7 +275,7 @@
                             content: e.target.result
                           };
 
-                    $upload.val ("");
+                    $upload.remove ();
   
                     wpt_request_ajax (
                       "PUT",
@@ -305,7 +305,7 @@
                 // error cb
                 () => plugin.unedit ());
             }
-          }).trigger ("click");
+          }).appendTo("body").trigger ("click");
       }
 
       if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
