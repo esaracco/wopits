@@ -21,7 +21,7 @@ INSTALLATION
 - Install Apache, MySQL or PostgreSQL and PHP 7 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
-- Create a database and a user (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/mysql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
+- Create a database and a user (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
 
 - With **MySQL**:
 
