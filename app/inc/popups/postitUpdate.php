@@ -11,7 +11,7 @@
         <form>
            <div class="form-group">
             <label for="postitUpdatePopupTitle"><?=_("Title")?></label>
-            <input type="text" class="form-control" id="postitUpdatePopupTitle">
+            <input type="text" class="form-control" id="postitUpdatePopupTitle" autofocus>
           </div>
           <div class="form-group">
             <label for="postitUpdatePopupBody"><?=_("Content")?></label>
