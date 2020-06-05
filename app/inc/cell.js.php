@@ -153,44 +153,27 @@
               if (e.target.tagName != 'TD')
                 return e.stopImmediatePropagation ();
   
-              const cellOffset = $cell.offset (),
-                    $filters = wpt_sharer.getCurrent ("filters"),
+              const $filters = wpt_sharer.getCurrent ("filters"),
+                    cellOffset = $cell.offset (),
                     pTop = ((_coords && _coords.changedTouches) ?
                       _coords.changedTouches[0].clientY :
                       e.pageY) - cellOffset.top,
                     pLeft = ((_coords && _coords.changedTouches) ?
                       _coords.changedTouches[0].clientX :
-                      e.pageX) - cellOffset.left,
-                    $mark = $(`<div class="postit-mark"><i class="fas fa-sticky-note"></i></div>`).css ({
-                      top: (pTop + 16 > cellOffset.top) ?
-                             pTop - 16 : pTop - 8,
-                      left: (pLeft < 14) ?
-                        pLeft : pLeft - 12})
-                      .appendTo ($cell);
+                      e.pageX) - cellOffset.left;
 
               _coords = null;
 
-              wpt_openConfirmPopover ({
-                item: $mark,
-                title: `<i class="fas fa-sticky-note fa-fw"></i> <?=_("Create")?>`,
-                content: "<?=_("Create a new postit-it here?")?>",
-                cb_close: () => $mark.remove (),
-                cb_ok: () =>
-                  {
-                    const $filters = wpt_sharer.getCurrent ("filters");
+              $wall.wpt_wall ("closeAllMenus");
 
-                    if ($filters)
-                      $filters.wpt_filters ("reset");
+              if ($filters)
+                $filters.wpt_filters ("reset");
 
-                    $wall.wpt_wall ("closeAllMenus");                    
-                    plugin.addPostit ({
-                      access: settings.access,
-                      top: pTop,
-                      left: pLeft - 15
-                    });
-                  }
+              plugin.addPostit ({
+                access: settings.access,
+                top: pTop,
+                left: pLeft - 15
               });
-
             });
         }
 
