@@ -241,6 +241,7 @@
     public function purgeTokens ()
     {
       $current = time ();
+      $diff = 30 * 60; // 30mn
 
       $this->exec ("
         DELETE FROM users_tokens
@@ -255,7 +256,7 @@
           FROM users_tokens AS ut
             INNER JOIN users ON users.id = ut.users_id
           WHERE ut.expiredate IS NULL
-            AND $current - users.updatedate > 30)");
+            AND $current - users.updatedate > $diff)");
     }
 
     public function createUpdateLdapUser ($args)
