@@ -1334,10 +1334,8 @@ a.download {
   display:none;
 }
 
-input[type="file"] {
-  width:0;
-  height:0;
-  overflow:hidden;
+input.upload {
+  display:none;
 }
 
 div.postit .postit-delete {

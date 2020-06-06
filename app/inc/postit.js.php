@@ -1419,69 +1419,7 @@
     // METHOD uploadAttachment ()
     uploadAttachment: function ()
     {
-      const plugin = this,
-            $postit = plugin.element;
-
-      $(`<input type="file">`)
-        .on("change", function (e, data)
-        {
-          const $upload = $(this);
-
-          if (e.target.files && e.target.files.length)
-          {
-            wpt_getUploadedFiles (e.target.files,
-              (e, file) =>
-              {
-                if ($_attachmentsPopup.find(
-                      ".list-group li[data-fname='"+
-                        wpt_htmlQuotes(file.name)+"']").length)
-                  return wpt_displayMsg ({
-                           type: "warning",
-                           msg: "<?=_("The file is already linked to the post-it")?>"
-                         });
-
-                if (wpt_checkUploadFileSize ({size: e.total}) &&
-                    e.target.result)
-                {
-                  const data = {
-                          name: file.name,
-                          size: file.size,
-                          type: file.type,
-                          content: e.target.result
-                        };
-
-                  $upload.remove ();
-
-                  wpt_request_ajax (
-                    "PUT",
-                    "wall/"+plugin.settings.wallId+
-                      "/cell/"+plugin.settings.cellId+"/postit/"+
-                        plugin.settings.id+"/attachment",
-                    data,
-                    // success cb
-                    (d) =>
-                    {
-                      const $body = $_attachmentsPopup.find("ul.list-group");
-
-                      $_attachmentsPopup.find(".modal-body").scrollTop (0);
-
-                      if (d.error_msg)
-                        return wpt_displayMsg ({
-                                 type: "warning",
-                                 msg: d.error_msg
-                               });
-    
-                      if (!$body.find("li").length)
-                        $body.html ("");
-    
-                      $body.prepend (plugin.getAttachmentTemplate (d));
-
-                      plugin.incAttachmentsCount ();
-                    });
-                }
-              });
-          }
-        }).appendTo("#postitUpdatePopup").trigger ("click");
+      $(".upload.postit-attachment").click ();
     },
 
     // METHOD setCurrent ()
@@ -1875,77 +1813,10 @@
           image_description: false,
           automatic_uploads: true,
           file_picker_types: "image",
-          file_picker_callback: function (cb, value, meta)
+          file_picker_callback: function (callback, value, meta)
           {
-            $(`<input type="file" accept=".jpeg,.jpg,.gif,.png">`)
-              .on("change", function ()
-              {
-                const $upload = $(this);
-
-                function __error_cb (d)
-                {
-                  if (d && !$(".tox-alert-dialog").length)
-                    tinymce.activeEditor.windowManager.alert (d.error||d);
-                }
-                wpt_getUploadedFiles (
-                  this.files,
-                  (e, file) =>
-                    {
-                      if (wpt_checkUploadFileSize ({
-                            size: e.total,
-                            cb_msg: __error_cb
-                          }) &&
-                          e.target.result)
-                      {
-                        const wallId = wpt_sharer.getCurrent("wall")
-                                         .wpt_wall("getId"),
-                              $postit = wpt_sharer.getCurrent ("postit"),
-                              postitId = $postit.wpt_postit ("getId"),
-                              cellId = $postit.wpt_postit ("getCellId"),
-                              data = {
-                                name: file.name,
-                                size: file.size,
-                                type: file.type,
-                                content: e.target.result
-                              };
-
-                        $upload.remove ();
-
-                        wpt_request_ajax (
-                          "PUT",
-                          "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
-                            "/picture",
-                          data,
-                          // success cb
-                          (d) =>
-                            {
-                              const $f = $(".tox-dialog");
-
-                              $postit[0].dataset.hasuploadedpictures = true;
-
-                              //FIXME
-                              // If uploaded img is too large TinyMCE plugin
-                              // take too much time to gather informations
-                              // about it. If user close popup before that,
-                              // img is inserted without width/height
-                              $f.find("input:eq(1)").val (d.width);
-                              $f.find("input:eq(2)").val (d.height);
-
-                              cb (d.link);
-
-                              setTimeout(()=>
-                              {
-                                if (!$f.find("input:eq(0)").val ())
-                                  __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser (Safari?) when it comes to uploading post-its images...")?>");
-                              }, 0);
-                            },
-                            __error_cb
-                        );
-                      }
-                    },
-                    null,
-                    __error_cb);
-              }).appendTo("body").trigger ("click");
+            wpt_sharer.set ("tinymce-callback", callback);
+            $(".upload.postit-picture").click ();
           },
 
           // "link" plugin options
@@ -2028,6 +1899,138 @@
                 break;
             }
           });
+
+      $(".upload.postit-attachment")
+        .on("change", function (e)
+        {
+          const $upload = $(this),
+                $postit = wpt_sharer.getCurrent("postit"),
+                settings = $postit.wpt_postit ("getSettings");
+
+          if (e.target.files && e.target.files.length)
+          {
+            wpt_getUploadedFiles (e.target.files,
+              (e, file) =>
+              {
+                $upload.val ("");
+
+                if ($_attachmentsPopup.find(
+                      ".list-group li[data-fname='"+
+                        wpt_htmlQuotes(file.name)+"']").length)
+                  return wpt_displayMsg ({
+                           type: "warning",
+                           msg: "<?=_("The file is already linked to the post-it")?>"
+                         });
+
+                if (wpt_checkUploadFileSize ({size: e.total}) &&
+                    e.target.result)
+                {
+                  wpt_request_ajax (
+                    "PUT",
+                    "wall/"+settings.wallId+
+                      "/cell/"+settings.cellId+"/postit/"+
+                        settings.id+"/attachment",
+                    {
+                      name: file.name,
+                      size: file.size,
+                      type: file.type,
+                      content: e.target.result
+                    },
+                    // success cb
+                    (d) =>
+                    {
+                      const $body = $_attachmentsPopup.find("ul.list-group");
+
+                      $_attachmentsPopup.find(".modal-body").scrollTop (0);
+
+                      if (d.error_msg)
+                        return wpt_displayMsg ({
+                                 type: "warning",
+                                 msg: d.error_msg
+                               });
+    
+                      if (!$body.find("li").length)
+                        $body.html ("");
+    
+                      $body.prepend (
+                        $postit.wpt_postit ("getAttachmentTemplate", d));
+
+                      $postit.wpt_postit("incAttachmentsCount");
+                    });
+                }
+              });
+          }
+        });
+
+        $(".upload.postit-picture")
+          .on("change", function ()
+          {
+            const $upload = $(this);
+
+            function __error_cb (d)
+            {
+              if (d && !$(".tox-alert-dialog").length)
+                tinymce.activeEditor.windowManager.alert (d.error||d);
+            }
+
+            wpt_getUploadedFiles (
+              this.files,
+              (e, file) =>
+                {
+                  $upload.val ("");
+
+                  if (wpt_checkUploadFileSize ({
+                        size: e.total,
+                        cb_msg: __error_cb
+                      }) && e.target.result)
+                  {
+                    const wallId = wpt_sharer.getCurrent("wall")
+                                     .wpt_wall("getId"),
+                          $postit = wpt_sharer.getCurrent ("postit"),
+                          postitId = $postit.wpt_postit ("getId"),
+                          cellId = $postit.wpt_postit ("getCellId");
+
+                    wpt_request_ajax (
+                      "PUT",
+                      "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
+                        "/picture",
+                      {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        content: e.target.result
+                      },
+                      // success cb
+                      (d) =>
+                        {
+                          const $f = $(".tox-dialog");
+
+                          $postit[0].dataset.hasuploadedpictures = true;
+
+                          //FIXME
+                          // If uploaded img is too large TinyMCE plugin
+                          // take too much time to gather informations
+                          // about it. If user close popup before that,
+                          // img is inserted without width/height
+                          $f.find("input:eq(1)").val (d.width);
+                          $f.find("input:eq(2)").val (d.height);
+
+                          wpt_sharer.get("tinymce-callback")(d.link);
+
+                          setTimeout(()=>
+                          {
+                            if (!$f.find("input:eq(0)").val ())
+                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser (Safari?) when it comes to uploading post-its images...")?>");
+                          }, 0);
+                        },
+                        __error_cb
+                    );
+                  }
+                },
+                null,
+                __error_cb);
+          }).appendTo("body").trigger ("click");
+
 
         $(document).on("click", "#postitAttachmentsPopup .modal-body li button",
           function (e)

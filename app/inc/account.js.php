@@ -32,6 +32,38 @@
           });
         });
 
+      $(".upload.account-picture")
+        .on("change",function (e)
+          {
+            const $upload = $(this);
+
+            if (e.target.files && e.target.files.length)
+            {
+              wpt_getUploadedFiles (e.target.files,
+                (e, file) =>
+                {
+                  $upload.val ("");
+
+                  if (wpt_checkUploadFileSize ({size: e.total}) &&
+                      e.target.result)
+                  {
+                    wpt_request_ajax (
+                      "PUT",
+                      "user/picture",
+                      {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        content: e.target.result
+                      },
+                      // success cb
+                      (d) => $account.find(".user-picture").html (
+                               _getUserPictureTemplate (d.src)));
+                  }
+                });
+            }
+          });
+
       $account.find(".user-picture")
         .on("click", function (e)
         {
@@ -46,41 +78,7 @@
               cb_ok: () => $("#accountPopup").wpt_account ("deletePicture")
             });
           else
-          {
-            $(`<input type="file" accept=".jpg,.gif,.png">`)
-              .on("change",function(e, data)
-                {
-                  const $upload = $(this);
-      
-                  if (e.target.files && e.target.files.length)
-                  {
-                    wpt_getUploadedFiles (e.target.files,
-                      (e, file) =>
-                      {
-                        if (wpt_checkUploadFileSize ({size: e.total}) &&
-                            e.target.result)
-                        {
-                          const data = {
-                                  name: file.name,
-                                  size: file.size,
-                                  type: file.type,
-                                  content: e.target.result
-                                };
-      
-                          $upload.remove ();
-      
-                          wpt_request_ajax (
-                            "PUT",
-                            "user/picture",
-                            data,
-                            // success cb
-                            (d) => $account.find(".user-picture").html (
-                                     _getUserPictureTemplate (d.src)));
-                        }
-                      });
-                  }
-                }).appendTo($("body")).trigger("click");
-          }
+            $(".upload.account-picture").click ();
         });
 
       $("#account").on("click", function (e)

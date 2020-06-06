@@ -1091,56 +1091,7 @@
     // METHOD import ()
     import: function ()
     {
-      $(`<input type="file" accept=".zip">`)
-        .on("change", function (e, data)
-          {
-            const $upload = $(this);
-
-            if (e.target.files && e.target.files.length)
-            {
-              wpt_getUploadedFiles (e.target.files,
-                (e, file) =>
-                {
-                  $upload.val ("");
-
-                  if (wpt_checkUploadFileSize ({
-                        size: e.total,
-                        maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
-                      }) &&
-                      e.target.result)
-                  {
-                    const data = {
-                              name: file.name,
-                              size: file.size,
-                              type: file.type,
-                              content: e.target.result
-                            };
-
-                    wpt_request_ajax (
-                      "PUT",
-                      "wall/import",
-                      data,
-                      // success cb
-                      (d) =>
-                      {
-                        if (d.error_msg)
-                          return wpt_displayMsg ({
-                                   type: "warning",
-                                   msg: d.error_msg
-                                 });
-
-                        $("<div/>").wpt_wall ("open", d.wallId);
-
-                        wpt_displayMsg ({
-                          type: "success",
-                          title: "<?=_("Import completed")?>",
-                          msg: "<?=_("The file has been successfully imported!")?>"
-                        });
-                      });
-                  }
-                });
-            }
-          }).trigger ("click");
+      $(".upload.import-wall").click ();
     },
 
     // METHOD restorePreviousSession ()
@@ -1650,6 +1601,53 @@
 
             $popup.find(el.checked?".cols-rows":".width-height").show ("fade");
           });
+
+        $(".upload.import-wall")
+          .on("change", function (e)
+            {
+              if (e.target.files && e.target.files.length)
+              {
+                wpt_getUploadedFiles (e.target.files,
+                  (e, file) =>
+                  {
+                    $(this).val ("");
+  
+                    if (wpt_checkUploadFileSize ({
+                          size: e.total,
+                          maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
+                        }) &&
+                        e.target.result)
+                    {
+                      wpt_request_ajax (
+                        "PUT",
+                        "wall/import",
+                        {
+                          name: file.name,
+                          size: file.size,
+                          type: file.type,
+                          content: e.target.result
+                        },
+                        // success cb
+                        (d) =>
+                        {
+                          if (d.error_msg)
+                            return wpt_displayMsg ({
+                                     type: "warning",
+                                     msg: d.error_msg
+                                   });
+  
+                          $("<div/>").wpt_wall ("open", d.wallId);
+  
+                          wpt_displayMsg ({
+                            type: "success",
+                            title: "<?=_("Import completed")?>",
+                            msg: "<?=_("The file has been successfully imported!")?>"
+                          });
+                        });
+                    }
+                  });
+              }
+            });
 
         $(document)
           .on("click","thead th:first-child",function (e)

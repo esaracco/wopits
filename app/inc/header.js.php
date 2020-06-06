@@ -238,94 +238,27 @@
 
     function __upload__ ()
     {
-      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png">`)
-        .on("click", function (e)
-          {
-            //FIXME
-            // we need this to cancel edit if no img is selected by user
-            // (desktop version)
-            if (plugin.useFocusTrick ())
-              $(window).on("focus", function ()
-                {
-                  $(window).off ("focus");
+      $(".upload.header-picture").click ();
+    }
 
-                  if (!_realEdit)
-                    plugin.unedit ();
-                });
-          })
-        .on("change",function(e, data)
-          {
-            const $upload = $(this);
-
-            if (e.target.files && e.target.files.length)
-            {
-              _realEdit = true;
-
-              wpt_getUploadedFiles (e.target.files,
-                (e, file) =>
-                {
-                  if (wpt_checkUploadFileSize ({size: e.total}) &&
-                      e.target.result)
-                  {
-                    const oldW = $header.outerWidth (),
-                          data = {
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            content: e.target.result
-                          };
-
-                    $upload.remove ();
-  
-                    wpt_request_ajax (
-                      "PUT",
-                      "wall/"+settings.wallId+
-                      "/header/"+settings.id+"/picture",
-                      data,
-                      // success cb
-                      (d) =>
-                      {
-                        if (d.error_msg)
-                          return plugin.unedit ({data: d});
-  
-                        plugin.setImg (d.img);
-                        setTimeout(() =>
-                          {
-                            settings.wall.wpt_wall (
-                              "fixSize", oldW, $header.outerWidth ());
-
-                            plugin.unedit ();
-
-                          }, 500);
-                      },
-                      // error cb
-                      (d) => plugin.unedit ({data: d}));
-                  }
-                },
-                // error cb
-                () => plugin.unedit ());
-            }
-          }).appendTo("body").trigger ("click");
-      }
-
-      if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
-        __upload__ ();
-      else
-      {
-        clearInterval (_ffTriggerBug.i);
-        _ffTriggerBug = {
-          run: false,
-          i: setInterval (() =>
+    if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
+      __upload__ ();
+    else
+    {
+      clearInterval (_ffTriggerBug.i);
+      _ffTriggerBug = {
+        run: false,
+        i: setInterval (() =>
+          { 
+            if (_ffTriggerBug.run)
             { 
-              if (_ffTriggerBug.run)
-              { 
-                clearInterval (_ffTriggerBug.i);
-                __upload__ ();
-              }
-            }, 150)
-        };
-      }
-    },
+              clearInterval (_ffTriggerBug.i);
+              __upload__ ();
+            }
+          }, 150)
+      };
+    }
+  },
 
     // METHOD removeUploadLayer ()
     removeUploadLayer: function ()
@@ -687,8 +620,90 @@
     getId: function ()
     {
       return this.settings.id;
+    },
+
+    // METHOD getSettings ()
+    getSettings: function ()
+    {
+      return this.settings;
     }
 
   };
+
+  $(function()
+    {
+      $(".upload.header-picture")
+        .on("click", function ()
+          {
+            const $header = wpt_sharer.getCurrent ("header");
+
+            //FIXME
+            // we need this to cancel edit if no img is selected by user
+            // (desktop version)
+            if ($header.wpt_header ("useFocusTrick"))
+              $(window).on("focus", function ()
+                {
+                  $(window).off ("focus");
+
+                  if (!_realEdit)
+                    $header.wpt_header ("unedit");
+                });
+          })
+        .on("change",function (e)
+          {
+            const $upload = $(this),
+                  $header = wpt_sharer.getCurrent ("header"),
+                  settings = $header.wpt_header ("getSettings");
+
+            if (e.target.files && e.target.files.length)
+            {
+              _realEdit = true;
+
+              wpt_getUploadedFiles (e.target.files,
+                (e, file) =>
+                {
+                  $upload.val ("");
+
+                  if (wpt_checkUploadFileSize ({size: e.total}) &&
+                      e.target.result)
+                  {
+                    const oldW = $header.outerWidth ();
+  
+                    wpt_request_ajax (
+                      "PUT",
+                      "wall/"+settings.wallId+
+                      "/header/"+settings.id+"/picture",
+                      {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        content: e.target.result
+                      },
+                      // success cb
+                      (d) =>
+                      {
+                        if (d.error_msg)
+                          return $header.wpt_header ("unedit", {data: d});
+  
+                        $header.wpt_header ("setImg", d.img);
+                        setTimeout(() =>
+                          {
+                            settings.wall.wpt_wall (
+                              "fixSize", oldW, $header.outerWidth ());
+
+                            $header.wpt_header ("unedit");
+
+                          }, 500);
+                      },
+                      // error cb
+                      (d) => $header.wpt_header ("unedit", {data: d}));
+                  }
+                },
+                // error cb
+                () => $header.wpt_header ("unedit"));
+            }
+          });
+
+    });
 
 <?php echo $Plugin->getFooter ()?>
