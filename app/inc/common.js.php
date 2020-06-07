@@ -1048,6 +1048,11 @@ function wpt_raiseError (error_cb, msg)
 // FUNCTION wpt_displayMsg ()
 function wpt_displayMsg (args)
 {
+  // If a TinyMCE plugin is running, display message using the editor window
+  // manager.
+  if ($(".tox-dialog").is(":visible"))
+    return tinymce.activeEditor.windowManager.alert (args.msg);
+
   const $previous = $(".alert").eq(0),
         id = (args.noclosure) ? "noclosure": "timeout-"+Math.random();
   let $target;
@@ -1280,22 +1285,17 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
      {
        switch (textStatus)
        {
+         case "abort":
+           msgArgs = {
+             type: "warning",
+             msg: "<?=_("Upload has been canceled.")?>"
+           };
+           break;
+
          case "timeout":
            msgArgs["msg"] = "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>";
            break;
-         case "abort":
-           var msg = "<?=_("Upload has been canceled.")?>";
-           if ($(".tox-dialog").length)
-           {
-             msgArgs = null;
-             tinymce.activeEditor.windowManager.alert (msg);
-           }
-           else
-             msgArgs = {
-               type: "warning",
-               msg: msg
-             };
-           break;
+
          default:
           msgArgs["msg"] ="<?=_("Unknown error.<br>Please try again later.")?>";
        }

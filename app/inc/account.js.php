@@ -32,7 +32,8 @@
           });
         });
 
-      $(".upload.account-picture")
+      $(`<input type="file" accept=".jpg,.gif,.png"
+          class="upload account-picture">`)
         .on("change",function (e)
           {
             const $upload = $(this);
@@ -62,7 +63,7 @@
                   }
                 });
             }
-          });
+          }).appendTo ("body");
 
       $account.find(".user-picture")
         .on("click", function (e)

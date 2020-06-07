@@ -9,12 +9,6 @@
   <!-- upload LAYER -->
   <div id="upload-layer" class="layer"></div>
 
-  <input type="file" accept=".zip" class="upload import-wall">
-  <input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload postit-picture">
-  <input type="file" class="upload postit-attachment">
-  <input type="file" accept=".jpg,.gif,.png" class="upload account-picture">
-  <input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload header-picture">
-
   <div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>
 
   <!-- MSG CONTAINER -->

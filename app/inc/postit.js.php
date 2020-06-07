@@ -1900,7 +1900,7 @@
             }
           });
 
-      $(".upload.postit-attachment")
+      $(`<input type="file" class="upload postit-attachment">`)
         .on("change", function (e)
         {
           const $upload = $(this),
@@ -1960,17 +1960,21 @@
                 }
               });
           }
-        });
+        }).appendTo ("body");
 
-        $(".upload.postit-picture")
+        $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
+            class="upload postit-picture">`)
           .on("change", function ()
           {
             const $upload = $(this);
 
             function __error_cb (d)
             {
-              if (d && !$(".tox-alert-dialog").length)
-                tinymce.activeEditor.windowManager.alert (d.error||d);
+             if (d)
+                wpt_displayMsg ({
+                  type: "warning",
+                  msg: d.error||d
+                });
             }
 
             wpt_getUploadedFiles (
@@ -2029,7 +2033,8 @@
                 },
                 null,
                 __error_cb);
-          }).appendTo("body").trigger ("click");
+
+          }).appendTo("body");
 
 
         $(document).on("click", "#postitAttachmentsPopup .modal-body li button",

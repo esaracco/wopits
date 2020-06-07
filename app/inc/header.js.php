@@ -632,7 +632,8 @@
 
   $(function()
     {
-      $(".upload.header-picture")
+      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
+          class="upload header-picture">`)
         .on("click", function ()
           {
             const $header = wpt_sharer.getCurrent ("header");
@@ -702,7 +703,7 @@
                 // error cb
                 () => $header.wpt_header ("unedit"));
             }
-          });
+          }).appendTo ("body");
 
     });
 

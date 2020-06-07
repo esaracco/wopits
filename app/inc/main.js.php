@@ -1602,7 +1602,7 @@
             $popup.find(el.checked?".cols-rows":".width-height").show ("fade");
           });
 
-        $(".upload.import-wall")
+        $(`<input type="file" accept=".zip" class="upload import-wall">`)
           .on("change", function (e)
             {
               if (e.target.files && e.target.files.length)
@@ -1647,7 +1647,7 @@
                     }
                   });
               }
-            });
+            }).appendTo ("body");
 
         $(document)
           .on("click","thead th:first-child",function (e)
