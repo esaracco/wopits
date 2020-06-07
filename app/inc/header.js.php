@@ -583,7 +583,6 @@
         if (msg)
           wpt_displayMsg ({
             type: (args.data.error) ? "danger" : "warning",
-            title: "<?=_("Warning!")?>",
             msg: msg
           });
       }

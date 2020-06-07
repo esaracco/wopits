@@ -1172,7 +1172,7 @@ function wpt_enableTooltips ($item)
 // FUNCTION wpt_request_ws ()
 function wpt_request_ws (method, service, args, success_cb, error_cb)
 {
-  const msgArgs = {type: "danger", title: "<?=_("Warning!")?>"};
+  const msgArgs = {type: "danger"};
 
   wpt_loader ("show");
 
@@ -1217,7 +1217,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
   const fileUpload = !!service.match(/attachment|picture|import|export$/),
         // No timeout for file upload
         timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
-  let msgArgs = {type: "danger", title: "<?=_("Warning!")?>"};
+  let msgArgs = {type: "danger"};
 
   //console.log ("AJAX: "+method+" "+service);
 
@@ -1245,7 +1245,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
               else if (percentComplete < 1)
                 $progress.css ("background", "#6ece4b");
               else
-                $progress.text ("<?=_("Upload completed!")?>");
+                $progress.text ("<?=_("Upload completed.")?>");
             }
         }
 
@@ -1313,7 +1313,7 @@ function wpt_request_ajax (method, service, args, success_cb, error_cb)
 // FUNCTION wpt_checkUploadFileSize ()
 function wpt_checkUploadFileSize (args)
 {
-  const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+  const msg = "<?=_("File size is too large (%sM max).")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
         maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
   let ret = true;
 

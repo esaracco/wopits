@@ -325,7 +325,7 @@
         if ($Ldap->bind ($ldapData['dn'], $this->data->password))
         {
           if  (empty ($ldapData['mail']))
-            return ['error_msg' => _("No email address is configured in your LDAP account. Please fix the problem before logging in again on wopits!")];
+            return ['error_msg' => _("No email address is configured in your LDAP account. Please fix the problem before logging in again on wopits.")];
 
           $data = $this->createUpdateLdapUser ([
             'username' => $this->data->username,
@@ -517,8 +517,18 @@
           $stmt->execute ([$this->userId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-         list ($imgPath, $this->data->type) =
-           Wpt_common::resizePicture ($imgPath, 200);
+          try
+          {
+            list ($imgPath, $this->data->type) =
+              Wpt_common::resizePicture ($imgPath, 200);
+          }
+          catch (ImagickException $e)
+          {
+           if ($e->getCode () == 425)
+             return ['error' => _("The file type was not recognized.")];
+           else
+             throw new ImagickException ($e->getMessage ());
+          }
 
           $img = "$wdir/".basename($imgPath);
           $this->executeQuery ('UPDATE users', [

@@ -373,8 +373,18 @@
         file_put_contents (
           $file, base64_decode(str_replace(' ', '+', $content)));
 
-        list ($file, $this->data->type, $width, $height) =
-          Wpt_common::resizePicture ($file, 800, 0, false);
+        try
+        {
+          list ($file, $this->data->type, $width, $height) =
+            Wpt_common::resizePicture ($file, 800, 0, false);
+        }
+        catch (ImagickException $e)
+        {
+          if ($e->getCode () == 425)
+            return ['error' => _("The file type was not recognized.")];
+          else
+            throw new ImagickException ($e->getMessage ());
+        }
 
         $ret = [
           'postits_id' => $this->postitId,

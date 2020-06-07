@@ -1524,7 +1524,6 @@
          //FIXME factorisation (cf. wpt_request_ws ())
           wpt_displayMsg ({
             type: "danger",
-            title: "<?=_("Warning!")?>",
             msg: (isNaN (d.error)) ?
               d.error : "<?=_("Unknown error.<br>Please try again later.")?>"
           });

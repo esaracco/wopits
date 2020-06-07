@@ -1065,8 +1065,7 @@
 
                 wpt_displayMsg ({
                   type: "success",
-                  title: "<?=_("Cloning completed")?>",
-                  msg: "<?=_("The wall has been successfully cloned!")?>"
+                  msg: "<?=_("The wall has been successfully cloned.")?>"
                 });
             });
           }
@@ -1640,8 +1639,7 @@
   
                           wpt_displayMsg ({
                             type: "success",
-                            title: "<?=_("Import completed")?>",
-                            msg: "<?=_("The file has been successfully imported!")?>"
+                            msg: "<?=_("The wall has been successfully imported.")?>"
                           });
                         });
                     }

@@ -186,8 +186,18 @@
           $stmt->execute ([$headerId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-          list ($imgPath, $this->data->type) =
-            Wpt_common::resizePicture ($imgPath, 100);
+          try
+          {
+            list ($imgPath, $this->data->type) =
+              Wpt_common::resizePicture ($imgPath, 100);
+          }
+          catch (ImagickException $e)
+          {
+           if ($e->getCode () == 425)
+             return ['error' => _("The file type was not recognized.")];
+           else
+             throw new ImagickException ($e->getMessage ());
+          }
 
           $img = "$wdir/$rdir/".basename($imgPath);
           $this->executeQuery ('UPDATE headers', [

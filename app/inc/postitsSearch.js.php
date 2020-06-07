@@ -95,8 +95,8 @@
 
       $search.find(".result").html ((count) ?
         ((count == 1) ?
-          "<?=_("1 post-it match your search!")?>" :
-          "<?=_("%s post-its match your search!")?>".replace("%s", count)) :
+          "<?=_("1 post-it match your search.")?>" :
+          "<?=_("%s post-its match your search.")?>".replace("%s", count)) :
         "<?=_("No result")?>");
     }
   };
