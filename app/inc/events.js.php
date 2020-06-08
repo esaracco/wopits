@@ -7,19 +7,9 @@ $(function()
   // EVENT resize on window
   if (!document.querySelector ("body.login-page"))
   {
-    let unloadDone = false;
-
     // EVENT onbeforeunload
     window.onbeforeunload = function ()
       {
-        // Nothing if unload has already been done
-        if (unloadDone) return;
-
-        unloadDone = true;
-
-        // Close TinyMCE and modals (to unedit editing items)
-        tinymce.activeEditor.windowManager.close ();
-
         $(".chatroom").each (function ()
           {
             const $chatroom = $(this);
@@ -29,28 +19,7 @@ $(function()
           });
       };
 
-    // EVENT visibilitychange
-    document.addEventListener ("visibilitychange", function ()
-      {
-        const isHidden = (document.visibilityState == "hidden");
-
-        // Nothing if unload has already been done or hidden state
-        if (isHidden && unloadDone) return;
-
-        unloadDone = isHidden;
-
-        // Close TinyMCE and modals (to unedit editing items)
-        tinymce.activeEditor.windowManager.close ();
-
-        $(".chatroom").each (function ()
-          {
-            const $chatroom = $(this);
-
-            if ($chatroom.css("display") == "table")
-              $chatroom.wpt_chatroom ((isHidden) ? "leave": "join");
-          });
-      });
-
+    // EVENTS resize & orientationchange
     $(window)
       .on("resize orientationchange", function()
       {
@@ -67,17 +36,17 @@ $(function()
                 $filters = wpt_sharer.getCurrent ("filters"),
                 $arrows = wpt_sharer.getCurrent ("arrows");
 
-          // Fix plugs labels position
+          // Reposition relationships
           $wall.wpt_wall ("repositionPostitsPlugs");
 
           if ($modal.length)
             wpt_resizeModal ($modal);
    
-          // Fix chatroom position if it is out of bounds
+          // Reposition chatroom popup if it is out of bounds
           if ($chatroom && $chatroom.is (":visible"))
             $chatroom.wpt_chatroom ("fixPosition");
    
-          // Fix chatroom position if it is out of bounds
+          // Reposition filters popup if it is out of bounds
           if ($filters.is (":visible"))
             $filters.wpt_filters ("fixPosition");
 
@@ -138,7 +107,7 @@ $(function()
             wpt_sharer.set ("plugs-hidden", true);
           }
 
-          // Fix postits plugs position
+          // Reposition relationships
           if (!$filters || !$filters.hasClass ("plugs-hidden"))
           {
             clearTimeout (_timeoutScroll);
@@ -153,7 +122,7 @@ $(function()
           }
         }
 
-        // Fix arrows tool appearence
+        // Update arrows
         if ($arrows.is (":visible"))
           $arrows.wpt_arrows ("update");
       }
@@ -170,12 +139,9 @@ $(function()
       const close = $(e.target).hasClass ("close"),
             rename = (!close && $(this).hasClass ("active"));
 
-      if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
-      {
-        if (rename)
-          wpt_sharer.getCurrent("wall").wpt_wall (
-            "openPropertiesPopup", {forRename: true});
-      }
+      if (rename && wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
+        wpt_sharer.getCurrent("wall").wpt_wall (
+          "openPropertiesPopup", {forRename: true});
 
       if (!rename && !close)
       {
@@ -212,10 +178,8 @@ $(function()
       // New wall
       const $wall = wpt_sharer.getCurrent ("wall");
 
-      // Need wall
+      // Need wall to continue
       if (!$wall.length) return;
-
-      //FIXME $wall.wpt_wall ("showPostitsPlugs");
 
       // Reinit search plugin for the current wall
       $("#postitsSearchPopup").wpt_postitsSearch (
@@ -313,8 +277,9 @@ $(function()
             this.className = this.className.replace (/color\-[a-z]+/, "");
           });
 
+      // Set focus on first autofocus field if not touch device
       if (!$.support.touch)
-        setTimeout (() => $popup.find("[autofocus]").focus (), 150);
+        setTimeout (() => $popup.find("[autofocus]:eq(0)").focus (), 150);
     });  
 
 
@@ -335,8 +300,7 @@ $(function()
           // popup
           if (data && data.closing) return;
 
-          const $div = $("<div/>"),
-                title = $("#postitUpdatePopupTitle").val (),
+          const title = $("#postitUpdatePopupTitle").val (),
                 content = tinymce.activeEditor.getContent (),
                 cb_cancel = () =>
                   {
