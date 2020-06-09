@@ -544,7 +544,7 @@
                       .off("keydown", _plugRabbit.escapeEvent)
                       .on ("keydown", _plugRabbit.escapeEvent);
       
-                    $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo ($("body"));
+                    $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo ("body");
       
                     _plugRabbit.line = new LeaderLine (
                       $postit[0],
