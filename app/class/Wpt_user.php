@@ -135,6 +135,14 @@
             WHERE id = {$r['postits_id']}");
         }
 
+        // Decrement userscount from user's groups.
+        $this
+          ->prepare ("
+            UPDATE groups SET userscount = userscount - 1
+            WHERE id IN (
+              SELECT groups_id FROM _perf_walls_users WHERE users_id = ?)")
+          ->execute ([$this->userId]);
+
         // Remove user's walls directories.
         $stmt = $this->prepare ('SELECT id FROM walls WHERE users_id = ?');
         $stmt->execute ([$this->userId]);
