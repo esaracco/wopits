@@ -11,14 +11,13 @@
     {
       parent::__construct ($args);
 
-      $this->item = @$args['item'];
-      $this->itemId = @$args['itemId'];
+      $this->item = $args['item']??null;
+      $this->itemId = $args['itemId']??null;
     }
 
     public function addTo ()
     {
       $q = $this->getFieldQuote ();
-      $currentDate = time ();
       $item = $this->item;
       $editIds = [$this->itemId];
       $ret = [];

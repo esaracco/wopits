@@ -14,8 +14,8 @@
 
       $this->userId = $args['userId'] ?? $GLOBALS['userId'] ??
                       $_SESSION['userId'] ?? null;
-      $this->wallId = @$args['wallId'];
-      $this->data = @$args['data'];
+      $this->wallId = $args['wallId']??null;
+      $this->data = $args['data']??null;
     }
 
     public function checkWallAccess ($requiredRole)

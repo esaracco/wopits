@@ -10,7 +10,7 @@
     {
       parent::__construct ($args);
 
-      $this->groupId = @$args['groupId'];
+      $this->groupId = $args['groupId']??null;
     }
   
     public function searchUser ($args)

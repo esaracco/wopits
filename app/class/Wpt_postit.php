@@ -11,8 +11,8 @@
     {
       parent::__construct ($args);
 
-      $this->cellId = @$args['cellId'];
-      $this->postitId = @$args['postitId'];
+      $this->cellId = $args['cellId']??null;
+      $this->postitId = $args['postitId']??null;
     }
 
     public function create ()
@@ -292,7 +292,7 @@
 
     public function getAttachment ($args)
     {
-      $attachmentId = @$args['attachmentId'];
+      $attachmentId = $args['attachmentId']??null;
       $ret = [];
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);

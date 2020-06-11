@@ -37,10 +37,9 @@
     public function getUnixDate ($dt)
     {
       $oldTZ = date_default_timezone_get ();
+
       date_default_timezone_set ($this->getTimezone ());
-
       $ret = strtotime ($dt);
-
       date_default_timezone_set ($oldTZ);
 
       return $ret;
@@ -386,7 +385,7 @@
     public function getSetting ($key)
     {
       $userId = $this->userId ?? $GLOBALS['userId'] ??
-                $_SESSION['userId'] ?? null;
+                  $_SESSION['userId'] ?? null;
 
       if ($userId && !isset ($this->settings[$key]))
       {
@@ -401,7 +400,8 @@
 
     public function getTimezone ()
     {
-      $defaultLocale = WPT_LOCALES[$GLOBALS['slocale'] ?? $_SESSION['slocale'] ?? 'en'];
+      $defaultLocale = WPT_LOCALES[$GLOBALS['slocale'] ??
+                                     $_SESSION['slocale'] ?? 'en'];
 
       return (empty ($ret = $this->getSetting('timezone'))) ?
                 $defaultLocale : $ret;
@@ -441,16 +441,12 @@
       $stmt->execute ([$userId]);
 
       if ( ($r = $stmt->fetch ()) )
-      {
-        $data = [
+        return Wpt_common::download ([
           'type' => $r['filetype'],
           'name' => basename ($r['picture']),
           'size' => $r['filesize'],
           'path' => WPT_ROOT_PATH.$r['picture']
-        ];
-
-        return Wpt_common::download ($data);
-      }
+        ]);
     }
 
     public function deletePicture ()
@@ -585,6 +581,8 @@
               _("This email already exists.");
           else
           {
+            $this->beginTransaction ();
+
             $this
               ->prepare ("UPDATE users SET $field = :$field WHERE id = :id")
               ->execute ([$field => $value, 'id' => $this->userId]);
@@ -601,6 +599,8 @@
                 Wpt_common::unaccent ($ret['username'].','.$ret['fullname']),
                 $this->userId
               ]);
+
+            $this->commit ();
           }
         }
         else
@@ -621,6 +621,9 @@
       catch (Exception $e)
       {
         $msg = $e->getMessage ();
+
+        if (PDO::inTransaction ())
+          $this->rollback ();
 
         error_log (__METHOD__.':'.__LINE__.':'.$msg);
         $ret['error_msg'] = $msg;
@@ -729,7 +732,7 @@
     private function _generatePassword ()
     {
       // Randomize letters pool order
-      // -> No "I", "l" nor "0" to prevent user reading errors
+      // -> No "I", "l" nor "0" to prevent user reading errors.
       $chars =
         str_split ('abcdefghijkmnpqrstuxyzABCDEFGHJKLMNPQRSTUXYZ23456789');
       shuffle ($chars);

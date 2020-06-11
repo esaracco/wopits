@@ -46,16 +46,16 @@
     {
       $q = $this->getFieldQuote ();
 
-      preg_match ('/^\s*(INSERT|UPDATE)\s*/', $sql, $m);
-
-      if ($m[1] == 'INSERT')
+      // INSERT
+      if (strpos ($sql, 'INSERT') !== false)
       {
         $fields = $q.implode("$q,$q", array_keys($data)).$q;
         $sql .=
           " ($fields) VALUES (".
-          preg_replace ("/($q([a-z_]+)$q)/", ':$2', $fields).')';
+          preg_replace ("/$q([a-z_]+)$q/", ':$1', $fields).')';
       }
-      elseif ($m[1] == 'UPDATE')
+      // UPDATE
+      elseif (strpos ($sql, 'UPDATE') !== false)
       {
         $fields = '';
         foreach ($data as $k => $v)
