@@ -570,24 +570,28 @@
 
               case "delete-plugs":
 
-                wpt_openConfirmPopover ({
-                  item: $postit.find("[data-action='menu']"),
-                  placement: "left",
-                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                  content: "<?=_("Delete all relationships from this post-it?")?>",
-                  cb_close: null,
-                  cb_ok: () => plugin.edit (null, () =>
-                    {
-                      const removedIds = plugin.removePlugs (),
-                            $undo = $menu.find("[data-action='undo-plug'] a");
+                plugin.edit (null, () =>
+                  {
+                    wpt_openConfirmPopover ({
+                      item: $postit.find("[data-action='menu']"),
+                      placement: "left",
+                      title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                      content: "<?=_("Delete all relationships from this post-it?")?>",
+                      cb_close: () => plugin.unedit (),
+                      cb_ok: () =>
+                        {
+                          const removedIds = plugin.removePlugs (),
+                                $undo =
+                                  $menu.find("[data-action='undo-plug'] a");
 
-                      plugin.unedit ();
+                          plugin.unedit ();
 
-                      $postit[0].dataset.undo = "delete|"+removedIds;
-                      $undo.removeClass ("disabled");
-                      $undo.find("span").text ("« <?=_("Delete")?> »");
-                    })
-                  });
+                          $postit[0].dataset.undo = "delete|"+removedIds;
+                          $undo.removeClass ("disabled");
+                          $undo.find("span").text ("« <?=_("Delete")?> »");
+                        }
+                      });
+                    });
 
                 break;
 
