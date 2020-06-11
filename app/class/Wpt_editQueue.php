@@ -77,27 +77,24 @@
             $ret['error_msg'] = _("Someone is editing this element.");
         }
         // If item is free for editing
+        elseif (
+          ($item == 'postit' || $item == 'header') &&
+          ($stmt = $this->prepare ("SELECT 1 FROM {$item}s WHERE id = ?")) &&
+          $stmt->execute ([$this->itemId]) &&
+          !$stmt->fetch ())
+        {
+          $ret['error_msg'] = _("This item has been deleted.");
+        }
         else
         {
-          if (($item == 'postit' || $item == 'header') &&
-              ($stmt = $this->prepare ("
-                SELECT 1 FROM {$item}s WHERE id = ?")) &&
-              $stmt->execute ([$this->itemId]) &&
-              !$stmt->fetch ())
-          {
-            $ret['error_msg'] = _("This item has been deleted.");
-          }
-          else
-          {
-            foreach ($editIds as $id)
-              $this->executeQuery ('INSERT INTO edit_queue', [
-                'walls_id' => $this->wallId,
-                'item_id' => $id,
-                'users_id' => $this->userId,
-                'session_id' => $GLOBALS['sessionId'],
-                'item' => $item
-              ]);
-          }
+          foreach ($editIds as $id)
+            $this->executeQuery ('INSERT INTO edit_queue', [
+              'walls_id' => $this->wallId,
+              'item_id' => $id,
+              'users_id' => $this->userId,
+              'session_id' => $GLOBALS['sessionId'],
+              'item' => $item
+            ]);
         }
       }
       catch (Exception $e)
