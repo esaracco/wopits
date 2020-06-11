@@ -120,8 +120,8 @@
       {
         $this->beginTransaction ();
 
-        // no SQL CASCADE here. We delete attachments manually and decrement
-        // postit attachments count
+        // No SQL CASCADE here. We delete attachments manually and decrement
+        // postit attachments count.
         $stmt = $this->prepare ('
           SELECT id, postits_id
           FROM postits_attachments WHERE users_id = ?');
@@ -133,6 +133,15 @@
           $this->exec ("
             UPDATE postits SET attachmentscount = attachmentscount - 1
             WHERE id = {$r['postits_id']}");
+        }
+
+        // Remove user's walls directories.
+        $stmt = $this->prepare ('SELECT id FROM walls WHERE users_id = ?');
+        $stmt->execute ([$this->userId]);
+        while ($item = $stmt->fetch ())
+        {
+          $this->wallId = $item['id'];
+          Wpt_common::rm ($this->getWallDir ());
         }
 
         // Delete user
