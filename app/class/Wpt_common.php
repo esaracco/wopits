@@ -138,6 +138,38 @@
       return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
     }
 
+    public static function rm ($path, $firstCall = true)
+    {
+      // First call? -> check the path
+      if ($firstCall)
+      {
+        $path = self::getSecureSystemName ($path);
+
+        // Delete only under the data directory and not the data directory
+        // itself or an external path.
+        if (!preg_match ('#'.WPT_DATA_SPATH.'/.#', $path))
+          return error_log (__METHOD__.':'.__LINE__.
+                              ":Forbidden root path `$path`!");
+
+        // If directory does not exists, return.
+        if (!file_exists ($path))
+          return;
+
+        // If the item to delete is a file (and not directory) and return.
+        if (is_file ($path))
+          return unlink ($path);
+      }
+
+      foreach (scandir ($path) as $file)
+      {
+        if ($file != '.' && $file != '..')
+          (is_dir("$path/$file")) ?
+            self::rm ("$path/$file", false) : unlink ("$path/$file");
+      }
+
+      return rmdir ($path);
+    }
+
     public static function mail ($args)
     {
       require_once (__DIR__.'/../libs/vendor/autoload.php');
@@ -211,8 +243,8 @@
       }
       while ($old != $name);
 
-      return (preg_match ('#'.preg_quote(WPT_DATA_SPATH).'#', $name)) ?
-                $name : WPT_DATA_SPATH."/$name";
+      return (strpos ($name, WPT_DATA_SPATH) === 0) ?
+               $name : WPT_DATA_SPATH."/$name";
     }
 
     public static function deleteCookie ()

@@ -198,8 +198,7 @@
       
         $this->commit ();
 
-        exec ('rm -f '.
-          Wpt_common::getSecureSystemName(WPT_ROOT_PATH.$attach['link']));
+        Wpt_common::rm (WPT_ROOT_PATH.$attach['link']);
       }
       catch (Exception $e)
       {
@@ -464,7 +463,7 @@
         if (!in_array ($pic['id'], $pics))
         {
           $toDelete[] = $pic['id'];
-          exec ('rm -f '.WPT_ROOT_PATH.$pic['link']);
+          Wpt_common::rm (WPT_ROOT_PATH.$pic['link']);
         }
       }
 
@@ -491,8 +490,7 @@
           ->execute ([$this->postitId]);
 
         // Delete postit files
-        exec ('rm -rf '.
-          Wpt_common::getSecureSystemName("$dir/postit/{$this->postitId}"));
+        Wpt_common::rm ("$dir/postit/{$this->postitId}");
       }
       catch (Exception $e)
       {

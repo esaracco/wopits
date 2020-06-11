@@ -144,8 +144,7 @@
 
         $this->logout ();
 
-        exec ('rm -rf '.
-          escapeshellarg(Wpt_common::getSecureSystemName($dir)));
+        Wpt_common::rm ($dir);
       }
       catch (Exception $e)
       {
@@ -469,8 +468,7 @@
         ],
         ['id' => $this->userId]);
 
-        exec ('rm -f '.
-          Wpt_common::getSecureSystemName(WPT_ROOT_PATH.$r['picture']));
+        Wpt_common::rm (WPT_ROOT_PATH.$r['picture']);
       }
       catch (Exception $e)
       {
@@ -536,8 +534,7 @@
 
           // delete old picture if needed
           if ($previousPicture && $previousPicture != $img)
-            exec ('rm -f '.
-              Wpt_common::getSecureSystemName (WPT_ROOT_PATH.$previousPicture));
+            Wpt_common::rm (WPT_ROOT_PATH.$previousPicture);
 
           $ret = ['src' => $img];
         }

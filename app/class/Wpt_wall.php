@@ -104,7 +104,7 @@
 
     protected function getWallDir ($type = null)
     {
-      return ($type) ?
+      return ($type == 'web') ?
         WPT_DATA_WPATH."/walls/{$this->wallId}" :
         Wpt_common::getSecureSystemName ("/walls/{$this->wallId}");
     }
@@ -211,8 +211,7 @@
   
           // delete old picture if needed
           if ($previousPicture && $previousPicture != $img)
-            exec ('rm -f '.
-              Wpt_common::getSecureSystemName (WPT_ROOT_PATH.$previousPicture));
+            Wpt_common::rm (WPT_ROOT_PATH.$previousPicture);
         }
         catch (ImagickException $e)
         {
@@ -257,8 +256,7 @@
         ],
         ['id' => $headerId]); 
 
-        exec ('rm -f '.
-          Wpt_common::getSecureSystemName(WPT_ROOT_PATH.$r['picture']));
+        Wpt_common::rm (WPT_ROOT_PATH.$r['picture']);
       }
       catch (Exception $e)
       {
@@ -335,8 +333,7 @@
           mkdir ($tmpPath);
 
         if (file_exists ($importPath))
-          exec ('rm -rf '.
-            escapeshellarg(Wpt_common::getSecureSystemName($importPath)));
+          Wpt_common::rm ($importPath);
         mkdir ($importPath);
 
         if (!$exportFile)
@@ -577,8 +574,7 @@
           unlink ($exportFile);
 
         if (file_exists ($importPath))
-          exec ('rm -rf '.
-            escapeshellarg(Wpt_common::getSecureSystemName($importPath)));
+          Wpt_common::rm ($importPath);
       }
 
       return $ret;
@@ -628,6 +624,8 @@
       $zip = new ZipArchive ();
 
       $dir = $this->getWallDir ();
+      // This is not be deleted at the end of the process.
+      //TODO Make a cron that will purge old wall.zip files for all walls.
       $zipPath1 = "$dir/wall.zip";
       $zipPath2 = "$dir/wopits-wall-{$this->wallId}.zip";
 
@@ -1013,9 +1011,7 @@
           ':type' => $item,
           ':order' => $itemPos]);
   
-        exec ('rm -rf '.
-          Wpt_common::getSecureSystemName(
-            "$dir/header/".($stmt->fetch ())['id']));
+        Wpt_common::rm ("$dir/header/".($stmt->fetch ())['id']);
 
         // Delete header
         $this
@@ -1056,8 +1052,7 @@
           ':item' => $itemPos
         ]);
         while ($row = $stmt->fetch ())
-          exec ('rm -rf '.
-            Wpt_common::getSecureSystemName("$dir/postit/{$row['id']}"));
+          Wpt_common::rm ("$dir/postit/{$row['id']}");
 
         // Delete
         $this
@@ -1374,8 +1369,7 @@
           ->prepare('DELETE FROM walls WHERE id = ?')
           ->execute ([$this->wallId]);
   
-        exec ('rm -rf '.
-          escapeshellarg(Wpt_common::getSecureSystemName($this->getWallDir())));
+        Wpt_common::rm ($this->getWallDir());
       }
       catch (Exception $e)
       {
