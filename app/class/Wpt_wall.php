@@ -155,7 +155,6 @@
     {
       $ret = [];
       $headerId = $args['headerId'];
-      $imgPath = null;
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
       if (!$r['ok'])
@@ -173,37 +172,27 @@
           $wdir = $this->getWallDir ('web');
           $rdir = "header/$headerId";
 
-          $imgPath = Wpt_common::getSecureSystemName (
+          $file = Wpt_common::getSecureSystemName (
             "$dir/$rdir/img-".hash('sha1', $this->data->content).".$ext");
 
           file_put_contents (
-            $imgPath, base64_decode(str_replace(' ', '+', $content)));
+            $file, base64_decode(str_replace(' ', '+', $content)));
 
-          if (!file_exists ($imgPath))
+          if (!file_exists ($file))
             throw new Exception (_("An error occured while uploading file."));
 
           $stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?');
           $stmt->execute ([$headerId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-          try
-          {
-            list ($imgPath, $this->data->type) =
-              Wpt_common::resizePicture ($imgPath, 100);
-          }
-          catch (ImagickException $e)
-          {
-           if ($e->getCode () == 425)
-             return ['error' => _("The file type was not recognized.")];
-           else
-             throw new ImagickException ($e->getMessage ());
-          }
+          list ($file, $this->data->type) =
+            Wpt_common::resizePicture ($file, 100);
 
-          $img = "$wdir/$rdir/".basename($imgPath);
+          $img = "$wdir/$rdir/".basename($file);
           $this->executeQuery ('UPDATE headers', [
             'picture' => $img,
             'filetype' => $this->data->type,
-            'filesize' => filesize ($imgPath)
+            'filesize' => filesize ($file)
           ],
           ['id' => $headerId]);
 
@@ -215,19 +204,22 @@
         }
         catch (ImagickException $e)
         {
-          if ($imgPath)
-            @unlink ($file);
+          @unlink ($file);
 
-          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = _("A error occured while processing file.");
+          if ($e->getCode () == 425)
+            return ['error' => _("The file type was not recognized.")];
+          else
+          {
+            error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+            throw $e;
+          }
         }
         catch (Exception $e)
         {
-          if ($imgPath)
-            @unlink ($file);
+          @unlink ($file);
 
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = 1;     
+          throw $e;
         }
       }
 
@@ -1428,7 +1420,7 @@
         if ($newTransaction)
           $this->rollback ();
 
-        throw new Exception ($e->getMessage ());
+        throw $e;
       }
     }
 
@@ -1469,7 +1461,7 @@
         if ($newTransaction)
           $this->rollback ();
 
-        throw new Exception ($e->getMessage ());
+        throw $e;
       }
     }
   }

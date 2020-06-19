@@ -351,7 +351,6 @@
       $ret = [];
       $dir = $this->getWallDir ();
       $wdir = $this->getWallDir ('web');
-      $currentDate = time ();
 
       $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
       if (!$r['ok'])
@@ -363,66 +362,70 @@
         $ret['error'] = $error;
       else
       {
-        $rdir = 'postit/'.$this->postitId;
-        $file = Wpt_common::getSecureSystemName (
-          "$dir/$rdir/picture-".hash('sha1', $this->data->content).".$ext");
-
-        $exists = file_exists ($file);
-
-        file_put_contents (
-          $file, base64_decode(str_replace(' ', '+', $content)));
-
         try
         {
+          $rdir = 'postit/'.$this->postitId;
+          $file = Wpt_common::getSecureSystemName (
+            "$dir/$rdir/picture-".hash('sha1', $this->data->content).".$ext");
+
+          file_put_contents (
+            $file, base64_decode (str_replace (' ', '+', $content)));
+
+          if (!file_exists ($file))
+            throw new Exception (_("An error occured while uploading file."));
+
           list ($file, $this->data->type, $width, $height) =
             Wpt_common::resizePicture ($file, 800, 0, false);
-        }
-        catch (ImagickException $e)
-        {
-          if ($e->getCode () == 425)
-            return ['error' => _("The file type was not recognized.")];
-          else
-            throw new ImagickException ($e->getMessage ());
-        }
 
-        $ret = [
-          'postits_id' => $this->postitId,
-          'walls_id' => $this->wallId,
-          'users_id' => $this->userId,
-          'creationdate' => $currentDate,
-          'name' => $this->data->name,
-          'size' => filesize ($file),
-          'type' => $this->data->type,
-          'link' => "$wdir/$rdir/".basename($file)
-        ];
+          $stmt = $this->prepare ('
+            SELECT * FROM postits_pictures WHERE postits_id = ? AND link = ?');
+          $stmt->execute ([$this->postitId, "$wdir/$rdir/".basename($file)]);
 
-        try
-        {
-          $this->beginTransaction ();
+          $ret = $stmt->fetch ();
 
-          if ($exists)
-            $this
-              ->prepare('DELETE FROM postits_pictures WHERE link = ?')
-              ->execute ([$ret['link']]);
+          if (!$ret)
+          {
+            $ret = [
+              'postits_id' => $this->postitId,
+              'walls_id' => $this->wallId,
+              'users_id' => $this->userId,
+              'creationdate' => time (),
+              'name' => $this->data->name,
+              'size' => filesize ($file),
+              'type' => $this->data->type,
+              'link' => "$wdir/$rdir/".basename($file)
+            ];
 
-          $this->executeQuery ('INSERT INTO postits_pictures', $ret);
-  
-          $ret['id'] = $this->lastInsertId ();
+            $this->executeQuery ('INSERT INTO postits_pictures', $ret);
+
+            $ret['id'] = $this->lastInsertId ();
+          }
+
           $ret['icon'] = Wpt_common::getImgFromMime ($this->data->type);
           $ret['width'] = $width;
           $ret['height'] = $height;
           $ret['link'] =
             "/api/wall/{$this->wallId}/cell/{$this->cellId}".
             "/postit/{$this->postitId}/picture/{$ret['id']}";
+        }
+        catch (ImagickException $e)
+        {
+          @unlink ($file);
 
-          $this->commit ();
+          if ($e->getCode () == 425)
+            return ['error' => _("The file type was not recognized.")];
+          else
+          {
+            error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+            throw $e;
+          }
         }
         catch (Exception $e)
         {
-          $this->rollback ();
+          @unlink ($file);
 
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = 1;
+          throw $e;
         }
       }
 
@@ -497,7 +500,7 @@
         error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
 
         if (PDO::inTransaction ())
-          throw new Exception ($e->getMessage ());
+          throw $e;
         else
           $ret['error'] = 1;
       }

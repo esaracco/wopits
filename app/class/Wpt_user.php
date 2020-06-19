@@ -499,7 +499,6 @@
     public function updatePicture ()
     {
       $ret = [];
-      $imgPath = null;
 
       if (!$this->userId)
         return ['error' => _("Access forbidden")];
@@ -515,37 +514,27 @@
           $dir = $this->getUserDir ();
           $wdir = $this->getUserDir ('web');
 
-          $imgPath = Wpt_common::getSecureSystemName (
+          $file = Wpt_common::getSecureSystemName (
             "$dir/img-".hash('sha1', $this->data->content).".$ext");
 
           file_put_contents (
-            $imgPath, base64_decode(str_replace(' ', '+', $content)));
+            $file, base64_decode(str_replace(' ', '+', $content)));
 
-          if (!file_exists ($imgPath))
+          if (!file_exists ($file))
             throw new Exception (_("An error occured while uploading file."));
 
           $stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?');
           $stmt->execute ([$this->userId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-          try
-          {
-            list ($imgPath, $this->data->type) =
-              Wpt_common::resizePicture ($imgPath, 200);
-          }
-          catch (ImagickException $e)
-          {
-           if ($e->getCode () == 425)
-             return ['error' => _("The file type was not recognized.")];
-           else
-             throw new ImagickException ($e->getMessage ());
-          }
+          list ($file, $this->data->type) =
+            Wpt_common::resizePicture ($file, 200);
 
-          $img = "$wdir/".basename($imgPath);
+          $img = "$wdir/".basename($file);
           $this->executeQuery ('UPDATE users', [
             'picture' => $img,
             'filetype' => $this->data->type,
-            'filesize' => filesize ($imgPath)
+            'filesize' => filesize ($file)
           ],
           ['id' => $this->userId]);
 
@@ -557,19 +546,22 @@
         }
         catch (ImagickException $e)
         {
-          if ($imgPath)
-            @unlink ($file);
+          @unlink ($file);
 
-          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = _("Error processing image data");
+          if ($e->getCode () == 425)
+            return ['error' => _("The file type was not recognized.")];
+          else
+          {
+            error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+            throw $e;
+          }
         }
         catch (Exception $e)
         {
-          if ($imgPath)
-            @unlink ($file);
+          @unlink ($file);
 
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = 1;
+          throw $e;
         }
       }
 
