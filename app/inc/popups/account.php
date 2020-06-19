@@ -58,7 +58,7 @@
 
         <div class="input-group mb-3">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-address-card fa-fw"></i></span></div>
-          <textarea class="form-control" name="about" data-oldvalue="<?=htmlentities($user['about'])?>" placeholder="<?=_("About you")?>"><?=$user['about']?></textarea>
+          <textarea class="form-control" name="about" data-oldvalue="<?=htmlentities($user['about'])?>" placeholder="<?=_("About you")?>" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'about')?>"><?=$user['about']?></textarea>
         </div>
         </div>
 

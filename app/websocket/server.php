@@ -452,12 +452,12 @@ class Wopits implements MessageComponentInterface
       {
         $this->_ping ();
       }
-      // ROUTE debug // PROD-remove
-      // Debug // PROD-remove
-      elseif ($msg->route == 'debug') // PROD-remove
-      { // PROD-remove
-        _debug ($data); // PROD-remove
-      }// PROD-remove
+      // ROUTE debug
+      // Debug
+      //<WPTPROD-remove>
+      elseif ($msg->route == 'debug')
+        _debug ($data);
+      //</WPTPROD-remove>
 
       $ret['action'] = $action;
 
@@ -469,8 +469,10 @@ class Wopits implements MessageComponentInterface
         if (isset ($clients[$wallId]))
         {
           foreach ($clients[$wallId] as $_connId => $_userId)
+          {
             if ($_connId != $connId)
               $this->clients[$_connId]->conn->send (json_encode ($ret));
+          }
         }
       }
 
@@ -612,7 +614,9 @@ class Wopits implements MessageComponentInterface
 
       foreach ($diff = array_diff ($oldSettings->openedWalls,
                                    $newSettings->openedWalls??[]) as $_wallId)
+      {
         $this->_unsetChatUsers ($_wallId, $connId);
+      }
     }
 
     // Associate new wall to user
@@ -640,12 +644,14 @@ class Wopits implements MessageComponentInterface
           {
             if ( ($client = $this->clients[$_connId] ?? null) &&
                  isset ($this->chatUsers[$_wallId]))
+            {
               $client->conn->send (
                 json_encode ([
                   'action' => 'chatcount',
                   'count' => count ($this->chatUsers[$_wallId]) - 1,
                   'wall' => ['id' => $_wallId]
                 ]));
+            }
           }
         }
       }
@@ -675,6 +681,7 @@ class Wopits implements MessageComponentInterface
     if (!isset ($args['ret']['error']))
     {
       foreach ($wallIds as $_wallId)
+      {
         if (!empty ($this->openedWalls[$_wallId]))
         {
           $_ret = $args['ret'];
@@ -682,12 +689,15 @@ class Wopits implements MessageComponentInterface
           $_ret['wall']['id'] = $_wallId;
 
           foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
+          {
             if ($_userId == $userId)
             {
               $this->clients[$_connId]->conn->send (json_encode ($_ret));
               break;
             }
+          }
         }
+      }
     }
   }
 
@@ -786,10 +796,12 @@ class Wopits implements MessageComponentInterface
   }
 }
 
-function _debug ($data) // PROD-remove
-{ // PROD-remove
-  error_log (print_r ($data, true)); // PROD-remove
-} // PROD-remove
+//<WPTPROD-remove>
+function _debug ($data)
+{
+  error_log (print_r ($data, true));
+}
+//</WPTPROD-remove>
 
 echo "wopits WebSocket server is listening on port ".WPT_WS_PORT."\n\n";
 

@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
         <form>
-          <div class="input-group"><input type="text" class="form-control" required autofocus placeholder="<?=_("wall name")?>"></div>
+          <div class="input-group"><input type="text" class="form-control" required autofocus placeholder="<?=_("wall name")?>" maxlength="<?=Wpt_dbCache::getFieldLength('walls', 'name')?>"></div>
           <div><input type="checkbox" checked="checked" id="w-grid"> <label for="w-grid"><?=_("With grid")?></label></div>
 
           <div class="wall-size">

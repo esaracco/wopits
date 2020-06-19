@@ -589,6 +589,7 @@
           {
             $this->beginTransaction ();
 
+            $this->checkDBValue ('users', $field, $value);
             $this
               ->prepare ("UPDATE users SET $field = :$field WHERE id = :id")
               ->execute ([$field => $value, 'id' => $this->userId]);
@@ -599,12 +600,10 @@
             $stmt->execute ([$this->userId]);
             $ret = $stmt->fetch ();
 
-            $this
-              ->prepare('UPDATE users SET searchdata = ? WHERE id = ?')
-              ->execute ([
-                Wpt_common::unaccent ($ret['username'].','.$ret['fullname']),
-                $this->userId
-              ]);
+            $this->executeQuery ('UPDATE users',
+              ['searchdata' =>
+                Wpt_common::unaccent ($ret['username'].','.$ret['fullname'])],
+              ['id' => $this->userId]);
 
             $this->commit ();
           }

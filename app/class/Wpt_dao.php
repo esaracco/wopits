@@ -1,4 +1,5 @@
 <?php
+  require_once (__DIR__.'/Wpt_dbCache.php');
 
   class Wpt_dao extends PDO
   {
@@ -6,7 +7,7 @@
 
     function __construct ()
     {
-      if (!getenv('DEPLOY'))//PROD-remove
+      if (!getenv('DEPLOY'))//WPTPROD-remove
         parent::__construct (
           WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [
             PDO::ATTR_PERSISTENT => true,
@@ -15,7 +16,7 @@
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
           ]);
 
-      if (!getenv('DEPLOY'))//PROD-remove
+      if (!getenv('DEPLOY'))//WPTPROD-remove
         $this->isMySQL =
           ($this->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql');
     }
@@ -42,9 +43,82 @@
         "SET timezone TO '".$User->getTimezone()."'");
     }
 
+    // Very basic DB fields validator.
+    protected function checkDBValue ($table, $field, &$value)
+    {
+      $f = Wpt_dbCache::getDBDescription()[$table][$field];
+
+      if (is_null ($value))
+      {
+        if ($f['nullable'])
+          return;
+        else
+          throw new Exception ("DB field $table::$field is not nullable");
+      }
+
+      switch ($f['type'])
+      {
+        case 'int':
+        case 'tinyint':
+        case 'smallint':
+
+          // Here we convert non integer values.
+          if (!preg_match ('/^\d+$/', $value))
+          {
+            $fix = intval ($value);
+
+            error_log ("Bad DB field integer type `$fix` for $table::$field");
+
+            $value = $fix;
+          }
+          break;
+
+        case 'char':
+        case 'varchar':
+        case 'text':
+
+          $maxLength = $f['length'];
+
+          // Here we cut long strings.
+          if ($maxLength && strlen ($value) > $f['length'])
+          {
+            $fix = substr ($value, 0, $maxLength);
+
+            error_log (
+              "Bad DB field length (".strlen ($value).
+              " instead of $maxLength) `".
+              preg_replace("/(\n|\r)/", '', substr ($fix, 0, 100)).
+                "(...)` for $table::$field");
+
+            $value = $fix;
+          }
+          break;
+
+        case 'enum':
+
+          if (!isset ($f['values'][$value]))
+            throw new Exception (
+              "Bad DB field value `$value` for $table::$field");
+          break;
+
+        //<WPTPROD-remove>
+        default:
+          throw new Exception (
+            "Unknown DB field type `{$f['type']}` for $table::$field");
+        //</WPTPROD-remove>
+      }
+    }
+
     protected function executeQuery ($sql, $data, $where = null)
     {
       $q = $this->getFieldQuote ();
+
+      preg_match ('/(INSERT\s+INTO|UPDATE)\s+([a-z_]+)$/', $sql, $m);
+      $table = $m[2];
+
+      // Check values. Bad values are silently converted when possible.
+      foreach ($data as $_field => $_value)
+        $this->checkDBValue ($table, $_field, $data[$_field]);
 
       // INSERT
       if (strpos ($sql, 'INSERT') !== false)

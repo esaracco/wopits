@@ -21,7 +21,7 @@
           <dt><?=_("Name")?></dt>
           <dd>
             <!-- adm -->
-            <div class="input-group"><input type="text" class="form-control adm" required placeholder="<?=_("wall name")?>"></div>
+            <div class="input-group"><input type="text" class="form-control adm" required placeholder="<?=_("wall name")?>" maxlength="<?=Wpt_dbCache::getFieldLength('walls', 'name')?>"></div>
             <!-- others -->
            <div class="ro"></div>
           </dd>
@@ -44,7 +44,7 @@
           <dt><?=_("Description")?></dt>
           <dd>
             <!-- adm -->
-            <textarea class="form-control adm" placeholder="<?=_("wall description")?>"></textarea>
+            <textarea class="form-control adm" placeholder="<?=_("wall description")?>" maxlength="<?=Wpt_dbCache::getFieldLength('walls', 'description')?>"></textarea>
             <!-- others -->
             <div class="ro"></div>
           </dd>

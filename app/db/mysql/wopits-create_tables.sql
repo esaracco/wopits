@@ -1,6 +1,8 @@
 --
 -- Create wopits tables for MySQL.
 --
+-- DO NOT EDIT OR DELETE THIS FILE!
+-- It is used to build wopits DB structure cache.
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -9,7 +11,7 @@ CREATE TABLE users
 (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   email VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
+  username VARCHAR(20) NOT NULL,
   password VARCHAR(255) NOT NULL,
   fullname VARCHAR(255) NOT NULL,
   searchdata VARCHAR(1024) NOT NULL,
@@ -52,7 +54,7 @@ CREATE TABLE walls
   users_id INT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED NOT NULL,
   creationdate INT UNSIGNED NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   description VARCHAR(2000),
 
   PRIMARY KEY (id),
@@ -70,8 +72,8 @@ CREATE TABLE groups
   users_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED,
   `type` TINYINT UNSIGNED NOT NULL, -- dedicated(1), generic(2)
-  name VARCHAR(255) NOT NULL,
-  description VARCHAR(2000),
+  name VARCHAR(30) NOT NULL,
+  description VARCHAR(30),
   userscount TINYINT UNSIGNED NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id),
@@ -138,7 +140,7 @@ CREATE TABLE headers
   `order` TINYINT UNSIGNED NOT NULL,
   height SMALLINT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED,
-  title VARCHAR(255),
+  title VARCHAR(50),
   picture VARCHAR(2000),
   filetype VARCHAR(50),
   filesize INT,
@@ -180,7 +182,7 @@ CREATE TABLE postits
   creationdate INT UNSIGNED NOT NULL,
   attachmentscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
-  title VARCHAR(255),
+  title VARCHAR(50),
   content TEXT,
   tags VARCHAR(255),
   deadline INT UNSIGNED,
@@ -199,7 +201,7 @@ CREATE TABLE postits_plugs
   walls_id INT UNSIGNED NOT NULL,
   start INT UNSIGNED NOT NULL,
   end INT UNSIGNED NOT NULL,
-  label VARCHAR(255),
+  label VARCHAR(50),
 
   PRIMARY KEY (walls_id, start, end),
   CONSTRAINT `postits_plugs-walls_id-fk` FOREIGN KEY (walls_id)

@@ -159,6 +159,8 @@
         ) $duplicate label = :label_1");
 
       foreach ($plugs as $_id => $_label)
+      {
+        $this->checkDBValue ('postits_plugs', 'label', $_label);
         $stmt->execute ([
           ':walls_id' => $this->wallId,
           ':start' => $postitId,
@@ -166,6 +168,7 @@
           ':label' => $_label,
           ':label_1' => $_label
         ]);
+      }
     }
 
     public function deleteAttachment ($args)

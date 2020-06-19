@@ -194,17 +194,21 @@
                 case "username":
                   title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
                   $input
+                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'username')?>")
                     .attr("placeholder", "<?=_("username")?>")
                     .attr("autocorrect", "off")
                     .attr ("autocapitalize", "none");
                   break;
                 case "fullname":
                   title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
-                  $input.attr("placeholder", "<?=_("full name")?>");
+                  $input
+                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'fullname')?>")
+                    .attr("placeholder", "<?=_("full name")?>");
                   break;
                 case "email":
                   title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
                   $input
+                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'email')?>")
                     .attr("placeholder", "<?=_("email")?>")
                     .attr("autocorrect", "off")
                     .attr ("autocapitalize", "none");

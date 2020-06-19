@@ -177,7 +177,9 @@
    
                   wpt_cleanPopupDataAttr ($popup);
     
-                  $popup.find("input").val ($header.find(".title").text());
+                  $popup.find("input")
+                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('headers', 'title')?>")
+                    .val ($header.find(".title").text());
                   $popup.find("#w-grid").parent().remove ();
     
                   $popup.find(".modal-title").html (
@@ -501,15 +503,8 @@
             success_cb (d);
         },
         // error cb
-        (d) =>
-        {
-          wpt_raiseError (() =>
-            {
-              error_cb && error_cb ();
-              this.cancelEdit ();
-
-            }, (d && d.error) ? d.error : null);
-        });
+        (d) => this.cancelEdit ()
+      );
     },
 
     // METHOD setCurrent ()

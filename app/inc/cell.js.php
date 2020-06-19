@@ -319,10 +319,7 @@
         null,
         // success cb
         (d) => d.error_msg &&
-                 wpt_raiseError (() => error_cb && error_cb (), d.error_msg),
-        // error cb
-        (d) => wpt_raiseError (() => error_cb && error_cb (),
-                               (d && d.error) ? d.error : null)
+                 wpt_raiseError (() => error_cb && error_cb (), d.error_msg)
       );
     },
 

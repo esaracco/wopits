@@ -664,10 +664,8 @@ function wpt_updatedObject (obj1, obj2, ignore = {})
 // FUNCTION wpt_cleanPopupDataAttr ()
 function wpt_cleanPopupDataAttr ($popup)
 {
-  const id = $popup.attr ("id"),
-        attrs = [];
-
   // Remove all data attributes
+  const attrs = [];
   $.each ($popup[0].attributes, function (i, a)
     {
       if (a.name.indexOf ("data-") == 0)
@@ -678,7 +676,7 @@ function wpt_cleanPopupDataAttr ($popup)
   $popup.find("span.required").remove ();
   $popup.find(".input-group.required").removeClass ("required");
 
-  switch (id)
+  switch ($popup.attr ("id"))
   {
     case "plugPopup":
 
@@ -697,29 +695,23 @@ function wpt_cleanPopupDataAttr ($popup)
 
       $popup.find("input").val (""); 
       $popup.find(".desc").html ("");
-      $popup.find("button.btn-primary")[0].removeAttribute ("data-type");
-      $popup.find("button.btn-primary")[0].removeAttribute ("data-groupid");
-
+      $popup.find("button.btn-primary").removeAttr ("data-type data-groupid");
       break;
 
     case "updateOneInputPopup":
-
-      const $input = $popup.find("input");
 
       $popup.find(".modal-dialog").removeClass ("modal-sm");
       $popup.find("#w-grid").parent().remove ();
       $popup.find(".btn-primary").html ("<?=_("Save")?>");
 
-      $input.removeAttr ("placeholder");
-      $input.removeAttr ("autocorrect autocapitalize");
-      $input.val ("");
-
+      $popup.find("input")
+        .removeAttr ("placeholder autocorrect autocapitalize maxlength")
+        .val ("");
       break;
 
     case "confirmPopup":
 
       $popup.removeClass ("no-theme");
-
       break;
   }
 }
@@ -1189,16 +1181,12 @@ function wpt_request_ws (method, service, args, success_cb, error_cb)
 
       if (d.error)
       {
+        msgArgs["msg"] = (isNaN (d.error)) ?
+          d.error : "<?=_("Unknown error.<br>Please try again later.")?>";
+        wpt_displayMsg (msgArgs);
+
         if (error_cb)
           error_cb (d);
-        else
-        {
-          msgArgs["msg"] = (isNaN (d.error)) ?
-            d.error :
-            "<?=_("Unknown error.<br>Please try again later.")?>";
-
-          wpt_displayMsg (msgArgs);
-        }
       }
       else if (success_cb)
         success_cb (d);

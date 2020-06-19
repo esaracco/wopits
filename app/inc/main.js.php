@@ -1471,10 +1471,7 @@
             wpt_raiseError (() => error_cb && error_cb (), d.error_msg);
           else if (success_cb)
             success_cb (d);
-        },
-        // error cb
-        (d) => wpt_raiseError (() => error_cb && error_cb (),
-                               (d && d.error) ? d.error : null)
+        }
       );
     },
 

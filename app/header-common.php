@@ -5,16 +5,18 @@
   $slocale = $_SESSION['slocale'];
   $userId = $_SESSION['userId'] ?? 0;
 
-  if (WPT_DEV_MODE) // PROD-remove
-  { // PROD-remove
-    $css = 'css/all.css.php'; // PROD-remove
-    $js = 'js/all.js.php'; // PROD-remove
-  } // PROD-remove
-  else // PROD-remove
-  { // PROD-remove
+  //<WPTPROD-remove>
+  if (WPT_DEV_MODE)
+  {
+    $css = 'css/all.css.php';
+    $js = 'js/all.js.php';
+  }
+  else
+  {
+  //</WPTPROD-remove>
     $css = 'css/all.css';
     $js = "js/all-$slocale.js";
-  } // PROD-remove
+  }//WPTPROD-remove
 
   $css .= "?$version";
   $js .= "?$version";

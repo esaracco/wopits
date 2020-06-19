@@ -1,7 +1,9 @@
 <?php
   require (
-    (!file_exists (__DIR__.'/../site-config.php')) ?//PROD-remove
-      __DIR__.'/../site-config.template.php' ://PROD-remove
+    //<WPTPROD-remove>
+    (!file_exists (__DIR__.'/../site-config.php')) ?
+      __DIR__.'/../site-config.template.php' :
+    //</WPTPROD-remove>
       __DIR__.'/../site-config.php');
 
   define ('WPT_VERSION', '0.14alpha5');

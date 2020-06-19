@@ -174,13 +174,13 @@
     {
       require_once (__DIR__.'/../libs/vendor/autoload.php');
 
-      $ret = false;
-
-      if (WPT_DEV_MODE) // PROD-remove
-      { // PROD-remove
-        return; // PROD-remove
-        $args['email'] = WPT_EMAIL_CONTACT; // PROD-remove
-      } // PROD-remove
+      //<WPTPROD-remove>
+      if (WPT_DEV_MODE)
+      {
+        return;
+        $args['email'] = WPT_EMAIL_CONTACT;
+      }
+      //</WPTPROD-remove>
 
       $mail = new PHPMailer (true);
       try
@@ -212,23 +212,21 @@
         $mail->Body = $args['msg'];
 
         $mail->send ();
-
-        $ret = true; 
       }
       catch (Exception $e)
       {
-        error_log (
+        throw new Exception (
           "Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
       }
-
-      return $ret;
     }
 
     public static function getWopitsVersion ()
     {
-      if (WPT_DEV_MODE) // PROD-remove
-        return date ('U'); // PROD-remove
-      else // PROD-remove
+      //<WPTPROD-remove>
+      if (WPT_DEV_MODE)
+        return date ('U');
+      else
+      //</WPTPROD-remove>
         return WPT_VERSION;
     }
 

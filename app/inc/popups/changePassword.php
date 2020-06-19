@@ -18,12 +18,12 @@
           <div><?=_("The new password:")?></div>
           <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key fa-xs"></i></span></div>
-          <input type="password" class="form-control" name="password2" value="" required placeholder="<?=_("new password")?>">
+          <input type="password" class="form-control" name="password2" value="" required placeholder="<?=_("new password")?>" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'password')?>">
         </div>
           <div><?=_("New password confirmation:")?></div>
           <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key fa-fw fa-xs"></i></span></div>
-          <input type="password" class="form-control" name="password3" value="" required placeholder="<?=_("new password confirmation")?>">
+          <input type="password" class="form-control" name="password3" value="" required placeholder="<?=_("new password confirmation")?>" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'password')?>">
         </div>
 
         </form>

@@ -1,5 +1,6 @@
 <?php
   require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
+  require_once (__DIR__.'/../class/Wpt_dbCache.php');
   $Plugin = new Wpt_jQueryPlugins ('postit');
   echo $Plugin->getHeader ();
 ?>
@@ -1667,15 +1668,7 @@
             success_cb (d);
         },
         // error cb
-        (d) =>
-        {
-          wpt_raiseError (() =>
-            {
-              error_cb && error_cb ();
-              this.cancelEdit  ();
-
-            }, (d && d.error) ? d.error : null);
-        }
+        (d) => this.cancelEdit  ()
       );
     },
 
@@ -1869,7 +1862,7 @@
                       type: "update",
                       item: $label,
                       title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Rename relation")?>`,
-                      content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}">`,
+                      content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=Wpt_dbCache::getFieldLength('postits_plugs', 'label')?>">`,
                       cb_close: __unedit,
                       cb_ok: ($popover) =>
                         $start.wpt_postit ("updatePlugLabel", {
