@@ -102,7 +102,7 @@
   <!-- MAIN CONTENT -->
   <div id="page-main">
     <!-- WALLS tabs -->
-    <nav class="nav nav-tabs walls"><a href="#" data-action="new"><i class="fas fa-plus"></i></a></nav>
+    <div><nav class="nav nav-tabs walls"><a href="#" data-action="new"><i class="fas fa-plus"></i></a></nav></div>
     <!-- WALLS content -->
     <div id="walls"><div class="tab-content walls"></div></div>
   </div>

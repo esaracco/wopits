@@ -135,6 +135,7 @@
 
 #normal-display-btn {
   display:none;
+  z-index:1031;
   position:absolute;
   top:65px;
   left:13px;
@@ -239,8 +240,11 @@ i.settings {
 }
 
 .nav-tabs.walls {
+  position:relative;
+  z-index:1030;
   text-align:center;
-  margin-top:70px;
+  padding-top:70px;
+  background:white;
 }
 
 .nav-tabs.walls button.close {

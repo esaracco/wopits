@@ -1111,9 +1111,9 @@ function wpt_fixMainHeight ()
 {
   document.querySelector("html").style.overflow = "hidden";
 
-  wpt_sharer.getCurrent("walls")[0].style.height = (
-    window.innerHeight -
-      (document.querySelector(".nav-tabs.walls").offsetHeight + 70))+"px";
+  wpt_sharer.getCurrent("walls")[0].style.height =
+    (window.innerHeight -
+     document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
 }
 
 function wpt_download (args)
