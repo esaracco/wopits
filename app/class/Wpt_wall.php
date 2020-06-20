@@ -372,7 +372,7 @@
 
           $wallName = $wall->name;
 
-          // Change wall name if needed
+          // Change wall name if it already exists
           $stmt = $this->prepare ('
             SELECT name FROM walls WHERE users_id = ?');
           $stmt->execute ([$this->userId]);
@@ -380,10 +380,15 @@
           if ( ($names = $stmt->fetchAll ()) )
           {
             $names = array_column ($names, 'name');
+            $maxLength = Wpt_dbCache::getFieldLength ('walls', 'name');
             $v = '';
             $i = 0;
             while (array_search ("$wallName$v", $names) !== false)
+            {
               $v = ' ('.(++$i).')';
+              if (strlen ("$wallName$v") > $maxLength)
+                $wallName = substr ($wallName, 0, $maxLength - strlen ($v));
+            }
             $wallName = "$wallName$v";
           }
   
