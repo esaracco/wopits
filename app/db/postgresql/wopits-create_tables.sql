@@ -13,7 +13,7 @@ CREATE TABLE users
 (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
+  username VARCHAR(20) NOT NULL,
   password VARCHAR(255) NOT NULL,
   fullname VARCHAR(255) NOT NULL,
   searchdata VARCHAR(1024) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE walls
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   width SMALLINT NOT NULL,
   creationdate INTEGER NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   description VARCHAR(2000)
 );
 CREATE INDEX "walls-name-idx" ON walls (name);
@@ -61,8 +61,8 @@ CREATE TABLE groups
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   walls_id INTEGER REFERENCES walls(id) ON DELETE CASCADE,
   type SMALLINT NOT NULL, -- dedicated(1), generic(2)
-  name VARCHAR(255) NOT NULL,
-  description VARCHAR(2000),
+  name VARCHAR(30) NOT NULL,
+  description VARCHAR(30),
   userscount SMALLINT NOT NULL DEFAULT 0
 );
 CREATE INDEX "groups-name:users_id-uidx" ON groups (name, users_id);
@@ -107,7 +107,7 @@ CREATE TABLE headers
   "order" SMALLINT NOT NULL,
   height SMALLINT NOT NULL,
   width SMALLINT,
-  title VARCHAR(255),
+  title VARCHAR(50),
   picture VARCHAR(2000),
   filetype VARCHAR(50),
   filesize INTEGER
@@ -139,7 +139,7 @@ CREATE TABLE postits
   creationdate INTEGER NOT NULL,
   attachmentscount SMALLINT NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
-  title VARCHAR(255),
+  title VARCHAR(50),
   content TEXT,
   tags VARCHAR(255),
   deadline INTEGER,
@@ -153,7 +153,7 @@ CREATE TABLE postits_plugs
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
   start INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
   "end" INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
-  label VARCHAR(255),
+  label VARCHAR(50),
   PRIMARY KEY (walls_id, start, "end")
 );
 
