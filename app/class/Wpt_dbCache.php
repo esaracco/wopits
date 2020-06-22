@@ -63,6 +63,6 @@
     {
       $ret = self::getDBDescription()[$table][$field]['length'];
 
-      return (!$ret) ? null : $ret;
+      return ($ret) ? $ret : null;
     }
   }

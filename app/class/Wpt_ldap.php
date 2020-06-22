@@ -112,10 +112,11 @@ class Wpt_ldap
     }
     elseif ($r['count'])
     {
+      $item = $r[0];
       $ret = [
-        'dn' => $r[0]['dn'],
-        'mail' => $r[0]['mail'][0]??null,
-        'cn' => $r[0]['cn'][0]??''
+        'dn' => $item['dn'],
+        'mail' => $item['mail'][0]??null,
+        'cn' => $item['cn'][0]??''
       ];
     }
 
