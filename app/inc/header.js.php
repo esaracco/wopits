@@ -227,40 +227,40 @@
           .show ();
     },
 
-  //FIXME
-  // to bypass FF bug when file manager is triggered from a third
-  // callback
-  // -> This trick does not fully work with edge!
-  // METHOD uploadPicture ()
-  uploadPicture: function ($item)
-  {
-    const plugin = this,
-          $header = plugin.element,
-          settings = plugin.settings;
-
-    function __upload__ ()
+    //FIXME
+    // to bypass FF bug when file manager is triggered from a third
+    // callback
+    // -> This trick does not fully work with edge!
+    // METHOD uploadPicture ()
+    uploadPicture: function ($item)
     {
-      $(".upload.header-picture").click ();
-    }
+      const plugin = this,
+            $header = plugin.element,
+            settings = plugin.settings;
 
-    if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
-      __upload__ ();
-    else
-    {
-      clearInterval (_ffTriggerBug.i);
-      _ffTriggerBug = {
-        run: false,
-        i: setInterval (() =>
-          { 
-            if (_ffTriggerBug.run)
+      function __upload__ ()
+      {
+        $(".upload.header-picture").click ();
+      }
+
+      if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
+        __upload__ ();
+      else
+      {
+        clearInterval (_ffTriggerBug.i);
+        _ffTriggerBug = {
+          run: false,
+          i: setInterval (() =>
             { 
-              clearInterval (_ffTriggerBug.i);
-              __upload__ ();
-            }
-          }, 150)
-      };
-    }
-  },
+              if (_ffTriggerBug.run)
+              {
+                clearInterval (_ffTriggerBug.i);
+                __upload__ ();
+              }
+            }, 150)
+        };
+      }
+    },
 
     // METHOD removeUploadLayer ()
     removeUploadLayer: function ()
