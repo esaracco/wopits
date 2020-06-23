@@ -809,7 +809,7 @@ function wpt_loader (action, force = false, xhr = null)
       $layer.find("button").hide ();
       $layer.find(".progress").css ({
         display: "none",
-        background: "orange"
+        background: "#ea6966"
       });
     }
   }
