@@ -262,6 +262,7 @@
         DELETE FROM users_tokens
         WHERE token IN (
           SELECT token
+          FROM users_tokens
           WHERE expiredate IS NOT NULL
             AND expiredate <= $current
 
