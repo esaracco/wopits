@@ -177,7 +177,7 @@
                   wpt_openConfirmPopover ({
                     type: "update",
                     item: $li.parent().parent().find(".btn-menu"),
-                    title: `<i class="fas fa-signature fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
+                    title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
                       content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`,
                       cb_close: () =>
                         {
