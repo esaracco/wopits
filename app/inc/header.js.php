@@ -171,25 +171,27 @@
               break;
   
             case "rename":
+
               plugin.edit (() =>
                 {
-                  const $popup = $("#updateOneInputPopup");
-   
-                  wpt_cleanPopupDataAttr ($popup);
-    
-                  $popup.find("input")
-                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('headers', 'title')?>")
-                    .val ($header.find(".title").text());
-                  $popup.find("#w-grid").parent().remove ();
-    
-                  $popup.find(".modal-title").html (
-                    (isCol)?"<?=_("Column title")?>":"<?=_("Row title")?>");
-       
-                  $popup.find(".btn-primary").html ("<?=_("Save")?>");
-    
-                  $popup[0].dataset.popuptype = "set-col-row-name";
-                  $popup[0].dataset.itemid = $header[0].dataset.id;
-                  $popup.modal ("show");
+                  wpt_openConfirmPopover ({
+                    type: "update",
+                    item: $li.parent().parent().find(".btn-menu"),
+                    title: `<i class="fas fa-signature fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
+                      content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`,
+                      cb_close: () =>
+                        {
+                          if (!wpt_sharer.get ("no-unedit"))
+                            plugin.unedit ();
+
+                          wpt_sharer.unset ("no-unedit");
+                        },
+                      cb_ok: ($popover) =>
+                        {
+                          wpt_sharer.set ("no-unedit", true);
+                          plugin.setTitle ($popover.find("input").val(), true);
+                        }
+                    });
                 });
               break;
           }

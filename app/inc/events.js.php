@@ -393,20 +393,6 @@ $(function()
             from.cancelCallback ();
           break;
 
-        case "updateOneInputPopup":
-
-          switch (type)
-          {
-            case "set-col-row-name":
-              if (!wpt_sharer.get ("no-unedit"))
-                $header.wpt_header ("unedit");
-
-              wpt_sharer.unset ("no-unedit");
-              break;
-          }
-
-          break;
-
         case "wallPropertiesPopup":
 
           if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>") &&
@@ -521,21 +507,6 @@ $(function()
                 };
 
               $("<div/>").wpt_wall ("addNew", data, $popup);
-            }
-            break;
-
-          // Manage all one field UPDATE
-          case "updateOneInputPopup":
-
-            switch (type)
-            {
-              // UPDATE name of column/row
-              case "set-col-row-name":
-
-                wpt_sharer.set ("no-unedit", true);
-                $header.wpt_header (
-                  "setTitle", $popup.find("input").val(), true);
-                break;
             }
             break;
 
