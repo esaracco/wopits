@@ -1861,7 +1861,7 @@
                     wpt_openConfirmPopover ({
                       type: "update",
                       item: $label,
-                      title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Rename relation")?>`,
+                      title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relationship name")?>`,
                       content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=Wpt_dbCache::getFieldLength('postits_plugs', 'label')?>">`,
                       cb_close: __unedit,
                       cb_ok: ($popover) =>
