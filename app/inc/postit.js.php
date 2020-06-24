@@ -112,6 +112,8 @@
       if (settings.obsolete)
         $postit.addClass ("obsolete");
 
+      //FIXME We must add destination postit in edit queue in order to preventi
+      //      its deletion during relationship adding.
       $postit.find(".postit-edit,.postit-header,.dates")
       .on("click", function (e)
       {
