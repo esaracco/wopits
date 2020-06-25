@@ -143,11 +143,13 @@
 }
 
 #msg-container {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
   z-index:60000;
+  width:90%;
+  max-width:400px;
 }
 
 .alert b {

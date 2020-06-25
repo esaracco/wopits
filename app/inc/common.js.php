@@ -1075,7 +1075,7 @@ function wpt_displayMsg (args)
 
           $div.hide("fade", function(){$div.remove ()})
   
-        }, 3000);
+        }, (args.type == "danger") ? 5000 : 3000);
   }
 }
 
