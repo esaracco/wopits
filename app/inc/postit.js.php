@@ -126,8 +126,8 @@
           if (from.id != id &&
               ($postit[0].dataset.plugs||"").indexOf(from.id) == -1)
           {
-            plugin.edit (null, ()=>
-              {
+//            plugin.edit (null, ()=>
+//              {
                 const $popup = $("#plugPopup"),
                   $start = from.obj,
                   line = {
@@ -188,7 +188,7 @@
                 wpt_sharer.set ("link-from", from);
 
                 wpt_openModal ($popup);
-              });
+//              });
           }
           else
           {
