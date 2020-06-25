@@ -65,12 +65,27 @@ It is important to optimize the SGBD configuration as much as possible. Default 
 
 #### PHP
 
-Edit PHP configuration file for both apache and CLI and remove the memory limit allowed for scripts `memory_limit = -1` or increase it significantly depending on available RAM.
+Edit PHP configuration file for both apache and CLI and remove the memory limit allowed for scripts:
+```ini
+memory_limit = -1
+```
+or increase it significantly depending on available RAM.
+
+Enable and customize PHP OPcache module for both **apache and CLI** (very important). Here is a common customization:
+
+```ini
+opcache.enable=1
+opcache.enable_cli=1
+opcache.validate_timestamps=0
+opcache.revalidate_freq=60
+opcache.save_comments=0
+opcache.enable_file_override=1
+```
+
+To allow PHP to use more than 1024 file descriptors and to be more performant at network level, do the following:
 
 - http://socketo.me/docs/deploy#evented-io-extensions
 - https://github.com/andreybolonin/RatchetBundle/blob/master/README.md
-
-To allow PHP to use more than 1024 file descriptors and to be more performant at network level, do the following:
 
  1. Install the `ev` and `event` modules using `pecl`. You will need `libevent-dev`, `php-dev` and `php-pear` in order to install and compile those modules.
  2. Add to `/etc/security/limits.d/local.conf`:
