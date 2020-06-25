@@ -71,7 +71,7 @@
 
       $postit
         .css({
-          display: "none",
+          visibility: "hidden",
           top: settings.top,
           left: settings.left
         })
@@ -720,8 +720,6 @@
       if (settings.creationdate)
         setTimeout (
           () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
-
-      $postit.show ();
     },
 
     // METHOD cancelPlugAction ()

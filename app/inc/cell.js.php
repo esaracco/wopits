@@ -279,6 +279,8 @@
       // another user, do not add it again in DB
       if (!noinsert)
         $postit.wpt_postit ("insert");
+      else
+        $postit.css ("visibility", "visible");
     },
 
     // METHOD update ()
