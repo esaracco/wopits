@@ -112,8 +112,6 @@
       if (settings.obsolete)
         $postit.addClass ("obsolete");
 
-      //FIXME We must add destination postit in edit queue in order to preventi
-      //      its deletion during relationship adding.
       $postit.find(".postit-edit,.postit-header,.dates")
       .on("click", function (e)
       {
@@ -128,66 +126,69 @@
           if (from.id != id &&
               ($postit[0].dataset.plugs||"").indexOf(from.id) == -1)
           {
-            const $popup = $("#plugPopup"),
-              $start = from.obj,
-              line = {
-                startId: from.id,
-                endId: id,
-                obj: plugin.getPlugTemplate ($start[0], $postit[0])
-              };
-
-            line.obj.setOptions ({
-              dropShadow: null,
-              size: 3,
-              color: "#bbb",
-              dash: {animation: true}
-            });
-
-            $start.wpt_postit ("addPlug", line);
-            $start.wpt_postit ("cancelPlugAction", false);
-
-            from.cancelCallback = () =>
+            plugin.edit (null, ()=>
               {
-                $start.wpt_postit ("removePlug", line);
-                $start.wpt_postit ("cancelPlugAction");
-              };
+                const $popup = $("#plugPopup"),
+                  $start = from.obj,
+                  line = {
+                    startId: from.id,
+                    endId: id,
+                    obj: plugin.getPlugTemplate ($start[0], $postit[0])
+                  };
 
-            from.confirmCallback = (label) =>
-              {
-                const color = plugin.settings._plugColor||
-                       $(".wall th:eq(0)").css("background-color"),
-                      $undo =
-                       $start.find(".postit-menu [data-action='undo-plug'] a");
-
-                if (!label)
-                  label = "...";
-  
-                line.label = label;
                 line.obj.setOptions ({
-                  size: 4,
-                  color: color,
-                  dash: null,
-                  middleLabel: LeaderLine.captionLabel({
-                    text: label,
-                    fontSize:"13px"
-                  })
+                  dropShadow: null,
+                  size: 3,
+                  color: "#bbb",
+                  dash: {animation: true}
                 });
 
-                $start.wpt_postit ("applyTheme");
-                $start.wpt_postit ("addPlugLabel", line);
+                $start.wpt_postit ("addPlug", line);
+                $start.wpt_postit ("cancelPlugAction", false);
 
-                $start[0].dataset.undo = "add";
-                $undo.removeClass ("disabled");
-                $undo.find("span").text ("« <?=_("Add")?> »");
-  
-                $start.wpt_postit ("cancelPlugAction");
-              };
-              
-            wpt_cleanPopupDataAttr ($popup); 
+                from.cancelCallback = () =>
+                  {
+                    $start.wpt_postit ("removePlug", line);
+                    $start.wpt_postit ("cancelPlugAction");
+                  };
 
-            wpt_sharer.set ("link-from", from);
-                           
-            wpt_openModal ($popup);
+                from.confirmCallback = (label) =>
+                  {
+                    const color = plugin.settings._plugColor||
+                           $(".wall th:eq(0)").css("background-color"),
+                          $undo = $start.find (
+                            ".postit-menu [data-action='undo-plug'] a");
+
+                    if (!label)
+                      label = "...";
+
+                    line.label = label;
+                    line.obj.setOptions ({
+                      size: 4,
+                      color: color,
+                      dash: null,
+                      middleLabel: LeaderLine.captionLabel({
+                        text: label,
+                        fontSize:"13px"
+                      })
+                    });
+
+                    $start.wpt_postit ("applyTheme");
+                    $start.wpt_postit ("addPlugLabel", line);
+
+                    $start[0].dataset.undo = "add";
+                    $undo.removeClass ("disabled");
+                    $undo.find("span").text ("« <?=_("Add")?> »");
+
+                    $start.wpt_postit ("cancelPlugAction");
+                  };
+
+                wpt_cleanPopupDataAttr ($popup);
+
+                wpt_sharer.set ("link-from", from);
+
+                wpt_openModal ($popup);
+              });
           }
           else
           {
