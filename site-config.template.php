@@ -5,11 +5,6 @@
   // - If you are using wopits "as is" from the Git repository, duplicate this
   //   file to "site-config.php" and customize it.
 
-  // Your wopits secret key for data integrity check
-  // -> Set it once and for all and don't change it anymore!
-  // Example: !!tobechanged!!
-  define ('WPT_SECRET_KEY', "");
-
   // System command to reload apache
   // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
   define ('WPT_APACHE_RESTART', "");

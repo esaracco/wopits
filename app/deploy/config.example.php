@@ -26,9 +26,6 @@
 
     // REMOTE target example
     'wopits1' => [
-      // Your wopits secret key for data integrity check
-      // -> Set it once and for all and don't change it anymore!
-      'secret-key' => 'ChangeMe1',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory
@@ -106,9 +103,6 @@
 
     // LOCAL target example
     'wopits2' => [
-      // Your wopits secret key for data integrity check
-      // -> Set it once and for all and don't change it anymore!
-      'secret-key' => 'ChangeMe2',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory
