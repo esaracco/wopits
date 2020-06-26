@@ -1883,10 +1883,15 @@
                       content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=Wpt_dbCache::getFieldLength('postits_plugs', 'label')?>">`,
                       cb_close: __unedit,
                       cb_ok: ($popover) =>
-                        $start.wpt_postit ("updatePlugLabel", {
-                          label: $popover.find("input").val().trim(),
-                          endId: endId
-                        })
+                        {
+                          const label = $popover.find("input").val().trim ();
+
+                          if (label != defaultLabel)
+                            $start.wpt_postit ("updatePlugLabel", {
+                              label: $popover.find("input").val().trim(),
+                              endId: endId
+                            });
+                        }
                     });
                   });
 
