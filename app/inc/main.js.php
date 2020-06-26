@@ -1045,7 +1045,7 @@
       wpt_openConfirmPopup ({
         type: "clone-wall",
         icon: "clone",
-        content: `<?=_("Depending on its content, the cloning of the current wall can take a long time.<br>Do you confirm your request?")?>`,
+        content: `<?=_("Depending on its content, cloning a wall can take time.<br>Do you confirm this request?")?>`,
         cb_ok: () =>
           {
             wpt_request_ajax (
@@ -1078,7 +1078,7 @@
       wpt_openConfirmPopup ({
         type: "export-wall",
         icon: "file-export",
-        content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm your request?")?>`,
+        content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm this request?")?>`,
         cb_ok: () => wpt_download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",

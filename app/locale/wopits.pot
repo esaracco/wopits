@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-06-24 16:21+0200\n"
+        "POT-Creation-Date: 2020-06-26 06:50+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgid   "<p>To create a post-it, double-click inside a cell. You can then move i
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:20
-msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename it, associate an image or completely delete the item.</p><p>You can edit the name and description of a wall via the menu <kbd>Edit</kbd>&rarr;<kbd>Properties...</kbd> or by clicking directly on the name of the wall.</p><p>To add a row or column, use the menu <kbd>Edit</kbd>.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify post-its.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create post-its and manage the wall. It's the sharing that gives you the most rights. You will also have partial group management.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the top of the wall on the left.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. In this mode, the wall will no longer be editable. To be able to edit it again, click on <i class='fas fa-crosshairs'></i> or on <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Depending on its content, the export size can be substantial! Furthermore you can only import it later on this website. Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu. Depending on its content, the cloning of a wall can take a long time!</p>"
+msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename it, associate an image or completely delete the item.</p><p>You can edit the name and description of a wall via the menu <kbd>Edit</kbd>&rarr;<kbd>Properties...</kbd> or by clicking directly on the name of the wall.</p><p>To add a row or column, use the menu <kbd>Edit</kbd>.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify post-its.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create post-its and manage the wall. It's the sharing that gives you the most rights. You will also have partial group management.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the top of the wall on the left.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. In this mode, the wall will no longer be editable. To be able to edit it again, click on <i class='fas fa-crosshairs'></i> or on <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Depending on its content, the export size can be substantial! Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu. Depending on its content, the cloning of a wall can take a long time!</p>"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1411
@@ -41,7 +41,7 @@ msgid   "A new release of wopits is available!"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_editQueue.php:159
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1231
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1206
 msgid   "A wall with the same name already exists."
 msgstr  ""
 
@@ -57,11 +57,11 @@ msgstr  ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:116
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:161
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:236
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:967
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:991
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:995
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1106
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1360
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:942
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:966
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:970
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1081
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1335
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:181
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:226
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:302
@@ -91,7 +91,7 @@ msgid   "Account"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitAttachments.php:15
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:179
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:181
 msgid   "Add"
 msgstr  ""
 
@@ -113,7 +113,7 @@ msgid   "Add or remove users in the group « %s »."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:5
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:393
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:396
 msgid   "Add relationship"
 msgstr  ""
 
@@ -141,8 +141,7 @@ msgid   "An error occured while uploading file."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1085
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:630
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:706
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:618
 msgid   "An error occurred while exporting wall data."
 msgstr  ""
 
@@ -301,12 +300,12 @@ msgid   "Default walls color:"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:44
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:452
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:579
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:592
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:885
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1884
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2048
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:455
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:582
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:595
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:886
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1894
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2058
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:95
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:156
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:329
@@ -314,7 +313,7 @@ msgstr  ""
 msgid   "Delete"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:580
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:583
 msgid   "Delete all relationships from this post-it?"
 msgstr  ""
 
@@ -322,7 +321,7 @@ msgstr  ""
 msgid   "Delete my account"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:394
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:397
 msgid   "Delete relationships"
 msgstr  ""
 
@@ -330,7 +329,7 @@ msgstr  ""
 msgid   "Delete this column?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2049
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2059
 msgid   "Delete this file?"
 msgstr  ""
 
@@ -346,11 +345,11 @@ msgstr  ""
 msgid   "Delete this picture?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:453
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:456
 msgid   "Delete this post-it?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1885
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1895
 msgid   "Delete this relationship?"
 msgstr  ""
 
@@ -367,12 +366,11 @@ msgid   "Delete your profile photo?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1048
-msgid   "Depending on its content, the cloning of the current wall can take a long time.<br>Do you confirm your request?"
+msgid   "Depending on its content, cloning a wall can take time.<br>Do you confirm this request?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1081
-#, php-format
-msgid   "Depending on its content, the export size can be substantial. Furthermore you can only import it later on %s.<br>Do you confirm your request?"
+msgid   "Depending on its content, the export size can be substantial.<br>Do you confirm this request?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:38
@@ -395,8 +393,8 @@ msgstr  ""
 msgid   "Either the network is unavailable or maintenance operation is in progress. Please reload this page or try again later."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:612
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:838
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:601
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:813
 msgid   "Either you no longer have the right to access this wall, or it has been deleted"
 msgstr  ""
 
@@ -566,7 +564,7 @@ msgstr  ""
 msgid   "No"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:430
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:433
 msgid   "No content."
 msgstr  ""
 
@@ -668,7 +666,7 @@ msgid   "Read only"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:14
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1864
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1874
 msgid   "Relationship name"
 msgstr  ""
 
@@ -688,7 +686,7 @@ msgstr  ""
 msgid   "Remember me"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:885
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:886
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:92
 msgid   "Rename"
 msgstr  ""
@@ -698,11 +696,11 @@ msgid   "Required field"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/resetPassword.php:5
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:706
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:709
 msgid   "Reset"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:707
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:710
 msgid   "Reset deadline?"
 msgstr  ""
 
@@ -766,7 +764,7 @@ msgstr  ""
 msgid   "Someone is editing this element."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2023
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2033
 msgid   "Sorry, there is a compatibility issue with your browser (Safari?) when it comes to uploading post-its images..."
 msgstr  ""
 
@@ -803,11 +801,11 @@ msgstr  ""
 msgid   "The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1751
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1760
 msgid   "The entire column was deleted while you were editing the post-it!"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1918
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1928
 msgid   "The file is already linked to the post-it"
 msgstr  ""
 
@@ -815,14 +813,14 @@ msgstr  ""
 msgid   "The file is already linked to the post-it."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:307
-msgid   "The file to import was not recognized. Was it really generated from this website?"
-msgstr  ""
-
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:210
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:419
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:553
 msgid   "The file type was not recognized."
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:307
+msgid   "The file you are trying to import is not compatible with the current wopits version."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallUsersview.php:11
@@ -885,7 +883,7 @@ msgstr  ""
 msgid   "This group does not currently contain any users."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:645
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:648
 msgid   "This item has been deleted"
 msgstr  ""
 
@@ -907,12 +905,12 @@ msgstr  ""
 msgid   "This new group will be available only for the current wall."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1391
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1625
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1392
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1626
 msgid   "This post-it has no attachment"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:197
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:198
 msgid   "This relationship already exists"
 msgstr  ""
 
@@ -932,11 +930,11 @@ msgstr  ""
 msgid   "Unable to retrieve your account information"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:396
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:399
 msgid   "Undo"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1533
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1534
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1185
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1264
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1288
@@ -994,7 +992,7 @@ msgid   "Users of this group will have the following access to the current wall:
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:62
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1828
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1838
 msgid   "View"
 msgstr  ""
 
@@ -1013,10 +1011,6 @@ msgstr  ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:28
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:375
 msgid   "Warning"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:714
-msgid   "Warning: if you modify the content of this archive, you will no longer be able to import it with wopits!"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:446
@@ -1080,7 +1074,7 @@ msgid   "You have reached the maximum number of tags."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_editQueue.php:327
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1112
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:1087
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_group.php:367
 msgid   "You must have admin access to perform this action."
 msgstr  ""
