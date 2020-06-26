@@ -6,7 +6,7 @@
     //</WPTPROD-remove>
       __DIR__.'/../site-config.php');
 
-  define ('WPT_VERSION', '0.16alpha2');
+  define ('WPT_VERSION', '0.16alpha3');
   define ('WPT_EXPORT_MIN_VERSION', '0.16');
 
   define ('WPT_COOKIE', 'wopits');
