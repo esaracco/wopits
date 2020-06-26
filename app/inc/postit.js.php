@@ -126,8 +126,8 @@
           if (from.id != id &&
               ($postit[0].dataset.plugs||"").indexOf(from.id) == -1)
           {
-//            plugin.edit (null, ()=>
-//              {
+            plugin.edit ({plugend: true}, ()=>
+              {
                 const $popup = $("#plugPopup"),
                   $start = from.obj,
                   line = {
@@ -188,17 +188,17 @@
                 wpt_sharer.set ("link-from", from);
 
                 wpt_openModal ($popup);
-//              });
+              });
           }
           else
           {
-            plugin.cancelPlugAction ();
-
             if (from.id != id)
               wpt_displayMsg ({
                 type: "warning",
                 msg: "<?=_("This relationship already exists")?>"
               });
+            else
+              plugin.cancelPlugAction ();
           }
         }
       })
@@ -1638,9 +1638,12 @@
       if (!args)
         args = {};
 
-      this.setCurrent ();
+      if (!args.plugend)
+      {
+        this.setCurrent ();
 
-      _originalObject = this.serialize()[0];
+        _originalObject = this.serialize()[0];
+      }
 
       if (!this.settings.wall[0].dataset.shared ||
           !wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
@@ -1661,7 +1664,7 @@
             wpt_raiseError (() =>
               {
                 error_cb && error_cb ();
-                this.cancelEdit ();
+                this.cancelEdit (args);
 
               }, d.error_msg);
           }
@@ -1669,47 +1672,50 @@
             success_cb (d);
         },
         // error cb
-        (d) => this.cancelEdit  ()
+        (d) => this.cancelEdit  (args)
       );
     },
 
     // METHOD unedit ()
-    unedit: function ()
+    unedit: function (args = {})
     {
       const $postit = this.element,
             plugsToSave = wpt_sharer.get ("plugs-to-save");
       let data = null,
           todelete;
 
-      this.unsetCurrent ();
-
       if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
-        return this.cancelEdit ();
+        return this.cancelEdit (args);
 
-      // Update postits plugs dependencies
-      if (plugsToSave)
+      if (!args.plugend)
       {
-        data = {updateplugs: true, plugs: []};
+        this.unsetCurrent ();
 
-        for (const id in plugsToSave)
-          data.plugs.push (plugsToSave[id].wpt_postit ("serialize")[0]);
+        // Update postits plugs dependencies
+        if (plugsToSave)
+        {
+          data = {updateplugs: true, plugs: []};
 
-        wpt_sharer.unset ("plugs-to-save");
-      }
-      // Postit update
-      else
-      {
-        data = this.serialize()[0];
-        todelete = !!data.todelete;
+          for (const id in plugsToSave)
+            data.plugs.push (plugsToSave[id].wpt_postit ("serialize")[0]);
 
-        // Update postit only if it has changed
-        if (todelete || wpt_updatedObject (_originalObject,
-                                           data, {hadpictures: 1}))
-          data["cellId"] = this.settings.cellId;
-        else if (!this.settings.wall[0].dataset.shared)
-          return this.cancelEdit ();
+          wpt_sharer.unset ("plugs-to-save");
+        }
+        // Postit update
         else
-          data = null;
+        {
+          data = this.serialize()[0];
+          todelete = !!data.todelete;
+
+          // Update postit only if it has changed
+          if (todelete || wpt_updatedObject (_originalObject,
+                                             data, {hadpictures: 1}))
+            data["cellId"] = this.settings.cellId;
+          else if (!this.settings.wall[0].dataset.shared)
+            return this.cancelEdit ();
+          else
+            data = null;
+        }
       }
 
       wpt_request_ws (
@@ -1719,7 +1725,7 @@
         // success cb
         (d) =>
         {
-          this.cancelEdit ();
+          this.cancelEdit (args);
 
           if (d.error_msg)
             wpt_displayMsg ({
@@ -1735,21 +1741,24 @@
             $postit[0].removeAttribute ("data-updatetz");
         },
         // error cb
-        () => this.cancelEdit ());
+        () => this.cancelEdit (args));
     },
 
     // METHOD cancelEdit ()
-    cancelEdit: function ()
+    cancelEdit: function (args = {})
     {
       $("body").css("cursor", "auto");
 
-      this.unsetCurrent ();
+      if (!args.plugend)
+      {
+        this.unsetCurrent ();
 
-      this.element[0].removeAttribute ("data-hasuploadedpictures");
-      this.element[0].removeAttribute ("data-hadpictures");
+        this.element[0].removeAttribute ("data-hasuploadedpictures");
+        this.element[0].removeAttribute ("data-hadpictures");
 
-      if (!this.settings.wall)
-        wpt_raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
+        if (!this.settings.wall)
+          wpt_raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
+      }
     },
 
     // METHOD openMenu ()
