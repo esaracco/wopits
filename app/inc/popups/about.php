@@ -27,7 +27,7 @@
           <div class="mt-4 warning">
             <h2 class="bg-warning"><?=_("Warning")?></h2>
   
-            <p class="mb-2"><?=_("We do not provide any guarantee on the availability on service or on the backups of your data. This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server.")?></p>
+            <p class="mb-2"><?=_("This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server.")?></p>
   
             <p class="mb2"><?=_("Of course we are doing everything to ensure a quality service, but the best solution is hosting on your own servers or with a professional host. wopits is a free project, anyone can get it and install it!")?></p>
   

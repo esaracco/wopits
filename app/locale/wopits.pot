@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-06-26 06:50+0200\n"
+        "POT-Creation-Date: 2020-06-26 09:43+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -883,6 +883,10 @@ msgstr  ""
 msgid   "This group does not currently contain any users."
 msgstr  ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:30
+msgid   "This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server."
+msgstr  ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:648
 msgid   "This item has been deleted"
 msgstr  ""
@@ -1015,10 +1019,6 @@ msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:446
 msgid   "We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:30
-msgid   "We do not provide any guarantee on the availability on service or on the backups of your data. This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:45
