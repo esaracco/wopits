@@ -339,7 +339,7 @@
         // Extract ZIP
         if (!file_exists ($zipPath) || $zip->open ($zipPath) !== true ||
             $zip->extractTo ($importPath) !== true ||
-            !($wall = json_decode (file_get_contents("$importPath/wall.json"))))
+            !($wall=@json_decode(@file_get_contents("$importPath/wall.json"))))
         {
           $ret['error'] = $errorMsg;
         }
