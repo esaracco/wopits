@@ -1082,7 +1082,7 @@
     // METHOD repositionPlugs ()
     repositionPlugs: function ()
     {
-      const $div = this.settings.wall.parent ();
+      const div = this.settings.wall.parent()[0];
 
       this.settings._plugs.forEach ((plug) =>
         {
@@ -1090,8 +1090,8 @@
 
           if (plug.label)
           {
-            const p = $div.find("svg.leader-line[data-id='"+
-              plug.startId+"-"+plug.endId+"'] text")[0].getBoundingClientRect();
+            const p = div.querySelector("svg.leader-line[data-id='"+
+              plug.startId+"-"+plug.endId+"'] text").getBoundingClientRect ();
 
             plug.labelObj[0].style.top = p.top+"px";
             plug.labelObj[0].style.left = p.left+"px";
@@ -1287,8 +1287,8 @@
     {
        const $postit = this.element,
              postit = $postit[0],
-             phTop =
-               $postit.find(".postit-header")[0].getBoundingClientRect().top,
+             phTop = postit.querySelector(".postit-header")
+                       .getBoundingClientRect().top,
              pW = postit.clientWidth,
              pH = postit.clientHeight;
        let pPos = postit.getBoundingClientRect ();
