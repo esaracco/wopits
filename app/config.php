@@ -7,6 +7,7 @@
       __DIR__.'/../site-config.php');
 
   define ('WPT_VERSION', '0.15alpha7');
+  define ('WPT_EXPORT_MIN_VERSION', '0.15');
 
   define ('WPT_COOKIE', 'wopits');
 

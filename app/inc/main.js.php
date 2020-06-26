@@ -1078,7 +1078,7 @@
       wpt_openConfirmPopup ({
         type: "export-wall",
         icon: "file-export",
-        content: `<?=_("Depending on its content, the export size can be substantial. Furthermore you can only import it later on %s.<br>Do you confirm your request?")?>`.replace("%s", location.hostname),
+        content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm your request?")?>`,
         cb_ok: () => wpt_download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",

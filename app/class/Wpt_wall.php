@@ -304,7 +304,7 @@
       $errorMsg = ($exportFile) ?
         _("An error occured while cloning the wall.") :
         _("An error occured while processing import.");
-      $sumErrorMsg = _("The file to import was not recognized. Was it really generated from this website?");
+      $versionErrorMsg = _("The file you are trying to import is not compatible with the current wopits version.");
 
       if (!$exportFile)
         list (, $content, $error) = $this->getUploadedFileInfos ($this->data);
@@ -312,13 +312,14 @@
       $zip = new ZipArchive ();
 
       if ($error)
+      {
         $ret['error'] = $error;
+      }
       else
       {
         $tmpPath = "{$this->getUserDir()}/tmp";
         $importPath = "$tmpPath/import";
-        $zipPath1 = "$importPath/import.zip";
-        $zipPath2 = "$importPath/wall.zip";
+        $zipPath = "$importPath/import.zip";
 
         //FIXME //TODO Remove this later (done in user account creation)
         if (!file_exists ($tmpPath))
@@ -326,37 +327,28 @@
 
         if (file_exists ($importPath))
           Wpt_common::rm ($importPath);
+
         mkdir ($importPath);
 
-        if (!$exportFile)
-          file_put_contents (
-            $zipPath1, base64_decode(str_replace(' ', '+', $content)));
+        if ($exportFile)
+          $zipPath = $exportFile;
         else
-          $zipPath1 = $exportFile;
+          file_put_contents (
+            $zipPath, base64_decode(str_replace(' ', '+', $content)));
 
-        // Extract first ZIP
-        if ($zip->open ($zipPath1) !== true ||
-            $zip->extractTo ($importPath) !== true)
+        // Extract ZIP
+        if (!file_exists ($zipPath) || $zip->open ($zipPath) !== true ||
+            $zip->extractTo ($importPath) !== true ||
+            !($wall = json_decode (file_get_contents("$importPath/wall.json"))))
         {
           $ret['error'] = $errorMsg;
         }
-        // Check for ZIP integrity
-        elseif (!file_exists ($zipPath2) ||
-                !file_exists ("$importPath/sum.sha1") ||
-                !($importSum = file_get_contents("$importPath/sum.sha1")) ||
-                !($sum = hash ('sha1', sha1_file ($zipPath2).WPT_SECRET_KEY))||
-                $sum != $importSum)
+        // Check export file compatibility with this wopits version
+        elseif (!preg_match ('/^([0-9\.]+)/',
+                  $wall->_exportInfos->wopitsVersion, $m) ||
+                $m[1] < WPT_EXPORT_MIN_VERSION)
         {
-          $ret['error'] = $sumErrorMsg;
-        }
-        // Extract second ZIP
-        elseif (!$zip->close () ||
-                $zip->open ($zipPath2) !== true ||
-                $zip->extractTo ($importPath) !== true ||
-                !($wall =
-                  json_decode (file_get_contents("$importPath/wall.json"))))
-        {
-          $ret['error'] = $sumErrorMsg;
+          $ret['error'] = $versionErrorMsg;
         }
         // Process ZIP data
         else
@@ -412,9 +404,6 @@
             mkdir ("$dir/header", 02770, true);
             mkdir ("$dir/postit");
       
-            $stmt = $this->prepare ('
-              UPDATE headers SET picture = ? WHERE id = ?');
-
             // ADD headers
             foreach ($wall->headers as $item)
             {
@@ -431,13 +420,13 @@
                 rename ("$importPath/header/{$item->id}/$fname",
                         "$dir/header/$headerId/$fname");
 
-                $stmt->execute ([
-                  str_replace (
+                $this->executeQuery ('UPDATE headers', [
+                  'picture' => str_replace (
                     ["walls/{$wall->id}/", "header/{$item->id}/"],
                     ["walls/{$this->wallId}/", "header/$headerId/"],
-                    $item->picture),
-                  $headerId
-                ]); 
+                    $item->picture)
+                ],
+                ['id' => $headerId]);
               }
             }
 
@@ -466,8 +455,6 @@
 
             $stmt = $this->prepare ('
               SELECT content FROM postits WHERE id = ?');
-            $stmt1 = $this->prepare ('
-              UPDATE postits SET content = ? WHERE id = ?');
 
             // ADD postit attachments / pictures / plugs
             foreach ($wall->cells as $cell)
@@ -528,7 +515,9 @@
                             "$dir/postit/$postitId/$fname");
                   }
 
-                  $stmt1->execute ([$content, $postitId]);
+                  $this->executeQuery ('UPDATE postits',
+                    ['content' => $content],
+                    ['id' => $postitId]);
                 }
 
                 // ADD plugs
@@ -623,10 +612,9 @@
       $dir = $this->getWallDir ();
       // This is not be deleted at the end of the process.
       //TODO Make a cron that will purge old wall.zip files for all walls.
-      $zipPath1 = "$dir/wall.zip";
-      $zipPath2 = "$dir/wopits-wall-{$this->wallId}.zip";
+      $zipPath = "$dir/wopits-wall-{$this->wallId}.zip";
 
-      if ($zip->open ($zipPath1, ZipArchive::CREATE) !== true)
+      if ($zip->open ($zipPath, ZipArchive::CREATE) !== true)
         return ['error' => _("An error occurred while exporting wall data.")];
 
       // Get headers
@@ -701,26 +689,13 @@
       $zip->addFromString ("wall.json", json_encode ($data));
       $zip->close ();
 
-      // Encapsulate first ZIP in another one
-      if ($zip->open ($zipPath2, ZipArchive::CREATE) !== true)
-        return ['error' => _("An error occurred while exporting wall data.")];
-
-      //TODO Password protect $zipPath1 with $sum to prevent bots from
-      //     snooping around
-
-      $zip->addFile ($zipPath1, basename ($zipPath1));
-      $sum = hash ('sha1', sha1_file ($zipPath1).WPT_SECRET_KEY);
-      $zip->addFromString ("sum.sha1", $sum);
-      $zip->addFromString ("README", _("Warning: if you modify the content of this archive, you will no longer be able to import it with wopits!"));
-      $zip->close ();
-
       return ($clone) ?
-        $zipPath2 :
+        $zipPath :
         Wpt_common::download ([
           'type' => 'application/zip',
-          'name' => basename ($zipPath2),
-          'size' => filesize ($zipPath2),
-          'path' => $zipPath2,
+          'name' => basename ($zipPath),
+          'size' => filesize ($zipPath),
+          'path' => $zipPath,
           'unlink' => true
         ]);
     }
