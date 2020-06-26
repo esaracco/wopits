@@ -758,27 +758,29 @@
     // METHOD getPlugTemplate ()
     getPlugTemplate: function (start, end, label)
     {
-      const color = this.settings._plugColor||
-                      $(".wall th:eq(0)").css("background-color");
+      const line = new LeaderLine (
+              start,
+              end,
+              {
+                dropShadow: {
+                  dx: 0.2,
+                  dy: 0.2,
+                  blur: 1,
+                  color: $(".bg-dark").css ("background-color")
+                },
+                startPlug: "arrow1",
+                endPlug: "arrow1",
+                color: this.settings._plugColor||
+                      $(".wall th:eq(0)").css("background-color"),
+                middleLabel: LeaderLine.captionLabel ({
+                  text: label,
+                  fontSize:"13px"
+                })
+              });
 
-      return new LeaderLine (
-        start,
-        end,
-        {
-          dropShadow: {
-            dx: 0.2,
-            dy: 0.2,
-            blur: 1,
-            color: $(".bg-dark").css ("background-color")
-          },
-          startPlug: "arrow1",
-          endPlug: "arrow1",
-          color: color,
-          middleLabel: LeaderLine.captionLabel ({
-            text: label,
-            fontSize:"13px"
-          })
-        });
+      line.dom = document.querySelector ("svg.leader-line:last-child");
+
+      return line;
     },
 
     // METHOD applyThemeToPlugs ()
@@ -871,12 +873,15 @@
     // METHOD addPlugLabel ()
     addPlugLabel: function (plug, $svg)
     {
-      const labelId = plug.startId+"-"+plug.endId;
+      const $div = this.settings.wall.parent (),
+            labelId = plug.startId+"-"+plug.endId;
 
-      if ($svg === undefined)
-        $svg = $("svg.leader-line[data-id='"+labelId+"']");
+      if ($svg)
+        $svg.appendTo ($div);
+      else
+        $svg = $div.find ("svg.leader-line[data-id='"+labelId+"']");
 
-      const $text = $svg.find("text"),
+      const $text = $svg.find ("text"),
             pos = $text.position ();
 
       if (pos)
@@ -885,8 +890,7 @@
                 "<?=WPT_RIGHTS['walls']['rw']?>", this.settings.access),
               menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
-        plug.labelObj = $(`
-          <div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? wpt_noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ("body");
+        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? wpt_noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div);
       }
     },
 
@@ -980,6 +984,7 @@
         toDefrag[plug.startId] = $(plug.obj.start);
         toDefrag[plug.endId] = $(plug.obj.end);
 
+        document.body.appendChild (plug.obj.dom);
         plug.obj.remove ();
         plug.obj = null;
 
@@ -1018,6 +1023,7 @@
           toDefrag[plug.endId] = $(plug.obj.end);
 
           // Remove line
+          document.body.appendChild (plug.obj.dom);
           plug.obj.remove ();
           plug.obj = null;
 
@@ -1076,13 +1082,15 @@
     // METHOD repositionPlugs ()
     repositionPlugs: function ()
     {
+      const $div = this.settings.wall.parent ();
+
       this.settings._plugs.forEach ((plug) =>
         {
           plug.obj.position ();
 
           if (plug.label)
           {
-            const p = $("svg.leader-line[data-id='"+
+            const p = $div.find("svg.leader-line[data-id='"+
               plug.startId+"-"+plug.endId+"'] text")[0].getBoundingClientRect();
 
             plug.labelObj[0].style.top = p.top+"px";
@@ -1747,7 +1755,7 @@
     // METHOD cancelEdit ()
     cancelEdit: function (args = {})
     {
-      $("body").css("cursor", "auto");
+      $("body").css ("cursor", "auto");
 
       if (!args.plugend)
       {
@@ -2041,7 +2049,6 @@
                 __error_cb);
 
           }).appendTo("body");
-
 
         $(document).on("click", "#postitAttachmentsPopup .modal-body li button",
           function (e)
