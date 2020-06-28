@@ -317,6 +317,9 @@ $(function()
                     wpt_sharer.unset ("postit-data");
 
                     tinymce.activeEditor.resetContent ();
+
+                    if (wpt_navigatorIsSafari ())
+                      wpt_safariFixScrollStop ();
                   };
 
           // If there is pending changes, ask confirmation to user

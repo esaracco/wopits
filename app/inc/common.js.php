@@ -899,12 +899,19 @@ function wpt_openConfirmPopup (args)
 // FUNCTION wpt_openConfirmPopover ()
 function wpt_openConfirmPopover (args)
 {
+  if (wpt_navigatorIsSafari ())
+    wpt_safariFixScrollStart ();
+
   wpt_openPopupLayer (() =>
     { 
       $(".popover").popover ("dispose");
 
       if (args.cb_close)
         args.cb_close ();
+
+      if (wpt_navigatorIsSafari ())
+        wpt_safariFixScrollStop ();
+
     }, false);
   
   args.item.popover({
@@ -1430,6 +1437,40 @@ function wpt_checkForAppUpgrade (version)
       wpt_openModal ($popup);
     }
   }
+}
+
+function wpt_navigatorIsSafari ()
+{
+  return window.navigator.vendor.match (/apple/i);
+}
+
+let bodyScrollTop = 0,
+    bodyComputedStyles;
+
+function wpt_safariFixScrollStart ()
+{
+  const body = document.body;
+
+  bodyScrollTop = body.scrollTop;
+  bodyComputedStyles = window.getComputedStyle (body);
+
+  body.style.position = "fixed";
+  body.style.top = (bodyScrollTop * -1)+"px";
+  wpt_fixMainHeight ();
+}
+
+function wpt_safariFixScrollStop ()
+{
+  wpt_waitForDOMUpdate(()=>
+  {
+    document.body.style = bodyComputedStyles;
+
+    wpt_waitForDOMUpdate (()=>
+    {
+      wpt_fixMainHeight ();
+      wpt_sharer.getCurrent("wall").wpt_wall ("repositionPostitsPlugs");
+    });
+  });
 }
 
 // GLOBAL VARS
