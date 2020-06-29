@@ -27,11 +27,6 @@
     };
   }
 
-  function _navigatorIsEdge ()
-  {
-    return navigator.userAgent.match (/edg/i);
-  }
-
   //FIXME
   // METHOD _simulateClick ()
   function _simulateClick (x, y)
@@ -210,7 +205,7 @@
     useFocusTrick: function ()
     {
       return (this.settings.wall[0].dataset.shared &&
-              !$.support.touch && !_navigatorIsEdge ());
+              !$.support.touch && !wpt_navigatorIsEdge ());
     },
 
     // METHOD addUploadLayer ()
@@ -245,7 +240,7 @@
         $(".upload.header-picture").click ();
       }
 
-      if (!settings.wall[0].dataset.shared || _navigatorIsEdge ())
+      if (!settings.wall[0].dataset.shared || wpt_navigatorIsEdge ())
         __upload__ ();
       else
       {

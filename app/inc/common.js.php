@@ -584,6 +584,7 @@ class Wpt_WebSocket
     }
   }
 
+  // METHOD ping ()
   ping ()
   {
     this.cnx.send ('{"route":"ping","data":""}');
@@ -899,8 +900,8 @@ function wpt_openConfirmPopup (args)
 // FUNCTION wpt_openConfirmPopover ()
 function wpt_openConfirmPopover (args)
 {
-  if (wpt_navigatorIsSafari ())
-    wpt_safariFixScrollStart ();
+  if ($.support.touch)
+    wpt_fixVKBScrollStart ();
 
   wpt_openPopupLayer (() =>
     { 
@@ -909,8 +910,8 @@ function wpt_openConfirmPopover (args)
       if (args.cb_close)
         args.cb_close ();
 
-      if (wpt_navigatorIsSafari ())
-        wpt_safariFixScrollStop ();
+      if ($.support.touch)
+        wpt_fixVKBScrollStop ();
 
     }, false);
   
@@ -1115,6 +1116,7 @@ function wpt_fixMainHeight ()
      document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
 }
 
+// FUNCTION wpt_download ()
 function wpt_download (args)
 {
   const req = new XMLHttpRequest ();
@@ -1439,38 +1441,55 @@ function wpt_checkForAppUpgrade (version)
   }
 }
 
-function wpt_navigatorIsSafari ()
+// FUNCTION wpt_navigatorIsEdge ()
+function wpt_navigatorIsEdge ()
 {
-  return window.navigator.vendor.match (/apple/i);
+  return navigator.userAgent.match (/edg/i);
 }
 
-let bodyScrollTop = 0,
-    bodyComputedStyles;
-
-function wpt_safariFixScrollStart ()
+// FUNCTION wpt_fixVKBScrollStart ()
+function wpt_fixVKBScrollStart ()
 {
-  const body = document.body;
+  const body = document.body,
+        walls = document.getElementById ("walls"),
+        bodyScrollTop = body.scrollTop,
+        wallsScrollLeft = walls.scrollLeft;
 
-  bodyScrollTop = body.scrollTop;
-  bodyComputedStyles = window.getComputedStyle (body);
+  wpt_sharer.set ("wallsScrollLeft", wallsScrollLeft);
+  wpt_sharer.set ("bodyComputedStyles", window.getComputedStyle (body));
 
   body.style.position = "fixed";
+  body.style.overflow = "hidden";
   body.style.top = (bodyScrollTop * -1)+"px";
-  wpt_fixMainHeight ();
+
+  if (wpt_navigatorIsEdge ())
+    wpt_sharer.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
+
+  walls.style.width = window.innerWidth+"px";
+  walls.style.overflow = "hidden";
+
+  $(window).trigger ("resize");
 }
 
-function wpt_safariFixScrollStop ()
+// FUNCTION wpt_fixVKBScrollStop ()
+function wpt_fixVKBScrollStop ()
 {
-  wpt_waitForDOMUpdate(()=>
-  {
-    document.body.style = bodyComputedStyles;
+  const walls = document.getElementById ("walls");
 
-    wpt_waitForDOMUpdate (()=>
+  document.body.style = wpt_sharer.get ("bodyComputedStyles");
+  wpt_sharer.unset ("bodyComputedStyles");
+
+  walls.style.overflow = "auto";
+  walls.style.width = "auto";
+  if (wpt_navigatorIsEdge ())
+    wpt_sharer.getCurrent("wall")[0].style.left = "";
+  walls.scrollLeft = wpt_sharer.get ("wallsScrollLeft");
+
+  wpt_waitForDOMUpdate (()=>
     {
       wpt_fixMainHeight ();
       wpt_sharer.getCurrent("wall").wpt_wall ("repositionPostitsPlugs");
     });
-  });
 }
 
 // GLOBAL VARS

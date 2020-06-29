@@ -318,8 +318,8 @@ $(function()
 
                     tinymce.activeEditor.resetContent ();
 
-                    if (wpt_navigatorIsSafari ())
-                      wpt_safariFixScrollStop ();
+                    if ($.support.touch)
+                      wpt_fixVKBScrollStop ();
                   };
 
           // If there is pending changes, ask confirmation to user

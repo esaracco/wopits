@@ -494,8 +494,8 @@
 
                       tinymce.activeEditor.setContent (content);
 
-                      if (wpt_navigatorIsSafari ())
-                        wpt_safariFixScrollStart ();
+                      if ($.support.touch)
+                        wpt_fixVKBScrollStart ();
 
                       wpt_openModal ($popup, _getMaxEditModalWidth (content));
     
