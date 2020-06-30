@@ -184,6 +184,7 @@
 #walls {
   overflow-x:auto !important;
   padding-left:10px;
+  position:relative;
 }
 
 i.settings {

@@ -216,9 +216,10 @@
           appendTo: "parent",
           revert: "invalid",
           cursor: "pointer",
+          containment: plugin.settings.wall.find("tbody"),
+          scrollSensitivity: 50,
           opacity: 0.35,
           scope: "dzone",
-          helper: "original",
           stack: ".postit",
           drag:function(e, ui)
           {
@@ -227,7 +228,7 @@
 
 // TODO - 1 - Hide plugs instead of moving them with postits (performance
 //            issue with some touch devices)
-              plugin.repositionPlugs ();
+            plugin.repositionPlugs ();
           },
           start: function(e, ui)
             {
@@ -243,9 +244,8 @@
                 left: p.left
               });
   
-              plugin.edit ({
-                  ignoreResize: true
-                },
+              plugin.edit (
+                {ignoreResize: true},
                 null,
                 () => wpt_sharer.get("revertData").revert = true
               );
@@ -281,7 +281,7 @@
         // RESIZABLE post-it
         .resizable ({
           handles: "all",
-          autoHide: !$.support.touch,
+          autoHide: false,
           resize:function(e, ui)
           {
             // Update postits relationships arrows
@@ -299,7 +299,7 @@
                 width: postit.clientWidth,
                 height: postit.clientHeight
               });
-  
+
               plugin.edit (
                 {ignoreResize: true},
                 null,
@@ -761,7 +761,7 @@
     // METHOD getPlugTemplate ()
     getPlugTemplate: function (start, end, label)
     {
-      const line = new LeaderLine (
+      return new LeaderLine (
               start,
               end,
               {
@@ -780,10 +780,6 @@
                   fontSize:"13px"
                 })
               });
-
-      line.dom = document.querySelector ("svg.leader-line:last-child");
-
-      return line;
     },
 
     // METHOD applyThemeToPlugs ()
@@ -876,12 +872,9 @@
     // METHOD addPlugLabel ()
     addPlugLabel: function (plug, $svg)
     {
-      const $div = this.settings.wall.parent (),
-            labelId = plug.startId+"-"+plug.endId;
+      const labelId = plug.startId+"-"+plug.endId;
 
-      if ($svg)
-        $svg.appendTo ($div);
-      else
+      if (!$svg)
         $svg = $div.find ("svg.leader-line[data-id='"+labelId+"']");
 
       const $text = $svg.find ("text"),
@@ -893,7 +886,9 @@
                 "<?=WPT_RIGHTS['walls']['rw']?>", this.settings.access),
               menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
-        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? wpt_noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div);
+        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? wpt_noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`);
+
+        document.body.appendChild (plug.labelObj[0]);
       }
     },
 
@@ -987,7 +982,6 @@
         toDefrag[plug.startId] = $(plug.obj.start);
         toDefrag[plug.endId] = $(plug.obj.end);
 
-        document.body.appendChild (plug.obj.dom);
         plug.obj.remove ();
         plug.obj = null;
 
@@ -1026,7 +1020,6 @@
           toDefrag[plug.endId] = $(plug.obj.end);
 
           // Remove line
-          document.body.appendChild (plug.obj.dom);
           plug.obj.remove ();
           plug.obj = null;
 
@@ -1085,7 +1078,7 @@
     // METHOD repositionPlugs ()
     repositionPlugs: function ()
     {
-      const div = this.settings.wall.parent()[0];
+      const div = document.body;
 
       this.settings._plugs.forEach ((plug) =>
         {
