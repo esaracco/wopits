@@ -56,8 +56,8 @@
   <script src="libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
   <script src="libs/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
   <script src="libs/jquery.double-tap-wopits.js?<?=$version?>"></script>
-  <script src="libs/moment-2.24.0/moment.min.js"></script>
-  <script src="libs/moment-2.24.0/moment-timezone-with-data.min.js"></script>
+  <script src="libs/moment-2.27.0/moment.min.js"></script>
+  <script src="libs/moment-2.27.0/moment-timezone-with-data.min.js"></script>
   <script src="<?=$js?>"></script>
 
   <script defer src="libs/tinymce-5.2.0/js/tinymce/tinymce.min.js"></script>
