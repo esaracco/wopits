@@ -37,14 +37,17 @@
     // METHOD search ()
     search: function (str)
     {
-      const walls = [];
+      const openedWalls = wpt_userData.settings.openedWalls,
+            userId = wpt_userData.id,
+            walls = [];
 
       wpt_userData.walls.forEach ((wall) =>
       {
         const re = new RegExp (wpt_quoteRegex(str), 'ig');
 
-        if (wall.name.match (re) ||
-            (wpt_userData.id != wall.ownerid && wall.ownername.match (re)))
+        if (openedWalls.indexOf(String(wall.id)) == -1 && (
+              wall.name.match (re) ||
+              (userId != wall.ownerid && wall.ownername.match (re))))
           walls.push (wall);
       });
 
