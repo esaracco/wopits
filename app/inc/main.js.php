@@ -1577,8 +1577,12 @@
         wpt_fixMainHeight ();
 
         //FIXME KO with some browsers and touch devices
-        if ($.support.touch || navigator.userAgent.match (/edg/i))
+        if ($.support.touch || wpt_navigatorIsEdge ())
           $("#main-menu").addClass ("nofullview");
+
+        // Arrows plugin is useless on desktop
+        if (!$.support.touch)
+          $("#main-menu").addClass ("noarrows");
 
         $("#normal-display-btn")
           .on("click", function ()

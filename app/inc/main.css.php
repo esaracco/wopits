@@ -1527,6 +1527,10 @@ div.postit .date-picker {
   display:none;
 }
 
+#main-menu.noarrows ul.display-section li[data-action=arrows] {
+  display:none;
+}
+
 @media (max-width:576px) {
   /*FIXME zoom does not work with some mobile browsers*/
   #main-menu ul.display-section li[data-action^=zoom],
