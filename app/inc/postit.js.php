@@ -875,7 +875,7 @@
       const labelId = plug.startId+"-"+plug.endId;
 
       if (!$svg)
-        $svg = $div.find ("svg.leader-line[data-id='"+labelId+"']");
+        $svg = $("svg.leader-line[data-id='"+labelId+"']");
 
       const $text = $svg.find ("text"),
             pos = $text.position ();
