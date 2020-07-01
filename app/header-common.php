@@ -42,7 +42,7 @@
   <link rel="manifest" href="/manifest.json?<?=$version?>">
 
   <link rel="stylesheet" href="libs/bootstrap-4.5.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/font-awesome-5.11.2/css/all.min.css">
+  <link rel="stylesheet" href="libs/font-awesome-5.13.1/css/all.min.css">
   <link rel="stylesheet" href="libs/jquery-ui-1.12.1/jquery-ui.min.css">
   <link rel="stylesheet" href="libs/colorpicker-1.2.20/jquery.colorpicker.css">
   <link rel="stylesheet" href="<?=$css?>">
