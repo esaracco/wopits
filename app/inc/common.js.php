@@ -608,6 +608,38 @@ class Wpt_WebSocket
   }
 }
 
+// FUNCTION wpt_testImage ()
+function wpt_testImage (url, timeout = 5000)
+{
+  return new Promise ((resolve, reject) =>
+    {
+      const img = new Image ();
+      let timer;
+
+      img.onerror = img.onabort = ()=>
+        {
+          clearTimeout (timer);
+          reject ("error");
+        };
+
+      img.onload = ()=>
+        {
+          clearTimeout (timer);
+          resolve ("success");
+        };
+
+      timer = setTimeout(()=>
+        {
+          // reset .src to invalid URL so it stops previous
+          // loading, but doesn't trigger new load
+          img.src = "//!!!!/test.jpg";
+          reject ("timeout");
+        }, timeout);
+
+      img.src = url;
+    });
+}
+
 // FUNCTION wpt_quoteRegex ()
 function wpt_quoteRegex (str)
 {

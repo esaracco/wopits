@@ -1819,6 +1819,47 @@
           branding: false,
           plugins: "autoresize link image charmap hr searchreplace visualchars fullscreen insertdatetime",
 
+          setup: function (editor)
+          {
+            // Hack to catch 404 not found error on just added images
+            // -> Is there a TinyMCE callback for that?
+            editor.on("change", function (e)
+              {
+                let c = editor.getContent (),
+                    cOrig = c,
+                    tmp;
+
+                (c.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
+                  {
+                    if ( (tmp = img.match (/src="([^"]+)"/)) )
+                    {
+                      const src = tmp[1];
+
+                      wpt_testImage(src)
+                        .then(
+                          null,
+                          ()=>
+                          {
+                            c = c.replace(new RegExp (wpt_quoteRegex(img)), "");
+
+                            wpt_displayMsg ({
+                              type: "warning",
+                              msg: "<?=_("The image %s was not available! It has been removed from post-it content.")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                            });
+                          })
+                        .finally (()=>
+                        {
+                          if (cOrig != c)
+                          {
+                            editor.setContent (c);
+                            cOrig = c;
+                          }
+                        });
+                    }
+                  });
+              });
+          },
+
           // "image" plugin options
           image_description: false,
           automatic_uploads: true,
