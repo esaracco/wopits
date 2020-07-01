@@ -118,6 +118,7 @@
   color:#fff;
   font-weight:bold;
   font-size:10px;
+  padding-top:7px;
   padding-left:3px;
   background:orange;
   margin-bottom:5px;
