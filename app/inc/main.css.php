@@ -589,13 +589,21 @@ th .close.img-delete {
 }
 
 .wall th div.img {
-  margin-top:10px;
   cursor:pointer;
+  display:inline-block;
+  margin-top:5px;
+}
+
+.wall tbody th div.img {
+  margin-left:10px;
+  margin-right:10px;
 }
 
 .wall th div.img img {
   max-width:100px;
   max-height:100px;
+  border-radius:3px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
 }
 
 /* MS "clear field" X button on inputs */
