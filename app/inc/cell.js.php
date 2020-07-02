@@ -260,12 +260,14 @@
     addPostit: function (args, noinsert)
     {
       const $cell = this.element,
+            settings = this.settings,
             $postit = $("<div/>");
 
-      args["wall"] = this.settings.wall;
-      args["wallId"] = this.settings.wallId;
-      args["cell"]  = $cell;
-      args["cellId"] = this.settings.id;
+      args.wall = settings.wall;
+      args.wallId = settings.wallId;
+      args.plugsContainer = settings.plugsContainer;
+      args.cell = $cell;
+      args.cellId = settings.id;
 
       // CREATE post-it
       $postit.wpt_postit (args);

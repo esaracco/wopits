@@ -31,6 +31,10 @@
             access = settings.access,
             rows = [];
 
+      // Create plugs container
+      settings.plugsContainer =
+        $(`<div id="plugs-${wallId}"></div>`).appendTo ("body");
+
       if (settings.restoring)
         $wall[0].dataset.restoring = 1;
 
@@ -356,15 +360,6 @@
           });
     },
 
-    // METHOD removePostitsPlugs ()
-    removePostitsPlugs: function ()
-    {
-      this.element.find(".postit.with-plugs").each (function ()
-        {
-          $(this).wpt_postit ("removePlugs", true);
-        });
-    },
-
     // METHOD hidePostitsPlugs ()
     hidePostitsPlugs: function ()
     {
@@ -486,7 +481,8 @@
               rowsCount = d.headers.rows.length,
               colsCount = d.headers.cols.length,
               postitsIds = {},
-              rows = [];
+              rows = [],
+              plugsContainer = plugin.settings.plugsContainer;
 
         _refreshing = true;
 
@@ -612,7 +608,8 @@
                 id: cell.id,
                 access: access,
                 wall: $wall,
-                wallId: wallId
+                wallId: wallId,
+                plugsContainer: plugsContainer
               });
             }
             else
@@ -727,7 +724,7 @@
 
       $(".modal.show").modal ("hide");
 
-      this.removePostitsPlugs ();
+      this.settings.plugsContainer.remove ();
 
       $activeTab.remove ();
       $("#"+activeTabId).remove ();
@@ -838,7 +835,8 @@
             id: this.dataset.id.substring (5),
             access: plugin.settings.access,
             wall: $wall,
-            wallId: wallId
+            wallId: wallId,
+            plugsContainer: plugin.settings.plugsContainer
           });
         });
 
