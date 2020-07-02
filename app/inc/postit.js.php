@@ -1825,38 +1825,39 @@
             // -> Is there a TinyMCE callback for that?
             editor.on("change", function (e)
               {
-                let c = editor.getContent (),
-                    cOrig = c,
-                    tmp;
+                // Check content only if the TinyMCE dialog is open
+                if ($(".tox-dialog").is(":visible"))
+                {
+                  let c = editor.getContent (),
+                      tmp;
 
-                (c.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
-                  {
-                    if ( (tmp = img.match (/src="([^"]+)"/)) )
+                  (c.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
                     {
-                      const src = tmp[1];
+                      if ( (tmp = img.match (/src="([^"]+)"/)) )
+                      {
+                        const src = tmp[1];
 
-                      wpt_testImage(src)
-                        .then(
-                          null,
-                          ()=>
+                        wpt_loader ("show");
+                        wpt_testImage(src)
+                          .then (null, ()=>
                           {
                             c = c.replace(new RegExp (wpt_quoteRegex(img)), "");
+
+                            editor.setContent (c);
+
+                            // Return to the top of the modal if mobile device
+                            if ($.support.touch)
+                              $("#postitUpdatePopup").scrollTop (0);
 
                             wpt_displayMsg ({
                               type: "warning",
                               msg: "<?=_("The image %s was not available! It has been removed from post-it content.")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
                           })
-                        .finally (()=>
-                        {
-                          if (cOrig != c)
-                          {
-                            editor.setContent (c);
-                            cOrig = c;
-                          }
-                        });
-                    }
-                  });
+                          .finally (()=> wpt_loader("hide"));
+                      }
+                    });
+                }
               });
           },
 
