@@ -527,7 +527,7 @@
           });
 
         // Menu submenus events
-        $menu.find(">ul .dropdown-menu a")
+        $menu.find("ul.dropdown-menu li")
           .on("click", function(e, d)
           {
             const $item = $(this);
@@ -537,11 +537,11 @@
             plugin.closePlugMenu ();
 
             // Nothing if item menu is disabled (can change dynamically)
-            if ($item.hasClass ("disabled")) return;
+            if ($item.find("a").hasClass ("disabled")) return;
 
             e = d||e;
 
-            switch ($(this).parent()[0].dataset.action)
+            switch (this.dataset.action)
             {
               case "add-plug":
 
@@ -551,11 +551,9 @@
                       .off("keydown", _plugRabbit.escapeEvent)
                       .on ("keydown", _plugRabbit.escapeEvent);
       
-                    $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo ("body");
-      
                     _plugRabbit.line = new LeaderLine (
                       $postit[0],
-                      document.getElementById ("plug-rabbit"),
+                      $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
                       {
                         size: 3,
                         color: "#9b9c9c",
