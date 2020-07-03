@@ -1015,11 +1015,8 @@
       (settings._plugs||[]).forEach ((plug)=>
         {
           // Remove label
-          if (plug.labelObj)
-          {
-            plug.labelObj.remove ();
-            plug.labelObj = null;
-          }
+          plug.labelObj.remove ();
+          plug.labelObj = null;
 
           toDefrag[plug.startId] = $(plug.obj.start);
           toDefrag[plug.endId] = $(plug.obj.end);
@@ -1058,8 +1055,7 @@
 
       this.settings._plugs.forEach ((plug) =>
         {
-           if (plug.labelObj)
-            plug.labelObj.hide ();
+          plug.labelObj.hide ();
 
           plug.obj.hide ("none");
         });
@@ -1075,29 +1071,24 @@
       this.settings._plugs.forEach ((plug) =>
         {
           plug.obj.show ();
-
-          if (plug.labelObj)
-            plug.labelObj.show ();
+          plug.labelObj.show ();
         });
     },
 
     // METHOD repositionPlugs ()
     repositionPlugs: function ()
     {
-      const div = document.body;
+      const div = this.settings.plugsContainer[0];
 
       this.settings._plugs.forEach ((plug) =>
         {
           plug.obj.position ();
 
-          if (plug.label)
-          {
-            const p = div.querySelector("svg.leader-line[data-id='"+
-              plug.startId+"-"+plug.endId+"'] text").getBoundingClientRect ();
+          const p = div.querySelector("svg.leader-line[data-id='"+
+            plug.startId+"-"+plug.endId+"'] text").getBoundingClientRect ();
 
-            plug.labelObj[0].style.top = p.top+"px";
-            plug.labelObj[0].style.left = p.left+"px";
-          }
+          plug.labelObj[0].style.top = p.top+"px";
+          plug.labelObj[0].style.left = p.left+"px";
         });
     },
 
