@@ -28,7 +28,7 @@
 
     open: function ()
     {
-      wpt_openModal (this.element); 
+      H.openModal (this.element); 
     },
 
     // METHOD restore ()
@@ -50,7 +50,7 @@
     // METHOD reset ()
     reset: function (args)
     {
-      const $wall = wpt_sharer.getCurrent("wall");
+      const $wall = wpt_sharer.getCurrent ("wall");
 
       $wall
         .find(".postit-edit,"+
@@ -82,7 +82,7 @@
 
 
           if ($edit.text().match (
-            new RegExp (wpt_quoteRegex(args.str), 'ig')))
+            new RegExp (H.quoteRegex(args.str), 'ig')))
           {
             const postitId = $edit.closest(".postit").postit("getId");
 

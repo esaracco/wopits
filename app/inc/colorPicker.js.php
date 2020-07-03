@@ -27,7 +27,7 @@
           e.stopImmediatePropagation ();
 
           // Update popup background color
-         wpt_sharer.getCurrent ("postit")
+         wpt_sharer.getCurrent("postit")
             .removeClass(_COLOR_PICKER_COLORS.join(" "))
             .addClass($(this).attr ("class"));
 
@@ -37,7 +37,7 @@
           wpt_sharer.getCurrent("filters").filters ("apply");
         });
 
-      wpt_waitForDOMUpdate (() =>
+      H.waitForDOMUpdate (() =>
         {
           _width = $picker.outerWidth ();
           _height = $picker.outerHeight ();
@@ -65,7 +65,7 @@
       if (y + _height > wH)
         y = wH - _height - 20;
 
-      wpt_openPopupLayer (() =>
+      H.openPopupLayer (() =>
         {
           this.close ();
           wpt_sharer.getCurrent("postit").postit ("unedit");

@@ -27,7 +27,7 @@
         {
           const timezone = $(this).val ();
 
-          wpt_openConfirmPopup ({
+          H.openConfirmPopup ({
             type: "reload-app",
             icon: "sync-alt",
             content: `<?=_("Reload wopits to apply the new timezone?")?>`,
@@ -56,7 +56,7 @@
             {
               if (!$(this).hasClass ("selected"))
               {
-                wpt_openConfirmPopup ({
+                H.openConfirmPopup ({
                   type: "reload-app",
                   icon: "sync-alt",
                   content: `<?=_("Reload wopits to apply the new language?")?>`,
@@ -133,7 +133,7 @@
 
       // if registered user (not login page)
       if (!document.querySelector ("body.login-page"))
-        wpt_request_ws (
+        H.request_ws (
           "POST",
           "user/settings",
           {settings: JSON.stringify (wpt_userData.settings)},
@@ -239,7 +239,7 @@
       else
       {
         // Load timezones
-        wpt_request_ajax (
+        H.request_ajax (
           "GET",
           "common/timezones",
           null,
@@ -289,7 +289,7 @@
         });
       }
 
-      wpt_openModal ($settings);
+      H.openModal ($settings);
 
       if (!loaded)
       {

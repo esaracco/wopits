@@ -25,8 +25,8 @@ $(function()
       {
         const $wall = wpt_sharer.getCurrent ("wall");
   
-        wpt_fixMenuHeight ();
-        wpt_fixMainHeight ();
+        H.fixMenuHeight ();
+        H.fixMainHeight ();
   
         if ($wall.length)
         {
@@ -40,7 +40,7 @@ $(function()
           $wall.wall ("repositionPostitsPlugs");
 
           if ($modal.length)
-            wpt_resizeModal ($modal);
+            H.resizeModal ($modal);
    
           // Reposition chatroom popup if it is out of bounds
           if ($chatroom && $chatroom.is (":visible"))
@@ -130,7 +130,7 @@ $(function()
 
   // EVENT click on main menu
   $(document).on("click", ".nav-link:not(.dropdown-toggle),"+
-                          ".dropdown-item", wpt_closeMainMenu);
+                          ".dropdown-item", H.closeMainMenu);
 
   // EVENT mousedown on walls tabs
   $(document).on("mousedown", ".nav-tabs.walls a.nav-link",
@@ -139,7 +139,7 @@ $(function()
       const close = $(e.target).hasClass ("close"),
             rename = (!close && $(this).hasClass ("active"));
 
-      if (rename && wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
+      if (rename && H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
         wpt_sharer.getCurrent("wall").wall (
           "openPropertiesPopup", {forRename: true});
 
@@ -319,7 +319,7 @@ $(function()
                     tinymce.activeEditor.resetContent ();
 
                     if ($.support.touch)
-                      wpt_fixVKBScrollStop ();
+                      H.fixVKBScrollStop ();
                   };
 
           // If there is pending changes, ask confirmation to user
@@ -327,11 +327,11 @@ $(function()
             // Content change detection
             tinymce.activeEditor.isDirty () ||
             // Title change detection
-            wpt_convertEntities(data.title) != wpt_convertEntities(title)))
+            H.convertEntities(data.title) != H.convertEntities(title)))
           {
             e.preventDefault ();
 
-            wpt_openConfirmPopup ({
+            H.openConfirmPopup ({
               type: "save-postits-changes",
               icon: "save",
               content: `<?=_("Save changes?")?>`,
@@ -398,7 +398,7 @@ $(function()
 
         case "wallPropertiesPopup":
 
-          if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>") &&
+          if (H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>") &&
               !$popup[0].dataset.uneditdone)
             $wall.wall ("unedit");
           break;
@@ -519,10 +519,9 @@ $(function()
 
             var Form = new Wpt_accountForms (),
                 $inputs = $popup.find("input:visible"),
-                name =
-                  wpt_noHTML ($popup.find(".name input").val ()),
+                name = H.noHTML ($popup.find(".name input").val ()),
                 description =
-                  wpt_noHTML ($popup.find(".description textarea").val ());
+                  H.noHTML ($popup.find(".description textarea").val ());
 
             $popup[0].dataset.noclosure = true;
 
@@ -589,9 +588,9 @@ $(function()
   $("#logout").on("click",
     function (e)
     {
-      wpt_closeMainMenu ();
+      H.closeMainMenu ();
 
-      wpt_openConfirmPopup ({
+      H.openConfirmPopup ({
         type: "logout",
         icon: "power-off",
         content: `<?=_("Do you really want to logout from wopits?")?>`,

@@ -24,7 +24,7 @@
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
-          wpt_openConfirmPopup ({
+          H.openConfirmPopup ({
             type: "delete-account",
             icon: "sad-tear",
             content: `<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>`,
@@ -40,15 +40,15 @@
 
             if (e.target.files && e.target.files.length)
             {
-              wpt_getUploadedFiles (e.target.files,
+              H.getUploadedFiles (e.target.files,
                 (e, file) =>
                 {
                   $upload.val ("");
 
-                  if (wpt_checkUploadFileSize ({size: e.total}) &&
+                  if (H.checkUploadFileSize ({size: e.total}) &&
                       e.target.result)
                   {
-                    wpt_request_ajax (
+                    H.request_ajax (
                       "PUT",
                       "user/picture",
                       {
@@ -72,7 +72,7 @@
 
           // If delete img
           if (e.target.tagName == "SPAN")
-            wpt_openConfirmPopup ({
+            H.openConfirmPopup ({
               type: "delete-account-picture",
               icon: "trash",
               content: `<?=_("Delete your profile photo?")?>`,
@@ -84,17 +84,17 @@
 
       $("#account").on("click", function (e)
         {
-          wpt_closeMainMenu ();
+          H.closeMainMenu ();
 
-          wpt_cleanPopupDataAttr ($account);
-          wpt_openModal ($account);
+          H.cleanPopupDataAttr ($account);
+          H.openModal ($account);
         });
 
       $account
         .on("hide.bs.modal", function ()
         {
           const about = $(this).find("[name='about']")[0],
-                val = wpt_noHTML (about.value);
+                val = H.noHTML (about.value);
 
           if (val != about.dataset.oldvalue)
             plugin.updateField ({about: val}, $account.find(".modal-body"));
@@ -111,7 +111,7 @@
 
           $popup[0].dataset.noclosure = true;
 
-          wpt_displayMsg ({target:$popup, reset: true});
+          H.displayMsg ({target:$popup, reset: true});
 
           switch (field)
           {
@@ -167,14 +167,14 @@
 
               $popup = $("#changePasswordPopup");
 
-              wpt_displayMsg ({target: $popup, reset: true});
-              wpt_cleanPopupDataAttr ($popup);
+              H.displayMsg ({target: $popup, reset: true});
+              H.cleanPopupDataAttr ($popup);
 
               $popup.find("input").val ("");
 
               $popup[0].dataset.field = "password";
               $popup[0].dataset.noclosure = true;
-              wpt_openModal ($popup);
+              H.openModal ($popup);
 
               break;
 
@@ -186,8 +186,8 @@
 
               const $input = $popup.find("input");
 
-              wpt_displayMsg ({reset: true});
-              wpt_cleanPopupDataAttr ($popup);
+              H.displayMsg ({reset: true});
+              H.cleanPopupDataAttr ($popup);
 
               switch (name)
               {
@@ -225,7 +225,7 @@
               $popup[0].dataset.field = name;
               $popup[0].dataset.oldvalue = value;
               $popup[0].dataset.noclosure = true;
-              wpt_openModal ($popup);
+              H.openModal ($popup);
 
               break;
           }
@@ -237,7 +237,7 @@
     {
       const $account = this.element;
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "user/picture",
         null,
@@ -245,7 +245,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
             $account.find(".user-picture").html (_getUserPictureTemplate ());
         }
@@ -255,7 +255,7 @@
     // METHOD delete ()
     delete: function ()
     {
-      wpt_request_ajax (
+      H.request_ajax (
         "DELETE",
         "user",
         null,
@@ -263,7 +263,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
             return location.href = '/r.php';
         });
@@ -274,7 +274,7 @@
     {
       const $account = this.element;
 
-      wpt_request_ws (
+      H.request_ws (
         "POST",
         "user/update",
         args,
@@ -282,7 +282,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
             for (const k in d)
@@ -297,7 +297,7 @@
             }
 
             if (!args.about)
-              wpt_displayMsg (
+              H.displayMsg (
                 {
                   target: $account.find (".modal-body"),
                   type: "success",

@@ -43,7 +43,7 @@
 
       wpt_userData.walls.forEach ((wall) =>
       {
-        const re = new RegExp (wpt_quoteRegex(str), 'ig');
+        const re = new RegExp (H.quoteRegex(str), 'ig');
 
         if (openedWalls.indexOf(String(wall.id)) == -1 && (
               wall.name.match (re) ||
@@ -79,7 +79,7 @@
             {
               const owner = (item.ownerid != wpt_userData.id) ?
                 `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
-              let dt1 = wpt_getUserDate (item.creationdate);
+              let dt1 = H.getUserDate (item.creationdate);
 
               if (dt1 != dt)
               {
@@ -87,7 +87,7 @@
                 body += `<li href="" class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li href="#" data-id="${item.id}" class="list-group-item list-group-item-action"> ${wpt_getAccessIcon(item.access)} ${item.name}${owner}</li>`;  
+              body += `<li href="#" data-id="${item.id}" class="list-group-item list-group-item-action"> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;  
             }
           });
   

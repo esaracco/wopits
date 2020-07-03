@@ -54,7 +54,7 @@ class Wpt_accountForms extends Wpt_forms
         !password.match (/[0-9]/))
     {
       ret = false;
-      wpt_displayMsg ({
+      H.displayMsg ({
         noclosure: true,
         type: "warning", msg: "<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>"
       });
@@ -328,7 +328,7 @@ class Wpt_WebSocket
   // METHOD _connect ()
   _connect (url, onopen_cb, opencb_init)
   {
-    wpt_loader ("show", true);
+    H.loader ("show", true);
 
     this.cnx = new WebSocket (url);
 
@@ -344,7 +344,7 @@ class Wpt_WebSocket
         if (onopen_cb)
           onopen_cb ();
 
-        wpt_loader ("hide", true);
+        H.loader ("hide", true);
       };
 
     // EVENT message
@@ -368,13 +368,13 @@ class Wpt_WebSocket
 
               $(".modal").modal ("hide");
 
-              wpt_cleanPopupDataAttr ($popup);
+              H.cleanPopupDataAttr ($popup);
 
               $popup.find(".modal-body").html ("<?=_("Another session was detected. Both sessions will be closed. Please log in again.")?>");
               $popup.find(".modal-title").html (
                 '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
               $popup[0].dataset.popuptype = "app-logout";
-              wpt_openModal ($popup);
+              H.openModal ($popup);
 
               setTimeout (() => $popup.modal ("hide"), 3000);
               break;
@@ -413,7 +413,7 @@ class Wpt_WebSocket
             case "unlinkedwall":
               if (!isResponse)
               {
-                wpt_displayMsg ({type: "warning", msg: data.wall.removed}); 
+                H.displayMsg ({type: "warning", msg: data.wall.removed}); 
                 $wall.wall ("close");
               }
               break;
@@ -424,14 +424,14 @@ class Wpt_WebSocket
             case "unlinkeduser":
               if (!isResponse)
               {
-                wpt_displayMsg ({type: "warning", msg: data.wall.unlinked});
+                H.displayMsg ({type: "warning", msg: data.wall.unlinked});
                 $wall.wall ("close");
               }
               break;
 
             // mainupgrade
             case "mainupgrade":
-              setTimeout (()=>wpt_checkForAppUpgrade (data.version), 5000);
+              setTimeout (()=> H.checkForAppUpgrade (data.version), 5000);
               break;
 
             // reload
@@ -440,14 +440,14 @@ class Wpt_WebSocket
 
               $(".modal").modal ("hide");
 
-              wpt_cleanPopupDataAttr ($popup);
+              H.cleanPopupDataAttr ($popup);
 
               $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded")?>");
               $popup.find(".modal-title").html (
                 '<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>');
 
               $popup[0].dataset.popuptype = "app-reload";
-              wpt_openModal ($popup);
+              H.openModal ($popup);
               break;
           }
         }
@@ -482,7 +482,7 @@ class Wpt_WebSocket
           }
         }
 
-        wpt_loader ("hide");
+        H.loader ("hide");
 
         // Send next message pending in sending queue
         if (nextMsg)
@@ -492,7 +492,7 @@ class Wpt_WebSocket
     // EVENT error
     this.cnx.onerror = (e) =>
       {
-        wpt_loader ("hide");
+        H.loader ("hide");
 
         if (this._retries < 30)
           this.tryToReconnect ({
@@ -607,923 +607,934 @@ class Wpt_WebSocket
   }
 }
 
-// FUNCTION wpt_testImage ()
-function wpt_testImage (url, timeout = 5000)
+class Help
 {
-  return new Promise ((resolve, reject) =>
-    {
-      const img = new Image ();
-      let timer;
-
-      img.onerror = img.onabort = ()=>
-        {
-          clearTimeout (timer);
-          reject ("error");
-        };
-
-      img.onload = ()=>
-        {
-          clearTimeout (timer);
-          resolve ("success");
-        };
-
-      timer = setTimeout(()=>
-        {
-          // reset .src to invalid URL so it stops previous
-          // loading, but doesn't trigger new load
-          img.src = "//!!!!/test.jpg";
-          reject ("timeout");
-        }, timeout);
-
-      img.src = url;
-    });
-}
-
-// FUNCTION wpt_quoteRegex ()
-function wpt_quoteRegex (str)
-{
-  return (str+"").replace (/(\W)/g, '\\$1');
-}
-
-// FUNCTION wpt_convertEntities ()
-function wpt_convertEntities (str)
-{
-  return $("<div/>").html(str).text ();
-}
-
-// FUNCTION wpt_htmlQuotes ()
-function wpt_htmlQuotes (str)
-{
-  return (str+"").replace(/["']/g, (c) => ({"\"":"&quot;", "'": "&#x27;"})[c]);
-}
-
-// FUNCTION wpt_noHTML ()
-function wpt_noHTML (str)
-{
-  return (str+"").trim().replace (/<[^>]+>/g, "");
-}
-
-// FUNCTION wpt_nl2br ()
-function wpt_nl2br (str)
-{
-  return (str+"").replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
-}
-
-// FUNCTION wpt_closeMainMenu ()
-function wpt_closeMainMenu ()
-{
-  if ($("#main-menu.show").length)
-    $("button.navbar-toggler").trigger ("click");
-}
-
-// FUNCTION wpt_updatedObject ()
-function wpt_updatedObject (obj1, obj2, ignore = {})
-{
-  for (const key in obj2)
+  // METHOD testImage ()
+  testImage (url, timeout = 5000)
   {
-    if (obj1[key] !== null && typeof obj1[key] === "object")
+    return new Promise ((resolve, reject) =>
+      {
+        const img = new Image ();
+        let timer;
+  
+        img.onerror = img.onabort = ()=>
+          {
+            clearTimeout (timer);
+            reject ("error");
+          };
+  
+        img.onload = ()=>
+          {
+            clearTimeout (timer);
+            resolve ("success");
+          };
+  
+        timer = setTimeout(()=>
+          {
+            // reset .src to invalid URL so it stops previous
+            // loading, but doesn't trigger new load
+            img.src = "//!!!!/test.jpg";
+            reject ("timeout");
+          }, timeout);
+  
+        img.src = url;
+      });
+  }
+
+  // METHOD quoteRegex ()
+  quoteRegex (str)
+  {
+    return (str+"").replace (/(\W)/g, '\\$1');
+  }
+
+  // METHOD convertEntities ()
+  convertEntities (str)
+  {
+    return $("<div/>").html(str).text ();
+  }
+
+  // METHOD htmlQuotes ()
+  htmlQuotes (str)
+  {
+    return (str+"")
+             .replace(/["']/g, (c) => ({"\"":"&quot;", "'": "&#x27;"})[c]);
+  }
+  
+  // METHOD noHTML ()
+  noHTML (str)
+  {
+    return (str+"").trim().replace (/<[^>]+>/g, "");
+  }
+  
+  // METHOD nl2br ()
+  nl2br (str)
+  {
+    return (str+"").replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
+  }
+  
+  // METHOD closeMainMenu ()
+  closeMainMenu ()
+  {
+    if ($("#main-menu.show").length)
+      $("button.navbar-toggler").trigger ("click");
+  }
+  
+  // METHOD updatedObject ()
+  updatedObject (obj1, obj2, ignore = {})
+  {
+    for (const key in obj2)
     {
-      if (wpt_updatedObject (obj1[key], obj2[key], ignore))
+      if (obj1[key] !== null && typeof obj1[key] === "object")
+      {
+        if (this.updatedObject (obj1[key], obj2[key], ignore))
+          return true;
+      }
+      else if (obj1[key] != obj2[key] && !ignore[key])
         return true;
     }
-    else if (obj1[key] != obj2[key] && !ignore[key])
-      return true;
+  
+    return false;
   }
-
-  return false;
-}
-
-// FUNCTION wpt_cleanPopupDataAttr ()
-function wpt_cleanPopupDataAttr ($popup)
-{
-  // Remove all data attributes
-  const attrs = [];
-  $.each ($popup[0].attributes, function (i, a)
-    {
-      if (a.name.indexOf ("data-") == 0)
-        attrs.push (a.name);
-    });
-  attrs.forEach ((item) => $popup.removeAttr (item));
-
-  $popup.find("span.required").remove ();
-  $popup.find(".input-group.required").removeClass ("required");
-
-  switch ($popup.attr ("id"))
+  
+  // METHOD cleanPopupDataAttr ()
+  cleanPopupDataAttr ($popup)
   {
-    case "plugPopup":
-
-      $popup.find("input").val ("");
-      break;
- 
-    case "createWallPopup":
-
-      $popup.find("input").val ("");
-      $popup.find(".cols-rows,.width-height").hide ();
-      $popup.find(".cols-rows").show ();
-      $popup.find("#w-grid")[0].checked = true;
-      break;
-
-    case "groupPopup":
-
-      $popup.find("input").val (""); 
-      $popup.find(".desc").html ("");
-      $popup.find("button.btn-primary").removeAttr ("data-type data-groupid");
-      break;
-
-    case "updateOneInputPopup":
-
-      $popup.find(".modal-dialog").removeClass ("modal-sm");
-      $popup.find("#w-grid").parent().remove ();
-      $popup.find(".btn-primary").html ("<?=_("Save")?>");
-
-      $popup.find("input")
-        .removeAttr ("placeholder autocorrect autocapitalize maxlength")
-        .val ("");
-      break;
-
-    case "confirmPopup":
-
-      $popup.removeClass ("no-theme");
-      break;
+    // Remove all data attributes
+    const attrs = [];
+    $.each ($popup[0].attributes, function (i, a)
+      {
+        if (a.name.indexOf ("data-") == 0)
+          attrs.push (a.name);
+      });
+    attrs.forEach ((item) => $popup.removeAttr (item));
+  
+    $popup.find("span.required").remove ();
+    $popup.find(".input-group.required").removeClass ("required");
+  
+    switch ($popup.attr ("id"))
+    {
+      case "plugPopup":
+  
+        $popup.find("input").val ("");
+        break;
+   
+      case "createWallPopup":
+  
+        $popup.find("input").val ("");
+        $popup.find(".cols-rows,.width-height").hide ();
+        $popup.find(".cols-rows").show ();
+        $popup.find("#w-grid")[0].checked = true;
+        break;
+  
+      case "groupPopup":
+  
+        $popup.find("input").val (""); 
+        $popup.find(".desc").html ("");
+        $popup.find("button.btn-primary").removeAttr ("data-type data-groupid");
+        break;
+  
+      case "updateOneInputPopup":
+  
+        $popup.find(".modal-dialog").removeClass ("modal-sm");
+        $popup.find("#w-grid").parent().remove ();
+        $popup.find(".btn-primary").html ("<?=_("Save")?>");
+  
+        $popup.find("input")
+          .removeAttr ("placeholder autocorrect autocapitalize maxlength")
+          .val ("");
+        break;
+  
+      case "confirmPopup":
+  
+        $popup.removeClass ("no-theme");
+        break;
+    }
   }
-}
-
-// FUNCTION wpt_getHumanSize ()
-function wpt_getHumanSize (bytes)
-{
-  const i = Math.floor(Math.log(bytes) / Math.log(1024)),
-        sizes = ['B', 'KB', 'MB'];
-
-  return (bytes / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + sizes[i];
-}
-
-// FUNCTION wpt_getAccess ()
-function wpt_getAccess ()
-{
-  const $wall = wpt_sharer.getCurrent ("wall");
-
-  return ($wall.length) ? $wall[0].dataset.access : "";
-}
-
-// FUNCTION wpt_checkAccess ()
-function wpt_checkAccess (requiredRights, currentAccess)
-{
-  if (currentAccess === undefined)
+  
+  // METHOD getHumanSize ()
+  getHumanSize (bytes)
+  {
+    const i = Math.floor(Math.log(bytes) / Math.log(1024)),
+          sizes = ['B', 'KB', 'MB'];
+  
+    return (bytes / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + sizes[i];
+  }
+  
+  // METHOD getAccess ()
+  getAccess ()
   {
     const $wall = wpt_sharer.getCurrent ("wall");
-
-    if ($wall.length)
-      currentAccess = $wall[0].dataset.access;
+  
+    return ($wall.length) ? $wall[0].dataset.access : "";
   }
-
-  return (currentAccess === undefined) ?
-    false : (currentAccess == "<?=WPT_RIGHTS['walls']['admin']?>" ||
-             currentAccess == String (requiredRights))
-}
-
-// FUNCTION wpt_getAccessIcon ()
-function wpt_getAccessIcon (access)
-{
-  let icon;
-
-  if (!access)
-    access = wpt_getAccess ();
-
-  switch (String (access))
+  
+  // METHOD checkAccess ()
+  checkAccess (requiredRights, currentAccess)
   {
-    case "<?=WPT_RIGHTS['walls']['admin']?>": icon = 'fa-shield-alt'; break;
-    case "<?=WPT_RIGHTS['walls']['rw']?>": icon = 'fa-edit'; break;
-    case "<?=WPT_RIGHTS['walls']['ro']?>": icon = 'fa-eye'; break;
-  }
-
-  return `<i class="fas ${icon} fa-fw"></i>`;
-}
-
-// FUNCTION wpt_getUserDate ()
-function wpt_getUserDate (dt, tz, fmt)
-{
-  return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
-           .format(fmt||"Y-MM-DD");
-}
-
-// FUNCTION wpt_loader ()
-function wpt_loader (action, force = false, xhr = null)
-{
-  const $layer = $("#popup-loader");
-
-  if ($layer.length && (wpt_WebSocket.ready () || force))
-  {
-    clearTimeout ($layer[0].dataset.timeoutid);
-
-    if (action == "show")
+    if (currentAccess === undefined)
     {
-      $layer[0].dataset.timeoutid = setTimeout (() =>
-        {
-          if (xhr)
-          {
-            // Abort upload on user request
-            $layer.find("button").off("click").on("click", function ()
-              {
-                xhr.abort ();
-              });
-
-            $layer.find (".progress,button").show ();
-          }
-
-          $layer.show ();
-
-        }, 500);
+      const $wall = wpt_sharer.getCurrent ("wall");
+  
+      if ($wall.length)
+        currentAccess = $wall[0].dataset.access;
     }
+  
+    return (currentAccess === undefined) ?
+      false : (currentAccess == "<?=WPT_RIGHTS['walls']['admin']?>" ||
+               currentAccess == String (requiredRights))
+  }
+  
+  // METHOD getAccessIcon ()
+  getAccessIcon (access)
+  {
+    let icon;
+  
+    if (!access)
+      access = this.getAccess ();
+  
+    switch (String (access))
+    {
+      case "<?=WPT_RIGHTS['walls']['admin']?>": icon = 'fa-shield-alt'; break;
+      case "<?=WPT_RIGHTS['walls']['rw']?>": icon = 'fa-edit'; break;
+      case "<?=WPT_RIGHTS['walls']['ro']?>": icon = 'fa-eye'; break;
+    }
+  
+    return `<i class="fas ${icon} fa-fw"></i>`;
+  }
+  
+  // METHOD getUserDate ()
+  getUserDate (dt, tz, fmt)
+  {
+    return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
+             .format(fmt||"Y-MM-DD");
+  }
+  
+  // METHOD loader ()
+  loader (action, force = false, xhr = null)
+  {
+    const $layer = $("#popup-loader");
+  
+    if ($layer.length && (wpt_WebSocket.ready () || force))
+    {
+      clearTimeout ($layer[0].dataset.timeoutid);
+  
+      if (action == "show")
+      {
+        $layer[0].dataset.timeoutid = setTimeout (() =>
+          {
+            if (xhr)
+            {
+              // Abort upload on user request
+              $layer.find("button").off("click").on("click", function ()
+                {
+                  xhr.abort ();
+                });
+  
+              $layer.find (".progress,button").show ();
+            }
+  
+            $layer.show ();
+  
+          }, 500);
+      }
+      else
+      {
+        $layer.hide ();
+  
+        $layer.find("button").hide ();
+        $layer.find(".progress").css ({
+          display: "none",
+          background: "#ea6966"
+        });
+      }
+    }
+  }
+  
+  // METHOD openPopupLayer ()
+  openPopupLayer (cb, closeMenus = true)
+  {
+    const $layer = $(`<div id="popup-layer" class="layer"></div>`);
+  
+    $(document)
+      .on ("keydown", function (e)
+      {
+        if (e.key == "Escape")
+          $layer.trigger ("click");
+      });
+  
+      $layer
+        .on ("click",
+        function (e)
+        {
+          $(document).off ("keydown");
+  
+          // Remove the layer
+          $(this).remove ();
+  
+          if (cb)
+            cb (e);
+        });
+  
+    $layer.prependTo("body").show ();
+  }
+  
+  // METHOD openInputPopup ()
+  openInputPopup (args)
+  {
+    const $popup = $("#updateOneInputPopup");
+  
+    this.cleanPopupDataAttr ($popup)
+  
+    if (args.before)
+      args.before ($popup);
+  
+    $popup.find(".modal-title").html (args.title);
+    $popup.find("input").val (args.defaultValue||'');
+  
+    $popup.find(".btn-primary").off("click").on("click", function (e)
+      {
+        args.cb_save ($popup.find("input").val(), $popup);
+        if (args.closure === undefined || args.closure == true)
+        $popup.modal ("hide");
+      });
+  
+    $popup.find(".btn-secondary").off("click").on("click", function (e)
+      {
+        args.cb_close ();
+      });
+  
+    $popup.modal ("show");
+  }
+  
+  // METHOD openConfirmPopup ()
+  openConfirmPopup (args)
+  {
+    const $popup = $("#confirmPopup");
+  
+    wpt_sharer.set ("confirmPopup", {
+      cb_ok: args.cb_ok,
+      cb_cancel: () =>
+        {
+          if (args.cb_cancel)
+            args.cb_cancel ();
+          wpt_sharer.unset ("confirmPopup");
+        }
+    });
+  
+    this.cleanPopupDataAttr ($popup);
+  
+    $popup.find(".modal-title").html (
+      `<i class="fas fa-${args.icon} fa-fw"></i> <?=_("Confirmation")?>`);
+    $popup.find(".modal-body").html (args.content);
+  
+    $popup[0].dataset.popuptype = args.type;
+  
+    this.openModal ($popup);
+  }
+  
+  // METHOD openConfirmPopover ()
+  openConfirmPopover (args)
+  {
+    if ($.support.touch)
+      this.fixVKBScrollStart ();
+  
+    this.openPopupLayer (() =>
+      { 
+        $(".popover").popover ("dispose");
+  
+        if (args.cb_close)
+          args.cb_close ();
+  
+        if ($.support.touch)
+          this.fixVKBScrollStop ();
+  
+      }, false);
+    
+    args.item.popover({
+      html: true,
+      title: args.title,
+      placement: args.placement || "auto",
+      boundary: "window"
+    }).popover ("show");
+    
+    //FIXME If not, "title" element property is used by default
+    $(".popover-header").html (args.title);
+  
+    const buttons = (args.type && args.type == "update") ?
+      `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>` : `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
+  
+    const $body = $(".popover-body");
+  
+    $body.html (`<p>${args.content}</p>${buttons}`);
+  
+    if (!$.support.touch)
+      $body.find("input:eq(0)").focus ();
+  
+    $body.find("button").on("click", function (e)
+      {
+        const $btn = $(this);
+  
+        if ($btn.hasClass ("btn-primary"))
+          args.cb_ok ($btn.closest(".popover"));
+  
+        $("#popup-layer").trigger ("click");
+      });
+  }
+  
+  // METHOD resizeModal ()
+  resizeModal ($modal, w)
+  {
+    const wW = $(window).width (),
+          cW = Number ($modal[0].dataset.customwidth)||0,
+          oW = w;
+  
+    if (cW)
+      w = cW;
+  
+    if (w < 500)
+      w = 500;
+  
+    if (wW <= 800)
+      w = "100%";
     else
     {
-      $layer.hide ();
-
-      $layer.find("button").hide ();
-      $layer.find(".progress").css ({
-        display: "none",
-        background: "#ea6966"
-      });
+      if (w != 500)
+        w += this.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
+               wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
+  
+      if (w > wW)
+        w = "100%";
     }
-  }
-}
-
-// FUNCTION wpt_openPopupLayer ()
-function wpt_openPopupLayer (cb, closeMenus = true)
-{
-  const $layer = $(`<div id="popup-layer" class="layer"></div>`);
-
-  $(document)
-    .on ("keydown", function (e)
-    {
-      if (e.key == "Escape")
-        $layer.trigger ("click");
-    });
-
-    $layer
-      .on ("click",
-      function (e)
-      {
-        $(document).off ("keydown");
-
-        // Remove the layer
-        $(this).remove ();
-
-        if (cb)
-          cb (e);
-      });
-
-  $layer.prependTo("body").show ();
-}
-
-// FUNCTION wpt_openInputPopup ()
-function wpt_openInputPopup (args)
-{
-  const $popup = $("#updateOneInputPopup");
-
-  wpt_cleanPopupDataAttr ($popup)
-
-  if (args.before)
-    args.before ($popup);
-
-  $popup.find(".modal-title").html (args.title);
-  $popup.find("input").val (args.defaultValue||'');
-
-  $popup.find(".btn-primary").off("click").on("click", function (e)
-    {
-      args.cb_save ($popup.find("input").val(), $popup);
-      if (args.closure === undefined || args.closure == true)
-      $popup.modal ("hide");
-    });
-
-  $popup.find(".btn-secondary").off("click").on("click", function (e)
-    {
-      args.cb_close ();
-    });
-
-  $popup.modal ("show");
-}
-
-function wpt_openConfirmPopup (args)
-{
-  const $popup = $("#confirmPopup");
-
-  wpt_sharer.set ("confirmPopup", {
-    cb_ok: args.cb_ok,
-    cb_cancel: () =>
-      {
-        if (args.cb_cancel)
-          args.cb_cancel ();
-        wpt_sharer.unset ("confirmPopup");
-      }
-  });
-
-  wpt_cleanPopupDataAttr ($popup);
-
-  $popup.find(".modal-title").html (
-    `<i class="fas fa-${args.icon} fa-fw"></i> <?=_("Confirmation")?>`);
-  $popup.find(".modal-body").html (args.content);
-
-  $popup[0].dataset.popuptype = args.type;
-
-  wpt_openModal ($popup);
-}
-
-// FUNCTION wpt_openConfirmPopover ()
-function wpt_openConfirmPopover (args)
-{
-  if ($.support.touch)
-    wpt_fixVKBScrollStart ();
-
-  wpt_openPopupLayer (() =>
-    { 
-      $(".popover").popover ("dispose");
-
-      if (args.cb_close)
-        args.cb_close ();
-
-      if ($.support.touch)
-        wpt_fixVKBScrollStop ();
-
-    }, false);
   
-  args.item.popover({
-    html: true,
-    title: args.title,
-    placement: args.placement || "auto",
-    boundary: "window"
-  }).popover ("show");
+    if (!cW)
+      $modal[0].dataset.customwidth = oW;
   
-  //FIXME If not, "title" element property is used by default
-  $(".popover-header").html (args.title);
-
-  const buttons = (args.type && args.type == "update") ?
-    `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>` : `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
-
-  const $body = $(".popover-body");
-
-  $body.html (`<p>${args.content}</p>${buttons}`);
-
-  if (!$.support.touch)
-    $body.find("input:eq(0)").focus ();
-
-  $body.find("button").on("click", function (e)
-    {
-      const $btn = $(this);
-
-      if ($btn.hasClass ("btn-primary"))
-        args.cb_ok ($btn.closest(".popover"));
-
-      $("#popup-layer").trigger ("click");
-    });
-}
-
-function wpt_resizeModal ($modal, w)
-{
-  const wW = $(window).width (),
-        cW = Number ($modal[0].dataset.customwidth)||0,
-        oW = w;
-
-  if (cW)
-    w = cW;
-
-  if (w < 500)
-    w = 500;
-
-  if (wW <= 800)
-    w = "100%";
-  else
-  {
-    if (w != 500)
-      w += wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
-             wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
-
-    if (w > wW)
-      w = "100%";
-  }
-
-  if (!cW)
-    $modal[0].dataset.customwidth = oW;
-
-  $modal
-    .find(".modal-dialog")
-      .css ({
-        width: w,
-        "min-width": w,
-        "max-width": w
-      });
-}
-
-// FUNCTION wpt_openModal ()
-function wpt_openModal ($modal, w)
-{
-  $modal[0].removeAttribute ("data-customwidth");
-
-  $modal.modal({
-    backdrop: true,
-    show: true
-  })
-  .draggable({
-    //FIXME "distance" is deprecated -> is there any alternative?
-    distance: 10,
-    handle: ".modal-header",
-    cursor: "pointer"
-  })
-  .css({
-    top: 0,
-    left: 0
-  });
-
-  if (w)
-    wpt_resizeModal ($modal, w);
-  else
     $modal
       .find(".modal-dialog")
         .css ({
-          width: "",
-          "min-width": "",
-          "max-width": ""
+          width: w,
+          "min-width": w,
+          "max-width": w
         });
-}
-
-// FUNCTION wpt_infoPopup ()
-function wpt_infoPopup (msg, notheme)
-{
-  const $popup = $("#infoPopup");
-
-  if (notheme)
-    $popup.addClass ("no-theme");
-  else
-    wpt_cleanPopupDataAttr ($popup);
-    
-  $popup.find(".modal-dialog").addClass ("modal-sm");
-
-  $popup.find(".modal-body").html (msg);
-
-  $popup.find(".modal-title").html (
-    '<i class="fas fa-bullhorn"></i> <?=_("Information")?>');
-
-  wpt_openModal ($popup);
-}
-
-// FUNCTION wpt_raiseError ()
-function wpt_raiseError (error_cb, msg)
-{
-  error_cb && error_cb ();
-
-  wpt_displayMsg ({
-    type: (msg)?"warning" : "danger",
-    msg: (msg)?msg : "<?=_("System error. Please report it to the administrator.")?>"
-  });
-}
-
-// FUNCTION wpt_displayMsg ()
-function wpt_displayMsg (args)
-{
-  // If a TinyMCE plugin is running, display message using the editor window
-  // manager.
-  if ($(".tox-dialog").is(":visible"))
-    return tinymce.activeEditor.windowManager.alert (args.msg);
-
-  const $previous = $(".alert").eq(0),
-        id = (args.noclosure) ? "noclosure": "timeout-"+Math.random();
-  let $target;
-
-  if (args.target)
-    $target = args.target;
-  else
-  {
-    const $modals = $(".modal:visible");
-
-    $target = $modals.length ?
-                $modals.last().find(".modal-body") : $("#msg-container");
   }
-
-  $target.find(".alert[data-timeoutid='noclosure']").remove ();
-
-  if (args.reset)
-    return;
-
-  if (!($previous.length && $previous.find("span").text () == args.msg))
-  {
-    $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<b>"+args.title+"</b><br>":""}<span>${args.msg}</span></div>`);
-
-    if (!args.noclosure)
-      setTimeout (() =>
-        {
-          const $div = $target.find(".alert[data-timeoutid='"+id+"']");
-
-          $div.hide("fade", function(){$div.remove ()})
   
-        }, (args.type == "danger") ? 5000 : 3000);
-  }
-}
-
-// FUNCTION wpt_fixMenuHeight ()
-function wpt_fixMenuHeight ()
-{
-  const menu = document.querySelector (".navbar-collapse.collapse"),
-        mbBtn = document.querySelector (".navbar-toggler-icon");
-
-  // If menu is in min mode, limit menus height
-  if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0)
+  // METHOD openModal ()
+  openModal ($modal, w)
   {
-    menu.style.overflowY = "auto";
-    menu.style.maxHeight = (window.innerHeight - 56)+"px";
-  }
-  else
-  {
-    menu.style.overflowY = "";
-    menu.style.maxHeight = "";
-  }
-}
-
-// FUNCTION wpt_fixMainHeight ()
-function wpt_fixMainHeight ()
-{
-  document.querySelector("html").style.overflow = "hidden";
-
-  wpt_sharer.getCurrent("walls")[0].style.height =
-    (window.innerHeight -
-     document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
-}
-
-// FUNCTION wpt_download ()
-function wpt_download (args)
-{
-  const req = new XMLHttpRequest ();
-
-  wpt_loader ("show");
-
-  req.onreadystatechange = (e) =>
-    {
-      if (req.readyState == 4)
-      {
-        wpt_loader ("hide");
-
-        if (req.status != 200)
-          wpt_displayMsg ({
-            type: "warning",
-            msg: args.msg ||
-                   "<?=_("An error occured while uploading file.")?>"
+    $modal[0].removeAttribute ("data-customwidth");
+  
+    $modal.modal({
+      backdrop: true,
+      show: true
+    })
+    .draggable({
+      //FIXME "distance" is deprecated -> is there any alternative?
+      distance: 10,
+      handle: ".modal-header",
+      cursor: "pointer"
+    })
+    .css({
+      top: 0,
+      left: 0
+    });
+  
+    if (w)
+      this.resizeModal ($modal, w);
+    else
+      $modal
+        .find(".modal-dialog")
+          .css ({
+            width: "",
+            "min-width": "",
+            "max-width": ""
           });
+  }
+  
+  // METHOD infoPopup ()
+  infoPopup (msg, notheme)
+  {
+    const $popup = $("#infoPopup");
+  
+    if (notheme)
+      $popup.addClass ("no-theme");
+    else
+      this.cleanPopupDataAttr ($popup);
+      
+    $popup.find(".modal-dialog").addClass ("modal-sm");
+  
+    $popup.find(".modal-body").html (msg);
+  
+    $popup.find(".modal-title").html (
+      '<i class="fas fa-bullhorn"></i> <?=_("Information")?>');
+  
+    this.openModal ($popup);
+  }
+  
+  // METHOD raiseError ()
+  raiseError (error_cb, msg)
+  {
+    error_cb && error_cb ();
+  
+    this.displayMsg ({
+      type: (msg)?"warning" : "danger",
+      msg: (msg)?msg : "<?=_("System error. Please report it to the administrator.")?>"
+    });
+  }
+  
+  // METHOD displayMsg ()
+  displayMsg (args)
+  {
+    // If a TinyMCE plugin is running, display message using the editor window
+    // manager.
+    if ($(".tox-dialog").is(":visible"))
+      return tinymce.activeEditor.windowManager.alert (args.msg);
+  
+    const $previous = $(".alert").eq(0),
+          id = (args.noclosure) ? "noclosure": "timeout-"+Math.random();
+    let $target;
+  
+    if (args.target)
+      $target = args.target;
+    else
+    {
+      const $modals = $(".modal:visible");
+  
+      $target = $modals.length ?
+                  $modals.last().find(".modal-body") : $("#msg-container");
+    }
+  
+    $target.find(".alert[data-timeoutid='noclosure']").remove ();
+  
+    if (args.reset)
+      return;
+  
+    if (!($previous.length && $previous.find("span").text () == args.msg))
+    {
+      $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<b>"+args.title+"</b><br>":""}<span>${args.msg}</span></div>`);
+  
+      if (!args.noclosure)
+        setTimeout (() =>
+          {
+            const $div = $target.find(".alert[data-timeoutid='"+id+"']");
+  
+            $div.hide("fade", function(){$div.remove ()})
+    
+          }, (args.type == "danger") ? 5000 : 3000);
+    }
+  }
+  
+  // METHOD fixMenuHeight ()
+  fixMenuHeight ()
+  {
+    const menu = document.querySelector (".navbar-collapse.collapse"),
+          mbBtn = document.querySelector (".navbar-toggler-icon");
+  
+    // If menu is in min mode, limit menus height
+    if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0)
+    {
+      menu.style.overflowY = "auto";
+      menu.style.maxHeight = (window.innerHeight - 56)+"px";
+    }
+    else
+    {
+      menu.style.overflowY = "";
+      menu.style.maxHeight = "";
+    }
+  }
+  
+  // METHOD fixMainHeight ()
+  fixMainHeight ()
+  {
+    document.querySelector("html").style.overflow = "hidden";
+  
+    wpt_sharer.getCurrent("walls")[0].style.height =
+      (window.innerHeight -
+       document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
+  }
+  
+  // METHOD download ()
+  download (args)
+  {
+    const req = new XMLHttpRequest ();
+  
+    this.loader ("show");
+  
+    req.onreadystatechange = (e) =>
+      {
+        if (req.readyState == 4)
+        {
+          this.loader ("hide");
+  
+          if (req.status != 200)
+            this.displayMsg ({
+              type: "warning",
+              msg: args.msg ||
+                     "<?=_("An error occured while uploading file.")?>"
+            });
+        }
+      };
+  
+    req.open ("GET", args.url);
+    req.responseType = "blob";
+  
+    req.onload = (e) =>
+    {
+      const blob = req.response,
+            fname = args.fname,
+            contentType = req.getResponseHeader ("Content-Type");
+  
+      if (window.navigator.msSaveOrOpenBlob)
+        window.navigator.msSaveOrOpenBlob (
+          new Blob([blob], {type: contentType}), fname);
+      else
+      {
+        const el = document.createElement ("a");
+  
+        el.href = window.URL.createObjectURL (blob);
+        el.download = fname;
+        el.click ();
       }
     };
-
-  req.open ("GET", args.url);
-  req.responseType = "blob";
-
-  req.onload = (e) =>
+  
+    req.send ();
+  }
+  
+  // METHOD enableTooltips ()
+  enableTooltips ($item)
   {
-    const blob = req.response,
-          fname = args.fname,
-          contentType = req.getResponseHeader ("Content-Type");
-
-    if (window.navigator.msSaveOrOpenBlob)
-      window.navigator.msSaveOrOpenBlob (
-        new Blob([blob], {type: contentType}), fname);
-    else
-    {
-      const el = document.createElement ("a");
-
-      el.href = window.URL.createObjectURL (blob);
-      el.download = fname;
-      el.click ();
-    }
-  };
-
-  req.send ();
-}
-
-// FUNCTION wpt_enableTooltips ()
-function wpt_enableTooltips ($item)
-{
-  if (!$.support.touch)
-    $item.tooltip ();
-}
-
-// FUNCTION wpt_request_ws ()
-function wpt_request_ws (method, service, args, success_cb, error_cb)
-{
-  const msgArgs = {type: "danger"};
-
-  wpt_loader ("show");
-
-  //console.log ("WS: "+method+" "+service);
-
-  wpt_WebSocket.send ({
-    method: method,
-    route: service,
-    data: args ? encodeURI (JSON.stringify (args)) : null  
-  },
-  (d) =>
-    {
-      wpt_loader ("hide");
-
-      if (d.error)
-      {
-        msgArgs["msg"] = (isNaN (d.error)) ?
-          d.error : "<?=_("Unknown error.<br>Please try again later.")?>";
-        wpt_displayMsg (msgArgs);
-
-        if (error_cb)
-          error_cb (d);
-      }
-      else if (success_cb)
-        success_cb (d);
+    if (!$.support.touch)
+      $item.tooltip ();
+  }
+  
+  // METHOD request_ws ()
+  request_ws (method, service, args, success_cb, error_cb)
+  {
+    const msgArgs = {type: "danger"},
+          _H = this;
+  
+    _H.loader ("show");
+  
+    //console.log ("WS: "+method+" "+service);
+  
+    wpt_WebSocket.send ({
+      method: method,
+      route: service,
+      data: args ? encodeURI (JSON.stringify (args)) : null  
     },
-  () =>
-    {
-      wpt_loader ("hide");
-
-      error_cb && error_cb ();
-    });
-}
-
-// FUNCTION wpt_request_ajax ()
-function wpt_request_ajax (method, service, args, success_cb, error_cb)
-{
-  const fileUpload = !!service.match(/attachment|picture|import|export$/),
-        // No timeout for file upload
-        timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
-  let msgArgs = {type: "danger"};
-
-  //console.log ("AJAX: "+method+" "+service);
-
-  const xhr = $.ajax (
-    {
-      // Progressbar for file upload
-      xhr: function ()
+    (d) =>
       {
-        const xhr = new window.XMLHttpRequest ();
-
-        function __progress (e)
+        _H.loader ("hide");
+  
+        if (d.error)
         {
-          if (e.lengthComputable)
-            {
-              const $progress = $("#loader .progress"),
-                    percentComplete = e.loaded / e.total,
-                    display = Math.trunc(percentComplete*100)+"%";
-
-              $progress.text(display).css ("width", display);
-
-              if (percentComplete < 0.5)
-                $progress.css ("background", "#ea6966");
-              else if (percentComplete < 0.9)
-                $progress.css ("background", "#f5b240");
-              else if (percentComplete < 1)
-                $progress.css ("background", "#6ece4b");
-              else
-                $progress.text ("<?=_("Upload completed.")?>");
-            }
+          msgArgs["msg"] = (isNaN (d.error)) ?
+            d.error : "<?=_("Unknown error.<br>Please try again later.")?>";
+          _H.displayMsg (msgArgs);
+  
+          if (error_cb)
+            error_cb (d);
         }
-
-        xhr.upload.addEventListener ("progress", __progress, false);
-        xhr.addEventListener ("progress", __progress, false);
-
-        return xhr;
+        else if (success_cb)
+          success_cb (d);
       },
-      type: method,
-      timeout: timeout,
-      async: true,
-      cache: false,
-      url: "/api/"+service,
-      data: args ? encodeURI (JSON.stringify (args)) : null,
-      dataType: "json",
-      contentType: "application/json;charset=utf-8"
-    })
-    .done (function (d)
-     {
-       if (d.error)
-       {
-         if (error_cb)
-           error_cb (d);
-         else
-         {
-           msgArgs["msg"] = (isNaN (d.error)) ?
-             d.error :
-             "<?=_("Unknown error.<br>Please try again later.")?>";
-
-           wpt_displayMsg (msgArgs);
-         }
-       }
-       else if (success_cb)
-         success_cb (d);
-     })
-    .fail (function (jqXHR, textStatus, errorThrown)
-     {
-       switch (textStatus)
-       {
-         case "abort":
-           msgArgs = {
-             type: "warning",
-             msg: "<?=_("Upload has been canceled.")?>"
-           };
-           break;
-
-         case "timeout":
-           msgArgs["msg"] = "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>";
-           break;
-
-         default:
-          msgArgs["msg"] ="<?=_("Unknown error.<br>Please try again later.")?>";
-       }
-
-       if (msgArgs)
-         wpt_displayMsg (msgArgs);
-
-       error_cb && error_cb ();
-     })
-    .always (function (){wpt_loader ("hide", true)});
-
-    wpt_loader ("show", true, fileUpload && xhr);
-}
-
-// FUNCTION wpt_checkUploadFileSize ()
-function wpt_checkUploadFileSize (args)
-{
-  const msg = "<?=_("File size is too large (%sM max).")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
-        maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
-  let ret = true;
-
-  if (args.size / 1024000 > maxSize)
-  {
-    ret = false;
-
-    if (args.cb_msg)
-      args.cb_msg (msg);
-    else
-      wpt_displayMsg ({
-        type: "danger",
-        msg: msg
+    () =>
+      {
+        _H.loader ("hide");
+  
+        error_cb && error_cb ();
       });
   }
-
-  return ret;
-}
-
-// FUNCTION wpt_getUploadedFiles ()
-function wpt_getUploadedFiles (files, success_cb, error_cb, cb_msg)
-{
-  const reader = new FileReader (),
-        file = files[0];
-
-  reader.readAsDataURL (file);
-
-  reader.onprogress = (e) =>
+  
+  // METHOD request_ajax ()
+  request_ajax (method, service, args, success_cb, error_cb)
+  {
+    const _H = this,
+          fileUpload = !!service.match(/attachment|picture|import|export$/),
+          // No timeout for file upload
+          timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
+    let msgArgs = {type: "danger"};
+  
+    //console.log ("AJAX: "+method+" "+service);
+  
+    const xhr = $.ajax (
+      {
+        // Progressbar for file upload
+        xhr: function ()
+        {
+          const xhr = new window.XMLHttpRequest ();
+  
+          function __progress (e)
+          {
+            if (e.lengthComputable)
+              {
+                const $progress = $("#loader .progress"),
+                      percentComplete = e.loaded / e.total,
+                      display = Math.trunc(percentComplete*100)+"%";
+  
+                $progress.text(display).css ("width", display);
+  
+                if (percentComplete < 0.5)
+                  $progress.css ("background", "#ea6966");
+                else if (percentComplete < 0.9)
+                  $progress.css ("background", "#f5b240");
+                else if (percentComplete < 1)
+                  $progress.css ("background", "#6ece4b");
+                else
+                  $progress.text ("<?=_("Upload completed.")?>");
+              }
+          }
+  
+          xhr.upload.addEventListener ("progress", __progress, false);
+          xhr.addEventListener ("progress", __progress, false);
+  
+          return xhr;
+        },
+        type: method,
+        timeout: timeout,
+        async: true,
+        cache: false,
+        url: "/api/"+service,
+        data: args ? encodeURI (JSON.stringify (args)) : null,
+        dataType: "json",
+        contentType: "application/json;charset=utf-8"
+      })
+      .done (function (d)
+       {
+         if (d.error)
+         {
+           if (error_cb)
+             error_cb (d);
+           else
+           {
+             msgArgs["msg"] = (isNaN (d.error)) ?
+               d.error :
+               "<?=_("Unknown error.<br>Please try again later.")?>";
+  
+             _H.displayMsg (msgArgs);
+           }
+         }
+         else if (success_cb)
+           success_cb (d);
+       })
+      .fail (function (jqXHR, textStatus, errorThrown)
+       {
+         switch (textStatus)
+         {
+           case "abort":
+             msgArgs = {
+               type: "warning",
+               msg: "<?=_("Upload has been canceled.")?>"
+             };
+             break;
+  
+           case "timeout":
+             msgArgs["msg"] = "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>";
+             break;
+  
+           default:
+            msgArgs["msg"] ="<?=_("Unknown error.<br>Please try again later.")?>";
+         }
+  
+         if (msgArgs)
+           _H.displayMsg (msgArgs);
+  
+         error_cb && error_cb ();
+       })
+      .always (function (){_H.loader ("hide", true)});
+  
+      _H.loader ("show", true, fileUpload && xhr);
+  }
+  
+  // METHOD checkUploadFileSize ()
+  checkUploadFileSize (args)
+  {
+    const msg = "<?=_("File size is too large (%sM max).")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+          maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
+    let ret = true;
+  
+    if (args.size / 1024000 > maxSize)
     {
-      if (!wpt_checkUploadFileSize (e.total, cb_msg))
-        reader.abort ();
-    }
-
-  reader.onerror = (e) =>
-    {
-      const msg = "<?=_("Can not read file")?> ("+e.target.error.code+")";
-
-      if (cb_msg)
-        cb_msg (msg);
+      ret = false;
+  
+      if (args.cb_msg)
+        args.cb_msg (msg);
       else
-        wpt_displayMsg ({
+        this.displayMsg ({
           type: "danger",
           msg: msg
         });
     }
-
-  reader.onloadend = ((f) => (evt) => success_cb (evt, f))(file);
-}
-
-// FUNCTION wpt_headerRemoveContentKeepingWallSize ()
-function wpt_headerRemoveContentKeepingWallSize (args)
-{
-  const $wall = wpt_sharer.getCurrent ("wall");
-  let tdW = 0;
-
-  // Get row TD total width
-  $wall.find("tbody tr:eq(0) td").each (function ()
-    {
-      tdW += $(this).outerWidth ();
-    });
-
-  args.cb ();
-
-  $wall.find("tbody tr th").css ("width", 1);
-
-  const newW = $wall.find("thead th:eq(0)").outerWidth ();
-
-  if (newW != args.oldW)
-  {
-    $wall.wall ("fixSize", args.oldW, newW);
-    $wall.css ("width", tdW + newW);
+  
+    return ret;
   }
-}
-
-// FUNCTION wpt_waitForDOMUpdate ()
-function wpt_waitForDOMUpdate (cb)
-{
-  //FIXME
-  setTimeout (
-    () => window.requestAnimationFrame (
-            () => window.requestAnimationFrame (cb)), 150);
-}
-
-// FUNCTION wpt_checkForAppUpgrade ()
-function wpt_checkForAppUpgrade (version)
-{
-  const html = $("html")[0],
-        $popup = $("#infoPopup"),
-        officialVersion = (version) ? version : html.dataset.version;
-
-  if (String(officialVersion).length != 10)
+  
+  // METHOD getUploadedFiles ()
+  getUploadedFiles (files, success_cb, error_cb, cb_msg)
   {
-    const $userSettings = $("#settingsPopup"),
-          userVersion = $userSettings.settings ("get", "version");
-
-    if (userVersion != officialVersion)
-    {
-      $userSettings.settings ("set", {version: officialVersion});
-
-      if (userVersion)
+    const _H = this,
+          reader = new FileReader (),
+          file = files[0];
+  
+    reader.readAsDataURL (file);
+  
+    reader.onprogress = (e) =>
       {
-        // Needed to unedit current items
-        $(".modal").modal ("hide");
-
-        wpt_cleanPopupDataAttr ($popup);
-
-        $popup.find(".modal-body").html ("<?=_("A new release of wopits is available!")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>".replace("%s1", "<b>"+userVersion+"</b>").replace("%s2", "<b>"+officialVersion+"</b>"));
+        if (!_H.checkUploadFileSize (e.total, cb_msg))
+          reader.abort ();
+      }
+  
+    reader.onerror = (e) =>
+      {
+        const msg = "<?=_("Can not read file")?> ("+e.target.error.code+")";
+  
+        if (cb_msg)
+          cb_msg (msg);
+        else
+          _H.displayMsg ({
+            type: "danger",
+            msg: msg
+          });
+      }
+  
+    reader.onloadend = ((f) => (evt) => success_cb (evt, f))(file);
+  }
+  
+  // METHOD headerRemoveContentKeepingWallSize ()
+  headerRemoveContentKeepingWallSize (args)
+  {
+    const $wall = wpt_sharer.getCurrent ("wall");
+    let tdW = 0;
+  
+    // Get row TD total width
+    $wall.find("tbody tr:eq(0) td").each (function ()
+      {
+        tdW += $(this).outerWidth ();
+      });
+  
+    args.cb ();
+  
+    $wall.find("tbody tr th").css ("width", 1);
+  
+    const newW = $wall.find("thead th:eq(0)").outerWidth ();
+  
+    if (newW != args.oldW)
+    {
+      $wall.wall ("fixSize", args.oldW, newW);
+      $wall.css ("width", tdW + newW);
+    }
+  }
+  
+  // METHOD waitForDOMUpdate ()
+  waitForDOMUpdate (cb)
+  {
+    //FIXME
+    setTimeout (
+      () => window.requestAnimationFrame (
+              () => window.requestAnimationFrame (cb)), 150);
+  }
+  
+  // METHOD checkForAppUpgrade ()
+  checkForAppUpgrade (version)
+  {
+    const html = $("html")[0],
+          $popup = $("#infoPopup"),
+          officialVersion = (version) ? version : html.dataset.version;
+  
+    if (String(officialVersion).length != 10)
+    {
+      const $userSettings = $("#settingsPopup"),
+            userVersion = $userSettings.settings ("get", "version");
+  
+      if (userVersion != officialVersion)
+      {
+        $userSettings.settings ("set", {version: officialVersion});
+  
+        if (userVersion)
+        {
+          // Needed to unedit current items
+          $(".modal").modal ("hide");
+  
+          this.cleanPopupDataAttr ($popup);
+  
+          $popup.find(".modal-body").html ("<?=_("A new release of wopits is available!")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>".replace("%s1", "<b>"+userVersion+"</b>").replace("%s2", "<b>"+officialVersion+"</b>"));
+          $popup.find(".modal-title").html (
+            '<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>');
+  
+          $popup[0].dataset.popuptype = "app-upgrade";
+          this.openModal ($popup);
+  
+          return true;
+        }
+      }
+      else if (html.dataset.upgradedone)
+      {
+        html.removeAttribute ("data-upgradedone");
+  
+        $popup.find(".modal-dialog").removeClass ("modal-sm");
+        $popup.find(".modal-body").html ("<?=_("Upgrade done.")?><br><?=_("Thank you for using wopits!")?>");
         $popup.find(".modal-title").html (
-          '<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>');
-
-        $popup[0].dataset.popuptype = "app-upgrade";
-        wpt_openModal ($popup);
-
-        return true;
+          '<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>');
+  
+        this.openModal ($popup);
       }
     }
-    else if (html.dataset.upgradedone)
-    {
-      html.removeAttribute ("data-upgradedone");
-
-      $popup.find(".modal-dialog").removeClass ("modal-sm");
-      $popup.find(".modal-body").html ("<?=_("Upgrade done.")?><br><?=_("Thank you for using wopits!")?>");
-      $popup.find(".modal-title").html (
-        '<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>');
-
-      wpt_openModal ($popup);
-    }
   }
-}
+  
+  // METHOD navigatorIsEdge ()
+  navigatorIsEdge ()
+  {
+    return navigator.userAgent.match (/edg/i);
+  }
+  
+  // METHOD fixVKBScrollStart ()
+  fixVKBScrollStart ()
+  {
+    const body = document.body,
+          walls = document.getElementById ("walls"),
+          bodyScrollTop = body.scrollTop,
+          wallsScrollLeft = walls.scrollLeft;
+  
+    wpt_sharer.set ("wallsScrollLeft", wallsScrollLeft);
+    wpt_sharer.set ("bodyComputedStyles", window.getComputedStyle (body));
+  
+    body.style.position = "fixed";
+    body.style.overflow = "hidden";
+    body.style.top = (bodyScrollTop * -1)+"px";
+  
+    if (this.navigatorIsEdge ())
+      wpt_sharer.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
+  
+    walls.style.width = window.innerWidth+"px";
+    walls.style.overflow = "hidden";
+  
+    $(window).trigger ("resize");
+  }
+  
+  // METHOD fixVKBScrollStop ()
+  fixVKBScrollStop ()
+  {
+    const walls = document.getElementById ("walls");
+  
+    document.body.style = wpt_sharer.get ("bodyComputedStyles");
+    wpt_sharer.unset ("bodyComputedStyles");
+  
+    walls.style.overflow = "auto";
+    walls.style.width = "auto";
+    if (this.navigatorIsEdge ())
+      wpt_sharer.getCurrent("wall")[0].style.left = "";
+    walls.scrollLeft = wpt_sharer.get ("wallsScrollLeft");
+  
+    this.waitForDOMUpdate (()=>
+      {
+        this.fixMainHeight ();
+        wpt_sharer.getCurrent("wall").wall ("repositionPostitsPlugs");
+      });
+  }
 
-// FUNCTION wpt_navigatorIsEdge ()
-function wpt_navigatorIsEdge ()
-{
-  return navigator.userAgent.match (/edg/i);
-}
-
-// FUNCTION wpt_fixVKBScrollStart ()
-function wpt_fixVKBScrollStart ()
-{
-  const body = document.body,
-        walls = document.getElementById ("walls"),
-        bodyScrollTop = body.scrollTop,
-        wallsScrollLeft = walls.scrollLeft;
-
-  wpt_sharer.set ("wallsScrollLeft", wallsScrollLeft);
-  wpt_sharer.set ("bodyComputedStyles", window.getComputedStyle (body));
-
-  body.style.position = "fixed";
-  body.style.overflow = "hidden";
-  body.style.top = (bodyScrollTop * -1)+"px";
-
-  if (wpt_navigatorIsEdge ())
-    wpt_sharer.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
-
-  walls.style.width = window.innerWidth+"px";
-  walls.style.overflow = "hidden";
-
-  $(window).trigger ("resize");
-}
-
-// FUNCTION wpt_fixVKBScrollStop ()
-function wpt_fixVKBScrollStop ()
-{
-  const walls = document.getElementById ("walls");
-
-  document.body.style = wpt_sharer.get ("bodyComputedStyles");
-  wpt_sharer.unset ("bodyComputedStyles");
-
-  walls.style.overflow = "auto";
-  walls.style.width = "auto";
-  if (wpt_navigatorIsEdge ())
-    wpt_sharer.getCurrent("wall")[0].style.left = "";
-  walls.scrollLeft = wpt_sharer.get ("wallsScrollLeft");
-
-  wpt_waitForDOMUpdate (()=>
-    {
-      wpt_fixMainHeight ();
-      wpt_sharer.getCurrent("wall").wall ("repositionPostitsPlugs");
-    });
 }
 
 // GLOBAL VARS
-const wpt_sharer = new Wpt_sharer (),
+const H = new Help (),
+      wpt_sharer = new Wpt_sharer (),
       wpt_storage = new Wpt_storage (),
       wpt_WebSocket = new Wpt_WebSocket ();

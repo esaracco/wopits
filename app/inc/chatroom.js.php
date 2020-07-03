@@ -93,12 +93,12 @@
       $chatroom.find("button.btn-primary").on("click",
         function ()
         {
-          const msg = wpt_noHTML ($chatroom.find("input").val());
+          const msg = H.noHTML ($chatroom.find("input").val());
 
           if (!msg)
             return;
 
-          plugin.sendMsg (wpt_noHTML ($chatroom.find("input").val()));
+          plugin.sendMsg (H.noHTML ($chatroom.find("input").val()));
           $chatroom.find("input").val("");
         });
     },
@@ -113,7 +113,7 @@
     // METHOD join ()
     join: function ()
     {
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
          "wall/"+this.settings.wallId+"/chat");
     },
@@ -121,7 +121,7 @@
     // METHOD leave ()
     leave: function ()
     {
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
          "wall/"+this.settings.wallId+"/chat");
     },
@@ -136,7 +136,7 @@
       {
         this.closeUsersTooltip (true);
 
-        wpt_request_ws (
+        H.request_ws (
           "DELETE",
           "wall/"+wallId+"/chat");
 
@@ -154,7 +154,7 @@
         if (!$.support.touch)
           setTimeout (() => $chatroom.find("[autofocus]").focus (), 150);
 
-        wpt_request_ws (
+        H.request_ws (
           "PUT",
           "wall/"+wallId+"/chat");
       }
@@ -274,7 +274,7 @@
     // METHOD sendMsg ()
     sendMsg: function (msg)
     {
-      wpt_request_ws (
+      H.request_ws (
         "POST",
         "wall/"+this.settings.wallId+"/chat",
         {msg: msg});

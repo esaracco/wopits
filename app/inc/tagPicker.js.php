@@ -41,7 +41,7 @@
 
             if (select && $picker.find("div.selected").length == 5)
             {
-              wpt_infoPopup (
+              H.infoPopup (
                 "<?=_("You have reached the maximum number of tags.")?>", true);
             }
             else
@@ -63,7 +63,7 @@
           }
         });
 
-      wpt_waitForDOMUpdate (() =>
+      H.waitForDOMUpdate (() =>
         {
           _width = $picker.outerWidth ();
           _height = $picker.outerHeight ();
@@ -101,7 +101,7 @@
       if (y + _height > wH)
         y = wH - _height - 20;
 
-      wpt_openPopupLayer (() =>
+      H.openPopupLayer (() =>
         {
           plugin.close ();
           wpt_sharer.getCurrent("postit").postit ("unedit");

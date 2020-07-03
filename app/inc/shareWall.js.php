@@ -20,7 +20,7 @@
     items.forEach ((item) =>
       {
         if (item.type == type)
-          html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${wpt_htmlQuotes(item.name)}" class="list-group-item list-group-item-action is-wall-creator"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||''}</span><button data-action="delete-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Link this group")?>"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`;
+          html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" class="list-group-item list-group-item-action is-wall-creator"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||''}</span><button data-action="delete-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Link this group")?>"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`;
       });
 
     $div.html (html);
@@ -88,12 +88,12 @@
               $_usersSearchPopup.usersSearch (
                 "displayUsers",
                 {
-                  wallId: wpt_sharer.getCurrent("wall").wall("getId"),
+                  wallId: wpt_sharer.getCurrent("wall").wall ("getId"),
                   groupId: groupId,
                   groupType: groupType
                 });
     
-              wpt_openModal ($_usersSearchPopup);
+              H.openModal ($_usersSearchPopup);
               break;
 
             case "delete-group":
@@ -103,7 +103,7 @@
                  `<?=_("Delete this group?")?>`:
                  `<?=_("If you delete this <b>generic</b> group, it will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
 
-              wpt_openConfirmPopover ({
+              H.openConfirmPopover ({
                  item: $btn,
                  placement: "left",
                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -129,7 +129,7 @@
 
             case "link-group":
 
-              wpt_openModal ($_groupAccessPopup);
+              H.openModal ($_groupAccessPopup);
               break;
           }
         });
@@ -206,7 +206,7 @@
         desc = "<?=_("This new group will be available only for the current wall.")?>";
       }
 
-      wpt_cleanPopupDataAttr ($_groupPopup);
+      H.cleanPopupDataAttr ($_groupPopup);
 
       $_groupPopup[0].dataset.action = "create";
 
@@ -218,12 +218,12 @@
       $_groupPopup.find("button.btn-primary")[0].dataset.type = type;
       $_groupPopup.find("button.btn-primary").text ("<?=_("Create")?>");
 
-      wpt_openModal ($_groupPopup);
+      H.openModal ($_groupPopup);
     },
 
     openUpdateGroup: function (args)
     {
-      wpt_cleanPopupDataAttr ($_groupPopup);
+      H.cleanPopupDataAttr ($_groupPopup);
 
       $_groupPopup[0].dataset.action = "update";
 
@@ -238,7 +238,7 @@
       $_groupPopup.find("button.btn-primary")[0].dataset.groupid = args.groupId;
       $_groupPopup.find("button.btn-primary").text ("<?=_("Save")?>");
 
-      wpt_openModal ($_groupPopup);
+      H.openModal ($_groupPopup);
     },
 
     // METHOD open ()
@@ -260,7 +260,7 @@
                 $_groupAccessPopup.find("input[name='access']:checked").val ()
             };
 
-      wpt_request_ws (
+      H.request_ws (
         "POST",
         "wall/"+wallId+"/group/"+$group[0].dataset.id+"/link",
         data,
@@ -268,7 +268,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
             this.displayGroups ();
         });
@@ -279,7 +279,7 @@
     {
       const wallId = wpt_sharer.getCurrent("wall").wall ("getId");
 
-      wpt_request_ws (
+      H.request_ws (
         "POST",
         "wall/"+wallId+"/group/"+args.id+"/unlink",
         null,
@@ -287,7 +287,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
             this.displayGroups ();
         });
@@ -302,7 +302,7 @@
                 "/group/"+$group[0].dataset.id :
               "group/"+$group[0].dataset.id
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         service,
         null,
@@ -310,7 +310,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
             this.displayGroups ();
         });
@@ -323,7 +323,7 @@
               "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group" :
               "group";
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         service,
         args,
@@ -331,7 +331,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
             this.displayGroups ();
@@ -343,7 +343,7 @@
     // METHOD updateGroup ()
     updateGroup: function (args)
     {
-      wpt_request_ws (
+      H.request_ws (
         "POST",
         "group/"+args.groupId,
         args,
@@ -351,7 +351,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
             this.displayGroups ();
@@ -366,7 +366,7 @@
             $wall = wpt_sharer.getCurrent ("wall"),
             $body = $share.find (".modal-body");
 
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group",
         null,
@@ -374,7 +374,7 @@
         (d) =>
         {
           if (d.error_msg)
-            return wpt_raiseError (null, d.error_msg);
+            return H.raiseError (null, d.error_msg);
         
           const $div = $body.find (".list-group.attr");
           let html = '';
@@ -388,7 +388,7 @@
             d.in.forEach ((item) =>
               {
                 const unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="close" data-toggle="tooltip" title="${item.type == <?=WPT_GTYPES['dedicated']?> ? "<?=_("Unlink this dedicated group")?>" : "<?=_("Unlink this group")?>"}"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button>`;
-                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${wpt_htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${wpt_getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||""}</span>${unlinkBtn}<button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button></li>`;
+                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||""}</span>${unlinkBtn}<button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button></li>`;
               });
 
             if (d.in.length == 1)
@@ -425,10 +425,10 @@
             $body.find(".delegate-admin-only").show ();
           }
 
-          wpt_enableTooltips (
+          H.enableTooltips (
             $share.find(".modal-body [data-toggle='tooltip']"));
 
-          wpt_openModal ($share);
+          H.openModal ($share);
         });
     }
 

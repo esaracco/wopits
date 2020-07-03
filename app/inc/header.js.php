@@ -68,7 +68,7 @@
             $wall = settings.wall,
             type = settings.type,
             isCol = (type == "col"),
-            adminAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
+            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
                                            settings.access);
 
       $header[0].dataset.id = "header-"+settings.id;
@@ -145,7 +145,7 @@
             case "delete":
               plugin.edit (() =>
                 {
-                  wpt_openConfirmPopover ({
+                  H.openConfirmPopover ({
                        item: $cell.find("i.btn-menu"),
                        placement: (isCol) ? "left" : "right",
                        title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -169,7 +169,7 @@
 
               plugin.edit (() =>
                 {
-                  wpt_openConfirmPopover ({
+                  H.openConfirmPopover ({
                     type: "update",
                     item: $li.parent().parent().find(".btn-menu"),
                     title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
@@ -205,7 +205,7 @@
     useFocusTrick: function ()
     {
       return (this.settings.wall[0].dataset.shared &&
-              !$.support.touch && !wpt_navigatorIsEdge ());
+              !$.support.touch && !H.navigatorIsEdge ());
     },
 
     // METHOD addUploadLayer ()
@@ -240,7 +240,7 @@
         $(".upload.header-picture").click ();
       }
 
-      if (!settings.wall[0].dataset.shared || wpt_navigatorIsEdge ())
+      if (!settings.wall[0].dataset.shared || H.navigatorIsEdge ())
         __upload__ ();
       else
       {
@@ -278,7 +278,7 @@
             $header = plugin.element,
             type =
               (($header.parent().parent()[0].tagName=="TBODY")?"row":"col"),
-            adminAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
+            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
                             plugin.settings.access),
             $img = $("<div class='img'><img src='"+src+"'></div>");
 
@@ -318,7 +318,7 @@
 
             plugin.edit (() =>
               {
-                wpt_openConfirmPopover ({
+                H.openConfirmPopover ({
                   item: $(this),
                   placement: "right",
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -369,7 +369,7 @@
             $wall = this.settings.wall,
             oldW = $header.outerWidth ();
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/header/"+this.settings.id+"/picture",
         null,
@@ -377,13 +377,13 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
           {
             if (this.settings.type == "col")
               $header.find(".img").remove ();
             else
-              wpt_headerRemoveContentKeepingWallSize ({
+              H.headerRemoveContentKeepingWallSize ({
                 oldW: oldW,
                 cb: () => $header.find(".img").remove ()
               });
@@ -412,7 +412,7 @@
             thIdx = $header.index (),
             isRow = (plugin.settings.type == "row");
 
-      title = wpt_noHTML (title);
+      title = H.noHTML (title);
 
       if (resize)
       {
@@ -434,7 +434,7 @@
 
         $header.find(".title").html (title ? title : "&nbsp;");
 
-        wpt_waitForDOMUpdate (()=>
+        H.waitForDOMUpdate (()=>
           {
             const newW = $header.outerWidth ();
 
@@ -479,7 +479,7 @@
       if (!this.settings.wall[0].dataset.shared)
         return success_cb && success_cb ();
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
         null,
@@ -489,7 +489,7 @@
           // If header does not exists anymore (row/col has been deleted)
           if (d.error_msg)
           {
-            wpt_raiseError (() =>
+            H.raiseError (() =>
               {
                 error_cb && error_cb ();
                 this.cancelEdit ();
@@ -573,14 +573,14 @@
             args.data.error_msg : null;
 
         if (msg)
-          wpt_displayMsg ({
+          H.displayMsg ({
             type: (args.data.error) ? "danger" : "warning",
             msg: msg
           });
       }
 
       // Update header only if it has changed
-      if (wpt_updatedObject(_originalObject, _serializeOne (this.element)))
+      if (H.updatedObject(_originalObject, _serializeOne (this.element)))
       {
         data = {
           headers: this.serialize (),
@@ -596,7 +596,7 @@
       else if (!this.settings.wall[0].dataset.shared)
         return this.cancelEdit (args.bubble_cb);
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
         data,
@@ -651,17 +651,17 @@
             {
               _realEdit = true;
 
-              wpt_getUploadedFiles (e.target.files,
+              H.getUploadedFiles (e.target.files,
                 (e, file) =>
                 {
                   $upload.val ("");
 
-                  if (wpt_checkUploadFileSize ({size: e.total}) &&
+                  if (H.checkUploadFileSize ({size: e.total}) &&
                       e.target.result)
                   {
                     const oldW = $header.outerWidth ();
   
-                    wpt_request_ajax (
+                    H.request_ajax (
                       "PUT",
                       "wall/"+settings.wallId+
                       "/header/"+settings.id+"/picture",

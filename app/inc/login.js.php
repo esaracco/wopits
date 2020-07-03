@@ -20,7 +20,7 @@
       $(".login-page .modal")
         .on('hidden.bs.modal', function(e)
         {
-          wpt_displayMsg ({target:$(this), reset: true});
+          H.displayMsg ({target:$(this), reset: true});
         });
 
       $login
@@ -43,25 +43,23 @@
 
               $popup = $("#createAccountPopup");
 
-              wpt_displayMsg ({reset: true});
-
-              wpt_cleanPopupDataAttr ($popup);
+              H.displayMsg ({reset: true});
+              H.cleanPopupDataAttr ($popup);
 
               plugin.resetCreateUserForm ();
               $popup[0].dataset.noclosure = true;
-              wpt_openModal ($popup);
+              H.openModal ($popup);
               break;
 
             case "forgot":
 
               $popup = $("#resetPasswordPopup");
 
-              wpt_cleanPopupDataAttr ($popup);
-
-              wpt_displayMsg ({reset: true});
+              H.cleanPopupDataAttr ($popup);
+              H.displayMsg ({reset: true});
 
               $popup[0].dataset.noclosure = true;
-              wpt_openModal ($popup);
+              H.openModal ($popup);
               break;
 
           }
@@ -101,7 +99,7 @@
 
           e.stopImmediatePropagation ();
 
-          wpt_displayMsg ({target:$popup, reset: true});
+          H.displayMsg ({target:$popup, reset: true});
 
           $popup[0].dataset.noclosure = true;
 
@@ -123,7 +121,7 @@
           else if (plugin.checkRequired ($popup.find("input")) &&
                    plugin.validForm ($popup.find("input")))
           {
-            wpt_displayMsg ({reset: true});
+            H.displayMsg ({reset: true});
 
             $popup.find(".main")
               .addClass("readonly")
@@ -177,7 +175,7 @@
     // METHOD login ()
     login: function (args)
     {
-      wpt_request_ajax (
+      H.request_ajax (
         "POST",
         "user/login",
         args,
@@ -185,7 +183,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
             return location.href = "/";
         });
@@ -196,7 +194,7 @@
     {
       location.href = "/login.php";
 
-      wpt_request_ajax (
+      H.request_ajax (
         "POST",
         "user/logout");
     },
@@ -204,7 +202,7 @@
     // METHOD createUser ()
     createUser: function (args)
     {
-      wpt_request_ajax (
+      H.request_ajax (
         "PUT",
         "user",
         args,
@@ -213,7 +211,7 @@
         {
           if (d.error_msg)
           {
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
 
             this.resetCreateUserForm ();
           }
@@ -225,7 +223,7 @@
     // METHOD resetPassword ()
     resetPassword: function (args)
     {
-      wpt_request_ajax (
+      H.request_ajax (
         "POST",
         "user/resetPassword",
         args,
@@ -233,11 +231,11 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           else
           {
             $("#resetPasswordPopup").modal ("hide");
-            wpt_displayMsg ({
+            H.displayMsg ({
                 noclosure: true,
                 type: "info",
                 msg: "<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>"

@@ -15,8 +15,8 @@
             $cell = plugin.element,
             settings = plugin.settings,
             $wall = settings.wall,
-            writeAccess = wpt_checkAccess (
-                            "<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
+            writeAccess =
+              H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
       // Coords of touchstart on touch devices
       let _coords = null;
 
@@ -317,20 +317,20 @@
       if (!this.settings.wall[0].dataset.shared)
         return;
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
         null,
         // success cb
         (d) => d.error_msg &&
-                 wpt_raiseError (() => error_cb && error_cb (), d.error_msg)
+                 H.raiseError (() => error_cb && error_cb (), d.error_msg)
       );
     },
 
     // METHOD unedit ()
     unedit: function ()
     {
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
         {

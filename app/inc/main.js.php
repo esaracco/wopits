@@ -85,7 +85,7 @@
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
-      wpt_waitForDOMUpdate (() =>
+      H.waitForDOMUpdate (() =>
         {
           // Create wall columns headers
           const hcols = settings.headers.cols;
@@ -172,7 +172,7 @@
             $wall = wpt_sharer.getCurrent ("wall"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
-            adminAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>");
+            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>");
 
       switch (args.from)
         {
@@ -370,7 +370,7 @@
     {
       this.repositionPostitsPlugs ();
 
-      wpt_waitForDOMUpdate (()=>
+      H.waitForDOMUpdate (()=>
         this.element.find(".postit").each (function ()
           {
             $(this).postit ("showPlugs");
@@ -386,7 +386,7 @@
       {
         if (d.removed)
         { 
-          wpt_displayMsg ({type: "warning", msg: d.removed});
+          H.displayMsg ({type: "warning", msg: d.removed});
           
           plugin.close ();
         }
@@ -397,7 +397,7 @@
       if (data)
         __refresh (data);
       else
-        wpt_request_ajax (
+        H.request_ajax (
           "GET",
           "wall/"+plugin.settings.id,
           null,
@@ -679,7 +679,7 @@
     // METHOD openCloseAllWallsPopup ()
     openCloseAllWallsPopup: function ()
     {
-      wpt_openConfirmPopup ({
+      H.openConfirmPopup ({
         type: "close-walls",
         icon: "times",
         content: `<?=_("Close the walls?")?>`,
@@ -751,7 +751,7 @@
     {
       this.edit (() =>
         {
-          wpt_openConfirmPopup ({
+          H.openConfirmPopup ({
             type: "delete-wall",
             icon: "trash",
             content: `<?=_("Delete this wall?")?>`,
@@ -782,9 +782,9 @@
 
       if (Number (wall.dataset.rows) *
             Number (wall.dataset.cols) >= <?=WPT_MAX_CELLS?>)
-        return wpt_infoPopup ("<?=_("For performance reasons, a wall cannot contain more than %s cells")?>.".replace("%s", <?=WPT_MAX_CELLS?>));
+        return H.infoPopup ("<?=_("For performance reasons, a wall cannot contain more than %s cells")?>.".replace("%s", <?=WPT_MAX_CELLS?>));
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.id+"/"+type,
         null,
@@ -846,12 +846,12 @@
 
       $tr.find("td").cell ("removePostitsPlugs");
 
-      wpt_headerRemoveContentKeepingWallSize ({
+      H.headerRemoveContentKeepingWallSize ({
         oldW: $tr.find("th").outerWidth (),
         cb: () => $tr.remove ()
       });
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/row/"+rowIdx,
         {wall: {width: Math.trunc($wall.outerWidth ())}},
@@ -889,7 +889,7 @@
 
       plugin.fixSize (oldW, newW); 
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+plugin.settings.id+"/col/"+(idx - 1),
         data,
@@ -940,7 +940,7 @@
       if (args.restoring)
         $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
-      wpt_request_ajax (
+      H.request_ajax (
         method,
         service,
         data,
@@ -963,12 +963,12 @@
               setTimeout (
                 ()=> $("#settingsPopup").settings ("saveOpenedWalls"), 500);
 
-              return wpt_displayMsg ({type: "warning", msg: d.removed});
+              return H.displayMsg ({type: "warning", msg: d.removed});
             }
           }
 
           if (d.error_msg)
-            return wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            return H.displayMsg ({type: "warning", msg: d.error_msg});
 
           if ($popup)
             $popup.modal ("hide");
@@ -982,7 +982,7 @@
             $(`<button type="button" class="close"><span class="close">&times;</span></button>`)
              .on("click",function()
              {
-               wpt_openConfirmPopover ({
+               H.openConfirmPopover ({
                  item: $(this),
                  placement: "left",
                  title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
@@ -1033,13 +1033,13 @@
     // METHOD clone ()
     clone: function ()
     {
-      wpt_openConfirmPopup ({
+      H.openConfirmPopup ({
         type: "clone-wall",
         icon: "clone",
         content: `<?=_("Depending on its content, cloning a wall can take time.<br>Do you confirm this request?")?>`,
         cb_ok: () =>
           {
-            wpt_request_ajax (
+            H.request_ajax (
             "PUT",
             "wall/"+this.settings.id+"/clone",
             null,
@@ -1047,14 +1047,14 @@
             (d) =>
               {
                 if (d.error_msg)
-                  return wpt_displayMsg ({
+                  return H.displayMsg ({
                            type: "warning",
                            msg: d.error_msg
                          });
 
                 $("<div/>").wall ("open", d.wallId);
 
-                wpt_displayMsg ({
+                H.displayMsg ({
                   type: "success",
                   msg: "<?=_("The wall has been successfully cloned.")?>"
                 });
@@ -1066,11 +1066,11 @@
     // METHOD export ()
     export: function ()
     {
-      wpt_openConfirmPopup ({
+      H.openConfirmPopup ({
         type: "export-wall",
         icon: "file-export",
         content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm this request?")?>`,
-        cb_ok: () => wpt_download ({
+        cb_ok: () => H.download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",
           msg: "<?=_("An error occurred while exporting wall data.")?>"
@@ -1099,7 +1099,7 @@
     // METHOD refreshUserWallsData ()
     refreshUserWallsData: function (success_cb)
     {
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         "wall",
         null,
@@ -1123,7 +1123,7 @@
           $popup.openWall ("reset");
           $popup.openWall ("displayWalls");
 
-          wpt_openModal ($popup);
+          H.openModal ($popup);
         });
     },
 
@@ -1132,16 +1132,16 @@
     {
       const $popup = $("#createWallPopup");
 
-      wpt_cleanPopupDataAttr ($popup);
+      H.cleanPopupDataAttr ($popup);
       $popup[0].dataset.noclosure = true;
-      wpt_openModal ($popup);
+      H.openModal ($popup);
     },
 
     // METHOD displayWallUsersview()
     displayWallUsersview: function ()
     {
       //TODO We should use ajax instead of ws
-      wpt_request_ws (
+      H.request_ws (
         "GET",
         "wall/"+this.settings.id+"/usersview",
         null,
@@ -1154,11 +1154,11 @@
           d.list.forEach ((item) =>
             {
               if (item.id != userId)
-                html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${wpt_htmlQuotes(item.fullname)}" data-picture="${item.picture||""}" data-about="${wpt_htmlQuotes(item.about||"")}">${wpt_getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
+                html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlQuotes(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlQuotes(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
             });
 
           $popup.find(".list-group").html (html);
-          wpt_openModal ($popup);
+          H.openModal ($popup);
         }
       );
     },
@@ -1168,7 +1168,7 @@
     {
       const $wall = this.element;
 
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         "wall/"+this.settings.id+"/infos",
         null,
@@ -1177,17 +1177,17 @@
         {
           const $popup = $("#wallPropertiesPopup");
 
-          wpt_cleanPopupDataAttr ($popup);
+          H.cleanPopupDataAttr ($popup);
 
           $popup.find(".description").show ();
 
           $popup.find(".creator").text (d.user_fullname);
           $popup.find(".creationdate").text (
-            wpt_getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
+            H.getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
 
           $popup.find(".size").hide ();
 
-          if (wpt_checkAccess("<?=WPT_RIGHTS['walls']['admin']?>"))
+          if (H.checkAccess("<?=WPT_RIGHTS['walls']['admin']?>"))
           {
             const $input = $popup.find(".name input");
 
@@ -1221,15 +1221,15 @@
             $popup.find(".adm").hide ();
             $popup.find(".ro").show ();
 
-            $popup.find(".name .ro").html(wpt_nl2br (d.name));
+            $popup.find(".name .ro").html(H.nl2br (d.name));
             if (d.description)
-              $popup.find(".description .ro").html(wpt_nl2br (d.description));
+              $popup.find(".description .ro").html(H.nl2br (d.description));
             else
               $popup.find(".description").hide ();
           }
       
           $popup[0].dataset.noclosure = true;
-          wpt_openModal ($popup);
+          H.openModal ($popup);
         }
       );
     },
@@ -1237,7 +1237,7 @@
     // METHOD openPropertiesPopup ()
     openPropertiesPopup: function (args)
     {
-      if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
+      if (H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
         this.edit (() => this.displayWallProperties (args));
       else
         this.displayWallProperties ();
@@ -1256,13 +1256,13 @@
 
       let html = (noicon) ?
         `<i class="fas fa-cog fa-spin fa-fw"></i>` :
-         wpt_getAccessIcon (this.settings.access);
+         H.getAccessIcon (this.settings.access);
 
       if (!noicon && this.settings.ownerid != wpt_userData.id)
         html = `<i class="fas fa-user-slash notowner" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
 
       $div.find('span.icon').html (html);
-      $div.find('span.val').text (wpt_noHTML (name));
+      $div.find('span.val').text (H.noHTML (name));
     },
 
     // METHOD getDescription ()
@@ -1275,7 +1275,7 @@
     setDescription: function (description)
     {
       $('a[href="#wall-'+this.settings.id+'"]')[0]
-        .dataset.description = wpt_noHTML (description);
+        .dataset.description = H.noHTML (description);
     },
 
     // METHOD fixSize ()
@@ -1314,7 +1314,7 @@
             type = args.type,
             noalert = !!args.noalert,
             zoomStep = (!!args.step) ? args.step : 0.2,
-            writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
+            writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
       let stylesOrigin;
 
       if (type == "screen")
@@ -1332,7 +1332,7 @@
         stylesOrigin = zoom0.style;
 
         if (writeAccess && !noalert)
-          wpt_displayMsg ({
+          H.displayMsg ({
             type: "warning",
             title: "<?=_("Zoom enabled")?>",
             msg: "<?=_("The wall is read only")?>"
@@ -1372,7 +1372,7 @@
         this.menu ({from: "display", type: "zoom-normal-off"});
 
         if (writeAccess && !noalert)
-          wpt_displayMsg ({
+          H.displayMsg ({
             type: "info",
             title: "<?=_("Zoom disabled")?>",
             msg: "<?=_("The wall is again editable")?>"
@@ -1445,7 +1445,7 @@
       if (!this.settings.shared)
         return success_cb && success_cb ();
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
         {todelete: todelete},
@@ -1454,12 +1454,12 @@
         {
           if (d.removed)
           {
-            wpt_displayMsg ({type: "warning", msg: d.removed});
+            H.displayMsg ({type: "warning", msg: d.removed});
 
             this.close ();
           }
           else if (d.error_msg)
-            wpt_raiseError (() => error_cb && error_cb (), d.error_msg);
+            H.raiseError (() => error_cb && error_cb (), d.error_msg);
           else if (success_cb)
             success_cb (d);
         }
@@ -1486,7 +1486,7 @@
       {
         data = this.serialize ();
 
-        if (!wpt_updatedObject (_originalObject, data))
+        if (!H.updatedObject (_originalObject, data))
         {
           if (!this.settings.shared)
             return success_cb && success_cb ();
@@ -1495,7 +1495,7 @@
         }
       }
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
         data,
@@ -1506,7 +1506,7 @@
           {
             error_cb && error_cb ();
 
-            wpt_displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "warning", msg: d.error_msg});
           }
           else if (success_cb)
             success_cb ();
@@ -1545,7 +1545,7 @@
             $settings.settings ("applyTheme");
 
             // Check if wopits has been upgraded
-            wpt_checkForAppUpgrade ();
+            H.checkForAppUpgrade ();
 
             // Load previously opened walls
             $("<div/>").wall ("restorePreviousSession");
@@ -1564,11 +1564,11 @@
 
           });
 
-        wpt_fixMenuHeight ();
-        wpt_fixMainHeight ();
+        H.fixMenuHeight ();
+        H.fixMainHeight ();
 
         //FIXME KO with some browsers and touch devices
-        if ($.support.touch || wpt_navigatorIsEdge ())
+        if ($.support.touch || H.navigatorIsEdge ())
           $("#main-menu").addClass ("nofullview");
 
         // Arrows plugin is useless on desktop
@@ -1598,18 +1598,18 @@
             {
               if (e.target.files && e.target.files.length)
               {
-                wpt_getUploadedFiles (e.target.files,
+                H.getUploadedFiles (e.target.files,
                   (e, file) =>
                   {
                     $(this).val ("");
   
-                    if (wpt_checkUploadFileSize ({
+                    if (H.checkUploadFileSize ({
                           size: e.total,
                           maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
                         }) &&
                         e.target.result)
                     {
-                      wpt_request_ajax (
+                      H.request_ajax (
                         "PUT",
                         "wall/import",
                         {
@@ -1622,14 +1622,14 @@
                         (d) =>
                         {
                           if (d.error_msg)
-                            return wpt_displayMsg ({
+                            return H.displayMsg ({
                                      type: "warning",
                                      msg: d.error_msg
                                    });
   
                           $("<div/>").wall ("open", d.wallId);
   
-                          wpt_displayMsg ({
+                          H.displayMsg ({
                             type: "success",
                             msg: "<?=_("The wall has been successfully imported.")?>"
                           });
@@ -1669,9 +1669,9 @@
             $popup.find(".modal-title span").text (a.dataset.title);
             $popup.find(".name dd").text (a.dataset.title);
             $popup.find(".about dd").html ((a.dataset.about) ?
-              wpt_nl2br(a.dataset.about) : "<i><?=_("No description.")?></i>");
+              H.nl2br(a.dataset.about) : "<i><?=_("No description.")?></i>");
 
-            wpt_openModal ($popup);
+            H.openModal ($popup);
           });
 
         // EVENT CLICK on menu items
@@ -1755,7 +1755,7 @@
 
               case "new":
 
-                wpt_closeMainMenu ();
+                H.closeMainMenu ();
 
                 $("<div/>").wall ("openNamePopup");
 
@@ -1763,13 +1763,13 @@
 
               case "about":
 
-                wpt_openModal ($("#aboutPopup"));
+                H.openModal ($("#aboutPopup"));
 
                 break;
 
               case "user-guide":
 
-                wpt_openModal ($("#userGuidePopup"));
+                H.openModal ($("#userGuidePopup"));
 
                 break;
 
@@ -1844,7 +1844,7 @@
       // EVENT CLICK on about at login page
       else
         $('[data-action="about"]').on("click", function ()
-          {wpt_openModal ($("#aboutPopup"))});
+          {H.openModal ($("#aboutPopup"))});
 
   });
 

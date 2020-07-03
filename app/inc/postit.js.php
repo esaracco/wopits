@@ -56,8 +56,8 @@
             $postit = plugin.element,
             settings = plugin.settings,
             $wall = settings.wall,
-            writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
-                                           settings.access);
+            writeAccess = H.checkAccess (
+              "<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
 
       $postit[0].className = settings.classes || "postit";
       $postit[0].dataset.tags = settings.tags || "";
@@ -183,17 +183,17 @@
                     $start.postit ("cancelPlugAction");
                   };
 
-                wpt_cleanPopupDataAttr ($popup);
+                H.cleanPopupDataAttr ($popup);
 
                 wpt_sharer.set ("link-from", from);
 
-                wpt_openModal ($popup);
+                H.openModal ($popup);
               });
           }
           else
           {
             if (from.id != id)
-              wpt_displayMsg ({
+              H.displayMsg ({
                 type: "warning",
                 msg: "<?=_("This relationship already exists")?>"
               });
@@ -275,7 +275,7 @@
               plugin.repositionPlugs ();
 // TODO - 1 - Hide plugs instead of moving them with postits (performance
 //            issue with some touch devices)
-//              wpt_waitForDOMUpdate (() => plugin.showPlugs ());
+//              H.waitForDOMUpdate (() => plugin.showPlugs ());
             }
         })
         // RESIZABLE post-it
@@ -427,7 +427,7 @@
 
               plugin.setCurrent ();
 
-              wpt_cleanPopupDataAttr ($popup);
+              H.cleanPopupDataAttr ($popup);
 
               $popup.find(".modal-body").html ((content) ?
                 content : "<i><?=_("No content.")?></i>");
@@ -435,7 +435,7 @@
               $popup.find(".modal-title").html (
                 `<i class="fas fa-sticky-note"></i> ${title}`);
 
-              wpt_openModal ($popup, _getMaxEditModalWidth (content));
+              H.openModal ($popup, _getMaxEditModalWidth (content));
             }
             // Open modal with write rights
             else
@@ -449,7 +449,7 @@
                   {
                     case "delete":
 
-                      wpt_openConfirmPopover ({
+                      H.openConfirmPopover ({
                         item: $header,
                         placement: "right",
                         title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -495,9 +495,9 @@
                       tinymce.activeEditor.setContent (content);
 
                       if ($.support.touch)
-                        wpt_fixVKBScrollStart ();
+                        H.fixVKBScrollStart ();
 
-                      wpt_openModal ($popup, _getMaxEditModalWidth (content));
+                      H.openModal ($popup, _getMaxEditModalWidth (content));
     
                       break;
     
@@ -577,7 +577,7 @@
 
                 plugin.edit (null, () =>
                   {
-                    wpt_openConfirmPopover ({
+                    H.openConfirmPopover ({
                       item: $postit.find("[data-action='menu']"),
                       placement: "left",
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -644,13 +644,13 @@
                           });
                         }
                         else
-                          wpt_displayMsg ({
+                          H.displayMsg ({
                             type: "warning",
                             msg: "<?=_("This item has been deleted")?>"
                           });
                       });
 
-                      wpt_sharer.set("plugs-to-save", toSave);
+                      wpt_sharer.set ("plugs-to-save", toSave);
 
                       plugin.unedit ();
 
@@ -702,7 +702,7 @@
               {
                 plugin.edit (null, () =>
                 {
-                  wpt_openConfirmPopover ({
+                  H.openConfirmPopover ({
                     item: $item,
                     title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
                     content: "<?=_("Reset deadline?")?>",
@@ -842,7 +842,7 @@
     // METHOD updatePlugLabel ()
     updatePlugLabel: function (args)
     {
-      const label = wpt_noHTML (args.label);
+      const label = H.noHTML (args.label);
 
       for (let i = 0, iLen = this.settings._plugs.length; i < iLen; i++)
       {
@@ -885,11 +885,11 @@
 
       if (pos)
       {
-        const writeAccess = wpt_checkAccess (
+        const writeAccess = H.checkAccess (
                 "<?=WPT_RIGHTS['walls']['rw']?>", this.settings.access),
               menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
-        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? wpt_noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
+        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
       }
     },
 
@@ -991,7 +991,7 @@
           toDefrag[id].postit ("defragPlugsArray");
 
         if (!noedit)
-          wpt_sharer.set("plugs-to-save", toDefrag);
+          wpt_sharer.set ("plugs-to-save", toDefrag);
       }
 
       return ","+plug.startId+";"+plug.endId;
@@ -1012,8 +1012,11 @@
       (settings._plugs||[]).forEach ((plug)=>
         {
           // Remove label
-          plug.labelObj.remove ();
-          plug.labelObj = null;
+          if (plug.labelObj)
+          {
+            plug.labelObj.remove ();
+            plug.labelObj = null;
+          }
 
           toDefrag[plug.startId] = $(plug.obj.start);
           toDefrag[plug.endId] = $(plug.obj.end);
@@ -1031,7 +1034,7 @@
         toDefrag[id].postit ("defragPlugsArray");
 
       if (!noedit)
-        wpt_sharer.set("plugs-to-save", toDefrag);
+        wpt_sharer.set ("plugs-to-save", toDefrag);
 
       $postit[0].dataset.plugs = "";
       settings._plugs = [];
@@ -1205,12 +1208,11 @@
       if (!deadline || isNaN (deadline))
         human = deadline||_defaultString;
       else
-        human = (deadline) ?
-          wpt_getUserDate (deadline, timezone) : _defaultString;
+        human = (deadline) ? H.getUserDate(deadline, timezone) : _defaultString;
 
       $date.find("span").text (human);
 
-      if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
+      if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
           human == _defaultString)
       {
         $postit[0].removeAttribute ("data-deadline");
@@ -1243,7 +1245,7 @@
     setTitle: function (title)
     {
       this.element.find(".postit-header span.title")
-        .html (wpt_noHTML(title) || _defaultString);
+        .html (H.noHTML(title) || _defaultString);
     },
 
     // METHOD setContent ()
@@ -1358,7 +1360,7 @@
             c = (item.ownerid && item.ownerid != wpt_userData.id) ?
                   `<span>${item.ownername}</span>` : '';
 
-      return `<li data-id="${item.id}" data-url="${item.link}" data-fname="${wpt_htmlQuotes(item.name)}" class="list-group-item list-group-item-action"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> ${item.name} <div class="item-infos"><span class="creationdate">${wpt_getUserDate (item.creationdate)}</span><span class="file-size">${wpt_getHumanSize(item.size)}</span>${c}</div>${noWriteAccess?'':w}</li>`;
+      return `<li data-id="${item.id}" data-url="${item.link}" data-fname="${H.htmlQuotes(item.name)}" class="list-group-item list-group-item-action"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> ${item.name} <div class="item-infos"><span class="creationdate">${H.getUserDate (item.creationdate)}</span><span class="file-size">${H.getHumanSize(item.size)}</span>${c}</div>${noWriteAccess?'':w}</li>`;
     },
 
     // METHOD getAttachmentsCount ()
@@ -1371,9 +1373,9 @@
     displayAttachments: function ()
     {
       const $postit = this.element,
-            writeAccess = wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
+            writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
 
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+
@@ -1403,7 +1405,7 @@
 
           $_attachmentsPopup[0].dataset.noclosure = true; 
 
-          wpt_openModal ($_attachmentsPopup);
+          H.openModal ($_attachmentsPopup);
         }
       );
     },
@@ -1467,7 +1469,7 @@
       if ($postit[0].dataset.deadline)
         $datePicker.datepicker ("setDate", $postit[0].dataset.deadline);
       
-      wpt_openPopupLayer (() =>
+      H.openPopupLayer (() =>
         {
           plugin.removeDatePicker ();
           plugin.unedit ();
@@ -1506,7 +1508,7 @@
       const $postit = this.element,
             data = this.serialize()[0];
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.wallId+
         "/cell/"+this.settings.cellId+"/postit",
@@ -1515,7 +1517,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_displayMsg ({
+            H.displayMsg ({
               type: "warning",
               msg: d.error_msg
             });
@@ -1525,8 +1527,8 @@
         // error cb
         (d) =>
         {
-         //FIXME factorisation (cf. wpt_request_ws ())
-          wpt_displayMsg ({
+          //FIXME factorisation (cf. H.request_ws ())
+          H.displayMsg ({
             type: "danger",
             msg: (isNaN (d.error)) ?
               d.error : "<?=_("Unknown error.<br>Please try again later.")?>"
@@ -1568,7 +1570,7 @@
 
       this.setAttachmentsCount (d.attachmentscount);
 
-      this.setCreationDate (d.creationdate?wpt_getUserDate (d.creationdate):'');
+      this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):'');
 
       this.setDeadline (d.deadline, d.timezone);
 
@@ -1601,7 +1603,7 @@
       const $postit = this.element,
             $attachment = $_attachmentsPopup.find("li.todelete");
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
@@ -1611,7 +1613,7 @@
         (d) =>
         {
           if (d.error_msg)
-            wpt_raiseError (null, d.error_msg);
+            H.raiseError (null, d.error_msg);
           else
           {
             $attachment.remove ();
@@ -1644,10 +1646,10 @@
       }
 
       if (!this.settings.wall[0].dataset.shared ||
-          !wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
+          !H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
         return success_cb && success_cb ();
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
         data,
@@ -1659,7 +1661,7 @@
 
           if (d.error_msg)
           {
-            wpt_raiseError (() =>
+            H.raiseError (() =>
               {
                 error_cb && error_cb ();
                 this.cancelEdit (args);
@@ -1682,7 +1684,7 @@
       let data = null,
           todelete;
 
-      if (!wpt_checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
+      if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
         return this.cancelEdit (args);
 
       if (!args.plugend)
@@ -1706,7 +1708,7 @@
           todelete = !!data.todelete;
 
           // Update postit only if it has changed
-          if (todelete || wpt_updatedObject (_originalObject,
+          if (todelete || H.updatedObject (_originalObject,
                                              data, {hadpictures: 1}))
             data["cellId"] = this.settings.cellId;
           else if (!this.settings.wall[0].dataset.shared)
@@ -1716,7 +1718,7 @@
         }
       }
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
         data,
@@ -1726,7 +1728,7 @@
           this.cancelEdit (args);
 
           if (d.error_msg)
-            wpt_displayMsg ({
+            H.displayMsg ({
               type: "warning",
               msg: d.error_msg
             });
@@ -1755,7 +1757,7 @@
         this.element[0].removeAttribute ("data-hadpictures");
 
         if (!this.settings.wall)
-          wpt_raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
+          H.raiseError (null, "<?=_("The entire column was deleted while you were editing the post-it!")?>");
       }
     },
 
@@ -1831,11 +1833,11 @@
                       {
                         const src = tmp[1];
 
-                        wpt_loader ("show");
-                        wpt_testImage(src)
+                        H.loader ("show");
+                        H.testImage(src)
                           .then (null, ()=>
                           {
-                            c = c.replace(new RegExp (wpt_quoteRegex(img)), "");
+                            c = c.replace(new RegExp (H.quoteRegex(img)), "");
 
                             editor.setContent (c);
 
@@ -1843,12 +1845,12 @@
                             if ($.support.touch)
                               $("#postitUpdatePopup").scrollTop (0);
 
-                            wpt_displayMsg ({
+                            H.displayMsg ({
                               type: "warning",
                               msg: "<?=_("The image %s was not available! It has been removed from post-it content.")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
                           })
-                          .finally (()=> wpt_loader("hide"));
+                          .finally (()=> H.loader("hide"));
                       }
                     });
                 }
@@ -1889,7 +1891,7 @@
                   [startId, endId] = $label[0].dataset.id.split ("-"),
                   $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                   $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
-                  defaultLabel = wpt_htmlQuotes ($label.find("span").text ());
+                  defaultLabel = H.htmlQuotes ($label.find("span").text ());
 
             function __unedit ()
             {
@@ -1908,7 +1910,7 @@
 
                 $start.postit ("edit", null, ()=>
                   {
-                    wpt_openConfirmPopover ({
+                    H.openConfirmPopover ({
                       type: "update",
                       item: $label,
                       title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relationship name")?>`,
@@ -1933,7 +1935,7 @@
 
                 $start.postit ("edit", null, ()=>
                   {
-                    wpt_openConfirmPopover ({
+                    H.openConfirmPopover ({
                       item: $label,
                       placement: "left",
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -1955,28 +1957,28 @@
         .on("change", function (e)
         {
           const $upload = $(this),
-                $postit = wpt_sharer.getCurrent("postit"),
+                $postit = wpt_sharer.getCurrent ("postit"),
                 settings = $postit.postit ("getSettings");
 
           if (e.target.files && e.target.files.length)
           {
-            wpt_getUploadedFiles (e.target.files,
+            H.getUploadedFiles (e.target.files,
               (e, file) =>
               {
                 $upload.val ("");
 
                 if ($_attachmentsPopup.find(
                       ".list-group li[data-fname='"+
-                        wpt_htmlQuotes(file.name)+"']").length)
-                  return wpt_displayMsg ({
+                        H.htmlQuotes(file.name)+"']").length)
+                  return H.displayMsg ({
                            type: "warning",
                            msg: "<?=_("The file is already linked to the post-it")?>"
                          });
 
-                if (wpt_checkUploadFileSize ({size: e.total}) &&
+                if (H.checkUploadFileSize ({size: e.total}) &&
                     e.target.result)
                 {
-                  wpt_request_ajax (
+                  H.request_ajax (
                     "PUT",
                     "wall/"+settings.wallId+
                       "/cell/"+settings.cellId+"/postit/"+
@@ -1995,7 +1997,7 @@
                       $_attachmentsPopup.find(".modal-body").scrollTop (0);
 
                       if (d.error_msg)
-                        return wpt_displayMsg ({
+                        return H.displayMsg ({
                                  type: "warning",
                                  msg: d.error_msg
                                });
@@ -2022,29 +2024,29 @@
             function __error_cb (d)
             {
              if (d)
-                wpt_displayMsg ({
+                H.displayMsg ({
                   type: "warning",
                   msg: d.error||d
                 });
             }
 
-            wpt_getUploadedFiles (
+            H.getUploadedFiles (
               this.files,
               (e, file) =>
                 {
                   $upload.val ("");
 
-                  if (wpt_checkUploadFileSize ({
+                  if (H.checkUploadFileSize ({
                         size: e.total,
                         cb_msg: __error_cb
                       }) && e.target.result)
                   {
-                    const wallId = wpt_sharer.getCurrent("wall").wall("getId"),
+                    const wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
                           $postit = wpt_sharer.getCurrent ("postit"),
                           postitId = $postit.postit ("getId"),
                           cellId = $postit.postit ("getCellId");
 
-                    wpt_request_ajax (
+                    H.request_ajax (
                       "PUT",
                       "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
                         "/picture",
@@ -2095,7 +2097,7 @@
       
             $item.addClass ("active todelete");
 
-            wpt_openConfirmPopover ({
+            H.openConfirmPopover ({
               item: $(this),
               placement: "left",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -2111,7 +2113,7 @@
         $(document).on("click", "#postitAttachmentsPopup .modal-body li",
           function (e)
           {
-            wpt_download ($(this)[0].dataset);
+            H.download ($(this)[0].dataset);
           });    
       });
 

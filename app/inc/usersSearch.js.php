@@ -28,7 +28,7 @@
         {
           const $btn = $(this),
                 args = {
-                  wallId: wpt_sharer.getCurrent("wall").wall("getId"),
+                  wallId: wpt_sharer.getCurrent("wall").wall ("getId"),
                   groupType: $ac[0].dataset.grouptype,
                   groupId: $ac[0].dataset.groupid,
                   userId: $btn[0].dataset.id
@@ -96,7 +96,7 @@
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
         service = "wall/"+args.wallId+"/"+service;
 
-      wpt_request_ws (
+      H.request_ws (
         "DELETE",
         service,
         null,
@@ -121,7 +121,7 @@
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
         service = "wall/"+args.wallId+"/"+service;
 
-      wpt_request_ws (
+      H.request_ws (
         "PUT",
         service,
         null,
@@ -148,7 +148,7 @@
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
         service = "wall/"+args.wallId+"/"+service;
 
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         service,
         null,
@@ -200,7 +200,7 @@
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
         data = {wallId: wallId};
 
-      wpt_request_ajax (
+      H.request_ajax (
         "GET",
         service,
         data,
