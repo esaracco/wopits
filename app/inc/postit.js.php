@@ -677,11 +677,9 @@
         $tags.on("mousedown",
           function (e)
           {
-            const evt = e;
-    
             e.stopImmediatePropagation ();
-    
-            plugin.edit (null, () => $(".tag-picker").tagPicker ("open", evt));
+
+            plugin.edit (null, () => $(".tag-picker").tagPicker ("open", e));
           });
       else
         $menu.css ("visibility", "hidden");
