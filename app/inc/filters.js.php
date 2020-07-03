@@ -15,8 +15,8 @@
     {
       const plugin = this,
             $filters = plugin.element,
-            tList = $(".tag-picker").wpt_tagPicker ("getTagsList"),
-            cList = $(".color-picker").wpt_colorPicker ("getColorsList");
+            tList = $(".tag-picker").tagPicker ("getTagsList"),
+            cList = $(".color-picker").colorPicker ("getColorsList");
 
       let tags = '';
       for (let i = 0, iLen = tList.length; i < iLen; i++)
@@ -73,7 +73,7 @@
     hidePlugs: function ()
     {
       this.element.addClass ("plugs-hidden");
-      wpt_sharer.getCurrent ("wall").wpt_wall ("hidePostitsPlugs"); 
+      wpt_sharer.getCurrent("wall").wall ("hidePostitsPlugs"); 
     },
 
     showPlugs: function ()
@@ -81,7 +81,7 @@
       this.element.removeClass ("plugs-hidden");
 
       setTimeout (() =>
-        wpt_sharer.getCurrent("wall").wpt_wall ("showPostitsPlugs"), 0);
+        wpt_sharer.getCurrent("wall").wall ("showPostitsPlugs"), 0);
     },
 
     // METHOD toggle ()

@@ -32,7 +32,7 @@
             icon: "sync-alt",
             content: `<?=_("Reload wopits to apply the new timezone?")?>`,
             cb_ok: () =>
-              $("#settingsPopup").wpt_settings ("applyTimezone", timezone),
+              $("#settingsPopup").settings ("applyTimezone", timezone),
             cb_cancel: () =>
               {
                 const tz = $(this)[0].dataset.timezone;
@@ -60,7 +60,8 @@
                   type: "reload-app",
                   icon: "sync-alt",
                   content: `<?=_("Reload wopits to apply the new language?")?>`,
-                  cb_ok: () => $("#settingsPopup").wpt_settings ("applyLocale", locale)
+                  cb_ok: () =>
+                    $("#settingsPopup").settings ("applyLocale", locale)
                   });
               }
             })
@@ -100,7 +101,7 @@
         this.media = (this.id == theme) ? '' : 'none';
       });
 
-      setTimeout (() => $("<div/>").wpt_postit ("applyTheme"), 250);
+      setTimeout (() => $("<div/>").postit ("applyTheme"), 250);
     },
 
     saveOpenedWalls: function (activeWall)
@@ -210,7 +211,7 @@
       const plugin = this,
             $settings = plugin.element,
             $wall = wpt_sharer.getCurrent ("wall"),
-            wallId = ($wall.length) ? $wall.wpt_wall ("getId") : null,
+            wallId = ($wall.length) ? $wall.wall ("getId") : null,
             $colorPicker = $settings.find(".cp"),
             loaded = $settings[0].dataset.loaded,
             ww = $(window).width ();
@@ -222,7 +223,7 @@
       if ($wall.length)
         $settings.find(".wall-color").html (
           "<?=_("Color of the wall «&nbsp;%s&nbsp;»:")?>"
-            .replace("%s", $wall.wpt_wall ("getName")));
+            .replace("%s", $wall.wall ("getName")));
       else
         $settings.find(".wall-color").html ("<?=_("Default walls color:")?>");
 
@@ -270,7 +271,7 @@
           select: function (e, color)
             {
               const $wall = wpt_sharer.getCurrent ("wall"),
-                    wallId = ($wall.length) ? $wall.wpt_wall ("getId") : null;
+                    wallId = ($wall.length) ? $wall.wall ("getId") : null;
 
               if (color.css != plugin.get ("wall-background", wallId))
               {
@@ -308,7 +309,7 @@
         const $plugin = $("#settingsPopup");
 
         if ($plugin.length)
-          $plugin.wpt_settings ();
+          $plugin.settings ();
       }
     });
 

@@ -77,7 +77,7 @@
 
               // Fix arrows tool appearence
               if ($arrows.is (":visible"))
-                $arrows.wpt_arrows ("update");
+                $arrows.arrows ("update");
 
               plugin.showPostitsPlugs ();
               wpt_sharer.unset ("wall-dragging", true);
@@ -95,7 +95,7 @@
                   $th = $("<th/>");
 
             $wall.find("thead tr").append ($th);
-            $th.wpt_header ({
+            $th.header ({
               access: access,
               type: "col",
               id: header.id,
@@ -121,7 +121,7 @@
               for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
               {
                 cell.postits[k]["access"] = access;
-                $cell.wpt_cell ("addPostit", cell.postits[k], true);
+                $cell.cell ("addPostit", cell.postits[k], true);
               }
             }
           }
@@ -271,7 +271,7 @@
       // Postits menu
       $wall.find("td div.postit-menu.on").each (function ()
         {
-          $(this).parent().wpt_postit ("closeMenu");
+          $(this).parent().postit ("closeMenu");
         });
     
       // Col/row headers menu
@@ -293,7 +293,7 @@
     {
       this.element.find(".postit").each (function ()
         {
-          $(this).wpt_postit ("checkPlugsMenu");
+          $(this).postit ("checkPlugsMenu");
         });
     },
 
@@ -302,7 +302,7 @@
     {
       this.element.find(".postit.with-plugs").each (function ()
         {
-          $(this).wpt_postit ("repositionPlugs");
+          $(this).postit ("repositionPlugs");
         });
     },
 
@@ -331,31 +331,27 @@
               startId: startId,
               endId: endId,
               label: label,
-              obj: $start.wpt_postit ("getPlugTemplate",
-                     $start[0], $end[0], label),
+              obj: $start.postit ("getPlugTemplate", $start[0], $end[0], label)
             };
 
-            $start.wpt_postit ("addPlug", newPlug);
+            $start.postit ("addPlug", newPlug);
 
             if (hidePlugs)
-              $start.wpt_postit ("hidePlugs");
+              $start.postit ("hidePlugs");
           }
           else
-            $start.wpt_postit ("updatePlugLabel", {
-              endId: endId,
-              label: label
-            });
+            $start.postit ("updatePlugLabel", {endId: endId, label: label});
         });
 
         // Remove obsolete plugs
         if (!partial)
           $wall.find(".postit.with-plugs").each (function ()
           {
-            $(this).wpt_postit("getSettings")._plugs.forEach ((plug)=>
+            $(this).postit("getSettings")._plugs.forEach ((plug)=>
               {
                 if (!idsNew[plug.startId+""+plug.endId])
                   $wall.find(".postit[data-id='postit-"+plug.endId+"']")
-                    .wpt_postit("removePlug", plug, true);
+                    .postit("removePlug", plug, true);
               });
           });
     },
@@ -365,7 +361,7 @@
     {
       this.element.find(".postit").each (function ()
         {
-          $(this).wpt_postit ("hidePlugs");
+          $(this).postit ("hidePlugs");
         });
     },
 
@@ -377,7 +373,7 @@
       wpt_waitForDOMUpdate (()=>
         this.element.find(".postit").each (function ()
           {
-            $(this).wpt_postit ("showPlugs");
+            $(this).postit ("showPlugs");
           }));
     },
 
@@ -442,18 +438,17 @@
               // Insert postit
               case "insert":
                 $("td[data-id='cell-"+d.postit.cells_id+"']")
-                  .wpt_cell ("addPostit", d.postit, true);
+                  .cell ("addPostit", d.postit, true);
                 break;
 
               // Update postit
               case "update":
-                $postit.wpt_postit (
-                  "update", d.postit, {id: d.postit.cells_id});
+                $postit.postit ("update", d.postit, {id: d.postit.cells_id});
                 break;
 
               // Remove postit
               case "delete":
-                $postit.wpt_postit ("removePlugs", true);
+                $postit.postit ("removePlugs", true);
                 $postit.remove ();
                 break;
             }
@@ -504,7 +499,7 @@
           if (!$header.length)
           {
             $wall.find("thead tr").append ("<th></th>");
-            $wall.find("thead tr th:last-child").wpt_header ({
+            $wall.find("thead tr th:last-child").header ({
               type: "col",
               id: header.id,
               wall: $wall,
@@ -514,7 +509,7 @@
             });
           }
           else
-            $header.wpt_header ("update", header);
+            $header.header ("update", header);
         }
 
         // Remove deleted rows
@@ -525,12 +520,12 @@
           {
             const $header = $(this);
 
-            if (!rowsHeadersIds[$header.wpt_header ("getId")])
+            if (!rowsHeadersIds[$header.header ("getId")])
             {
               const $cell =
                 $wall.find("tbody tr:eq("+$header.parent().index()+")");
 
-              $cell.wpt_cell ("removePostitsPlugs");
+              $cell.cell ("removePostitsPlugs");
               $cell.remove ();
             }
           });
@@ -546,14 +541,14 @@
 
             if (idx > 0)
             {
-              if (!colsHeadersIds[$header.wpt_header ("getId")])
+              if (!colsHeadersIds[$header.header ("getId")])
               {
                 $wall.find("thead th:eq("+idx+")").remove ();
                 $wall.find("tbody tr").each(function()
                   {
                     const $cell = $(this).find("td:eq("+(idx-1)+")");
 
-                    $cell.wpt_cell ("removePostitsPlugs");
+                    $cell.cell ("removePostitsPlugs");
                     $cell.remove();
                   });
               }
@@ -585,7 +580,7 @@
           else
           {
             $wall.find('tbody th[data-id="header-'+header.id+'"]')
-              .wpt_header ("update", header);
+              .header ("update", header);
           }
 
           for (let j = 0, jLen = row.length; j < jLen; j++)
@@ -604,7 +599,7 @@
               $wall.find("tbody tr:eq("+cell.row+")").append ($cell);
 
               // Init cell
-              $cell.wpt_cell ({
+              $cell.cell ({
                 id: cell.id,
                 access: access,
                 wall: $wall,
@@ -614,16 +609,16 @@
             }
             else
             {
-              $cell.wpt_cell ("update", cell);
+              $cell.cell ("update", cell);
 
               // Remove deleted post-its
               $cell.find(".postit").each (function ()
                 {
                   const $postit = $(this);
 
-                  if (!postitsIds[$postit.wpt_postit ("getId")])
+                  if (!postitsIds[$postit.postit ("getId")])
                   {
-                    $postit.wpt_postit ("removePlugs", true);
+                    $postit.postit ("removePlugs", true);
                     $postit.remove ();
                   }
                 });
@@ -639,7 +634,7 @@
               if (!$postit.length)
               {
                 postit.isNewCell = isNewCell;
-                $cell.wpt_cell ("addPostit", postit, true);
+                $cell.cell ("addPostit", postit, true);
               }
               // else update it
               else
@@ -647,8 +642,7 @@
                 if (d.ignoreResize)
                   postit.ignoreResize = true;
 
-                $postit.wpt_postit (
-                  "update", postit, {id: cell.id, obj: $cell});
+                $postit.postit ("update", postit, {id: cell.id, obj: $cell});
               }
             }
           }
@@ -660,11 +654,11 @@
 
       // If filters tool is visible
       if ($filters.is (":visible"))
-        $filters.wpt_filters ("apply");
+        $filters.filters ("apply");
 
       // If arrows tool is visible
       if ($arrows.is (":visible"))
-        $arrows.wpt_arrows ("reset");
+        $arrows.arrows ("reset");
 
       if (d.postits_plugs)
         setTimeout (() =>
@@ -679,8 +673,7 @@
         plugin.repositionPostitsPlugs ();
 
       // Replay postits search
-      setTimeout (() =>
-        $("#postitsSearchPopup").wpt_postitsSearch("replay"), 250);
+      setTimeout (()=> $("#postitsSearchPopup").postitsSearch("replay"), 250);
     },
 
     // METHOD openCloseAllWallsPopup ()
@@ -701,11 +694,11 @@
       wpt_sharer.set ("closingAll", 1);
       wpt_sharer.getCurrent("walls").find("table.wall").each (function ()
         {
-          $(this).wpt_wall ("close");
+          $(this).wall ("close");
         });
       wpt_sharer.unset ("closingAll");
 
-      $("#settingsPopup").wpt_settings ("saveOpenedWalls");
+      $("#settingsPopup").settings ("saveOpenedWalls");
     },
 
     // METHOD close ()
@@ -720,7 +713,7 @@
             $chatroom = wpt_sharer.getCurrent ("chatroom");
 
       if ($chatroom.is (":visible"))
-        $chatroom.wpt_chatroom ("leave");
+        $chatroom.chatroom ("leave");
 
       $(".modal.show").modal ("hide");
 
@@ -747,7 +740,7 @@
 
       // If we are not massively closing all walls
       if (!wpt_sharer.get("closingAll"))
-        $("#settingsPopup").wpt_settings ("saveOpenedWalls");
+        $("#settingsPopup").settings ("saveOpenedWalls");
 
       //FIXME
       setTimeout (() => wpt_sharer.reset (), 250);
@@ -777,8 +770,8 @@
       this.unedit (() =>
         {
           this.close ();
-          $("#settingsPopup")
-            .wpt_settings ("removeWallBackground", this.settings.id);
+          $("#settingsPopup").settings (
+            "removeWallBackground", this.settings.id);
         });
     },
 
@@ -818,7 +811,7 @@
 
       // Add row
       $wall.find("tbody").append ($row);
-      $row.find("th:eq(0)").wpt_header ({
+      $row.find("th:eq(0)").header ({
         access: plugin.settings.access,
         type: "row",
         id: header.id,
@@ -831,7 +824,7 @@
       // Init cells
       $row.find("td").each (function ()
         {
-          $(this).wpt_cell ({
+          $(this).cell ({
             id: this.dataset.id.substring (5),
             access: plugin.settings.access,
             wall: $wall,
@@ -851,7 +844,7 @@
 
       this.closeAllMenus ();
 
-      $tr.find("td").wpt_cell ("removePostitsPlugs");
+      $tr.find("td").cell ("removePostitsPlugs");
 
       wpt_headerRemoveContentKeepingWallSize ({
         oldW: $tr.find("th").outerWidth (),
@@ -885,7 +878,7 @@
         {
           const $cell = $(this).find("td:eq("+(idx - 1)+")");
 
-          $cell.wpt_cell ("removePostitsPlugs");
+          $cell.cell ("removePostitsPlugs");
           $cell.remove ();
         });
 
@@ -968,7 +961,7 @@
 
               //FIXME Wait for ws server connection...
               setTimeout (
-                ()=>$("#settingsPopup").wpt_settings ("saveOpenedWalls"), 500);
+                ()=> $("#settingsPopup").settings ("saveOpenedWalls"), 500);
 
               return wpt_displayMsg ({type: "warning", msg: d.removed});
             }
@@ -994,19 +987,19 @@
                  placement: "left",
                  title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
                  content: "<?=_("Close this wall?")?>",
-                 cb_ok: () => wpt_sharer.getCurrent("wall").wpt_wall ("close")
+                 cb_ok: () => wpt_sharer.getCurrent("wall").wall ("close")
                });
              }));
 
           d["background-color"] =
-            $("#settingsPopup").wpt_settings ("get", "wall-background", d.id);
+            $("#settingsPopup").settings ("get", "wall-background", d.id);
 
           const $wallDiv = $("#wall-"+d.id);
 
-          $wallDiv.find(".wall").wpt_wall (d);
-          $wallDiv.find(".chatroom").wpt_chatroom ({wallId: d.id});
-          $wallDiv.find(".filters").wpt_filters ();
-          $wallDiv.find(".arrows").wpt_arrows ();
+          $wallDiv.find(".wall").wall (d);
+          $wallDiv.find(".chatroom").chatroom ({wallId: d.id});
+          $wallDiv.find(".filters").filters ();
+          $wallDiv.find(".arrows").arrows ();
 
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
@@ -1022,7 +1015,7 @@
           plugin.menu ({from: "wall", type: "have-wall"});
 
           if (!args.restoring)
-            $("#settingsPopup").wpt_settings ("saveOpenedWalls");
+            $("#settingsPopup").settings ("saveOpenedWalls");
 
         });
     },
@@ -1059,7 +1052,7 @@
                            msg: d.error_msg
                          });
 
-                $("<div/>").wpt_wall ("open", d.wallId);
+                $("<div/>").wall ("open", d.wallId);
 
                 wpt_displayMsg ({
                   type: "success",
@@ -1127,8 +1120,8 @@
         {
           const $popup = $("#openWallPopup");
 
-          $popup.wpt_openWall ("reset");
-          $popup.wpt_openWall ("displayWalls");
+          $popup.openWall ("reset");
+          $popup.openWall ("displayWalls");
 
           wpt_openModal ($popup);
         });
@@ -1531,14 +1524,14 @@
     {
       if (!document.querySelector ("body.login-page"))
       {
-        $("#settingsPopup").wpt_settings ("applyTheme");
+        $("#settingsPopup").settings ("applyTheme");
 
         wpt_WebSocket.connect (
           "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
           {
             const $settings = $("#settingsPopup");
 
-            $settings.wpt_settings ({locale: $("html").attr ("lang")});
+            $settings.settings ({locale: $("html").attr ("lang")});
 
             // if a theme exists from the login page, apply it once the user is
             // logged
@@ -1546,16 +1539,16 @@
             if (loginTheme)
             {
               wpt_storage.delete ("theme");
-              $settings.wpt_settings ("set", {theme: loginTheme});
+              $settings.settings ("set", {theme: loginTheme});
             }
 
-            $settings.wpt_settings ("applyTheme");
+            $settings.settings ("applyTheme");
 
             // Check if wopits has been upgraded
             wpt_checkForAppUpgrade ();
 
             // Load previously opened walls
-            $("<div/>").wpt_wall ("restorePreviousSession");
+            $("<div/>").wall ("restorePreviousSession");
 
             // Keep WS connection and database persistent connection alive and
             // prevent PHP timeout
@@ -1585,7 +1578,7 @@
         $("#normal-display-btn")
           .on("click", function ()
           {
-            wpt_sharer.getCurrent("wall").wpt_wall ("zoom", {type: "normal"});
+            wpt_sharer.getCurrent("wall").wall ("zoom", {type: "normal"});
           });
 
         $("#createWallPopup #w-grid").on("change", function ()
@@ -1634,7 +1627,7 @@
                                      msg: d.error_msg
                                    });
   
-                          $("<div/>").wpt_wall ("open", d.wallId);
+                          $("<div/>").wall ("open", d.wallId);
   
                           wpt_displayMsg ({
                             type: "success",
@@ -1650,7 +1643,7 @@
           .on("click","thead th:first-child",function (e)
           {
             if ($(this).find(".wpt-badge").length)
-              wpt_sharer.getCurrent("wall").wpt_wall ("displayWallUsersview");
+              wpt_sharer.getCurrent("wall").wall ("displayWallUsersview");
           });
 
         $("#wallUsersviewPopup")
@@ -1696,25 +1689,25 @@
             {
               case "zoom+":
 
-                $wall.wpt_wall ("zoom", {type: "+"});
+                $wall.wall ("zoom", {type: "+"});
 
                 break;
 
               case "zoom-":
 
-                $wall.wpt_wall ("zoom", {type: "-"});
+                $wall.wall ("zoom", {type: "-"});
 
                 break;
 
               case "zoom-screen":
 
-                $wall.wpt_wall ("zoom", {type:"screen"});
+                $wall.wall ("zoom", {type:"screen"});
 
                 break;
 
               case "zoom-normal":
 
-                $wall.wpt_wall ("zoom", {type: "normal"});
+                $wall.wall ("zoom", {type: "normal"});
 
                 break;
 
@@ -1726,7 +1719,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("chatroom").wpt_chatroom ("toggle");
+                wpt_sharer.getCurrent("chatroom").chatroom ("toggle");
 
                 break;
 
@@ -1738,7 +1731,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("filters").wpt_filters ("toggle");
+                wpt_sharer.getCurrent("filters").filters ("toggle");
 
                 break;
 
@@ -1750,13 +1743,13 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("arrows").wpt_arrows ("toggle");
+                wpt_sharer.getCurrent("arrows").arrows ("toggle");
 
                 break;
 
               case "settings":
 
-                $("#settingsPopup").wpt_settings ("open");
+                $("#settingsPopup").settings ("open");
 
                 break;
 
@@ -1764,7 +1757,7 @@
 
                 wpt_closeMainMenu ();
 
-                $("<div/>").wpt_wall ("openNamePopup");
+                $("<div/>").wall ("openNamePopup");
 
                 break;
 
@@ -1782,67 +1775,67 @@
 
               case "open":
 
-                $("<div/>").wpt_wall ("openOpenWallPopup");
+                $("<div/>").wall ("openOpenWallPopup");
 
                 break;
 
               case "close-walls":
 
-                $("<div/>").wpt_wall ("openCloseAllWallsPopup");
+                $("<div/>").wall ("openCloseAllWallsPopup");
 
                 break;
 
               case "delete":
 
-                $wall.wpt_wall ("openDeletePopup");
+                $wall.wall ("openDeletePopup");
 
                 break;
 
               case "search":
 
-                $("#postitsSearchPopup").wpt_postitsSearch ("open");
+                $("#postitsSearchPopup").postitsSearch ("open");
 
                 break;
 
               case "clone":
 
-                $wall.wpt_wall ("clone");
+                $wall.wall ("clone");
 
                 break;
 
               case "export":
 
-                $wall.wpt_wall ("export");
+                $wall.wall ("export");
 
                 break;
 
               case "import":
 
-                $("<div/>").wpt_wall ("import");
+                $("<div/>").wall ("import");
 
                 break;
 
               case "share":
 
-                $("#shareWallPopup").wpt_shareWall ("open");
+                $("#shareWallPopup").shareWall ("open");
 
                 break;
 
               case "add-col":
 
-                $wall.wpt_wall ("createColRow", "col");
+                $wall.wall ("createColRow", "col");
 
                 break;
 
               case "add-row":
 
-                $wall.wpt_wall ("createColRow", "row");
+                $wall.wall ("createColRow", "row");
 
                 break;
 
               case "view-properties":
 
-                $wall.wpt_wall ("openPropertiesPopup");
+                $wall.wall ("openPropertiesPopup");
 
                 break;
             }

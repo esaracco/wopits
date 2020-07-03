@@ -15,7 +15,7 @@ $(function()
             const $chatroom = $(this);
 
             if ($chatroom.css("display") == "table")
-              $chatroom.wpt_chatroom ("leave");
+              $chatroom.chatroom ("leave");
           });
       };
 
@@ -37,29 +37,29 @@ $(function()
                 $arrows = wpt_sharer.getCurrent ("arrows");
 
           // Reposition relationships
-          $wall.wpt_wall ("repositionPostitsPlugs");
+          $wall.wall ("repositionPostitsPlugs");
 
           if ($modal.length)
             wpt_resizeModal ($modal);
    
           // Reposition chatroom popup if it is out of bounds
           if ($chatroom && $chatroom.is (":visible"))
-            $chatroom.wpt_chatroom ("fixPosition");
+            $chatroom.chatroom ("fixPosition");
    
           // Reposition filters popup if it is out of bounds
           if ($filters.is (":visible"))
-            $filters.wpt_filters ("fixPosition");
+            $filters.filters ("fixPosition");
 
           if ($arrows.is(":visible"))
-            $arrows.wpt_arrows ("reset");
+            $arrows.arrows ("reset");
    
           if ($zoom[0].dataset.zoomlevelorigin)
           {
             if ($zoom[0].dataset.zoomtype == "screen")
-              $wall.wpt_wall ("zoom", {type:"screen"});
+              $wall.wall ("zoom", {type:"screen"});
             else
             {
-              $wall.wpt_wall ("zoom", {type: "="});
+              $wall.wall ("zoom", {type: "="});
               $('.dropdown-menu li[data-action="zoom-screen"] a')
                 .removeClass ("disabled");
             }
@@ -103,7 +103,7 @@ $(function()
               (Math.abs(scroll.top - _scrollDiff.top) > 1 ||
                Math.abs(scroll.left - _scrollDiff.left) > 1))
           {
-            $wall.wpt_wall ("hidePostitsPlugs");
+            $wall.wall ("hidePostitsPlugs");
             wpt_sharer.set ("plugs-hidden", true);
           }
 
@@ -115,7 +115,7 @@ $(function()
             {
               _scrollDiff = null;
 
-              $wall.wpt_wall ("showPostitsPlugs");
+              $wall.wall ("showPostitsPlugs");
               wpt_sharer.unset ("plugs-hidden");
 
             }, 150);
@@ -124,7 +124,7 @@ $(function()
 
         // Update arrows
         if ($arrows.is (":visible"))
-          $arrows.wpt_arrows ("update");
+          $arrows.arrows ("update");
       }
     });
 
@@ -140,7 +140,7 @@ $(function()
             rename = (!close && $(this).hasClass ("active"));
 
       if (rename && wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
-        wpt_sharer.getCurrent("wall").wpt_wall (
+        wpt_sharer.getCurrent("wall").wall (
           "openPropertiesPopup", {forRename: true});
 
       if (!rename && !close)
@@ -148,10 +148,10 @@ $(function()
         const $chatroom = wpt_sharer.getCurrent ("chatroom");
 
         if ($chatroom)
-          $chatroom.wpt_chatroom ("closeUsersTooltip");
+          $chatroom.chatroom ("closeUsersTooltip");
 
-        $("#settingsPopup").wpt_settings ("saveOpenedWalls",
-          $(this).attr("href").split("-")[1]);
+        $("#settingsPopup").settings (
+          "saveOpenedWalls", $(this).attr("href").split("-")[1]);
       }
 
     });
@@ -160,7 +160,7 @@ $(function()
   $(document).on("hidden.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
-      $_walls.wpt_wall ("hidePostitsPlugs");
+      $_walls.wall ("hidePostitsPlugs");
     });
 
   // EVENT shown.bs.tab on walls tabs
@@ -182,10 +182,10 @@ $(function()
       if (!$wall.length) return;
 
       // Reinit search plugin for the current wall
-      $("#postitsSearchPopup").wpt_postitsSearch (
+      $("#postitsSearchPopup").postitsSearch (
         "restore", $wall[0].dataset.searchstring||"");
 
-      $wall.wpt_wall ("zoom", {type: "normal", "noalert": true});
+      $wall.wall ("zoom", {type: "normal", "noalert": true});
 
       $("#walls")
           .scrollLeft(0)
@@ -201,8 +201,8 @@ $(function()
         .find("li[data-action='chatroom'] input")[0].checked = chatRoomVisible;
       if (chatRoomVisible)
       {
-        $chatroom.wpt_chatroom ("removeAlert");
-        $chatroom.wpt_chatroom ("setCursorToEnd");
+        $chatroom.chatroom ("removeAlert");
+        $chatroom.chatroom ("setCursorToEnd");
       }
 
       // Manage filters checkbox menu
@@ -212,13 +212,13 @@ $(function()
       // Manage arrows checkbox menu
       $menu.find("li[data-action='arrows'] input")[0].checked =
         $arrows.is (":visible");
-      $arrows.wpt_arrows ("reset");
+      $arrows.arrows ("reset");
 
       // Refresh wall if it has not just been opened
       if (!wpt_sharer.get ("newWall"))
-        $wall.wpt_wall ("refresh");
+        $wall.wall ("refresh");
 
-      $wall.wpt_wall ("menu", {from: "wall", type: "have-wall"});
+      $wall.wall ("menu", {from: "wall", type: "have-wall"});
 
       $(window).trigger ("resize");
     });
@@ -269,7 +269,7 @@ $(function()
 
       // Get postit color and set modal header color the same
       if (!modalsCount && $postit.length)
-        $postit.wpt_postit ("setPopupColor", $(this));
+        $postit.postit ("setPopupColor", $(this));
       else
         $popup.find(".modal-header,.modal-title,.modal-footer").each (
           function ()
@@ -311,7 +311,7 @@ $(function()
                     $(".tox-menu").hide ();
     
                     $popup.find("input").val ("");
-                    $postit.wpt_postit ("unedit");
+                    $postit.postit ("unedit");
 
                     $popup.modal ("hide");
                     wpt_sharer.unset ("postit-data");
@@ -337,8 +337,8 @@ $(function()
               content: `<?=_("Save changes?")?>`,
               cb_ok: () =>
                 {
-                  $postit.wpt_postit ("setTitle", title);
-                  $postit.wpt_postit ("setContent", content);
+                  $postit.postit ("setTitle", title);
+                  $postit.postit ("setContent", content);
 
                   $postit[0].removeAttribute ("data-uploadedpictures");
                 },
@@ -383,7 +383,7 @@ $(function()
               break;
 
             case "app-logout":
-              $("<div/>").wpt_login ("logout");
+              $("<div/>").login ("logout");
               break;
           }
           break;
@@ -400,17 +400,17 @@ $(function()
 
           if (wpt_checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>") &&
               !$popup[0].dataset.uneditdone)
-            $wall.wpt_wall ("unedit");
+            $wall.wall ("unedit");
           break;
 
         case "postitViewPopup":
 
-          $postit.wpt_postit ("unsetCurrent");
+          $postit.postit ("unsetCurrent");
           break;
 
         case "postitAttachmentsPopup":
 
-          $postit.wpt_postit ("unedit");
+          $postit.postit ("unedit");
           break;
 
         case "confirmPopup":
@@ -452,8 +452,8 @@ $(function()
 
           case "postitUpdatePopup":
 
-            $postit.wpt_postit("setTitle",$("#postitUpdatePopupTitle").val ());
-            $postit.wpt_postit("setContent",tinymce.activeEditor.getContent());
+            $postit.postit("setTitle",$("#postitUpdatePopupTitle").val ());
+            $postit.postit("setContent",tinymce.activeEditor.getContent());
 
             $postit[0].removeAttribute ("data-uploadedpictures");
             wpt_sharer.unset ("postit-data");
@@ -461,7 +461,7 @@ $(function()
 
           case "groupAccessPopup":
 
-            $("#shareWallPopup").wpt_shareWall ("linkGroup");
+            $("#shareWallPopup").shareWall ("linkGroup");
             break;
 
           case "groupPopup":
@@ -474,7 +474,7 @@ $(function()
           case "postitAttachmentsPopup":
 
             $popup[0].dataset.noclosure = true;
-            $postit.wpt_postit ("uploadAttachment");
+            $postit.postit ("uploadAttachment");
             break;
 
           // Manage confirmations
@@ -509,12 +509,12 @@ $(function()
                   height: $popup.find(".width-height input:eq(1)").val()
                 };
 
-              $("<div/>").wpt_wall ("addNew", data, $popup);
+              $("<div/>").wall ("addNew", data, $popup);
             }
             break;
 
           // UPDATE wall name and description
-          //TODO Should be a wpt_wall() method
+          //TODO Should be a wall() method
           case "wallPropertiesPopup":
 
             var Form = new Wpt_accountForms (),
@@ -528,14 +528,14 @@ $(function()
 
             if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
             {
-              const oldName = $wall.wpt_wall ("getName"),
+              const oldName = $wall.wall ("getName"),
                     $cell = $wall.find("td"),
                     oldW = $cell.outerWidth ();
 
-              $wall.wpt_wall ("setName", name);
-              $wall.wpt_wall ("setDescription", description);
+              $wall.wall ("setName", name);
+              $wall.wall ("setDescription", description);
 
-              $wall.wpt_wall ("unedit",
+              $wall.wall ("unedit",
                 () =>
                 {
                   $popup[0].dataset.uneditdone = 1;
@@ -543,9 +543,9 @@ $(function()
                 },
                 () =>
                 {
-                  $wall.wpt_wall ("setName", oldName);
+                  $wall.wall ("setName", oldName);
                   //FIXME
-                  $wall.wpt_wall ("edit");
+                  $wall.wall ("edit");
                 });
 
               if ($inputs[1] && $inputs[1].value != oldW ||
@@ -565,16 +565,16 @@ $(function()
                     $wall.find(".ui-resizable-e").css ("height", args.newH+2);
                   }
 
-                  $wall.wpt_wall ("fixSize", args.oldW, args.newW);
+                  $wall.wall ("fixSize", args.oldW, args.newW);
                 }
 
                 __resize ({newW: w, oldW: oldW, newH: h});
                 if ($wall.find("td").outerWidth () != w)
                   __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
 
-                $cell.wpt_cell ("edit");
-                $cell.wpt_cell ("reorganize");
-                $cell.wpt_cell ("unedit");
+                $cell.cell ("edit");
+                $cell.cell ("reorganize");
+                $cell.cell ("unedit");
               }
             }
             return;
@@ -595,7 +595,7 @@ $(function()
         type: "logout",
         icon: "power-off",
         content: `<?=_("Do you really want to logout from wopits?")?>`,
-        cb_ok: () => $("<div/>").wpt_login ("logout")
+        cb_ok: () => $("<div/>").login ("logout")
       });
     });
 

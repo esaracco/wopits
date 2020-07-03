@@ -101,7 +101,7 @@
 
             e.stopImmediatePropagation ();
 
-            $wall.wpt_wall ("hidePostitsPlugs");
+            $wall.wall ("hidePostitsPlugs");
 
             if ($btn.closest("div").hasClass ("goto-box-y"))
             {
@@ -126,7 +126,7 @@
                   ($btn.hasClass("full-left") ? 100000 : 100));
             }
 
-            $wall.wpt_wall ("showPostitsPlugs");
+            $wall.wall ("showPostitsPlugs");
 
           });
       }

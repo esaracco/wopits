@@ -254,7 +254,7 @@
   $(function ()
   {
     if (location.href.match (/login\.php/))
-      $("#login").wpt_login ();
+      $("#login").login ();
   });
 
 <?php echo $Plugin->getFooter ()?>

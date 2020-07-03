@@ -37,7 +37,7 @@
                       ptop = ui.offset.top - $target.offset().top,
                       pleft = ui.offset.left - $target.offset().left;
   
-                $postit.wpt_postit ("setPosition", {
+                $postit.postit ("setPosition", {
                   cellId: settings.id,
                   top: (ptop < 0) ? 0 : ptop,
                   left: (pleft < 0) ? 0 : pleft
@@ -45,7 +45,7 @@
   
                 $postit.appendTo ($target);
   
-                $target.wpt_cell ("reorganize");
+                $target.cell ("reorganize");
               }
           });
 
@@ -94,7 +94,7 @@
               }
               else
               {
-                $wall.wpt_wall ("fixSize",
+                $wall.wall ("fixSize",
                   ui.originalSize.width, ui.size.width + 3);
 
                 plugin.update ({
@@ -121,7 +121,7 @@
 
                 $wall.find("tbody td").each (function ()
                   {
-                    $(this).wpt_cell ("reorganize");
+                    $(this).cell ("reorganize");
                   });
 
                 plugin.unedit ();
@@ -145,7 +145,7 @@
               const currentPlug = wpt_sharer.get("link-from");
 
               if (currentPlug)
-                currentPlug.obj.wpt_postit ("cancelPlugAction");
+                currentPlug.obj.postit ("cancelPlugAction");
             })
           // EVENT MOUSEDOWN on cell
           .doubletap(function(e)
@@ -164,10 +164,10 @@
 
               _coords = null;
 
-              $wall.wpt_wall ("closeAllMenus");
+              $wall.wall ("closeAllMenus");
 
               if ($filters)
-                $filters.wpt_filters ("reset");
+                $filters.filters ("reset");
 
               plugin.addPostit ({
                 access: settings.access,
@@ -202,7 +202,7 @@
     {
       this.element.find(".postit.with-plugs").each (function ()
         {
-          $(this).wpt_postit ("removePlugs", true);
+          $(this).postit ("removePlugs", true);
         });
     },
 
@@ -223,7 +223,7 @@
 
         $cell.find(".postit").each (function ()
         {
-          $(this).wpt_postit ("fixPosition",
+          $(this).postit ("fixPosition",
             bbox,
             cell.clientHeight,
             cell.clientWidth
@@ -249,7 +249,7 @@
           row: $cell.parent().index (),
           col: $cell.index () - 1,
           postits: $postits.length ?
-                     $cell.find(".postit").wpt_postit ("serialize") : null
+                     $cell.find(".postit").postit ("serialize") : null
         });
       });
 
@@ -270,7 +270,7 @@
       args.cellId = settings.id;
 
       // CREATE post-it
-      $postit.wpt_postit (args);
+      $postit.postit (args);
 
       // Add postit on cell
       $cell.append ($postit);
@@ -280,7 +280,7 @@
       // If we are refreshing wall and postit has been already created by
       // another user, do not add it again in DB
       if (!noinsert)
-        $postit.wpt_postit ("insert");
+        $postit.postit ("insert");
       else
         $postit.css ("visibility", "visible");
     },

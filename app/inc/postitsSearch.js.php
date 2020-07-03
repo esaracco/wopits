@@ -84,7 +84,7 @@
           if ($edit.text().match (
             new RegExp (wpt_quoteRegex(args.str), 'ig')))
           {
-            const postitId = $edit.closest(".postit").wpt_postit("getId");
+            const postitId = $edit.closest(".postit").postit("getId");
 
             occur[postitId] = 1;
             $edit.closest(".postit").addClass("search-match");
@@ -108,7 +108,7 @@
       const $plugin = $("#postitsSearchPopup");
 
       if ($plugin.length)
-        $plugin.wpt_postitsSearch ();
+        $plugin.postitsSearch ();
     });
 
 <?php echo $Plugin->getFooter ()?>

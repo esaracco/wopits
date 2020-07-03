@@ -24,7 +24,7 @@
         escapeEvent: (e) =>
           {
             if (e.key == "Escape")
-              wpt_sharer.get("link-from").obj.wpt_postit ("cancelPlugAction");
+              wpt_sharer.get("link-from").obj.postit ("cancelPlugAction");
           }
       };
 
@@ -81,7 +81,7 @@
             const $oldPostit = wpt_sharer.get ("postit-oldzindex");
 
             if ($oldPostit &&
-                $oldPostit.postit.wpt_postit ("getId") != settings.id)
+                $oldPostit.postit.postit ("getId") != settings.id)
               plugin.resetZIndexData ();
 
             if (!wpt_sharer.get ("postit-oldzindex"))
@@ -143,13 +143,13 @@
                   dash: {animation: true}
                 });
 
-                $start.wpt_postit ("addPlug", line);
-                $start.wpt_postit ("cancelPlugAction", false);
+                $start.postit ("addPlug", line);
+                $start.postit ("cancelPlugAction", false);
 
                 from.cancelCallback = () =>
                   {
-                    $start.wpt_postit ("removePlug", line);
-                    $start.wpt_postit ("cancelPlugAction");
+                    $start.postit ("removePlug", line);
+                    $start.postit ("cancelPlugAction");
                   };
 
                 from.confirmCallback = (label) =>
@@ -173,14 +173,14 @@
                       })
                     });
 
-                    $start.wpt_postit ("applyTheme");
-                    $start.wpt_postit ("addPlugLabel", line);
+                    $start.postit ("applyTheme");
+                    $start.postit ("addPlugLabel", line);
 
                     $start[0].dataset.undo = "add";
                     $undo.removeClass ("disabled");
                     $undo.find("span").text ("« <?=_("Add")?> »");
 
-                    $start.wpt_postit ("cancelPlugAction");
+                    $start.postit ("cancelPlugAction");
                   };
 
                 wpt_cleanPopupDataAttr ($popup);
@@ -266,7 +266,7 @@
               else
               {
                 // If the postit has been dropped into another cell
-                plugin.settings.cellId = $postit.parent().wpt_cell ("getId");
+                plugin.settings.cellId = $postit.parent().cell ("getId");
 
                 plugin.unedit ();
               }
@@ -326,7 +326,7 @@
                 //FIXME
                 setTimeout (() =>
                   {
-                    ui.element.parent().wpt_cell ("reorganize");
+                    ui.element.parent().cell ("reorganize");
                     plugin.unedit ();
 
                   }, 150);
@@ -346,7 +346,7 @@
 
             if (!$menu.hasClass ("on"))
             {
-              $wall.wpt_wall ("closeAllMenus");
+              $wall.wall ("closeAllMenus");
 
               if ($wall.find(".postit").length == 1)
                 $menu.find("li[data-action='add-plug'] .dropdown-item")
@@ -504,14 +504,14 @@
                     // OPEN tags picker
                     case "tag-picker":
 
-                      $(".tag-picker").wpt_tagPicker ("open", e);
+                      $(".tag-picker").tagPicker ("open", e);
 
                       break;
     
                     // OPEN color picker
                     case "color-picker":
 
-                      $(".color-picker").wpt_colorPicker ("open", e);
+                      $(".color-picker").colorPicker ("open", e);
 
                       break;
     
@@ -671,7 +671,7 @@
               plugin.edit (null, () => plugin.displayAttachments ());
           });
   
-      const $tags = $(`<div class="postit-tags">${settings.tags?$(".tag-picker").wpt_tagPicker ("getHTMLFromString", settings.tags):''}</div>`);
+      const $tags = $(`<div class="postit-tags">${settings.tags?$(".tag-picker").tagPicker ("getHTMLFromString", settings.tags):''}</div>`);
 
       if (writeAccess)
         $tags.on("mousedown",
@@ -681,8 +681,7 @@
     
             e.stopImmediatePropagation ();
     
-            plugin.edit (null,
-              () => $(".tag-picker").wpt_tagPicker ("open", evt));
+            plugin.edit (null, () => $(".tag-picker").tagPicker ("open", evt));
           });
       else
         $menu.css ("visibility", "hidden");
@@ -739,7 +738,7 @@
       if (full)
       {
         if (unedit)
-          wpt_sharer.get ("link-from").obj.wpt_postit ("unedit");
+          wpt_sharer.get("link-from").obj.postit ("unedit");
 
         wpt_sharer.unset ("link-from");
       }
@@ -810,7 +809,7 @@
     {
       $(".postit.with-plugs").each (function ()
         {
-          $(this).wpt_postit ("applyThemeToPlugs");
+          $(this).postit ("applyThemeToPlugs");
         });
     },
 
@@ -922,7 +921,7 @@
       $start.addClass ("with-plugs");
 
       // Register plug on end point postit
-      $end.wpt_postit("getSettings")._plugs.push (plug);
+      $end.postit("getSettings")._plugs.push (plug);
       $end.addClass ("with-plugs");
     },
 
@@ -991,7 +990,7 @@
         plug.obj = null;
 
         for (const id in toDefrag)
-          toDefrag[id].wpt_postit ("defragPlugsArray");
+          toDefrag[id].postit ("defragPlugsArray");
 
         if (!noedit)
           wpt_sharer.set("plugs-to-save", toDefrag);
@@ -1031,7 +1030,7 @@
         });
 
       for (const id in toDefrag)
-        toDefrag[id].wpt_postit ("defragPlugsArray");
+        toDefrag[id].postit ("defragPlugsArray");
 
       if (!noedit)
         wpt_sharer.set("plugs-to-save", toDefrag);
@@ -1185,7 +1184,7 @@
             updatetz: p.dataset.updatetz || null,
             obsolete: $p.hasClass ("obsolete"),
             attachmentscount: $p.find(".attachmentscount span").text (),
-            plugs: $p.wpt_postit ("serializePlugs"),
+            plugs: $p.postit ("serializePlugs"),
             hadpictures: !!p.dataset.hadpictures,
             hasuploadedpictures: !!p.dataset.hasuploadedpictures
           };
@@ -1583,9 +1582,9 @@
       $postit[0].dataset.tags = d.tags;
 
       $postit.find(".postit-tags").html (
-        $(".tag-picker").wpt_tagPicker ("getHTMLFromString", d.tags));
+        $(".tag-picker").tagPicker ("getHTMLFromString", d.tags));
 
-      $(".tag-picker").wpt_tagPicker ("refreshPostitDataTag", $postit);
+      $(".tag-picker").tagPicker ("refreshPostitDataTag", $postit);
 
       this.repositionPlugs ();
     },
@@ -1698,7 +1697,7 @@
           data = {updateplugs: true, plugs: []};
 
           for (const id in plugsToSave)
-            data.plugs.push (plugsToSave[id].wpt_postit ("serialize")[0]);
+            data.plugs.push (plugsToSave[id].postit ("serialize")[0]);
 
           wpt_sharer.unset ("plugs-to-save");
         }
@@ -1736,7 +1735,7 @@
           else if (todelete)
           {
             $postit.remove ();
-            $("#postitsSearchPopup").wpt_postitsSearch ("replay");
+            $("#postitsSearchPopup").postitsSearch ("replay");
           }
           else if (data && data.updatetz)
             $postit[0].removeAttribute ("data-updatetz");
@@ -1902,14 +1901,14 @@
               toSave[endId] = $end
 
               wpt_sharer.set ("plugs-to-save", toSave);
-              $start.wpt_postit ("unedit");
+              $start.postit ("unedit");
             }
 
             switch ($item[0].dataset.action)
             {
               case "rename":
 
-                $start.wpt_postit ("edit", null, ()=>
+                $start.postit ("edit", null, ()=>
                   {
                     wpt_openConfirmPopover ({
                       type: "update",
@@ -1922,7 +1921,7 @@
                           const label = $popover.find("input").val().trim ();
 
                           if (label != defaultLabel)
-                            $start.wpt_postit ("updatePlugLabel", {
+                            $start.postit ("updatePlugLabel", {
                               label: $popover.find("input").val().trim(),
                               endId: endId
                             });
@@ -1934,7 +1933,7 @@
 
               case "delete":
 
-                $start.wpt_postit ("edit", null, ()=>
+                $start.postit ("edit", null, ()=>
                   {
                     wpt_openConfirmPopover ({
                       item: $label,
@@ -1944,8 +1943,8 @@
                       cb_close: __unedit,
                       cb_ok: () =>
                         {
-                          $start.wpt_postit ("removePlug", startId+"-"+endId);
-                          $start.wpt_postit ("resetPlugsUndo");
+                          $start.postit ("removePlug", startId+"-"+endId);
+                          $start.postit ("resetPlugsUndo");
                         }
                     });
                   });
@@ -1959,7 +1958,7 @@
         {
           const $upload = $(this),
                 $postit = wpt_sharer.getCurrent("postit"),
-                settings = $postit.wpt_postit ("getSettings");
+                settings = $postit.postit ("getSettings");
 
           if (e.target.files && e.target.files.length)
           {
@@ -2007,9 +2006,9 @@
                         $body.html ("");
     
                       $body.prepend (
-                        $postit.wpt_postit ("getAttachmentTemplate", d));
+                        $postit.postit ("getAttachmentTemplate", d));
 
-                      $postit.wpt_postit("incAttachmentsCount");
+                      $postit.postit("incAttachmentsCount");
                     });
                 }
               });
@@ -2042,11 +2041,10 @@
                         cb_msg: __error_cb
                       }) && e.target.result)
                   {
-                    const wallId = wpt_sharer.getCurrent("wall")
-                                     .wpt_wall("getId"),
+                    const wallId = wpt_sharer.getCurrent("wall").wall("getId"),
                           $postit = wpt_sharer.getCurrent ("postit"),
-                          postitId = $postit.wpt_postit ("getId"),
-                          cellId = $postit.wpt_postit ("getCellId");
+                          postitId = $postit.postit ("getId"),
+                          cellId = $postit.postit ("getCellId");
 
                     wpt_request_ajax (
                       "PUT",
@@ -2108,7 +2106,7 @@
                 $(".modal").find("li.list-group-item.active")
                   .removeClass ("active todelete"),
               cb_ok: () =>
-                wpt_sharer.getCurrent ("postit").wpt_postit ("deleteAttachment")
+                wpt_sharer.getCurrent("postit").postit ("deleteAttachment")
             });
           });
     

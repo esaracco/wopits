@@ -28,7 +28,7 @@
             type: "delete-account",
             icon: "sad-tear",
             content: `<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>`,
-            cb_ok: () => $("#accountPopup").wpt_account ("delete")
+            cb_ok: () => $("#accountPopup").account ("delete")
           });
         });
 
@@ -76,7 +76,7 @@
               type: "delete-account-picture",
               icon: "trash",
               content: `<?=_("Delete your profile photo?")?>`,
-              cb_ok: () => $("#accountPopup").wpt_account ("deletePicture")
+              cb_ok: () => $("#accountPopup").account ("deletePicture")
             });
           else
             $(".upload.account-picture").click ();
@@ -318,7 +318,7 @@
       const $plugin = $("#accountPopup");
   
       if ($plugin.length)
-        $plugin.wpt_account ();
+        $plugin.account ();
     });
 
 <?php echo $Plugin->getFooter ()?>

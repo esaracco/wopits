@@ -76,7 +76,7 @@
               const groupId = $row[0].dataset.id,
                     delegateAdminId = $row[0].dataset.delegateadminid||0;
 
-              $_usersSearchPopup.wpt_usersSearch ("reset", {full: true});
+              $_usersSearchPopup.usersSearch ("reset", {full: true});
 
               $_usersSearchPopup[0].dataset.delegateadminid = delegateAdminId;
               $_usersSearchPopup[0].dataset.groupid = groupId;
@@ -85,10 +85,10 @@
               $_usersSearchPopup
                 .find(".desc").html ("<?=_("Add or remove users in the group « %s ».")?>".replace("%s", "<b>"+$row[0].dataset.name+"</b>"));
     
-              $_usersSearchPopup.wpt_usersSearch (
+              $_usersSearchPopup.usersSearch (
                 "displayUsers",
                 {
-                  wallId: wpt_sharer.getCurrent("wall").wpt_wall("getId"),
+                  wallId: wpt_sharer.getCurrent("wall").wall("getId"),
                   groupId: groupId,
                   groupType: groupType
                 });
@@ -250,7 +250,7 @@
     // METHOD linkGroup ()
     linkGroup: function (args)
     {
-      const wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
+      const wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
             $group = this.element.find("li.todelete"),
             data = {
               type:
@@ -277,7 +277,7 @@
     // METHOD unlinkGroup ()
     unlinkGroup: function (args)
     {
-      const wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId");
+      const wallId = wpt_sharer.getCurrent("wall").wall ("getId");
 
       wpt_request_ws (
         "POST",
@@ -298,7 +298,7 @@
     {
       const $group = this.element.find("li.todelete"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES['dedicated']?>) ?
-              "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+
+              "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+
                 "/group/"+$group[0].dataset.id :
               "group/"+$group[0].dataset.id
 
@@ -320,7 +320,7 @@
     createGroup: function (type, args)
     {
       const service = (type == <?=WPT_GTYPES['dedicated']?>) ?
-              "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+"/group" :
+              "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group" :
               "group";
 
       wpt_request_ws (
@@ -368,7 +368,7 @@
 
       wpt_request_ajax (
         "GET",
-        "wall/"+wpt_sharer.getCurrent("wall").wpt_wall("getId")+"/group",
+        "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group",
         null,
         // success cb
         (d) =>
@@ -441,7 +441,7 @@
       const $plugin = $("#shareWallPopup");
 
       if ($plugin.length)
-        $plugin.wpt_shareWall ();
+        $plugin.shareWall ();
     });
 
 <?php echo $Plugin->getFooter ()?>

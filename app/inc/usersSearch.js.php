@@ -28,7 +28,7 @@
         {
           const $btn = $(this),
                 args = {
-                  wallId: wpt_sharer.getCurrent("wall").wpt_wall("getId"),
+                  wallId: wpt_sharer.getCurrent("wall").wall("getId"),
                   groupType: $ac[0].dataset.grouptype,
                   groupId: $ac[0].dataset.groupid,
                   userId: $btn[0].dataset.id
@@ -109,7 +109,7 @@
 
           this.search (args);
 
-          $("#shareWallPopup").wpt_shareWall ("displayGroups");
+          $("#shareWallPopup").shareWall ("displayGroups");
         });
     },
 
@@ -134,7 +134,7 @@
 
           this.search (args);
 
-          $("#shareWallPopup").wpt_shareWall ("displayGroups");
+          $("#shareWallPopup").shareWall ("displayGroups");
         });
     },
 
@@ -189,7 +189,7 @@
     search: function (args)
     {
       const $ac = this.element,
-            wallId = wpt_sharer.getCurrent("wall").wpt_wall ("getId"),
+            wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
             groupId = $ac[0].dataset.groupid;
       let service = "group/"+groupId+"/searchUsers/"+args.str,
           data = null;
@@ -234,7 +234,7 @@
       const $plugin = $("#usersSearchPopup");
 
       if ($plugin.length)
-        $plugin.wpt_usersSearch ();
+        $plugin.usersSearch ();
     });
 
 <?php echo $Plugin->getFooter ()?>

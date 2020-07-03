@@ -382,13 +382,13 @@ class Wpt_WebSocket
             // refreshwall
             case "refreshwall":
               if ($wall.length && data.wall)
-                $wall.wpt_wall ("refresh", data.wall);
+                $wall.wall ("refresh", data.wall);
               break;
 
             // viewcount
             case "viewcount":
               if ($wall.length)
-                $wall.wpt_wall ("refreshUsersview", data.count);
+                $wall.wall ("refreshUsersview", data.count);
               else
                 wpt_WebSocket.pushResponse (
                   "viewcount-wall-"+data.wall.id, data.count);
@@ -397,15 +397,14 @@ class Wpt_WebSocket
             // chat
             case "chat":
               if ($wall.length)
-                $("#wall-"+data.wall.id+" .chatroom")
-                  .wpt_chatroom ("addMsg", data);
+                $("#wall-"+data.wall.id+" .chatroom").chatroom ("addMsg", data);
               break;
 
             // chatcount
             case "chatcount":
               if ($wall.length)
                 $("#wall-"+data.wall.id+" .chatroom")
-                  .wpt_chatroom ("refreshUserscount", data.count);
+                  .chatroom ("refreshUserscount", data.count);
               break;
 
             // deletedwall
@@ -415,7 +414,7 @@ class Wpt_WebSocket
               if (!isResponse)
               {
                 wpt_displayMsg ({type: "warning", msg: data.wall.removed}); 
-                $wall.wpt_wall ("close");
+                $wall.wall ("close");
               }
               break;
 
@@ -426,7 +425,7 @@ class Wpt_WebSocket
               if (!isResponse)
               {
                 wpt_displayMsg ({type: "warning", msg: data.wall.unlinked});
-                $wall.wpt_wall ("close");
+                $wall.wall ("close");
               }
               break;
 
@@ -502,7 +501,7 @@ class Wpt_WebSocket
                 const $wall = wpt_sharer.getCurrent ("wall");
 
                 if ($wall.length)
-                  $wall.wpt_wall ("refresh");
+                  $wall.wall ("refresh");
               }
           });
         else
@@ -1412,7 +1411,7 @@ function wpt_headerRemoveContentKeepingWallSize (args)
 
   if (newW != args.oldW)
   {
-    $wall.wpt_wall ("fixSize", args.oldW, newW);
+    $wall.wall ("fixSize", args.oldW, newW);
     $wall.css ("width", tdW + newW);
   }
 }
@@ -1436,11 +1435,11 @@ function wpt_checkForAppUpgrade (version)
   if (String(officialVersion).length != 10)
   {
     const $userSettings = $("#settingsPopup"),
-          userVersion = $userSettings.wpt_settings ("get", "version");
+          userVersion = $userSettings.settings ("get", "version");
 
     if (userVersion != officialVersion)
     {
-      $userSettings.wpt_settings ("set", {version: officialVersion});
+      $userSettings.settings ("set", {version: officialVersion});
 
       if (userVersion)
       {
@@ -1520,7 +1519,7 @@ function wpt_fixVKBScrollStop ()
   wpt_waitForDOMUpdate (()=>
     {
       wpt_fixMainHeight ();
-      wpt_sharer.getCurrent("wall").wpt_wall ("repositionPostitsPlugs");
+      wpt_sharer.getCurrent("wall").wall ("repositionPostitsPlugs");
     });
 }
 

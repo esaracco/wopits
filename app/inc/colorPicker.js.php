@@ -34,7 +34,7 @@
           // Remove color picker
           $("#popup-layer").trigger ("click");
 
-          wpt_sharer.getCurrent("filters").wpt_filters ("apply");
+          wpt_sharer.getCurrent("filters").filters ("apply");
         });
 
       wpt_waitForDOMUpdate (() =>
@@ -68,7 +68,7 @@
       wpt_openPopupLayer (() =>
         {
           this.close ();
-          wpt_sharer.getCurrent ("postit").wpt_postit ("unedit");
+          wpt_sharer.getCurrent("postit").postit ("unedit");
         });
 
       $picker
@@ -97,7 +97,7 @@
     const $plugin = $(".color-picker");
 
     if ($plugin.length)
-      $plugin.wpt_colorPicker ();
+      $plugin.colorPicker ();
   });
 
 <?php echo $Plugin->getFooter ()?>

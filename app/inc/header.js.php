@@ -156,10 +156,10 @@
                        cb_ok: () =>
                          {
                            if (isCol)
-                             $wall.wpt_wall ("deleteCol", $header.index ());
+                             $wall.wall ("deleteCol", $header.index ());
                            else
-                            $wall.wpt_wall ("deleteRow",
-                              $header.closest("tr").index ()); 
+                            $wall.wall (
+                              "deleteRow", $header.closest("tr").index ()); 
                          }
                      });
                 });
@@ -307,7 +307,7 @@
         .find("img")
           .on("load", function (e)
           {
-            plugin.settings.wall.wpt_wall ("repositionPostitsPlugs");
+            plugin.settings.wall.wall ("repositionPostitsPlugs");
           });
 
       // Create img delete button
@@ -442,7 +442,7 @@
             {
               if (newW != oldW)
               {
-                $wall.wpt_wall ("fixSize", oldW, newW);
+                $wall.wall ("fixSize", oldW, newW);
                 $wall.css("width", tdW + newW);
               }
 
@@ -460,7 +460,7 @@
               }
             }
             else
-              $wall.wpt_wall ("fixSize");
+              $wall.wall ("fixSize");
 
             plugin.unedit ();
           });
@@ -529,7 +529,7 @@
 
       this.unsetCurrent ();
 
-      $wall.wpt_wall ("closeAllMenus");
+      $wall.wall ("closeAllMenus");
 
       if (bubble_event_cb)
       {
@@ -584,13 +584,13 @@
       {
         data = {
           headers: this.serialize (),
-          cells: $("<div/>").wpt_cell ("serialize"),
+          cells: $("<div/>").cell ("serialize"),
           wall: {width: Math.trunc($wall.outerWidth ())}
         };
 
         $wall.find("tbody td").each (function ()
           {
-            $(this).wpt_cell ("reorganize");
+            $(this).cell ("reorganize");
           });
       }
       else if (!this.settings.wall[0].dataset.shared)
@@ -632,20 +632,20 @@
             //FIXME
             // we need this to cancel edit if no img is selected by user
             // (desktop version)
-            if ($header.wpt_header ("useFocusTrick"))
+            if ($header.header ("useFocusTrick"))
               $(window).on("focus", function ()
                 {
                   $(window).off ("focus");
 
                   if (!_realEdit)
-                    $header.wpt_header ("unedit");
+                    $header.header ("unedit");
                 });
           })
         .on("change",function (e)
           {
             const $upload = $(this),
                   $header = wpt_sharer.getCurrent ("header"),
-                  settings = $header.wpt_header ("getSettings");
+                  settings = $header.header ("getSettings");
 
             if (e.target.files && e.target.files.length)
             {
@@ -675,24 +675,24 @@
                       (d) =>
                       {
                         if (d.error_msg)
-                          return $header.wpt_header ("unedit", {data: d});
+                          return $header.header ("unedit", {data: d});
   
-                        $header.wpt_header ("setImg", d.img);
+                        $header.header ("setImg", d.img);
                         setTimeout(() =>
                           {
-                            settings.wall.wpt_wall (
+                            settings.wall.wall (
                               "fixSize", oldW, $header.outerWidth ());
 
-                            $header.wpt_header ("unedit");
+                            $header.header ("unedit");
 
                           }, 500);
                       },
                       // error cb
-                      (d) => $header.wpt_header ("unedit", {data: d}));
+                      (d) => $header.header ("unedit", {data: d}));
                   }
                 },
                 // error cb
-                () => $header.wpt_header ("unedit"));
+                () => $header.header ("unedit"));
             }
           }).appendTo ("body");
 
