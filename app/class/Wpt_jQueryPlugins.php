@@ -27,7 +27,7 @@ EOC;
     public function getFooter ()
     {
       return <<<EOC
-  $.fn["$this->name"] = function (arg)
+  $.fn["{$this->name}"] = function (arg)
   {
     if (!(this.data ("plugin_{$this->name}") instanceof Plugin))
       this.data ("plugin_{$this->name}", new Plugin (this));
