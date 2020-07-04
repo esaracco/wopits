@@ -2073,7 +2073,7 @@
                           setTimeout(()=>
                           {
                             if (!$f.find("input:eq(0)").val ())
-                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser (Safari?) when it comes to uploading post-its images...")?>");
+                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading post-its images...")?>");
                           }, 0);
                         },
                         __error_cb
