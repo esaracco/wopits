@@ -2,7 +2,7 @@ $(function()
 {
   "use strict";
 
-  const $_walls = wpt_sharer.getCurrent ("walls");
+  const $_walls = S.getCurrent ("walls");
 
   // EVENT resize on window
   if (!document.querySelector ("body.login-page"))
@@ -23,7 +23,7 @@ $(function()
     $(window)
       .on("resize orientationchange", function()
       {
-        const $wall = wpt_sharer.getCurrent ("wall");
+        const $wall = S.getCurrent ("wall");
   
         H.fixMenuHeight ();
         H.fixMainHeight ();
@@ -32,9 +32,9 @@ $(function()
         {
           const $zoom = $(".tab-content.walls"),
                 $modal = $(".modal.m-fullscreen[data-customwidth]"),
-                $chatroom = wpt_sharer.getCurrent ("chatroom"),
-                $filters = wpt_sharer.getCurrent ("filters"),
-                $arrows = wpt_sharer.getCurrent ("arrows");
+                $chatroom = S.getCurrent ("chatroom"),
+                $filters = S.getCurrent ("filters"),
+                $arrows = S.getCurrent ("arrows");
 
           // Reposition relationships
           $wall.wall ("repositionPostitsPlugs");
@@ -79,14 +79,14 @@ $(function()
       _scrollDiff = null;
   $_walls.on("scroll", function(e)
     {
-      const $wall = wpt_sharer.getCurrent ("wall");
+      const $wall = S.getCurrent ("wall");
 
       if ($wall.length)
       {
-        const $arrows = wpt_sharer.getCurrent ("arrows"),
-              $filters = wpt_sharer.getCurrent ("filters");
+        const $arrows = S.getCurrent ("arrows"),
+              $filters = S.getCurrent ("filters");
 
-        if (!wpt_sharer.get ("wall-dragging"))
+        if (!S.get ("wall-dragging"))
         {
           const scroll = {
             top: $(this).scrollTop (),
@@ -99,12 +99,12 @@ $(function()
               left: scroll.left
             };
 
-          if (!wpt_sharer.get ("plugs-hidden") &&
+          if (!S.get ("plugs-hidden") &&
               (Math.abs(scroll.top - _scrollDiff.top) > 1 ||
                Math.abs(scroll.left - _scrollDiff.left) > 1))
           {
             $wall.wall ("hidePostitsPlugs");
-            wpt_sharer.set ("plugs-hidden", true);
+            S.set ("plugs-hidden", true);
           }
 
           // Reposition relationships
@@ -116,7 +116,7 @@ $(function()
               _scrollDiff = null;
 
               $wall.wall ("showPostitsPlugs");
-              wpt_sharer.unset ("plugs-hidden");
+              S.unset ("plugs-hidden");
 
             }, 150);
           }
@@ -140,12 +140,12 @@ $(function()
             rename = (!close && $(this).hasClass ("active"));
 
       if (rename && H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
-        wpt_sharer.getCurrent("wall").wall (
+        S.getCurrent("wall").wall (
           "openPropertiesPopup", {forRename: true});
 
       if (!rename && !close)
       {
-        const $chatroom = wpt_sharer.getCurrent ("chatroom");
+        const $chatroom = S.getCurrent ("chatroom");
 
         if ($chatroom)
           $chatroom.chatroom ("closeUsersTooltip");
@@ -170,13 +170,13 @@ $(function()
           // If we are massively restoring all walls, do nothing here
       if ($_walls.find(".wall[data-restoring]").length ||
           // If we are massively closing all walls, do nothing here
-          wpt_sharer.get ("closingAll"))
+          S.get ("closingAll"))
         return;
 
-      wpt_sharer.reset ();
+      S.reset ();
 
       // New wall
-      const $wall = wpt_sharer.getCurrent ("wall");
+      const $wall = S.getCurrent ("wall");
 
       // Need wall to continue
       if (!$wall.length) return;
@@ -192,9 +192,9 @@ $(function()
           .scrollTop (0);
 
       const $menu = $("#main-menu"),
-            $chatroom = wpt_sharer.getCurrent ("chatroom"),
+            $chatroom = S.getCurrent ("chatroom"),
             chatRoomVisible = $chatroom.is (":visible"),
-            $arrows = wpt_sharer.getCurrent ("arrows");
+            $arrows = S.getCurrent ("arrows");
 
       // Manage chatroom checkbox menu
       $menu
@@ -207,7 +207,7 @@ $(function()
 
       // Manage filters checkbox menu
       $menu.find("li[data-action='filters'] input")[0].checked =
-        wpt_sharer.getCurrent("filters").is (":visible");
+        S.getCurrent("filters").is (":visible");
 
       // Manage arrows checkbox menu
       $menu.find("li[data-action='arrows'] input")[0].checked =
@@ -215,7 +215,7 @@ $(function()
       $arrows.arrows ("reset");
 
       // Refresh wall if it has not just been opened
-      if (!wpt_sharer.get ("newWall"))
+      if (!S.get ("newWall"))
         $wall.wall ("refresh");
 
       $wall.wall ("menu", {from: "wall", type: "have-wall"});
@@ -250,7 +250,7 @@ $(function()
     {
       const $popup = $(this),
             $dialog = $popup.find (".modal-dialog"),
-            $postit = wpt_sharer.getCurrent ("postit"),
+            $postit = S.getCurrent ("postit"),
             modalsCount = $(".modal:visible").length;
 
       // If there is already opened modals
@@ -288,13 +288,13 @@ $(function()
     function (e)
     {
       const $popup = $(this),
-            $postit = wpt_sharer.getCurrent ("postit");
+            $postit = S.getCurrent ("postit");
 
       switch (e.target.id)
       {
         case "postitUpdatePopup":
 
-          const data = wpt_sharer.get ("postit-data");
+          const data = S.get ("postit-data");
 
           // Return if we are closing the postit modal from the confirmation
           // popup
@@ -304,7 +304,7 @@ $(function()
                 content = tinymce.activeEditor.getContent (),
                 cb_cancel = () =>
                   {
-                    wpt_sharer.set ("postit-data", {closing: true});
+                    S.set ("postit-data", {closing: true});
 
                     //FIXME
                     $(".tox-toolbar__overflow").hide ();
@@ -314,7 +314,7 @@ $(function()
                     $postit.postit ("unedit");
 
                     $popup.modal ("hide");
-                    wpt_sharer.unset ("postit-data");
+                    S.unset ("postit-data");
 
                     tinymce.activeEditor.resetContent ();
 
@@ -345,7 +345,7 @@ $(function()
               cb_cancel: cb_cancel
             });
 
-            wpt_sharer.set ("postit-data", data);
+            S.set ("postit-data", data);
           }
           else
             cb_cancel ();
@@ -359,11 +359,11 @@ $(function()
     function(e)
     {
       const $popup = $(this),
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             type = $popup[0].dataset.popuptype,
             openedModals = $(".modal:visible").length,
-            $postit = wpt_sharer.getCurrent ("postit"),
-            $header = wpt_sharer.getCurrent ("header");
+            $postit = S.getCurrent ("postit"),
+            $header = S.getCurrent ("header");
 
       // Prevent child popups from removing scroll to their parent
       if (openedModals)
@@ -390,7 +390,7 @@ $(function()
 
         case "plugPopup":
 
-          const from = wpt_sharer.get ("link-from");
+          const from = S.get ("link-from");
 
           if (from)
             from.cancelCallback ();
@@ -414,7 +414,7 @@ $(function()
           break;
 
         case "confirmPopup":
-          wpt_sharer.get("confirmPopup").cb_cancel ();
+          S.get("confirmPopup").cb_cancel ();
           // No break
         case "usersSearchPopup":
         case "groupAccessPopup":
@@ -433,11 +433,11 @@ $(function()
     function (e)
     {
       const $popup = $(this).closest (".modal"),
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             type = $popup[0].dataset.popuptype,
             closePopup = !!!$popup[0].dataset.noclosure,
-            $postit = wpt_sharer.getCurrent ("postit"),
-            $header = wpt_sharer.getCurrent ("header");
+            $postit = S.getCurrent ("postit"),
+            $header = S.getCurrent ("header");
 
       $popup[0].removeAttribute ("data-noclosure");
 
@@ -446,7 +446,7 @@ $(function()
         switch ($popup.attr ("id"))
         {
           case "plugPopup":
-            wpt_sharer.get ("link-from")
+            S.get ("link-from")
               .confirmCallback ($popup.find("input").val());
             break;
 
@@ -456,7 +456,7 @@ $(function()
             $postit.postit("setContent",tinymce.activeEditor.getContent());
 
             $postit[0].removeAttribute ("data-uploadedpictures");
-            wpt_sharer.unset ("postit-data");
+            S.unset ("postit-data");
             break;
 
           case "groupAccessPopup":
@@ -480,7 +480,7 @@ $(function()
           // Manage confirmations
           case "confirmPopup":
 
-            wpt_sharer.get("confirmPopup").cb_ok ();
+            S.get("confirmPopup").cb_ok ();
             break;
 
           // Create new wall

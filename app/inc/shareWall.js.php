@@ -88,7 +88,7 @@
               $_usersSearchPopup.usersSearch (
                 "displayUsers",
                 {
-                  wallId: wpt_sharer.getCurrent("wall").wall ("getId"),
+                  wallId: S.getCurrent("wall").wall ("getId"),
                   groupId: groupId,
                   groupType: groupType
                 });
@@ -250,7 +250,7 @@
     // METHOD linkGroup ()
     linkGroup: function (args)
     {
-      const wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
+      const wallId = S.getCurrent("wall").wall ("getId"),
             $group = this.element.find("li.todelete"),
             data = {
               type:
@@ -277,7 +277,7 @@
     // METHOD unlinkGroup ()
     unlinkGroup: function (args)
     {
-      const wallId = wpt_sharer.getCurrent("wall").wall ("getId");
+      const wallId = S.getCurrent("wall").wall ("getId");
 
       H.request_ws (
         "POST",
@@ -298,7 +298,7 @@
     {
       const $group = this.element.find("li.todelete"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES['dedicated']?>) ?
-              "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+
+              "wall/"+S.getCurrent("wall").wall("getId")+
                 "/group/"+$group[0].dataset.id :
               "group/"+$group[0].dataset.id
 
@@ -320,7 +320,7 @@
     createGroup: function (type, args)
     {
       const service = (type == <?=WPT_GTYPES['dedicated']?>) ?
-              "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group" :
+              "wall/"+S.getCurrent("wall").wall("getId")+"/group" :
               "group";
 
       H.request_ws (
@@ -363,12 +363,12 @@
     displayGroups: function ()
     {
       const $share = this.element,
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             $body = $share.find (".modal-body");
 
       H.request_ajax (
         "GET",
-        "wall/"+wpt_sharer.getCurrent("wall").wall("getId")+"/group",
+        "wall/"+S.getCurrent("wall").wall("getId")+"/group",
         null,
         // success cb
         (d) =>

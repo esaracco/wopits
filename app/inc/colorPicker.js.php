@@ -27,14 +27,14 @@
           e.stopImmediatePropagation ();
 
           // Update popup background color
-         wpt_sharer.getCurrent("postit")
+          S.getCurrent("postit")
             .removeClass(_COLOR_PICKER_COLORS.join(" "))
             .addClass($(this).attr ("class"));
 
           // Remove color picker
           $("#popup-layer").trigger ("click");
 
-          wpt_sharer.getCurrent("filters").filters ("apply");
+          S.getCurrent("filters").filters ("apply");
         });
 
       H.waitForDOMUpdate (() =>
@@ -68,7 +68,7 @@
       H.openPopupLayer (() =>
         {
           this.close ();
-          wpt_sharer.getCurrent("postit").postit ("unedit");
+          S.getCurrent("postit").postit ("unedit");
         });
 
       $picker
@@ -84,7 +84,7 @@
       if ($picker.length)
       {
         $picker.hide ();
-        wpt_sharer.getCurrent("postit").trigger ("mouseleave");
+        S.getCurrent("postit").trigger ("mouseleave");
       }
     }
 

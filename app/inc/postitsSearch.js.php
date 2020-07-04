@@ -50,7 +50,7 @@
     // METHOD reset ()
     reset: function (args)
     {
-      const $wall = wpt_sharer.getCurrent ("wall");
+      const $wall = S.getCurrent ("wall");
 
       $wall
         .find(".postit-edit,"+
@@ -67,7 +67,7 @@
     {
       const plugin = this,
             $search = plugin.element,
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             occur = {};
 
       plugin.reset ();

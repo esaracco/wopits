@@ -46,7 +46,7 @@
             }
             else
             {
-              const $postit = wpt_sharer.getCurrent ("postit"),
+              const $postit = S.getCurrent ("postit"),
                     tag = e.target.dataset.tag;
 
               if (!select)
@@ -58,7 +58,7 @@
   
               plugin.refreshPostitDataTag ();
 
-              wpt_sharer.getCurrent("filters").filters ("apply");
+              S.getCurrent("filters").filters ("apply");
             }
           }
         });
@@ -81,7 +81,7 @@
     {
       const plugin = this,
             $picker = plugin.element,
-            $postit = wpt_sharer.getCurrent ("postit"),
+            $postit = S.getCurrent ("postit"),
             wW = $(window).outerWidth (),
             wH = $(window).outerHeight ();
       let x = args.pageX + 5,
@@ -104,7 +104,7 @@
       H.openPopupLayer (() =>
         {
           plugin.close ();
-          wpt_sharer.getCurrent("postit").postit ("unedit");
+          S.getCurrent("postit").postit ("unedit");
         });
 
       $picker
@@ -118,7 +118,7 @@
       if (this.element.length)
       {
         this.element.hide ();
-        wpt_sharer.getCurrent("postit").trigger ("mouseleave");
+        S.getCurrent("postit").trigger ("mouseleave");
       }
     },
 
@@ -128,7 +128,7 @@
       let dataTag = "";
 
       if (!$postit)
-        $postit = wpt_sharer.getCurrent ("postit");
+        $postit = S.getCurrent ("postit");
 
       $postit.find(".postit-tags i").each (function ()
         {

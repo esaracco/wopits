@@ -176,14 +176,14 @@
                       content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`,
                       cb_close: () =>
                         {
-                          if (!wpt_sharer.get ("no-unedit"))
+                          if (!S.get ("no-unedit"))
                             plugin.unedit ();
 
-                          wpt_sharer.unset ("no-unedit");
+                          S.unset ("no-unedit");
                         },
                       cb_ok: ($popover) =>
                         {
-                          wpt_sharer.set ("no-unedit", true);
+                          S.set ("no-unedit", true);
                           plugin.setTitle ($popover.find("input").val(), true);
                         }
                     });
@@ -325,14 +325,14 @@
                   content: "<?=_("Delete this picture?")?>",
                   cb_close: () =>
                     {
-                      if (!wpt_sharer.get ("unedit-done"))
+                      if (!S.get ("unedit-done"))
                         plugin.unedit ();
                       else
-                        wpt_sharer.unset ("unedit-done");
+                        S.unset ("unedit-done");
                     },
                   cb_ok: () =>
                     {
-                      wpt_sharer.set ("unedit-done", true);
+                      S.set ("unedit-done", true);
                       plugin.deleteImg ();
                     }
                 });
@@ -513,7 +513,7 @@
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
-      wpt_sharer.reset ("header");
+      S.reset ("header");
       this.element.removeClass ("current");
     },
 
@@ -627,7 +627,7 @@
           class="upload header-picture">`)
         .on("click", function ()
           {
-            const $header = wpt_sharer.getCurrent ("header");
+            const $header = S.getCurrent ("header");
 
             //FIXME
             // we need this to cancel edit if no img is selected by user
@@ -644,7 +644,7 @@
         .on("change",function (e)
           {
             const $upload = $(this),
-                  $header = wpt_sharer.getCurrent ("header"),
+                  $header = S.getCurrent ("header"),
                   settings = $header.header ("getSettings");
 
             if (e.target.files && e.target.files.length)

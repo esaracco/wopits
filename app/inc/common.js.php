@@ -199,8 +199,8 @@ class Wpt_storage
   }
 }
 
-// CLASS Wpt_sharer
-class Wpt_sharer
+// CLASS Sharer
+class Sharer
 {
   // METHOD constructor ()
   constructor ()
@@ -498,7 +498,7 @@ class Wpt_WebSocket
           this.tryToReconnect ({
             success_cb: () =>
               {
-                const $wall = wpt_sharer.getCurrent ("wall");
+                const $wall = S.getCurrent ("wall");
 
                 if ($wall.length)
                   $wall.wall ("refresh");
@@ -763,7 +763,7 @@ class Help
   // METHOD getAccess ()
   getAccess ()
   {
-    const $wall = wpt_sharer.getCurrent ("wall");
+    const $wall = S.getCurrent ("wall");
   
     return ($wall.length) ? $wall[0].dataset.access : "";
   }
@@ -773,7 +773,7 @@ class Help
   {
     if (currentAccess === undefined)
     {
-      const $wall = wpt_sharer.getCurrent ("wall");
+      const $wall = S.getCurrent ("wall");
   
       if ($wall.length)
         currentAccess = $wall[0].dataset.access;
@@ -911,13 +911,13 @@ class Help
   {
     const $popup = $("#confirmPopup");
   
-    wpt_sharer.set ("confirmPopup", {
+    S.set ("confirmPopup", {
       cb_ok: args.cb_ok,
       cb_cancel: () =>
         {
           if (args.cb_cancel)
             args.cb_cancel ();
-          wpt_sharer.unset ("confirmPopup");
+          S.unset ("confirmPopup");
         }
     });
   
@@ -1000,7 +1000,7 @@ class Help
     {
       if (w != 500)
         w += this.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
-               wpt_sharer.getCurrent("wall")[0].dataset.access) ? 70 : 30;
+               S.getCurrent("wall")[0].dataset.access) ? 70 : 30;
   
       if (w > wW)
         w = "100%";
@@ -1147,9 +1147,9 @@ class Help
   {
     document.querySelector("html").style.overflow = "hidden";
   
-    wpt_sharer.getCurrent("walls")[0].style.height =
+    S.getCurrent("walls")[0].style.height =
       (window.innerHeight -
-       document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
+        document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
   }
   
   // METHOD download ()
@@ -1402,7 +1402,7 @@ class Help
   // METHOD headerRemoveContentKeepingWallSize ()
   headerRemoveContentKeepingWallSize (args)
   {
-    const $wall = wpt_sharer.getCurrent ("wall");
+    const $wall = S.getCurrent ("wall");
     let tdW = 0;
   
     // Get row TD total width
@@ -1494,15 +1494,15 @@ class Help
           bodyScrollTop = body.scrollTop,
           wallsScrollLeft = walls.scrollLeft;
   
-    wpt_sharer.set ("wallsScrollLeft", wallsScrollLeft);
-    wpt_sharer.set ("bodyComputedStyles", window.getComputedStyle (body));
+    S.set ("wallsScrollLeft", wallsScrollLeft);
+    S.set ("bodyComputedStyles", window.getComputedStyle (body));
   
     body.style.position = "fixed";
     body.style.overflow = "hidden";
     body.style.top = (bodyScrollTop * -1)+"px";
   
     if (this.navigatorIsEdge ())
-      wpt_sharer.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
+      S.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
   
     walls.style.width = window.innerWidth+"px";
     walls.style.overflow = "hidden";
@@ -1515,19 +1515,19 @@ class Help
   {
     const walls = document.getElementById ("walls");
   
-    document.body.style = wpt_sharer.get ("bodyComputedStyles");
-    wpt_sharer.unset ("bodyComputedStyles");
+    document.body.style = S.get ("bodyComputedStyles");
+    S.unset ("bodyComputedStyles");
   
     walls.style.overflow = "auto";
     walls.style.width = "auto";
     if (this.navigatorIsEdge ())
-      wpt_sharer.getCurrent("wall")[0].style.left = "";
-    walls.scrollLeft = wpt_sharer.get ("wallsScrollLeft");
+      S.getCurrent("wall")[0].style.left = "";
+    walls.scrollLeft = S.get ("wallsScrollLeft");
   
     this.waitForDOMUpdate (()=>
       {
         this.fixMainHeight ();
-        wpt_sharer.getCurrent("wall").wall ("repositionPostitsPlugs");
+        S.getCurrent("wall").wall ("repositionPostitsPlugs");
       });
   }
 
@@ -1535,6 +1535,6 @@ class Help
 
 // GLOBAL VARS
 const H = new Help (),
-      wpt_sharer = new Wpt_sharer (),
+      S = new Sharer (),
       wpt_storage = new Wpt_storage (),
       wpt_WebSocket = new Wpt_WebSocket ();

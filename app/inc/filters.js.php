@@ -73,22 +73,21 @@
     hidePlugs: function ()
     {
       this.element.addClass ("plugs-hidden");
-      wpt_sharer.getCurrent("wall").wall ("hidePostitsPlugs"); 
+      S.getCurrent("wall").wall ("hidePostitsPlugs"); 
     },
 
     showPlugs: function ()
     {
       this.element.removeClass ("plugs-hidden");
 
-      setTimeout (() =>
-        wpt_sharer.getCurrent("wall").wall ("showPostitsPlugs"), 0);
+      setTimeout (()=> S.getCurrent("wall").wall ("showPostitsPlugs"), 0);
     },
 
     // METHOD toggle ()
     toggle: function ()
     {
       const $filters = this.element,
-            $wall = wpt_sharer.getCurrent ("wall");
+            $wall = S.getCurrent ("wall");
 
       if ($filters.is (":visible"))
       {
@@ -119,7 +118,7 @@
     {
       const plugin = this,
             $filters = plugin.element,
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             $postits = $wall.find(".postit"),
             $tags = $filters.find(".tags div.selected"),
             $colors = $filters.find(".colors div.selected");

@@ -210,7 +210,7 @@
     {
       const plugin = this,
             $settings = plugin.element,
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             wallId = ($wall.length) ? $wall.wall ("getId") : null,
             $colorPicker = $settings.find(".cp"),
             loaded = $settings[0].dataset.loaded,
@@ -270,7 +270,7 @@
           color: plugin.get ("wall-background", wallId),
           select: function (e, color)
             {
-              const $wall = wpt_sharer.getCurrent ("wall"),
+              const $wall = S.getCurrent ("wall"),
                     wallId = ($wall.length) ? $wall.wall ("getId") : null;
 
               if (color.css != plugin.get ("wall-background", wallId))

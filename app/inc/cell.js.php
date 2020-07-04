@@ -30,7 +30,7 @@
             classes: {"ui-droppable-hover" : "droppable-hover"},
             drop: function (e, ui)
               {
-                if (wpt_sharer.get("revertData").revert) return;
+                if (S.get("revertData").revert) return;
 
                 const $target = $(this),
                       $postit = ui.draggable,
@@ -60,7 +60,7 @@
           helper: "resizable-helper",
           resize:function(e, ui)
             {
-              if (wpt_sharer.get("revertData").revert)
+              if (S.get("revertData").revert)
               {
                 $("body")[0].removeAttribute ("style");
 
@@ -69,7 +69,7 @@
             },
           start: function(e, ui)
             {
-              wpt_sharer.set ("revertData", {
+              S.set ("revertData", {
                 revert: false,
                 size: {
                   width: $cell.outerWidth (),
@@ -77,11 +77,11 @@
                 }
               });
 
-              plugin.edit (() =>  wpt_sharer.get("revertData").revert = true);
+              plugin.edit (()=> S.get("revertData").revert = true);
             },
           stop:function(e, ui)
             {
-              const revertData = wpt_sharer.get ("revertData");
+              const revertData = S.get ("revertData");
 
               if (revertData.revert)
               {
@@ -90,7 +90,7 @@
                   height: revertData.size.height
                 });
 
-                wpt_sharer.unset ("revertData");
+                S.unset ("revertData");
               }
               else
               {
@@ -142,7 +142,7 @@
             })
           .on("click", function (e)
             {
-              const currentPlug = wpt_sharer.get("link-from");
+              const currentPlug = S.get ("link-from");
 
               if (currentPlug)
                 currentPlug.obj.postit ("cancelPlugAction");
@@ -153,7 +153,7 @@
               if (e.target.tagName != 'TD')
                 return e.stopImmediatePropagation ();
   
-              const $filters = wpt_sharer.getCurrent ("filters"),
+              const $filters = S.getCurrent ("filters"),
                     cellOffset = $cell.offset (),
                     pTop = ((_coords && _coords.changedTouches) ?
                       _coords.changedTouches[0].clientY :
@@ -237,7 +237,7 @@
     {
       const cells = [];
 
-      wpt_sharer.getCurrent("wall").find("tbody td").each (function ()
+      S.getCurrent("wall").find("tbody td").each (function ()
       {
         const $cell = $(this),
               $postits = $cell.find(".postit");

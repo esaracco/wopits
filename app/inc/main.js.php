@@ -68,19 +68,19 @@
           cursor: "grab",
           start: function ()
             {
-              wpt_sharer.set ("wall-dragging", true);
+              S.set ("wall-dragging", true);
               plugin.hidePostitsPlugs ();
             },
           stop: function ()
             {
-              const $arrows = wpt_sharer.getCurrent ("arrows");
+              const $arrows = S.getCurrent ("arrows");
 
               // Fix arrows tool appearence
               if ($arrows.is (":visible"))
                 $arrows.arrows ("update");
 
               plugin.showPostitsPlugs ();
-              wpt_sharer.unset ("wall-dragging", true);
+              S.unset ("wall-dragging", true);
             }
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
@@ -169,7 +169,7 @@
     menu: function (args)
     {
       const $menu = $("#main-menu"),
-            $wall = wpt_sharer.getCurrent ("wall"),
+            $wall = S.getCurrent ("wall"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
             adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>");
@@ -311,8 +311,7 @@
     refreshPostitsPlugs: function (plugs, partial = false)
     {
       const $wall = this.element,
-            hidePlugs =
-              wpt_sharer.getCurrent("filters").hasClass ("plugs-hidden");
+            hidePlugs = S.getCurrent("filters").hasClass ("plugs-hidden");
       let idsNew = {};
 
       (plugs||[]).forEach ((plug) =>
@@ -410,8 +409,8 @@
     {
       const plugin = this,
             $wall = plugin.element,
-            $filters = wpt_sharer.getCurrent ("filters"),
-            $arrows = wpt_sharer.getCurrent ("arrows");
+            $filters = S.getCurrent ("filters"),
+            $arrows = S.getCurrent ("arrows");
 
       function __refreshWallBasicProperties (d)
       {
@@ -691,12 +690,12 @@
     closeAllWalls: function ()
     {
       // Tell the other methods that we are massively closing the walls
-      wpt_sharer.set ("closingAll", 1);
-      wpt_sharer.getCurrent("walls").find("table.wall").each (function ()
+      S.set ("closingAll", true);
+      S.getCurrent("walls").find("table.wall").each (function ()
         {
           $(this).wall ("close");
         });
-      wpt_sharer.unset ("closingAll");
+      S.unset ("closingAll");
 
       $("#settingsPopup").settings ("saveOpenedWalls");
     },
@@ -710,7 +709,7 @@
               $activeTab.prev().attr("href") :
                 ($activeTab.next().length) ?
                   $activeTab.next().attr("href") : null,
-            $chatroom = wpt_sharer.getCurrent ("chatroom");
+            $chatroom = S.getCurrent ("chatroom");
 
       if ($chatroom.is (":visible"))
         $chatroom.chatroom ("leave");
@@ -739,11 +738,11 @@
         $(".nav-tabs.walls").find('a[href="'+newActiveTabId+'"]').tab ("show");
 
       // If we are not massively closing all walls
-      if (!wpt_sharer.get("closingAll"))
+      if (!S.get ("closingAll"))
         $("#settingsPopup").settings ("saveOpenedWalls");
 
       //FIXME
-      setTimeout (() => wpt_sharer.reset (), 250);
+      setTimeout (()=> S.reset (), 250);
     },
 
     // METHOD openDeletePopup ()
@@ -789,11 +788,10 @@
         "wall/"+this.settings.id+"/"+type,
         null,
         () =>
-          {
-            wpt_sharer.getCurrent("walls")
-              [(type == "col")?"scrollLeft":"scrollTop"](30000);
-            wall.dataset[type+"s"] = Number (wall.dataset[type+"s"]) + 1;
-          });
+        {
+          S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000);
+          wall.dataset[type+"s"] = Number (wall.dataset[type+"s"]) + 1;
+        });
     },
 
     // METHOD addRow ()
@@ -935,7 +933,7 @@
          }
        }
 
-      wpt_sharer.reset ();
+      S.reset ();
 
       if (args.restoring)
         $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
@@ -987,7 +985,7 @@
                  placement: "left",
                  title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
                  content: "<?=_("Close this wall?")?>",
-                 cb_ok: () => wpt_sharer.getCurrent("wall").wall ("close")
+                 cb_ok: ()=> S.getCurrent("wall").wall ("close")
                });
              }));
 
@@ -1003,9 +1001,9 @@
 
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
-            wpt_sharer.set ("newWall", true);
+            S.set ("newWall", true);
             $tabs.find('a[href="#wall-'+d.id+'"]').tab ("show");
-            wpt_sharer.unset ("newWall");
+            S.unset ("newWall");
           }
 
           $(".nav.walls").show ();
@@ -1409,7 +1407,7 @@
     {
       const step = .005,
             wall = this.element[0],
-            walls = wpt_sharer.getCurrent("walls")[0];
+            walls = S.getCurrent("walls")[0];
       let position = wall.getBoundingClientRect ();
 
       if (position.bottom - position.top < walls.clientHeight &&
@@ -1578,7 +1576,7 @@
         $("#normal-display-btn")
           .on("click", function ()
           {
-            wpt_sharer.getCurrent("wall").wall ("zoom", {type: "normal"});
+            S.getCurrent("wall").wall ("zoom", {type: "normal"});
           });
 
         $("#createWallPopup #w-grid").on("change", function ()
@@ -1643,7 +1641,7 @@
           .on("click","thead th:first-child",function (e)
           {
             if ($(this).find(".wpt-badge").length)
-              wpt_sharer.getCurrent("wall").wall ("displayWallUsersview");
+              S.getCurrent("wall").wall ("displayWallUsersview");
           });
 
         $("#wallUsersviewPopup")
@@ -1681,7 +1679,7 @@
                        ".nav-tabs.walls a[data-action='new'],"+
                        "#welcome",function(e)
           {
-            const $wall = wpt_sharer.getCurrent ("wall");
+            const $wall = S.getCurrent ("wall");
             const action = $(this)[0].dataset.action ||
                              $(this).parent()[0].dataset.action;
 
@@ -1719,7 +1717,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("chatroom").chatroom ("toggle");
+                S.getCurrent("chatroom").chatroom ("toggle");
 
                 break;
 
@@ -1731,7 +1729,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("filters").filters ("toggle");
+                S.getCurrent("filters").filters ("toggle");
 
                 break;
 
@@ -1743,7 +1741,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                wpt_sharer.getCurrent("arrows").arrows ("toggle");
+                S.getCurrent("arrows").arrows ("toggle");
 
                 break;
 

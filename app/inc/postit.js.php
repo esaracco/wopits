@@ -24,7 +24,7 @@
         escapeEvent: (e) =>
           {
             if (e.key == "Escape")
-              wpt_sharer.get("link-from").obj.postit ("cancelPlugAction");
+              S.get("link-from").obj.postit ("cancelPlugAction");
           }
       };
 
@@ -78,15 +78,15 @@
         // EVENTS mouseenter focusin click
         .on("mouseenter focusin click", function(e)
           {
-            const $oldPostit = wpt_sharer.get ("postit-oldzindex");
+            const $oldPostit = S.get ("postit-oldzindex");
 
             if ($oldPostit &&
                 $oldPostit.postit.postit ("getId") != settings.id)
               plugin.resetZIndexData ();
 
-            if (!wpt_sharer.get ("postit-oldzindex"))
+            if (!S.get ("postit-oldzindex"))
             {
-              wpt_sharer.set ("postit-oldzindex", {
+              S.set ("postit-oldzindex", {
                 zIndex: $postit.css ("z-index"),
                 postit: $postit
               });
@@ -97,11 +97,11 @@
         // EVENTS mouseleave focusout
         .on("mouseleave focusout",function(e)
           {
-            const $currentPostit = wpt_sharer.getCurrent ("postit");
+            const $currentPostit = S.getCurrent ("postit");
 
             if (!$.support.touch &&
                 (!$currentPostit || !$currentPostit.length) &&
-                wpt_sharer.get ("postit-oldzindex") &&
+                S.get ("postit-oldzindex") &&
                 !$("#popup-layer").length &&
                 !$(".modal:visible").length)
             {
@@ -116,7 +116,7 @@
       .on("click", function (e)
       {
         const id = plugin.settings.id,
-              from = wpt_sharer.get ("link-from");
+              from = S.get ("link-from");
 
         if (from)
         {
@@ -185,7 +185,7 @@
 
                 H.cleanPopupDataAttr ($popup);
 
-                wpt_sharer.set ("link-from", from);
+                S.set ("link-from", from);
 
                 H.openModal ($popup);
               });
@@ -223,7 +223,7 @@
           stack: ".postit",
           drag:function(e, ui)
           {
-            if (wpt_sharer.get("revertData").revert)
+            if (S.get("revertData").revert)
               return false;
 
 // TODO - 1 - Hide plugs instead of moving them with postits (performance
@@ -238,7 +238,7 @@
 //            issue with some touch devices)
 //              plugin.hidePlugs ();
   
-              wpt_sharer.set ("revertData", {
+              S.set ("revertData", {
                 revert: false,
                 top: p.top,
                 left: p.left
@@ -247,14 +247,14 @@
               plugin.edit (
                 {ignoreResize: true},
                 null,
-                () => wpt_sharer.get("revertData").revert = true
+                ()=> S.get("revertData").revert = true
               );
             },
           stop: function(e, ui)
             {
-              if (wpt_sharer.get("revertData").revert)
+              if (S.get("revertData").revert)
               {
-                const revertData = wpt_sharer.get ("revertData");
+                const revertData = S.get ("revertData");
 
                 plugin.setPosition ({
                   top: revertData.top,
@@ -287,14 +287,14 @@
             // Update postits relationships arrows
             plugin.repositionPlugs ();
 
-            if (wpt_sharer.get("revertData").revert)
+            if (S.get("revertData").revert)
               return false;
           },
           start: function(e, ui)
             {
               const postit = $postit[0];
   
-              wpt_sharer.set ("revertData", {
+              S.set ("revertData", {
                 revert: false,
                 width: postit.clientWidth,
                 height: postit.clientHeight
@@ -303,11 +303,11 @@
               plugin.edit (
                 {ignoreResize: true},
                 null,
-                () => wpt_sharer.get("revertData").revert = true);
+                ()=> S.get("revertData").revert = true);
             },
           stop: function(e, ui)
             {
-              const revertData = wpt_sharer.get ("revertData");
+              const revertData = S.get ("revertData");
 
               if (revertData.revert)
               {
@@ -440,7 +440,7 @@
             // Open modal with write rights
             else
             {
-              if (wpt_sharer.get ("link-from"))
+              if (S.get ("link-from"))
                 plugin.cancelPlugAction (true, false);
 
               plugin.edit (null, () =>
@@ -475,12 +475,12 @@
                               $postit.find(".postit-header span.title").html (),
                             content = $postit.find(".postit-edit").html()||"";
 
-                      wpt_sharer.set ("postit-data", {
+                      S.set ("postit-data", {
                         title: title != _defaultString ? title : ""
                       });
     
                       $("#postitUpdatePopupTitle")
-                        .val (wpt_sharer.get("postit-data").title);
+                        .val (S.get("postit-data").title);
 
                       //FIXME
                       $(".tox-toolbar__overflow").show ();
@@ -564,10 +564,7 @@
                       .off("mousemove", _plugRabbit.mouseEvent)
                       .on("mousemove", _plugRabbit.mouseEvent);
       
-                    wpt_sharer.set ("link-from", {
-                      id: settings.id,
-                      obj: $postit
-                    });
+                    S.set ("link-from", {id: settings.id, obj: $postit});
 
                   });
 
@@ -650,7 +647,7 @@
                           });
                       });
 
-                      wpt_sharer.set ("plugs-to-save", toSave);
+                      S.set ("plugs-to-save", toSave);
 
                       plugin.unedit ();
 
@@ -736,9 +733,9 @@
       if (full)
       {
         if (unedit)
-          wpt_sharer.get("link-from").obj.postit ("unedit");
+          S.get("link-from").obj.postit ("unedit");
 
-        wpt_sharer.unset ("link-from");
+        S.unset ("link-from");
       }
     },
 
@@ -991,7 +988,7 @@
           toDefrag[id].postit ("defragPlugsArray");
 
         if (!noedit)
-          wpt_sharer.set ("plugs-to-save", toDefrag);
+          S.set ("plugs-to-save", toDefrag);
       }
 
       return ","+plug.startId+";"+plug.endId;
@@ -1034,7 +1031,7 @@
         toDefrag[id].postit ("defragPlugsArray");
 
       if (!noedit)
-        wpt_sharer.set ("plugs-to-save", toDefrag);
+        S.set ("plugs-to-save", toDefrag);
 
       $postit[0].dataset.plugs = "";
       settings._plugs = [];
@@ -1095,10 +1092,10 @@
     // METHOD resetZIndexData ()
     resetZIndexData: function ()
     {
-      wpt_sharer.get("postit-oldzindex").postit.css ("z-index",
-        wpt_sharer.get ("postit-oldzindex").zIndex);
+      S.get("postit-oldzindex").postit.css (
+        "z-index", S.get ("postit-oldzindex").zIndex);
 
-      wpt_sharer.unset ("postit-oldzindex");
+      S.unset ("postit-oldzindex");
     },
 
     // METHOD getSettings ()
@@ -1431,7 +1428,7 @@
     // METHOD setCurrent ()
     setCurrent: function ()
     {
-      wpt_sharer.reset ("postit");
+      S.reset ("postit");
 
       this.element.addClass("current")
     },
@@ -1439,7 +1436,7 @@
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
-      wpt_sharer.reset ("postit");
+      S.reset ("postit");
 
       this.element.removeClass ("current");
     },
@@ -1592,7 +1589,7 @@
     // METHOD delete ()
     delete: function ()
     {
-      wpt_sharer.reset ();
+      S.reset ();
 
       this.element[0].dataset.todelete = true;
     },
@@ -1680,7 +1677,7 @@
     unedit: function (args = {})
     {
       const $postit = this.element,
-            plugsToSave = wpt_sharer.get ("plugs-to-save");
+            plugsToSave = S.get ("plugs-to-save");
       let data = null,
           todelete;
 
@@ -1699,7 +1696,7 @@
           for (const id in plugsToSave)
             data.plugs.push (plugsToSave[id].postit ("serialize")[0]);
 
-          wpt_sharer.unset ("plugs-to-save");
+          S.unset ("plugs-to-save");
         }
         // Postit update
         else
@@ -1863,7 +1860,7 @@
           file_picker_types: "image",
           file_picker_callback: function (callback, value, meta)
           {
-            wpt_sharer.set ("tinymce-callback", callback);
+            S.set ("tinymce-callback", callback);
             $(".upload.postit-picture").click ();
           },
 
@@ -1887,7 +1884,7 @@
             const $item = $(this),
                   $label = $item.closest("div"),
                   $popup = $("#plugPopup"),
-                  $wall = wpt_sharer.getCurrent ("wall"),
+                  $wall = S.getCurrent ("wall"),
                   [startId, endId] = $label[0].dataset.id.split ("-"),
                   $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                   $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
@@ -1900,7 +1897,7 @@
               toSave[startId] = $start;
               toSave[endId] = $end
 
-              wpt_sharer.set ("plugs-to-save", toSave);
+              S.set ("plugs-to-save", toSave);
               $start.postit ("unedit");
             }
 
@@ -1957,7 +1954,7 @@
         .on("change", function (e)
         {
           const $upload = $(this),
-                $postit = wpt_sharer.getCurrent ("postit"),
+                $postit = S.getCurrent ("postit"),
                 settings = $postit.postit ("getSettings");
 
           if (e.target.files && e.target.files.length)
@@ -2041,8 +2038,8 @@
                         cb_msg: __error_cb
                       }) && e.target.result)
                   {
-                    const wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
-                          $postit = wpt_sharer.getCurrent ("postit"),
+                    const wallId = S.getCurrent("wall").wall ("getId"),
+                          $postit = S.getCurrent ("postit"),
                           postitId = $postit.postit ("getId"),
                           cellId = $postit.postit ("getCellId");
 
@@ -2071,7 +2068,7 @@
                           $f.find("input:eq(1)").val (d.width);
                           $f.find("input:eq(2)").val (d.height);
 
-                          wpt_sharer.get("tinymce-callback")(d.link);
+                          S.get("tinymce-callback")(d.link);
 
                           setTimeout(()=>
                           {
@@ -2102,11 +2099,9 @@
               placement: "left",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
               content: "<?=_("Delete this file?")?>",
-              cb_close: () =>
-                $(".modal").find("li.list-group-item.active")
-                  .removeClass ("active todelete"),
-              cb_ok: () =>
-                wpt_sharer.getCurrent("postit").postit ("deleteAttachment")
+              cb_close: ()=> $(".modal").find("li.list-group-item.active")
+                               .removeClass ("active todelete"),
+              cb_ok: ()=> S.getCurrent("postit").postit ("deleteAttachment")
             });
           });
     

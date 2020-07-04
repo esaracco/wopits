@@ -28,7 +28,7 @@
         {
           const $btn = $(this),
                 args = {
-                  wallId: wpt_sharer.getCurrent("wall").wall ("getId"),
+                  wallId: S.getCurrent("wall").wall ("getId"),
                   groupType: $ac[0].dataset.grouptype,
                   groupId: $ac[0].dataset.groupid,
                   userId: $btn[0].dataset.id
@@ -189,7 +189,7 @@
     search: function (args)
     {
       const $ac = this.element,
-            wallId = wpt_sharer.getCurrent("wall").wall ("getId"),
+            wallId = S.getCurrent("wall").wall ("getId"),
             groupId = $ac[0].dataset.groupid;
       let service = "group/"+groupId+"/searchUsers/"+args.str,
           data = null;
