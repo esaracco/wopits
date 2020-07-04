@@ -143,11 +143,11 @@
       // if login page, save wopits version to set it in user settings when he
       // will be logged
       else if (keyVal.version)
-        wpt_storage.set ("version", keyVal.version);
+        ST.set ("version", keyVal.version);
       // if login page, save selected theme to reapply it when user will be
       // logged
       else if (keyVal.theme)
-        wpt_storage.set ("theme", keyVal.theme);
+        ST.set ("theme", keyVal.theme);
     },
 
     // METHOD getVersion ()

@@ -146,7 +146,7 @@
 
           // Set wall users view count if needed
           const viewcount =
-            wpt_WebSocket.popResponse ("viewcount-wall-"+wallId);
+            WS.popResponse ("viewcount-wall-"+wallId);
           if (viewcount !== undefined)
             plugin.refreshUsersview (viewcount); 
 
@@ -1524,7 +1524,7 @@
       {
         $("#settingsPopup").settings ("applyTheme");
 
-        wpt_WebSocket.connect (
+        WS.connect (
           "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
           {
             const $settings = $("#settingsPopup");
@@ -1533,10 +1533,10 @@
 
             // if a theme exists from the login page, apply it once the user is
             // logged
-            const loginTheme = wpt_storage.get ("theme");
+            const loginTheme = ST.get ("theme");
             if (loginTheme)
             {
-              wpt_storage.delete ("theme");
+              ST.delete ("theme");
               $settings.settings ("set", {theme: loginTheme});
             }
 
@@ -1554,7 +1554,7 @@
             setInterval (()=>
               {
                 // WebSocket ping
-                wpt_WebSocket.ping();
+                WS.ping();
                 // AJAX ping
                 $.get ("/api/user/ping");
 

@@ -177,8 +177,8 @@ class Wpt_toolbox
   }
 }
 
-// CLASS Wpt_storage
-class Wpt_storage
+// CLASS Storage
+class Storage
 {
   // METHOD delete ()
   delete (name)
@@ -305,8 +305,8 @@ class Sharer
   }
 }
 
-// CLASS Wpt_WebSocket
-class Wpt_WebSocket
+// CLASS WSocket
+class WSocket
 {
   // METHOD constructor ()
   constructor ()
@@ -390,8 +390,7 @@ class Wpt_WebSocket
               if ($wall.length)
                 $wall.wall ("refreshUsersview", data.count);
               else
-                wpt_WebSocket.pushResponse (
-                  "viewcount-wall-"+data.wall.id, data.count);
+                WS.pushResponse ("viewcount-wall-"+data.wall.id, data.count);
               break;
 
             // chat
@@ -814,7 +813,7 @@ class Help
   {
     const $layer = $("#popup-loader");
   
-    if ($layer.length && (wpt_WebSocket.ready () || force))
+    if ($layer.length && (WS.ready () || force))
     {
       clearTimeout ($layer[0].dataset.timeoutid);
   
@@ -1216,7 +1215,7 @@ class Help
   
     //console.log ("WS: "+method+" "+service);
   
-    wpt_WebSocket.send ({
+    WS.send ({
       method: method,
       route: service,
       data: args ? encodeURI (JSON.stringify (args)) : null  
@@ -1536,5 +1535,5 @@ class Help
 // GLOBAL VARS
 const H = new Help (),
       S = new Sharer (),
-      wpt_storage = new Wpt_storage (),
-      wpt_WebSocket = new Wpt_WebSocket ();
+      ST = new Storage (),
+      WS = new WSocket ();
