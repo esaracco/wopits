@@ -33,7 +33,7 @@
 
       // Create plugs container
       settings.plugsContainer =
-        $(`<div id="plugs-${wallId}"></div>`).appendTo ("body");
+        $(`<div id="plugs-${wallId}"></div>`).prependTo ("body");
 
       if (settings.restoring)
         $wall[0].dataset.restoring = 1;
