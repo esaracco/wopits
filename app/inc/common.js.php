@@ -177,8 +177,8 @@ class Wpt_toolbox
   }
 }
 
-// CLASS Storage
-class Storage
+// CLASS WStorage
+class WStorage
 {
   // METHOD delete ()
   delete (name)
@@ -199,8 +199,8 @@ class Storage
   }
 }
 
-// CLASS Sharer
-class Sharer
+// CLASS WSharer
+class WSharer
 {
   // METHOD constructor ()
   constructor ()
@@ -606,7 +606,8 @@ class WSocket
   }
 }
 
-class Help
+// CLASS WHelp
+class WHelp
 {
   // METHOD testImage ()
   testImage (url, timeout = 5000)
@@ -1533,7 +1534,7 @@ class Help
 }
 
 // GLOBAL VARS
-const H = new Help (),
-      S = new Sharer (),
-      ST = new Storage (),
+const H = new WHelp (),
+      S = new WSharer (),
+      ST = new WStorage (),
       WS = new WSocket ();
