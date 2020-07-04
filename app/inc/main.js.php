@@ -306,6 +306,17 @@
         });
     },
 
+    // METHOD removePostitsPlugs ()
+    removePostitsPlugs: function ()
+    {
+      this.element.find(".postit.with-plugs").each (function ()
+        {
+          $(this).postit ("removePlugs", true);
+        });
+
+      this.settings.plugsContainer.remove ();
+    },
+
     // METHOD refreshPostitsPlugs ()
     //FIXME //TODO Optimize
     refreshPostitsPlugs: function (plugs, partial = false)
@@ -716,7 +727,7 @@
 
       $(".modal.show").modal ("hide");
 
-      this.settings.plugsContainer.remove ();
+      this.removePostitsPlugs ();
 
       $activeTab.remove ();
       $("#"+activeTabId).remove ();
