@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-10 17:16+0200\n"
-"PO-Revision-Date: 2020-07-10 17:17+0200\n"
+"POT-Creation-Date: 2020-07-10 17:20+0200\n"
+"PO-Revision-Date: 2020-07-10 17:20+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -696,6 +696,21 @@ msgstr ""
 "\n"
 "%s"
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:173
+#, php-format
+msgid ""
+"Hello %s,\n"
+"\n"
+"The deadline for the following post-it will expire soon:\n"
+"\n"
+"%s"
+msgstr ""
+"Bonjour %s,\n"
+"\n"
+"La date limite du post-it suivant expire bientôt:\n"
+"\n"
+"%s"
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
 #, php-format
 msgid ""
@@ -745,21 +760,6 @@ msgstr ""
 "Bonjour %s,\n"
 "\n"
 "Votre nouveau compte \"%s\" a été créé sur wopits!"
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:173
-#, php-format
-msgid ""
-"Hello %s,r\n"
-"\n"
-"The deadline for the following post-it will expire soon:\n"
-"\n"
-"%s"
-msgstr ""
-"Bonjour %s,r\n"
-"\n"
-"La date limite du post-it suivant expire bientôt:\n"
-"\n"
-"%s"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:80
 msgid "Help"

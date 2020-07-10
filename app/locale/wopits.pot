@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-07-10 17:16+0200\n"
+        "POT-Creation-Date: 2020-07-10 17:20+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -474,6 +474,15 @@ msgid   "Hello %s,\n"
         "%s"
 msgstr  ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:173
+#, php-format
+msgid   "Hello %s,\n"
+        "\n"
+        "The deadline for the following post-it will expire soon:\n"
+        "\n"
+        "%s"
+msgstr  ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
 #, php-format
 msgid   "Hello %s,\n"
@@ -500,15 +509,6 @@ msgstr  ""
 msgid   "Hello %s,\n"
         "\n"
         "Your new account \"%s\" has been created on wopits!"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:173
-#, php-format
-msgid   "Hello %s,r\n"
-        "\n"
-        "The deadline for the following post-it will expire soon:\n"
-        "\n"
-        "%s"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:80
