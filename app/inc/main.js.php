@@ -169,8 +169,16 @@
               plugin.setActive ();
 
               H.waitForDOMUpdate (() =>
-                $wall.find ("[data-id=postit-"+settings.postitId+"]")
-                  .postit ("displayDeadlineAlert"));
+                {
+                  const $postit =
+                    $wall.find ("[data-id=postit-"+settings.postitId+"]");
+
+                  if ($postit.length)
+                    $wall.find ("[data-id=postit-"+settings.postitId+"]")
+                      .postit ("displayDeadlineAlert");
+                  else
+                    H.displayMsg ({type: "warning", msg: "<?=_("The post-it has been deleted.")?>"});
+                });
             }
 
           }, 0);
