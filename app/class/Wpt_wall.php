@@ -598,7 +598,7 @@
       if (!$data)
         return [
           'id' => $this->wallId,
-          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted")
+          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted.")
         ];
 
       $data['_exportInfos'] = [
@@ -810,7 +810,7 @@
       {
         return [
           'id' => $this->wallId,
-          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted")
+          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted.")
         ];
       }
       elseif (!$basic)
