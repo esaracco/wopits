@@ -222,9 +222,9 @@
 
         $mail->Body =
           $args['msg'].
-          "\r\n\r\n"._("The wopits team,")."\r\n\r\n--\r\n".
+          "\n\n"._("The wopits team,")."\n\n--\n".
           _("This email was sent automatically by wopits.").
-          "\r\nhttps://".WPT_URL;
+          "\nhttps://".WPT_URL;
 
         $mail->send ();
       }

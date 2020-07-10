@@ -158,7 +158,7 @@
             Wpt_common::mail ([
               'email' => $item['alert_user_email'],
               'subject' => _("Post-it deadline notification"),
-              'msg' => sprintf (_("Hello %s,\r\n\r\nThe dealine for the following post-it has expired:\r\n\r\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following post-it has expired:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
             ]);
           }
         }
@@ -170,8 +170,8 @@
             'email' => $item['alert_user_email'],
             'subject' => _("Post-it deadline notification"),
             'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
-              sprintf (_("Hello %s,\r\n\r\nThe deadline for the following post-it will expire soon:\r\n\r\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
-              sprintf (_("Hello %s,\r\n\r\nThe deadline for the following post-it will expire in %s days:\r\n\r\n%s"), $item['alert_user_fullname'], $days, WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              sprintf (_("Hello %s,r\n\nThe deadline for the following post-it will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
+              sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire in %s days:\n\n%s"), $item['alert_user_fullname'], $days, WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
           ]);
         }
 
