@@ -46,8 +46,8 @@
         }
         else
         {
-          // If postit, set editing mode for all of other postits plugged
-          // with it
+          // If postit, set editing mode for all of other postits
+          // plugged with it.
           if ($item == 'postit')
           {
             $stmt = $this->prepare ("
@@ -151,7 +151,7 @@
                   $ret = ['wall' => [
                     'id' => $this->wallId,
                     'partial' => 'wall',
-                    'wall' => $this->getWall (true)
+                    'wall' => $this->getWall (false, true)
                   ]];
                 }
                 else
@@ -218,11 +218,22 @@
                   // Full postit update
                   else
                   {
+                    $content = $this->data->content;
                     $deadline = (empty($this->data->deadline)) ?
                                   null : $this->data->deadline;
+                    $alertShift = ($this->data->alertshift == '') ?
+                                    null : $this->data->alertshift;
 
                     if ($deadline && !is_numeric ($deadline))
                       $deadline = $User->getUnixDate ($deadline);
+
+                    // Fix wrong img src URL (tinymce).
+                    if (strpos ($content, '"api/') !== false)
+                      $content = preg_replace (
+                        '#src="api#', 'src="/api', $content);
+                    elseif (strpos ($content, '../api/') !== false)
+                      $content = preg_replace (
+                        '#src="(\.\./)+api#', 'src="/api', $content);
 
                     $data = [
                       'cells_id' => $this->data->cellId,
@@ -232,7 +243,7 @@
                       'left' => $this->data->left,
                       'classcolor' => $this->data->classcolor,
                       'title' => $this->data->title,
-                      'content' => $this->data->content,
+                      'content' => $content,
                       'tags' => $this->data->tags,
                       'obsolete' => (empty ($this->data->obsolete)) ?
                                       0 : $this->data->obsolete,
@@ -246,6 +257,45 @@
 
                     $this->executeQuery ('UPDATE postits', $data,
                       ['id' => $this->data->id]);
+
+                    // Clear all alerts if deadline is reset.
+                    if (!$deadline)
+                      $this
+                        ->prepare ("
+                            DELETE FROM postits_alerts WHERE postits_id = ?")
+                        ->execute ([$this->data->id]);
+                    // Remove user deadline alert if not set
+                    elseif (is_null ($alertShift))
+                      $this
+                        ->prepare ("
+                            DELETE FROM postits_alerts
+                            WHERE postits_id = ? AND users_id = ?")
+                        ->execute ([$this->data->id, $this->userId]);
+                    else
+                    {
+                      $this->checkDBValue (
+                        'postits_alerts', 'postits_id', $this->data->id);
+                      $this->checkDBValue (
+                        'postits_alerts', 'users_id', $this->userId);
+                      $this->checkDBValue (
+                        'postits_alerts', 'alertshift', $alertShift);
+
+                      $stmt = $this->prepare ("
+                        INSERT INTO postits_alerts (
+                          postits_id, users_id, alertshift
+                        ) VALUES (
+                          :postits_id, :users_id, :alertshift
+                        ) {$this->getDuplicateQueryPart (
+                           ['postits_id', 'users_id'])}
+                        alertshift = :alertshift_1");
+
+                      $stmt->execute ([
+                        ':postits_id' => $this->data->id,
+                        ':users_id' => $this->userId,
+                        ':alertshift' => $alertShift,
+                        ':alertshift_1' => $alertShift
+                      ]);
+                    }
 
                     // Delete postit content pictures if necessary
                     if ($this->data->hadpictures ||

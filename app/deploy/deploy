@@ -92,6 +92,8 @@
         $this->help ("Which environment should we deploy?");
       if (empty ($env))
         $this->help ("Unknown environment `{$this->opt['env']}`!");
+      if (empty ($env['url']))
+        $this->help ("Conf `url` is empty!");
       if (empty ($env['www-system-user']))
         $this->help ("Conf `www-system-user` is empty!");
       if (empty ($env['build-path']))
@@ -466,6 +468,7 @@
       $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
 
       foreach (['WPT_DEV_MODE' => false,
+                'WPT_URL' => $env['url'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
                 'WPT_WS_PORT' => $env['websocket']['server']['port'],

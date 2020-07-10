@@ -15,6 +15,14 @@
     return `<td scope="dzone" class="size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
   }
 
+  // METHOD _getPostitAlertData ()
+  function _getPostitAlertData ()
+  {
+    const m = location.pathname.match (/^\/a\/w\/(\d+)\/p\/(\d+)$/);
+
+    return m ? {wallId: m[1], postitId: m[2]} : null;
+  }
+
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   // Inherit from Wpt_accountForms
@@ -155,9 +163,25 @@
             // Refresh postits relations
             plugin.refreshPostitsPlugs (settings.postits_plugs);
 
+            // Display postit dealine alert if needed.
+            if (settings.postitId)
+            {
+              plugin.setActive ();
+
+              H.waitForDOMUpdate (() =>
+                $wall.find ("[data-id=postit-"+settings.postitId+"]")
+                  .postit ("displayDeadlineAlert"));
+            }
+
           }, 0);
 
         });
+    },
+
+    // METHOD setActive ()
+    setActive: function ()
+    {
+      $("a[href='#wall-"+this.settings.id+"']").click ();
     },
 
     // METHOD getId ()
@@ -956,24 +980,28 @@
         // success cb
         (d) =>
         {
+          // If we must raise a postit deadline alert.
+          if (args.postitId)
+            d.postitId = args.postitId;
+
+          // If we are retoring a wall
           if (args.restoring)
-          {
             d.restoring = 1;
 
-            // A wall in user session has been removed
-            if (d.removed)
-            {
-              $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
+          // The wall does not exists anymore.
+          if (d.removed && (d.postitId || d.restoring))
+          {
+            $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
 
-              if ($tabs.find(".nav-item").length)
-                $tabs.find(".nav-item:first-child").tab ("show")
+            if ($tabs.find(".nav-item").length)
+              $tabs.find(".nav-item:first-child").tab ("show")
 
-              //FIXME Wait for ws server connection...
+            //FIXME Wait for ws server connection...
+            if (d.restoring)
               setTimeout (
                 ()=> $("#settingsPopup").settings ("saveOpenedWalls"), 500);
 
-              return H.displayMsg ({type: "warning", msg: d.removed});
-            }
+            return H.displayMsg ({type: "warning", msg: d.removed});
           }
 
           if (d.error_msg)
@@ -1030,12 +1058,13 @@
     },
 
     // METHOD open ()
-    open: function (wallId, restoring)
+    open: function (wallId, restoring, postitId)
     {
       this.addNew ({
         load: true,
         restoring: restoring,
-        wallId: wallId
+        wallId: wallId,
+        postitId: postitId
       });
     },
 
@@ -1094,15 +1123,28 @@
     },
 
     // METHOD restorePreviousSession ()
-    restorePreviousSession: function ()
+    restorePreviousSession: function (args)
     {
-      const walls = wpt_userData.settings.openedWalls;
+      const walls = wpt_userData.settings.openedWalls,
+            {wallId, postitId} = args||{};
    
       if (walls)
       {
         for (let i = walls.length - 1; i >= 0; i--)
-          this.open (walls[i], true);
+          this.open (walls[i], true, (walls[i] == wallId)?postitId:null);
       }
+    },
+
+    // METHOD displayPostitDeadlineAlert ()
+    displayPostitDeadlineAlert: function (args)
+    {
+      const {wallId, postitId} = args;
+
+      if (wpt_userData.settings.openedWalls.indexOf (wallId) == -1)
+        this.open (wallId, false, postitId);
+
+      // Remove slecific alert URL.
+      history.pushState (null, null, "/");
     },
 
     // METHOD refreshUserWallsData ()
@@ -1556,8 +1598,14 @@
             // Check if wopits has been upgraded
             H.checkForAppUpgrade ();
 
+            const postitAlertData = _getPostitAlertData ();
+
             // Load previously opened walls
-            $("<div/>").wall ("restorePreviousSession");
+            $("<div/>").wall ("restorePreviousSession", postitAlertData);
+
+            // Check if we must display postit alert (direct URL)
+            if (postitAlertData)
+              $("<div/>").wall ("displayPostitDeadlineAlert", postitAlertData);
 
             // Keep WS connection and database persistent connection alive and
             // prevent PHP timeout

@@ -700,7 +700,7 @@
         ]);
     }
 
-    public function getWall ($basic = false)
+    public function getWall ($withAlerts = false, $basic = false)
     {
       $q = $this->getFieldQuote ();
       $ret = [];
@@ -840,16 +840,28 @@
           WHERE walls_id = ?');
         $stmt->execute ([$this->wallId]);
         // Get postits
-        $stmt1 = $this->prepare ("
-          SELECT
-            id, width, height, top, ${q}left$q, classcolor, title, content,
-            tags, creationdate, deadline, timezone, obsolete, attachmentscount
-          FROM postits
-          WHERE cells_id = ?");
+        $stmt1 = $this->prepare (($withAlerts) ?
+          "SELECT
+             postits.id, width, height, top, ${q}left$q, classcolor, title,
+             content, tags, creationdate, deadline, timezone, obsolete,
+             attachmentscount, postits_alerts.alertshift
+           FROM postits
+             LEFT JOIN postits_alerts
+               ON postits_alerts.postits_id = postits.id
+                 AND postits_alerts.users_id = ?
+           WHERE cells_id = ?"
+          :
+          "SELECT
+             id, width, height, top, ${q}left$q, classcolor, title,
+             content, tags, creationdate, deadline, timezone, obsolete,
+             attachmentscount
+           FROM postits
+           WHERE cells_id = ?");
         $data['cells'] = [];
         while ($row = $stmt->fetch ())
         {
-          $stmt1->execute ([$row['id']]);
+          $stmt1->execute (($withAlerts) ? [$this->userId, $row['id']] :
+                                           [$row['id']]);
           $row['postits'] = [];
           while ($row1 = $stmt1->fetch ())
             $row['postits'][] = $row1;

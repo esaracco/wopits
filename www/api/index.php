@@ -157,7 +157,8 @@
               break;
 
             default:
-              $ret = $Wall->getWall ();
+              // Get wall with user postits alerts
+              $ret = $Wall->getWall (true);
           }
           break;
 

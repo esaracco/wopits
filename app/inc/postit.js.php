@@ -518,7 +518,7 @@
                     // OPEN date picker
                     case "date-picker":
 
-                      plugin.openDatePicker ();
+                      $("#datePickerPopup").datePicker ("open");
 
                       break;
                   }
@@ -715,6 +715,44 @@
       if (settings.creationdate)
         setTimeout (
           () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
+    },
+
+    // METHOD displayDeadlineAlert ()
+    displayDeadlineAlert: function ()
+    {
+      const data = this.element[0].dataset;
+      let content;
+
+      // Scroll to the to the post-it if needed.
+      H.setViewToElement (this.element);
+
+      H.waitForDOMUpdate (()=>
+      {
+        if (!data.deadlineepoch)
+          content = "<?=_("The deadline for this post-it has been removed!")?>";
+        else if (this.element.hasClass ("obsolete"))
+          content = "<?=_("This post-it has expired.")?>";
+        else
+        {
+          const a = moment.unix (data.deadlineepoch),
+                b = moment (new Date ());
+          let days = moment.duration(a.diff(b)).asDays ();
+
+          if (days % 1 > 0)
+            days = Math.trunc(days) + 1;
+
+          content = (days > 1) ?
+            "<?=_("The deadline for this post-it will expire in about %s day(s).")?>".replace("%s", days) :
+            "<?=_("The deadline for this post-it will expire soon.")?>";
+        }
+
+        H.openConfirmPopover ({
+          type: "info",
+          item: this.element,
+          title: `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Post-it deadline alert")?>`,
+          content: content
+        });
+      });
     },
 
     // METHOD cancelPlugAction ()
@@ -1157,11 +1195,11 @@
         else
         {
           const title = $p.find(".postit-header span.title").html (),
-                classcolor = p.className.match(/(color\-[a-z]+)/);
-          let tags = [],
-              deadline = (p.dataset.deadlineepoch) ?
-                p.dataset.deadlineepoch :
-                $p.find(".dates .end span").text().trim ();
+                classcolor = p.className.match(/(color\-[a-z]+)/),
+                deadline = (p.dataset.deadlineepoch) ?
+                  p.dataset.deadlineepoch :
+                  $p.find(".dates .end span").text().trim ();
+          let tags = [];
 
           $p.find(".postit-tags i").each (function ()
             {
@@ -1179,6 +1217,8 @@
             content: $p.find(".postit-edit").html (),
             tags: (tags.length) ? ","+tags.join(",")+"," : null,
             deadline: (deadline == _defaultString) ? "" : deadline,
+            alertshift: (p.dataset.deadlinealertshift !== undefined) ?
+                          p.dataset.deadlinealertshift : null,
             updatetz: p.dataset.updatetz || null,
             obsolete: $p.hasClass ("obsolete"),
             attachmentscount: $p.find(".attachmentscount span").text (),
@@ -1196,10 +1236,11 @@
     },
 
     // METHOD setDeadline ()
-    setDeadline: function (deadline, timezone)
+    setDeadline: function (args)
     {
       const $postit = this.element,
-            $date = $postit.find(".dates .end");
+            $date = $postit.find(".dates .end"),
+            {deadline, alertshift, timezone} = args;
       let human;
 
       if (!deadline || isNaN (deadline))
@@ -1213,6 +1254,7 @@
           human == _defaultString)
       {
         $postit[0].removeAttribute ("data-deadline");
+        $postit[0].removeAttribute ("data-deadlinealertshift");
         $postit[0].removeAttribute ("data-deadlineepoch");
         $postit[0].removeAttribute ("data-updatetz");
         $date.find("i.fa-times-circle").hide ();
@@ -1221,6 +1263,9 @@
       {
         $postit[0].dataset.deadline = human;
         $postit[0].dataset.deadlineepoch = deadline;
+        if (alertshift !== undefined && alertshift !== null)
+          $postit[0].dataset.deadlinealertshift = alertshift;
+
         $date.find("i.fa-times-circle").show ();
       }
     },
@@ -1229,7 +1274,7 @@
     resetDeadline: function ()
     {
       this.element.removeClass ("obsolete");
-      this.setDeadline (_defaultString);
+      this.setDeadline ({deadline: _defaultString});
     },
 
     // METHOD setCreationDate ()
@@ -1246,17 +1291,10 @@
     },
 
     // METHOD setContent ()
-    setContent: function (content)
+    setContent: function (newContent)
     {
-      //FIXME Optimize with postit versioning
-      const $postit = this.element,
-            c1 = $postit.find("div.postit-edit").html (),
-//FIXME
-//            c2 = content.trim().replace (/^<(br|p)\/>/ig, "");
-            c2 = content;
-
-      if (c1 !== c2)
-        $postit.find("div.postit-edit").html (c2);
+      if (newContent !== this.element.find("div.postit-edit").html ())
+        this.element.find("div.postit-edit").html (newContent);
     },
 
     // METHOD setPosition ()
@@ -1441,64 +1479,6 @@
       this.element.removeClass ("current");
     },
 
-    // METHOD openDatePicker ()
-    openDatePicker: function ()
-    {
-      const plugin = this,
-            $postit = plugin.element;
-
-      $postit.prepend (
-        $("<input type='text' class='date-picker'>")
-          .datepicker ({
-            dateFormat: "yy-mm-dd",
-            minDate: moment().tz(wpt_userData.settings.timezone).add (1, "days").format("Y-MM-DD")
-          }));
-      
-      const $datePicker = $postit.find (".date-picker");
-      $datePicker
-        .on("change", function()
-        {
-          $postit[0].dataset.updatetz = true;
-          $postit.removeClass ("obsolete");
-          $("#popup-layer").trigger ("click");
-        });
-      
-      if ($postit[0].dataset.deadline)
-        $datePicker.datepicker ("setDate", $postit[0].dataset.deadline);
-      
-      H.openPopupLayer (() =>
-        {
-          plugin.removeDatePicker ();
-          plugin.unedit ();
-        });
-
-      $datePicker.datepicker ("show");
-      $datePicker.blur ();
-    },
-
-    // METHOD removeDatePicker ()
-    removeDatePicker: function ()
-    {
-      const $postit = this.element,
-            $datePicker = $postit.find(".date-picker");
-
-      if ($datePicker.length)
-      {
-        const v = $datePicker.val ();
-
-        $postit[0].dataset.deadline = v;
-        this.setDeadline ((v) ? v : _defaultString);
-
-        if (v)
-          $postit[0].removeAttribute ("data-deadlineepoch");
-
-        $datePicker.datepicker ("destroy");
-        $datePicker.remove ();
-        $(".ui-datepicker").remove ();
-        $postit.trigger ("mouseleave");
-      }
-    },
-
     // METHOD insert ()
     insert: function ()
     {
@@ -1569,7 +1549,7 @@
 
       this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):'');
 
-      this.setDeadline (d.deadline, d.timezone);
+      this.setDeadline (d);
 
       if (!d.obsolete)
         $postit.removeClass ("obsolete");

@@ -26,6 +26,8 @@
 
     // REMOTE target example
     'wopits1' => [
+      // Wopits URL
+      'url' => 'https://www.wopits.com',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory
@@ -103,6 +105,8 @@
 
     // LOCAL target example
     'wopits2' => [
+      // Wopits URL
+      'url' => 'https://wopits-preprod.domain.com',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory

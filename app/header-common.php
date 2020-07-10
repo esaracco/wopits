@@ -8,14 +8,14 @@
   //<WPTPROD-remove>
   if (WPT_DEV_MODE)
   {
-    $css = 'css/all.css.php';
-    $js = 'js/all.js.php';
+    $css = '/css/all.css.php';
+    $js = '/js/all.js.php';
   }
   else
   {
   //</WPTPROD-remove>
-    $css = 'css/all.css';
-    $js = "js/all-$slocale.js";
+    $css = '/css/all.css';
+    $js = "/js/all-$slocale.js";
   }//WPTPROD-remove
 
   $css .= "?$version";
@@ -41,27 +41,27 @@
 
   <link rel="manifest" href="/manifest.json?<?=$version?>">
 
-  <link rel="stylesheet" href="libs/bootstrap-4.5.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="libs/font-awesome-5.13.1/css/all.min.css">
-  <link rel="stylesheet" href="libs/jquery-ui-1.12.1/jquery-ui.min.css">
-  <link rel="stylesheet" href="libs/colorpicker-1.2.20/jquery.colorpicker.css">
+  <link rel="stylesheet" href="/libs/bootstrap-4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libs/font-awesome-5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="/libs/jquery-ui-1.12.1/jquery-ui.min.css">
+  <link rel="stylesheet" href="/libs/colorpicker-1.2.20/jquery.colorpicker.css">
   <link rel="stylesheet" href="<?=$css?>">
 
   <?php foreach (WPT_THEMES as $theme) { ?>
-    <link rel="stylesheet" href="css/themes/<?=$theme?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="theme-<?=$theme?>" media="none">
+    <link rel="stylesheet" href="/css/themes/<?=$theme?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="theme-<?=$theme?>" media="none">
   <?php } ?>
 
-  <script src="libs/jquery-3.5.1.min.js"></script>
-  <script src="libs/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-  <script src="libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
-  <script src="libs/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
-  <script src="libs/jquery.double-tap-wopits.js?<?=$version?>"></script>
-  <script src="libs/moment-2.27.0/moment.min.js"></script>
-  <script src="libs/moment-2.27.0/moment-timezone-with-data.min.js"></script>
+  <script src="/libs/jquery-3.5.1.min.js"></script>
+  <script src="/libs/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+  <script src="/libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
+  <script src="/libs/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
+  <script src="/libs/jquery.double-tap-wopits.js?<?=$version?>"></script>
+  <script src="/libs/moment-2.27.0/moment.min.js"></script>
+  <script src="/libs/moment-2.27.0/moment-timezone-with-data.min.js"></script>
   <script src="<?=$js?>"></script>
 
-  <script defer src="libs/tinymce-5.4.0/js/tinymce/tinymce.min.js"></script>
-  <script defer src="libs/jquery-ui-1.12.1/datepicker-<?=$slocale?>.js"></script>
-  <script defer src="libs/colorpicker-1.2.20/jquery.colorpicker.js"></script>
-  <script defer src="libs/leader-line.min.js?<?=$version?>"></script>
+  <script defer src="/libs/tinymce-5.4.0/js/tinymce/tinymce.min.js"></script>
+  <script defer src="/libs/jquery-ui-1.12.1/datepicker-<?=$slocale?>.js"></script>
+  <script defer src="/libs/colorpicker-1.2.20/jquery.colorpicker.js"></script>
+  <script defer src="/libs/leader-line.min.js?<?=$version?>"></script>
 </head>

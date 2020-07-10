@@ -63,6 +63,15 @@
   // Only in web mode
   if (!$isCLI)
   {
+    $isDealineAlertURL = false;
+
+    if (!isset ($_SESSION['userId']) &&
+        preg_match ('#^/a/w/\d+/p/\d+$#', $scriptName))
+    {
+      $isDealineAlertURL = true;
+      $_SESSION['_deadlineAlertURL'] = $scriptName;
+    }
+
     $_SESSION['locale'] = $locale;
     $_SESSION['slocale'] = $slocale;
 
@@ -73,6 +82,8 @@
       $scriptName != '/login.php'
       &&
       (
+        $isDealineAlertURL
+        ||
         $scriptName == '/index.php'
         ||
         (
@@ -209,7 +220,11 @@
           $mail->DKIM_identity = $mail->From;
         }
 
-        $mail->Body = $args['msg'];
+        $mail->Body =
+          $args['msg'].
+          "\r\n\r\n"._("The wopits team,")."\r\n\r\n--\r\n".
+          _("This email was sent automatically by wopits.").
+          "\r\nhttps://".WPT_URL;
 
         $mail->send ();
       }

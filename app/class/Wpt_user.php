@@ -69,7 +69,8 @@
 
       try
       {
-        $stmt = $this->prepare ('SELECT username FROM users WHERE email = ?');
+        $stmt = $this->prepare ('
+          SELECT username, fullname FROM users WHERE email = ?');
         $stmt->execute ([$this->data->email]);
 
         if ($r = $stmt->fetch ())
@@ -83,7 +84,7 @@
           Wpt_common::mail ([
             'email' => $this->data->email,
             'subject' => _("Your password reset"),
-            'msg' => sprintf(_("You are receiving this email because you requested the reset of your wopits password.\n\n- Login: %s\n- New password: %s\n\nFor security reasons we advise you to change it as soon as possible."), $r['username'], $password)
+            'msg' => sprintf(_("Hello %s,\r\n\r\nYou are receiving this email because you requested the reset of your wopits password.\r\n\r\n- Login: %s\r\n- New password: %s\r\n\r\nFor security reasons we advise you to change it as soon as possible."), $r['fullname'], $r['username'], $password)
           ]);
         }
       }
@@ -714,7 +715,7 @@
           Wpt_common::mail ([
             'email' => $this->data->email,
             'subject' => _("Creation of your account"),
-            'msg' => sprintf(_("Your new account \"%s\" has been created on wopits!\n\nFeel free to contact us for feature request, and enjoy ;-)"), $this->data->username)
+            'msg' => sprintf(_("Hello %s,\r\n\r\nYour new account \"%s\" has been created on wopits!"), $this->data->fullname, $this->data->username)
             ]);
 
         mkdir ("{$this->getUserDir()}/tmp", 02770, true);

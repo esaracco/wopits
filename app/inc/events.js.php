@@ -409,6 +409,7 @@ $(function()
           break;
 
         case "postitAttachmentsPopup":
+        case "datePickerPopup":
 
           $postit.postit ("unedit");
           break;
@@ -445,7 +446,13 @@ $(function()
       {
         switch ($popup.attr ("id"))
         {
+          case "datePickerPopup":
+
+            $popup.datePicker ("save");
+            break;
+
           case "plugPopup":
+
             S.get ("link-from")
               .confirmCallback ($popup.find("input").val());
             break;

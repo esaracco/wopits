@@ -96,7 +96,7 @@
   <!-- WELCOM MSG -->
   <div id="welcome" data-action="new">
     <p><?=_("Create your walls of post-its, and let your ideas shine!")?></p>
-    <img src="img/wopits.png?<?=$version?>">
+    <img src="/img/wopits.png?<?=$version?>">
   </div>
 
   <!-- MAIN CONTENT -->

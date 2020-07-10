@@ -93,6 +93,7 @@
         'gray' => '#c8d0d7'
       ] 
     ],
+    'datePicker' => [],
     'chatroom' => [],
     'filters' => [],
     'arrows' => [],
@@ -141,7 +142,8 @@
       'postitUpdate',
       'updateOneInput',
       'info',
-      'confirm'
+      'confirm',
+      'datePicker'
     ]
   ]);
 

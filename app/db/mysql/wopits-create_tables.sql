@@ -253,6 +253,21 @@ CREATE TABLE postits_pictures
 )
 ENGINE=INNODB;
 
+DROP TABLE IF EXISTS postits_alerts;
+CREATE TABLE postits_alerts
+(
+  postits_id INT UNSIGNED NOT NULL,
+  users_id INT UNSIGNED NOT NULL,
+  alertshift INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (postits_id, users_id),
+  CONSTRAINT `postits_alerts-postits_id-fk` FOREIGN KEY (postits_id)
+    REFERENCES postits(id) ON DELETE CASCADE,
+  CONSTRAINT `postits_alerts-users_id-fk` FOREIGN KEY (users_id)
+    REFERENCES users(id) ON DELETE CASCADE
+)
+ENGINE=INNODB;
+
 DROP TABLE IF EXISTS edit_queue;
 CREATE TABLE edit_queue
 (

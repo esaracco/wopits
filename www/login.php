@@ -2,6 +2,14 @@
   include (__DIR__.'/../app/header-common.php');
 
   $_SESSION['_check'] = time ();
+
+  if (isset ($_SESSION['_deadlineAlertURL']))
+  {
+    $_deadlineAlertURL = $_SESSION['_deadlineAlertURL'];
+    unset ($_SESSION['_deadlineAlertURL']);
+  }
+  else
+    $_deadlineAlertURL = '';
 ?>
 <body class="login-page">
 
@@ -44,12 +52,13 @@
         <div class="user-card">
           <div class="d-flex justify-content-center div-logo">
             <div class="brand-logo-container">
-              <img src="img/wopits-192x192.png" class="brand-logo" alt="Logo">
+              <img src="/img/wopits-192x192.png" class="brand-logo" alt="Logo">
             </div>
           </div>
           <div class="d-flex justify-content-center form-container">
             <form>
               <input type="hidden" name="_check" value="<?=$_SESSION['_check']?>">
+              <input type="hidden" name="_deadlineAlertURL" value="<?=$_deadlineAlertURL?>">
 
               <?php if (WPT_USE_LDAP):?>
                 <div class="ldap-msg mb-3">

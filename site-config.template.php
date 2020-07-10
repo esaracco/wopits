@@ -5,6 +5,10 @@
   // - If you are using wopits "as is" from the Git repository, duplicate this
   //   file to "site-config.php" and customize it.
 
+  // Wopits URL
+  // Example: "https://www.domain.com"
+  define ('WPT_URL', "");
+
   // System command to reload apache
   // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
   define ('WPT_APACHE_RESTART', "");

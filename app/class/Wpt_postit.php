@@ -91,55 +91,102 @@
       $q = $this->getFieldQuote ();
       $stmt = $this->prepare ("
         SELECT
-          id, cells_id, width, height, top, ${q}left$q, classcolor, title,
-          content, tags, creationdate, deadline, timezone, obsolete,
+          id, cells_id, width, height, top, ${q}left$q, classcolor,
+          title, content, tags, creationdate, deadline, timezone, obsolete,
           attachmentscount
         FROM postits
-        WHERE id = ?");
+        WHERE postits.id = ?");
       $stmt->execute ([$this->postitId]);
 
       return $stmt->fetch ();
     }
 
+//TODO
     public function checkDeadline ()
     {
-      $User = new Wpt_user ();
-      $time = time ();
-      $toDate = $this->isMySQL ?
-        // MySQL
-        ' DATE(FROM_UNIXTIME(deadline)) ' :
-        // PostgreSQL
-        ' to_timestamp(deadline) ';
-
+      // Get all postits with a deadline, and associated alerts if available.
       $stmt = $this->query ('
         SELECT
-          postits.id AS postitid,
-          postits.timezone
+          postits.id AS postit_id,
+          postits.deadline AS postit_deadline,
+          postits.title AS postit_title,
+          users.id AS alert_user_id,
+          users.email AS alert_user_email,
+          users.username AS alert_user_fullname,
+          postits_alerts.alertshift AS alert_shift,
+          walls.id as wall_id
         FROM postits
           INNER JOIN cells ON cells.id = postits.cells_id
           INNER JOIN walls ON walls.id = cells.walls_id
-          INNER JOIN users ON users.id = walls.users_id
+          LEFT JOIN postits_alerts ON postits.id = postits_alerts.postits_id
+          LEFT JOIN users ON postits_alerts.users_id = users.id
         WHERE postits.obsolete = 0
           AND deadline IS NOT NULL');
 
+      $now = new DateTime ();;
+
+      $oldTZ = date_default_timezone_get ();
       while ($item = $stmt->fetch ())
       {
-        $this->exec ("
-          UPDATE postits SET obsolete = 1
-          WHERE id = '{$item['postitid']}'
-            AND $toDate <= '{$User->getDate($time, $item['timezone'])}'");
+        $deleteAlert = false;
+
+        $User = new Wpt_user ();
+
+        $User->userId = $item['alert_user_id'];
+
+        Wpt_common::changeLocale (Wpt_common::getsLocale ($User));
+
+        date_default_timezone_set ($User->getTimezone ());
+
+        $dlEpoch = $item['postit_deadline'];
+        $dl = new DateTime("@{$dlEpoch}");
+        $days = $dl->diff($now)->days;
+        $hours = $dl->diff($now)->h;
+
+        if ($hours)
+         ++$days;
+
+        if ($dlEpoch <= $now->format("U") && $hours == 0)
+        {
+          $this->exec ("
+            UPDATE postits SET obsolete = 1 WHERE id = {$item['postit_id']}");
+
+          if (!is_null ($User->userId))
+          {
+            $deleteAlert = true;
+
+            Wpt_common::mail ([
+              'email' => $item['alert_user_email'],
+              'subject' => _("Post-it deadline notification"),
+              'msg' => sprintf (_("Hello %s,\r\n\r\nThe dealine for the following post-it has expired:\r\n\r\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+            ]);
+          }
+        }
+        elseif (!is_null ($User->userId) && $item['alert_shift'] >= $days)
+        {
+          $deleteAlert = true;
+
+          Wpt_common::mail ([
+            'email' => $item['alert_user_email'],
+            'subject' => _("Post-it deadline notification"),
+            'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
+              sprintf (_("Hello %s,\r\n\r\nThe deadline for the following post-it will expire soon:\r\n\r\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
+              sprintf (_("Hello %s,\r\n\r\nThe deadline for the following post-it will expire in %s days:\r\n\r\n%s"), $item['alert_user_fullname'], $days, WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+          ]);
+        }
+
+        if ($deleteAlert)
+          $this->exec ("
+            DELETE FROM postits_alerts
+            WHERE postits_id = {$item['postit_id']}
+              AND users_id = {$item['alert_user_id']}");
       }
+      date_default_timezone_set ($oldTZ);
     }
 
     public function addRemovePlugs ($plugs, $postitId = null)
     {
       $q = $this->getFieldQuote ();
-
-      $duplicate = ($this->isMySQL) ?
-        // MySQL
-        ' ON DUPLICATE KEY UPDATE ' :
-        // PostgreSQL
-        ' ON CONFLICT (walls_id, start, "end") DO UPDATE SET ';
 
       if (!$postitId)
         $postitId = $this->postitId;
@@ -156,7 +203,8 @@
           walls_id, start, ${q}end$q, label
         ) VALUES (
           :walls_id, :start, :end, :label
-        ) $duplicate label = :label_1");
+        ) {$this->getDuplicateQueryPart (['walls_id', 'start', 'end'])}
+        label = :label_1");
 
       foreach ($plugs as $_id => $_label)
       {

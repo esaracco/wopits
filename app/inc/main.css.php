@@ -390,6 +390,14 @@ select.timezone {
   max-width:300px;
 }
 
+.ui-datepicker select {
+  background-color:#fff !important;
+  font-size:0.8rem !important;
+  margin-right:5px !important;
+  opacity:0.8 !important;
+  padding:3px !important;
+}
+
 .navbar-brand i:hover {
   cursor:pointer;
   opacity:0.6;
@@ -1435,16 +1443,31 @@ div.postit .end {
   cursor:pointer;
 }
 
-div.postit .date-picker {
-  width:0;
-  height:0;
-  overflow:hidden;
-  background:transparent;
-  border:none;
+#datePickerPopup .date-picker a {
+  color:#555!important;
+}
+
+#datePickerPopup .date-picker a.ui-state-active {
+  color:#fff!important;
+  font-weight:bold;
+}
+
+.date-picker-notify {
+  font-size:0.8rem;
+  margin:0.8em;
+  text-align:left;
+}
+
+.date-picker-notify input[type="number"] {
+  width:3rem;
 }
 
 .ui-datepicker {
   z-index:5020 !important;
+}
+
+button.ui-datepicker-close {
+  font-size:0.8rem;
 }
 
 .tag-picker {

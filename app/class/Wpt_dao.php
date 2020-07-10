@@ -67,7 +67,7 @@
           {
             $fix = intval ($value);
 
-            error_log ("Bad DB field integer type `$fix` for $table::$field");
+            error_log ("Bad DB field integer value `$fix` for $table::$field");
 
             $value = $fix;
           }
@@ -107,6 +107,17 @@
             "Unknown DB field type `{$f['type']}` for $table::$field");
         //</WPTPROD-remove>
       }
+    }
+
+    protected function getDuplicateQueryPart ($fields)
+    {
+      $q = $this->getFieldQuote ();
+
+      return ($this->isMySQL) ?
+        // MySQL
+        ' ON DUPLICATE KEY UPDATE ' :
+        // PostgreSQL
+        " ON CONFLICT ($q".implode("$q,$q",$fields)."$q) DO UPDATE SET ";
     }
 
     protected function executeQuery ($sql, $data, $where = null)

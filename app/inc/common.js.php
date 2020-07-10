@@ -960,8 +960,21 @@ class WHelp
     //FIXME If not, "title" element property is used by default
     $(".popover-header").html (args.title);
   
-    const buttons = (args.type && args.type == "update") ?
-      `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>` : `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
+    let buttons;
+
+    switch (args.type)
+    {
+      case "update":
+        buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
+        break;
+
+      case "info":
+        buttons = `<button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
+        break;
+
+      default:
+        buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
+    }
   
     const $body = $(".popover-body");
   
@@ -979,6 +992,20 @@ class WHelp
   
         $("#popup-layer").trigger ("click");
       });
+  }
+
+  // METHOD setViewToElement ()
+  setViewToElement ($el)
+  {
+    const $view = S.getCurrent("walls"),
+          posE = $el[0].getBoundingClientRect (),
+          posV = $view[0].getBoundingClientRect ();
+
+    if (posE.left > posV.width)
+      $view.scrollLeft (posE.left - posE.width);
+
+    if (posE.top > posV.height)
+      $view.scrollTop (posE.top - posE.height - 110);
   }
   
   // METHOD resizeModal ()
