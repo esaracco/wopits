@@ -29,7 +29,7 @@
     hide: function ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='arrows'] a").trigger ("click");
+        $("#main-menu").find("li[data-action='arrows'] a").click ();
     },
 
     // METHOD toggle ()

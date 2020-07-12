@@ -78,7 +78,7 @@
           {
             e.preventDefault ();
 
-            $(this).find(".btn-success").trigger ("click");
+            $(this).find(".btn-success").click ();
           }
         });
 

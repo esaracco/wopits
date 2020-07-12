@@ -28,6 +28,9 @@
           }
       };
 
+  /////////////////////////// PRIVATE METHODS ///////////////////////////
+
+  // METHOD _getMaxEditModalWidth ()
   function _getMaxEditModalWidth (content)
   {
     let maxW = 0,
@@ -46,6 +49,17 @@
 
     return maxW;
   }
+
+  // METHOD _resetZIndexData ()
+  function _resetZIndexData ()
+  {
+    S.get("postit-oldzindex").obj.css (
+      "z-index", S.get ("postit-oldzindex").zIndex);
+
+    S.unset ("postit-oldzindex");
+  }
+
+  /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
   {
@@ -81,14 +95,14 @@
             const $oldPostit = S.get ("postit-oldzindex");
 
             if ($oldPostit &&
-                $oldPostit.postit.postit ("getId") != settings.id)
-              plugin.resetZIndexData ();
+                $oldPostit.obj.postit ("getId") != settings.id)
+              _resetZIndexData ();
 
             if (!S.get ("postit-oldzindex"))
             {
               S.set ("postit-oldzindex", {
                 zIndex: $postit.css ("z-index"),
-                postit: $postit
+                obj: $postit
               });
 
               $postit.css ("z-index", 5000);
@@ -105,7 +119,7 @@
                 !$("#popup-layer").length &&
                 !$(".modal:visible").length)
             {
-              plugin.resetZIndexData ();
+              _resetZIndexData ();
             }
           });
 
@@ -204,7 +218,7 @@
       })
       // EVENT doubletap
       .doubletap (() =>
-        $postit.find(".postit-menu [data-action='edit']").trigger ("click"));
+        $postit.find(".postit-menu [data-action='edit']").click ());
 
       if (writeAccess)
       {
@@ -221,7 +235,7 @@
           opacity: 0.35,
           scope: "dzone",
           stack: ".postit",
-          drag:function(e, ui)
+          drag: function(e, ui)
           {
             if (S.get("revertData").revert)
               return false;
@@ -268,7 +282,13 @@
                 // If the postit has been dropped into another cell
                 plugin.settings.cellId = $postit.parent().cell ("getId");
 
-                plugin.unedit ();
+                S.set ("block-edit", true);
+                setTimeout (()=>
+                {
+                   plugin.unedit ();
+                   S.unset ("block-edit");
+
+                }, 500);
               }
 
               // Update postits relationships arrows
@@ -282,7 +302,7 @@
         .resizable ({
           handles: "all",
           autoHide: false,
-          resize:function(e, ui)
+          resize: function(e, ui)
           {
             // Update postits relationships arrows
             plugin.repositionPlugs ();
@@ -322,15 +342,18 @@
                 plugin.repositionPlugs ();
               }
               else
-              {
-                //FIXME
-                setTimeout (() =>
+                H.waitForDOMUpdate (() =>
                   {
                     ui.element.parent().cell ("reorganize");
-                    plugin.unedit ();
 
-                  }, 150);
-              }
+                    S.set ("block-edit", true);
+                    setTimeout (()=>
+                    {
+                      plugin.unedit ();
+                      S.unset ("block-edit");
+
+                    }, 500);
+                  });
             }
           });
         }
@@ -342,7 +365,7 @@
             const $btn = $(this),
                   id = settings.id,
                   $menu = $postit.find (".postit-menu"),
-                  $header = $btn.closest(".postit-header");
+                  $header = $btn.closest (".postit-header");
 
             if (!$menu.hasClass ("on"))
             {
@@ -362,7 +385,7 @@
               $menu
                 .addClass("on")
                 .show ();
-              $postit.find (".postit-delete").show ();
+              $postit.find(".postit-delete").show ();
             }
             else
             {
@@ -371,7 +394,7 @@
               $menu
                 .removeClass("on")
                 .hide ();
-              $postit.find (".postit-delete").hide ();
+              $postit.find(".postit-delete").hide ();
             }
           });
   
@@ -412,6 +435,10 @@
 
             e.stopImmediatePropagation ();
 
+            // To prevent race condition with draggable & resizable plugins.
+            if (S.get ("block-edit"))
+              return;
+
             if (!action)
             {
               $btn = $btn.find ("i");
@@ -440,6 +467,7 @@
             // Open modal with write rights
             else
             {
+              //FIXME quand drag speed et click speed apres
               if (S.get ("link-from"))
                 plugin.cancelPlugAction (true, false);
 
@@ -565,7 +593,6 @@
                       .on("mousemove", _plugRabbit.mouseEvent);
       
                     S.set ("link-from", {id: settings.id, obj: $postit});
-
                   });
 
                 break;
@@ -650,7 +677,6 @@
                       S.set ("plugs-to-save", toSave);
 
                       plugin.unedit ();
-
                     });
                 }
 
@@ -662,8 +688,7 @@
         .on("click", function ()
           {
             if (writeAccess)
-              $postit.find(".postit-menu [data-action='attachments']")
-                .trigger ("click");
+              $postit.find(".postit-menu [data-action='attachments']").click ();
             else
               plugin.edit (null, () => plugin.displayAttachments ());
           });
@@ -709,7 +734,7 @@
                 });
               }
               else
-                $menu.find ("i.fa-hourglass-end").trigger ("click");
+                $menu.find ("i.fa-hourglass-end").click ();
             });
 
       if (settings.creationdate)
@@ -805,7 +830,7 @@
                 startPlug: "arrow1",
                 endPlug: "arrow1",
                 color: this.settings._plugColor||
-                      $(".wall th:eq(0)").css("background-color"),
+                      $(".wall th:eq(0)").css ("background-color"),
                 middleLabel: LeaderLine.captionLabel ({
                   text: label,
                   fontSize:"13px"
@@ -851,11 +876,9 @@
     {
       this.settings.wall.find(".postit").each (function ()
         {
-          const $postit = $(this);
+          this.dataset.undo = "";
 
-          $postit[0].dataset.undo = "";
-
-          $postit.find(".postit-menu [data-action='undo-plug'] a")
+          $(this).find(".postit-menu [data-action='undo-plug'] a")
             .addClass("disabled")
             .find("span").text ("");
         });
@@ -864,14 +887,13 @@
     // METHOD checkPlugsMenu ()
     checkPlugsMenu: function ()
     {
-      const $menu = this.element.find (".postit-menu");
+      const $menu = this.element.find (
+        ".postit-menu li[data-action='delete-plugs'] .dropdown-item");
 
       if (this.havePlugs ())
-        $menu.find("li[data-action='delete-plugs'] .dropdown-item")
-          .removeClass ("disabled");
+        $menu.removeClass ("disabled");
       else
-        $menu.find("li[data-action='delete-plugs'] .dropdown-item")
-          .addClass ("disabled");
+        $menu.addClass ("disabled");
     },
 
     // METHOD updatePlugLabel ()
@@ -1091,7 +1113,6 @@
       this.settings._plugs.forEach ((plug) =>
         {
           plug.labelObj.hide ();
-
           plug.obj.hide ("none");
         });
     },
@@ -1127,15 +1148,6 @@
         });
     },
 
-    // METHOD resetZIndexData ()
-    resetZIndexData: function ()
-    {
-      S.get("postit-oldzindex").postit.css (
-        "z-index", S.get ("postit-oldzindex").zIndex);
-
-      S.unset ("postit-oldzindex");
-    },
-
     // METHOD getSettings ()
     getSettings: function ()
     {
@@ -1154,16 +1166,10 @@
       return this.settings.cellId;
     },
 
-    // METHOD getWallId ()
-    getWallId: function ()
-    {
-      return this.settings.wallId;
-    },
-
     // METHOD serializePlugs ()
     serializePlugs: function ()
     {
-      const settings = this.settings;
+     const settings = this.settings;
       let ret = {};
 
       settings._plugs !== undefined &&
@@ -1171,7 +1177,7 @@
         {
           // Take in account only plugs from this postit
           if (plug.startId == settings.id)
-            ret[plug.endId] = (plug.label == "...") ?
+            ret[plug.endId] = (plug.label == _defaultString) ?
               "" : plug.labelObj.find("a span").text ();
         });
 
@@ -1186,7 +1192,7 @@
       this.element.each (function ()
       {
         const $p = $(this),
-              p = $p[0],
+              p = this,
               postitId = p.dataset.id.substring (7);
         let data = {};
 
@@ -1229,7 +1235,6 @@
         }
 
         postits.push (data);
-
       });
 
       return postits;
@@ -1238,8 +1243,8 @@
     // METHOD setDeadline ()
     setDeadline: function (args)
     {
-      const $postit = this.element,
-            $date = $postit.find(".dates .end"),
+      const postit = this.element[0],
+            $date = this.element.find(".dates .end"),
             {deadline, alertshift, timezone} = args;
       let human;
 
@@ -1253,18 +1258,19 @@
       if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
           human == _defaultString)
       {
-        $postit[0].removeAttribute ("data-deadline");
-        $postit[0].removeAttribute ("data-deadlinealertshift");
-        $postit[0].removeAttribute ("data-deadlineepoch");
-        $postit[0].removeAttribute ("data-updatetz");
+        postit.removeAttribute ("data-deadline");
+        postit.removeAttribute ("data-deadlinealertshift");
+        postit.removeAttribute ("data-deadlineepoch");
+        postit.removeAttribute ("data-updatetz");
+
         $date.find("i.fa-times-circle").hide ();
       }
       else
       {
-        $postit[0].dataset.deadline = human;
-        $postit[0].dataset.deadlineepoch = deadline;
+        postit.dataset.deadline = human;
+        postit.dataset.deadlineepoch = deadline;
         if (alertshift !== undefined && alertshift !== null)
-          $postit[0].dataset.deadlinealertshift = alertshift;
+          postit.dataset.deadlinealertshift = alertshift;
 
         $date.find("i.fa-times-circle").show ();
       }
@@ -1312,8 +1318,7 @@
     // METHOD fixPosition ()
     fixPosition: function (cPos, cH, cW)
     {
-       const $postit = this.element,
-             postit = $postit[0],
+       const postit = this.element[0],
              phTop = postit.querySelector(".postit-header")
                        .getBoundingClientRect().top,
              pW = postit.clientWidth,
@@ -1407,8 +1412,7 @@
     // METHOD displayAttachments ()
     displayAttachments: function ()
     {
-      const $postit = this.element,
-            writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
+      const writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
 
       H.request_ajax (
         "GET",
@@ -1468,7 +1472,7 @@
     {
       S.reset ("postit");
 
-      this.element.addClass("current")
+      this.element.addClass ("current")
     },
 
     // METHOD unsetCurrent ()
@@ -1519,6 +1523,7 @@
     update: function (d, cell)
     {
       const $postit = this.element,
+            $tagPicker = $(".tag-picker"),
             tz = wpt_userData.settings.timezone;
 
       // Change postit cell
@@ -1559,9 +1564,9 @@
       $postit[0].dataset.tags = d.tags;
 
       $postit.find(".postit-tags").html (
-        $(".tag-picker").tagPicker ("getHTMLFromString", d.tags));
+        $tagPicker.tagPicker ("getHTMLFromString", d.tags));
 
-      $(".tag-picker").tagPicker ("refreshPostitDataTag", $postit);
+      $tagPicker.tagPicker ("refreshPostitDataTag", $postit);
 
       this.repositionPlugs ();
     },
@@ -1577,8 +1582,7 @@
     // METHOD deleteAttachment ()
     deleteAttachment: function ()
     {
-      const $postit = this.element,
-            $attachment = $_attachmentsPopup.find("li.todelete");
+      const $attachment = $_attachmentsPopup.find ("li.todelete");
 
       H.request_ws (
         "DELETE",
@@ -1741,28 +1745,22 @@
     // METHOD openMenu ()
     openMenu: function ()
     {
-      const $postit = this.element;
-
-      if (!$postit.find(".postit-menu.on").length)
-        $postit.find(".postit-header [data-action='menu']").trigger ("click");
+      if (!this.element.find(".postit-menu.on").length)
+        this.element.find(".postit-header [data-action='menu']").click ();
     },
 
     // METHOD closePlugMenu ()
     closePlugMenu: function ()
     {
-      const $postit = this.element;
-
-      if ($postit.find(".postit-menu.on").length)
-        $postit.find(".postit-menu .dropdown-menu").dropdown ("hide");
+      if (this.element.find(".postit-menu.on").length)
+        this.element.find(".postit-menu .dropdown-menu").dropdown ("hide");
     },
 
     // METHOD closeMenu ()
     closeMenu: function ()
     {
-      const $postit = this.element;
-
-      if ($postit.find(".postit-menu.on").length)
-        $postit.find(".postit-header [data-action='menu']").trigger ("click");
+      if (this.element.find(".postit-menu.on").length)
+        this.element.find(".postit-header [data-action='menu']").click ();
     }
 
   };

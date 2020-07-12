@@ -32,7 +32,7 @@
             .addClass($(this).attr ("class"));
 
           // Remove color picker
-          $("#popup-layer").trigger ("click");
+          $("#popup-layer").click ();
 
           S.getCurrent("filters").filters ("apply");
         });

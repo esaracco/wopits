@@ -676,7 +676,7 @@ class WHelp
   closeMainMenu ()
   {
     if ($("#main-menu.show").length)
-      $("button.navbar-toggler").trigger ("click");
+      $("button.navbar-toggler").click ();
   }
   
   // METHOD updatedObject ()
@@ -859,7 +859,7 @@ class WHelp
       .on ("keydown", function (e)
       {
         if (e.key == "Escape")
-          $layer.trigger ("click");
+          $layer.click ();
       });
   
       $layer
@@ -990,7 +990,7 @@ class WHelp
         if ($btn.hasClass ("btn-primary"))
           args.cb_ok ($btn.closest(".popover"));
   
-        $("#popup-layer").trigger ("click");
+        $("#popup-layer").click ();
       });
   }
 

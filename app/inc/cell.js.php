@@ -106,16 +106,15 @@
                 $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
                   .each (function ()
                   {
-                    const $c = $(this),
-                          c = $c[0];
+                    const $c = $(this);
 
-                    c.style.height = (ui.size.height + 2)+"px";
-                    c.style.width = c.clientWidth+"px";
+                    this.style.height = (ui.size.height + 2)+"px";
+                    this.style.width = this.clientWidth+"px";
 
                     $c.find(">div.ui-resizable-e")[0]
                       .style.height = (ui.size.height + 2)+"px";
                     $c.find(">div.ui-resizable-s")[0]
-                      .style.width = c.clientWidth+"px";
+                      .style.width = this.clientWidth+"px";
 
                   });
 
@@ -217,11 +216,10 @@
     {
       this.element.each (function ()
       {
-        const $cell = $(this),
-              cell = $cell[0],
+        const cell = this,
               bbox = cell.getBoundingClientRect ();
 
-        $cell.find(".postit").each (function ()
+        $(this).find(".postit").each (function ()
         {
           $(this).postit ("fixPosition",
             bbox,
@@ -248,8 +246,7 @@
           height: Math.trunc($cell.outerHeight ()),
           row: $cell.parent().index (),
           col: $cell.index () - 1,
-          postits: $postits.length ?
-                     $cell.find(".postit").postit ("serialize") : null
+          postits: $postits.length ? $postits.postit ("serialize") : null
         });
       });
 

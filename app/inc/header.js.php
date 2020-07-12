@@ -268,7 +268,7 @@
     openMenu: function ()
     {
       if (!this.element.find(".btn-menu.fas").length)
-        this.element.find(".btn-menu").trigger ("click");
+        this.element.find(".btn-menu").click ();
     },
 
     // METHOD getImgTemplate ()

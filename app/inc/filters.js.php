@@ -67,7 +67,7 @@
     hide: function ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='filters'] a").trigger ("click");
+        $("#main-menu").find("li[data-action='filters'] a").click ();
     },
 
     hidePlugs: function ()
@@ -149,7 +149,7 @@
             });
  
         if ($wall.find(".postit.current:not(.filter-display)").length)
-          $("#popup-layer").trigger ("click");
+          $("#popup-layer").click ();
 
         $wall.find(".postit:not(.filter-display)").hide ();
       }

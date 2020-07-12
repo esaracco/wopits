@@ -309,7 +309,7 @@
       // Col/row headers menu
       $wall.find("th div[class*='-menu'].on").each (function ()
         {
-          $(this).parent().find(".btn-menu").trigger ("click");
+          $(this).parent().find(".btn-menu").click ();
         });
     },
 
@@ -1151,7 +1151,7 @@
       if (wpt_userData.settings.openedWalls.indexOf (wallId) == -1)
         this.open (wallId, false, postitId);
 
-      // Remove slecific alert URL.
+      // Remove special alert URL.
       history.pushState (null, null, "/");
     },
 
@@ -1343,11 +1343,11 @@
       if (_refreshing)
         return;
 
-      const $wall = this.element;
-      let w = Number ($wall[0].dataset.oldwidth);
+      const wall = this.element[0];
+      let w = Number (wall.dataset.oldwidth);
 
       if (!w)
-        w = $wall.outerWidth ();
+        w = this.element.outerWidth ();
 
       if (newW)
       {
@@ -1357,9 +1357,9 @@
           w -= (oldW - newW);
       }
 
-      $wall[0].dataset.oldwidth = w;
-      $wall[0].style.width = w+"px";
-      $wall[0].style.maxWidth = w+"px";
+      wall.dataset.oldwidth = w;
+      wall.style.width = w+"px";
+      wall.style.maxWidth = w+"px";
     },
 
     // METHOD zoom ()
@@ -1369,6 +1369,7 @@
       const $zoom = $(".tab-content.walls"),
             zoom0 = $zoom[0],
             wall0 = this.element[0],
+            $plugsLabels = this.settings.plugsContainer.find (".plug-label"),
             from = args.from,
             type = args.type,
             noalert = !!args.noalert,
@@ -1403,7 +1404,7 @@
           "opacity": (writeAccess) ? .6 : 1,
           "width": 30000
         });
-        $(".plug-label").css ("pointer-events", "none");
+        $plugsLabels.css ("pointer-events", "none");
       }
 
       if (from)
@@ -1438,7 +1439,7 @@
           });
 
         zoom0.style = stylesOrigin;
-        $(".plug-label").css ("pointer-events", "auto");
+        $plugsLabels.css ("pointer-events", "auto");
 
         //FIXME
         //wall0.scrollIntoView ({inline: "start"});

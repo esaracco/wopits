@@ -66,7 +66,7 @@
           {
             e.preventDefault ();
 
-            $(this).find(".btn-primary").trigger ("click");
+            $(this).find(".btn-primary").click ();
           }
         });
 
@@ -107,7 +107,7 @@
     hide: function ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='chatroom'] a").trigger ("click");
+        $("#main-menu").find("li[data-action='chatroom'] a").click ();
     },
 
     // METHOD join ()
@@ -254,8 +254,7 @@
         $(`<div class="chatroom-alert"><i class="fas fa-comments fa-2x"></i><span class="wpt-badge">1</span></div>`)
           .on("click", function ()
           {
-            $("#main-menu").find("li[data-action='chatroom'] input")
-              .trigger ("click");
+            $("#main-menu").find("li[data-action='chatroom'] input").click ();
           })
           .insertBefore ($chatroom);
       }

@@ -238,7 +238,7 @@ $(function()
         if ($btn.length)
         {
           e.preventDefault ();
-          $btn.trigger ("click");
+          $btn.click ();
         }
       }
 
