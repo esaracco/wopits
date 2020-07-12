@@ -282,13 +282,7 @@
                 // If the postit has been dropped into another cell
                 plugin.settings.cellId = $postit.parent().cell ("getId");
 
-                S.set ("block-edit", true);
-                setTimeout (()=>
-                {
-                   plugin.unedit ();
-                   S.unset ("block-edit");
-
-                }, 500);
+                plugin.unedit ();
               }
 
               // Update postits relationships arrows
@@ -346,13 +340,7 @@
                   {
                     ui.element.parent().cell ("reorganize");
 
-                    S.set ("block-edit", true);
-                    setTimeout (()=>
-                    {
-                      plugin.unedit ();
-                      S.unset ("block-edit");
-
-                    }, 500);
+                    plugin.unedit ();
                   });
             }
           });
@@ -1478,9 +1466,14 @@
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
-      S.reset ("postit");
+      S.set ("block-edit", true);
+      setTimeout (()=>
+        {
+          S.reset ("postit");
+          this.element.removeClass ("current");
+          S.unset ("block-edit");
 
-      this.element.removeClass ("current");
+        }, 500);
     },
 
     // METHOD insert ()
