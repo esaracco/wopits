@@ -32,7 +32,7 @@
 
               if (plugin.checkRequired ($login.find("input")))
               {
-                const dl =$login.find("input[name='_deadlineAlertURL']").val();
+                let dl = $login.find("input[name='_deadlineAlertURL']").val ();
 
                 if (dl && !dl.match (/^\/a\/w\/\d+\/p\/\d+$/))
                   dl = "";
