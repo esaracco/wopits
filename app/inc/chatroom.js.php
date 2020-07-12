@@ -100,6 +100,7 @@
 
           plugin.sendMsg (H.noHTML ($chatroom.find("input").val()));
           $chatroom.find("input").val("");
+          $chatroom.chatroom ("setFocus");
         });
     },
 
@@ -124,6 +125,13 @@
       H.request_ws (
         "DELETE",
          "wall/"+this.settings.wallId+"/chat");
+    },
+
+    // METHOD setFocus ()
+    setFocus: function (delay = 0)
+    {
+      if (!$.support.touch)
+        setTimeout (() => this.element.find("[autofocus]").focus (), delay);
     },
 
     // METHOD toggle ()
@@ -151,8 +159,7 @@
 
         $chatroom.css({bottom: "15px", left: "5px", display: "table"});
 
-        if (!$.support.touch)
-          setTimeout (() => $chatroom.find("[autofocus]").focus (), 150);
+        this.setFocus (150);
 
         H.request_ws (
           "PUT",
