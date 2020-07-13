@@ -472,12 +472,17 @@
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
                 'WPT_WS_PORT' => $env['websocket']['server']['port'],
+                'WPT_SMTP_HOST' => $env['smtp']['host'],
+                'WPT_SMTP_PORT' => $env['smtp']['port'],
                 'WPT_DB_USER' => $env['db']['user'],
                 'WPT_DB_PASSWORD' => $env['db']['password'],
                 'WPT_DSN' => $env['db']['dsn'],
                 'WPT_EMAIL_FROM' => $env['emails']['from'],
                 'WPT_EMAIL_CONTACT' => $env['emails']['contact']] as $k => $v)
-        $this->_updateConf ($k, $v);
+      {
+        if (!empty ($v))
+          $this->_updateConf ($k, $v);
+      }
 
       if (!empty ($env['about']))
       {

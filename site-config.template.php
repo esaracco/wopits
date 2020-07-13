@@ -29,12 +29,11 @@
   // Example: 8080
   define ('WPT_WS_PORT', "");
 
-  // SMTP
-/*TODO //FIXME For the moment, the mailer can only be the localhost
-  -> Do not change those values
-  define ('WPT_SMTP_HOST', "localhost");
-  define ('WPT_SMTP_PORT', "25");
-*/
+  // SMTP if empty, localhost will be used by default.
+  // Example: smtp.free.fr
+  define ('WPT_SMTP_HOST', "");
+  // Example: 25
+  define ('WPT_SMTP_PORT', "");
 
   // About popup
   // Display/hide about popup informations

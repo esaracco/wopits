@@ -187,10 +187,7 @@
 
       //<WPTPROD-remove>
       if (WPT_DEV_MODE)
-      {
-        return;
         $args['email'] = WPT_EMAIL_CONTACT;
-      }
       //</WPTPROD-remove>
 
       $mail = new PHPMailer (true);
@@ -201,11 +198,14 @@
         $mail->Encoding = 'base64';
         $mail->isHTML (false);
 
-/*TODO //FIXME For the moment, mailer can only be the localhost
-        $mail->isSMTP ();
-        $mail->Host = WPT_SMTP_HOST;
-        $mail->Port = WPT_SMTP_PORT;
-*/
+        if (!empty (WPT_SMTP_HOST))
+        {
+          $mail->isSMTP ();
+          $mail->Host = WPT_SMTP_HOST;
+
+          if (!empty (WPT_SMTP_PORT))
+            $mail->Port = WPT_SMTP_PORT;
+        }
 
         $mail->setFrom (WPT_EMAIL_FROM, 'wopits');
         $mail->addAddress ($args['email']);

@@ -50,6 +50,11 @@
           'port' => 8080
         ]
       ],
+      // SMTP if empty, localhost will be used by default.
+      'smtp' => [
+        'host' => 'smtp.free.fr',
+        'port' => 25
+      ],
       // Database on target
       'db' => [
         'dsn' => 'mysql:host=localhost;dbname=wopits-prod;port=3306',
@@ -128,6 +133,11 @@
           // used in your apache proxy section conf)
           'port' => 8081
         ]
+      ],
+      // SMTP if empty, localhost will be used by default.
+      'smtp' => [
+        'host' => 'smtp.free.fr',
+        'port' => 25
       ],
       // Database on target
       'db' => [
