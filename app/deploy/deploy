@@ -128,6 +128,13 @@
               !preg_match('/^(.+)@(.+):(.+)$/', $env['target']['path']))
         $this->help ("Conf remote `target->path` ".
                      "(`{$env['target']['path']}`) is not valid!");
+      if (!empty ($env['smtp']))
+      {
+        if (empty ($env['smtp']['host']))
+          $this->help ("Conf `smtp->host` is empty!");
+        if (empty ($env['smtp']['port']))
+          $this->help ("Conf `smtp->port` is empty!");
+      }
       if (!empty ($env['dkim']))
       {
         if (empty ($env['dkim']['domain']))
@@ -472,24 +479,36 @@
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
                 'WPT_WS_PORT' => $env['websocket']['server']['port'],
-                'WPT_SMTP_HOST' => $env['smtp']['host'],
-                'WPT_SMTP_PORT' => $env['smtp']['port'],
                 'WPT_DB_USER' => $env['db']['user'],
                 'WPT_DB_PASSWORD' => $env['db']['password'],
                 'WPT_DSN' => $env['db']['dsn'],
                 'WPT_EMAIL_FROM' => $env['emails']['from'],
-                'WPT_EMAIL_CONTACT' => $env['emails']['contact']] as $k => $v)
+                'WPT_EMAIL_CONTACT' => $env['emails']['contact']]
+                  as $k => $v)
       {
-        if (!empty ($v))
-          $this->_updateConf ($k, $v);
+        $this->_updateConf ($k, $v);
       }
+
+      if (!empty ($env['smtp']))
+      {
+        foreach (['WPT_SMTP_HOST' => $env['smtp']['host'],
+                  'WPT_SMTP_PORT' => $env['smtp']['port']]
+                    as $k => $v)
+        {
+          $this->_updateConf ($k, $v);
+        }
+      }
+      else
+        $this->_deleteConf ('smtp');
 
       if (!empty ($env['about']))
       {
         foreach (['WPT_ABOUT_WARNING' => boolval(@$env['about']['warning']),
                   'WPT_ABOUT_PRIVACY' => boolval(@$env['about']['privacy'])]
                     as $k => $v)
-        $this->_updateConf ($k, $v);
+        {
+          $this->_updateConf ($k, $v);
+        }
       }
       else
       {
@@ -501,11 +520,17 @@
       {
         foreach (['WPT_USE_DKIM' => true,
                   'WPT_DKIM_DOMAIN' => $env['dkim']['domain'],
-                  'WPT_DKIM_SELECTOR' => $env['dkim']['selector']] as $k => $v)
-        $this->_updateConf ($k, $v);
+                  'WPT_DKIM_SELECTOR' => $env['dkim']['selector']]
+                    as $k => $v)
+        {
+          $this->_updateConf ($k, $v);
+        }
       }
       else
+      {
         $this->_updateConf ('WPT_USE_DKIM', false);
+        $this->_deleteConf ('dkim');
+      }
 
       if (!empty ($env['ldap']))
       {
@@ -513,16 +538,20 @@
         $this->_exec ("chmod 755 {$env['build-path']}/app/ldap/*.php");
 
         foreach (['WPT_USE_LDAP' => true,
-                'WPT_LDAP_HOST' => $env['ldap']['host'],
-                'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
-                'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
-                'WPT_LDAP_OBJECTCLASS' => $env['ldap']['objectclass'],
-                'WPT_LDAP_BASEDN' => $env['ldap']['basedn']] as $k => $v)
-        $this->_updateConf ($k, $v);
+                  'WPT_LDAP_HOST' => $env['ldap']['host'],
+                  'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
+                  'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
+                  'WPT_LDAP_OBJECTCLASS' => $env['ldap']['objectclass'],
+                  'WPT_LDAP_BASEDN' => $env['ldap']['basedn']]
+                    as $k => $v)
+        {
+          $this->_updateConf ($k, $v);
+        }
       }
       else
       {
         $this->_updateConf ('WPT_USE_LDAP', false);
+        $this->_deleteConf ('ldap');
         $this->_exec ("rm -rf {$env['build-path']}/app/ldap");
       }
 
@@ -649,6 +678,13 @@
           exit ($r);
         }
       }
+    }
+
+    private function _deleteConf ($section)
+    {
+      $this->_exec (
+        "perl -pi -e \"s/^\s*define\s*\('WPT_".strtoupper($section).".*$//\" ".
+          $this->siteConfPath);
     }
 
     private function _updateConf ($k, $v)
