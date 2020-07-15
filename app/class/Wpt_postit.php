@@ -112,7 +112,7 @@
           postits.title AS postit_title,
           users.id AS alert_user_id,
           users.email AS alert_user_email,
-          users.username AS alert_user_fullname,
+          users.fullname AS alert_user_fullname,
           postits_alerts.alertshift AS alert_shift,
           walls.id as wall_id
         FROM postits
