@@ -362,15 +362,15 @@ class WSocket
         {
           switch (data.action)
           {
-            // sessionexists
-            case "sessionexists":
+            // exitsession
+            case "exitsession":
               var $popup = $("#infoPopup");
 
               $(".modal").modal ("hide");
 
               H.cleanPopupDataAttr ($popup);
 
-              $popup.find(".modal-body").html ("<?=_("Another session was detected. Both sessions will be closed. Please log in again.")?>");
+              $popup.find(".modal-body").html ("<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>");
               $popup.find(".modal-title").html (
                 '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
               $popup[0].dataset.popuptype = "app-logout";
@@ -433,7 +433,11 @@ class WSocket
               setTimeout (()=> H.checkForAppUpgrade (data.version), 5000);
               break;
 
-            // reload
+            // Reload to refresh user working space.
+            case "reloadsession":
+              return location.href = '/r.php?l='+data.locale;
+
+            // Maintenance reload.
             case "reload":
               var $popup = $("#infoPopup");
 
@@ -441,7 +445,7 @@ class WSocket
 
               H.cleanPopupDataAttr ($popup);
 
-              $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded")?>");
+              $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>");
               $popup.find(".modal-title").html (
                 '<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>');
 

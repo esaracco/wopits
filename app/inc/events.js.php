@@ -383,7 +383,7 @@ $(function()
               break;
 
             case "app-logout":
-              $("<div/>").login ("logout");
+              $("<div/>").login ("logout", {auto: true});
               break;
           }
           break;

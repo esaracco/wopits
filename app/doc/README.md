@@ -33,21 +33,21 @@ $ mysql wopits -uwopits -p < app/db/mysql/wopits-create_tables.sql
 
 Edit the `pg_hba.conf` like this:
 
-1. Change (depending of your needs):
+1. According to your need, update:
 
 ```bash
 # "local" is for Unix domain socket connections only
 local   all             all                                     peer
 ```
 
-2. To:
+2. to:
 
 ```bash
 # "local" is for Unix domain socket connections only
 local   all             all                                     md5
 ```
 
-3. Then:
+3. then:
 
 ```bash
 $ sudo -upostgres app/db/postgresql/wopits-create_db.example.sh

@@ -199,13 +199,16 @@
     },
 
     // METHOD logout ()
-    logout: function (args)
+    logout: function (args = {})
     {
       location.href = "/login.php";
 
-      H.request_ajax (
-        "POST",
-        "user/logout");
+      // Clean all data only if the logout order come from the main user
+      // session.
+      if (!args.auto)
+        H.request_ajax (
+          "POST",
+          "user/logout");
     },
 
     // METHOD createUser ()

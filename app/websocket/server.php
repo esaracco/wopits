@@ -20,6 +20,7 @@ class Session
   public $settings;
   public $username;
   public $openedChats = [];
+  public $final = false;
   private $slocale;
 
   public function init (Wopits $wpt, ConnectionInterface $conn)
@@ -27,10 +28,10 @@ class Session
     $ret = false;
 
     $headers = $conn->httpRequest->getHeaders ();
-    $token = $wpt->getQueryParams($conn)['token'];
     $User = new Wpt_user ();
 
-    if ( ($r = $User->loadByToken ($token, $headers['X-Forwarded-For'][0])) )
+    if ( ($r = $User->loadByToken ($wpt->getQueryParams($conn)['token'],
+                                   $headers['X-Forwarded-For'][0])) )
     {
       $this->conn = $conn;
       $this->sessionId = $conn->resourceId;
@@ -104,17 +105,11 @@ class Wopits implements MessageComponentInterface
   
         if (isset ($client->settings->activeWall))
           $this->_pushWallsUsersCount ([$client->settings->activeWall]);
-  
-        // Close all sessions if multiple sessions has been detected
+
         if (isset ($this->usersUnique[$userId]))
-        {
-          $this->clients[$this->usersUnique[$userId]]->conn->send (
-            '{"action": "sessionexists"}');
-          $this->clients[$connId]->conn->send (
-            '{"action": "sessionexists"}');
-        }
+          $this->usersUnique[$userId][] = $connId;
         else
-          $this->usersUnique[$userId] = $connId;
+          $this->usersUnique[$userId] = [$connId];
       }
       else
         throw new Exception ("UNAUTHORIZED login attempt!");
@@ -216,12 +211,12 @@ class Wopits implements MessageComponentInterface
   
           // Active wall
           $this->registerActiveWall (
-            $connId, $client->id, $oldSettings, $newSettings);
+            $connId, $User->userId, $oldSettings, $newSettings);
           $client->settings->activeWall = $newSettings->activeWall ?? null;
   
           // Opened walls
           $this->registerOpenedWalls (
-            $connId, $client->id, $oldSettings, $newSettings);
+            $connId, $User->userId, $oldSettings, $newSettings);
           $client->settings->openedWalls = $newSettings->openedWalls ?? [];
 
           $ret = $User->saveSettings ();
@@ -229,6 +224,24 @@ class Wopits implements MessageComponentInterface
         // User's data update
         elseif ($type == 'update')
           $ret = $User->update ();
+
+        // Reload all current user sessions if any.
+        if (!$client->final)
+        {
+          foreach ($this->usersUnique[$User->userId] as $_connId)
+          {
+            if ($_connId != $connId && isset ($this->clients[$_connId]))
+            {
+              $this->clients[$_connId]->final = true;
+              $this->clients[$_connId]->conn->send (json_encode ([
+                'action' => 'reloadsession',
+                'locale' => $newSettings->locale
+              ]));
+            }
+          }
+        }
+        else
+          $client->final = false;
       }
       // ROUTE edit queue
       // - PUT to block updates for other users on a item
@@ -527,13 +540,16 @@ class Wopits implements MessageComponentInterface
       unset ($this->internals[$connId]);
     }
     // Common wopits client
-    elseif ( ($client = $this->clients[$connId] ?? null))
+    elseif (isset ($this->clients[$connId]))
     {
+      $client = $this->clients[$connId];
       $client->loadContext ();
       $userId = $client->id;
 
-      if ( ($wallId = $client->settings->activeWall ?? null) )
+      if (isset ($client->settings->activeWall))
       {
+        $wallId = $client->settings->activeWall;
+
         // Remove user's action from DB edit queue
         (new Wpt_editQueue())->removeUser ();
 
@@ -554,7 +570,23 @@ class Wopits implements MessageComponentInterface
         unset ($this->chatUsers[$_wallId][$connId]);
 
       unset ($this->clients[$connId]);
-      unset ($this->usersUnique[$userId]);
+
+      // Close all current user sessions if any.
+      if (!$client->final)
+      {
+        foreach ($this->usersUnique[$userId] as $_connId)
+        {
+          if ($_connId != $connId && isset ($this->clients[$_connId]))
+          {
+            $this->clients[$_connId]->final = true;
+            $this->clients[$_connId]->conn->send (
+              json_encode (['action' => 'exitsession']));
+          }
+        }
+      }
+
+      if (empty ($this->usersUnique[$userId]))
+        unset ($this->usersUnique[$userId]);
 
       //FIXME
       //https://github.com/ratchetphp/Ratchet/issues/662#issuecomment-454886034
@@ -642,10 +674,10 @@ class Wopits implements MessageComponentInterface
         {
           foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
           {
-            if ( ($client = $this->clients[$_connId] ?? null) &&
-                 isset ($this->chatUsers[$_wallId]))
+            if (isset ($this->clients[$_connId]) &&
+                isset ($this->chatUsers[$_wallId]))
             {
-              $client->conn->send (
+              $this->clients[$_connId]->conn->send (
                 json_encode ([
                   'action' => 'chatcount',
                   'count' => count ($this->chatUsers[$_wallId]) - 1,
@@ -773,13 +805,15 @@ class Wopits implements MessageComponentInterface
 
         foreach ($this->activeWalls[$_wallId] as $_connId => $_userId)
         {
-          if ( ($client = $this->clients[$_connId] ?? null) )
-            $client->conn->send (
+          if (isset ($this->clients[$_connId]))
+          {
+            $this->clients[$_connId]->conn->send (
               json_encode ([
                 'action' => 'viewcount',
                 'count' => $usersCount - 1,
                 'wall' => ['id' => $_wallId]
               ]));
+          }
         }
       }
     }
