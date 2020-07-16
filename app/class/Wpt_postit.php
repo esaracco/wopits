@@ -146,7 +146,7 @@
         if ($hours)
          ++$days;
 
-        if ($dlEpoch <= $now->format("U") && $hours == 0)
+        if ($dlEpoch <= $now->format ('U'))
         {
           $this->exec ("
             UPDATE postits SET obsolete = 1 WHERE id = {$item['postit_id']}");
@@ -158,7 +158,7 @@
             Wpt_common::mail ([
               'email' => $item['alert_user_email'],
               'subject' => _("Post-it deadline notification"),
-              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following post-it has expired:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following post-it has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
             ]);
           }
         }
@@ -171,7 +171,7 @@
             'subject' => _("Post-it deadline notification"),
             'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
               sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
-              sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire in %s days:\n\n%s"), $item['alert_user_fullname'], $days, WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
           ]);
         }
 
