@@ -157,8 +157,8 @@
 
             Wpt_common::mail ([
               'email' => $item['alert_user_email'],
-              'subject' => _("Post-it deadline notification"),
-              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following post-it has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              'subject' => _("Sticky note deadline notification"),
+              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following sticky note has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
             ]);
           }
         }
@@ -168,10 +168,10 @@
 
           Wpt_common::mail ([
             'email' => $item['alert_user_email'],
-            'subject' => _("Post-it deadline notification"),
+            'subject' => _("Sticky note deadline notification"),
             'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
-              sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
-              sprintf (_("Hello %s,\n\nThe deadline for the following post-it will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              sprintf (_("Hello %s,\n\nThe deadline for the following sticky note will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
+              sprintf (_("Hello %s,\n\nThe deadline for the following sticky note will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
           ]);
         }
 
@@ -284,7 +284,7 @@
           "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
 
         if (file_exists ($file))
-          $ret['error_msg'] = _("The file is already linked to the post-it.");
+          $ret['error_msg'] = _("The file is already linked to the sticky note.");
         else
         {
           file_put_contents (

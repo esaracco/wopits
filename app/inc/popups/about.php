@@ -12,7 +12,7 @@
         <p><i><b>w</b>orld <b>o</b>f <b>p</b>ost-<b>its</b></i></p>
 
         <p class="mt-2 mb-2">
-          <?=_("wopits is a world in which you can manage all kinds of projects by simply using post-its to share and collaborate with other users simultaneously.")?>
+          <?=_("wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously.")?>
         </p>
 
         <p class="desc mb-2">

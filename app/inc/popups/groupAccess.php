@@ -23,7 +23,7 @@
           <div class="input-group-prepend"><span><i class="fas fa-edit fa-fw"></i></span></div>
           <div class="custom-control custom-radio">
             <input type="radio" value="<?=WPT_RIGHTS['walls']['rw']?>" class="custom-control-input" id="_access2" name="access">
-            <label class="custom-control-label" for="_access2"><?=_("Post-it creation")?></label>
+            <label class="custom-control-label" for="_access2"><?=_("Sticky note creation")?></label>
           </div>
         </div>
         

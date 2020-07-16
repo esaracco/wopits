@@ -7,7 +7,7 @@ wopits - _A world of post-its_
 
 [Project homepage](https://wopits.esaracco.fr) | [wopits homepage](https://www.wopits.com)
 
-*wopits is a world in which you can manage all kinds of projects by simply using post-its to share and collaborate with other users simultaneously*.
+*wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously*.
 
 If you do not want to bother installing it on your own, just create an account on the [wopits official website](https://www.wopits.com)!
 

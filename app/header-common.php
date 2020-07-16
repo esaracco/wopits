@@ -34,6 +34,7 @@
   <meta charset="utf-8">
   <title>wopits - <?=_("Let your ideas shine!")?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no">
+  <meta name="description" lang="<?=$slocale?>" content="<?=_("wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously.")?>">
 
   <script>window.onload=function(){try{eval("var f=(x)=>x")}catch(e){document.title="<?=_("Deprecated browser")?>";document.body.innerHTML = "<center><?=sprintf (_("Please use the latest version of a recent browser like %s or %s."), "<a href='https://www.mozilla.org'>Firefox</a>", "<a href='https://www.google.com/chrome'>Chrome</a>")?></center>"}}</script>
 

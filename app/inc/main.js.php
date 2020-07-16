@@ -177,7 +177,7 @@
                     $wall.find ("[data-id=postit-"+settings.postitId+"]")
                       .postit ("displayDeadlineAlert");
                   else
-                    H.displayMsg ({type: "warning", msg: "<?=_("The post-it has been deleted.")?>"});
+                    H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted.")?>"});
                 });
             }
 
