@@ -23,7 +23,7 @@
           <?=sprintf(_("If you need professional hosting or special features, don't hesitate to contact %s."), '<a href="https://www.easter-eggs.com" target="_blank">Easter-eggs</a>')?>
         </p>
 
-        <?php if (WPT_ABOUT_WARNING):?>
+        <?php if (defined ('WPT_ABOUT_WARNING') && WPT_ABOUT_WARNING):?>
           <div class="mt-4 warning">
             <h2 class="bg-warning"><?=_("Warning")?></h2>
   
@@ -34,7 +34,7 @@
           </div>
         <?php endif?>
   
-        <?php if (WPT_ABOUT_PRIVACY):?>
+        <?php if (defined ('WPT_ABOUT_PRIVACY') && WPT_ABOUT_PRIVACY):?>
           <div class="mt-4 warning">
             <h2 class="bg-info"><?=_("Privacy policy")?></h2>
   
