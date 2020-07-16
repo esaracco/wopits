@@ -198,7 +198,7 @@
         $mail->Encoding = 'base64';
         $mail->isHTML (false);
 
-        if (!empty (WPT_SMTP_HOST))
+        if (defined ('WPT_SMTP_HOST') && !empty (WPT_SMTP_HOST))
         {
           $mail->isSMTP ();
           $mail->Host = WPT_SMTP_HOST;
