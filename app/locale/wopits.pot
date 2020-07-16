@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-07-16 09:56+0200\n"
+        "POT-Creation-Date: 2020-07-16 12:08+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr  "Project-Id-Version: PACKAGE VERSION\n"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postitsSearch.js.php:99
 #, php-format
-msgid   "%s post-its match your search."
+msgid   "%s sticky notes match your search."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postitsSearch.js.php:98
-msgid   "1 post-it match your search."
+msgid   "1 sticky note match your search."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:42
-msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the icon <i class='fas fa-plus-circle'></i> in the group list. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify post-its (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create post-its and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>You can easily chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
+msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the icon <i class='fas fa-plus-circle'></i> in the group list. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify sticky notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create sticky notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>You can easily chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:31
-msgid   "<p>To create a post-it, double-click inside a cell. You can then move it anywhere on the wall. The creation date appears at the bottom left.</p><p>By clicking on the menu <i class='far fa-caret-square-down'></i> of the post-it you access the different icons allowing you to modify it:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-times fa-fw'></i></dt><dd class='col-sm-9'>Delete the post-it. All associated documents will be deleted.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Edit title and content.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-tags fa-fw'></i></dt><dd class='col-sm-9'>Manage associated tags. If some tags are already associated, their icons appear on the right. You can also click on them to manage them.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-palette fa-fw'></i></dt><dd class='col-sm-9'>Change the color.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Change the deadline. You can then reset it by clicking on <i class='fas fa-xs fa-times-circle fa-fw'></i>. When the deadline arrives, the bottom of the post-it will appear in red.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated documents. If documents are already associated, an icon appears at the top left. You can also click on this icon to manage them.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-sm-9'>Manage relationships between post-its.</dd></dl><p>You can search in the post-its of the current wall by clicking on <kbd>Edit</kbd>&rarr;<kbd>Search...</kbd>. Post-its containing the searched string will be highlighted.</p><p>It is possible to filter the post-its using the filtering tool. To display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</kbd>. You can filter by tags and colors.</p><p>On some little screens it can be useful to use the <kbd>Arrows</kbd> tool in order to move around the wall.</p>"
+msgid   "<p>To create a sticky note, double-click inside a cell. You can then move it anywhere on the wall. The creation date appears at the bottom left.</p><p>By clicking on the menu <i class='far fa-caret-square-down'></i> of the sticky note you access the different icons allowing you to modify it:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-times fa-fw'></i></dt><dd class='col-sm-9'>Delete the sticky note. All associated documents will be deleted.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Edit title and content.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-tags fa-fw'></i></dt><dd class='col-sm-9'>Manage associated tags. If some tags are already associated, their icons appear on the right. You can also click on them to manage them.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-palette fa-fw'></i></dt><dd class='col-sm-9'>Change the color.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Change the deadline. You can then reset it by clicking on <i class='fas fa-xs fa-times-circle fa-fw'></i>. When the deadline arrives, the bottom of the sticky note will appear in red.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated documents. If documents are already associated, an icon appears at the top left. You can also click on this icon to manage them.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-sm-9'>Manage relationships between sticky notes.</dd></dl><p>You can search in the sticky note of the current wall by clicking on <kbd>Edit</kbd>&rarr;<kbd>Search...</kbd>. Sticky notes containing the searched string will be highlighted.</p><p>It is possible to filter the sticky notes using the filtering tool. To display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</kbd>. You can filter by tags and colors.</p><p>On some little screens it can be useful to use the <kbd>Arrows</kbd> tool in order to move around the wall.</p>"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:20
-msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename it, associate an image or completely delete the item.</p><p>You can edit the name and description of a wall via the menu <kbd>Edit</kbd>&rarr;<kbd>Properties...</kbd> or by clicking directly on the name of the wall.</p><p>To add a row or column, use the menu <kbd>Edit</kbd>.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify post-its.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create post-its and manage the wall. It's the sharing that gives you the most rights. You will also have partial group management.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the top of the wall on the left.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. In this mode, the wall will no longer be editable. To be able to edit it again, click on <i class='fas fa-crosshairs'></i> or on <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Depending on its content, the export size can be substantial! Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu. Depending on its content, the cloning of a wall can take a long time!</p>"
+msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename it, associate an image or completely delete the item.</p><p>You can edit the name and description of a wall via the menu <kbd>Edit</kbd>&rarr;<kbd>Properties...</kbd> or by clicking directly on the name of the wall.</p><p>To add a row or column, use the menu <kbd>Edit</kbd>.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify sticky notes.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create sticky notes and manage the wall. It's the sharing that gives you the most rights. You will also have partial group management.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the top of the wall on the left.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. In this mode, the wall will no longer be editable. To be able to edit it again, click on <i class='fas fa-crosshairs'></i> or on <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Depending on its content, the export size can be substantial! Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu. Depending on its content, the cloning of a wall can take a long time!</p>"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1490
@@ -265,7 +265,7 @@ msgid   "Create a account"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:98
-msgid   "Create your walls of post-its, and let your ideas shine!"
+msgid   "Create your walls of sticky notes, and let your ideas shine!"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:82
@@ -313,7 +313,7 @@ msgid   "Delete"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:596
-msgid   "Delete all relationships from this post-it?"
+msgid   "Delete all relationships from this sticky note?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:68
@@ -344,16 +344,16 @@ msgstr  ""
 msgid   "Delete this picture?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:472
-msgid   "Delete this post-it?"
-msgstr  ""
-
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1910
 msgid   "Delete this relationship?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/header.js.php:154
 msgid   "Delete this row?"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:472
+msgid   "Delete this sticky note?"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:799
@@ -372,7 +372,7 @@ msgstr  ""
 msgid   "Depending on its content, the export size can be substantial.<br>Do you confirm this request?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:38
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:39
 msgid   "Deprecated browser"
 msgstr  ""
 
@@ -465,7 +465,7 @@ msgstr  ""
 #, php-format
 msgid   "Hello %s,\n"
         "\n"
-        "The deadline for the following post-it will expire in %s days:\n"
+        "The deadline for the following sticky note will expire in %s days:\n"
         "\n"
         "%s%s"
 msgstr  ""
@@ -474,7 +474,7 @@ msgstr  ""
 #, php-format
 msgid   "Hello %s,\n"
         "\n"
-        "The deadline for the following post-it will expire soon:\n"
+        "The deadline for the following sticky note will expire soon:\n"
         "\n"
         "%s"
 msgstr  ""
@@ -483,7 +483,7 @@ msgstr  ""
 #, php-format
 msgid   "Hello %s,\n"
         "\n"
-        "The dealine for the following post-it has expired:\n"
+        "The dealine for the following sticky note has expired:\n"
         "\n"
         "%s%s"
 msgstr  ""
@@ -667,7 +667,7 @@ msgstr  ""
 msgid   "Passwords must match"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:38
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:39
 #, php-format
 msgid   "Please use the latest version of a recent browser like %s or %s."
 msgstr  ""
@@ -683,27 +683,6 @@ msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/login.js.php:140
 msgid   "Please, confirm your password:"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/groupAccess.php:26
-msgid   "Post-it creation"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
-msgid   "Post-it deadline alert"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:160
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:171
-msgid   "Post-it deadline notification"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitUpdate.php:5
-msgid   "Post-it update"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:27
-msgid   "Post-its management"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/login.js.php:154
@@ -791,7 +770,7 @@ msgid   "Search"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitsSearch.php:12
-msgid   "Search for post-its in the current wall."
+msgid   "Search for sticky notes in the current wall."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:55
@@ -828,11 +807,29 @@ msgid   "Someone is editing this element."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:2047
-msgid   "Sorry, there is a compatibility issue with your browser when it comes to uploading post-its images..."
+msgid   "Sorry, there is a compatibility issue with your browser when it comes to uploading sticky notes images..."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:67
 msgid   "Standard view"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/groupAccess.php:26
+msgid   "Sticky note creation"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:160
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:171
+msgid   "Sticky note deadline notification"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitUpdate.php:5
+msgid   "Sticky note update"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:27
+msgid   "Sticky notes management"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:6
@@ -861,16 +858,16 @@ msgid   "The application will be upgraded from v%s1 to v%s2."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:745
-msgid   "The deadline for this post-it has been removed!"
+msgid   "The deadline for this sticky note has been removed!"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:758
 #, php-format
-msgid   "The deadline for this post-it will expire in about %s day(s)."
+msgid   "The deadline for this sticky note will expire in about %s day(s)."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:759
-msgid   "The deadline for this post-it will expire soon."
+msgid   "The deadline for this sticky note will expire soon."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:30
@@ -878,15 +875,12 @@ msgid   "The deletion of your account will result in the deletion of all your wa
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1734
-msgid   "The entire column was deleted while you were editing the post-it!"
+msgid   "The entire column was deleted while you were editing the sticky note!"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1943
-msgid   "The file is already linked to the post-it"
-msgstr  ""
-
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:287
-msgid   "The file is already linked to the post-it."
+msgid   "The file is already linked to the sticky note."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:467
@@ -905,15 +899,11 @@ msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1818
 #, php-format
-msgid   "The image %s was not available! It has been removed from post-it content."
+msgid   "The image %s was not available! It has been removed from the sticky note content."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:18
 msgid   "The new password:"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:180
-msgid   "The post-it has been deleted."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:1362
@@ -928,6 +918,10 @@ msgstr  ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:91
 #, php-format
 msgid   "The size of a wall cannot be less than %s"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:180
+msgid   "The sticky note has been deleted."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:50
@@ -1002,17 +996,17 @@ msgstr  ""
 msgid   "This new group will be available only for the current wall."
 msgstr  ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:212
+msgid   "This relationship already exists"
+msgstr  ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:747
-msgid   "This post-it has expired."
+msgid   "This sticky note has expired."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1419
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:1600
-msgid   "This post-it has no attachment"
-msgstr  ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:212
-msgid   "This relationship already exists"
+msgid   "This sticky note has no attachment"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_editQueue.php:142
@@ -1308,6 +1302,7 @@ msgstr  ""
 msgid   "wall name"
 msgstr  ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/header-common.php:37
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:15
-msgid   "wopits is a world in which you can manage all kinds of projects by simply using post-its to share and collaborate with other users simultaneously."
+msgid   "wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously."
 msgstr  ""

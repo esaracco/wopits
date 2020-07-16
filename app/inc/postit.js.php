@@ -762,7 +762,7 @@
         H.openConfirmPopover ({
           type: "info",
           item: this.element,
-          title: `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Sticky note deadline alert")?>`,
+          title: `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Sticky note deadline notification")?>`,
           content: content
         });
       });
