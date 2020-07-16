@@ -585,6 +585,9 @@ class Wopits implements MessageComponentInterface
         }
       }
 
+      unset ($this->usersUnique[$userId][
+             array_search ($connId, $this->usersUnique[$userId])]);
+
       if (empty ($this->usersUnique[$userId]))
         unset ($this->usersUnique[$userId]);
 
