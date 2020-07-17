@@ -119,7 +119,7 @@ In order to run the WebSocket server as a daemon you must add it to the startup 
 If you are using the Git repository as your Apache DocumentRoot, create a `data/` directory and give the Apache user all rights on it:
 ```bash
 # mkdir -p data/{walls,users}
-# chown -R [Apache user]:[Apache user] data
+# chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
 ```
 
@@ -131,9 +131,10 @@ If you are using the Git repository as your Apache DocumentRoot, create a `data/
 - Deploy the application by executing `./deploy -e[yourenv]`. `yourenv` should have been defined in the new `config.php` you just created previously. If the target is located on remote, the SSH user must have full rights on the remote DocumentRoot.
 - The very first time the deployment script has been executed, you will have to log as root and execute the following commands before creating a service for the wopits WebSocket daemon:
 ```bash
-# cd [DocumentRoot]
+# chown -R [wopitsUser]:[wopitsUserGroup] /var/www/wopits.domain.com/
+# cd /var/www/wopits.domain.com/
 # mkdir -p data/{walls,users}
-# chown -R [Apache user]:[Apache user] data
+# chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
 ```
 - At each deployment you must broadcast new release announce to all connected clients, reload apache and restart the WebSocket daemon.
@@ -173,9 +174,9 @@ If you plan to deploy wopits, edit `app/deploy/config.php` and customize the fol
 **The following is needed only after the very first deployment, or later if you update your key**:
 Copy your private key in `app/dkim/dkim.private` on the target. Then:
 ```bash
-# cd [DocumentRoot]
-# chown [Apache user] app/dkim/dkim.private
-# chmod 400 app/dkim/dkim.private
+# cd /var/www/wopits.domain.com/
+# chown [ApacheUser]:[wopitsUserGroup] app/dkim/dkim.private
+# chmod 440 app/dkim/dkim.private
 ```
 
 ### LDAP
