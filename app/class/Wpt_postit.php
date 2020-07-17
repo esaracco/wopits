@@ -158,7 +158,7 @@
             Wpt_common::mail ([
               'email' => $item['alert_user_email'],
               'subject' => _("Sticky note deadline notification"),
-              'msg' => sprintf (_("Hello %s,\n\nThe dealine for the following sticky note has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              'msg' => sprintf (_("Hello %s,\n\nThe following sticky note has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
             ]);
           }
         }
@@ -170,8 +170,8 @@
             'email' => $item['alert_user_email'],
             'subject' => _("Sticky note deadline notification"),
             'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
-              sprintf (_("Hello %s,\n\nThe deadline for the following sticky note will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
-              sprintf (_("Hello %s,\n\nThe deadline for the following sticky note will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
+              sprintf (_("Hello %s,\n\nThe following sticky note will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}") :
+              sprintf (_("Hello %s,\n\nThe following sticky note will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/a/w/{$item['wall_id']}/p/{$item['postit_id']}")
           ]);
         }
 
