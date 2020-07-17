@@ -30,7 +30,7 @@ class Session
     $headers = $conn->httpRequest->getHeaders ();
     $User = new Wpt_user ();
 
-    if ( ($r = $User->loadByToken ($wpt->getQueryParams($conn)['token'],
+    if ( ($r = $User->loadByToken (_getQueryParams($conn)['token'],
                                    $headers['X-Forwarded-For'][0])) )
     {
       $this->conn = $conn;
@@ -86,7 +86,7 @@ class Wopits implements MessageComponentInterface
     // Internal wopits client
     if (!$conn->httpRequest->getHeader ('X-Forwarded-Server'))
     {
-      $this->_log ($conn, 'info', "wopits INTERNAL connection");
+      _log ($conn, 'info', "wopits INTERNAL connection");
 
       $this->internals[$connId] = 1;
     }
@@ -100,7 +100,7 @@ class Wopits implements MessageComponentInterface
         $userId = $client->id;
         $this->clients[$connId] = $client;
   
-        $this->_log ($conn, 'info',
+        _log ($conn, 'info',
           "OPEN connection (".count($this->clients)." connected clients)");
   
         if (isset ($client->settings->activeWall))
@@ -126,6 +126,7 @@ class Wopits implements MessageComponentInterface
     {
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
+      $postitId = null;
       $push = false;
       $action = '';
       $ret = [];
@@ -183,16 +184,16 @@ class Wopits implements MessageComponentInterface
               break;
           }
 
-          $users = [];
           if (isset ($this->chatUsers[$wallId]))
           {
-            foreach ($this->chatUsers[$wallId] as $_connId => $_userData)
-              $users[] = $_userData;
+            $ret['userslist'] = array_values ($this->chatUsers[$wallId]);
+            $ret['userscount'] = count ($this->chatUsers[$wallId]) - 1;
           }
-          $ret['userslist'] = $users;
-
-          $ret['userscount'] = isset ($this->chatUsers[$wallId]) ?
-            count ($this->chatUsers[$wallId]) - 1 : 0;
+          else
+          {
+            $ret['userslist'] = [];
+            $ret['userscount'] = 0;
+          }
         }
       }
       // ROUTE User
@@ -232,11 +233,12 @@ class Wopits implements MessageComponentInterface
           {
             if ($_connId != $connId && isset ($this->clients[$_connId]))
             {
+              $toSend = ['action' => 'reloadsession'];
+              if (isset ($newSettings->locale))
+                $toSend['locale'] = $newSettings->locale;
+
               $this->clients[$_connId]->final = true;
-              $this->clients[$_connId]->conn->send (json_encode ([
-                'action' => 'reloadsession',
-                'locale' => $newSettings->locale
-              ]));
+              $this->clients[$_connId]->conn->send (json_encode ($toSend));
             }
           }
         }
@@ -272,8 +274,16 @@ class Wopits implements MessageComponentInterface
             if ($data && !isset ($ret['error_msg']) && !isset ($ret['error']))
             {
               $push = true;
-              $action = (empty ($ret['wall']['removed'])) ?
-                          'refreshwall' : 'deletedwall';
+
+              if (empty ($ret['wall']['removed']))
+              {
+                $action = 'refreshwall';
+
+                if ($item == 'postit')
+                  $postitId = $itemId;
+              }
+              else
+                $action = 'deletedwall';
             }
             break;
         }
@@ -463,7 +473,7 @@ class Wopits implements MessageComponentInterface
       // Keep WS connection and database persistent connection alive
       elseif ($msg->route == 'ping')
       {
-        $this->_ping ();
+        _ping ();
       }
       // ROUTE debug
       // Debug
@@ -481,15 +491,33 @@ class Wopits implements MessageComponentInterface
 
         if (isset ($clients[$wallId]))
         {
+          $userId = $client->id;
+          $json = json_encode ($ret);
+
           foreach ($clients[$wallId] as $_connId => $_userId)
           {
+            // Message sender material will be broadcasted later.
             if ($_connId != $connId)
-              $this->clients[$_connId]->conn->send (json_encode ($ret));
+            {
+              // If we are broadcasting on other sender user's sessions.
+              if ($_userId == $userId)
+              {
+                // Keep broadcasting only for walls updates.
+                if ($action == 'refreshwall')
+                  $this->clients[$_connId]->conn->send (
+                    ($postitId) ?
+                      // If postit update, send user's specific data too.
+                      json_encode (_injectUserSpecificData ($ret, $postitId)) :
+                      $json);
+              }
+              else
+                $this->clients[$_connId]->conn->send ($json);
+            }
           }
         }
       }
 
-      // Respond to the sender
+      // Respond to the sender.
       $ret['msgId'] = $msg->msgId ?? null;
       $conn->send (json_encode ($ret));
     }
@@ -499,7 +527,7 @@ class Wopits implements MessageComponentInterface
       switch ($msg->action)
       {
         case 'ping':
-          $this->_ping ();
+          _ping ();
           break;
     
         case 'dump-all':
@@ -574,19 +602,20 @@ class Wopits implements MessageComponentInterface
       // Close all current user sessions if any.
       if (!$client->final)
       {
+        $json = json_encode (['action' => 'exitsession']);
+
         foreach ($this->usersUnique[$userId] as $_connId)
         {
           if ($_connId != $connId && isset ($this->clients[$_connId]))
           {
             $this->clients[$_connId]->final = true;
-            $this->clients[$_connId]->conn->send (
-              json_encode (['action' => 'exitsession']));
+            $this->clients[$_connId]->conn->send ($json);
           }
         }
       }
 
       unset ($this->usersUnique[$userId][
-             array_search ($connId, $this->usersUnique[$userId])]);
+               array_search ($connId, $this->usersUnique[$userId])]);
 
       if (empty ($this->usersUnique[$userId]))
         unset ($this->usersUnique[$userId]);
@@ -595,14 +624,14 @@ class Wopits implements MessageComponentInterface
       //https://github.com/ratchetphp/Ratchet/issues/662#issuecomment-454886034
       gc_collect_cycles ();
 
-      $this->_log ($conn, 'info',
+      _log ($conn, 'info',
         "CLOSE connection (".count($this->clients)." connected clients)");
     }
   }
 
   public function onError (ConnectionInterface $conn, \Exception $e)
   {
-    $this->_log ($conn, 'error', "ERROR {$e->getMessage()}");
+    _log ($conn, 'error', "ERROR {$e->getMessage()}");
 
     $conn->close ();
   }
@@ -693,18 +722,6 @@ class Wopits implements MessageComponentInterface
     }
   }
 
-  public function getQueryParams (ConnectionInterface $conn)
-  {
-    parse_str ($conn->httpRequest->getUri()->getQuery(), $params);
-
-    return $params;
-  }
-
-  private function _ping ()
-  {
-    (new Wpt_dao ())->ping ();
-  }
-
   private function _removeUserFromGroup ($args)
   {
     $Group = $args['obj'];
@@ -715,19 +732,21 @@ class Wopits implements MessageComponentInterface
 
     if (!isset ($args['ret']['error']))
     {
+      $toSend = $args['ret'];
+      $toSend['action'] = 'unlinkeduser';
+
       foreach ($wallIds as $_wallId)
       {
         if (!empty ($this->openedWalls[$_wallId]))
         {
-          $_ret = $args['ret'];
-          $_ret['action'] = 'unlinkeduser';
-          $_ret['wall']['id'] = $_wallId;
+          $toSend['wall']['id'] = $_wallId;
+          $json = json_encode ($toSend);
 
           foreach ($this->openedWalls[$_wallId] as $_connId => $_userId)
           {
             if ($_userId == $userId)
             {
-              $this->clients[$_connId]->conn->send (json_encode ($_ret));
+              $this->clients[$_connId]->conn->send ($json);
               break;
             }
           }
@@ -735,7 +754,6 @@ class Wopits implements MessageComponentInterface
       }
     }
   }
-
 
   private function _unsetChatUsers ($wallId, $connId)
   {
@@ -805,32 +823,50 @@ class Wopits implements MessageComponentInterface
       if (isset ($this->activeWalls[$_wallId]))
       {
         $usersCount = count ($this->activeWallsUnique[$_wallId]);
+        $json = json_encode ([
+          'action' => 'viewcount',
+          'count' => $usersCount - 1,
+          'wall' => ['id' => $_wallId]
+        ]);
 
         foreach ($this->activeWalls[$_wallId] as $_connId => $_userId)
         {
           if (isset ($this->clients[$_connId]))
-          {
-            $this->clients[$_connId]->conn->send (
-              json_encode ([
-                'action' => 'viewcount',
-                'count' => $usersCount - 1,
-                'wall' => ['id' => $_wallId]
-              ]));
-          }
+            $this->clients[$_connId]->conn->send ($json);
         }
       }
     }
   }
+}
 
-  private function _log (ConnectionInterface $conn, $type, $msg)
-  {
-    printf ("%s:%s [%s][%s] %s\n",
-      $conn->httpRequest->getHeader("X-Forwarded-For")[0]??'localhost',
-      $conn->resourceId,
-      date('Y-m-d H:i:s'),
-      strtoupper ($type),
-      $msg);
-  }
+function _injectUserSpecificData ($ret, $postitId)
+{
+  $ret['wall']['postit']['alertshift'] =
+    (new Wpt_postit (['postitId' => $postitId]))->getPostitAlertShift ();
+
+  return $ret;
+}
+
+function _ping ()
+{
+  (new Wpt_dao ())->ping ();
+}
+
+function _getQueryParams (ConnectionInterface $conn)
+{
+  parse_str ($conn->httpRequest->getUri()->getQuery(), $params);
+
+  return $params;
+}
+
+function _log (ConnectionInterface $conn, $type, $msg)
+{
+  printf ("%s:%s [%s][%s] %s\n",
+    $conn->httpRequest->getHeader("X-Forwarded-For")[0]??'localhost',
+    $conn->resourceId,
+    date('Y-m-d H:i:s'),
+    strtoupper ($type),
+    $msg);
 }
 
 //<WPTPROD-remove>

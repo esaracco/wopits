@@ -107,9 +107,14 @@
               $postit[0].dataset.deadlinealertshift = 0;
             else
               $postit[0].dataset.deadlinealertshift = shift;
+
+            $postit.find(".dates .end").addClass ("with-alert");
           }
           else
+          {
             $postit[0].removeAttribute ("data-deadlinealertshift");
+            $postit.find(".dates .end").removeClass ("with-alert");
+          }
         }
     }
   };

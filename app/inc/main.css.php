@@ -1443,6 +1443,11 @@ div.postit .end {
   cursor:pointer;
 }
 
+div.postit .end.with-alert {
+  font-weight:bold;
+  text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
+}
+
 #datePickerPopup .date-picker a {
   color:#555!important;
 }

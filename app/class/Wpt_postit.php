@@ -101,7 +101,17 @@
       return $stmt->fetch ();
     }
 
-//TODO
+    public function getPostitAlertShift ()
+    {
+      $stmt = $this->prepare ("
+        SELECT alertshift
+        FROM postits_alerts
+        WHERE postits_id = ? AND users_id = ?");
+      $stmt->execute ([$this->postitId, $this->userId]);
+
+      return ($r = $stmt->fetch ()) ? $r['alertshift'] : null;
+    }
+
     public function checkDeadline ()
     {
       // Get all postits with a deadline, and associated alerts if available.

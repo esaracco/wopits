@@ -1232,7 +1232,7 @@
     setDeadline: function (args)
     {
       const postit = this.element[0],
-            $date = this.element.find(".dates .end"),
+            $date = this.element.find (".dates .end"),
             {deadline, alertshift, timezone} = args;
       let human;
 
@@ -1246,19 +1246,34 @@
       if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
           human == _defaultString)
       {
+        postit.classList.remove ("obsolete");
+
         postit.removeAttribute ("data-deadline");
         postit.removeAttribute ("data-deadlinealertshift");
         postit.removeAttribute ("data-deadlineepoch");
         postit.removeAttribute ("data-updatetz");
 
-        $date.find("i.fa-times-circle").hide ();
+        $date
+          .removeClass ("with-alert obsolete")
+          .find("i.fa-times-circle").hide ();
       }
       else
       {
         postit.dataset.deadline = human;
         postit.dataset.deadlineepoch = deadline;
-        if (alertshift !== undefined && alertshift !== null)
-          postit.dataset.deadlinealertshift = alertshift;
+        if (alertshift !== undefined)
+        {
+          if (alertshift !== null)
+          {
+            postit.dataset.deadlinealertshift = alertshift;
+            $date.addClass ("with-alert");
+          }
+          else
+          {
+            postit.removeAttribute ("data-deadlinealertshift");
+            $date.removeClass ("with-alert");
+          }
+        }
 
         $date.find("i.fa-times-circle").show ();
       }
@@ -1267,7 +1282,6 @@
     // METHOD resetDeadline ()
     resetDeadline: function ()
     {
-      this.element.removeClass ("obsolete");
       this.setDeadline ({deadline: _defaultString});
     },
 
