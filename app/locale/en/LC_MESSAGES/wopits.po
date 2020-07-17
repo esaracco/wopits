@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-16 12:08+0200\n"
+"POT-Creation-Date: 2020-07-17 06:55+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -508,6 +508,10 @@ msgstr ""
 msgid "Empty file or bad file format"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
+msgid "Expiration"
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:39
 msgid "Export"
 msgstr ""
@@ -560,12 +564,22 @@ msgstr ""
 msgid "Groups linked to this wall:"
 msgstr ""
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
+#, php-format
+msgid ""
+"Hello %s,\n"
+"\n"
+"The following sticky note has expired:\n"
+"\n"
+"%s%s"
+msgstr ""
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:174
 #, php-format
 msgid ""
 "Hello %s,\n"
 "\n"
-"The deadline for the following sticky note will expire in %s days:\n"
+"The following sticky note will expire in %s days:\n"
 "\n"
 "%s%s"
 msgstr ""
@@ -575,19 +589,9 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"The deadline for the following sticky note will expire soon:\n"
+"The following sticky note will expire soon:\n"
 "\n"
 "%s"
-msgstr ""
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The dealine for the following sticky note has expired:\n"
-"\n"
-"%s%s"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:87
@@ -939,7 +943,6 @@ msgstr ""
 msgid "Sticky note creation"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:160
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:171
 msgid "Sticky note deadline notification"

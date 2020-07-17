@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-16 12:08+0200\n"
-"PO-Revision-Date: 2020-07-16 12:08+0200\n"
+"POT-Creation-Date: 2020-07-17 06:55+0200\n"
+"PO-Revision-Date: 2020-07-17 06:58+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -619,6 +619,10 @@ msgstr "Les emails doivent correspondre"
 msgid "Empty file or bad file format"
 msgstr "Fichier vide ou mauvais format de fichier"
 
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
+msgid "Expiration"
+msgstr "Expiration"
+
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:39
 msgid "Export"
 msgstr "Exporter"
@@ -673,18 +677,33 @@ msgstr "Groupes disponibles pour ce mur seulement:"
 msgid "Groups linked to this wall:"
 msgstr "Groupes <b>liés</b> à ce mur:"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:174
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
 #, php-format
 msgid ""
 "Hello %s,\n"
 "\n"
-"The deadline for the following sticky note will expire in %s days:\n"
+"The following sticky note has expired:\n"
 "\n"
 "%s%s"
 msgstr ""
 "Bonjour %s,\n"
 "\n"
-"La date limite du post-it suivant expirera dans %s jours:\n"
+"Le post-it suivant a expiré:\n"
+"\n"
+"%s%s"
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:174
+#, php-format
+msgid ""
+"Hello %s,\n"
+"\n"
+"The following sticky note will expire in %s days:\n"
+"\n"
+"%s%s"
+msgstr ""
+"Bonjour %s,\n"
+"\n"
+"Le post-it suivant expirera dans %s jours:\n"
 "\n"
 "%s%s"
 
@@ -693,30 +712,15 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"The deadline for the following sticky note will expire soon:\n"
+"The following sticky note will expire soon:\n"
 "\n"
 "%s"
 msgstr ""
 "Bonjour %s,\n"
 "\n"
-"La date limite du post-it suivant expire bientôt:\n"
+"Le post-it suivant expire bientôt:\n"
 "\n"
 "%s"
-
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:161
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The dealine for the following sticky note has expired:\n"
-"\n"
-"%s%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"La date limite du post-it suivant a expiré:\n"
-"\n"
-"%s%s"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:87
 #, php-format
@@ -1099,7 +1103,6 @@ msgstr "Vue standard"
 msgid "Sticky note creation"
 msgstr "Création de post-it"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/postit.js.php:765
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:160
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_postit.php:171
 msgid "Sticky note deadline notification"
