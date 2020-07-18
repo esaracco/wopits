@@ -755,8 +755,8 @@
             days = Math.trunc(days) + 1;
 
           content = (days > 1) ?
-            "<?=_("The deadline for this sticky note will expire in about %s day(s).")?>".replace("%s", days) :
-            "<?=_("The deadline for this sticky note will expire soon.")?>";
+            "<?=_("This sticky note will expire in about %s day(s).")?>".replace("%s", days) :
+            "<?=_("This sticky note will expire soon.")?>";
         }
 
         H.openConfirmPopover ({
