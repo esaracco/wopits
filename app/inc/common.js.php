@@ -1471,7 +1471,7 @@ class WHelp
           $popup = $("#infoPopup"),
           officialVersion = (version) ? version : html.dataset.version;
   
-    if (String(officialVersion).length != 10)
+    if (!String(officialVersion).match(/^\s+$/))
     {
       const $userSettings = $("#settingsPopup"),
             userVersion = $userSettings.settings ("get", "version");
