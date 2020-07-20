@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-18 10:27+0200\n"
+"POT-Creation-Date: 2020-07-20 08:47+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -69,21 +69,22 @@ msgid ""
 "icons appear on the right. You can also click on them to manage them.</"
 "dd><dt class='col-sm-2'><i class='fas fa-sm fa-palette fa-fw'></i></dt><dd "
 "class='col-sm-9'>Change the color.</dd><dt class='col-sm-2'><i class='fas fa-"
-"sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Change the "
-"deadline. You can then reset it by clicking on <i class='fas fa-xs fa-times-"
-"circle fa-fw'></i>. When the deadline arrives, the bottom of the sticky note "
-"will appear in red.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-"
-"paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated documents. "
-"If documents are already associated, an icon appears at the top left. You "
-"can also click on this icon to manage them.</dd><dt class='col-sm-2'><i "
-"class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-sm-9'>Manage "
-"relationships between sticky notes.</dd></dl><p>You can search in the sticky "
-"note of the current wall by clicking on <kbd>Edit</kbd>&rarr;<kbd>Search...</"
-"kbd>. Sticky notes containing the searched string will be highlighted.</"
-"p><p>It is possible to filter the sticky notes using the filtering tool. To "
-"display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</kbd>. You can filter "
-"by tags and colors.</p><p>On some little screens it can be useful to use the "
-"<kbd>Arrows</kbd> tool in order to move around the wall.</p>"
+"sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Set the deadline "
+"and email notification. You can then reset it by clicking on <i class='fas "
+"fa-xs fa-times-circle fa-fw'></i>. When the deadline arrives, the bottom of "
+"the sticky note will appear in red.</dd><dt class='col-sm-2'><i class='fas "
+"fa-sm fa-paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated "
+"documents. If documents are already associated, an icon appears at the top "
+"left. You can also click on this icon to manage them.</dd><dt class='col-"
+"sm-2'><i class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-"
+"sm-9'>Manage relationships between sticky notes.</dd></dl><p>You can search "
+"in the sticky note of the current wall by clicking on <kbd>Edit</kbd>&rarr;"
+"<kbd>Search...</kbd>. Sticky notes containing the searched string will be "
+"highlighted.</p><p>It is possible to filter the sticky notes using the "
+"filtering tool. To display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</"
+"kbd>. You can filter by tags and colors.</p><p>On some little screens it can "
+"be useful to use the <kbd>Arrows</kbd> tool in order to move around the wall."
+"</p>"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:20
@@ -679,7 +680,7 @@ msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/usersSearch.php:5
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:391
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:393
 msgid "Manage users"
 msgstr ""
 
@@ -738,7 +739,7 @@ msgid ""
 "before logging in again on wopits."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:406
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:408
 msgid "No group is yet linked with this wall."
 msgstr ""
 
@@ -1177,11 +1178,11 @@ msgid ""
 "considered here as a commodity or as a product."
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:390
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:392
 msgid "Unlink this dedicated group"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:390
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:392
 msgid "Unlink this group"
 msgstr ""
 
@@ -1283,7 +1284,7 @@ msgstr ""
 msgid "You are not the creator of this wall"
 msgstr ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:405
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:407
 msgid "You cannot manage any of the existing groups."
 msgstr ""
 
@@ -1437,7 +1438,7 @@ msgid "username"
 msgstr ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:391
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:393
 msgid "users in this group"
 msgstr ""
 

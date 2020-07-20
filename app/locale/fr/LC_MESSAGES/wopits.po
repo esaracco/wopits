@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-18 10:27+0200\n"
-"PO-Revision-Date: 2020-07-18 10:29+0200\n"
-"Last-Translator: Emmanuel Saracco <contact@leroulard.com>\n"
+"POT-Creation-Date: 2020-07-20 08:47+0200\n"
+"PO-Revision-Date: 2020-07-20 08:48+0200\n"
+"Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -101,21 +101,22 @@ msgid ""
 "icons appear on the right. You can also click on them to manage them.</"
 "dd><dt class='col-sm-2'><i class='fas fa-sm fa-palette fa-fw'></i></dt><dd "
 "class='col-sm-9'>Change the color.</dd><dt class='col-sm-2'><i class='fas fa-"
-"sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Change the "
-"deadline. You can then reset it by clicking on <i class='fas fa-xs fa-times-"
-"circle fa-fw'></i>. When the deadline arrives, the bottom of the sticky note "
-"will appear in red.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-"
-"paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated documents. "
-"If documents are already associated, an icon appears at the top left. You "
-"can also click on this icon to manage them.</dd><dt class='col-sm-2'><i "
-"class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-sm-9'>Manage "
-"relationships between sticky notes.</dd></dl><p>You can search in the sticky "
-"note of the current wall by clicking on <kbd>Edit</kbd>&rarr;<kbd>Search...</"
-"kbd>. Sticky notes containing the searched string will be highlighted.</"
-"p><p>It is possible to filter the sticky notes using the filtering tool. To "
-"display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</kbd>. You can filter "
-"by tags and colors.</p><p>On some little screens it can be useful to use the "
-"<kbd>Arrows</kbd> tool in order to move around the wall.</p>"
+"sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Set the deadline "
+"and email notification. You can then reset it by clicking on <i class='fas "
+"fa-xs fa-times-circle fa-fw'></i>. When the deadline arrives, the bottom of "
+"the sticky note will appear in red.</dd><dt class='col-sm-2'><i class='fas "
+"fa-sm fa-paperclip fa-fw'></i></dt><dd class='col-sm-9'>Manage associated "
+"documents. If documents are already associated, an icon appears at the top "
+"left. You can also click on this icon to manage them.</dd><dt class='col-"
+"sm-2'><i class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd class='col-"
+"sm-9'>Manage relationships between sticky notes.</dd></dl><p>You can search "
+"in the sticky note of the current wall by clicking on <kbd>Edit</kbd>&rarr;"
+"<kbd>Search...</kbd>. Sticky notes containing the searched string will be "
+"highlighted.</p><p>It is possible to filter the sticky notes using the "
+"filtering tool. To display it, click on <kbd>View</kbd>&rarr;<kbd>Filters</"
+"kbd>. You can filter by tags and colors.</p><p>On some little screens it can "
+"be useful to use the <kbd>Arrows</kbd> tool in order to move around the wall."
+"</p>"
 msgstr ""
 "<p>Pour créer un post-it, double-cliquez à l'intérieur d'une cellule. Vous "
 "pouvez ensuite le déplacer n'importe où sur le mur. La date de création "
@@ -131,23 +132,23 @@ msgstr ""
 "à droite. Vous pouvez également cliquer dessus pour les gérer.</dd><dt "
 "class='col-sm-2'><i class='fas fa-sm fa-palette fa-fw'></i></dt><dd "
 "class='col-sm-9'>Modifier la couleur.</dd><dt class='col-sm-2'><i class='fas "
-"fa-sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Modifier la date "
-"limite. Vous pourrez ensuite la réinitialiser en cliquant sur <i class='fas "
-"fa-xs fa-times-circle fa-fw'></i>. Lorsque l'échéance arrivera, le bas du "
-"post-it apparaîtra en rouge.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-"
-"paperclip fa-fw'></i></dt><dd class='col-sm-9'>Gérer les documents associés. "
-"Si des documents sont déjà associés, une icône apparaît en haut à gauche. "
-"Vous pouvez également cliquer sur cette icône pour les gérer.</dd><dt "
-"class='col-sm-2'><i class='fas fa-sm fa-bezier-curve fa-fw'></i></dt><dd "
-"class='col-sm-9'>Gérer les relations entre post-its.</dd></dl><p>Vous pouvez "
-"rechercher dans les post-its du mur courant en cliquant sur <kbd>Édition</"
-"kbd>&rarr;<kbd>Rechercher...</kbd>. Les post-its contenant la chaîne "
-"recherchée seront mis en évidence.</p><p>Il est possible de filtrer les post-"
-"its en utilisant l'outil de filtrage. Pour l'afficher, cliquez sur "
-"<kbd>Affichage</kbd>&rarr;<kbd>Filtres</kbd>. Vous pouvez filtrer par "
-"étiquettes et par couleurs.</p><p>Sur certains petits écrans il peut être "
-"utile d'utiliser l'outil <kbd>Flèches</kbd> afin de se déplacer dans les "
-"murs.</p>"
+"fa-sm fa-hourglass-end fa-fw'></i></dt><dd class='col-sm-9'>Définir la date "
+"limite et la notification par mail. Vous pourrez ensuite la réinitialiser en "
+"cliquant sur <i class='fas fa-xs fa-times-circle fa-fw'></i>. Lorsque "
+"l'échéance arrivera, le bas du post-it apparaîtra en rouge.</dd><dt "
+"class='col-sm-2'><i class='fas fa-sm fa-paperclip fa-fw'></i></dt><dd "
+"class='col-sm-9'>Gérer les documents associés. Si des documents sont déjà "
+"associés, une icône apparaît en haut à gauche. Vous pouvez également cliquer "
+"sur cette icône pour les gérer.</dd><dt class='col-sm-2'><i class='fas fa-sm "
+"fa-bezier-curve fa-fw'></i></dt><dd class='col-sm-9'>Gérer les relations "
+"entre post-its.</dd></dl><p>Vous pouvez rechercher dans les post-its du mur "
+"courant en cliquant sur <kbd>Édition</kbd>&rarr;<kbd>Rechercher...</kbd>. "
+"Les post-its contenant la chaîne recherchée seront mis en évidence.</p><p>Il "
+"est possible de filtrer les post-its en utilisant l'outil de filtrage. Pour "
+"l'afficher, cliquez sur <kbd>Affichage</kbd>&rarr;<kbd>Filtres</kbd>. Vous "
+"pouvez filtrer par étiquettes et par couleurs.</p><p>Sur certains petits "
+"écrans il peut être utile d'utiliser l'outil <kbd>Flèches</kbd> afin de se "
+"déplacer dans les murs.</p>"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:20
 msgid ""
@@ -824,7 +825,7 @@ msgstr "L'identifiant doit contenir au moins 3 caractères"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/usersSearch.php:5
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:391
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:393
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
 
@@ -887,7 +888,7 @@ msgstr ""
 "Aucune adresse email n'est configurée dans votre compte LDAP. Veuillez "
 "corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:406
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:408
 msgid "No group is yet linked with this wall."
 msgstr "Aucun groupe n'est encore lié à ce mur."
 
@@ -1351,11 +1352,11 @@ msgstr ""
 "Contrairement à d'autres applications vous offrant un service gratuit, vous "
 "n'êtes pas considéré ici comme une marchandise ou un produit."
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:390
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:392
 msgid "Unlink this dedicated group"
 msgstr "Délier ce groupe dédié"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:390
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:392
 msgid "Unlink this group"
 msgstr "Délier ce groupe"
 
@@ -1461,7 +1462,7 @@ msgstr "Vous êtes connecté avec votre compte LDAP"
 msgid "You are not the creator of this wall"
 msgstr "Vous n'êtes pas le créateur de ce mur"
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:405
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:407
 msgid "You cannot manage any of the existing groups."
 msgstr "Vous ne pouvez gérer aucun des groupes existants."
 
@@ -1622,7 +1623,7 @@ msgid "username"
 msgstr "utilisateur"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:23
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:391
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:393
 msgid "users in this group"
 msgstr "utilisateurs dans ce groupe"
 
