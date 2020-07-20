@@ -387,8 +387,10 @@
 
             d.in.forEach ((item) =>
               {
-                const unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="close" data-toggle="tooltip" title="${item.type == <?=WPT_GTYPES['dedicated']?> ? "<?=_("Unlink this dedicated group")?>" : "<?=_("Unlink this group")?>"}"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button>`;
-                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||""}</span>${unlinkBtn}<button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button></li>`;
+                const isDed = (item.type == <?=WPT_GTYPES['dedicated']?>),
+                      typeIcon = (d.delegateAdminId) ? '' : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
+                      unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="close" data-toggle="tooltip" title="${isDed ? "<?=_("Unlink this dedicated group")?>" : "<?=_("Unlink this group")?>"}"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button>`;
+                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span>${unlinkBtn}<button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button></li>`;
               });
 
             if (d.in.length == 1)

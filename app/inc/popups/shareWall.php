@@ -22,10 +22,10 @@
 
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active gtype-<?=WPT_GTYPES['dedicated']?>" data-toggle="tab" href="#gtype-<?=WPT_GTYPES['dedicated']?>" role="tab" aria-controls="gtype-<?=WPT_GTYPES['dedicated']?>" aria-selected="false"><span><?=_("Dedicated")?></span></a>
+              <a class="nav-link active gtype-<?=WPT_GTYPES['dedicated']?>" data-toggle="tab" href="#gtype-<?=WPT_GTYPES['dedicated']?>" role="tab" aria-controls="gtype-<?=WPT_GTYPES['dedicated']?>" aria-selected="false"><i class="fas fa-asterisk fa-xs"></i> <span><?=_("Dedicated")?></span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link gtype-<?=WPT_GTYPES['generic']?>" data-toggle="tab" href="#gtype-<?=WPT_GTYPES['generic']?>" role="tab" aria-controls="gtype-<?=WPT_GTYPES['generic']?>" aria-selected="true"><span><?=_("Generic")?></span></a>
+              <a class="nav-link gtype-<?=WPT_GTYPES['generic']?>" data-toggle="tab" href="#gtype-<?=WPT_GTYPES['generic']?>" role="tab" aria-controls="gtype-<?=WPT_GTYPES['generic']?>" aria-selected="true"><i class="far fa-circle fa-xs"></i> <span><?=_("Generic")?></span></a>
             </li>
           </ul>
   

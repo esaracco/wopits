@@ -30,7 +30,8 @@ div.postit .postit-header {
   border-color: #ffdfe2 !important;
 }
 
-.modal a:not(.list-group-item):not(.close) {
+.modal a:not(.list-group-item):not(.close),
+.modal span.name i {
   color: #e84c5b !important;
 }
 

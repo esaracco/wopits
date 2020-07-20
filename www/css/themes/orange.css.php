@@ -55,7 +55,8 @@ a.nav-link.disabled {
   color: #6b6a6a !important;
 }
 
-.modal a:not(.list-group-item):not(.close) {
+.modal a:not(.list-group-item):not(.close),
+.modal span.name i {
   color: #ffbf00 !important;
 }
 

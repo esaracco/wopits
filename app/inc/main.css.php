@@ -1198,7 +1198,7 @@ div.postit div.attachmentscount span.wpt-badge {
 }
 
 .modal-body .list-group li span.name {
-  margin-left:30px;
+  margin-left:20px;
 }
 
 .modal-body .list-group li span.desc {
@@ -1309,8 +1309,13 @@ EOC;
   }
 ?>
 
-.modal a:not(.list-group-item):not(.close) {
+.modal a:not(.list-group-item):not(.close),
+.modal span.name i {
   color: #343a40;
+}
+
+i.fa-xs {
+  vertical-align:middle;
 }
 
 .modal-header {
