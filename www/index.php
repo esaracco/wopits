@@ -88,9 +88,12 @@
     </div>
   </nav>
 
+  <!--<WPTPROD-inject-WPT_POPUPS['index']/>-->
   <?php
-    foreach (WPT_POPUPS['index'] as $popup)
-      include (__DIR__."/../app/inc/popups/$popup.php");
+    //<WPTPROD-remove>
+      foreach (WPT_POPUPS['index'] as $popup)
+        include (__DIR__."/../app/inc/popups/$popup.php");
+    //</WPTPROD-remove>
   ?>
 
   <!-- WELCOM MSG -->

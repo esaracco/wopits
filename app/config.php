@@ -1,14 +1,16 @@
 <?php
   require (
     //<WPTPROD-remove>
-    (!file_exists (__DIR__.'/../site-config.php')) ?
-      __DIR__.'/../site-config.template.php' :
+      (!file_exists (__DIR__.'/../site-config.php')) ?
+        __DIR__.'/../site-config.template.php' :
     //</WPTPROD-remove>
       __DIR__.'/../site-config.php');
 
+  // Version
   define ('WPT_VERSION', '0.18alpha5');
   define ('WPT_EXPORT_MIN_VERSION', '0.16');
 
+  // Cookie
   define ('WPT_COOKIE', 'wopits');
 
   // Paths
@@ -22,11 +24,6 @@
     'fr' => 'Europe/Paris'
   ]);
   define ('WPT_DEFAULT_LOCALE', 'en');
-
-  // Max upload file size in Mb
-  define ('WPT_UPLOAD_MAX_SIZE', 10);
-  // Max size for wopits export/import file in Mb
-  define ('WPT_IMPORT_UPLOAD_MAX_SIZE', 500);
 
   // Users groups types
   define ('WPT_GTYPES', [
@@ -43,108 +40,118 @@
     ]
   ]);
 
-  // Max cells in a wall (for performance reasons)
-  define ('WPT_MAX_CELLS', 400);
-
   // Themes
   define ('WPT_THEMES', ['blue', 'green', 'red', 'orange']);
 
-  // Timeouts (seconds)
-  define ('WPT_TIMEOUTS', [
-    // AJAX requests
-    'ajax' => 10
-  ]);
+  //////////////// This section will be removed after deployment //////////////
 
-  // Modules
-  define ('WPT_MODULES', [
-    'common' => [],
-    'settings' => [],
-    // Postit tags picker
-    'tagPicker' => [
-      'items' => [
-        'thumbs-up' => '#555',
-        'thumbs-down' => '#555',
-        'tools' => '#555',
-        'life-ring' => '#555',
-        'peace' => '#555',
-        'phone' => '#555',
-        'ambulance' => '#555',
-        'balance-scale' => '#555',
-        'bell' => '#555',
-        'bullhorn' => '#555',
-        'certificate' => '#555',
-        'cubes' => '#555',
-        'donate' => '#555',
-        'fire-extinguisher' => '#555',
-        'fire' => '#555',
-        'birthday-cake' => '#555',
-        'users' => '#555',
-        'lightbulb' => '#555'
+  //<WPTPROD-remove>
+
+    // Max upload file size in Mb
+    define ('WPT_UPLOAD_MAX_SIZE', 10);
+    // Max size for wopits export/import file in Mb
+    define ('WPT_IMPORT_UPLOAD_MAX_SIZE', 500);
+
+    // Max cells in a wall (for performance reasons)
+    define ('WPT_MAX_CELLS', 400);
+
+    // Timeouts (seconds)
+    define ('WPT_TIMEOUTS', [
+      // AJAX requests
+      'ajax' => 10
+    ]);
+
+    // Popups
+    define ('WPT_POPUPS', [
+      'login' => [
+        'about',
+        'userGuide',
+        'settings',
+        'createAccount',
+        'resetPassword',
+        'info'
+      ],
+      'index' => [
+        'plug',
+        'about',
+        'userGuide',
+        'settings',
+        'account',
+        'shareWall',
+        'group',
+        'usersSearch',
+        'groupAccess',
+        'postitsSearch',
+        'changePassword',
+        'createWall',
+        'openWall',
+        'wallProperties',
+        'wallUsersview',
+        'userView',
+        'postitAttachments',
+        'postitView',
+        'postitUpdate',
+        'updateOneInput',
+        'info',
+        'confirm',
+        'datePicker'
       ]
-    ],
-    // Postit colors picker
-    'colorPicker' => [
-      'items' => [
-        'yellow' => '#ffffc6',
-        'orange' => '#ffdd9f',
-        'green' => '#b3ffc4',
-        'red' => '#ff9fa8',
-        'blue' => '#9ef2ff',
-        'gray' => '#c8d0d7'
-      ] 
-    ],
-    'datePicker' => [],
-    'chatroom' => [],
-    'filters' => [],
-    'arrows' => [],
-    'main' => [],
-    'header' => [],
-    'postit' => [],
-    'cell' => [],
-    'events' => [],
-    'login' => [],
-    'account' => [],
-    'shareWall' => [],
-    'usersSearch' => [],
-    'postitsSearch' => [],
-    'openWall' => []
-  ]);
+    ]);
 
-  // Popups
-  define ('WPT_POPUPS', [
-    'login' => [
-      'about',
-      'userGuide',
-      'settings',
-      'createAccount',
-      'resetPassword',
-      'info'
-    ],
-    'index' => [
-      'plug',
-      'about',
-      'userGuide',
-      'settings',
-      'account',
-      'shareWall',
-      'group',
-      'usersSearch',
-      'groupAccess',
-      'postitsSearch',
-      'changePassword',
-      'createWall',
-      'openWall',
-      'wallProperties',
-      'wallUsersview',
-      'userView',
-      'postitAttachments',
-      'postitView',
-      'postitUpdate',
-      'updateOneInput',
-      'info',
-      'confirm',
-      'datePicker'
-    ]
-  ]);
+    // Modules
+    define ('WPT_MODULES', [
+      'common' => [],
+      'settings' => [],
+      // Postit tags picker
+      'tagPicker' => [
+        'items' => [
+          'thumbs-up' => '#555',
+          'thumbs-down' => '#555',
+          'tools' => '#555',
+          'life-ring' => '#555',
+          'peace' => '#555',
+          'phone' => '#555',
+          'ambulance' => '#555',
+          'balance-scale' => '#555',
+          'bell' => '#555',
+          'bullhorn' => '#555',
+          'certificate' => '#555',
+          'cubes' => '#555',
+          'donate' => '#555',
+          'fire-extinguisher' => '#555',
+          'fire' => '#555',
+          'birthday-cake' => '#555',
+          'users' => '#555',
+          'lightbulb' => '#555'
+        ]
+      ],
+      // Postit colors picker
+      'colorPicker' => [
+        'items' => [
+          'yellow' => '#ffffc6',
+          'orange' => '#ffdd9f',
+          'green' => '#b3ffc4',
+          'red' => '#ff9fa8',
+          'blue' => '#9ef2ff',
+          'gray' => '#c8d0d7'
+        ]
+      ],
+      'datePicker' => [],
+      'chatroom' => [],
+      'filters' => [],
+      'arrows' => [],
+      'main' => [],
+      'header' => [],
+      'postit' => [],
+      'cell' => [],
+      'events' => [],
+      'login' => [],
+      'account' => [],
+      'shareWall' => [],
+      'usersSearch' => [],
+      'postitsSearch' => [],
+      'openWall' => []
+    ]);
 
+  //</WPTPROD-remove>
 ?>

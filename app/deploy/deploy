@@ -428,16 +428,15 @@
             !preg_match ('/[^css,js].php$/', $php)) continue;
 
         $dest = str_replace ($this->srcAppPath, $env['build-path'], $php);
+        $destdir = dirname ($dest);
     
         // Copy tmp file on dest rep.
-        $this->_exec ("mkdir -p ".dirname($dest));
-        $this->_exec ("cp -a $php $dest-tmp");
+        if (!is_dir ($destdir))
+          mkdir ($destdir, 0755, true);
+        copy ($php, "$dest-tmp");
     
-        // Remove DEV specific.
-        $data = file_get_contents ("$dest-tmp");
-        $data = preg_replace ([
-          '#//<WPTPROD\-remove>.*?</WPTPROD\-remove>#ms',
-          '#^.*WPTPROD\-remove.*$#m'], '', $data);
+        // Process wopits pseudo-tags
+        $data = $this->_processWptCode (file_get_contents ("$dest-tmp"));
 
         // Add static data about DB structure.
         if (strpos ($dest, 'Wpt_dbCache.php') !== false)
@@ -449,8 +448,8 @@
     
         // Minify PHP code.
         $this->_exec ("php -w $dest-tmp > $dest");
-//        $this->_exec ("cat $dest-tmp > $dest");
-        $this->_exec ("rm -f $dest-tmp");
+//        copy ("$dest-tmp", $dest);
+        unlink ("$dest-tmp");
 
         // Prepend first exec line on CLI scripts
         if (strpos ($dest, '/crons/') !== false ||
@@ -619,6 +618,39 @@
         exit ("\e[1;31mDeployment has been aborted!\e[0m\n".
               "New \e[1m{$this->opt['env']}\e[0m release still in the tmp ".
               "directory \e[1m{$env['build-path']}\e[0m\n");
+    }
+
+    private function _processWptCode ($data)
+    {
+      $data = preg_replace ([
+        '#//<WPTPROD\-remove>.*?</WPTPROD\-remove>#ms',
+        '#^.*WPTPROD\-remove.*$#m'], '', $data);
+
+      if (preg_match_all ('#WPTPROD\-inject\-([^\/]+)#', $data, $m))
+      {
+        foreach ($m[1] as $const)
+        {
+          $inject = '';
+
+          if (preg_match ("#^([^\[]+)\[.(.+).\]#", $const, $m1))
+          {
+            switch ($m1[1])
+            {
+              case 'WPT_POPUPS':
+                foreach (constant($m1[1])[$m1[2]] as $f)
+                  $inject .= file_get_contents(__DIR__."/../inc/popups/$f.php");
+                break;
+            }
+          }
+          else
+            $inject = constant ($const);
+
+          $data = str_replace (
+                    "<!--<WPTPROD-inject-$const/>-->", $inject, $data);
+        }
+      }
+
+      return $data;
     }
 
     private function _execMinifier ($min, $src, $dest)

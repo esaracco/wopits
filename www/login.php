@@ -39,10 +39,13 @@
       </ul>
     </div>
   </nav>
-    
+
+  <!--<WPTPROD-inject-WPT_POPUPS['login']/>-->
   <?php
-    foreach (WPT_POPUPS['login'] as $popup)
-      include (__DIR__."/../app/inc/popups/$popup.php");
+    //<WPTPROD-remove>
+      foreach (WPT_POPUPS['login'] as $popup)
+        include (__DIR__."/../app/inc/popups/$popup.php");
+    //</WPTPROD-remove>
   ?>
   
   <div class="main-login<?=WPT_USE_LDAP?' ldap':''?>">

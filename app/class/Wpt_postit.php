@@ -133,7 +133,7 @@
         WHERE postits.obsolete = 0
           AND deadline IS NOT NULL');
 
-      $now = new DateTime ();;
+      $now = new DateTime ();
 
       $oldTZ = date_default_timezone_get ();
       while ($item = $stmt->fetch ())
