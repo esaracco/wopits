@@ -266,6 +266,8 @@
             },
           stop: function(e, ui)
             {
+              plugin.blockEdit ();
+
               if (S.get("revertData").revert)
               {
                 const revertData = S.get ("revertData");
@@ -322,6 +324,8 @@
           stop: function(e, ui)
             {
               const revertData = S.get ("revertData");
+
+              plugin.blockEdit ();
 
               if (revertData.revert)
               {
@@ -424,7 +428,7 @@
             e.stopImmediatePropagation ();
 
             // To prevent race condition with draggable & resizable plugins.
-            if (S.get ("block-edit"))
+            if (plugin._blockEdit)
               return;
 
             if (!action)
@@ -728,6 +732,14 @@
       if (settings.creationdate)
         setTimeout (
           () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
+    },
+
+    // METHOD blockEdit ()
+    blockEdit: function ()
+    {
+      this._blockEdit = true;
+
+      setTimeout (()=> this._blockEdit = false, 500);
     },
 
     // METHOD displayDeadlineAlert ()
@@ -1473,21 +1485,14 @@
     setCurrent: function ()
     {
       S.reset ("postit");
-
       this.element.addClass ("current")
     },
 
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
-      S.set ("block-edit", true);
-      setTimeout (()=>
-        {
-          S.reset ("postit");
-          this.element.removeClass ("current");
-          S.unset ("block-edit");
-
-        }, 500);
+      S.reset ("postit");
+      this.element.removeClass ("current");
     },
 
     // METHOD insert ()
@@ -1677,8 +1682,6 @@
 
       if (!args.plugend)
       {
-        this.unsetCurrent ();
-
         // Update postits plugs dependencies
         if (plugsToSave)
         {
