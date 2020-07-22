@@ -7,7 +7,7 @@
       __DIR__.'/../site-config.php');
 
   // Version
-  define ('WPT_VERSION', '0.18alpha5');
+  define ('WPT_VERSION', '0.18alpha6');
   define ('WPT_EXPORT_MIN_VERSION', '0.16');
 
   // Cookie
