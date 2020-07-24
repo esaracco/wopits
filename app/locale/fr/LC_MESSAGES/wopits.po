@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-24 16:59+0200\n"
+"POT-Creation-Date: 2020-07-24 17:07+0200\n"
 "PO-Revision-Date: 2020-07-24 17:02+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -775,11 +775,11 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"Your new account \"%s\" has been created on wopits!"
+"Your account \"%s\" has been created!"
 msgstr ""
 "Bonjour %s,\n"
 "\n"
-"Votre nouveau compte \"%s\" a été créé sur wopits!"
+"Votre compte \"%s\" a bien été créé!"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:80
 msgid "Help"
@@ -1682,86 +1682,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid "Access type"
-#~ msgstr "Type d'accès"
-
-#~ msgid "Groups available only for this wall:"
-#~ msgstr "Groupes disponibles pour ce mur seulement:"
-
-#~ msgid "Groups linked to this wall:"
-#~ msgstr "Groupes <b>liés</b> à ce mur:"
-
-#~ msgid "Link"
-#~ msgstr "Lier"
-
-#~ msgid "Link this group"
-#~ msgstr "Lier ce groupe"
-
-#~ msgid "No group is yet linked with this wall."
-#~ msgstr "Aucun groupe n'est encore lié à ce mur."
-
-#~ msgid "Unlink this dedicated group"
-#~ msgstr "Délier ce groupe dédié"
-
-#~ msgid ""
-#~ "Users of this group will have the following access to the current wall:"
-#~ msgstr ""
-#~ "Les utilisateurs de ce groupe auront l'accès suivant au mur courant:"
-
-#~ msgid "Sticky note deadline alert"
-#~ msgstr "Alerte date limite post-it"
-
-#~ msgid "Delete this post-it?"
-#~ msgstr "Supprimer ce post-it?"
-
-#~ msgid "The file is already linked to the post-it"
-#~ msgstr "Le fichier est déjà associé au post-it"
-
-#~ msgid ""
-#~ "Your new account \"%s\" has been created on wopits!\n"
-#~ "\n"
-#~ "Feel free to contact us for feature request, and enjoy ;-)"
-#~ msgstr ""
-#~ "Votre nouveau compte \"%s\" a été créé sur wopits!\n"
-#~ "\n"
-#~ "N'hésitez pas à nous faire des demandes d'évolution, et amusez-vous "
-#~ "bien ;-)"
-
-#~ msgid ""
-#~ "The file to import was not recognized. Was it really generated from this "
-#~ "website?"
-#~ msgstr ""
-#~ "Le fichier à importer n'a pas été reconnu. A-t-il bien été généré par ce "
-#~ "site web?"
-
-#~ msgid ""
-#~ "Warning: if you modify the content of this archive, you will no longer be "
-#~ "able to import it with wopits!"
-#~ msgstr ""
-#~ "Avertissement: si vous modifiez le contenu de cette archive, vous ne "
-#~ "pourrez plus l'importer avec wopits!"
-
-#~ msgid "A error occured while processing file."
-#~ msgstr "Une erreur est survenue durant le traitement du fichier."
-
-#~ msgid "Error processing image data"
-#~ msgstr "Erreur durant le traitement des données de l'image"
-
-#~ msgid "Rename relation"
-#~ msgstr "Renommer la relation"
-
-#~ msgid "Row title"
-#~ msgstr "Titre ligne"
-
-#~ msgid "Cloning completed"
-#~ msgstr "Clonage terminé"
-
-#~ msgid "Import completed"
-#~ msgstr "Importation terminée"
-
-#~ msgid "Warning!"
-#~ msgstr "Attention!"
-
-#~ msgid "Create a new postit-it here?"
-#~ msgstr "Créer un nouveau post-it ici?"
