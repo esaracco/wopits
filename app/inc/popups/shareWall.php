@@ -12,13 +12,14 @@
       <div class="modal-body">
 
 
-        <label><?=_("Groups linked to this wall:")?></label>
         <div class="delegate-admin-only">(<?=_("not being the creator of this wall, you have a restricted administration of access groups")?>)</div>
         <div class="scroll mb-3">
           <ul class="list-group attr"></ul>
         </div>
 
         <div class="creator-only">
+
+          <label class="grp-lb"><?=_("Available groups:")?></label>
 
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
@@ -32,7 +33,7 @@
           <div class="tab-content">
   
             <div class="tab-pane show active mt-2" role="tabpanel" id="gtype-<?=WPT_GTYPES['dedicated']?>">
-              <label><?=_("Groups available only for this wall:")?></label>
+              <label><?=_("For this wall only.")?></label>
               <div class="mb-2">
                 <button type="button" data-action="add-gtype-<?=WPT_GTYPES['dedicated']?>" class="btn btn-primary btn-sm"><i class="fas fa-bolt fa-xs"></i> <?=_("Create")?></button>
               </div>
@@ -42,7 +43,7 @@
             </div>
     
             <div class="tab-pane mt-2" role="tabpanel" id="gtype-<?=WPT_GTYPES['generic']?>">
-              <label><?=_("Groups available for all your walls:")?></label>
+              <label><?=_("For all your walls.")?></label>
               <div class="mb-2">
                 <button type="button" data-action="add-gtype-<?=WPT_GTYPES['generic']?>" class="btn btn-primary btn-sm"><i class="fas fa-bolt fa-xs"></i> <?=_("Create")?></button>
               </div>

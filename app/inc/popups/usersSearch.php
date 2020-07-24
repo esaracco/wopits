@@ -16,7 +16,7 @@
 
         <div>
           <label class="users-title"><?=_("Users in this group:")?></label>
-          <label class="nousers-title"><?=_("This group does not currently contain any users.")?></label>
+          <label class="nousers-title"><?=_("This group does not contain any users!")?></label>
           <div class="scroll mb-2">
             <ul class="list-group attr"></ul>
           </div>

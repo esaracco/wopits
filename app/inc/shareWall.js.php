@@ -20,7 +20,7 @@
     items.forEach ((item) =>
       {
         if (item.type == type)
-          html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" class="list-group-item list-group-item-action is-wall-creator"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||''}</span><button data-action="delete-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Link this group")?>"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`;
+          html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" class="list-group-item list-group-item-action is-wall-creator"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||''}</span><button data-action="delete-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs" style="float:right;margin-right:5px" data-toggle="tooltip" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i>Share</button></li>`;
       });
 
     $div.html (html);
@@ -209,13 +209,13 @@
 
       if (type == <?=WPT_GTYPES['generic']?>)
       {
-        title = "<?=_("Add a <b>generic</b> group")?>";
-        desc =  "<?=_("This new group will also be available for all your other walls.")?>";
+        title = "<?=_("Create a <b>generic</b> group")?>";
+        desc =  "<?=_("The group will also be available for all your other walls.")?>";
       }
       else
       {
-        title = "<?=_("Add a <b>dedicated</b> group")?>";
-        desc = "<?=_("This new group will be available only for the current wall.")?>";
+        title = "<?=_("Create a <b>dedicated</b> group")?>";
+        desc = "<?=_("The group will be available only for the current wall.")?>";
       }
 
       H.cleanPopupDataAttr ($_groupPopup);
@@ -404,13 +404,16 @@
             $wall[0].dataset.shared = 1;
 
             $div.parent().addClass ("scroll");
+            $share.find(".grp-lb").text ("<?=_("Other available groups:")?>");
+
+            html = `<label><?=_("The wall is shared with the following groups:")?></label>`;
 
             d.in.forEach ((item) =>
               {
                 const isDed = (item.type == <?=WPT_GTYPES['dedicated']?>),
                       typeIcon = (d.delegateAdminId) ? '' : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
-                      unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="close" data-toggle="tooltip" title="${isDed ? "<?=_("Unlink this dedicated group")?>" : "<?=_("Unlink this group")?>"}"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button>`;
-                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span>${unlinkBtn}<button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button></li>`;
+                      unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs" style="float:right;margin-right:5px" data-toggle="tooltip" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i>Unshare</button>`;
+                html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</li>`;
               });
 
             if (d.in.length == 1)
@@ -421,11 +424,12 @@
           else
           {
             $wall[0].removeAttribute ("data-shared");
+            $share.find(".grp-lb").text ("<?=_("Available groups:")?>");
             $wall.find("thead th:eq(0)").html ("&nbsp;");
 
             html = (d.delegateAdminId) ?
               "<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>" :
-              "<span class='nogroup'><?=_("No group is yet linked with this wall.")?></span>";
+              "<span class='nogroup'><?=_("This wall is not shared with any group!")?></span>";
             $div.parent().removeClass ("scroll");
           }
 

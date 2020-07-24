@@ -2,14 +2,12 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-plus-circle fa-fw"></i> <?=_("Access type")?></h5>
+        <h5 class="modal-title"><i class="fas fa-plus-circle fa-fw"></i> <?=_("Sharing type")?></h5>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
-        <div class="mb-3"><?=_("Give users the following access to the current wall:")?></div>
 
         <div class="input-group">
           <div class="input-group-prepend"><span><i class="fas fa-eye fa-fw"></i></span></div>
@@ -44,7 +42,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary"><?=_("Link")?></button>
+        <button type="button" class="btn btn-primary"><?=_("Share")?></button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Close")?></button>
       </div>
     </div>

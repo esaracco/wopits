@@ -269,7 +269,7 @@ i.settings {
 }
 
 .nav-tabs a span {
-  color:#000;
+  color:#212529;
   opacity:0.3;
 }
 
@@ -1109,11 +1109,20 @@ button.btn-primary i {
   overflow-y:unset;
 }
 
+#shareWallPopup .creator-only {
+  border:1px solid #eceaea;
+  border-radius: 5px;
+  padding:5px;
+}
+
+#shareWallPopup .list-group .btn-xs i {
+  color:#fff;
+}
+
 #shareWallPopup span.nogroup,
 #usersSearchPopup label.nousers-title {
   font-style:italic;
   opacity:0.6;
-  font-size:0.9rem;
 }
 
 div.userscount {
