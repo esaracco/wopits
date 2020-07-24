@@ -27,7 +27,8 @@
       $alert.find("#dp-notify")
         .on("change", function ()
           {
-            const $div = $(this).parent().find (">div")
+            const $div = $(this).closest(".date-picker-notify")
+                           .find(">div:eq(1)");
 
             if (this.checked)
             {
@@ -69,9 +70,9 @@
         (days === undefined || days == 0) ? 1 : days);
 
       if (days === undefined)
-        $alert.find("#_dp-shift1").parent().hide ();
+        $alert.find(">div:eq(1)").hide ();
       else
-        $alert.find("#_dp-shift1").parent().show ();
+        $alert.find(">div:eq(1)").show ();
 
       H.openModal ($popup);
     },

@@ -12,10 +12,17 @@
           <div class="date-picker"></div>
           <div>
             <div class="date-picker-notify">
-              <input type="checkbox" name="dp-notify" id="dp-notify"> <label for="dp-notify"><?=_("Notify me by email")?></label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" name="dp-notify" id="dp-notify">
+                <label class="custom-control-label" for="dp-notify"><?=_("Notify me by email")?></label>
+              </div>
               <div>
-                <input type="radio" name="dp-shift" id="_dp-shift1"> <label for="_dp-shift1"><?=_("the same day")?></label><br>
-                <input type="radio" name="dp-shift" id="_dp-shift2"> <label for="_dp-shift2"><input type="number" min="1" value="1"> <?=_("day(s) before")?></label>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" name="dp-shift" id="_dp-shift1"> <label class="custom-control-label" for="_dp-shift1"><?=_("the same day")?></label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" name="dp-shift" id="_dp-shift2"> <label class="custom-control-label" for="_dp-shift2"><input type="number" min="1" value="1"> <?=_("day(s) before")?></label>
+              </div>
               </div>
             </div>
           </div>

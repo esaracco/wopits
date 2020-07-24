@@ -1479,13 +1479,18 @@ div.postit .end.with-alert {
   font-weight:bold;
 }
 
-.date-picker-notify {
+#datePickerPopup .custom-control-label::before,
+#datePickerPopup .custom-control-label::after {
+  top:2px;
+}
+
+#datePickerPopup .date-picker-notify {
   font-size:0.8rem;
   margin:0.8em;
   text-align:left;
 }
 
-.date-picker-notify input[type="number"] {
+#datePickerPopup .date-picker-notify input[type="number"] {
   width:3rem;
 }
 
