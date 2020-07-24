@@ -645,7 +645,7 @@ msgstr "Filtres"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:46
 msgid "For all your walls."
-msgstr "Pour tous vos murs:"
+msgstr "Pour tous vos murs."
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:827
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:105
@@ -1394,7 +1394,7 @@ msgstr "Mot de passe non sécurisé"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:415
 msgid "Unshare"
-msgstr "Annuler"
+msgstr "Retirer"
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:245
 msgid "Update this group"
