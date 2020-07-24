@@ -472,7 +472,7 @@
             Wpt_common::mail ([
               'email' => $user['email'],
               'subject' => _("Wall sharing"),
-              'msg' => sprintf(_("Hello %s,\n\n%s shared a wall with you:\n\n%s\n%s"), $user['fullname'], $currentUserFullname, "«{$wallTitle}»", WPT_URL."/s/w/{$this->wallId}")
+              'msg' => sprintf(_("Hello %s,\n\n%s shared a wall with you:\n\n%s\n%s"), $user['fullname'], $currentUserFullname, "«{$wallTitle}»", WPT_URL."/?/s/w/{$this->wallId}")
             ]);
           }
 
