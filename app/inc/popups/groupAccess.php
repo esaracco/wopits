@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
 
-        <div class="mb-3"><?=_("Users of this group will have the following access to the current wall:")?></div>
+        <div class="mb-3"><?=_("Give users the following access to the current wall:")?></div>
 
         <div class="input-group">
           <div class="input-group-prepend"><span><i class="fas fa-eye fa-fw"></i></span></div>
@@ -33,6 +33,13 @@
             <input type="radio" value="<?=WPT_RIGHTS['walls']['admin']?>" class="custom-control-input" id="_access3" name="access">
             <label class="custom-control-label" for="_access3"><?=_("Full access (admin)")?></label>
           </div>
+        </div>
+
+        <hr>
+
+        <div class="custom-control custom-switch mt-3 send-msg disabled">
+          <input type="checkbox" class="custom-control-input" id="_sm-1">
+          <label class="custom-control-label" for="_sm-1"><?=_("Send an email to notify group users.")?></label>
         </div>
 
       </div>

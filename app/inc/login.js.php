@@ -32,13 +32,13 @@
 
               if (plugin.checkRequired ($login.find("input")))
               {
-                let dl = $login.find("input[name='_deadlineAlertURL']").val ();
+                let dl = $login.find("input[name='_directURL']").val ();
 
-                if (dl && !dl.match (/^\/a\/w\/\d+\/p\/\d+$/))
+                if (dl && !dl.match (/^\/(a|s)\/w\/\d+(\/p\/\d+)?$/))
                   dl = "";
 
                 plugin.login ({
-                  _deadlineAlertURL: dl,
+                  _directURL: dl,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val().trim (), 
                   password: $login.find("input[type='password']").val().trim ()
@@ -193,8 +193,8 @@
           if (d.error_msg)
             H.displayMsg ({type: "warning", msg: d.error_msg});
           else
-            return location.href = (args._deadlineAlertURL) ? 
-              args._deadlineAlertURL : "/";
+            return location.href = (args._directURL) ?
+              args._directURL : "/";
         });
     },
 

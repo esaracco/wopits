@@ -3,13 +3,13 @@
 
   $_SESSION['_check'] = time ();
 
-  if (isset ($_SESSION['_deadlineAlertURL']))
+  if (isset ($_SESSION['_directURL']))
   {
-    $_deadlineAlertURL = $_SESSION['_deadlineAlertURL'];
-    unset ($_SESSION['_deadlineAlertURL']);
+    $_directURL = $_SESSION['_directURL'];
+    unset ($_SESSION['_directURL']);
   }
   else
-    $_deadlineAlertURL = '';
+    $_directURL = '';
 ?>
 <body class="login-page">
 
@@ -61,7 +61,7 @@
           <div class="d-flex justify-content-center form-container">
             <form>
               <input type="hidden" name="_check" value="<?=$_SESSION['_check']?>">
-              <input type="hidden" name="_deadlineAlertURL" value="<?=$_deadlineAlertURL?>">
+              <input type="hidden" name="_directURL" value="<?=$_directURL?>">
 
               <?php if (WPT_USE_LDAP):?>
                 <div class="ldap-msg mb-3">

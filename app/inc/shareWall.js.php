@@ -129,6 +129,7 @@
 
             case "link-group":
 
+              H.cleanPopupDataAttr ($_groupAccessPopup);
               H.openModal ($_groupAccessPopup);
               break;
           }
@@ -187,6 +188,17 @@
               description: $inputs[1].value.trim()||""
             });
           }
+        });
+
+      $_groupAccessPopup.find(".send-msg input[type='checkbox']")
+        .on("change", function ()
+        {
+          const $div = $(this).closest (".send-msg");
+
+          if (this.checked)
+            $div.removeClass ("disabled");
+          else
+            $div.addClass ("disabled");
         });
     },
 
@@ -250,14 +262,22 @@
     // METHOD linkGroup ()
     linkGroup: function (args)
     {
-      const wallId = S.getCurrent("wall").wall ("getId"),
+      const $wall = S.getCurrent ("wall"),
+            wallId = $wall.wall ("getId"),
             $group = this.element.find("li.todelete"),
+            $sendMsg = $_groupAccessPopup.find(".send-msg"),
             data = {
               type:
                 $group.parent().hasClass("gtype-<?=WPT_GTYPES['dedicated']?>") ?
                    <?=WPT_GTYPES['dedicated']?> : <?=WPT_GTYPES['generic']?>,
               access:
-                $_groupAccessPopup.find("input[name='access']:checked").val ()
+                $_groupAccessPopup.find("input[name='access']:checked").val (),
+              sendmail: $sendMsg.find("input[type='checkbox']")[0].checked ?
+                {
+                  userFullname:
+                    $("#accountPopup").account ("getProp", "fullname"),
+                  wallTitle: $wall.wall ("getName")
+                } : null
             };
 
       H.request_ws (

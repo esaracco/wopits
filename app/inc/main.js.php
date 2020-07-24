@@ -15,12 +15,12 @@
     return `<td scope="dzone" class="size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
   }
 
-  // METHOD _getPostitAlertData ()
-  function _getPostitAlertData ()
+  // METHOD _getDirectURLData ()
+  function _getDirectURLData ()
   {
-    const m = location.pathname.match (/^\/a\/w\/(\d+)\/p\/(\d+)$/);
+    const m = location.pathname.match (/^\/(a|s)\/w\/(\d+)(\/p\/(\d+))?$/);
 
-    return m ? {wallId: m[1], postitId: m[2]} : null;
+    return m ? {type: m[1], wallId: m[2], postitId: m[4]||null} : null;
   }
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -1135,7 +1135,7 @@
     {
       const walls = wpt_userData.settings.openedWalls,
             {wallId, postitId} = args||{};
-   
+
       if (walls)
       {
         for (let i = walls.length - 1; i >= 0; i--)
@@ -1143,8 +1143,8 @@
       }
     },
 
-    // METHOD displayPostitDeadlineAlert ()
-    displayPostitDeadlineAlert: function (args)
+    // METHOD loadSpecific ()
+    loadSpecific: function (args)
     {
       const {wallId, postitId} = args;
 
@@ -1607,14 +1607,15 @@
             // Check if wopits has been upgraded
             H.checkForAppUpgrade ();
 
-            const postitAlertData = _getPostitAlertData ();
+            const directURLData = _getDirectURLData ();
 
             // Load previously opened walls
-            $("<div/>").wall ("restorePreviousSession", postitAlertData);
+            $("<div/>").wall ("restorePreviousSession", directURLData);
 
-            // Check if we must display postit alert (direct URL)
-            if (postitAlertData)
-              $("<div/>").wall ("displayPostitDeadlineAlert", postitAlertData);
+            // Check if we must display a postit alert or a specific wall
+            // (from direct URL)
+            if (directURLData)
+              $("<div/>").wall ("loadSpecific", directURLData);
 
             // Keep WS connection and database persistent connection alive and
             // prevent PHP timeout

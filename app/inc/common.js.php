@@ -752,6 +752,14 @@ class WHelp
   
         $popup.removeClass ("no-theme");
         break;
+
+      case "groupAccessPopup":
+
+        const $cb = $popup.find(".send-msg input[type='checkbox']");
+
+        if ($cb[0].checked)
+          $cb.click ();
+        break;
     }
   }
   

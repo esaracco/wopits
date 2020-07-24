@@ -1271,6 +1271,14 @@ input.form-control.autocomplete {
   margin-right: 10px;
 }
 
+#groupAccessPopup .send-msg * {
+  font-size:0.9rem;
+}
+
+#groupAccessPopup .send-msg.disabled {
+  opacity:0.6;
+}
+
 #shareWallPopup .delegate-admin-only {
   font-size:0.9rem;
   opacity:0.6;

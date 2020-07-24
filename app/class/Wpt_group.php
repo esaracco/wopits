@@ -67,13 +67,13 @@
       return $ret;
     }
 
-    public function getUsers ()
+    public function getUsers ($withEmail = false)
     {
       if (!$this->_checkGroupAccess ())
         return ['error' => _("Access forbidden")];
 
       $stmt = $this->prepare ('
-        SELECT id, fullname
+        SELECT id, fullname '.($withEmail?',email':'').'
         FROM users
           INNER JOIN users_groups ON users_groups.users_id = users.id
         WHERE users_groups.groups_id = ?
@@ -448,6 +448,37 @@
             {$this->data->access} AS access
           FROM users_groups WHERE groups_id = ?");
         $stmt->execute ([$this->groupId]);
+
+        if ($this->data->sendmail)
+        {
+          global $slocale;
+
+          $currentUserFullname = $this->data->sendmail->userFullname;
+          $wallTitle = $this->data->sendmail->wallTitle;
+
+          
+          $oldTZ = date_default_timezone_get ();
+          $oldLocale = $slocale;
+
+          $User = new Wpt_user ();
+          foreach ($this->getUsers(true)['users'] as $user)
+          {
+            $User->userId = $user['id'];
+
+            Wpt_common::changeLocale (Wpt_common::getsLocale ($User));
+            date_default_timezone_set ($User->getTimezone ());
+
+            //TODO Use messaging queue
+            Wpt_common::mail ([
+              'email' => $user['email'],
+              'subject' => _("Wall sharing"),
+              'msg' => sprintf(_("Hello %s,\n\n%s just shared a wall with you:\n\n%s\n%s"), $user['fullname'], $currentUserFullname, "«{$wallTitle}»", WPT_URL."/s/w/{$this->wallId}")
+            ]);
+          }
+
+          Wpt_common::changeLocale ($oldLocale);
+          date_default_timezone_set ($oldTZ);
+        }
 
         $this->commit ();
       }

@@ -63,13 +63,13 @@
   // Only in web mode
   if (!$isCLI)
   {
-    $isDealineAlertURL = false;
+    $isDirectURL = false;
 
     if (!isset ($_SESSION['userId']) &&
-        preg_match ('#^/a/w/\d+/p/\d+$#', $scriptName))
+        preg_match ('#^/(a|s)/w/\d+(/p/\d+)?$#', $scriptName))
     {
-      $isDealineAlertURL = true;
-      $_SESSION['_deadlineAlertURL'] = $scriptName;
+      $isDirectURL = true;
+      $_SESSION['_directURL'] = $scriptName;
     }
 
     $_SESSION['locale'] = $locale;
@@ -82,7 +82,7 @@
       $scriptName != '/login.php'
       &&
       (
-        $isDealineAlertURL
+        $isDirectURL
         ||
         $scriptName == '/index.php'
         ||
@@ -209,7 +209,7 @@
 
         $mail->setFrom (WPT_EMAIL_FROM, 'wopits');
         $mail->addAddress ($args['email']);
-        $mail->Subject = "[wopits] {$args['subject']}";
+        $mail->Subject = $args['subject'];
 
         if (WPT_USE_DKIM)
         {

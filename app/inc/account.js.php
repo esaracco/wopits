@@ -232,6 +232,12 @@
         })
     },
 
+    // METHOD getProp ()
+    getProp: function (prop)
+    {
+      return this.element.find("input[name='"+prop+"']").val ();
+    },
+
     // METHOD deletePicture ()
     deletePicture: function ()
     {
