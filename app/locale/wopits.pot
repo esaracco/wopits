@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-07-24 11:48+0200\n"
+        "POT-Creation-Date: 2020-07-24 16:59+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid   "1 sticky note match your search."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:42
-msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the icon <i class='fas fa-plus-circle'></i> in the group list. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify sticky notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create sticky notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>You can easily chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
+msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify sticky notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create sticky notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/userGuide.php:31
@@ -128,7 +128,7 @@ msgstr  ""
 msgid   "An error occured while uploading file."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1122
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1125
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_wall.php:618
 msgid   "An error occurred while exporting wall data."
 msgstr  ""
@@ -184,18 +184,18 @@ msgstr  ""
 msgid   "Clone"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1033
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1039
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:980
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:984
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/usersSearch.php:27
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/updateOneInput.php:17
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitAttachments.php:16
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/openWall.php:18
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:37
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:40
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/about.php:52
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:73
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:59
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:26
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:33
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:62
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:40
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallUsersview.php:15
@@ -215,11 +215,11 @@ msgstr  ""
 msgid   "Close the walls"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:727
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:730
 msgid   "Close the walls?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1034
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1040
 msgid   "Close this wall?"
 msgstr  ""
 
@@ -236,7 +236,7 @@ msgstr  ""
 msgid   "Column name"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:18
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:21
 msgid   "Columns/Rows"
 msgstr  ""
 
@@ -249,7 +249,7 @@ msgid   "Content"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/login.js.php:162
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:36
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:39
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:38
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/shareWall.php:48
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/shareWall.js.php:231
@@ -278,7 +278,7 @@ msgstr  ""
 msgid   "Creation date"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:717
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:721
 msgid   "Creation of your account"
 msgstr  ""
 
@@ -361,7 +361,7 @@ msgstr  ""
 msgid   "Delete this sticky note?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:799
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:802
 msgid   "Delete this wall?"
 msgstr  ""
 
@@ -369,11 +369,11 @@ msgstr  ""
 msgid   "Delete your profile photo?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1085
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1088
 msgid   "Depending on its content, cloning a wall can take time.<br>Do you confirm this request?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1118
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1121
 msgid   "Depending on its content, the export size can be substantial.<br>Do you confirm this request?"
 msgstr  ""
 
@@ -436,7 +436,7 @@ msgstr  ""
 msgid   "For all your walls."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:827
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:830
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:105
 #, php-format
 msgid   "For performance reasons, a wall cannot contain more than %s cells"
@@ -515,7 +515,7 @@ msgid   "Hello %s,\n"
         "For security reasons we advise you to change it as soon as possible."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:718
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:722
 #, php-format
 msgid   "Hello %s,\n"
         "\n"
@@ -620,7 +620,7 @@ msgstr  ""
 msgid   "No content."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1739
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1756
 msgid   "No description."
 msgstr  ""
 
@@ -637,7 +637,7 @@ msgstr  ""
 msgid   "No walls available"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:15
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:17
 msgid   "Notify me by email"
 msgstr  ""
 
@@ -760,7 +760,7 @@ msgstr  ""
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/common.js.php:980
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/updateOneInput.php:16
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:58
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:25
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:32
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/changePassword.php:32
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/postitUpdate.php:23
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/plug.php:20
@@ -942,7 +942,7 @@ msgstr  ""
 msgid   "The size of a wall cannot be less than %s"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:180
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:182
 msgid   "The sticky note has been deleted."
 msgstr  ""
 
@@ -950,19 +950,19 @@ msgstr  ""
 msgid   "The wall has been deleted."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1105
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1108
 msgid   "The wall has been successfully cloned."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1701
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1718
 msgid   "The wall has been successfully imported."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1438
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1455
 msgid   "The wall is again editable"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1398
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1415
 msgid   "The wall is read only"
 msgstr  ""
 
@@ -1143,12 +1143,12 @@ msgstr  ""
 msgid   "When you delete your account, your walls and all your personnal data are permanently erased."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:26
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:29
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/wallProperties.php:35
 msgid   "Width/Height"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:13
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createWall.php:15
 msgid   "With grid"
 msgstr  ""
 
@@ -1165,7 +1165,7 @@ msgstr  ""
 msgid   "You are connected with your LDAP account"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1321
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1338
 msgid   "You are not the creator of this wall"
 msgstr  ""
 
@@ -1233,11 +1233,11 @@ msgstr  ""
 msgid   "Zoom -"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1437
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1454
 msgid   "Zoom disabled"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1397
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/main.js.php:1414
 msgid   "Zoom enabled"
 msgstr  ""
 
@@ -1249,7 +1249,7 @@ msgstr  ""
 msgid   "current password"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:18
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:24
 msgid   "day(s) before"
 msgstr  ""
 
@@ -1306,7 +1306,7 @@ msgstr  ""
 msgid   "password confirmation"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:17
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:21
 msgid   "the same day"
 msgstr  ""
 
