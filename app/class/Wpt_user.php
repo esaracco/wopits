@@ -702,7 +702,11 @@
                             "{$this->data->username},{$this->data->fullname}"),
           'creationdate' => $currentDate,
           'updatedate' => $currentDate,
-          'lastconnectiondate' => $currentDate
+          'lastconnectiondate' => $currentDate,
+          'settings' => json_encode ([
+            'locale' => $_SESSION['slocale']??WPT_DEFAULT_LOCALE,
+            'timezone' => $this->getTimezone ()
+          ])
         ]);
 
         $this->userId = $this->lastInsertId ();
