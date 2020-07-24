@@ -69,7 +69,7 @@
         preg_match ('#^/(a|s)/w/\d+(/p/\d+)?$#', $_SERVER['QUERY_STRING']))
     {
       $isDirectURL = true;
-      $_SESSION['_directURL'] = $scriptName;
+      $_SESSION['_directURL'] = $_SERVER['QUERY_STRING'];
     }
 
     $_SESSION['locale'] = $locale;

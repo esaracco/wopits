@@ -38,7 +38,7 @@
                   dl = "";
 
                 plugin.login ({
-                  _directURL: dl,
+                  _directURL: "/?"+dl,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val().trim (), 
                   password: $login.find("input[type='password']").val().trim ()

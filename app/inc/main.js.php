@@ -18,7 +18,7 @@
   // METHOD _getDirectURLData ()
   function _getDirectURLData ()
   {
-    const m = location.search.match (/^\?\/(a|s)\/w\/(\d+)(\/p\/(\d+))?$/);
+    const m = location.href.match (/\?\/(a|s)\/w\/(\d+)(\/p\/(\d+))?$/);
 
     return m ? {type: m[1], wallId: m[2], postitId: m[4]||null} : null;
   }
@@ -163,22 +163,25 @@
             // Refresh postits relations
             plugin.refreshPostitsPlugs (settings.postits_plugs);
 
-            // Display postit dealine alert if needed.
-            if (settings.postitId)
+            // Display postit dealine alert or specific wall if needed.
+            if (settings.fromDirectURL)
             {
+              const postitId = settings.postitId;
+
               plugin.setActive ();
 
-              H.waitForDOMUpdate (() =>
-                {
-                  const $postit =
-                    $wall.find ("[data-id=postit-"+settings.postitId+"]");
+              if (postitId)
+              {
+                H.waitForDOMUpdate (() =>
+                  {
+                    const $postit = $wall.find("[data-id=postit-"+postitId+"]");
 
-                  if ($postit.length)
-                    $wall.find ("[data-id=postit-"+settings.postitId+"]")
-                      .postit ("displayDeadlineAlert");
-                  else
-                    H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted.")?>"});
-                });
+                    if ($postit.length)
+                      $postit.postit ("displayDeadlineAlert");
+                    else
+                      H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted.")?>"});
+                  });
+              }
             }
 
           }, 0);
@@ -989,15 +992,18 @@
         (d) =>
         {
           // If we must raise a postit deadline alert.
-          if (args.postitId)
-            d.postitId = args.postitId;
+          if (args.fromDirectURL)
+          {
+            d.postitId = args.postitId||null;
+            d.fromDirectURL = true;
+          }
 
           // If we are retoring a wall
           if (args.restoring)
             d.restoring = 1;
 
           // The wall does not exists anymore.
-          if (d.removed && (d.postitId || d.restoring))
+          if (d.removed && (d.fromDirectURL || d.restoring))
           {
             $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
 
@@ -1066,14 +1072,11 @@
     },
 
     // METHOD open ()
-    open: function (wallId, restoring, postitId)
+    open: function (args)
     {
-      this.addNew ({
-        load: true,
-        restoring: restoring,
-        wallId: wallId,
-        postitId: postitId
-      });
+      args.load = true;
+
+      this.addNew (args);
     },
 
     // METHOD clone ()
@@ -1098,7 +1101,7 @@
                            msg: d.error_msg
                          });
 
-                $("<div/>").wall ("open", d.wallId);
+                $("<div/>").wall ("open", {wallId: d.wallId});
 
                 H.displayMsg ({
                   type: "success",
@@ -1134,12 +1137,21 @@
     restorePreviousSession: function (args)
     {
       const walls = wpt_userData.settings.openedWalls,
-            {wallId, postitId} = args||{};
+            {type, wallId, postitId} = args||{};
 
       if (walls)
       {
         for (let i = walls.length - 1; i >= 0; i--)
-          this.open (walls[i], true, (walls[i] == wallId)?postitId:null);
+        {
+          const fromDirectURL = type && walls[i] == wallId;
+
+          this.open ({
+            wallId: walls[i],
+            restoring: true,
+            fromDirectURL: fromDirectURL,
+            postitId: (fromDirectURL) ? postitId : null
+          });
+        }
       }
     },
 
@@ -1148,8 +1160,13 @@
     {
       const {wallId, postitId} = args;
 
-      if (wpt_userData.settings.openedWalls.indexOf (wallId) == -1)
-        this.open (wallId, false, postitId);
+      if ((wpt_userData.settings.openedWalls||[]).indexOf (wallId) == -1)
+        this.open ({
+          wallId: wallId,
+          restoring: false,
+          fromDirectURL: true,
+          postitId: postitId
+        });
 
       // Remove special alert URL.
       history.pushState (null, null, "/");
@@ -1694,7 +1711,7 @@
                                      msg: d.error_msg
                                    });
   
-                          $("<div/>").wall ("open", d.wallId);
+                          $("<div/>").wall ("open", {wallId: d.wallId});
   
                           H.displayMsg ({
                             type: "success",

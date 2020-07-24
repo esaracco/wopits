@@ -22,7 +22,7 @@
       // EVENT CLICK on open wall popup
       $(document).on("click", "#openWallPopup .modal-body li", function(e)
       {
-        $("<div/>").wall ("open", $(this)[0].dataset.id);
+        $("<div/>").wall ("open", {wallId: $(this)[0].dataset.id});
   
         $openWall.modal ("hide");
       });
