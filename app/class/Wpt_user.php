@@ -719,7 +719,7 @@
           Wpt_common::mail ([
             'email' => $this->data->email,
             'subject' => _("Creation of your account"),
-            'msg' => sprintf(_("Hello %s,\n\nYour new account \"%s\" has been created on wopits!"), $this->data->fullname, $this->data->username)
+            'msg' => sprintf(_("Hello %s,\n\nYour account \"%s\" has been created!"), $this->data->fullname, $this->data->username)
             ]);
 
         mkdir ("{$this->getUserDir()}/tmp", 02770, true);
