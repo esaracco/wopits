@@ -37,7 +37,7 @@
 
         <div class="custom-control custom-switch mt-3 send-msg disabled">
           <input type="checkbox" class="custom-control-input" id="_sm-1">
-          <label class="custom-control-label" for="_sm-1"><?=_("Send an email to notify group users.")?></label>
+          <label class="custom-control-label" for="_sm-1"><?=_("Notify users")?></label>
         </div>
 
       </div>
