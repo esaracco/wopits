@@ -21,6 +21,13 @@
       const plugin = this,
             $account = plugin.element;
 
+      if ($.support.touch)
+        $account.find(".modal-title i.fa-user-circle")
+          .on("click", function ()
+            {
+              $account.modal ("hide");
+            });
+
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
