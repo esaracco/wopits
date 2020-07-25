@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-07-24 17:07+0200\n"
+        "POT-Creation-Date: 2020-07-25 16:38+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -278,7 +278,7 @@ msgstr  ""
 msgid   "Creation date"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:721
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:724
 msgid   "Creation of your account"
 msgstr  ""
 
@@ -365,7 +365,7 @@ msgstr  ""
 msgid   "Delete this wall?"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:78
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:85
 msgid   "Delete your profile photo?"
 msgstr  ""
 
@@ -402,7 +402,7 @@ msgstr  ""
 msgid   "Either you no longer have the right to access this wall, or it has been deleted."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:209
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:216
 msgid   "Email"
 msgstr  ""
 
@@ -454,7 +454,7 @@ msgstr  ""
 msgid   "Full access (admin)"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:203
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:210
 msgid   "Full name"
 msgstr  ""
 
@@ -515,7 +515,7 @@ msgid   "Hello %s,\n"
         "For security reasons we advise you to change it as soon as possible."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:722
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:725
 #, php-format
 msgid   "Hello %s,\n"
         "\n"
@@ -563,7 +563,7 @@ msgstr  ""
 msgid   "Log in with your LDAP account"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:195
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:202
 msgid   "Login"
 msgstr  ""
 
@@ -639,6 +639,10 @@ msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/datePicker.php:17
 msgid   "Notify me by email"
+msgstr  ""
+
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/groupAccess.php:40
+msgid   "Notify users"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/info.php:12
@@ -788,10 +792,6 @@ msgstr  ""
 msgid   "Send"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/groupAccess.php:40
-msgid   "Send an email to notify group users."
-msgstr  ""
-
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/settings.php:5
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../www/index.php:76
 msgid   "Settings"
@@ -871,7 +871,7 @@ msgstr  ""
 msgid   "Thank you for using wopits!"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:681
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:684
 msgid   "The account creation forms were filled out too quickly. Please reload this page and try again to verify that you are not a robot..."
 msgstr  ""
 
@@ -884,7 +884,7 @@ msgstr  ""
 msgid   "The deadline for this sticky note has been removed!"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:30
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:37
 msgid   "The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?"
 msgstr  ""
 
@@ -979,7 +979,7 @@ msgid   "Theme"
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:589
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:692
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:695
 msgid   "This email already exists."
 msgstr  ""
 
@@ -1006,7 +1006,7 @@ msgid   "This item has been deleted."
 msgstr  ""
 
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:588
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:692
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/class/Wpt_user.php:695
 msgid   "This login already exists."
 msgstr  ""
 
@@ -1196,7 +1196,7 @@ msgstr  ""
 msgid   "You no longer have the right to access this wall."
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:310
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:317
 msgid   "Your account has been updated"
 msgstr  ""
 
@@ -1253,7 +1253,7 @@ msgstr  ""
 msgid   "day(s) before"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:212
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:219
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:45
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:31
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/resetPassword.php:17
@@ -1264,7 +1264,7 @@ msgstr  ""
 msgid   "email confirmation"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:206
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:213
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/account.php:53
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/popups/createAccount.php:26
 msgid   "full name"
@@ -1310,7 +1310,7 @@ msgstr  ""
 msgid   "the same day"
 msgstr  ""
 
-#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:198
+#: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/account.js.php:205
 #: /var/www/wopits-dev.esaracco.fr/app/locale/../../app/inc/usersSearch.js.php:18
 msgid   "username"
 msgstr  ""
