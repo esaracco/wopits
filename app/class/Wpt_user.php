@@ -672,9 +672,12 @@
       // Check for SPAM only if standard auth mode
       if (!WPT_USE_LDAP)
       {
-        if (empty ($_SESSION['_check']) ||
-            $this->data->_check != $_SESSION['_check'] ||
-            (time() - $this->data->_check) < 10)
+        $checkRef = $_SESSION['_check']??null;
+        $checkCompare = $this->data->_check??null;
+
+        if (is_null ($checkRef) || is_null ($checkCompare) ||
+            $checkCompare != $checkRef ||
+            (time() - $checkCompare) < 10)
         {
           $this->logout ();
           error_log ("SPAM detection");
