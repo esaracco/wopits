@@ -6,9 +6,10 @@
 - Deploy the application by executing `./deploy -e[yourenv]`. `yourenv` should have been defined in the new `config.php` you just created previously. If the target is located on remote, the SSH user must have full rights on the remote DocumentRoot.
 - The very first time the deployment script has been executed, you will have to log as root and execute the following commands before creating a service for the wopits WebSocket daemon:
 ```bash
-# cd [DocumentRoot]
+# chown -R [wopitsUser]:[wopitsUserGroup] /var/www/wopits.domain.com/
+# cd /var/www/wopits.domain.com/
 # mkdir -p data/{walls,users}
-# chown -R [Apache user]:[Apache user] data
+# chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
 ```
 - At each deployment you must broadcast new release announce to all connected clients, reload apache and restart the WebSocket daemon.

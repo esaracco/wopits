@@ -24,7 +24,7 @@ If you plan to deploy wopits, edit `app/deploy/config.php` and customize the fol
 **The following is needed only after the very first deployment, or later if you update your key**:
 Copy your private key in `app/dkim/dkim.private` on the target. Then:
 ```bash
-# cd [DocumentRoot]
-# chown [Apache user] app/dkim/dkim.private
-# chmod 400 app/dkim/dkim.private
+# cd /var/www/wopits.domain.com/
+# chown [ApacheUser]:[wopitsUserGroup] app/dkim/dkim.private
+# chmod 440 app/dkim/dkim.private
 ```
