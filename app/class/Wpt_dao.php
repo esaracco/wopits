@@ -107,6 +107,23 @@
             "Unknown DB field type `{$f['type']}` for $table::$field");
         //</WPTPROD-remove>
       }
+
+      $badValue = false;
+      switch ($field)
+      {
+        // `settings` must be a JSON string.
+        case 'settings':
+          $badValue = !@json_decode($value)->locale;
+          break;
+
+        // `email` must be a simple valid email.
+        case 'email':
+          $badValue = !filter_var ($value, FILTER_VALIDATE_EMAIL);
+          break;
+      }
+
+      if ($badValue)
+        throw new Exception ("Bad DB field value `$value` for $table::$field");
     }
 
     protected function getDuplicateQueryPart ($fields)
