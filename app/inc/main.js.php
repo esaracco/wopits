@@ -18,7 +18,7 @@
   // METHOD _getDirectURLData ()
   function _getDirectURLData ()
   {
-    const m = location.href.match (/\?\/(a|s)\/w\/(\d+)(\/p\/(\d+))?$/);
+    const m = location.href.match (/\?\/(a|s)\/(\d+)(\/(\d+))?$/);
 
     return m ? {type: m[1], wallId: m[2], postitId: m[4]||null} : null;
   }

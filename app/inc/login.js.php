@@ -34,7 +34,7 @@
               {
                 let dl = $login.find("input[name='_directURL']").val ();
 
-                if (dl && !dl.match (/^\/(a|s)\/w\/\d+(\/p\/\d+)?$/))
+                if (dl && !dl.match (/^\/(a|s)\/\d+(\/\d+)?$/))
                   dl = "";
 
                 plugin.login ({
