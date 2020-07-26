@@ -1,6 +1,7 @@
 <?php
 
   require_once (__DIR__.'/Wpt_wall.php');
+  require_once (__DIR__.'/Wpt_emailsQueue.php');
   if (WPT_USE_LDAP)
     require_once (__DIR__.'/Wpt_ldap.php');
 
@@ -70,7 +71,7 @@
       try
       {
         $stmt = $this->prepare ('
-          SELECT username, fullname FROM users WHERE email = ?');
+          SELECT id, username, fullname FROM users WHERE email = ?');
         $stmt->execute ([$this->data->email]);
 
         if ($r = $stmt->fetch ())
@@ -79,12 +80,16 @@
             'password' => hash ('sha1', $password),
             'updatedate' => time ()
           ],
-          ['email' => $this->data->email]);
+          ['id' => $r['id']]);
   
-          Wpt_common::mail ([
-            'email' => $this->data->email,
-            'subject' => _("Your password reset"),
-            'msg' => sprintf(_("Hello %s,\n\nYou are receiving this email because you requested the reset of your wopits password.\n\n- Login: %s\n- New password: %s\n\nFor security reasons we advise you to change it as soon as possible."), $r['fullname'], $r['username'], $password)
+          (new Wpt_emailsQueue())->addTo ([
+            'type' => 'resetPassword',
+            'users_id' => $r['id'],
+            'data' => [
+              'username' => $r['username'],
+              'fullname' => $r['fullname'],
+              'password' => $password
+            ]
           ]);
         }
       }
@@ -717,13 +722,16 @@
         // All is OK, user is logged
         $_SESSION['userId'] = $this->userId;
 
-        // Send account creation email only in standard auth mode
+        // Send account creation email only in standard auth mode.
         if (!WPT_USE_LDAP)
-          Wpt_common::mail ([
-            'email' => $this->data->email,
-            'subject' => _("Creation of your account"),
-            'msg' => sprintf(_("Hello %s,\n\nYour account \"%s\" has been created!"), $this->data->fullname, $this->data->username)
-            ]);
+          (new Wpt_emailsQueue())->addTo ([
+            'type' => 'accountCreation',
+            'users_id' => $this->userId,
+            'data' => [
+              'username' => $this->data->username,
+              'fullname' => $this->data->fullname
+            ]
+          ]);
 
         mkdir ("{$this->getUserDir()}/tmp", 02770, true);
 

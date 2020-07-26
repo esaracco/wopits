@@ -1,6 +1,7 @@
 <?php
 
   require_once (__DIR__.'/Wpt_wall.php');
+  require_once (__DIR__.'/Wpt_emailsQueue.php');
 
   class Wpt_group extends Wpt_wall
   {
@@ -67,13 +68,13 @@
       return $ret;
     }
 
-    public function getUsers ($withEmail = false)
+    public function getUsers ()
     {
       if (!$this->_checkGroupAccess ())
         return ['error' => _("Access forbidden")];
 
       $stmt = $this->prepare ('
-        SELECT id, fullname '.($withEmail?',email':'').'
+        SELECT id, fullname
         FROM users
           INNER JOIN users_groups ON users_groups.users_id = users.id
         WHERE users_groups.groups_id = ?
@@ -381,6 +382,15 @@
       {
         $this->beginTransaction ();
 
+        $q = $this->getFieldQuote ();
+        $this
+          ->prepare("
+            DELETE FROM emails_queue
+            WHERE {$q}type{$q} = 'wallSharing'
+              AND walls_id = ?
+              AND groups_id = ?")
+          ->execute ([$this->wallId, $this->groupId]);
+
         // Unlink group from wall
         $this
           ->prepare('
@@ -451,33 +461,24 @@
 
         if ($this->data->sendmail)
         {
-          global $slocale;
-
-          $currentUserFullname = $this->data->sendmail->userFullname;
+          $EmailsQueue = new Wpt_emailsQueue ();
+          $sharerName = $this->data->sendmail->userFullname;
           $wallTitle = $this->data->sendmail->wallTitle;
 
-          
-          $oldTZ = date_default_timezone_get ();
-          $oldLocale = $slocale;
-
-          $User = new Wpt_user ();
-          foreach ($this->getUsers(true)['users'] as $user)
+          foreach ($this->getUsers()['users'] as $user)
           {
-            $User->userId = $user['id'];
-
-            Wpt_common::changeLocale (Wpt_common::getsLocale ($User));
-            date_default_timezone_set ($User->getTimezone ());
-
-            //TODO Use messaging queue
-            Wpt_common::mail ([
-              'email' => $user['email'],
-              'subject' => _("Wall sharing"),
-              'msg' => sprintf(_("Hello %s,\n\n%s shared a wall with you:\n\n%s\n%s"), $user['fullname'], $currentUserFullname, "«{$wallTitle}»", WPT_URL."/?/s/{$this->wallId}")
+            $EmailsQueue->addTo ([
+              'type' => 'wallSharing',
+              'users_id' => $user['id'],
+              'walls_id' => $this->wallId,
+              'groups_id' => $this->groupId,
+              'data' => [
+                'recipientName' => $user['fullname'],
+                'sharerName' => $sharerName,
+                'wallTitle' => $wallTitle
+              ]
             ]);
           }
-
-          Wpt_common::changeLocale ($oldLocale);
-          date_default_timezone_set ($oldTZ);
         }
 
         $this->commit ();

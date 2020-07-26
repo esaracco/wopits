@@ -268,6 +268,30 @@ CREATE TABLE postits_alerts
 )
 ENGINE=INNODB;
 
+DROP TABLE IF EXISTS emails_queue;
+CREATE TABLE emails_queue
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  users_id INT UNSIGNED NOT NULL,
+  walls_id INT UNSIGNED,
+  groups_id INT UNSIGNED,
+  postits_id INT UNSIGNED,
+  `type` VARCHAR(50) NOT NULL,
+  data VARCHAR(2000),
+  processed INT UNSIGNED NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (id),
+  CONSTRAINT `emails_queue-users_id-fk` FOREIGN KEY (users_id)
+    REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT `emails_queue-walls_id-fk` FOREIGN KEY (walls_id)
+    REFERENCES walls(id) ON DELETE CASCADE,
+  CONSTRAINT `emails_queue-groups_id-fk` FOREIGN KEY (groups_id)
+    REFERENCES groups(id) ON DELETE CASCADE,
+  CONSTRAINT `emails_queue-postits_id-fk` FOREIGN KEY (postits_id)
+    REFERENCES postits(id) ON DELETE CASCADE
+)
+ENGINE=INNODB;
+
 DROP TABLE IF EXISTS edit_queue;
 CREATE TABLE edit_queue
 (

@@ -5,10 +5,6 @@
   // They must have the same system group and umask must be 002.
   umask (002);
 
-  use PHPMailer\PHPMailer\PHPMailer;
-//  use PHPMailer\PHPMailer\SMTP;
-//  use PHPMailer\PHPMailer\Exception;
-
   require_once (__DIR__.'/../config.php');
   require_once (__DIR__.'/Wpt_user.php');
 
@@ -179,59 +175,6 @@
       }
 
       return rmdir ($path);
-    }
-
-    public static function mail ($args)
-    {
-      require_once (__DIR__.'/../libs/vendor/autoload.php');
-
-      //<WPTPROD-remove>
-      if (WPT_DEV_MODE)
-        $args['email'] = WPT_EMAIL_CONTACT;
-      //</WPTPROD-remove>
-
-      $mail = new PHPMailer (true);
-      try
-      {
-        //$mail->SMTPDebug = SMTP::DEBUG_SERVER;
-        $mail->CharSet = 'UTF-8';
-        $mail->Encoding = 'base64';
-        $mail->isHTML (false);
-
-        if (defined ('WPT_SMTP_HOST') && !empty (WPT_SMTP_HOST))
-        {
-          $mail->isSMTP ();
-          $mail->Host = WPT_SMTP_HOST;
-
-          if (!empty (WPT_SMTP_PORT))
-            $mail->Port = WPT_SMTP_PORT;
-        }
-
-        $mail->setFrom (WPT_EMAIL_FROM, 'wopits');
-        $mail->addAddress ($args['email']);
-        $mail->Subject = $args['subject'];
-
-        if (WPT_USE_DKIM)
-        {
-          $mail->DKIM_domain = WPT_DKIM_DOMAIN;
-          $mail->DKIM_private = __DIR__.'/../dkim/dkim.private';
-          $mail->DKIM_selector = WPT_DKIM_SELECTOR;
-          $mail->DKIM_passphrase = '';
-          $mail->DKIM_identity = $mail->From;
-        }
-
-        $mail->Body =
-          $args['msg'].
-          "\n\n"._("The wopits team,")."\n\n--\n".
-          _("This message was sent automatically.")."\n".WPT_URL;
-
-        $mail->send ();
-      }
-      catch (Exception $e)
-      {
-        throw new Exception (
-          "Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
-      }
     }
 
     public static function getWopitsVersion ()

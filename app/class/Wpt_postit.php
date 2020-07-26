@@ -1,6 +1,7 @@
 <?php
 
   require_once (__DIR__.'/Wpt_wall.php');
+  require_once (__DIR__.'/Wpt_emailsQueue.php');
 
   class Wpt_postit extends Wpt_wall
   {
@@ -135,16 +136,13 @@
 
       $now = new DateTime ();
 
+      $EmailsQueue = new Wpt_emailsQueue ();
       $oldTZ = date_default_timezone_get ();
       while ($item = $stmt->fetch ())
       {
         $deleteAlert = false;
 
-        $User = new Wpt_user ();
-
-        $User->userId = $item['alert_user_id'];
-
-        Wpt_common::changeLocale (Wpt_common::getsLocale ($User));
+        $User = new Wpt_user (['userId' => $item['alert_user_id']]);
 
         date_default_timezone_set ($User->getTimezone ());
 
@@ -165,10 +163,15 @@
           {
             $deleteAlert = true;
 
-            Wpt_common::mail ([
-              'email' => $item['alert_user_email'],
-              'subject' => _("Sticky note deadline notification"),
-              'msg' => sprintf (_("Hello %s,\n\nThe following sticky note has expired:\n\n%s%s"), $item['alert_user_fullname'], ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/?/a/{$item['wall_id']}/{$item['postit_id']}")
+            $EmailsQueue->addTo ([
+              'type' => 'deadlineAlert_1',
+              'users_id' => $item['alert_user_id'],
+              'walls_id' => $item['wall_id'],
+              'postits_id' => $item['postit_id'],
+              'data' => [
+                'fullname' => $item['alert_user_fullname'],
+                'title' => $item['postit_title']
+              ]
             ]);
           }
         }
@@ -176,12 +179,17 @@
         {
           $deleteAlert = true;
 
-          Wpt_common::mail ([
-            'email' => $item['alert_user_email'],
-            'subject' => _("Sticky note deadline notification"),
-            'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
-              sprintf (_("Hello %s,\n\nThe following sticky note will expire soon:\n\n%s"), $item['alert_user_fullname'], WPT_URL."/?/a/{$item['wall_id']}/{$item['postit_id']}") :
-              sprintf (_("Hello %s,\n\nThe following sticky note will expire in %s days:\n\n%s%s"), $item['alert_user_fullname'], $days, ($item['postit_title'] != '') ? "«{$item['postit_title']}»\n":'', WPT_URL."/?/a/{$item['wall_id']}/{$item['postit_id']}")
+          $EmailsQueue->addTo ([
+            'type' => 'deadlineAlert_2',
+            'users_id' => $item['alert_user_id'],
+            'walls_id' => $item['wall_id'],
+            'postits_id' => $item['postit_id'],
+            'data' => [
+              'fullname' => $item['alert_user_fullname'],
+              'title' => $item['postit_title'],
+              'days' => $days,
+              'hours' => $hours
+            ]
           ]);
         }
 
@@ -191,6 +199,7 @@
             WHERE postits_id = {$item['postit_id']}
               AND users_id = {$item['alert_user_id']}");
       }
+
       date_default_timezone_set ($oldTZ);
     }
 

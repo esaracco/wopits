@@ -7,3 +7,4 @@ Create a `/var/log/wopits.domain.com/` directory and customize the following lin
 1 0 * * * /var/www/wopits.domain.com/app/crons/cleanup.php >> /var/log/wopits.domain.com/cleanup.log 2>&1
 1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits.domain.com/check-deadline.log 2>&1
 */15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits.domain.com/ping.log 2>&1
+* * * * * /var/www/wopits.domain.com/app/crons/processEmailsQueue.php >> /var/log/wopits.domain.com/processEmailsQueue.php.log 2>&1
