@@ -296,7 +296,7 @@
       if (!$data)
       {
         if ($this->_isDuplicate (['email' => $args['mail']]))
-          return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email %s already exists on wopits!"), $args['mail'])];
+          return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email `%s` already exists on wopits!"), $args['mail'])];
 
         $this->data = (object)[
           'email' => $args['mail'],
@@ -589,9 +589,9 @@
   
           if (!isset ($data['about']) &&
               ($dbl = $this->_isDuplicate ([$field => $value])) )
-            $ret['error_msg'] = ($dbl == 'username') ?
-              _("This login already exists.") :
-              _("This email already exists.");
+            $ret['error_msg'] = sprintf (($dbl == 'username') ?
+              _("The login `%s` already exists.") :
+              _("The email `%s` already exists."), $value);
           else
           {
             $this->beginTransaction ();
@@ -697,7 +697,10 @@
                 'username' => $this->data->username,
                 'email' => $this->data->email])) )
           throw new Exception (($dbl == 'username') ?
-            _("This login already exists.") : _("This email already exists."));
+            sprintf (_("The login `%s` already exists."),
+                       $this->data->username) :
+            sprintf (_("The email `%s` already exists."),
+                       $this->data->email));
 
         // Create user
         $currentDate = time ();
