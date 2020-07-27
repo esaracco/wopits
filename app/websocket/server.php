@@ -86,7 +86,7 @@ class Wopits implements MessageComponentInterface
     // Internal wopits client
     if (!$conn->httpRequest->getHeader ('X-Forwarded-Server'))
     {
-      _log ($conn, 'info', "wopits INTERNAL connection");
+      //_log ($conn, 'info', "wopits INTERNAL connection");
 
       $this->internals[$connId] = 1;
     }
