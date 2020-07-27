@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body"><p></p></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("OK")?></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Close")?></button>
       </div>
     </div>
   </div>
