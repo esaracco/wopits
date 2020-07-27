@@ -1396,6 +1396,12 @@
             writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
       let stylesOrigin;
 
+      if (!args.step)
+      {
+        wall0.style.top = 0;
+        wall0.style.left = "15px";
+      }
+
       if (type == "screen")
         return this.screen ();
 
@@ -1409,9 +1415,6 @@
       if (!zoom0.dataset.zoomlevelorigin)
       {
         stylesOrigin = zoom0.style;
-
-        wall0.style.top = 0;
-        wall0.style.left = "15px";
 
         if (writeAccess && !noalert)
           H.displayMsg ({
