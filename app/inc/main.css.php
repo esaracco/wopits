@@ -1288,6 +1288,14 @@ input.form-control.autocomplete {
   opacity:0.6;
 }
 
+#groupAccessPopup .custom-switch .custom-control-label::before {
+  top:.15rem;
+}
+
+#groupAccessPopup .custom-switch .custom-control-label::after {
+  top:.25rem;
+}
+
 #shareWallPopup .delegate-admin-only {
   font-size:0.9rem;
   opacity:0.6;
@@ -1481,7 +1489,7 @@ div.postit .end.with-alert {
 
 #datePickerPopup .custom-control-label::before,
 #datePickerPopup .custom-control-label::after {
-  top:2px;
+  top:.10rem;
 }
 
 #datePickerPopup .date-picker-notify {
