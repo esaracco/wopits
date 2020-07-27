@@ -613,6 +613,9 @@
         // Instructions for each deployments
         echo "At each deployment you must execute the following post-deployment script as root on the target:\n\n".
              "# {$this->targetPath}/app/deploy/bin/post-deploy.php\n\n";
+
+        // Delete working path.
+        $this->_exec ("rm -rf {$env['build-path']}");
       }
       else
         exit ("\e[1;31mDeployment has been aborted!\e[0m\n".
