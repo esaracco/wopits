@@ -5,8 +5,7 @@
   echo $Plugin->getHeader ();
 ?>
 
-  const _defaultString = "...",
-        _defaultClassColor =
+  const _defaultClassColor =
           "color-<?=array_keys(WPT_MODULES['colorPicker']['items'])[0]?>";
   let $_attachmentsPopup,
       _originalObject,
@@ -79,7 +78,7 @@
       settings._plugs = [];
       settings._plugColor = "";
 
-      const $body = $(`<div class="postit-header"><span class="title">${_defaultString}</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
+      const $body = $(`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
 
       $postit.append ($body);
 
@@ -496,7 +495,7 @@
                             content = $postit.find(".postit-edit").html()||"";
 
                       S.set ("postit-data", {
-                        title: title != _defaultString ? title : ""
+                        title: (title != "...") ? title : ""
                       });
     
                       $("#postitUpdatePopupTitle")
@@ -1177,7 +1176,7 @@
         {
           // Take in account only plugs from this postit
           if (plug.startId == settings.id)
-            ret[plug.endId] = (plug.label == _defaultString) ?
+            ret[plug.endId] = (plug.label == "...") ?
               "" : plug.labelObj.find("a span").text ();
         });
 
@@ -1219,10 +1218,10 @@
             top: Math.trunc((p.offsetTop < 0) ? 0 : p.offsetTop),
             left: Math.trunc((p.offsetLeft < 0) ? 0 : p.offsetLeft),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
-            title: (title == _defaultString) ? "" : title,
+            title: (title == "...") ? "" : title,
             content: $p.find(".postit-edit").html (),
             tags: (tags.length) ? ","+tags.join(",")+"," : null,
-            deadline: (deadline == _defaultString) ? "" : deadline,
+            deadline: (deadline == "...") ? "" : deadline,
             alertshift: (p.dataset.deadlinealertshift !== undefined) ?
                           p.dataset.deadlinealertshift : null,
             updatetz: p.dataset.updatetz || null,
@@ -1249,14 +1248,14 @@
       let human;
 
       if (!deadline || isNaN (deadline))
-        human = deadline||_defaultString;
+        human = deadline||"...";
       else
-        human = (deadline) ? H.getUserDate(deadline, timezone) : _defaultString;
+        human = (deadline) ? H.getUserDate(deadline, timezone) : "...";
 
       $date.find("span").text (human);
 
       if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
-          human == _defaultString)
+          human == "...")
       {
         postit.classList.remove ("obsolete");
 
@@ -1294,7 +1293,7 @@
     // METHOD resetDeadline ()
     resetDeadline: function ()
     {
-      this.setDeadline ({deadline: _defaultString});
+      this.setDeadline ({deadline: "..."});
     },
 
     // METHOD setCreationDate ()
@@ -1307,7 +1306,7 @@
     setTitle: function (title)
     {
       this.element.find(".postit-header span.title")
-        .html (H.noHTML(title) || _defaultString);
+        .html (H.noHTML(title) || "...");
     },
 
     // METHOD setContent ()
