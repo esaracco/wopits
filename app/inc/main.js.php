@@ -1410,6 +1410,9 @@
       {
         stylesOrigin = zoom0.style;
 
+        wall0.style.top = 0;
+        wall0.style.left = "15px";
+
         if (writeAccess && !noalert)
           H.displayMsg ({
             type: "warning",
