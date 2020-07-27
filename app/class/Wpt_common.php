@@ -8,8 +8,6 @@
   require_once (__DIR__.'/../config.php');
   require_once (__DIR__.'/Wpt_user.php');
 
-  $User = new Wpt_user ();
-
   $isCLI = (php_sapi_name () == 'cli');
   $scriptName = '';
 
@@ -21,7 +19,9 @@
   // Only in web mode
   else
   {
-    session_set_cookie_params (0, '/', $_SERVER['HTTP_HOST'], true, true);
+    $User = new Wpt_user ();
+
+    session_set_cookie_params (0, '/', null, true, true);
     session_start ();
 
     $scriptName = $_SERVER['SCRIPT_NAME'];
@@ -100,8 +100,6 @@
       exit;
     }
   }
-
-  //date_default_timezone_set ($User->getTimezone ());
 
   class Wpt_common
   {
@@ -213,7 +211,6 @@
       setcookie (WPT_COOKIE, $value, mktime (0, 0, 0, 1, 1, 2035),
                  '/', null, true, true);
     }
-
 
     public static function getCookie ()
     {
