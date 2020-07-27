@@ -136,18 +136,23 @@
         });
 
       $(document)
-        .on("click", "#shareWallPopup .list-group-item.is-wall-creator",
+        .on("click", "#shareWallPopup .list-group-item",
         function (e)
         {
-          const $row = $(this);
+          if ($(this).hasClass ("is-wall-creator"))
+          {
+            const $row = $(this);
 
-          $row.addClass ("active todelete");
+            $row.addClass ("active todelete");
 
-          plugin.openUpdateGroup ({
-            groupId: $row[0].dataset.id,
-            name: $row.find(".name").text(),
-            description: $row.find(".desc").text()
-          });
+            plugin.openUpdateGroup ({
+              groupId: $row[0].dataset.id,
+              name: $row.find(".name").text(),
+              description: $row.find(".desc").text()
+            });
+          }
+          else
+            $share.find("button[data-action='users-search'] i").click ();
         });
 
       $share.find("button")
@@ -413,6 +418,7 @@
                 const isDed = (item.type == <?=WPT_GTYPES['dedicated']?>),
                       typeIcon = (d.delegateAdminId) ? '' : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
                       unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs" style="float:right;margin-right:5px" data-toggle="tooltip" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
+
                 html += `<li data-id="${item.id}" data-type="${item.type}" data-name="${H.htmlQuotes(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item list-group-item-action${d.delegateAdminId?'':' is-wall-creator'}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("users in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</li>`;
               });
 
