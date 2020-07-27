@@ -824,15 +824,16 @@ class WHelp
   // METHOD loader ()
   loader (action, force = false, xhr = null)
   {
-    const $layer = $("#popup-loader");
+    const $layer = $("#popup-loader"),
+          layer0 = $layer[0];
   
     if ($layer.length && (WS.ready () || force))
     {
-      clearTimeout ($layer[0].dataset.timeoutid);
+      clearTimeout (layer0.dataset.timeoutid);
   
       if (action == "show")
       {
-        $layer[0].dataset.timeoutid = setTimeout (() =>
+        layer0.dataset.timeoutid = setTimeout (() =>
           {
             if (xhr)
             {
@@ -858,6 +859,8 @@ class WHelp
           display: "none",
           background: "#ea6966"
         });
+
+        layer0.removeAttribute ("data-timeoutid");
       }
     }
   }
