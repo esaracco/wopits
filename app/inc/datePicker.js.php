@@ -9,11 +9,14 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init: function ()
     {
       const $popup = this.element,
-            $picker = $popup.find(".date-picker"),
-            $alert = $popup.find(".date-picker-notify");
+            $picker = $popup.find (".date-picker"),
+            $alert = $popup.find (".date-picker-notify");
+
+      this.settings.$picker = $picker;
+      this.settings.$alert = $alert;
 
       $picker.datepicker ({
         showWeek: true,
@@ -21,14 +24,17 @@
         changeYear: true,
         dateFormat: "yy-mm-dd",
         minDate: moment().tz(wpt_userData.settings.timezone)
-                   .add (1, "days").format ("Y-MM-DD")
+                   .add (1, "days").format ("Y-MM-DD"),
+        onSelect: function (dt, $dp)
+          {
+            $alert.show ();
+          }
       });
 
       $alert.find("#dp-notify")
         .on("change", function ()
           {
-            const $div = $(this).closest(".date-picker-notify")
-                           .find(">div:eq(1)");
+            const $div = $alert.find(">div:eq(1)");
 
             if (this.checked)
             {
@@ -51,11 +57,11 @@
     },
 
     // METHOD open ()
-    open: function (args)
+    open: function ()
     {
       const $popup = this.element,
-            $picker = $popup.find(".date-picker"),
-            $alert = $popup.find(".date-picker-notify"),
+            $picker = this.settings.$picker,
+            $alert = this.settings.$alert,
             $postit = S.getCurrent ("postit"),
             days = $postit[0].dataset.deadlinealertshift;
 
@@ -67,6 +73,7 @@
       {
         $picker.datepicker ("setDate", null);
         $picker.find(".ui-state-active").removeClass("ui-state-active");
+        $alert.hide ();
       }
 
       if (days !== undefined)
@@ -96,8 +103,8 @@
     save: function ()
     {
       const $popup = this.element,
-            $picker = $popup.find(".date-picker"),
-            $alert = $popup.find(".date-picker-notify"),
+            $picker = this.settings.$picker,
+            $alert = this.settings.$alert,
             $postit = S.getCurrent ("postit"),
             v = $picker.val ();
 
