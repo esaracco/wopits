@@ -34,9 +34,13 @@
             {
               $div.show ("fade");
               $alert.find("#_dp-shift1")[0].checked = true;
+              $(this).parent().removeClass ("disabled");
             }
             else
+            {
               $div.hide ();
+              $(this).parent().addClass ("disabled");
+            }
           });
 
       $alert.find("input[type='number']")
@@ -56,14 +60,25 @@
             days = $postit[0].dataset.deadlinealertshift;
 
       if ($postit[0].dataset.deadline)
+      {
         $picker.datepicker ("setDate", $postit[0].dataset.deadline);
+      }
       else
       {
         $picker.datepicker ("setDate", null);
         $picker.find(".ui-state-active").removeClass("ui-state-active");
       }
 
-      $alert.find("#dp-notify")[0].checked = (days !== undefined);
+      if (days !== undefined)
+      {
+        $alert.find("#dp-notify")[0].checked = true;
+        $alert.find("#dp-notify").parent().removeClass ("disabled");
+      }
+      else
+      {
+        $alert.find("#dp-notify")[0].checked = false;
+        $alert.find("#dp-notify").parent().addClass ("disabled");
+      }
       $alert.find("#_dp-shift1")[0].checked = (days == 0);
       $alert.find("#_dp-shift2")[0].checked = (days > 0);
       $alert.find("input[type='number']").val (

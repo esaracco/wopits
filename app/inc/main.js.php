@@ -1679,8 +1679,14 @@
                   $popup = $(this).closest (".modal");
 
             $popup.find("span.required").remove ();
-            $popup.find(".cols-rows input,.width-height input").val ("");
+            $popup.find(".cols-rows input").val (3);
+            $popup.find(".width-height input").val ("");
             $popup.find(".cols-rows,.width-height").hide ();
+
+            if (el.checked)
+              $(this).parent().removeClass ("disabled");
+            else
+              $(this).parent().addClass ("disabled");
 
             $popup.find(el.checked?".cols-rows":".width-height").show ("fade");
           });

@@ -1299,15 +1299,17 @@ input.form-control.autocomplete {
   font-size:0.9rem;
 }
 
-#groupAccessPopup .send-msg.disabled {
+.custom-control.disabled {
   opacity:0.6;
 }
 
-#groupAccessPopup .custom-switch .custom-control-label::before {
+#groupAccessPopup .custom-switch .custom-control-label::before,
+#datePickerPopup .custom-switch .custom-control-label::before {
   top:.15rem;
 }
 
-#groupAccessPopup .custom-switch .custom-control-label::after {
+#groupAccessPopup .custom-switch .custom-control-label::after,
+#datePickerPopup .custom-switch .custom-control-label::after {
   top:.25rem;
 }
 
@@ -1506,14 +1508,8 @@ div.postit .end.with-alert {
   font-weight:bold;
 }
 
-#datePickerPopup .custom-control-label::before,
-#datePickerPopup .custom-control-label::after {
-  top:.10rem;
-}
-
 #datePickerPopup .date-picker-notify {
-  font-size:0.8rem;
-  margin:0.8em;
+  font-size:0.9rem;
   text-align:left;
 }
 

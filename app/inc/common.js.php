@@ -725,9 +725,11 @@ class WHelp
       case "createWallPopup":
   
         $popup.find("input").val ("");
+        $popup.find(".cols-rows input").val (3);
         $popup.find(".cols-rows,.width-height").hide ();
         $popup.find(".cols-rows").show ();
         $popup.find("#w-grid")[0].checked = true;
+        $popup.find("#w-grid").parent().removeClass ("disabled");
         break;
   
       case "groupPopup":

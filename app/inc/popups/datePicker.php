@@ -10,9 +10,9 @@
       <div class="modal-body text-center">
         <div style="display:inline-block">
           <div class="date-picker"></div>
-          <div>
+          <div class="mt-3">
             <div class="date-picker-notify">
-              <div class="custom-control custom-checkbox">
+              <div class="custom-control custom-switch disabled">
                 <input type="checkbox" class="custom-control-input" name="dp-notify" id="dp-notify">
                 <label class="custom-control-label" for="dp-notify"><?=_("Notify me by email")?></label>
               </div>
