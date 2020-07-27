@@ -21,7 +21,7 @@
   {
     $User = new Wpt_user ();
 
-    session_set_cookie_params (0, '/', null, true, true);
+    session_set_cookie_params (0, '/', $_SERVER['HTTP_HOST']??null, true, true);
     session_start ();
 
     $scriptName = $_SERVER['SCRIPT_NAME'];
