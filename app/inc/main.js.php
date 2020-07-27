@@ -41,7 +41,8 @@
 
       // Create plugs container
       settings.plugsContainer =
-        $(`<div id="plugs-${wallId}"></div>`).appendTo ("body");
+        $(`<div id="plugs-${wallId}" data-access="${access}"></div>`)
+          .appendTo ("body");
 
       if (settings.restoring)
         $wall[0].dataset.restoring = 1;
@@ -1008,7 +1009,7 @@
             $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
 
             if ($tabs.find(".nav-item").length)
-              $tabs.find(".nav-item:first-child").tab ("show")
+              $tabs.find(".nav-item:first-child").tab ("show");
 
             //FIXME Wait for ws server connection...
             if (d.restoring)
@@ -1029,18 +1030,19 @@
           if (!args.restoring)
             $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
-          $tabs.find('a[href="#wall-'+d.id+'"]').prepend (
-            $(`<button type="button" class="close"><span class="close">&times;</span></button>`)
-             .on("click",function()
-             {
-               H.openConfirmPopover ({
-                 item: $(this),
-                 placement: "left",
-                 title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
-                 content: "<?=_("Close this wall?")?>",
-                 cb_ok: ()=> S.getCurrent("wall").wall ("close")
-               });
-             }));
+          $tabs.find('a[href="#wall-'+d.id+'"]')
+            .attr("data-access", d.access)
+            .prepend($(`<button type="button" class="close"><span class="close">&times;</span></button>`)
+            .on("click",function()
+            {
+              H.openConfirmPopover ({
+                item: $(this),
+                placement: "left",
+                title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
+                content: "<?=_("Close this wall?")?>",
+                cb_ok: ()=> S.getCurrent("wall").wall ("close")
+              });
+            }));
 
           d["background-color"] =
             $("#settingsPopup").settings ("get", "wall-background", d.id);
@@ -1724,10 +1726,9 @@
             }).appendTo ("body");
 
         $(document)
-          .on("click","thead th:first-child",function (e)
+          .on("click","thead th:first-child .usersviewcounts", function (e)
           {
-            if ($(this).find(".wpt-badge").length)
-              S.getCurrent("wall").wall ("displayWallUsersview");
+            S.getCurrent("wall").wall ("displayWallUsersview");
           });
 
         $("#wallUsersviewPopup")

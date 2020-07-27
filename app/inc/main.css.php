@@ -252,6 +252,11 @@ i.settings {
   background:white;
 }
 
+.nav-tabs.walls a.active[data-access="2"],
+.nav-tabs.walls a.active[data-access="3"] {
+  cursor:auto !important;
+}
+
 .nav-tabs.walls button.close {
   display:none;
   margin-top:-10px;
@@ -279,12 +284,6 @@ i.settings {
 
 .nav-tabs a.active span {
   opacity:1;
-}
-
-.wall-caption {
-  margin-top:10px;
-  cursor:pointer;
-  font-style:italic;
 }
 
 .layer {
@@ -551,9 +550,7 @@ select.timezone {
   background-color: yellow;
 }
 
-.wall thead th:first-child {
-  color:#555;
-  padding-left:0;
+.wall thead th:first-child .usersviewcounts {
   cursor:pointer;
 }
 
@@ -603,6 +600,11 @@ th .close.img-delete {
   margin-top:5px;
 }
 
+.wall[data-access="2"] th div.img,
+.wall[data-access="3"] th div.img {
+  cursor:auto !important;
+}
+
 .wall tbody th div.img {
   margin-left:10px;
   margin-right:10px;
@@ -646,6 +648,11 @@ div.plug-label {
   font-size:0.8rem;
   margin-top:-1px;
   margin-left:-4px;
+}
+
+div[data-access="3"] div.plug-label,
+div[data-access="3"] div.plug-label a {
+  cursor:auto !important;
 }
 
 div.plug-label > a {
@@ -785,6 +792,10 @@ div.postit .postit-header i {
   margin-right:10px;
 }
 
+.wall[data-access="3"] div.postit .postit-header i {
+  cursor:auto !important;
+}
+
 div.postit .postit-header span {
   font-weight:bold;
   text-decoration: underline;
@@ -834,6 +845,10 @@ div.postit div.postit-tags {
   cursor:pointer;
   line-height: 20px;
   z-index:10000;
+}
+
+.wall[data-access="3"] div.postit div.postit-tags {
+  cursor:auto !important;
 }
 
 div.postit div.postit-tags i {
@@ -1471,6 +1486,10 @@ div.postit .end {
   position:absolute;
   right:15px;
   cursor:pointer;
+}
+
+.wall[data-access="3"] div.postit .end {
+  cursor:auto !important;
 }
 
 div.postit .end.with-alert {
