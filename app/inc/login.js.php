@@ -32,13 +32,11 @@
 
               if (plugin.checkRequired ($login.find("input")))
               {
-                let dl = $login.find("input[name='_directURL']").val ();
-
-                if (dl && !dl.match (/^\/(a|s)\/\d+(\/\d+)?$/))
-                  dl = "";
+                const dl = $login.find("input[name='_directURL']").val ();
 
                 plugin.login ({
-                  _directURL: "/?"+dl,
+                  _directURL: (dl && dl.match (/^\/(a|s)\/\d+(\/\d+)?$/)) ?
+                                "/?"+dl : null,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val().trim (), 
                   password: $login.find("input[type='password']").val().trim ()
