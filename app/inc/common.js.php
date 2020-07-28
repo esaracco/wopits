@@ -743,7 +743,7 @@ class WHelp
   
         $popup.find(".modal-dialog").removeClass ("modal-sm");
         $popup.find("#w-grid").parent().remove ();
-        $popup.find(".btn-primary").html ("<?=_("Save")?>");
+        $popup.find(".btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
   
         $popup.find("input")
           .removeAttr ("placeholder autocorrect autocapitalize maxlength")

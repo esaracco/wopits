@@ -26,7 +26,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Close")?></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-undo-alt"></i> <?=_("Cancel")?></button>
       </div>
     </div>
   </div>

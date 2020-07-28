@@ -1,4 +1,4 @@
-<div class="modal" id="createWallPopup" role="dialog" tabindex="-1">
+<div class="modal m-fullscreen" id="createWallPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -36,8 +36,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary"><?=_("Create")?></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Close")?></button>
+        <button type="button" class="btn btn-primary"><i class="fas fa-bolt"></i> <?=_("Create")?></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-undo-alt"></i> <?=_("Cancel")?></button>
       </div>
     </div>
   </div>

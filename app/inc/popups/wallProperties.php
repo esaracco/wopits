@@ -55,8 +55,8 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary"><?=_("Save")?></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Close")?></button>
+        <button type="button" class="btn btn-primary"><i class="fas fa-save"></i> <?=_("Save")?></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
       </div>
     </div>
   </div>

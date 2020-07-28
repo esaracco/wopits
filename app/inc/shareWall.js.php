@@ -233,7 +233,8 @@
       $_groupPopup.find(".desc").html (desc);
 
       $_groupPopup.find("button.btn-primary")[0].dataset.type = type;
-      $_groupPopup.find("button.btn-primary").text ("<?=_("Create")?>");
+      $_groupPopup.find("button.btn-primary").html (`<i class="fas fa-bolt"></i> <?=_("Create")?>`);
+      $_groupPopup.find("button.btn-secondary").html (`<i class="fas fa-undo-alt"></i> <?=_("Cancel")?>`);
 
       H.openModal ($_groupPopup);
     },
@@ -253,7 +254,8 @@
       $_groupPopup.find("input")[1].value = args.description||"";
 
       $_groupPopup.find("button.btn-primary")[0].dataset.groupid = args.groupId;
-      $_groupPopup.find("button.btn-primary").text ("<?=_("Save")?>");
+      $_groupPopup.find("button.btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
+      $_groupPopup.find("button.btn-secondary").html (`<i class="fas fa-times"></i> <?=_("Close")?>`);
 
       H.openModal ($_groupPopup);
     },

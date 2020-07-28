@@ -17,8 +17,8 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary"><?=_("Save")?></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("Cancel")?></button>
+        <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> <?=_("Add")?></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-undo-alt"></i> <?=_("Cancel")?></button>
       </div>
     </div>
   </div>
