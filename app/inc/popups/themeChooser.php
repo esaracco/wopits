@@ -16,7 +16,7 @@
             <a class="dot-theme btn-theme-<?=$theme?>" data-theme="theme-<?=$theme?>"></a>
           <?php } ?>
         </div>
-        <p><?=sprintf(_("You can change it at any time in your %ssettings%s."), '<button type="button" class="btn btn-secondary btn-xs settings"><i class="fa-fw fas fa-sliders-h"></i>&nbsp;', '</button>')?></p>
+        <p><?=sprintf(_("You can change it at any time in your %sSettings%s."), '<button type="button" class="btn btn-secondary btn-xs settings"><i class="fa-fw fas fa-sliders-h"></i>&nbsp;', '</button>')?></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><?=_("OK")?></button>
