@@ -85,8 +85,8 @@
       $postit
         .css({
           visibility: "hidden",
-          top: settings.top,
-          left: settings.left
+          top: settings.item_top,
+          left: settings.item_left
         })
         // EVENTS mouseenter focusin click
         .on("mouseenter focusin click", function(e)
@@ -1215,8 +1215,8 @@
             id: postitId,
             width: Math.trunc($p.outerWidth ()),
             height: Math.trunc($p.outerHeight ()),
-            top: Math.trunc((p.offsetTop < 0) ? 0 : p.offsetTop),
-            left: Math.trunc((p.offsetLeft < 0) ? 0 : p.offsetLeft),
+            item_top: Math.trunc((p.offsetTop < 0) ? 0 : p.offsetTop),
+            item_left: Math.trunc((p.offsetLeft < 0) ? 0 : p.offsetLeft),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
             content: $p.find(".postit-edit").html (),
@@ -1549,8 +1549,8 @@
 
       if (!d.ignoreResize)
         $postit.css ({
-          top: d.top,
-          left: d.left,
+          top: d.item_top,
+          left: d.item_left,
           width: d.width,
           height: d.height
         });
@@ -1970,7 +1970,7 @@
                     {
                       name: file.name,
                       size: file.size,
-                      type: file.type,
+                      item_type: file.type,
                       content: e.target.result
                     },
                     // success cb
@@ -2037,7 +2037,7 @@
                       {
                         name: file.name,
                         size: file.size,
-                        type: file.type,
+                        item_type: file.type,
                         content: e.target.result
                       },
                       // success cb

@@ -66,7 +66,7 @@
             $header = plugin.element,
             settings = plugin.settings,
             $wall = settings.wall,
-            type = settings.type,
+            type = settings.item_type,
             isCol = (type == "col"),
             adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
                                            settings.access);
@@ -380,7 +380,7 @@
             H.raiseError (null, d.error_msg);
           else
           {
-            if (this.settings.type == "col")
+            if (this.settings.item_type == "col")
               $header.find(".img").remove ();
             else
               H.headerRemoveContentKeepingWallSize ({
@@ -410,7 +410,7 @@
       const plugin = this,
             $header = plugin.element,
             thIdx = $header.index (),
-            isRow = (plugin.settings.type == "row");
+            isRow = (plugin.settings.item_type == "row");
 
       title = H.noHTML (title);
 
@@ -668,7 +668,7 @@
                       {
                         name: file.name,
                         size: file.size,
-                        type: file.type,
+                        item_type: file.type,
                         content: e.target.result
                       },
                       // success cb

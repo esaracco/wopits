@@ -185,13 +185,13 @@
           $stmt->execute ([$headerId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-          list ($file, $this->data->type) =
+          list ($file, $this->data->item_type) =
             Wpt_common::resizePicture ($file, 100);
 
           $img = "$wdir/$rdir/".basename($file);
           $this->executeQuery ('UPDATE headers', [
             'picture' => $img,
-            'filetype' => $this->data->type,
+            'filetype' => $this->data->item_type,
             'filesize' => filesize ($file)
           ],
           ['id' => $headerId]);
@@ -525,8 +525,8 @@
                 {
                   $this->executeQuery ('INSERT INTO postits_plugs',
                     $this->_getImportItemData ($item, [
-                      'start' => $postitId,
-                      'end' => $idsMap['postits'][$item->end],
+                      'item_start' => $postitId,
+                      'item_end' => $idsMap['postits'][$item->item_end],
                       'label' => $item->label
                     ]));
                 }
@@ -642,7 +642,7 @@
       $stmt3 = $this->prepare ('
         SELECT * FROM postits_pictures WHERE postits_id = ?');
       $stmt4 = $this->prepare ('
-        SELECT * FROM postits_plugs WHERE start = ?');
+        SELECT * FROM postits_plugs WHERE item_start = ?');
 
       $data['cells'] = [];
       while ( ($cell = $stmt->fetch ()) )
@@ -692,7 +692,7 @@
       return ($clone) ?
         $zipPath :
         Wpt_common::download ([
-          'type' => 'application/zip',
+          'item_type' => 'application/zip',
           'name' => basename ($zipPath),
           'size' => filesize ($zipPath),
           'path' => $zipPath,
@@ -702,7 +702,6 @@
 
     public function getWall ($withAlerts = false, $basic = false)
     {
-      $q = $this->getFieldQuote ();
       $ret = [];
 
       // Return walls list
@@ -817,32 +816,32 @@
       {
         // Get headers
         $stmt = $this->prepare ("
-          SELECT id, ${q}type$q, ${q}order$q, width, height, title, picture
+          SELECT id, item_type, item_order, width, height, title, picture
           FROM headers
           WHERE walls_id = ?
-          ORDER BY ${q}type$q, ${q}order$q ASC");
+          ORDER BY item_type, item_order ASC");
         $stmt->execute ([$this->wallId]);
         $data['headers'] = ['cols' => [], 'rows' => []];
         while ($row = $stmt->fetch ())
         {
-          $type = $row['type'];
+          $type = $row['item_type'];
   
-          unset ($row['type']);
-          unset ($row['order']);
+          unset ($row['item_type']);
+          unset ($row['item_order']);
   
           $data['headers'][$type.'s'][] = $row;
         }
   
         // Get cells and postits
         $stmt = $this->prepare ('
-          SELECT id, height, width, col, row
+          SELECT id, height, width, item_col, item_row
           FROM cells
           WHERE walls_id = ?');
         $stmt->execute ([$this->wallId]);
         // Get postits
         $stmt1 = $this->prepare (($withAlerts) ?
           "SELECT
-             postits.id, width, height, top, ${q}left$q, classcolor, title,
+             postits.id, width, height, item_top, item_left, classcolor, title,
              content, tags, creationdate, deadline, timezone, obsolete,
              attachmentscount, postits_alerts.alertshift
            FROM postits
@@ -852,7 +851,7 @@
            WHERE cells_id = ?"
           :
           "SELECT
-             id, width, height, top, ${q}left$q, classcolor, title,
+             id, width, height, item_top, item_left, classcolor, title,
              content, tags, creationdate, deadline, timezone, obsolete,
              attachmentscount
            FROM postits
@@ -871,7 +870,7 @@
 
         // Get postits plugs
         $stmt = $this->prepare ("
-          SELECT start, ${q}end$q, label
+          SELECT item_start, item_end, label
           FROM postits_plugs
           WHERE walls_id = ?");
         $stmt->execute ([$this->wallId]); 
@@ -959,7 +958,7 @@
 
       if ( ($r = $stmt->fetch ()) )
         return Wpt_common::download ([
-          'type' => $r['filetype'],
+          'item_type' => $r['filetype'],
           'name' => basename ($r['picture']),
           'size' => $r['filesize'],
           'path' => WPT_ROOT_PATH.$r['picture']
@@ -968,7 +967,6 @@
 
     public function deleteWallColRow ($args)
     {
-      $q = $this->getFieldQuote ();
       $item = $args['item'];
       $itemPos = $args['itemPos'];
       $dir = $this->getWallDir ();
@@ -989,11 +987,11 @@
         $stmt = $this->prepare("
           SELECT id FROM headers
           WHERE walls_id = :walls_id
-            AND ${q}type$q = :type AND ${q}order$q = :order");
+            AND item_type = :item_type AND item_order = :item_order");
         $stmt->execute ([
           ':walls_id' => $this->wallId,
-          ':type' => $item,
-          ':order' => $itemPos]);
+          ':item_type' => $item,
+          ':item_order' => $itemPos]);
   
         Wpt_common::rm ("$dir/header/".($stmt->fetch ())['id']);
 
@@ -1002,26 +1000,26 @@
           ->prepare("
             DELETE FROM headers
             WHERE walls_id = :walls_id
-              AND ${q}type$q = :type
-              AND ${q}order$q = :order")
+              AND item_type = :item_type
+              AND item_order = :item_order")
           ->execute ([
             ':walls_id' => $this->wallId,
-            ':type' => $item,
-            ':order' => $itemPos
+            ':item_type' => $item,
+            ':item_order' => $itemPos
           ]);
 
         // Reordonate headers
         $this
           ->prepare("
             UPDATE headers SET
-              ${q}order$q = ${q}order$q - 1
+              item_order = item_order - 1
             WHERE walls_id = :walls_id
-              AND ${q}type$q = :type
-              AND ${q}order$q > :order")
+              AND item_type = :item_type
+              AND item_order > :item_order")
           ->execute ([
               ':walls_id' => $this->wallId,
-              ':type' => $item,
-              ':order' => $itemPos
+              ':item_type' => $item,
+              ':item_order' => $itemPos
             ]);
 
         // Delete files for all postits
@@ -1030,7 +1028,7 @@
           FROM cells
             INNER JOIN postits ON postits.cells_id = cells.id
           WHERE cells.walls_id = :walls_id
-            AND cells.$item = :item");
+            AND cells.item_$item = :item");
         $stmt->execute ([
           ':walls_id' => $this->wallId,
           ':item' => $itemPos
@@ -1042,16 +1040,16 @@
         $this
           ->prepare("
             DELETE FROM cells
-            WHERE walls_id = ? AND $item = ?")
+            WHERE walls_id = ? AND item_$item = ?")
           ->execute ([$this->wallId, $itemPos]);
 
         // Reordonate
         $this
           ->prepare("
             UPDATE cells SET
-              $item = $item - 1
+              item_$item = item_$item - 1
             WHERE walls_id = ?
-              AND $item > ?")
+              AND item_$item > ?")
           ->execute ([$this->wallId, $itemPos]);
 
         if ($item == 'col')
@@ -1084,7 +1082,6 @@
 
     public function createWallColRow ($args)
     {
-      $q = $this->getFieldQuote ();
       $item = $args['item'];
       $dir = $this->getWallDir ();
       $ret = [];
@@ -1103,19 +1100,19 @@
         $this->beginTransaction ();
 
         $stmt = $this->prepare("
-        SELECT ${q}order$q FROM headers
+        SELECT item_order FROM headers
         WHERE walls_id = :walls_id
-          AND ${q}type$q = :type ORDER BY ${q}order$q DESC LIMIT 1");
+          AND item_type = :item_type ORDER BY item_order DESC LIMIT 1");
         $stmt->execute ([
           ':walls_id' => $this->wallId,
-          ':type' => $item
+          ':item_type' => $item
         ]);
-        $order = $stmt->fetch()['order'];
+        $order = $stmt->fetch()['item_order'];
   
         $this->executeQuery ('INSERT INTO headers', [
           'walls_id' => $this->wallId,
-          'type' => $item,
-          'order' => $order + 1,
+          'item_type' => $item,
+          'item_order' => $order + 1,
           'width' => ($item == 'col') ? 300 : 51,
           'height' => ($item == 'row') ? 200 : 42,
           'title' => ' '
@@ -1126,15 +1123,15 @@
         if ($item == 'col')
         {
           $stmt = $this->prepare("
-            SELECT row, col FROM cells
-            WHERE walls_id = ? AND $item = ?");
+            SELECT item_row, item_col FROM cells
+            WHERE walls_id = ? AND item_$item = ?");
           $stmt->execute ([$this->wallId, $order]);
         }
         else
         {
           $stmt = $this->prepare('
-            SELECT row, col FROM cells
-            WHERE walls_id = ? ORDER BY row DESC, col ASC');
+            SELECT item_row, item_col FROM cells
+            WHERE walls_id = ? ORDER BY item_row DESC, item_col ASC');
           $stmt->execute ([$this->wallId]);
         }
   
@@ -1150,19 +1147,19 @@
           // Col
           if ($item == 'col')
           {
-            $data['row'] = $e['row'];
-            $data['col'] = $order + 1;
+            $data['item_row'] = $e['item_row'];
+            $data['item_col'] = $order + 1;
           }
           // Row
           else
           {
             if ($r == null)
-              $r = $e['row'];
-            elseif ($e['row'] != $r)
+              $r = $e['item_row'];
+            elseif ($e['item_row'] != $r)
               break 1;
   
-            $data['row'] = $e['row'] + 1;
-            $data['col'] = $e['col'];
+            $data['item_row'] = $e['item_row'] + 1;
+            $data['item_col'] = $e['item_col'];
           }
   
           $this->executeQuery ('INSERT INTO cells', $data);
@@ -1239,8 +1236,8 @@
       {
         for ($col = 0; $col < $colsCount; $col++) 
           $wall['cells'][] = [
-            'row' => $row,
-            'col' => $col,
+            'item_row' => $row,
+            'item_col' => $col,
             'width' => $cellWidth,
             'height' => $cellHeight,
             'postits' => []
@@ -1273,8 +1270,8 @@
   
           $this->executeQuery ('INSERT INTO headers', [
             'walls_id' => $this->wallId,
-            'type' => 'col',
-            'order' => $i,
+            'item_type' => 'col',
+            'item_order' => $i,
             'width' => $col['width'],
             'height' => $col['height'],
             'title' => $col['title']
@@ -1290,8 +1287,8 @@
 
           $this->executeQuery ('INSERT INTO headers', [
             'walls_id' => $this->wallId,
-            'type' => 'row',
-            'order' => $i,
+            'item_type' => 'row',
+            'item_order' => $i,
             'height' => $row['height'],
             'title' => $row['title']
           ]);
@@ -1308,8 +1305,8 @@
             'walls_id' => $this->wallId,
             'width' => $cell['width'],
             'height' => $cell['height'],
-            'row' => $cell['row'],
-            'col' => $cell['col']
+            'item_row' => $cell['item_row'],
+            'item_col' => $cell['item_col']
           ]);
         }
 
@@ -1392,8 +1389,8 @@
               $this->executeQuery ('UPDATE postits', [
                 'width' => $postit->width,
                 'height' => $postit->height,
-                'top' => $postit->top,
-                'left' => $postit->left
+                'item_top' => $postit->item_top,
+                'item_left' => $postit->item_left
               ],
               ['id' => $postit->id]);
             }

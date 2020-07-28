@@ -60,13 +60,13 @@ CREATE TABLE groups
   id SERIAL PRIMARY KEY,
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   walls_id INTEGER REFERENCES walls(id) ON DELETE CASCADE,
-  type SMALLINT NOT NULL, -- dedicated(1), generic(2)
+  item_type SMALLINT NOT NULL, -- dedicated(1), generic(2)
   name VARCHAR(30) NOT NULL,
   description VARCHAR(30),
   userscount SMALLINT NOT NULL DEFAULT 0
 );
 CREATE INDEX "groups-name:users_id-uidx" ON groups (name, users_id);
-CREATE INDEX "groups-type-idx" ON groups (type);
+CREATE INDEX "groups-item_type-idx" ON groups (item_type);
 
 DROP TABLE IF EXISTS users_groups CASCADE;
 CREATE TABLE users_groups
@@ -103,8 +103,8 @@ CREATE TABLE headers
 (
   id SERIAL PRIMARY KEY,
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
-  type enum_type NOT NULL,
-  "order" SMALLINT NOT NULL,
+  item_type enum_type NOT NULL,
+  item_order SMALLINT NOT NULL,
   height SMALLINT NOT NULL,
   width SMALLINT,
   title VARCHAR(50),
@@ -112,7 +112,7 @@ CREATE TABLE headers
   filetype VARCHAR(50),
   filesize INTEGER
 );
-CREATE INDEX "headers-type:order-idx" ON headers (type, "order");
+CREATE INDEX "headers-item_type:item_order-idx" ON headers (item_type, item_order);
 
 DROP TABLE IF EXISTS cells CASCADE;
 CREATE TABLE cells
@@ -121,11 +121,11 @@ CREATE TABLE cells
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
   width SMALLINT NOT NULL,
   height SMALLINT NOT NULL,
-  row SMALLINT NOT NULL,
-  col SMALLINT NOT NULL
+  item_row SMALLINT NOT NULL,
+  item_col SMALLINT NOT NULL
 );
-CREATE INDEX "cells-row-idx" ON cells (row);
-CREATE INDEX "cells-col-idx" ON cells (col);
+CREATE INDEX "cells-item_row-idx" ON cells (item_row);
+CREATE INDEX "cells-item_col-idx" ON cells (item_col);
 
 DROP TABLE IF EXISTS postits CASCADE;
 CREATE TABLE postits
@@ -134,8 +134,8 @@ CREATE TABLE postits
   cells_id INTEGER NOT NULL REFERENCES cells(id) ON DELETE CASCADE,
   width SMALLINT NOT NULL,
   height SMALLINT NOT NULL,
-  top SMALLINT NOT NULL,
-  "left" SMALLINT NOT NULL,
+  item_top SMALLINT NOT NULL,
+  item_left SMALLINT NOT NULL,
   creationdate INTEGER NOT NULL,
   attachmentscount SMALLINT NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
@@ -151,10 +151,10 @@ DROP TABLE IF EXISTS postits_plugs CASCADE;
 CREATE TABLE postits_plugs
 (
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
-  start INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
-  "end" INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
+  item_start INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
+  item_end INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
   label VARCHAR(50),
-  PRIMARY KEY (walls_id, start, "end")
+  PRIMARY KEY (walls_id, item_start, item_end)
 );
 
 DROP TABLE IF EXISTS postits_attachments CASCADE;
@@ -166,7 +166,7 @@ CREATE TABLE postits_attachments
   walls_id INTEGER NOT NULL,
   -- Not a foreign key, just a helper
   users_id INTEGER,
-  type VARCHAR(255) NOT NULL,
+  item_type VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INTEGER NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE postits_pictures
   walls_id INTEGER NOT NULL,
   -- Not a foreign key, just a helper
   users_id INTEGER,
-  type VARCHAR(50) NOT NULL,
+  item_type VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INTEGER NOT NULL,
@@ -209,7 +209,7 @@ CREATE TABLE emails_queue
   walls_id INTEGER REFERENCES walls(id) ON DELETE CASCADE,
   groups_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
   postits_id INTEGER REFERENCES postits(id) ON DELETE CASCADE,
-  type VARCHAR(50) NOT NULL,
+  item_type VARCHAR(50) NOT NULL,
   data VARCHAR(2000),
   processed INT NOT NULL DEFAULT 0
 );

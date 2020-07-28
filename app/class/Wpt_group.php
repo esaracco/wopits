@@ -199,7 +199,7 @@
       try
       {
         $this->executeQuery ('INSERT INTO groups', array_merge ([
-          'type' => $type,
+          'item_type' => $type,
           'name' => $this->data->name,
           'description' => ($this->data->description) ?
             $this->data->description : null,
@@ -262,7 +262,6 @@
 
     public function getGroup ()
     {
-      $q = $this->getFieldQuote ();
       $isCreator = $this->isWallCreator ($this->userId);
       $ret = [];
 
@@ -274,7 +273,7 @@
         $stmt = $this->prepare ('
           SELECT
             groups.userscount,
-            groups.type,
+            groups.item_type,
             groups.id,
             groups.name,
             groups.description,
@@ -297,7 +296,7 @@
         $stmt = $this->prepare ("
           SELECT
             userscount,
-            ${q}type$q,
+            item_type,
             id,
             name,
             description
@@ -306,12 +305,12 @@
             (
               (
                 users_id = :users_id_1 AND
-                ${q}type$q = ".WPT_GTYPES['generic']."
+                item_type = ".WPT_GTYPES['generic']."
               )
               OR
               (
                 users_id = :users_id_2 AND
-                ${q}type$q = ".WPT_GTYPES['dedicated']." AND
+                item_type = ".WPT_GTYPES['dedicated']." AND
                 walls_id = :walls_id_1
               )
             )
@@ -347,7 +346,7 @@
         $stmt = $this->prepare ('
           SELECT
             groups.userscount,
-            groups.type,
+            groups.item_type,
             groups.id,
             groups.name,
             groups.description,
@@ -357,7 +356,7 @@
             INNER JOIN groups
               ON groups.id = walls_groups.groups_id
           WHERE walls_groups.walls_id = ?
-            AND groups.type = '.WPT_GTYPES['dedicated'].'
+            AND groups.item_type = '.WPT_GTYPES['dedicated'].'
           ORDER BY name, access');
         $stmt->execute ([$this->wallId]);
         $ret['in'] = $stmt->fetchAll ();
@@ -382,11 +381,10 @@
       {
         $this->beginTransaction ();
 
-        $q = $this->getFieldQuote ();
         $this
           ->prepare("
             DELETE FROM emails_queue
-            WHERE {$q}type{$q} = 'wallSharing'
+            WHERE item_type = 'wallSharing'
               AND walls_id = ?
               AND groups_id = ?")
           ->execute ([$this->wallId, $this->groupId]);
@@ -468,7 +466,7 @@
           foreach ($this->getUsers()['users'] as $user)
           {
             $EmailsQueue->addTo ([
-              'type' => 'wallSharing',
+              'item_type' => 'wallSharing',
               'users_id' => $user['id'],
               'walls_id' => $this->wallId,
               'groups_id' => $this->groupId,

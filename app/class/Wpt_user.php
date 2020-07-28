@@ -83,7 +83,7 @@
           ['id' => $r['id']]);
   
           (new Wpt_emailsQueue())->addTo ([
-            'type' => 'resetPassword',
+            'item_type' => 'resetPassword',
             'users_id' => $r['id'],
             'data' => [
               'username' => $r['username'],
@@ -465,7 +465,7 @@
 
       if ( ($r = $stmt->fetch ()) )
         return Wpt_common::download ([
-          'type' => $r['filetype'],
+          'item_type' => $r['filetype'],
           'name' => basename ($r['picture']),
           'size' => $r['filesize'],
           'path' => WPT_ROOT_PATH.$r['picture']
@@ -534,7 +534,7 @@
           $stmt->execute ([$this->userId]);
           $previousPicture = $stmt->fetch()['picture'];
 
-          list ($file, $this->data->type) =
+          list ($file, $this->data->item_type) =
             Wpt_common::resizePicture ($file, 200);
 
           $img = "$wdir/".basename($file);
@@ -728,7 +728,7 @@
         // Send account creation email only in standard auth mode.
         if (!WPT_USE_LDAP)
           (new Wpt_emailsQueue())->addTo ([
-            'type' => 'accountCreation',
+            'item_type' => 'accountCreation',
             'users_id' => $this->userId,
             'data' => [
               'username' => $this->data->username,

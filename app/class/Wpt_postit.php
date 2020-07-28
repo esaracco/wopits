@@ -31,8 +31,8 @@
         'cells_id' => $this->cellId,
         'width' => $this->data->width,
         'height' => $this->data->height,
-        'top' => $this->data->top,
-        'left' => $this->data->left,
+        'item_top' => $this->data->item_top,
+        'item_left' => $this->data->item_left,
         'classcolor' => $this->data->classcolor,
         'title' => $this->data->title,
         'content' => $this->data->content,
@@ -75,13 +75,11 @@
 
     public function getPlugs ($all = false)
     {
-      $q = $this->getFieldQuote ();
-
       // Get postits plugs
       $stmt = $this->prepare ("
-        SELECT start, ${q}end$q, label
+        SELECT item_start, item_end, label
         FROM postits_plugs
-        WHERE ".(($all)?'walls_id':'start')." = ?");
+        WHERE ".(($all)?'walls_id':'item_start')." = ?");
       $stmt->execute ([($all)?$this->wallId:$this->postitId]);
 
       return $stmt->fetchAll ();
@@ -89,10 +87,9 @@
 
     public function getPostit ()
     {
-      $q = $this->getFieldQuote ();
       $stmt = $this->prepare ("
         SELECT
-          id, cells_id, width, height, top, ${q}left$q, classcolor,
+          id, cells_id, width, height, item_top, item_left, classcolor,
           title, content, tags, creationdate, deadline, timezone, obsolete,
           attachmentscount
         FROM postits
@@ -164,7 +161,7 @@
             $deleteAlert = true;
 
             $EmailsQueue->addTo ([
-              'type' => 'deadlineAlert_1',
+              'item_type' => 'deadlineAlert_1',
               'users_id' => $item['alert_user_id'],
               'walls_id' => $item['wall_id'],
               'postits_id' => $item['postit_id'],
@@ -180,7 +177,7 @@
           $deleteAlert = true;
 
           $EmailsQueue->addTo ([
-            'type' => 'deadlineAlert_2',
+            'item_type' => 'deadlineAlert_2',
             'users_id' => $item['alert_user_id'],
             'walls_id' => $item['wall_id'],
             'postits_id' => $item['postit_id'],
@@ -205,33 +202,32 @@
 
     public function addRemovePlugs ($plugs, $postitId = null)
     {
-      $q = $this->getFieldQuote ();
-
       if (!$postitId)
         $postitId = $this->postitId;
 
       $this
         ->prepare("
           DELETE FROM postits_plugs
-          WHERE start = ? AND ${q}end$q NOT IN (".
+          WHERE item_start = ? AND item_end NOT IN (".
             implode(",",array_map([$this, 'quote'], array_keys($plugs))).")")
         ->execute ([$postitId]);
 
       $stmt = $this->prepare ("
         INSERT INTO postits_plugs (
-          walls_id, start, ${q}end$q, label
+          walls_id, item_start, item_end, label
         ) VALUES (
-          :walls_id, :start, :end, :label
-        ) {$this->getDuplicateQueryPart (['walls_id', 'start', 'end'])}
-        label = :label_1");
+          :walls_id, :item_start, :item_end, :label
+        ) {$this->getDuplicateQueryPart (
+             ['walls_id', 'item_start', 'item_end'])}
+         label = :label_1");
 
       foreach ($plugs as $_id => $_label)
       {
         $this->checkDBValue ('postits_plugs', 'label', $_label);
         $stmt->execute ([
           ':walls_id' => $this->wallId,
-          ':start' => $postitId,
-          ':end' => $_id,
+          ':item_start' => $postitId,
+          ':item_end' => $_id,
           ':label' => $_label,
           ':label_1' => $_label
         ]);
@@ -311,7 +307,7 @@
 
           // Fix wrong MIME type for images
           if (preg_match ('/(jpe?g|gif|png)/i', $ext))
-            list ($file, $this->data->type, $this->data->name) =
+            list ($file, $this->data->item_type, $this->data->name) =
               Wpt_common::checkRealFileType ($file, $this->data->name);
 
           $ret = [
@@ -321,7 +317,7 @@
             'creationdate' => $currentDate,
             'name' => $this->data->name,
             'size' => $this->data->size,
-            'type' => $this->data->type,
+            'item_type' => $this->data->item_type,
             'link' => "$wdir/$rdir/".basename($file)
           ];
   
@@ -339,7 +335,7 @@
                 WHERE id = ?')
               ->execute ([$this->postitId]);
             
-            $ret['icon'] = Wpt_common::getImgFromMime ($this->data->type);
+            $ret['icon'] = Wpt_common::getImgFromMime ($this->data->item_type);
             $ret['link'] =
               "/api/wall/{$this->wallId}/cell/{$this->cellId}".
               "/postit/{$this->postitId}/attachment/{$ret['id']}";
@@ -377,7 +373,7 @@
           SELECT
              postits_attachments.id
             ,postits_attachments.link
-            ,postits_attachments.type
+            ,postits_attachments.item_type
             ,postits_attachments.name
             ,postits_attachments.size
             ,users.id AS ownerid
@@ -392,7 +388,7 @@
 
         while ($row = $stmt->fetch ())
         {
-          $row['icon'] = Wpt_common::getImgFromMime ($row['type']);
+          $row['icon'] = Wpt_common::getImgFromMime ($row['item_type']);
           $row['link'] =
             "/api/wall/{$this->wallId}/cell/{$this->cellId}/postit/".
             "{$this->postitId}/attachment/{$row['id']}";
@@ -444,7 +440,7 @@
           if (!file_exists ($file))
             throw new Exception (_("An error occured while uploading file."));
 
-          list ($file, $this->data->type, $width, $height) =
+          list ($file, $this->data->item_type, $width, $height) =
             Wpt_common::resizePicture ($file, 800, 0, false);
 
           $stmt = $this->prepare ('
@@ -462,7 +458,7 @@
               'creationdate' => time (),
               'name' => $this->data->name,
               'size' => filesize ($file),
-              'type' => $this->data->type,
+              'item_type' => $this->data->item_type,
               'link' => "$wdir/$rdir/".basename($file)
             ];
 
@@ -471,7 +467,7 @@
             $ret['id'] = $this->lastInsertId ();
           }
 
-          $ret['icon'] = Wpt_common::getImgFromMime ($this->data->type);
+          $ret['icon'] = Wpt_common::getImgFromMime ($this->data->item_type);
           $ret['width'] = $width;
           $ret['height'] = $height;
           $ret['link'] =

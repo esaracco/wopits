@@ -170,8 +170,8 @@
 
               plugin.addPostit ({
                 access: settings.access,
-                top: pTop,
-                left: pLeft - 15
+                item_top: pTop,
+                item_left: pLeft - 15
               });
             });
         }
@@ -244,8 +244,8 @@
           id: $cell[0].dataset.id.substring (5),
           width: Math.trunc($cell.outerWidth ()),
           height: Math.trunc($cell.outerHeight ()),
-          row: $cell.parent().index (),
-          col: $cell.index () - 1,
+          item_row: $cell.parent().index (),
+          item_col: $cell.index () - 1,
           postits: $postits.length ? $postits.postit ("serialize") : null
         });
       });

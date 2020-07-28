@@ -71,7 +71,7 @@ CREATE TABLE groups
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   users_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED,
-  `type` TINYINT UNSIGNED NOT NULL, -- dedicated(1), generic(2)
+  item_type TINYINT UNSIGNED NOT NULL, -- dedicated(1), generic(2)
   name VARCHAR(30) NOT NULL,
   description VARCHAR(30),
   userscount TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -82,7 +82,7 @@ CREATE TABLE groups
     REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT `groups-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,
-  INDEX `groups-type-idx` (`type`)
+  INDEX `groups-item_type-idx` (item_type)
 )
 ENGINE=INNODB;
 
@@ -136,8 +136,8 @@ CREATE TABLE headers
 (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   walls_id INT UNSIGNED NOT NULL,
-  `type` ENUM('col', 'row') NOT NULL,
-  `order` TINYINT UNSIGNED NOT NULL,
+  item_type ENUM('col', 'row') NOT NULL,
+  item_order TINYINT UNSIGNED NOT NULL,
   height SMALLINT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED,
   title VARCHAR(50),
@@ -148,7 +148,7 @@ CREATE TABLE headers
   PRIMARY KEY (id),
   CONSTRAINT `headers-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,
-  INDEX `headers-type:order-idx` (`type`, `order`)
+  INDEX `headers-item_type:item_order-idx` (item_type, item_order)
 )
 ENGINE=INNODB;
 
@@ -159,14 +159,14 @@ CREATE TABLE cells
   walls_id INT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED NOT NULL,
   height SMALLINT UNSIGNED NOT NULL,
-  `row` TINYINT UNSIGNED NOT NULL,
-  col TINYINT UNSIGNED NOT NULL,
+  item_row TINYINT UNSIGNED NOT NULL,
+  item_col TINYINT UNSIGNED NOT NULL,
 
   PRIMARY KEY (id),
   CONSTRAINT `cells-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,
-  INDEX `cells-row-idx` (`row`),
-  INDEX `cells-col-idx` (col)
+  INDEX `cells-item_row-idx` (item_row),
+  INDEX `cells-item_col-idx` (item_col)
 )
 ENGINE=INNODB;
 
@@ -177,8 +177,8 @@ CREATE TABLE postits
   cells_id INT UNSIGNED NOT NULL,
   width SMALLINT UNSIGNED NOT NULL,
   height SMALLINT UNSIGNED NOT NULL,
-  top SMALLINT UNSIGNED NOT NULL,
-  `left` SMALLINT UNSIGNED NOT NULL,
+  item_top SMALLINT UNSIGNED NOT NULL,
+  item_left SMALLINT UNSIGNED NOT NULL,
   creationdate INT UNSIGNED NOT NULL,
   attachmentscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
@@ -199,16 +199,16 @@ DROP TABLE IF EXISTS postits_plugs;
 CREATE TABLE postits_plugs
 (
   walls_id INT UNSIGNED NOT NULL,
-  start INT UNSIGNED NOT NULL,
-  end INT UNSIGNED NOT NULL,
+  item_start INT UNSIGNED NOT NULL,
+  item_end INT UNSIGNED NOT NULL,
   label VARCHAR(50),
 
-  PRIMARY KEY (walls_id, start, end),
+  PRIMARY KEY (walls_id, item_start, item_end),
   CONSTRAINT `postits_plugs-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,
-  CONSTRAINT `postits_plugs-start-fk` FOREIGN KEY (start)
+  CONSTRAINT `postits_plugs-item_start-fk` FOREIGN KEY (item_start)
     REFERENCES postits(id) ON DELETE CASCADE,
-  CONSTRAINT `postits_plugs-end-fk` FOREIGN KEY (end)
+  CONSTRAINT `postits_plugs-item_end-fk` FOREIGN KEY (item_end)
     REFERENCES postits(id) ON DELETE CASCADE
 )
 ENGINE=INNODB;
@@ -220,7 +220,7 @@ CREATE TABLE postits_attachments
   postits_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
   users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
-  `type` VARCHAR(255) NOT NULL,
+  item_type VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INT NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE postits_pictures
   postits_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
   users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
-  `type` VARCHAR(50) NOT NULL,
+  item_type VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INT NOT NULL,
@@ -276,7 +276,7 @@ CREATE TABLE emails_queue
   walls_id INT UNSIGNED,
   groups_id INT UNSIGNED,
   postits_id INT UNSIGNED,
-  `type` VARCHAR(50) NOT NULL,
+  item_type VARCHAR(50) NOT NULL,
   data VARCHAR(2000),
   processed INT UNSIGNED NOT NULL DEFAULT 0,
 

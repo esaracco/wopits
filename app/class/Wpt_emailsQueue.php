@@ -12,15 +12,14 @@
       if (isset ($data['data']))
         $data['data'] = json_encode ($data['data']);
 
-      if ($data['type'] == 'resetPassword')
+      if ($data['item_type'] == 'resetPassword')
       {
-        $q = $this->getFieldQuote ();
         $this
           ->prepare("
             DELETE FROM emails_queue
-            WHERE {$q}type{$q} = ?
+            WHERE item_type = ?
               AND users_id = ?")
-          ->execute ([$data['type'], $data['users_id']]);
+          ->execute ([$data['item_type'], $data['users_id']]);
       }
 
       $this->executeQuery ('INSERT INTO emails_queue', $data);
@@ -53,7 +52,7 @@
             if (isset ($item[$k]))
               $data->$k = $item[$k];
 
-          $this->{$item['type']}($User->getUser()['email'], $data);
+          $this->{$item['item_type']}($User->getUser()['email'], $data);
 
           $stmtDelete->execute ([$item['id']]);
         }

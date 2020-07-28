@@ -238,7 +238,7 @@
     public static function download ($args)
     {
       header ('Content-Description: File Transfer');
-      header ("Content-Type: {$args['type']}");
+      header ("Content-Type: {$args['item_type']}");
       header ('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
       header ('Content-Disposition: attachment; filename="'.
         preg_replace('/[^\.a-z0-9\-_\()\[\]:\s]+/i', '_', $args['name']).'"');

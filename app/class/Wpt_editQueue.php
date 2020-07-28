@@ -17,7 +17,6 @@
 
     public function addTo ()
     {
-      $q = $this->getFieldQuote ();
       $item = $this->item;
       $editIds = [$this->itemId];
       $ret = [];
@@ -51,13 +50,13 @@
           if ($item == 'postit')
           {
             $stmt = $this->prepare ("
-              SELECT start, ${q}end$q
+              SELECT item_start, item_end
               FROM postits_plugs
-              WHERE start = ? OR ${q}end$q = ?");
+              WHERE item_start = ? OR item_end = ?");
             $stmt->execute ([$this->itemId, $this->itemId]);
             while ($plug = $stmt->fetch ())
-              $editIds[] = ($plug['start'] == $this->itemId) ?
-                             $plug['end'] : $plug['start'];
+              $editIds[] = ($plug['item_start'] == $this->itemId) ?
+                             $plug['item_end'] : $plug['item_start'];
           }
 
           $stmt = $this->prepare ('
@@ -203,7 +202,7 @@
                        else
                          $this
                            ->prepare('
-                             DELETE FROM postits_plugs WHERE start = ?')
+                             DELETE FROM postits_plugs WHERE item_start = ?')
                            ->execute ([$_postit->id]);
                     }
 
@@ -239,8 +238,8 @@
                       'cells_id' => $this->data->cellId,
                       'width' => $this->data->width,
                       'height' => $this->data->height,
-                      'top' => $this->data->top,
-                      'left' => $this->data->left,
+                      'item_top' => $this->data->item_top,
+                      'item_left' => $this->data->item_left,
                       'classcolor' => $this->data->classcolor,
                       'title' => $this->data->title,
                       'content' => $content,

@@ -53,12 +53,12 @@
       for (let i = 0, iLen = settings.cells.length; i < iLen; i++)
       {
         const cell = settings.cells[i],
-              rowIdx = cell.row;
+              rowIdx = cell.item_row;
 
         if (!rows[rowIdx])
           rows[rowIdx] = [];
 
-        rows[rowIdx][cell.col] = cell;
+        rows[rowIdx][cell.item_col] = cell;
       }
 
       if (settings.shared)
@@ -106,7 +106,7 @@
             $wall.find("thead tr").append ($th);
             $th.header ({
               access: access,
-              type: "col",
+              item_type: "col",
               id: header.id,
               wall: $wall,
               wallId: wallId,
@@ -363,8 +363,8 @@
 
       (plugs||[]).forEach ((plug) =>
         {
-          const startId = plug.start,
-                endId = plug.end,
+          const startId = plug.item_start,
+                endId = plug.item_end,
                 $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                 $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
                 label = plug.label || "...";
@@ -546,7 +546,7 @@
           {
             $wall.find("thead tr").append ("<th></th>");
             $wall.find("thead tr th:last-child").header ({
-              type: "col",
+              item_type: "col",
               id: header.id,
               wall: $wall,
               wallId: wallId,
@@ -604,7 +604,7 @@
         for (let i = 0, iLen = d.cells.length; i < iLen; i++)
         {
           const cell = d.cells[i],
-                irow = cell.row;
+                irow = cell.item_row;
 
           // Get all postits ids for this cell
           for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
@@ -613,7 +613,7 @@
           if (rows[irow] == undefined)
             rows[irow] = [];
 
-          rows[irow][cell.col] = cell;
+          rows[irow][cell.item_col] = cell;
         }
 
         for (let i = 0, iLen = rows.length; i < iLen; i++)
@@ -642,7 +642,7 @@
 
               $cell = $(_getCellTemplate (cell));
 
-              $wall.find("tbody tr:eq("+cell.row+")").append ($cell);
+              $wall.find("tbody tr:eq("+cell.item_row+")").append ($cell);
 
               // Init cell
               $cell.cell ({
@@ -858,7 +858,7 @@
       $wall.find("tbody").append ($row);
       $row.find("th:eq(0)").header ({
         access: plugin.settings.access,
-        type: "row",
+        item_type: "row",
         id: header.id,
         wall: $wall,
         wallId: wallId,
@@ -1713,7 +1713,7 @@
                         {
                           name: file.name,
                           size: file.size,
-                          type: file.type,
+                          item_type: file.type,
                           content: e.target.result
                         },
                         // success cb
