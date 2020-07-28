@@ -12,7 +12,20 @@
     init: function (args)
     {
       const plugin = this,
+            $tc = $("#themeChooserPopup"),
             $settings = plugin.element;
+
+      $tc
+        .on("hide.bs.modal", function ()
+        {
+          if (!wpt_userData.settings.theme)
+            plugin.set ({theme: "theme-default"});
+        })
+        .find(".settings").on("click", function ()
+        {
+          $tc.modal ("hide");
+          plugin.open ();
+        });
 
       $("a.dot-theme")
         .on("click", function ()
@@ -203,6 +216,12 @@
         wpt_userData.settings.walls.global = data;
 
       this.set ({walls: wpt_userData.settings.walls});
+    },
+
+    // METHOD openThemeChooser ()
+    openThemeChooser: function ()
+    {
+      H.openModal ($("#themeChooserPopup"));
     },
 
     // METHOD open ()

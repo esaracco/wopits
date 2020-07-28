@@ -94,7 +94,8 @@
         'updateOneInput',
         'info',
         'confirm',
-        'datePicker'
+        'datePicker',
+        'themeChooser'
       ]
     ]);
 

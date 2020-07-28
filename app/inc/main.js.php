@@ -1654,6 +1654,10 @@
 
               }, 15*60*1000);
 
+            // Display theme chooser if needed.
+            if (!wpt_userData.settings.theme)
+              setTimeout(()=>
+                $("#settingsPopup").settings ("openThemeChooser"), 1000);
           });
 
         H.fixMenuHeight ();
