@@ -161,9 +161,6 @@
 
           setTimeout (()=>
           {
-            // Refresh postits relations
-            plugin.refreshPostitsPlugs (settings.postits_plugs);
-
             // Display postit dealine alert or specific wall if needed.
             if (settings.fromDirectURL)
             {
@@ -171,9 +168,9 @@
 
               plugin.setActive ();
 
-              if (postitId)
-              {
-                H.waitForDOMUpdate (() =>
+              H.waitForDOMUpdate (() =>
+                {
+                  if (postitId)
                   {
                     const $postit = $wall.find("[data-id=postit-"+postitId+"]");
 
@@ -181,13 +178,45 @@
                       $postit.postit ("displayDeadlineAlert");
                     else
                       H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted.")?>"});
-                  });
-              }
+                  }
+                  else
+                  {
+                    plugin.displayShareAlert ();
+                  }
+
+                  // Refresh postits relations
+                  H.waitForDOMUpdate (() =>
+                    plugin.refreshPostitsPlugs (settings.postits_plugs));;
+                });
             }
+            // Refresh postits relations
+            else
+              plugin.refreshPostitsPlugs (settings.postits_plugs);
 
           }, 0);
 
         });
+    },
+
+    // METHOD displayShareAlert ()
+    displayShareAlert: function ()
+    {
+      const walls = wpt_userData.walls.list;
+      let owner;
+
+      for (const k in walls)
+        if (walls[k].id == this.settings.id)
+        {
+          owner = walls[k].ownername
+          break;
+        }
+
+      H.openConfirmPopover ({
+        type: "info",
+        item: $(".walls a.active"),
+        title: `<i class="fas fa-share fa-fw"></i> <?=_("Sharing")?>`,
+        content: "<?=_("%s shared this wall with you!")?>".replace("%s", owner)
+      });
     },
 
     // METHOD setActive ()
