@@ -159,6 +159,30 @@
           if (viewcount !== undefined)
             plugin.refreshUsersview (viewcount); 
 
+          // If last wall to load.
+          if (S.get ("last-wall"))
+          {
+            S.unset ("last-wall");
+            // If we must save opened walls (because user have no longer the
+            // rights to load a previously opened wall for example).
+            if (S.get ("save-opened-walls"))
+            {
+              S.unset ("save-opened-walls");
+
+              plugin.setActive ();
+
+              // Save only when all walls has been loaded.
+              const t = setInterval (()=>
+                {
+                  if (!$('.walls i.fa-cog').length)
+                  {
+                    $("#settingsPopup").settings ("saveOpenedWalls");
+                    clearInterval (t);
+                  }
+                });
+            }
+          }
+
           setTimeout (()=>
           {
             // Display postit dealine alert or specific wall if needed.
@@ -1040,10 +1064,17 @@
             if ($tabs.find(".nav-item").length)
               $tabs.find(".nav-item:first-child").tab ("show");
 
-            //FIXME Wait for ws server connection...
+            // Save opened walls when all walls will be loaded.
             if (d.restoring)
-              setTimeout (
-                ()=> $("#settingsPopup").settings ("saveOpenedWalls"), 500);
+            {
+              if (S.get ("last-wall") && S.get ("last-wall") == 1)
+              {
+                S.unset ("last-wall");
+                $("#settingsPopup").settings ("saveOpenedWalls");
+              }
+              else
+                S.set ("save-opened-walls", true);
+            }
 
             return H.displayMsg ({type: "warning", msg: d.removed});
           }
@@ -1168,13 +1199,17 @@
     restorePreviousSession: function (args)
     {
       const walls = wpt_userData.settings.openedWalls,
-            {type, wallId, postitId} = args||{};
+            {type, wallId, postitId} = args||{},
+            wallsLen = walls.length;
 
       if (walls)
       {
-        for (let i = walls.length - 1; i >= 0; i--)
+        for (let i = wallsLen - 1; i >= 0; i--)
         {
           const fromDirectURL = type && walls[i] == wallId;
+
+          if (i == 0)
+            S.set ("last-wall", wallsLen);
 
           this.open ({
             wallId: walls[i],
