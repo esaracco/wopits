@@ -62,14 +62,14 @@
           $maxLength = $f['length'];
 
           // Here we cut long strings.
-          if ($maxLength && strlen ($value) > $f['length'])
+          if ($maxLength && mb_strlen ($value) > $f['length'])
           {
-            $fix = substr ($value, 0, $maxLength);
+            $fix = mb_substr ($value, 0, $maxLength);
 
             error_log (
-              "Bad DB field length (".strlen ($value).
+              "Bad DB field length (".mb_strlen ($value).
               " instead of $maxLength) `".
-              preg_replace("/(\n|\r)/", '', substr ($fix, 0, 100)).
+              preg_replace("/(\n|\r)/", '', mb_substr ($fix, 0, 100)).
                 "(...)` for $table::$field");
 
             $value = $fix;

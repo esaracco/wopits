@@ -378,8 +378,9 @@
             while (array_search ("$wallName$v", $names) !== false)
             {
               $v = ' ('.(++$i).')';
-              if (strlen ("$wallName$v") > $maxLength)
-                $wallName = substr ($wallName, 0, $maxLength - strlen ($v));
+              if (mb_strlen ("$wallName$v") > $maxLength)
+                $wallName = mb_substr ($wallName, 0,
+                                       $maxLength - mb_strlen ($v));
             }
             $wallName = "$wallName$v";
           }

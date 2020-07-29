@@ -298,7 +298,8 @@
 
       $mime = $imagick->getImageMimeType ();
       $ext = explode('/', $mime)[1];
-      $newFilename = substr($filename, 0, strrpos($filename, '.')).".$ext";
+      $newFilename = mb_substr($filename, 0, mb_strrpos($filename, '.')).
+                       ".$ext";
 
       if ($newFilename != $filename)
       {
@@ -306,7 +307,7 @@
         $filename = $newFilename;
 
         if ($name)
-          $name = substr($name, 0, strrpos($name, '.')).".$ext";
+          $name = mb_substr($name, 0, mb_strrpos($name, '.')).".$ext";
       }
 
       if (!$_imagick)
