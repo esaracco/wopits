@@ -196,27 +196,27 @@
           !$this->isWallCreator ($this->userId) || empty ($this->userId))
         return ['error' => _("Access forbidden")];
 
-      try
+      $stmt = $this->prepare ('
+        SELECT name FROM groups WHERE users_id = ? AND name = ?');
+      $stmt->execute ([$this->userId, $this->data->name]);
+      if ($stmt->fetch ())
+        $ret['error_msg'] = _("This group already exists.");
+      else
       {
-        $this->executeQuery ('INSERT INTO groups', array_merge ([
-          'item_type' => $type,
-          'name' => $this->data->name,
-          'description' => ($this->data->description) ?
-            $this->data->description : null,
-          'users_id' => $this->userId
-        ], ($type == WPT_GTYPES['dedicated']) ?
-             ['walls_id' => $this->wallId] : []));
-      }
-      catch (Exception $e)
-      {
-        $msg = $e->getMessage ();
-
-        // If duplicated entry
-        if (stripos ($msg, "duplicate") !== false)
-          $ret['error_msg'] = _("This group already exists.");
-        else
+        try
         {
-          error_log (__METHOD__.':'.__LINE__.':'.$msg);
+          $this->executeQuery ('INSERT INTO groups', array_merge ([
+            'item_type' => $type,
+            'name' => $this->data->name,
+            'description' => ($this->data->description) ?
+              $this->data->description : null,
+            'users_id' => $this->userId
+          ], ($type == WPT_GTYPES['dedicated']) ?
+               ['walls_id' => $this->wallId] : []));
+        }
+        catch (Exception $e)
+        {
+          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
           $ret['error'] = 1;
         }
       }
@@ -230,29 +230,28 @@
 
       // no need to check rights here (users_id = users_id in WHERE clause)
 
-      try
+      $stmt = $this->prepare ('
+        SELECT name FROM groups WHERE id <> ? AND users_id = ? AND name = ?');
+      $stmt->execute ([$this->groupId, $this->userId, $this->data->name]);
+      if ($stmt->fetch ())
+        $ret['error_msg'] = _("This group already exists.");
+      else
       {
-        $this->executeQuery ('UPDATE groups', [
-          'name' => $this->data->name,
-          'description' => ($this->data->description) ?
-            $this->data->description : null
-        ],
-        [
-          'id' => $this->groupId,
-          'users_id' => $this->userId
-        ]);
-      }
-      catch (Exception $e)
-      {
-        $msg = $e->getMessage ();
-
-        //FIXME
-        // duplicated entry
-        if (stripos ($msg, "duplicate") !== false)
-          $ret['error_msg'] = _("This group already exists.");
-        else
+        try
         {
-          error_log (__METHOD__.':'.__LINE__.':'.$msg);
+          $this->executeQuery ('UPDATE groups', [
+            'name' => $this->data->name,
+            'description' => ($this->data->description) ?
+              $this->data->description : null
+          ],
+          [
+            'id' => $this->groupId,
+            'users_id' => $this->userId
+          ]);
+        }
+        catch (Exception $e)
+        {
+          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
           $ret['error'] = 1;
         }
       }
