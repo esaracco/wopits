@@ -1200,7 +1200,7 @@
     {
       const walls = wpt_userData.settings.openedWalls,
             {type, wallId, postitId} = args||{},
-            wallsLen = walls.length;
+            wallsLen = (walls||[]).length;
 
       if (walls)
       {
