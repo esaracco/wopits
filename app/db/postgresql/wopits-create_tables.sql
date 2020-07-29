@@ -65,7 +65,7 @@ CREATE TABLE groups
   description VARCHAR(30),
   userscount SMALLINT NOT NULL DEFAULT 0
 );
-CREATE INDEX "groups-name:users_id-uidx" ON groups (name, users_id);
+CREATE UNIQUE INDEX "groups-name:users_id-uidx" ON groups (name, users_id);
 CREATE INDEX "groups-item_type-idx" ON groups (item_type);
 
 DROP TABLE IF EXISTS users_groups CASCADE;
