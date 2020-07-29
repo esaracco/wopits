@@ -13,7 +13,7 @@
     {
       const plugin = this,
             $ac = plugin.element,
-            $search = $ac.find(".search")
+            $search = $ac.find (".search");
 
       $search.append (`<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span></div><input type="input" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="none" autofocus></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu"><span>&times;</span></button><div class="content"></div></ul>`);
 
@@ -21,22 +21,37 @@
         .on("hidden.bs.modal", function (e)
         {
           $(this).find(".list-group.attr").empty ();
+        })
+        .on("keypress", function (e)
+        {
+          if (e.which == 13 && e.target.tagName == "INPUT")
+          {
+            const $el = $ac.find (".search .list-group-item-action");
+
+            if ($el.length == 1)
+            {
+              e.stopImmediatePropagation ();
+              e.preventDefault ();
+
+              $el.click ();
+            }
+          }
         });
    
       $(document)
-        .on("click", "#usersSearchPopup .list-group-item button",function (e)
+        .on("click", "#usersSearchPopup .list-group-item",function (e)
         {
-          const $btn = $(this),
+          const $el = $(this),
                 args = {
                   wallId: S.getCurrent("wall").wall ("getId"),
                   groupType: $ac[0].dataset.grouptype,
                   groupId: $ac[0].dataset.groupid,
-                  userId: $btn[0].dataset.id
+                  userId: $el[0].dataset.id
                 };
 
           e.stopImmediatePropagation ();
 
-          if ($btn[0].dataset.action == "add")
+          if ($el[0].dataset.action == "add")
             plugin.addGroupUser (args);
           else
             plugin.removeGroupUser (args);
@@ -142,7 +157,7 @@
     displayUsers: function (args)
     {
       const $ac = this.element,
-            delegateAdminId = $ac[0].dataset.delegateadminid || 0;
+            delegateAdminId = $ac[0].dataset.delegateadminid||0;
       let service = "group/"+args.groupId+"/getUsers";
 
       if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
@@ -165,7 +180,7 @@
             $ac.find(".users-title").show ();
             $ac.find(".nousers-title").hide ();
 
-            d.forEach ((item) => html += `<li class="list-group-item list-group-item-action${(delegateAdminId == item.id)?' readonly':''}"><span>${item.fullname}</span><button data-id="${item.id}" data-action="remove" type="button" class="close"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button></li>`);
+            d.forEach ((item) => html += `<li class="list-group-item list-group-item-action${(delegateAdminId == item.id)?' readonly':''}" data-action="remove" data-id="${item.id}"><span>${item.fullname}</span><button type="button" class="close"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button></li>`);
 
             if (d.length > 1)
               $div.parent().addClass ("scroll");
@@ -209,7 +224,7 @@
         {
           let html = "";
 
-          d.users.forEach ((item) => html += `<li class="list-group-item list-group-item-action">${item.fullname}<button data-id="${item.id}" data-action="add" type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
+          d.users.forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
 
           if (html)
           {
@@ -220,7 +235,7 @@
           else
             this.reset ();
           
-          $ac.find(".result .content").html (html)
+          $ac.find(".result .content").html (html);
         }
       );
     },
