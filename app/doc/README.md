@@ -9,7 +9,7 @@ wopits - _A world of post-its_
 
 **wopits is multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes** to share and collaborate with other users simultaneously.
 
-It is possible to edit several post-its at the same time, to add attachments, to insert images, to create relationships etc.
+It is possible to edit several post-its walls at the same time, to add attachments, to insert images, to create relationships etc.
 
 Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
