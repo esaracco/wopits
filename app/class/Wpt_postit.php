@@ -62,7 +62,7 @@
         // If 1452 : the col/row does not exists (has been removed between
         // two synchro).
         if (strpos ($msg, ": 1542") === false)
-          $ret['error_msg'] = _("This item has been deleted.");
+          $ret['error_msg'] = _("This item has been deleted!");
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$msg);

@@ -72,7 +72,7 @@
         {
           // If item is already edited by other user, error
           if ($r['session_id'] != $GLOBALS['sessionId'])
-            $ret['error_msg'] = _("Someone is editing this element.");
+            $ret['error_msg'] = _("Someone is editing this item.");
         }
         // If item is free for editing
         elseif (
@@ -81,7 +81,7 @@
           $stmt->execute ([$this->itemId]) &&
           !$stmt->fetch ())
         {
-          $ret['error_msg'] = _("This item has been deleted.");
+          $ret['error_msg'] = _("This item has been deleted!");
         }
         else
         {
@@ -131,14 +131,17 @@
   
               if (!empty ($this->data->todelete))
               {
-                $ret = $this->deleteWall ();
+                $ret = $this->deleteWall (false, true);
   
                 if (!isset ($ret['error']))
-                  $ret = ['wall' => [
-                    'id' => $this->wallId,
-                    // This message will be broadcast to users who have this
-                    // wall opened
-                    'removed' => _("This wall has been deleted!")]
+                  $ret = [
+                    'wall' => [
+                      'id' => $this->wallId,
+                      // This message will be broadcast to users who have this
+                      // wall opened
+                      'removed' => sprintf (
+                        _("The «%s» wall has been deleted!"), $ret['name'])
+                    ]
                   ];
               }
               elseif ($update)

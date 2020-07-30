@@ -7,6 +7,7 @@
     public $userId;
     public $wallId;
     public $data;
+    public $wallName;
 
     public function __construct ($args = null)
     {
@@ -39,15 +40,17 @@
 
       if ( !($allowed = $stmt->fetch ()) )
       {
-        $stmt = $this->prepare ('SELECT 1 FROM walls WHERE id = ?');
+        $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
         $stmt->execute ([$this->wallId]);
-        if (!$stmt->fetch ())
+
+        if ( !($r = $stmt->fetch ()) )
           return [
             'ok' => 0,
             'id' => $this->wallId,
             // This message will be broadcast to users who have this
             // wall opened
-            'error_msg' => _("The wall has been deleted."),
+            'error_msg' =>
+              sprintf (_("The «%s» wall has been deleted!"), $r['name']),
             'action' => 'deletedwall'
           ];
       }
@@ -70,6 +73,26 @@
       ]);
 
       return $stmt->rowCount ();
+    }
+
+    protected function getWallName ()
+    {
+      if (!$this->wallName)
+      {
+        $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
+        $stmt->execute ([$this->wallId]);
+
+        $this->wallName = $stmt->fetch()['name'];
+      }
+
+      return $this->wallName;
+    }
+
+    protected function getRemovedWallMessage ()
+    {
+      return ( ($name = $this->getWallName ()) ) ?
+        sprintf(_("You no longer have the necessary rights to access the «%s» wall!"), $name):
+        _("One of your opened walls has been deleted!");
     }
 
     protected function isWallCreator ($userId)
@@ -599,7 +622,7 @@
       if (!$data)
         return [
           'id' => $this->wallId,
-          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted.")
+          'removed' => $this->getRemovedWallMessage ()
         ];
 
       $data['_exportInfos'] = [
@@ -807,12 +830,10 @@
       $data = $stmt->fetch ();
 
       if (!$data)
-      {
         return [
           'id' => $this->wallId,
-          'removed' => _("Either you no longer have the right to access this wall, or it has been deleted.")
+          'removed' => $this->getRemovedWallMessage ()
         ];
-      }
       elseif (!$basic)
       {
         // Get headers
@@ -1334,7 +1355,7 @@
       return $ret;
     }
   
-    public function deleteWall ($force = false)
+    public function deleteWall ($force = false, $returnName = false)
     {
       $ret = [];
 
@@ -1347,6 +1368,13 @@
 
       try
       {
+        if ($returnName)
+        {
+          $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
+          $stmt->execute ([$this->wallId]);
+          $ret['name'] = $stmt->fetch()['name'];
+        }
+
         $this
           ->prepare('DELETE FROM walls WHERE id = ?')
           ->execute ([$this->wallId]);

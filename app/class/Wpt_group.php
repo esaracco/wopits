@@ -139,7 +139,7 @@
     {
       $ret = [];
       $groupUserId = $args['userId'];
-      
+
       if (!$this->_checkGroupAccess ())
         return ['error' => _("Access forbidden")];
 
@@ -147,19 +147,27 @@
       {
         $this->beginTransaction ();
 
+        $params = [$this->groupId, $groupUserId];
+
         $this
           ->prepare('
             DELETE FROM users_groups
             WHERE groups_id = ? AND users_id = ?')
-          ->execute ([$this->groupId, $groupUserId]);
+          ->execute ($params);
 
         // Performance helper:
+        // Get wall id.
+        $stmt = $this->prepare ('
+          SELECT walls_id FROM _perf_walls_users
+          WHERE groups_id = ? AND users_id = ?');
+        $stmt->execute ($params);
+        $this->wallId = $stmt->fetch()['walls_id'];
         // Unlink user to group's walls.
         $this
           ->prepare('
             DELETE FROM _perf_walls_users
             WHERE groups_id = ? AND users_id = ?')
-          ->execute ([$this->groupId, $groupUserId]);
+          ->execute ($params);
 
         $this
           ->prepare('
@@ -171,7 +179,7 @@
 
         $ret['wall'] = [
           'id' => $this->wallId,
-          'unlinked' => _("You have been removed from a group associated with this wall.")
+          'unlinked' => sprintf(_("You no longer have the necessary rights to access the «%s» wall!"), $this->getWallName ())
         ];
       }
       catch (Exception $e) 
@@ -404,7 +412,7 @@
 
         $ret['wall'] = [
           'id' => $this->wallId,
-          'removed' => _("You no longer have the right to access this wall.")
+          'removed' => $this->getRemovedWallMessage ()
         ];
 
         $this->commit ();
