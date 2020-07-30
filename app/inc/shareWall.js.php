@@ -104,8 +104,7 @@
                  `<?=_("If you delete this <b>generic</b> group, it will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
 
               H.openConfirmPopover ({
-                 item: $btn,
-                 placement: "left",
+                 item: $btn.parent().find(".name"),
                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                  content: content,
                  cb_close: () =>
