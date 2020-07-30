@@ -163,6 +163,7 @@
           if (S.get ("last-wall"))
           {
             S.unset ("last-wall");
+
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
             if (S.get ("save-opened-walls"))
@@ -176,6 +177,9 @@
                 {
                   if (!$('.walls i.fa-cog').length)
                   {
+                    //FIXME
+                    $(".tab-content > .tab-pane").show ();
+
                     $("#settingsPopup").settings ("saveOpenedWalls");
                     clearInterval (t);
                   }
@@ -210,7 +214,7 @@
 
                   // Refresh postits relations
                   H.waitForDOMUpdate (() =>
-                    plugin.refreshPostitsPlugs (settings.postits_plugs));;
+                    plugin.refreshPostitsPlugs (settings.postits_plugs));
                 });
             }
             // Refresh postits relations
@@ -1129,7 +1133,6 @@
 
           if (!args.restoring)
             $("#settingsPopup").settings ("saveOpenedWalls");
-
         });
     },
 
@@ -1198,12 +1201,13 @@
     // METHOD restorePreviousSession ()
     restorePreviousSession: function (args)
     {
-      const walls = wpt_userData.settings.openedWalls,
-            {type, wallId, postitId} = args||{},
-            wallsLen = (walls||[]).length;
+      const walls = wpt_userData.settings.openedWalls;
 
       if (walls)
       {
+        const {type, wallId, postitId} = args||{},
+              wallsLen = walls.length;
+
         for (let i = wallsLen - 1; i >= 0; i--)
         {
           const fromDirectURL = type && walls[i] == wallId;
@@ -1215,7 +1219,7 @@
             wallId: walls[i],
             restoring: true,
             fromDirectURL: fromDirectURL,
-            postitId: (fromDirectURL) ? postitId : null
+            postitId: fromDirectURL ? postitId : null
           });
         }
       }
