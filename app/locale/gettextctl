@@ -25,7 +25,7 @@ DATE=$(date "+%Y-%m-%d %H:%M\+0200")
 if [ "x$1" == "xcreate" ]
 then
   
-  OPTIONS=" --default-domain=${DOMAIN} --from-code=UTF-8 --force-po --indent --add-location --no-wrap --sort-output --foreign-user -L PHP"
+  OPTIONS=" --default-domain=${DOMAIN} --from-code=UTF-8 --force-po --indent --no-location --no-wrap --sort-output --foreign-user -L PHP"
 
   $(/bin/mkdir -p $LOCALEDIR/)
   $(/bin/rm -f ${LOCALEDIR}/${DOMAIN}.pot)
@@ -117,7 +117,7 @@ then
         ${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.old)
       
       # Merge all PO
-      msgmerge --quiet \
+      msgmerge --no-location --quiet \
         $LOCALEDIR/${loc}/LC_MESSAGES/${DOMAIN}.po.old \
       	${LOCALEDIR}/${DOMAIN}.pot > \
         ${LOCALEDIR}/${loc}/LC_MESSAGES/${DOMAIN}.po.new 2>&1
