@@ -61,7 +61,7 @@
   <script src="/libs/moment-2.27.0/moment-timezone-with-data.min.js"></script>
   <script src="<?=$js?>"></script>
 
-  <script defer src="/libs/tinymce-5.4.0/js/tinymce/tinymce.min.js"></script>
+  <script defer src="/libs/tinymce-5.4.1/js/tinymce/tinymce.min.js"></script>
   <script defer src="/libs/jquery-ui-1.12.1/datepicker-<?=$slocale?>.js"></script>
   <script defer src="/libs/colorpicker-1.2.20/jquery.colorpicker.js"></script>
   <script defer src="/libs/leader-line.min.js?<?=$version?>"></script>
