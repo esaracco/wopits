@@ -13,7 +13,7 @@ It is possible to edit several post-its walls at the same time, to add attachmen
 
 Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
-If you do not want to bother installing it on your own, just create an account on the [wopits official website](https://www.wopits.com)!
+If you don't want to bother to install it yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
 INSTALLATION
 ------------
