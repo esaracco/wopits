@@ -669,6 +669,7 @@
         // CLI args for CSS minifier "closure-stylesheets"
         elseif (stripos ($m[1], 'closure-stylesheets') !== false)
           $options = 
+            ' --allowed-unrecognized-property image-orientation '.
             ' --allowed-unrecognized-property hyphens '.
             ' --allowed-unrecognized-property -o-hyphens '.
             ' --allowed-unrecognized-property -webkit-hyphens '.
