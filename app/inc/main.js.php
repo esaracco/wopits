@@ -177,9 +177,6 @@
                 {
                   if (!$('.walls i.fa-cog').length)
                   {
-                    //FIXME
-                    $(".tab-content > .tab-pane").show ();
-
                     $("#settingsPopup").settings ("saveOpenedWalls");
                     clearInterval (t);
                   }
@@ -250,7 +247,12 @@
     // METHOD setActive ()
     setActive: function ()
     {
+      S.reset ();
+
       $("a[href='#wall-"+this.settings.id+"']").click ();
+      $("#wall-"+this.settings.id).addClass ("active");
+
+      this.menu ({from: "wall", type: "have-wall"});
     },
 
     // METHOD getId ()
