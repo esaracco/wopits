@@ -7,7 +7,11 @@ wopits - _A world of post-its_
 
 [Project homepage](https://wopits.esaracco.fr) | [wopits homepage](https://www.wopits.com)
 
-*wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously*.
+**wopits is multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes** to share and collaborate with other users simultaneously.
+
+It is possible to edit several post-its walls at the same time, to add attachments, to insert images, to create relationships etc.
+
+Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
 If you do not want to bother installing it on your own, just create an account on the [wopits official website](https://www.wopits.com)!
 
