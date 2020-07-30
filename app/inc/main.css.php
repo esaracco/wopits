@@ -8,6 +8,10 @@
   opacity:0.4 !important;
 }
 
+img {
+  image-orientation: from-image;
+}
+
 .custom-control-input:checked ~ .custom-control-label::before {
   color: #fff;
   border-color: #343a40;
