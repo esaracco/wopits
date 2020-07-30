@@ -27,6 +27,13 @@
           ['error_msg' =>
              _("You must have write access to perform this action.")];
 
+      // Check for the col/row (it could have been removed while user was
+      // creating the new post-it.
+      $stmt = $this->prepare ('SELECT 1 FROM cells WHERE id = ?');
+      $stmt->execute ([$this->cellId]);
+      if (!$stmt->fetch ())
+        return ['error_msg' => _("The row/column has been deleted!")];
+
       $data = [
         'cells_id' => $this->cellId,
         'width' => $this->data->width,
@@ -42,7 +49,6 @@
       try
       {
         $this->executeQuery ('INSERT INTO postits', $data);
-
         $this->postitId = $this->lastInsertId ();
 
         mkdir ("$dir/postit/".$this->postitId);
@@ -57,17 +63,8 @@
       }
       catch (Exception $e)
       {
-        $msg = $e->getMessage ();
-
-        // If 1452 : the col/row does not exists (has been removed between
-        // two synchro).
-        if (strpos ($msg, ": 1542") === false)
-          $ret['error_msg'] = _("This item has been deleted!");
-        else
-        {
-          error_log (__METHOD__.':'.__LINE__.':'.$msg);
-          $ret['error'] = 1;
-        }
+        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+        $ret['error'] = 1;
       }
 
       return $ret;
