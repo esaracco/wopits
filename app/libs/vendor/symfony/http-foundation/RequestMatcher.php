@@ -29,6 +29,11 @@ class RequestMatcher implements RequestMatcherInterface
     private $host;
 
     /**
+     * @var int|null
+     */
+    private $port;
+
+    /**
      * @var string[]
      */
     private $methods = [];
@@ -49,19 +54,18 @@ class RequestMatcher implements RequestMatcherInterface
     private $schemes = [];
 
     /**
-     * @param string|null          $path
-     * @param string|null          $host
      * @param string|string[]|null $methods
      * @param string|string[]|null $ips
      * @param string|string[]|null $schemes
      */
-    public function __construct($path = null, $host = null, $methods = null, $ips = null, array $attributes = [], $schemes = null)
+    public function __construct(string $path = null, string $host = null, $methods = null, $ips = null, array $attributes = [], $schemes = null, int $port = null)
     {
         $this->matchPath($path);
         $this->matchHost($host);
         $this->matchMethod($methods);
         $this->matchIps($ips);
         $this->matchScheme($schemes);
+        $this->matchPort($port);
 
         foreach ($attributes as $k => $v) {
             $this->matchAttribute($k, $v);
@@ -80,20 +84,26 @@ class RequestMatcher implements RequestMatcherInterface
 
     /**
      * Adds a check for the URL host name.
-     *
-     * @param string|null $regexp A Regexp
      */
-    public function matchHost($regexp)
+    public function matchHost(?string $regexp)
     {
         $this->host = $regexp;
     }
 
     /**
-     * Adds a check for the URL path info.
+     * Adds a check for the the URL port.
      *
-     * @param string|null $regexp A Regexp
+     * @param int|null $port The port number to connect to
      */
-    public function matchPath($regexp)
+    public function matchPort(?int $port)
+    {
+        $this->port = $port;
+    }
+
+    /**
+     * Adds a check for the URL path info.
+     */
+    public function matchPath(?string $regexp)
     {
         $this->path = $regexp;
     }
@@ -103,7 +113,7 @@ class RequestMatcher implements RequestMatcherInterface
      *
      * @param string $ip A specific IP address or a range specified using IP/netmask like 192.168.1.0/24
      */
-    public function matchIp($ip)
+    public function matchIp(string $ip)
     {
         $this->matchIps($ip);
     }
@@ -130,11 +140,8 @@ class RequestMatcher implements RequestMatcherInterface
 
     /**
      * Adds a check for request attribute.
-     *
-     * @param string $key    The request attribute name
-     * @param string $regexp A Regexp
      */
-    public function matchAttribute($key, $regexp)
+    public function matchAttribute(string $key, string $regexp)
     {
         $this->attributes[$key] = $regexp;
     }
@@ -163,6 +170,10 @@ class RequestMatcher implements RequestMatcherInterface
         }
 
         if (null !== $this->host && !preg_match('{'.$this->host.'}i', $request->getHost())) {
+            return false;
+        }
+
+        if (null !== $this->port && 0 < $this->port && $request->getPort() !== $this->port) {
             return false;
         }
 

@@ -1,6 +1,59 @@
 CHANGELOG
 =========
 
+5.1.0
+-----
+
+ * added the protected method `PhpFileLoader::callConfigurator()` as extension point to ease custom routing configuration
+ * deprecated `RouteCollectionBuilder` in favor of `RoutingConfigurator`.
+ * added "priority" option to annotated routes
+ * added argument `$priority` to `RouteCollection::add()`
+ * deprecated the `RouteCompiler::REGEX_DELIMITER` constant
+ * added `ExpressionLanguageProvider` to expose extra functions to route conditions
+ * added support for a `stateless` keyword for configuring route stateless in PHP, YAML and XML configurations.
+ * added the "hosts" option to be able to configure the host per locale.
+ * added `RequestContext::fromUri()` to ease building the default context
+
+5.0.0
+-----
+
+ * removed `PhpGeneratorDumper` and `PhpMatcherDumper`
+ * removed `generator_base_class`, `generator_cache_class`, `matcher_base_class` and `matcher_cache_class` router options
+ * `Serializable` implementing methods for `Route` and `CompiledRoute` are final
+ * removed referencing service route loaders with a single colon
+ * Removed `ServiceRouterLoader` and `ObjectRouteLoader`.
+
+4.4.0
+-----
+
+ * Deprecated `ServiceRouterLoader` in favor of `ContainerLoader`.
+ * Deprecated `ObjectRouteLoader` in favor of `ObjectLoader`.
+ * Added a way to exclude patterns of resources from being imported by the `import()` method
+
+4.3.0
+-----
+
+ * added `CompiledUrlMatcher` and `CompiledUrlMatcherDumper`
+ * added `CompiledUrlGenerator` and `CompiledUrlGeneratorDumper`
+ * deprecated `PhpGeneratorDumper` and `PhpMatcherDumper`
+ * deprecated `generator_base_class`, `generator_cache_class`, `matcher_base_class` and `matcher_cache_class` router options
+ * `Serializable` implementing methods for `Route` and `CompiledRoute` are marked as `@internal` and `@final`.
+   Instead of overwriting them, use `__serialize` and `__unserialize` as extension points which are forward compatible
+   with the new serialization methods in PHP 7.4.
+ * exposed `utf8` Route option, defaults "locale" and "format" in configuration loaders and configurators
+ * added support for invokable service route loaders
+
+4.2.0
+-----
+
+ * added fallback to cultureless locale for internationalized routes
+
+4.0.0
+-----
+
+ * dropped support for using UTF-8 route patterns without using the `utf8` option
+ * dropped support for using UTF-8 route requirements without using the `utf8` option
+
 3.4.0
 -----
 
