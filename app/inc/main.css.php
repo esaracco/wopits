@@ -349,8 +349,13 @@ form span.required {
 }
 
 .user-picture {
-  text-align:center;
+  display:inline-block;
   color:#555;
+}
+
+div.content-centered {
+  width:100%;
+  text-align:center;
 }
 
 #accountPopup .user-picture {
