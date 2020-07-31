@@ -469,6 +469,7 @@
           $EmailsQueue = new Wpt_emailsQueue ();
           $sharerName = $this->data->sendmail->userFullname;
           $wallTitle = $this->data->sendmail->wallTitle;
+          $access = $this->data->access;
 
           foreach ($this->getUsers()['users'] as $user)
           {
@@ -480,7 +481,8 @@
               'data' => [
                 'recipientName' => $user['fullname'],
                 'sharerName' => $sharerName,
-                'wallTitle' => $wallTitle
+                'wallTitle' => $wallTitle,
+                'access' => $access
               ]
             ]);
           }

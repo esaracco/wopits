@@ -109,10 +109,25 @@
 
     private function wallSharing ($to, $data)
     {
+      $msg = '';
+
+      switch ($data->access)
+      {
+        case WPT_WRIGHTS_ADMIN:
+          $msg = _("Hello %s,\n\n%s gave you full access to the following wall:\n\n%s\n%s");
+          break;
+        case WPT_WRIGHTS_RW:
+          $msg = _("Hello %s,\n\n%s gave you limited access with creation of sticky notes to the following wall:\n\n%s\n%s");
+          break;
+        case WPT_WRIGHTS_RO:
+          $msg = _("Hello %s,\n\n%s gave you read-only access to the following wall:\n\n%s\n%s");
+          break;
+      }
+
       $this->send ([
         'email' => $to,
         'subject' => _("Wall sharing"),
-        'msg' => sprintf(_("Hello %s,\n\n%s shared a wall with you:\n\n%s\n%s"), $data->recipientName, $data->sharerName, "«{$data->wallTitle}»", WPT_URL."/?/s/{$data->walls_id}")
+        'msg' => sprintf ($msg, $data->recipientName, $data->sharerName, "«{$data->wallTitle}»", WPT_URL."/?/s/{$data->walls_id}")
       ]);
     }
 
