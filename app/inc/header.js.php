@@ -68,7 +68,7 @@
             $wall = settings.wall,
             type = settings.item_type,
             isCol = (type == "col"),
-            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
+            adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>",
                                            settings.access);
 
       $header[0].dataset.id = "header-"+settings.id;
@@ -278,7 +278,7 @@
             $header = plugin.element,
             type =
               (($header.parent().parent()[0].tagName=="TBODY")?"row":"col"),
-            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>",
+            adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>",
                             plugin.settings.access),
             $img = $("<div class='img'><img src='"+src+"'></div>");
 

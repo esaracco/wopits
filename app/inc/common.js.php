@@ -794,7 +794,7 @@ class WHelp
     }
   
     return (currentAccess === undefined) ?
-      false : (currentAccess == "<?=WPT_RIGHTS['walls']['admin']?>" ||
+      false : (currentAccess == "<?=WPT_WRIGHTS_ADMIN?>" ||
                currentAccess == String (requiredRights))
   }
   
@@ -808,9 +808,9 @@ class WHelp
   
     switch (String (access))
     {
-      case "<?=WPT_RIGHTS['walls']['admin']?>": icon = 'fa-shield-alt'; break;
-      case "<?=WPT_RIGHTS['walls']['rw']?>": icon = 'fa-edit'; break;
-      case "<?=WPT_RIGHTS['walls']['ro']?>": icon = 'fa-eye'; break;
+      case "<?=WPT_WRIGHTS_ADMIN?>": icon = 'fa-shield-alt'; break;
+      case "<?=WPT_WRIGHTS_RW?>": icon = 'fa-edit'; break;
+      case "<?=WPT_WRIGHTS_RO?>": icon = 'fa-eye'; break;
     }
   
     return `<i class="fas ${icon} fa-fw"></i>`;
@@ -1043,7 +1043,7 @@ class WHelp
     else
     {
       if (w != 500)
-        w += this.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>",
+        w += this.checkAccess ("<?=WPT_WRIGHTS_RW?>",
                S.getCurrent("wall")[0].dataset.access) ? 70 : 30;
   
       if (w > wW)

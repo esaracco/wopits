@@ -99,7 +99,7 @@
             case "delete-group":
 
               var content =
-               ($row.parent().hasClass ("gtype-<?=WPT_GTYPES['dedicated']?>"))?
+               ($row.parent().hasClass ("gtype-<?=WPT_GTYPES_DED?>"))?
                  `<?=_("Delete this group?")?>`:
                  `<?=_("If you delete this <b>generic</b> group, it will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
 
@@ -160,8 +160,8 @@
           const $btn = $(this),
                 action = $btn[0].dataset.action;
 
-          if (action == "add-gtype-<?=WPT_GTYPES['generic']?>" ||
-              action == "add-gtype-<?=WPT_GTYPES['dedicated']?>")
+          if (action == "add-gtype-<?=WPT_GTYPES_GEN?>" ||
+              action == "add-gtype-<?=WPT_GTYPES_DED?>")
             plugin.openAddGroup (action.match(/add\-gtype\-([^\-]+)/)[1]);
         });
 
@@ -211,7 +211,7 @@
       let title,
           desc;
 
-      if (type == <?=WPT_GTYPES['generic']?>)
+      if (type == <?=WPT_GTYPES_GEN?>)
       {
         title = "<?=_("Create a <b>generic</b> group")?>";
         desc =  "<?=_("The group will also be available for all your other walls.")?>";
@@ -274,8 +274,8 @@
             $sendMsg = $_groupAccessPopup.find(".send-msg"),
             data = {
               type:
-                $group.parent().hasClass("gtype-<?=WPT_GTYPES['dedicated']?>") ?
-                   <?=WPT_GTYPES['dedicated']?> : <?=WPT_GTYPES['generic']?>,
+                $group.parent().hasClass("gtype-<?=WPT_GTYPES_DED?>") ?
+                   <?=WPT_GTYPES_DED?> : <?=WPT_GTYPES_GEN?>,
               access:
                 $_groupAccessPopup.find("input[name='access']:checked").val (),
               sendmail: $sendMsg.find("input[type='checkbox']")[0].checked ?
@@ -323,7 +323,7 @@
     deleteGroup: function ()
     {
       const $group = this.element.find("li.todelete"),
-            service = ($group[0].dataset.type == <?=WPT_GTYPES['dedicated']?>) ?
+            service = ($group[0].dataset.type == <?=WPT_GTYPES_DED?>) ?
               "wall/"+S.getCurrent("wall").wall("getId")+
                 "/group/"+$group[0].dataset.id :
               "group/"+$group[0].dataset.id
@@ -345,7 +345,7 @@
     // METHOD createGroup ()
     createGroup: function (type, args)
     {
-      const service = (type == <?=WPT_GTYPES['dedicated']?>) ?
+      const service = (type == <?=WPT_GTYPES_DED?>) ?
               "wall/"+S.getCurrent("wall").wall("getId")+"/group" :
               "group";
 
@@ -416,7 +416,7 @@
 
             d.in.forEach ((item) =>
               {
-                const isDed = (item.item_type == <?=WPT_GTYPES['dedicated']?>),
+                const isDed = (item.item_type == <?=WPT_GTYPES_DED?>),
                       typeIcon = (d.delegateAdminId) ? '' : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
                       unlinkBtn = (d.delegateAdminId) ? '' : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs" style="float:right;margin-right:5px" data-toggle="tooltip" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
 
@@ -446,9 +446,9 @@
           {
             $body.find(".delegate-admin-only").hide ();
 
-            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES['dedicated']?>.noattr"), <?=WPT_GTYPES['dedicated']?>, d.notin);
+            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_DED?>.noattr"), <?=WPT_GTYPES_DED?>, d.notin);
 
-            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES['generic']?>.noattr"), <?=WPT_GTYPES['generic']?>, d.notin);
+            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr"), <?=WPT_GTYPES_GEN?>, d.notin);
   
             $body.find(".creator-only").show ();
           }

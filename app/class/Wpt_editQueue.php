@@ -367,8 +367,7 @@
       $needAdminAccess = ($item == 'header' || $item == 'wall');
 
       // Wall update need admin rights, else need write access
-      $access = ($needAdminAccess) ?
-                  WPT_RIGHTS['walls']['admin'] : WPT_RIGHTS['walls']['rw'];
+      $access = ($needAdminAccess) ? WPT_WRIGHTS_ADMIN : WPT_WRIGHTS_RW;
 
       $r = $this->checkWallAccess ($access);
 

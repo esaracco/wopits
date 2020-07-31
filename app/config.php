@@ -23,19 +23,13 @@
   define ('WPT_DEFAULT_LOCALE', 'en');
 
   // Users groups types
-  define ('WPT_GTYPES', [
-    'dedicated' => 1,
-    'generic' => 2
-   ]);
+  define ('WPT_GTYPES_DED', 1);
+  define ('WPT_GTYPES_GEN', 2);
 
   // Walls access rights
-  define ('WPT_RIGHTS', [
-    'walls' => [
-      'admin' => 1,
-      'rw' => 2,
-      'ro' => 3
-    ]
-  ]);
+  define ('WPT_WRIGHTS_ADMIN', 1);
+  define ('WPT_WRIGHTS_RW', 2);
+  define ('WPT_WRIGHTS_RO', 3);
 
   // Themes
   define ('WPT_THEMES', ['blue', 'green', 'red', 'orange']);

@@ -267,7 +267,7 @@
             $wall = S.getCurrent ("wall"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
-            adminAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>");
+            adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>");
 
       switch (args.from)
         {
@@ -1335,7 +1335,7 @@
 
           $popup.find(".size").hide ();
 
-          if (H.checkAccess("<?=WPT_RIGHTS['walls']['admin']?>"))
+          if (H.checkAccess("<?=WPT_WRIGHTS_ADMIN?>"))
           {
             const $input = $popup.find(".name input");
 
@@ -1385,7 +1385,7 @@
     // METHOD openPropertiesPopup ()
     openPropertiesPopup: function (args)
     {
-      if (H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
+      if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
         this.edit (() => this.displayWallProperties (args));
       else
         this.displayWallProperties ();
@@ -1463,7 +1463,7 @@
             type = args.type,
             noalert = !!args.noalert,
             zoomStep = (!!args.step) ? args.step : 0.2,
-            writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
+            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
       let stylesOrigin;
 
       if (!args.step)

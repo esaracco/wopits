@@ -21,7 +21,7 @@
       $ret = [];
       $dir = $this->getWallDir ();
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r :
           ['error_msg' =>
@@ -236,7 +236,7 @@
       $ret = [];
       $attachmentId = $args['attachmentId'];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -281,7 +281,7 @@
       $wdir = $this->getWallDir ('web');
       $currentDate = time ();
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -357,7 +357,7 @@
       $attachmentId = $args['attachmentId']??null;
       $ret = [];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -415,7 +415,7 @@
       $dir = $this->getWallDir ();
       $wdir = $this->getWallDir ('web');
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -499,7 +499,7 @@
     {
       $picId = $args['pictureId'];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -545,7 +545,7 @@
       $dir = $this->getWallDir ();
       $newTransaction = (!PDO::inTransaction ());
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['rw']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
       

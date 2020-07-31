@@ -108,7 +108,7 @@
     {
       let service = "group/"+args.groupId+"/removeUser/"+args.userId;
 
-      if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
+      if (args.groupType == <?=WPT_GTYPES_DED?>)
         service = "wall/"+args.wallId+"/"+service;
 
       H.request_ws (
@@ -133,7 +133,7 @@
     {
       let service = "group/"+args.groupId+"/addUser/"+args.userId;
 
-      if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
+      if (args.groupType == <?=WPT_GTYPES_DED?>)
         service = "wall/"+args.wallId+"/"+service;
 
       H.request_ws (
@@ -160,7 +160,7 @@
             delegateAdminId = $ac[0].dataset.delegateadminid||0;
       let service = "group/"+args.groupId+"/getUsers";
 
-      if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
+      if (args.groupType == <?=WPT_GTYPES_DED?>)
         service = "wall/"+args.wallId+"/"+service;
 
       H.request_ajax (
@@ -212,7 +212,7 @@
       if (!args.str)
         return;
 
-      if (args.groupType == <?=WPT_GTYPES['dedicated']?>)
+      if (args.groupType == <?=WPT_GTYPES_DED?>)
         data = {wallId: wallId};
 
       H.request_ajax (

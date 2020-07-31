@@ -16,7 +16,7 @@
             settings = plugin.settings,
             $wall = settings.wall,
             writeAccess =
-              H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
+              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", settings.access);
       // Coords of touchstart on touch devices
       let _coords = null;
 

@@ -139,7 +139,7 @@ $(function()
       const close = $(e.target).hasClass ("close"),
             rename = (!close && $(this).hasClass ("active"));
 
-      if (rename && H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>"))
+      if (rename && H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
         S.getCurrent("wall").wall (
           "openPropertiesPopup", {forRename: true});
 
@@ -398,7 +398,7 @@ $(function()
 
         case "wallPropertiesPopup":
 
-          if (H.checkAccess ("<?=WPT_RIGHTS['walls']['admin']?>") &&
+          if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
               !$popup[0].dataset.uneditdone)
             $wall.wall ("unedit");
           break;

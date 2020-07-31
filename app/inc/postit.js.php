@@ -70,7 +70,7 @@
             settings = plugin.settings,
             $wall = settings.wall,
             writeAccess = H.checkAccess (
-              "<?=WPT_RIGHTS['walls']['rw']?>", settings.access);
+              "<?=WPT_WRIGHTS_RW?>", settings.access);
 
       $postit[0].className = settings.classes || "postit";
       $postit[0].dataset.tags = settings.tags || "";
@@ -942,7 +942,7 @@
       if (pos)
       {
         const writeAccess = H.checkAccess (
-                "<?=WPT_RIGHTS['walls']['rw']?>", this.settings.access),
+                "<?=WPT_WRIGHTS_RW?>", this.settings.access),
               menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
         plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
@@ -1254,7 +1254,7 @@
 
       $date.find("span").text (human);
 
-      if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>") ||
+      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
           human == "...")
       {
         postit.classList.remove ("obsolete");
@@ -1425,7 +1425,7 @@
     // METHOD displayAttachments ()
     displayAttachments: function ()
     {
-      const writeAccess = H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>");
+      const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
       H.request_ajax (
         "GET",
@@ -1638,7 +1638,7 @@
       }
 
       if (!this.settings.wall[0].dataset.shared ||
-          !H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
+          !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         return success_cb && success_cb ();
 
       H.request_ws (
@@ -1676,7 +1676,7 @@
       let data = null,
           todelete;
 
-      if (!H.checkAccess ("<?=WPT_RIGHTS['walls']['rw']?>"))
+      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         return this.cancelEdit (args);
 
       if (!args.plugend)

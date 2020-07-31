@@ -21,16 +21,15 @@
 
     public function checkWallAccess ($requiredRole)
     {
-      $wr = WPT_RIGHTS['walls'];
       // Wall admin has full access
-      $in = $wr['admin'];
+      $in = WPT_WRIGHTS_ADMIN;
 
       // If access needs only write right, allow admin and rw roles
-      if ($requiredRole == $wr['rw'])
-        $in .= ','.$wr['rw'];
+      if ($requiredRole == WPT_WRIGHTS_RW)
+        $in .= ','.WPT_WRIGHTS_RW;
       // If access need at least read right, allow admin, ro and rw roles
-      elseif ($requiredRole == $wr['ro'])
-        $in .= ','.$wr['ro'].','.$wr['rw'];
+      elseif ($requiredRole == WPT_WRIGHTS_RO)
+        $in .= ','.WPT_WRIGHTS_RO.','.WPT_WRIGHTS_RW;
 
       $stmt = $this->prepare ("
         SELECT 1 FROM _perf_walls_users
@@ -108,7 +107,7 @@
     {
       $stmt = $this->prepare ('
         SELECT 1 FROM _perf_walls_users
-        WHERE access = '.WPT_RIGHTS['walls']['admin'].'
+        WHERE access = '.WPT_WRIGHTS_ADMIN.'
           AND groups_id IS NOT NULL
           AND walls_id = ?
           AND users_id = ?
@@ -134,7 +133,7 @@
 
     public function getWallInfos ()
     {
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -179,7 +178,7 @@
       $ret = [];
       $headerId = $args['headerId'];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -254,7 +253,7 @@
       $ret = [];
       $headerId = $args['headerId'];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -562,7 +561,7 @@
             $this->executeQuery ('INSERT INTO _perf_walls_users', [
               'walls_id' => $this->wallId,
               'users_id' => $this->userId,
-             'access' => WPT_RIGHTS['walls']['admin']
+             'access' => WPT_WRIGHTS_ADMIN
             ]);
 
             $this->commit ();
@@ -737,7 +736,7 @@
             walls.creationdate,
             walls.name,
             walls.description,
-            '".WPT_RIGHTS['walls']['admin']."' AS access,
+            ".WPT_WRIGHTS_ADMIN." AS access,
             users.id AS ownerid,
             users.fullname AS ownername
           FROM walls
@@ -796,7 +795,7 @@
           creationdate,
           name,
           description,
-          '".WPT_RIGHTS['walls']['admin']."' AS access
+          ".WPT_WRIGHTS_ADMIN." AS access
         FROM walls
         WHERE users_id = :users_id_1
           AND walls.id = :walls_id_1
@@ -938,7 +937,7 @@
          users.fullname,
          users.picture,
          users.about,
-         '1' AS access
+         1 AS access
        FROM users
          INNER JOIN walls ON walls.users_id = users.id
        WHERE walls.id = :walls_id_2
@@ -970,7 +969,7 @@
     {
       $headerId = $args['headerId'];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['ro']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -997,7 +996,7 @@
       if ($item != 'col' && $item != 'row')
         return ['error' => _("Access forbidden")];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
@@ -1111,7 +1110,7 @@
       if ($item != 'col' && $item != 'row')
         return ['error' => _("Access forbidden")];
 
-      $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
+      $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
       if (!$r['ok'])
         return (isset ($r['id'])) ? $r :
           ['error' =>
@@ -1337,7 +1336,7 @@
         $this->executeQuery ('INSERT INTO _perf_walls_users', [
           'walls_id' => $this->wallId,
           'users_id' => $this->userId,
-          'access' => WPT_RIGHTS['walls']['admin']
+          'access' => WPT_WRIGHTS_ADMIN
         ]);
 
         $this->commit ();
@@ -1361,7 +1360,7 @@
 
       if (!$force)
       {
-        $r = $this->checkWallAccess (WPT_RIGHTS['walls']['admin']);
+        $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
         if (!$r['ok'])
           return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
       }

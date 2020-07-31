@@ -312,7 +312,7 @@ class Wopits implements MessageComponentInterface
           case 'PUT':
             $ret = ($userId) ?
                      $Group->addUser (['userId' => $userId]) :
-                     $Group->create (['type' => WPT_GTYPES['generic']]);
+                     $Group->create (['type' => WPT_GTYPES_GEN]);
             break;
 
           // DELETE
@@ -364,7 +364,7 @@ class Wopits implements MessageComponentInterface
           case 'PUT':
             $ret = ($userId) ?
                      $Group->addUser (['userId' => $userId]) :
-                     $Group->create (['type' => WPT_GTYPES['dedicated']]);
+                     $Group->create (['type' => WPT_GTYPES_DED]);
             break;
 
           // DELETE

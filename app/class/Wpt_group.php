@@ -200,7 +200,7 @@
 
       // only wall creator can create dedicated group
       // and a user must be logged to create generic group
-      if ($type == WPT_GTYPES['dedicated'] &&
+      if ($type == WPT_GTYPES_DED &&
           !$this->isWallCreator ($this->userId) || empty ($this->userId))
         return ['error' => _("Access forbidden")];
 
@@ -219,7 +219,7 @@
             'description' => ($this->data->description) ?
               $this->data->description : null,
             'users_id' => $this->userId
-          ], ($type == WPT_GTYPES['dedicated']) ?
+          ], ($type == WPT_GTYPES_DED) ?
                ['walls_id' => $this->wallId] : []));
         }
         catch (Exception $e)
@@ -312,12 +312,12 @@
             (
               (
                 users_id = :users_id_1 AND
-                item_type = ".WPT_GTYPES['generic']."
+                item_type = ".WPT_GTYPES_GEN."
               )
               OR
               (
                 users_id = :users_id_2 AND
-                item_type = ".WPT_GTYPES['dedicated']." AND
+                item_type = ".WPT_GTYPES_DED." AND
                 walls_id = :walls_id_1
               )
             )
@@ -363,7 +363,7 @@
             INNER JOIN groups
               ON groups.id = walls_groups.groups_id
           WHERE walls_groups.walls_id = ?
-            AND groups.item_type = '.WPT_GTYPES['dedicated'].'
+            AND groups.item_type = '.WPT_GTYPES_DED.'
           ORDER BY name, access');
         $stmt->execute ([$this->wallId]);
         $ret['in'] = $stmt->fetchAll ();
@@ -527,7 +527,7 @@
     {
       $stmt = $this->prepare ('
         SELECT 1 FROM _perf_walls_users
-        WHERE access = '.WPT_RIGHTS['walls']['admin'].' AND users_id = ?
+        WHERE access = '.WPT_WRIGHTS_ADMIN.' AND users_id = ?
         LIMIT 1');
       $stmt->execute ([$this->userId]);
 
