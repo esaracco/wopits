@@ -10,9 +10,6 @@
   define ('WPT_VERSION', '0.21alpha5');
   define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
-  // Cookie
-  define ('WPT_COOKIE', 'wopits');
-
   // Paths
   define ('WPT_ROOT_PATH', realpath (__DIR__.'/..'));
   define ('WPT_DATA_SPATH', WPT_ROOT_PATH.'/data');

@@ -203,18 +203,18 @@
     public static function deleteCookie ()
     {
       // 24 * 3600 == 86400
-      setcookie (WPT_COOKIE, '', time () - 86400, '/', null, true, true);
+      setcookie ('wopits', '', time () - 86400, '/', null, true, true);
     }
 
     public static function setCookie ($value)
     {
-      setcookie (WPT_COOKIE, $value, mktime (0, 0, 0, 1, 1, 2035),
+      setcookie ('wopits', $value, mktime (0, 0, 0, 1, 1, 2035),
                  '/', null, true, true);
     }
 
     public static function getCookie ()
     {
-      return (preg_match ('/'.WPT_COOKIE.'=([^;]+)/',
+      return (preg_match ('/wopits=([^;]+)/',
               $_SERVER['HTTP_COOKIE'] ?? '', $m)) ? $m[1] : '';
     }
 
