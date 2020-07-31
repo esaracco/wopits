@@ -140,8 +140,7 @@ $(function()
             rename = (!close && $(this).hasClass ("active"));
 
       if (rename && H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-        S.getCurrent("wall").wall (
-          "openPropertiesPopup", {forRename: true});
+        S.getCurrent("wall").wall ("openPropertiesPopup", {renaming: true});
 
       if (!rename && !close)
       {

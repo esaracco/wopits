@@ -1335,7 +1335,7 @@
 
           $popup.find(".size").hide ();
 
-          if (H.checkAccess("<?=WPT_WRIGHTS_ADMIN?>"))
+          if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
           {
             const $input = $popup.find(".name input");
 
@@ -1346,7 +1346,7 @@
             $input.val(d.name);
             $popup.find(".description textarea").val(d.description);
 
-            if (args && args.forRename)
+            if (args && args.renaming)
               $input.attr ("autofocus", "autofocus");
             else
               $input.removeAttr ("autofocus");
