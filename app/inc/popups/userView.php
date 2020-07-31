@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
 
-      <div class="user-picture mb-3"></div>
+      <div class="content-centered"><div class="user-picture mb-3"></div></div>
 
       <dl>
         <div class="name">
