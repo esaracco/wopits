@@ -1,4 +1,4 @@
-<div class="modal m-fullscreen" id="userViewPopup" role="dialog" tabindex="-1">
+<div class="modal" id="userViewPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
