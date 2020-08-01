@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-07-31 17:44+0200\n"
+        "POT-Creation-Date: 2020-08-01 10:46+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -404,6 +404,9 @@ msgid   "Login"
 msgstr  ""
 
 msgid   "Login must contain at least 3 characters"
+msgstr  ""
+
+msgid   "Login must not be a email address"
 msgstr  ""
 
 msgid   "Manage users"

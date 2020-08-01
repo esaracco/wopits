@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-31 17:44+0200\n"
+"POT-Creation-Date: 2020-08-01 10:46+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -519,6 +519,9 @@ msgid "Login"
 msgstr ""
 
 msgid "Login must contain at least 3 characters"
+msgstr ""
+
+msgid "Login must not be a email address"
 msgstr ""
 
 msgid "Manage users"
