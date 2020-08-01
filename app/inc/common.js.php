@@ -123,6 +123,8 @@ class Wpt_accountForms extends Wpt_forms
 
           if (val.trim().length < 3)
             return this.focusBadField ($f, "<?=_("Login must contain at least 3 characters")?>");
+          else if (val.indexOf('@') != -1)
+            return this.focusBadField ($f, "<?=_("Login must not be a email address")?>");
 
           break;
 
