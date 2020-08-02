@@ -184,7 +184,7 @@
             }
           }
 
-          setTimeout (()=>
+          H.waitForDOMUpdate (()=>
           {
             // Display postit dealine alert or specific wall if needed.
             if (settings.fromDirectURL)
@@ -218,7 +218,7 @@
             else
               plugin.refreshPostitsPlugs (settings.postits_plugs);
 
-          }, 0);
+          });
 
         });
     },
