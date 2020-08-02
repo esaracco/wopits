@@ -32,7 +32,7 @@
   define ('WPT_WRIGHTS_RO', 3);
 
   // Themes
-  define ('WPT_THEMES', ['blue', 'green', 'red', 'orange']);
+  define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 
   //////////////// This section will be removed after deployment //////////////
 

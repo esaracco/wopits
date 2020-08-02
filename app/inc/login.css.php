@@ -6,6 +6,11 @@ html {
   overflow:auto;
 }
 
+.login-page .navbar {
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+}
+
 .main-login {
   height:80%;
   width:100%;

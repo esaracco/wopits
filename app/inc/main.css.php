@@ -1108,6 +1108,11 @@ button.btn-primary i {
   background-color: #dc3545;
 }
 
+.btn-theme-purple {
+  background-color: #c63fca;
+}
+
+
 .modal-dialog.modal-sm .modal-title {
   font-size: 1em;
 }
