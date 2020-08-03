@@ -22,7 +22,7 @@
           },
         escapeEvent: (e) =>
           {
-            if (e.key == "Escape")
+            if (e.which == 27)
               S.get("link-from").obj.postit ("cancelPlugAction");
           }
       };

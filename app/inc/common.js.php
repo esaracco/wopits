@@ -877,7 +877,7 @@ class WHelp
     $(document)
       .on ("keydown", function (e)
       {
-        if (e.key == "Escape")
+        if (e.which == 27)
           $layer.click ();
       });
   
