@@ -893,11 +893,8 @@
         "PUT",
         "wall/"+this.settings.id+"/"+type,
         null,
-        () =>
-        {
-          S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000);
-          wall.dataset[type+"s"] = Number (wall.dataset[type+"s"]) + 1;
-        });
+        ()=>
+          S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000));
     },
 
     // METHOD addRow ()
@@ -958,8 +955,7 @@
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/row/"+rowIdx,
-        {wall: {width: Math.trunc($wall.outerWidth ())}},
-        () => $wall[0].dataset.rows = Number ($wall[0].dataset.rows) - 1);
+        {wall: {width: Math.trunc($wall.outerWidth ())}});
     },
 
     // METHOD deleteCol ()
@@ -996,8 +992,7 @@
       H.request_ws (
         "DELETE",
         "wall/"+plugin.settings.id+"/col/"+(idx - 1),
-        data,
-        () => $wall[0].dataset.cols = Number ($wall[0].dataset.cols) - 1);
+        data);
     },
 
     // METHOD addNew ()
