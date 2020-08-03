@@ -6,6 +6,9 @@
     <div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div>
   </div>
 
+  <!-- SANDBOX -->
+  <div id="sandbox"></div>
+
   <!-- upload LAYER -->
   <div id="upload-layer" class="layer"></div>
 

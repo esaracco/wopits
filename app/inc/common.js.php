@@ -258,6 +258,13 @@ class WSharer
 
     switch (item)
     {
+      case "sandbox":
+
+        if (!this.sandbox)
+          this.sandbox = $("#sandbox");
+
+        return this.sandbox;
+
       case "wall":
 
         if (!this.wall.length)
@@ -615,6 +622,15 @@ class WSocket
 // CLASS WHelp
 class WHelp
 {
+  getTextWidth (str)
+  {
+    const sb = S.getCurrent("sandbox")[0];
+
+    sb.innerText = str;
+
+    return sb.clientWidth + 30;
+  }
+
   // METHOD testImage ()
   testImage (url, timeout = 5000)
   {

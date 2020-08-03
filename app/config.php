@@ -46,10 +46,12 @@
     // Max cells in a wall (for performance reasons)
     define ('WPT_MAX_CELLS', 400);
 
-    // Timeouts (seconds)
+    // Timeouts (seconds).
     define ('WPT_TIMEOUTS', [
-      // AJAX requests
-      'ajax' => 10
+      // AJAX requests.
+      'ajax' => 10,
+      // Edition without activity.
+      'edit' => 15
     ]);
 
     // Popups

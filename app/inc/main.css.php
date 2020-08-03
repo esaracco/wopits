@@ -533,13 +533,13 @@ select.timezone {
 }
 
 .wall th {
-  font-size:0.9rem;
   vertical-align:top;
   padding:10px;
   border: 1px solid #cecece;
   background:#f1f1f1;
   text-align:center;
   white-space:nowrap;
+  font-size:14px;
 }
 
 .wall th ul.navbar-nav {
@@ -564,7 +564,7 @@ select.timezone {
 }
 
 .wall thead th .title {
-  margin:18px 20px 0 20px;
+  margin:28px 20px 0 20px;
 }
 
 .wall td {
@@ -581,10 +581,35 @@ select.timezone {
 }
 
 .wall tbody th .title {
-  margin-top:25px;
+  margin-top:28px;
   padding:0 10px 0 10px;
   text-overflow: ellipsis;
   overflow:hidden;
+}
+
+.wall th .title.focused input {
+  z-index: 5001;
+  position: absolute;
+  border-top:none;
+  border-right:4px solid silver;
+  border-bottom:1px dashed gray;
+  border-left:4px solid silver;
+  min-width: 45px;
+  padding: 0 5px 0 5px;
+  background: transparent;
+  font-weight:bold;
+  text-align:center;
+  transform:translate(-50%);
+}
+
+#sandbox {
+  font-size:14px;
+  width: auto;
+  display: inline-block;
+  visibility: hidden;
+  position: fixed;
+  overflow:auto;
+  font-weight: bold;
 }
 
 th .close.img-delete,
@@ -600,7 +625,7 @@ th .close.img-delete {
   visibility:visible !important;
   margin-top:0 !important;
   margin-right:-13px !important;
-  font-size:1rem;
+  font-size:0.9rem;
 }
 
 .wall th div.img {

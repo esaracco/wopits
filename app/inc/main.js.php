@@ -380,7 +380,7 @@
     refreshUsersview: function (count)
     {
       this.element.find("thead th:eq(0)").html ((count) ?
-        `<div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge">${count}</span></div>` : "&nbsp;");
+        `<div class="usersviewcounts"><i class="fas fa-user-friends fa-lg"></i> <span class="wpt-badge">${count}</span></div>` : "&nbsp;");
     },
 
     // METHOD checkPostitsPlugsMenu ()

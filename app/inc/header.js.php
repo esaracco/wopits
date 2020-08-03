@@ -6,6 +6,8 @@
 ?>
 
   let _realEdit = false,
+      _editing = false,
+      _intervalBlockEditing = 0,
       _originalObject,
        //FIXME
        // to bypass FF bug when file manager is triggered from a third callback
@@ -66,10 +68,11 @@
             $header = plugin.element,
             settings = plugin.settings,
             $wall = settings.wall,
-            type = settings.item_type,
-            isCol = (type == "col"),
+            isCol = (settings.item_type == "col"),
             adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>",
                                            settings.access);
+
+      settings._timeoutEditing = 0;
 
       $header[0].dataset.id = "header-"+settings.id;
 
@@ -169,6 +172,8 @@
 
               plugin.edit (() =>
                 {
+                  plugin.saveCurrentWidth ();
+
                   H.openConfirmPopover ({
                     type: "update",
                     item: $li.parent().parent().find(".btn-menu"),
@@ -191,7 +196,91 @@
               break;
           }
         });
-  
+
+        $header
+          .on("click", function (e)
+          {
+            const div = this.querySelector (".title");
+
+            if (!_intervalBlockEditing &&
+                !div.classList.contains ("focused") &&
+                (e.target.tagName == "TH" || e.target.tagName == "DIV"))
+            {
+              _intervalBlockEditing = setInterval (() =>
+              {
+                if (!_editing)
+                {
+                  clearInterval (_intervalBlockEditing);
+                  _intervalBlockEditing = 0;
+
+                  plugin.saveCurrentWidth ();
+
+                  plugin.edit (()=>
+                  {
+                    const title = div.innerText;
+
+                    settings.titleOrig = title;
+
+                    div.classList.add ("focused");
+                    div.style.height = div.clientHeight+"px";
+                    div.style.width = div.clientWidth+"px";
+                    div.innerHTML = `<input type="text" value="${title}" style="width:${H.getTextWidth(title)}px" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`;
+
+                    const $input = $(div.querySelector ("input"));
+
+                    // Commit change automatically if no activity since 15s.
+                    settings._timeoutEditing = setTimeout (
+                      ()=> $input.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
+
+                    $input
+                      .focus()
+                      .on("blur", function (e)
+                      {
+                        const title = this.value;
+
+                        e.stopImmediatePropagation ();
+
+                        div.classList.remove ("focused");
+                        div.removeAttribute ("style");
+                        this.remove ();
+
+                        if (title != settings.titleOrig)
+                          plugin.setTitle (title, true);
+                        else
+                        {
+                          div.innerText = title;
+                          plugin.unedit ();
+                        }
+
+                        delete settings.titleOrig;
+                        clearTimeout (settings._timeoutEditing);
+                      })
+                      .on("keypress, keyup", function (e)
+                      {
+                        if (e.which == 13)
+                          this.blur ();
+                        else if (e.which == 27)
+                        {
+                          this.value = settings.titleOrig;
+                          this.blur ();
+                        }
+                        else
+                        {
+                          this.style.width = H.getTextWidth(this.value)+"px";
+
+                          // Commit change automatically if no activity since
+                          // 15s.
+                          clearTimeout (settings._timeoutEditing);
+                          settings._timeoutEditing = setTimeout (
+                            ()=> this.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
+                        }
+                      });
+                  });
+                }
+              }, 250);
+            }
+          });
+
         $part.prependTo ($header);
       }
       else
@@ -206,6 +295,13 @@
     {
       return (this.settings.wall[0].dataset.shared &&
               !$.support.touch && !H.navigatorIsEdge ());
+    },
+
+    // METHOD saveCurrentWidth ()
+    saveCurrentWidth: function ()
+    {
+      // Save current TH width
+      this.settings.thwidth = this.element.outerWidth ();
     },
 
     // METHOD addUploadLayer ()
@@ -417,17 +513,7 @@
       if (resize)
       {
         const $wall = plugin.settings.wall,
-              oldW = $header.outerWidth ();
-        let tdW = 0;
-
-        // Get row TD total width
-        $wall.find("tbody tr:eq(0) td").each (function ()
-          {
-            const $td = $(this);
-
-            if (isRow || $td.index () != thIdx)
-              tdW += $td.outerWidth ();
-          });
+              oldW = plugin.settings.thwidth;
 
         if (isRow)
           $header.css ("width", 1);
@@ -441,10 +527,7 @@
             if (isRow || newW > oldW)
             {
               if (newW != oldW)
-              {
                 $wall.wall ("fixSize", oldW, newW);
-                $wall.css("width", tdW + newW);
-              }
 
               if (!isRow)
               {
@@ -472,6 +555,8 @@
     // METHOD edit ()
     edit: function (success_cb, error_cb)
     {
+      _editing = true;
+
       this.setCurrent ();
 
       _originalObject = _serializeOne (this.element);
@@ -537,6 +622,8 @@
         bubble_event_cb ();
         $header.removeClass ("_current")
       }
+
+      _editing = false;
     },
 
     // METHOD serialize ()
