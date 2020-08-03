@@ -3,7 +3,7 @@ Themes
 
 ### Create theme
 
-- Edit `app/config`:
+- Edit `app/config.php`:
 ```php
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple', 'newtheme']);
 ```
