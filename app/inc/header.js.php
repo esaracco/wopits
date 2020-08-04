@@ -202,6 +202,10 @@
           {
             const div = this.querySelector (".title");
 
+            // Cancel if current relationship creation.
+            if (S.get("link-from"))
+              return false;
+
             if (!_intervalBlockEditing &&
                 !div.classList.contains ("focused") &&
                 (e.target.tagName == "TH" || e.target.tagName == "DIV"))
