@@ -694,7 +694,7 @@ class WHelp
   // METHOD noHTML ()
   noHTML (str)
   {
-    return (str+"").trim().replace (/<[^>]+>/g, "");
+    return (str+"").trim().replace (/<[^>]+>|&[^;]+;/g, "");
   }
 
   // METHOD nl2br ()

@@ -458,8 +458,8 @@ $(function()
 
           case "postitUpdatePopup":
 
-            $postit.postit("setTitle",$("#postitUpdatePopupTitle").val ());
-            $postit.postit("setContent",tinymce.activeEditor.getContent());
+            $postit.postit("setTitle", $("#postitUpdatePopupTitle").val ());
+            $postit.postit("setContent", tinymce.activeEditor.getContent());
 
             $postit[0].removeAttribute ("data-uploadedpictures");
             S.unset ("postit-data");

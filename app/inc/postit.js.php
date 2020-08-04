@@ -440,7 +440,7 @@
             if (!writeAccess)
             {
               const content = $postit.find(".postit-edit").html (),
-                    title = $postit.find(".postit-header span.title").html (),
+                    title = $postit.find(".postit-header span.title").text (),
                     $popup = $("#postitViewPopup");
 
               plugin.setCurrent ();
@@ -491,7 +491,7 @@
     
                       const $popup = $("#postitUpdatePopup"),
                             title =
-                              $postit.find(".postit-header span.title").html (),
+                              $postit.find(".postit-header span.title").text (),
                             content = $postit.find(".postit-edit").html()||"";
 
                       S.set ("postit-data", {
@@ -1200,7 +1200,7 @@
           data = {id: postitId, todelete: true};
         else
         {
-          const title = $p.find(".postit-header span.title").html (),
+          const title = $p.find(".postit-header span.title").text (),
                 classcolor = p.className.match(/(color\-[a-z]+)/),
                 deadline = (p.dataset.deadlineepoch) ?
                   p.dataset.deadlineepoch :
@@ -1307,7 +1307,7 @@
     setTitle: function (title)
     {
       this.element.find(".postit-header span.title")
-        .html (H.noHTML(title) || "...");
+        .text (H.noHTML(title) || "...");
     },
 
     // METHOD setContent ()
