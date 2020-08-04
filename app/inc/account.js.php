@@ -159,11 +159,12 @@
         });
 
       $account
-        .on("click", "button", function (e)
+        .on("click", "button,input", function (e)
         {
           const $btn = $(this),
-                $field = $btn.parent().prev (),
-                name = $field.attr ("name"),
+                $field = (e.target.tagName == 'INPUT') ?
+                           $btn : $btn.parent().prev (),
+                name = $field.attr("name"),
                 value = $field.val ();
           let title,
               $popup;
