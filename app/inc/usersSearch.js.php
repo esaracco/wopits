@@ -209,6 +209,8 @@
       let service = "group/"+groupId+"/searchUsers/"+args.str,
           data = null;
 
+      args.str = args.str.replace (/&/, "");
+
       if (!args.str)
         return;
 
@@ -224,7 +226,7 @@
         {
           let html = "";
 
-          d.users.forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
+          (d.users||[]).forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
 
           if (html)
           {

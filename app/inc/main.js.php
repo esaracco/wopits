@@ -1297,7 +1297,7 @@
           d.list.forEach ((item) =>
             {
               if (item.id != userId)
-                html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlQuotes(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlQuotes(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
+                html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
             });
 
           $popup.find(".list-group").html (html);

@@ -326,7 +326,7 @@ $(function()
             // Content change detection
             tinymce.activeEditor.isDirty () ||
             // Title change detection
-            H.convertEntities(data.title) != H.convertEntities(title)))
+            H.htmlEscape(data.title) != H.htmlEscape(title)))
           {
             e.preventDefault ();
 

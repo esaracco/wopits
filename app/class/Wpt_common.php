@@ -140,7 +140,17 @@
 
     public static function unaccent ($str)
     {
-      return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
+      //FIXME iconv does not work with user search.
+      //return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
+
+      return
+        strtolower (
+          preg_replace (['#&lt;#', '#&gt;#', '#&[^;]+;#'], ['<', '>', ''],
+            preg_replace ('#&([A-za-z]{2})(?:lig);#', '\1',
+              preg_replace (
+                '#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|'.
+                'slash|th|tilde|uml);#', '\1',
+                htmlentities ($str, ENT_NOQUOTES, 'utf-8')))));
     }
 
     public static function rm ($path, $firstCall = true)

@@ -121,10 +121,8 @@ class Wpt_accountForms extends Wpt_forms
 
         case "username":
 
-          if (val.trim().length < 3)
-            return this.focusBadField ($f, "<?=_("Login must contain at least 3 characters")?>");
-          else if (val.indexOf('@') != -1)
-            return this.focusBadField ($f, "<?=_("Login must not be a email address")?>");
+          if (val.trim().length < 3 || val.match (/@|&|\\/))
+            return this.focusBadField ($f, "<?=_("Login is not valid")?>");
 
           break;
 
@@ -622,13 +620,31 @@ class WSocket
 // CLASS WHelp
 class WHelp
 {
+  constructor ()
+  {
+    this.entitiesMap = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    };
+  }
+
   getTextWidth (str)
   {
-    const sb = S.getCurrent("sandbox")[0];
+    let ret = 0;
 
-    sb.innerText = str;
+    if (str != "")
+    {
+      const sb = S.getCurrent("sandbox")[0];
 
-    return sb.clientWidth + 30;
+      sb.innerText = str;
+
+      ret = (sb.clientWidth+30)+"px";
+    }
+
+    return ret;
   }
 
   // METHOD testImage ()
@@ -669,17 +685,10 @@ class WHelp
     return (str+"").replace (/(\W)/g, '\\$1');
   }
 
-  // METHOD convertEntities ()
-  convertEntities (str)
+  // METHOD HTMLEscape ()
+  htmlEscape (str)
   {
-    return $("<div/>").html(str).text ();
-  }
-
-  // METHOD htmlQuotes ()
-  htmlQuotes (str)
-  {
-    return (str+"")
-             .replace(/["']/g, (c) => ({"\"":"&quot;", "'": "&#x27;"})[c]);
+    return (str+"").replace (/[&<>"']/g, (c) => this.entitiesMap[c]);
   }
   
   // METHOD noHTML ()
@@ -687,7 +696,7 @@ class WHelp
   {
     return (str+"").trim().replace (/<[^>]+>/g, "");
   }
-  
+
   // METHOD nl2br ()
   nl2br (str)
   {

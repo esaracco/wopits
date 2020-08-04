@@ -219,20 +219,30 @@
                   {
                     const title = div.innerText;
 
+                    // We also pass the value to enable text pasting.
+                    function __resize (el, v)
+                    {
+                      el.style.width = H.getTextWidth (v);
+
+                      // Commit change automatically if no activity since
+                      // 15s.
+                      clearTimeout (settings._timeoutEditing);
+                      settings._timeoutEditing = setTimeout (
+                        ()=> el.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
+                    }
+
                     settings.titleOrig = title;
 
                     div.classList.add ("focused");
                     div.style.height = div.clientHeight+"px";
                     div.style.width = div.clientWidth+"px";
-                    div.innerHTML = `<input type="text" value="${title}" style="width:${H.getTextWidth(title)}px" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`;
+                    div.innerHTML = `<input type="text" value="${H.htmlEscape(title)}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`;
 
-                    const $input = $(div.querySelector ("input"));
+                    const input = div.querySelector ("input");
 
-                    // Commit change automatically if no activity since 15s.
-                    settings._timeoutEditing = setTimeout (
-                      ()=> $input.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
+                    __resize (input, input.value);
 
-                    $input
+                    $(input)
                       .focus()
                       .on("blur", function (e)
                       {
@@ -255,26 +265,46 @@
                         delete settings.titleOrig;
                         clearTimeout (settings._timeoutEditing);
                       })
-                      .on("keypress, keyup", function (e)
+                      .on("keydown", function (e)
                       {
-                        if (e.which == 13)
+                        const k = e.which;
+
+                        // Exclude some control keys
+                        if (k == 9 ||
+                            (k >= 16 && k <= 20) ||
+                            k == 27 ||
+                            (k >= 35 && k <= 40) ||
+                            k == 45 || k == 46 ||
+                            // CTRL+A
+                            (e.ctrlKey && k == 65) ||
+                            // CTRL+V
+                            (e.ctrlKey && k == 86) ||
+                            (k >= 144 && k <= 145))
+                        {
+                          ;
+                        }
+                        else if (k == 13)
                           this.blur ();
-                        else if (e.which == 27)
+                        else
+                          __resize (this, this.value);
+                      })
+                      .on("keyup", function (e)
+                      {
+                        const k = e.which;
+
+                        if (k == 27)
                         {
                           this.value = settings.titleOrig;
                           this.blur ();
                         }
-                        else
-                        {
-                          this.style.width = H.getTextWidth(this.value)+"px";
-
-                          // Commit change automatically if no activity since
-                          // 15s.
-                          clearTimeout (settings._timeoutEditing);
-                          settings._timeoutEditing = setTimeout (
-                            ()=> this.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
-                        }
-                      });
+                        else if (k == 46)
+                          __resize (this, this.value);
+                      })
+                      .on("paste", function (e)
+                      {
+                        __resize (this,
+                          e.originalEvent.clipboardData.getData ('text'));
+                      })
                   });
                 }
               }, 250);

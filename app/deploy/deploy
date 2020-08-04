@@ -290,6 +290,8 @@
     
           echo " ".basename($js);
           $this->_execMinifier (ENV['minifiers']['js'], $js, "$js-tmp");
+//        copy ($js, "$js-tmp");
+
           rename ("$js-tmp", $js);
         }
         echo "\n";

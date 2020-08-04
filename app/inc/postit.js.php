@@ -495,7 +495,8 @@
                             content = $postit.find(".postit-edit").html()||"";
 
                       S.set ("postit-data", {
-                        title: (title != "...") ? title : ""
+                        title: (title != "...") ?
+                                 title.replace(/&amp;/g, "&") : ""
                       });
     
                       $("#postitUpdatePopupTitle")
@@ -1413,7 +1414,7 @@
             c = (item.ownerid && item.ownerid != wpt_userData.id) ?
                   `<span>${item.ownername}</span>` : '';
 
-      return `<li data-id="${item.id}" data-url="${item.link}" data-fname="${H.htmlQuotes(item.name)}" class="list-group-item list-group-item-action"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> ${item.name} <div class="item-infos"><span class="creationdate">${H.getUserDate (item.creationdate)}</span><span class="file-size">${H.getHumanSize(item.size)}</span>${c}</div>${noWriteAccess?'':w}</li>`;
+      return `<li data-id="${item.id}" data-url="${item.link}" data-fname="${H.htmlEscape(item.name)}" class="list-group-item list-group-item-action"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> ${item.name} <div class="item-infos"><span class="creationdate">${H.getUserDate (item.creationdate)}</span><span class="file-size">${H.getHumanSize(item.size)}</span>${c}</div>${noWriteAccess?'':w}</li>`;
     },
 
     // METHOD getAttachmentsCount ()
@@ -1875,7 +1876,7 @@
                   [startId, endId] = $label[0].dataset.id.split ("-"),
                   $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
                   $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
-                  defaultLabel = H.htmlQuotes ($label.find("span").text ());
+                  defaultLabel = H.htmlEscape ($label.find("span").text ());
 
             function __unedit ()
             {
@@ -1953,7 +1954,7 @@
 
                 if ($_attachmentsPopup.find(
                       ".list-group li[data-fname='"+
-                        H.htmlQuotes(file.name)+"']").length)
+                        H.htmlEscape(file.name)+"']").length)
                   return H.displayMsg ({
                            type: "warning",
                            msg: "<?=_("The file is already linked to the sticky note.")?>"

@@ -16,37 +16,42 @@
   
     public function searchUser ($args)
     {
-      $ret = [];
+      $ret = ['users' => null];
 
       // user must be logged to view users
       if (empty ($this->userId))
         return ['error' => _("Access forbidden")];
 
-      //FIXME SQL optimization!
-      $stmt = $this->prepare ('
-        SELECT id, fullname
-        FROM users
-        WHERE id <> :users_id
-          AND searchdata LIKE :search
-          AND id NOT IN
-          (
-            SELECT users_id FROM users_groups
-            WHERE users_groups.groups_id = :groups_id_1
+      if ( ($search = Wpt_common::unaccent ($args['search'])) )
+      {
+        //FIXME SQL optimization.
+        $stmt = $this->prepare ('
+          SELECT id, fullname
+          FROM users
+          WHERE id <> :users_id
+            AND searchdata LIKE :search
+            AND id NOT IN
+            (
+              SELECT users_id FROM users_groups
+              WHERE users_groups.groups_id = :groups_id_1
 
-            UNION
+              UNION
 
-            SELECT users_id FROM groups
-            WHERE id = :groups_id_2
-          )
-        LIMIT 10');
-      $stmt->execute ([
-        ':users_id' => $this->userId,
-        ':search' => '%'.Wpt_common::unaccent($args['search']).'%',
-        ':groups_id_1' => $this->groupId,
-        ':groups_id_2' => $this->groupId
-      ]);
+              SELECT users_id FROM groups
+              WHERE id = :groups_id_2
+            )
+          LIMIT 10');
+        $stmt->execute ([
+          ':users_id' => $this->userId,
+          ':search' => "%$search%",
+          ':groups_id_1' => $this->groupId,
+          ':groups_id_2' => $this->groupId
+        ]);
 
-      return ['users' => $stmt->fetchAll ()];
+        $ret['users'] = $stmt->fetchAll ();
+      }
+
+      return $ret;
     }
 
     public function getWallsByGroup ($groupId = null)
