@@ -76,6 +76,7 @@
                 cb.edit (()=>
                 {
                   _editing = true;
+                  plugin.disablePlugins (true);
 
                   settings._valueOrig = editable.innerText;
 
@@ -114,6 +115,7 @@
 
                       clearTimeout (settings._timeoutEditing);
                       _editing = false;
+                      plugin.disablePlugins (false);
                     })
                     .on("keyup", function (e)
                     {
@@ -178,6 +180,23 @@
     {
       if (this.settings._input) 
         $(this.settings._input).trigger ("blur");
+    },
+
+    // METHOD disablePlugins ()
+    disablePlugins: function (type)
+    {
+      const settings = this.settings;
+      let $plug;
+
+      settings.wall.draggable ("option", "disabled", type);
+
+      $plug = settings.container.closest (".ui-draggable");
+      if ($plug.length)
+        $plug.draggable ("option", "disabled", type);
+
+      $plug = settings.container.closest ("ui-resizable");
+      if ($plug.length)
+        $plug.resizable ("option", "disabled", type);
     },
 
     // METHOD resize ()

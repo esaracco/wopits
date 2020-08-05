@@ -736,6 +736,7 @@
             });
 
         $postit.find(".title").editable ({
+          wall: $wall,
           container: $postit.find (".postit-header"),
           maxLength: <?=Wpt_dbCache::getFieldLength('postits', 'title')?>,
           triggerTags: ["span"],

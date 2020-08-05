@@ -196,6 +196,7 @@
         });
 
         $header.find(".title").editable ({
+          wall: $wall,
           container: $header,
           maxLength: <?=Wpt_dbCache::getFieldLength('headers', 'title')?>,
           triggerTags: ["th", "div"],
