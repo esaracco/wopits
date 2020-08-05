@@ -69,6 +69,9 @@
             },
           start: function(e, ui)
             {
+              // Cancel all editable (blur event is not triggered on resizing).
+              $wall.find(".editable").editable ("cancelAll");
+
               S.set ("revertData", {
                 revert: false,
                 size: {
