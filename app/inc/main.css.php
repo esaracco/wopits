@@ -587,23 +587,35 @@ select.timezone {
   overflow:hidden;
 }
 
-.wall th .title.focused input {
-  z-index: 5001;
-  position: absolute;
+.editable.editing input {
+  z-index:5001;
   border-top:none;
   border-right:4px solid silver;
   border-bottom:1px dashed gray;
   border-left:4px solid silver;
-  min-width: 45px;
-  padding: 0 5px 0 5px;
-  background: transparent;
+  background:transparent;
   font-weight:bold;
+  white-space:nowrap;
+}
+
+th .editable.editing input {
+  position:absolute;
   text-align:center;
   transform:translate(-50%);
+  min-width:45px;
+  padding:0 5px 0 5px;
+}
+
+.postit .editable.editing input {
+  height:13px;
+  min-width:30px;
+  margin-left:-5px;
+  padding:0 3px 0 3px;
+  border-right:2px solid silver;
+  border-left:2px solid silver;
 }
 
 #sandbox {
-  font-size:14px;
   width: auto;
   display: inline-block;
   visibility: hidden;
@@ -781,8 +793,8 @@ div.postit {
   z-index:1010;
   position:absolute !important;
   background:#ffffc6;
-  min-height:120px;
-  min-width:180px;
+  min-height:50px;
+  min-width:160px;
   height:120px;
   width:180px;
   border-radius:0 3px 3px 3px;
@@ -793,17 +805,13 @@ div.postit {
 div.postit .postit-header {
   position:absolute;
   font-size:0.8rem;
-  border-radius:5px 5px 0 0;
+  border-radius:5px 5px 5px 0;
   background:#ffffc6;
-  top:-21px;
+  top:-19px;
   margin-left:-2px;
-  max-width:180px;
   padding:0 5px 0 5px;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow:hidden;
   border:2px solid #cecece;
-  border-bottom:0;
   box-shadow: 0 0 5px #cecece;
 }
 
@@ -830,9 +838,10 @@ div.postit .postit-header i {
   cursor:auto !important;
 }
 
-div.postit .postit-header span {
+div.postit .postit-header .title {
   font-weight:bold;
   text-decoration: underline;
+  display:inline-block;
 }
 
 div.postit div.postit-menu {
@@ -1222,13 +1231,13 @@ div.usersviewcounts span.wpt-badge,
 }
 
 div.postit div.attachmentscount {
-  display:block;
   position:absolute;
   border-radius:0 5px 5px 0;
-  background:none;
-  top:-35px;
+  background:pink;
+  height:0;
+  top:-30px;
   left:30px;
-  padding: 5px 0 5px 5px;
+  padding-left: 5px;
   cursor:pointer;
   line-height: 20px;
   z-index:10000;

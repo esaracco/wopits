@@ -6,8 +6,6 @@
 ?>
 
   let _realEdit = false,
-      _editing = false,
-      _intervalBlockEditing = 0,
       _originalObject,
        //FIXME
        // to bypass FF bug when file manager is triggered from a third callback
@@ -197,123 +195,18 @@
           }
         });
 
-        $header
-          .on("click", function (e)
-          {
-            const div = this.querySelector (".title");
-
-            // Cancel if current relationship creation.
-            if (S.get("link-from"))
-              return false;
-
-            if (!_intervalBlockEditing &&
-                !div.classList.contains ("focused") &&
-                (e.target.tagName == "TH" || e.target.tagName == "DIV"))
-            {
-              _intervalBlockEditing = setInterval (() =>
-              {
-                if (!_editing)
-                {
-                  clearInterval (_intervalBlockEditing);
-                  _intervalBlockEditing = 0;
-
-                  plugin.saveCurrentWidth ();
-
-                  plugin.edit (()=>
-                  {
-                    const title = div.innerText;
-
-                    // We also pass the value to enable text pasting.
-                    function __resize (el, v)
-                    {
-                      el.style.width = H.getTextWidth (v);
-
-                      // Commit change automatically if no activity since
-                      // 15s.
-                      clearTimeout (settings._timeoutEditing);
-                      settings._timeoutEditing = setTimeout (
-                        ()=> el.blur (), <?=WPT_TIMEOUTS['edit']*1000?>);
-                    }
-
-                    settings.titleOrig = title;
-
-                    div.classList.add ("focused");
-                    div.style.height = div.clientHeight+"px";
-                    div.style.width = div.clientWidth+"px";
-                    div.innerHTML = `<input type="text" value="${H.htmlEscape(title)}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`;
-
-                    const input = div.querySelector ("input");
-
-                    __resize (input, input.value);
-
-                    $(input)
-                      .focus()
-                      .on("blur", function (e)
-                      {
-                        const title = this.value;
-
-                        e.stopImmediatePropagation ();
-
-                        div.classList.remove ("focused");
-                        div.removeAttribute ("style");
-                        this.remove ();
-
-                        if (title != settings.titleOrig)
-                          plugin.setTitle (title, true);
-                        else
-                        {
-                          div.innerText = title;
-                          plugin.unedit ();
-                        }
-
-                        delete settings.titleOrig;
-                        clearTimeout (settings._timeoutEditing);
-                      })
-                      .on("keydown", function (e)
-                      {
-                        const k = e.which;
-
-                        // Exclude some control keys
-                        if (k == 9 ||
-                            (k >= 16 && k <= 20) ||
-                            k == 27 ||
-                            (k >= 35 && k <= 40) ||
-                            k == 45 || k == 46 ||
-                            // CTRL+A
-                            (e.ctrlKey && k == 65) ||
-                            // CTRL+V
-                            (e.ctrlKey && k == 86) ||
-                            (k >= 144 && k <= 145))
-                        {
-                          ;
-                        }
-                        else if (k == 13)
-                          this.blur ();
-                        else
-                          __resize (this, this.value);
-                      })
-                      .on("keyup", function (e)
-                      {
-                        const k = e.which;
-
-                        if (k == 27)
-                        {
-                          this.value = settings.titleOrig;
-                          this.blur ();
-                        }
-                        else if (k == 46)
-                          __resize (this, this.value);
-                      })
-                      .on("paste", function (e)
-                      {
-                        __resize (this,
-                          e.originalEvent.clipboardData.getData ('text'));
-                      })
-                  });
-                }
-              }, 250);
-            }
-          });
+        $header.find(".title").editable ({
+          container: $header,
+          maxLength: <?=Wpt_dbCache::getFieldLength('headers', 'title')?>,
+          triggerTags: ["th", "div"],
+          fontSize: "14px",
+          callbacks: {
+            before: () => plugin.saveCurrentWidth (),
+            edit: (cb) => plugin.edit (cb),
+            unedit: () => plugin.unedit (),
+            update: (v) => plugin.setTitle (v, true)
+          }
+        });
 
         $part.prependTo ($header);
       }
@@ -589,8 +482,6 @@
     // METHOD edit ()
     edit: function (success_cb, error_cb)
     {
-      _editing = true;
-
       this.setCurrent ();
 
       _originalObject = _serializeOne (this.element);
@@ -656,8 +547,6 @@
         bubble_event_cb ();
         $header.removeClass ("_current")
       }
-
-      _editing = false;
     },
 
     // METHOD serialize ()

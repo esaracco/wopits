@@ -135,6 +135,7 @@
       'filters' => [],
       'arrows' => [],
       'main' => [],
+      'editable' => [],
       'header' => [],
       'postit' => [],
       'cell' => [],

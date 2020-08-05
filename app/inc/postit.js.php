@@ -214,10 +214,12 @@
               plugin.cancelPlugAction ();
           }
         }
-      })
-      // EVENT doubletap
-      .doubletap (() =>
-        $postit.find(".postit-menu [data-action='edit']").click ());
+      });
+
+      $postit.find(".postit-edit"+(writeAccess?"":",.postit-header,.dates"))
+        // EVENT doubletap
+        .doubletap (() =>
+          $postit.find(".postit-menu [data-action='edit']").click ());
 
       if (writeAccess)
       {
@@ -308,6 +310,9 @@
           start: function(e, ui)
             {
               const postit = $postit[0];
+
+              // Cancel all editable (blur event is not triggered on resizing).
+              $wall.find(".editable").editable ("cancelAll");
   
               S.set ("revertData", {
                 revert: false,
@@ -392,7 +397,7 @@
       if (!writeAccess)
         $header.css("visibility", "hidden");
 
-      $header.prependTo ($postit.find(".postit-header"));
+      $header.prependTo ($postit.find (".postit-header"));
 
       // Post-it menu
       const $menu = $(`
@@ -706,6 +711,7 @@
         .prepend($menu);
 
       if (writeAccess)
+      {
         $postit
         .find(".dates .end")
           .on("click", function(e)
@@ -728,6 +734,24 @@
               else
                 $menu.find ("i.fa-hourglass-end").click ();
             });
+
+        $postit.find(".title").editable ({
+          container: $postit.find (".postit-header"),
+          maxLength: <?=Wpt_dbCache::getFieldLength('postits', 'title')?>,
+          triggerTags: ["span"],
+          fontSize: "13px",
+          callbacks: {
+            before: (ed, v) => v == "..." && ed.setValue (""),
+            edit: (cb) => plugin.edit (null, cb),
+            unedit: () => plugin.unedit (),
+            update: (v) =>
+              {
+                plugin.setTitle (v);
+                plugin.unedit ();
+              }
+          }
+        });
+      }
 
       if (settings.creationdate)
         setTimeout (

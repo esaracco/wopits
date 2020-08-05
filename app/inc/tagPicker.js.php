@@ -37,29 +37,20 @@
           if (e.target.tagName == 'I')
           {
             const $div = $(e.target).parent (),
-                  select = (!$div.hasClass ("selected"));
+                  select = !$div.hasClass ("selected"),
+                  $postit = S.getCurrent ("postit"),
+                  tag = e.target.dataset.tag;
 
-            if (select && $picker.find("div.selected").length == 5)
-            {
-              H.infoPopup (
-                "<?=_("You have reached the maximum number of tags.")?>", true);
-            }
+            if (!select)
+              $postit.find(".postit-tags i.fa-"+tag).remove ();
             else
-            {
-              const $postit = S.getCurrent ("postit"),
-                    tag = e.target.dataset.tag;
+              $postit.find(".postit-tags").prepend (_getTagTemplate(tag));
 
-              if (!select)
-                $postit.find(".postit-tags i.fa-"+tag).remove ();
-              else
-                $postit.find(".postit-tags").prepend (_getTagTemplate(tag));
-  
-              $div.toggleClass ("selected");
-  
-              plugin.refreshPostitDataTag ();
+            $div.toggleClass ("selected");
 
-              S.getCurrent("filters").filters ("apply");
-            }
+            plugin.refreshPostitDataTag ();
+
+            S.getCurrent("filters").filters ("apply");
           }
         });
 
