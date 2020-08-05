@@ -70,13 +70,13 @@
             {
               if (!_editing)
               {
-                _editing = true;
-
                 clearInterval (settings._intervalBlockEditing);
                 settings._intervalBlockEditing = 0;
 
                 cb.edit (()=>
                 {
+                  _editing = true;
+
                   settings._valueOrig = editable.innerText;
 
                   editable.classList.add ("editing");

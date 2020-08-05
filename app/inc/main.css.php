@@ -607,7 +607,7 @@ th .editable.editing input {
 }
 
 .postit .editable.editing input {
-  height:14px;
+  height:16px;
   min-width:30px;
   margin-left:-6px;
   padding:0 3px 0 3px;
@@ -1218,6 +1218,7 @@ div.userscount span.wpt-badge {
 div.usersviewcounts {
   display:inline-block;
   position:relative;
+  margin-left:-20px;
   height: 1.2em;
   line-height: 1.2em;
   width: 1.2em;
