@@ -82,7 +82,7 @@
                   editable.classList.add ("editing");
                   editable.style.height = editable.clientHeight+"px";
 
-                  editable.innerHTML = `<div style="visibility:hidden;height:0">${settings._valueOrig}</div><input type="text" value="${H.htmlEscape(settings._valueOrig)}" maxlength="${settings.maxLength}">`;
+                  editable.innerHTML = `<div style="visibility:hidden;height:0">${H.htmlEscape(settings._valueOrig)}</div><input type="text" value="${H.htmlEscape(settings._valueOrig)}" maxlength="${settings.maxLength}">`;
 
                   settings._input = editable.querySelector ("input");
 
