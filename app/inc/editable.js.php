@@ -178,7 +178,7 @@
     // METHOD cancel ()
     cancel: function ()
     {
-      if (this.settings._input) 
+      if (this.element.hasClass ("editing"))
         $(this.settings._input).trigger ("blur");
     },
 
