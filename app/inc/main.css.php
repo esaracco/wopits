@@ -607,12 +607,12 @@ th .editable.editing input {
 }
 
 .postit .editable.editing input {
-  height:13px;
+  height:14px;
   min-width:30px;
-  margin-left:-5px;
+  margin-left:-6px;
   padding:0 3px 0 3px;
-  border-right:2px solid silver;
-  border-left:2px solid silver;
+  border-right:3px solid silver;
+  border-left:3px solid silver;
 }
 
 #sandbox {
@@ -804,10 +804,10 @@ div.postit {
 
 div.postit .postit-header {
   position:absolute;
-  font-size:0.8rem;
+  font-size:14px;
   border-radius:5px 5px 5px 0;
   background:#ffffc6;
-  top:-19px;
+  top:-21px;
   margin-left:-2px;
   padding:0 5px 0 5px;
   white-space: nowrap;
@@ -840,7 +840,6 @@ div.postit .postit-header i {
 
 div.postit .postit-header .title {
   font-weight:bold;
-  text-decoration: underline;
   display:inline-block;
 }
 

@@ -739,7 +739,7 @@
           container: $postit.find (".postit-header"),
           maxLength: <?=Wpt_dbCache::getFieldLength('postits', 'title')?>,
           triggerTags: ["span"],
-          fontSize: "13px",
+          fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
             edit: (cb) => plugin.edit (null, cb),
