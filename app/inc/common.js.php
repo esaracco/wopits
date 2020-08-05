@@ -631,28 +631,6 @@ class WHelp
     };
   }
 
-  // METHOD getTextWidth ()
-  getTextWidth (str, fontSize)
-  {
-    let ret = 0;
-
-    if (str != "")
-    {
-      const sb = S.getCurrent("sandbox")[0];
-
-      if (fontSize)
-        sb.style.fontSize = fontSize;
-      else
-        sb.removeAttribute ("style");
-
-      sb.innerText = str;
-
-      ret = (sb.clientWidth+30)+"px";
-    }
-
-    return ret;
-  }
-
   // METHOD testImage ()
   testImage (url, timeout = 5000)
   {

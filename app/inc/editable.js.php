@@ -7,6 +7,37 @@
 
   let _editing = false;
 
+  /////////////////////////// PRIVATE METHODS ///////////////////////////
+
+  // METHOD _clearSelection ()
+  function _clearSelection ()
+  {
+    window.getSelection && window.getSelection().removeAllRanges () ||
+      document.selection && document.selection.empty ();
+  }
+
+  // METHOD _getTextWidth ()
+  function _getTextWidth (str, fontSize)
+  {
+    let ret = 0;
+
+    if (str != "")
+    {
+      const sb = S.getCurrent("sandbox")[0];
+
+      if (fontSize)
+        sb.style.fontSize = fontSize;
+      else
+        sb.removeAttribute ("style");
+
+      sb.innerText = str;
+
+      ret = (sb.clientWidth+30)+"px";
+    }
+
+    return ret;
+  }
+
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -79,49 +110,41 @@
                         cb.unedit ();
                       }
 
-                      plugin.clearSelection ();
+                      _clearSelection ();
 
-                      delete settings._valueOrig;
                       clearTimeout (settings._timeoutEditing);
                       _editing = false;
-                    })
-                    .on("keydown", function (e)
-                    {
-                      const k = e.which;
-
-                      // Exclude some control keys
-                      if (k == 8 || k == 9 ||
-                          (k >= 16 && k <= 20) ||
-                          k == 27 ||
-                          (k >= 35 && k <= 40) ||
-                          k == 45 || k == 46 ||
-                          // CTRL+A
-                          (e.ctrlKey && k == 65) ||
-                          // CTRL+V
-                          (e.ctrlKey && k == 86) ||
-                          (k >= 144 && k <= 145))
-                      {
-                        ;
-                      }
-                      // ENTER
-                      else if (k == 13)
-                        this.blur ();
-                      else
-                        plugin.resize ();
                     })
                     .on("keyup", function (e)
                     {
                       const k = e.which;
 
-                      // ESC
-                      if (k == 27)
+                      // ENTER Validate changes
+                      if (k == 13)
+                        this.blur ();
+                      // ESC Cancel edition
+                      else if (e.which == 27)
                       {
                         this.value = settings._valueOrig;
                         this.blur ();
                       }
-                      // BACK || DEL
-                      else if (k == 8 || k == 46)
+                      // Exclude some control keys
+                      else if (
+                        k != 9 &&
+                        (k < 16 || k > 20) &&
+                        k != 27 &&
+                        (k < 35 || k > 40) &&
+                        k != 45 &&
+                        // CTRL+A
+                        !(e.ctrlKey && k == 65) &&
+                        // CTRL+C
+                        !(e.ctrlKey && k == 67) &&
+                        // CTRL+V (managed by "paste" event)
+                        !(e.ctrlKey && k == 86) &&
+                        (k < 144 || k > 145))
+                      {
                         plugin.resize ();
+                      }
                     })
                     .on("paste", function (e)
                     {
@@ -139,13 +162,6 @@
     setValue: function (v)
     {
       this.settings._input.value = v;
-    },
-
-    // METHOD clearSelection ()
-    clearSelection: function ()
-    {
-      window.getSelection && window.getSelection().removeAllRanges () ||
-        document.selection && document.selection.empty ();
     },
 
     // METHOD cancelAll ()
@@ -171,7 +187,7 @@
       const settings = this.settings,
             input = settings._input;
 
-      input.style.width = H.getTextWidth (v||input.value, settings.fontSize);
+      input.style.width = _getTextWidth (v||input.value, settings.fontSize);
 
       // Commit change automatically if no activity since
       // 15s.
