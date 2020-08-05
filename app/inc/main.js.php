@@ -84,6 +84,8 @@
             {
               const $arrows = S.getCurrent ("arrows");
 
+              S.set ("still-dragging", true, 500);
+
               // Fix arrows tool appearence
               if ($arrows.is (":visible"))
                 $arrows.arrows ("update");

@@ -231,9 +231,12 @@ class WSharer
   }
 
   // METHOD set ()
-  set (k, v)
+  set (k, v, t)
   {
     this.vars[k] = v;
+
+    if (t)
+      setTimeout (()=> this.unset (k), 500);
   }
 
   // METHOD get ()

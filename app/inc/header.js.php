@@ -203,7 +203,7 @@
           fontSize: "14px",
           callbacks: {
             before: () => plugin.saveCurrentWidth (),
-            edit: (cb) => plugin.edit (cb),
+            edit: (cb) => !S.get ("still-dragging") && plugin.edit (cb),
             unedit: () => plugin.unedit (),
             update: (v) => plugin.setTitle (v, true)
           }

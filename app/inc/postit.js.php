@@ -267,7 +267,7 @@
             },
           stop: function(e, ui)
             {
-              plugin.blockEdit ();
+              S.set ("still-dragging", true, 500);
 
               if (S.get("revertData").revert)
               {
@@ -329,7 +329,7 @@
             {
               const revertData = S.get ("revertData");
 
-              plugin.blockEdit ();
+              S.set ("still-dragging", true, 500);
 
               if (revertData.revert)
               {
@@ -432,7 +432,7 @@
             e.stopImmediatePropagation ();
 
             // To prevent race condition with draggable & resizable plugins.
-            if (plugin._blockEdit)
+            if (S.get ("still-dragging"))
               return;
 
             if (!action)
@@ -743,7 +743,7 @@
           fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
-            edit: (cb) => plugin.edit (null, cb),
+            edit: (cb) => !S.get ("still-dragging") && plugin.edit (null, cb),
             unedit: () => plugin.unedit (),
             update: (v) =>
               {
@@ -757,14 +757,6 @@
       if (settings.creationdate)
         setTimeout (
           () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
-    },
-
-    // METHOD blockEdit ()
-    blockEdit: function ()
-    {
-      this._blockEdit = true;
-
-      setTimeout (()=> this._blockEdit = false, 500);
     },
 
     // METHOD displayDeadlineAlert ()
