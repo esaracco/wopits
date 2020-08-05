@@ -236,7 +236,7 @@ class WSharer
     this.vars[k] = v;
 
     if (t)
-      setTimeout (()=> this.unset (k), 500);
+      setTimeout (()=> this.unset (k), t);
   }
 
   // METHOD get ()
