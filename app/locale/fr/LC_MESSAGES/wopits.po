@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-04 12:08+0200\n"
-"PO-Revision-Date: 2020-08-04 12:08+0200\n"
+"POT-Creation-Date: 2020-08-06 16:12+0200\n"
+"PO-Revision-Date: 2020-08-06 16:13+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -274,6 +274,9 @@ msgstr "Une erreur est survenue durant le clonage du fichier."
 
 msgid "An error occured while processing import."
 msgstr "Une erreur est survenue durant l'importation."
+
+msgid "An error occured while uploading file!"
+msgstr "Une erreur est survenue durant l'envoi du fichier!"
 
 msgid "An error occured while uploading file."
 msgstr "Une erreur est survenue durant le dépôt du fichier."
@@ -999,6 +1002,9 @@ msgstr "Cet identifiant `%s` existe déjà."
 msgid "The new password:"
 msgstr "Le nouveau mot de passe:"
 
+msgid "The requested file is no longer available for download!"
+msgstr "Le fichier demandé n'est plus disponible au téléchargement!"
+
 msgid "The row/column has been deleted!"
 msgstr "La ligne/colonne a été supprimée!"
 
@@ -1189,9 +1195,6 @@ msgstr "Vous pouvez le changer à tout moment dans vos %sRéglages%s."
 msgid "You cannot manage any of the existing groups."
 msgstr "Vous ne pouvez gérer aucun des groupes existants."
 
-msgid "You have reached the maximum number of tags."
-msgstr "Vous avez atteint le nombre maximum d'étiquettes."
-
 msgid "You must have admin access to perform this action."
 msgstr "Vous devez avoir un accès administrateur pour effectuer cette action."
 
@@ -1314,6 +1317,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "You have reached the maximum number of tags."
+#~ msgstr "Vous avez atteint le nombre maximum d'étiquettes."
 
 #~ msgid "Login must contain at least 3 characters"
 #~ msgstr "L'identifiant doit contenir au moins 3 caractères"

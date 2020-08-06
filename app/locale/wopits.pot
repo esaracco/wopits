@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-04 12:08+0200\n"
+        "POT-Creation-Date: 2020-08-06 16:12+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,6 +76,9 @@ msgid   "An error occured while cloning the wall."
 msgstr  ""
 
 msgid   "An error occured while processing import."
+msgstr  ""
+
+msgid   "An error occured while uploading file!"
 msgstr  ""
 
 msgid   "An error occured while uploading file."
@@ -673,6 +676,9 @@ msgstr  ""
 msgid   "The new password:"
 msgstr  ""
 
+msgid   "The requested file is no longer available for download!"
+msgstr  ""
+
 msgid   "The row/column has been deleted!"
 msgstr  ""
 
@@ -844,9 +850,6 @@ msgid   "You can change it at any time in your %sSettings%s."
 msgstr  ""
 
 msgid   "You cannot manage any of the existing groups."
-msgstr  ""
-
-msgid   "You have reached the maximum number of tags."
 msgstr  ""
 
 msgid   "You must have admin access to perform this action."
