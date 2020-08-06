@@ -17,11 +17,11 @@
   <!-- MSG CONTAINER -->
   <div id="msg-container"></div>
 
+  <!-- TAG PICKER -->
+  <div id="tag-picker"></div>
+
   <!-- COLOR PICKER -->
   <div class="color-picker"></div>
-
-  <!-- TAG PICKER -->
-  <div class="tag-picker"></div>
 
   <!-- MENU main -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm">

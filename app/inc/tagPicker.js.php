@@ -160,7 +160,7 @@
 
   $(function ()
     {
-      const $plugin = $(".tag-picker");
+      const $plugin = S.getCurrent ("tag-picker");
 
       if ($plugin.length)
         $plugin.tagPicker ();

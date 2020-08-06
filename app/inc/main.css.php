@@ -904,7 +904,7 @@ div.postit div.postit-tags i {
   {
 echo <<<EOC
 div.postit div.postit-tags i.fa-$item,
-.tag-picker i.fa-$item {
+#tag-picker i.fa-$item {
   color:$color !important;
 }
 EOC;
@@ -1218,11 +1218,14 @@ div.userscount span.wpt-badge {
 div.usersviewcounts {
   display:inline-block;
   position:relative;
-  margin-left:-20px;
   height: 1.2em;
   line-height: 1.2em;
   width: 1.2em;
   color:#555;
+}
+
+th .usersviewcounts {
+  margin-left:-20px;
 }
 
 div.usersviewcounts span.wpt-badge,
@@ -1572,7 +1575,7 @@ button.ui-datepicker-close {
   font-size:0.8rem;
 }
 
-.tag-picker {
+#tag-picker {
   display:none;
   position:absolute;
   cursor:pointer;
@@ -1585,21 +1588,21 @@ button.ui-datepicker-close {
   text-align:center;
 }
 
-.tag-picker > div.selected,
+#tag-picker > div.selected,
 .filters-items .tags > div.selected {
   background-color:#dadada;
   border: 1px solid silver;
   border-radius: 5px;
 }
 
-.tag-picker > div,
+#tag-picker > div,
 .filters-items .tags > div {
   float:left;
   border: 1px solid transparent;
   margin:2px;
 }
 
-.tag-picker > div i,
+#tag-picker > div i,
 .filters-items .tags > div i {
   margin:2px;
   color:#555;

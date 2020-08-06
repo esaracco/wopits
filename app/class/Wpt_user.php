@@ -394,7 +394,7 @@
 
       $ret = ( ($ret = $stmt->fetch ()) ) ? $ret['settings'] : '[]';
 
-      if (strpos($ret, 'timezone:') === false)
+      if (strpos ($ret, '"timezone":') === false)
       {
         $ret = json_decode ($ret);
         $ret->timezone = $this->getTimezone ();

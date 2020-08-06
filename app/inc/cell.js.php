@@ -69,8 +69,11 @@
             },
           start: function(e, ui)
             {
+              const $editable = $wall.find (".editable");
+
               // Cancel all editable (blur event is not triggered on resizing).
-              $wall.find(".editable").editable ("cancelAll");
+              if ($editable.length)
+                $editable.editable ("cancelAll");
 
               S.set ("revertData", {
                 revert: false,
@@ -97,8 +100,7 @@
               }
               else
               {
-                $wall.wall ("fixSize",
-                  ui.originalSize.width, ui.size.width + 3);
+                $wall.wall("fixSize", ui.originalSize.width, ui.size.width + 3);
 
                 plugin.update ({
                   width: ui.size.width + 3,
@@ -118,13 +120,9 @@
                       .style.height = (ui.size.height + 2)+"px";
                     $c.find(">div.ui-resizable-s")[0]
                       .style.width = this.clientWidth+"px";
-
                   });
 
-                $wall.find("tbody td").each (function ()
-                  {
-                    $(this).cell ("reorganize");
-                  });
+                $wall.find("tbody td").cell ("reorganize");
 
                 plugin.unedit ();
               }
@@ -222,14 +220,11 @@
         const cell = this,
               bbox = cell.getBoundingClientRect ();
 
-        $(this).find(".postit").each (function ()
-        {
-          $(this).postit ("fixPosition",
-            bbox,
-            cell.clientHeight,
-            cell.clientWidth
-          );
-        });
+        this.querySelectorAll(".postit").forEach (
+          (postit) => $(postit).postit ("fixPosition",
+                                        bbox,
+                                        cell.clientHeight,
+                                        cell.clientWidth));
       });
     },
 
@@ -238,17 +233,17 @@
     {
       const cells = [];
 
-      S.getCurrent("wall").find("tbody td").each (function ()
+      S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach ((cell)=>
       {
-        const $cell = $(this),
-              $postits = $cell.find(".postit");
+        const $postits = $(cell).find (".postit"),
+              bbox = cell.getBoundingClientRect ();
 
         cells.push ({
-          id: $cell[0].dataset.id.substring (5),
-          width: Math.trunc($cell.outerWidth ()),
-          height: Math.trunc($cell.outerHeight ()),
-          item_row: $cell.parent().index (),
-          item_col: $cell.index () - 1,
+          id: cell.dataset.id.substring (5),
+          width: Math.trunc (bbox.width),
+          height: Math.trunc (bbox.height),
+          item_row: cell.parentNode.rowIndex - 1,
+          item_col: cell.cellIndex - 1,
           postits: $postits.length ? $postits.postit ("serialize") : null
         });
       });
@@ -289,16 +284,14 @@
     update: function (d)
     {
       const $cell = this.element,
-            cell = $cell[0],
-            chgH = ($cell[0].clientHeight + 1 != d.height),
-            chgW = ($cell[0].clientWidth + 1 != d.width);
-            
+            cell0 = $cell[0],
+            chgH = (cell0.clientHeight + 1 != d.height),
+            chgW = (cell0.clientWidth + 1 != d.width);
+
       if (chgH || chgW)
       {
-        $cell.css ({
-          width: d.width,
-          height: d.height
-        }); 
+        cell0.style.width = d.width+"px";
+        cell0.style.height = d.height+"px";
  
         if (chgW)
           $cell.find(">div.ui-resizable-s").css ("width", d.width + 2);

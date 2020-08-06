@@ -247,20 +247,28 @@
 
     public static function download ($args)
     {
-      header ('Content-Description: File Transfer');
-      header ("Content-Type: {$args['item_type']}");
-      header ('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
-      header ('Content-Disposition: attachment; filename="'.
-        preg_replace('/[^\.a-z0-9\-_\()\[\]:\s]+/i', '_', $args['name']).'"');
-      header ('Pragma: no-cache');
-      header ("Content-Length: {$args['size']}");
+      $itemType = $args['item_type'];
 
-      flush ();
-    
-      readfile ($args['path']);
+      // Tell our client API that this file is not available anymore.
+      if ($itemType == '404')
+        header ("Content-Type: $itemType");
+      else
+      {
+        header ('Content-Description: File Transfer');
+        header ("Content-Type: $itemType");
+        header ('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Content-Disposition: attachment; filename="'.
+          preg_replace('/[^\.a-z0-9\-_\()\[\]:\s]+/i', '_', $args['name']).'"');
+        header ('Pragma: no-cache');
+        header ("Content-Length: {$args['size']}");
 
-      if ($args['unlink']??false)
-        unlink ($args['path']);
+        flush ();
+
+        readfile ($args['path']);
+
+        if ($args['unlink']??false)
+          unlink ($args['path']);
+      }
 
       exit;
     }

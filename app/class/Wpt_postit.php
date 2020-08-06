@@ -399,9 +399,13 @@
         $stmt = $this->prepare ('
           SELECT * FROM postits_attachments WHERE id = ?');
         $stmt->execute ([$attachmentId]);
-        $data = $stmt->fetch ();
 
-        $data['path'] = WPT_ROOT_PATH.$data['link'];
+        // If the file has been deleted by admin while a user with readonly
+        // access was taking a look at the attachments list.
+        if ( !($data = $stmt->fetch ()) )
+          $data = ['item_type' => 404];
+        else
+          $data['path'] = WPT_ROOT_PATH.$data['link'];
 
         Wpt_common::download ($data);
       }

@@ -15,7 +15,7 @@
     {
       const plugin = this,
             $filters = plugin.element,
-            tList = $(".tag-picker").tagPicker ("getTagsList"),
+            tList = S.getCurrent("tag-picker").tagPicker ("getTagsList"),
             cList = $(".color-picker").colorPicker ("getColorsList");
 
       let tags = '';

@@ -67,13 +67,14 @@
     {
       const plugin = this,
             $postit = plugin.element,
+            postit0 = $postit[0],
             settings = plugin.settings,
             $wall = settings.wall,
             writeAccess = H.checkAccess (
               "<?=WPT_WRIGHTS_RW?>", settings.access);
 
-      $postit[0].className = settings.classes || "postit";
-      $postit[0].dataset.tags = settings.tags || "";
+      postit0.className = settings.classes || "postit";
+      postit0.dataset.tags = settings.tags || "";
 
       settings._plugs = [];
       settings._plugColor = "";
@@ -137,7 +138,7 @@
           e.preventDefault ();
 
           if (from.id != id &&
-              ($postit[0].dataset.plugs||"").indexOf(from.id) == -1)
+              (postit0.dataset.plugs||"").indexOf(from.id) == -1)
           {
             plugin.edit ({plugend: true}, ()=>
               {
@@ -146,7 +147,7 @@
                   line = {
                     startId: from.id,
                     endId: id,
-                    obj: plugin.getPlugTemplate ($start[0], $postit[0])
+                    obj: plugin.getPlugTemplate ($start[0], postit0)
                   };
 
                 line.obj.setOptions ({
@@ -309,15 +310,16 @@
           },
           start: function(e, ui)
             {
-              const postit = $postit[0];
+              const $editable = $wall.find (".editable");
 
               // Cancel all editable (blur event is not triggered on resizing).
-              $wall.find(".editable").editable ("cancelAll");
+              if ($editable.length)
+                $editable.editable ("cancelAll");
   
               S.set ("revertData", {
                 revert: false,
-                width: postit.clientWidth,
-                height: postit.clientHeight
+                width: postit0.clientWidth,
+                height: postit0.clientHeight
               });
 
               plugin.edit (
@@ -495,13 +497,13 @@
                     case "edit":
     
                       const $popup = $("#postitUpdatePopup"),
-                            title =
-                              $postit.find(".postit-header span.title").text (),
-                            content = $postit.find(".postit-edit").html()||"";
+                            title = postit0.querySelector(
+                                      ".postit-header span.title").innerText,
+                            content = postit0.querySelector(
+                                        ".postit-edit").innerHTML||"";
 
                       S.set ("postit-data", {
-                        title: (title != "...") ?
-                                 title.replace(/&amp;/g, "&") : ""
+                        title: (title != "...")?title.replace(/&amp;/g, "&"):""
                       });
     
                       $("#postitUpdatePopupTitle")
@@ -513,9 +515,9 @@
 
                       // Check if post-it content has pictures
                       if (content.match (/\/postit\/\d+\/picture\/\d+/))
-                        $postit[0].dataset.hadpictures = true;
+                        postit0.dataset.hadpictures = true;
                       else
-                        $postit[0].removeAttribute ("data-hadpictures");
+                        postit0.removeAttribute ("data-hadpictures");
 
                       tinymce.activeEditor.setContent (content);
 
@@ -529,7 +531,7 @@
                     // OPEN tags picker
                     case "tag-picker":
 
-                      $(".tag-picker").tagPicker ("open", e);
+                      S.getCurrent("tag-picker").tagPicker ("open", e);
 
                       break;
     
@@ -577,7 +579,7 @@
                       .on ("keydown", _plugRabbit.escapeEvent);
       
                     _plugRabbit.line = new LeaderLine (
-                      $postit[0],
+                      postit0,
                       $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
                       {
                         size: 3,
@@ -587,7 +589,7 @@
        
                     $("body")
                       .off("mousemove", _plugRabbit.mouseEvent)
-                      .on("mousemove", _plugRabbit.mouseEvent);
+                      .on ("mousemove", _plugRabbit.mouseEvent);
       
                     S.set ("link-from", {id: settings.id, obj: $postit});
                   });
@@ -612,7 +614,7 @@
 
                           plugin.unedit ();
 
-                          $postit[0].dataset.undo = "delete|"+removedIds;
+                          postit0.dataset.undo = "delete|"+removedIds;
                           $undo.removeClass ("disabled");
                           $undo.find("span").text ("« <?=_("Delete")?> »");
                         }
@@ -623,7 +625,7 @@
 
               case "undo-plug":
 
-                const [action, ids] = $postit[0].dataset.undo.split ("|");
+                const [action, ids] = postit0.dataset.undo.split ("|");
 
                 plugin.resetPlugsUndo ();
 
@@ -661,7 +663,7 @@
                             endId: endId,
                             label: label,
                             obj: plugin.getPlugTemplate (
-                                   $postit[0], $end[0], label)
+                                   postit0, $end[0], label)
                           });
                         }
                         else
@@ -690,7 +692,7 @@
               plugin.edit (null, () => plugin.displayAttachments ());
           });
   
-      const $tags = $(`<div class="postit-tags">${settings.tags?$(".tag-picker").tagPicker ("getHTMLFromString", settings.tags):''}</div>`);
+      const $tags = $(`<div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
         $tags.on("mousedown",
@@ -698,12 +700,13 @@
           {
             e.stopImmediatePropagation ();
 
-            plugin.edit (null, () => $(".tag-picker").tagPicker ("open", e));
+            plugin.edit (null, () =>
+              S.getCurrent("tag-picker").tagPicker ("open", e));
           });
       else
         $menu.css ("visibility", "hidden");
   
-      $postit[0].dataset.id = "postit-"+settings.id;
+      postit0.dataset.id = "postit-"+settings.id;
     
       $postit
         .append($attachmentscount)
@@ -1186,7 +1189,7 @@
     // METHOD serializePlugs ()
     serializePlugs: function ()
     {
-     const settings = this.settings;
+      const settings = this.settings;
       let ret = {};
 
       settings._plugs !== undefined &&
@@ -1195,7 +1198,7 @@
           // Take in account only plugs from this postit
           if (plug.startId == settings.id)
             ret[plug.endId] = (plug.label == "...") ?
-              "" : plug.labelObj.find("a span").text ();
+              "" : plug.labelObj[0].querySelector("a span").innerText;
         });
 
       return ret;
@@ -1208,46 +1211,45 @@
 
       this.element.each (function ()
       {
-        const $p = $(this),
-              p = this,
-              postitId = p.dataset.id.substring (7);
+        const postitId = this.dataset.id.substring (7);
         let data = {};
 
-        if (p.dataset.todelete)
+        if (this.dataset.todelete)
           data = {id: postitId, todelete: true};
         else
         {
-          const title = $p.find(".postit-header span.title").text (),
-                classcolor = p.className.match(/(color\-[a-z]+)/),
-                deadline = (p.dataset.deadlineepoch) ?
-                  p.dataset.deadlineepoch :
-                  $p.find(".dates .end span").text().trim ();
+          const title =
+                  this.querySelector(".postit-header span.title").innerText,
+                classcolor = this.className.match(/(color\-[a-z]+)/),
+                deadline = (this.dataset.deadlineepoch) ?
+                  this.dataset.deadlineepoch :
+                  this.querySelector(".dates .end span").innerText.trim (),
+                bbox = this.getBoundingClientRect ();
           let tags = [];
 
-          $p.find(".postit-tags i").each (function ()
-            {
-              tags.push (this.dataset.tag);
-            });
+          this.querySelectorAll(".postit-tags i").forEach (
+            (item) => tags.push (item.dataset.tag));
 
           data = {
             id: postitId,
-            width: Math.trunc($p.outerWidth ()),
-            height: Math.trunc($p.outerHeight ()),
-            item_top: Math.trunc((p.offsetTop < 0) ? 0 : p.offsetTop),
-            item_left: Math.trunc((p.offsetLeft < 0) ? 0 : p.offsetLeft),
+            width: Math.trunc (bbox.width),
+            height: Math.trunc (bbox.height),
+            item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
+            item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
-            content: $p.find(".postit-edit").html (),
+            content: this.querySelector(".postit-edit").innerHTML,
             tags: (tags.length) ? ","+tags.join(",")+"," : null,
             deadline: (deadline == "...") ? "" : deadline,
-            alertshift: (p.dataset.deadlinealertshift !== undefined) ?
-                          p.dataset.deadlinealertshift : null,
-            updatetz: p.dataset.updatetz || null,
-            obsolete: $p.hasClass ("obsolete"),
-            attachmentscount: $p.find(".attachmentscount span").text (),
-            plugs: $p.postit ("serializePlugs"),
-            hadpictures: !!p.dataset.hadpictures,
-            hasuploadedpictures: !!p.dataset.hasuploadedpictures
+            alertshift: (this.dataset.deadlinealertshift !== undefined) ?
+                          this.dataset.deadlinealertshift : null,
+            updatetz: this.dataset.updatetz||null,
+            obsolete: this.classList.contains ("obsolete"),
+            attachmentscount:
+              this.querySelector(".attachmentscount span").innerText,
+            plugs: $(this).postit ("serializePlugs"),
+            hadpictures: !!this.dataset.hadpictures,
+            hasuploadedpictures: !!this.dataset.hasuploadedpictures
           };
         }
 
@@ -1261,7 +1263,7 @@
     setDeadline: function (args)
     {
       const postit = this.element[0],
-            $date = this.element.find (".dates .end"),
+            date = postit.querySelector (".dates .end"),
             {deadline, alertshift, timezone} = args;
       let human;
 
@@ -1270,10 +1272,9 @@
       else
         human = (deadline) ? H.getUserDate(deadline, timezone) : "...";
 
-      $date.find("span").text (human);
+      date.querySelector("span").innerText = human;
 
-      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
-          human == "...")
+      if (human == "...")
       {
         postit.classList.remove ("obsolete");
 
@@ -1282,29 +1283,31 @@
         postit.removeAttribute ("data-deadlineepoch");
         postit.removeAttribute ("data-updatetz");
 
-        $date
-          .removeClass ("with-alert obsolete")
-          .find("i.fa-times-circle").hide ();
+        date.classList.remove ("with-alert");
+        date.classList.remove ("obsolete");
+        date.querySelector("i.fa-times-circle").style.display = "none";
       }
       else
       {
         postit.dataset.deadline = human;
         postit.dataset.deadlineepoch = deadline;
+
         if (alertshift !== undefined)
         {
           if (alertshift !== null)
           {
             postit.dataset.deadlinealertshift = alertshift;
-            $date.addClass ("with-alert");
+            date.classList.add ("with-alert");
           }
           else
           {
             postit.removeAttribute ("data-deadlinealertshift");
-            $date.removeClass ("with-alert");
+            date.classList.remove ("with-alert");
           }
         }
 
-        $date.find("i.fa-times-circle").show ();
+        if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+          date.querySelector("i.fa-times-circle").style.display = "block";
       }
     },
 
@@ -1552,7 +1555,8 @@
     update: function (d, cell)
     {
       const $postit = this.element,
-            $tagPicker = $(".tag-picker"),
+            postit0 = $postit[0],
+            $tagPicker = S.getCurrent ("tag-picker"),
             tz = wpt_userData.settings.timezone;
 
       // Change postit cell
@@ -1586,14 +1590,14 @@
       this.setDeadline (d);
 
       if (!d.obsolete)
-        $postit.removeClass ("obsolete");
+        postit0.classList.remove ("obsolete");
 
       if (!d.tags)
         d.tags = "";
-      $postit[0].dataset.tags = d.tags;
+      postit0.dataset.tags = d.tags;
 
-      $postit.find(".postit-tags").html (
-        $tagPicker.tagPicker ("getHTMLFromString", d.tags));
+      postit0.querySelector(".postit-tags").innerHTML =
+        $tagPicker.tagPicker ("getHTMLFromString", d.tags);
 
       $tagPicker.tagPicker ("refreshPostitDataTag", $postit);
 

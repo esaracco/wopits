@@ -963,37 +963,32 @@
     // METHOD deleteCol ()
     deleteCol: function (idx)
     {
-      const plugin = this,
-            $wall = plugin.element,
+      const $wall = this.element,
             $header = $wall.find("thead tr th:eq("+idx+")"),
-            oldW = Math.trunc($wall.outerWidth () - 1),
-            newW = Math.trunc(oldW - $header.outerWidth ()),
+            oldW = Math.trunc ($wall.outerWidth () - 1),
+            newW = Math.trunc (oldW - $header.outerWidth ()),
             data = {
               wall: {width: oldW},
-              width: Math.trunc($header.outerWidth ())
+              width: Math.trunc ($header.outerWidth ())
             };
 
-      plugin.closeAllMenus ();
+      this.closeAllMenus ();
 
      $header.remove ();
-     $wall.find("tbody tr").each(function()
+
+     $wall[0].querySelectorAll("tbody tr").forEach ((tr)=>
         {
-          const $cell = $(this).find("td:eq("+(idx - 1)+")");
+          const $cell = $(tr).find("td:eq("+(idx - 1)+")");
 
           $cell.cell ("removePostitsPlugs");
           $cell.remove ();
         });
 
-      $wall.find("tbody th").each(function()
-        {
-          $(this).css ("width", 1);
-        });
-
-      plugin.fixSize (oldW, newW); 
+      this.fixSize (oldW, newW);
 
       H.request_ws (
         "DELETE",
-        "wall/"+plugin.settings.id+"/col/"+(idx - 1),
+        "wall/"+this.settings.id+"/col/"+(idx - 1),
         data);
     },
 

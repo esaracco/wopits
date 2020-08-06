@@ -14,16 +14,17 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD serializeOne ()
-  function _serializeOne ($header)
+  function _serializeOne (header)
   {
-    const $img = $header.find("img");
+    const img = header.querySelector ("img"),
+          bbox = header.getBoundingClientRect ();
 
     return {
-      id: $header[0].dataset.id.substring (7),
-      width: Math.trunc($header.outerWidth ()),
-      height: Math.trunc($header.outerHeight ()),
-      title: $header.find(".title").text (),
-      picture: ($img.length) ? $img.attr("src") : null
+      id: header.dataset.id.substring (7),
+      width: Math.trunc (bbox.width),
+      height: Math.trunc (bbox.height),
+      title: header.querySelector(".title").innerText,
+      picture: img ? img.getAttribute ("src") : null
     };
   }
 
@@ -389,10 +390,6 @@
     // METHOD deleteImg ()
     deleteImg: function ()
     {
-      const $header = this.element,
-            $wall = this.settings.wall,
-            oldW = $header.outerWidth ();
-
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/header/"+this.settings.id+"/picture",
@@ -404,12 +401,16 @@
             H.raiseError (null, d.error_msg);
           else
           {
+            const header = this.element[0],
+                  oldW = header.getBoundingClientRect().width,
+                  img = header.querySelector (".img");
+
             if (this.settings.item_type == "col")
-              $header.find(".img").remove ();
+              img.remove ();
             else
               H.headerRemoveContentKeepingWallSize ({
                 oldW: oldW,
-                cb: () => $header.find(".img").remove ()
+                cb: () => img.remove ()
               });
 
             this.unedit ();
@@ -421,63 +422,59 @@
     // METHOD update ()
     update: function (header)
     {
-      if (header.hasOwnProperty("title"))
+      if (header.hasOwnProperty ("title"))
         this.setTitle (header.title);
 
-      if (header.hasOwnProperty("picture"))
+      if (header.hasOwnProperty ("picture"))
         this.setImg (header.picture);
     },
 
     // METHOD setTitle ()
     setTitle: function (title, resize)
     {
-      const plugin = this,
-            $header = plugin.element,
-            thIdx = $header.index (),
-            isRow = (plugin.settings.item_type == "row");
+      const header = this.element[0];
 
       title = H.noHTML (title);
 
+      header.querySelector(".title").innerHTML = title||"&nbsp;";
+
       if (resize)
       {
-        const $wall = plugin.settings.wall,
-              oldW = plugin.settings.thwidth;
+        const $wall = this.settings.wall,
+              oldW = this.settings.thwidth,
+              isRow = (this.settings.item_type == "row");
 
         if (isRow)
-          $header.css ("width", 1);
-
-        $header.find(".title").html (title ? title : "&nbsp;");
+        {
+          $wall[0].style.width = "auto";
+          header.style.width = 0;
+        }
 
         H.waitForDOMUpdate (()=>
           {
-            const newW = $header.outerWidth ();
+            const newW = header.getBoundingClientRect().width;
 
             if (isRow || newW > oldW)
             {
-              if (newW != oldW)
-                $wall.wall ("fixSize", oldW, newW);
+              $wall.wall ("fixSize", oldW, newW);
 
               if (!isRow)
               {
                 $wall.find("tbody tr")
-                  .find("td:eq("+(thIdx - 1)+")").each (function ()
+                  .find("td:eq("+(header.cellIndex-1)+")").each (function ()
                   {
-                    const $cell = $(this);
-
-                    $cell[0].style.width = newW+"px";
-                    $cell.find(".ui-resizable-s")[0].style.width =
-                      (newW + 2)+"px";
+                    this.style.width = newW+"px";
+                    this.querySelector(".ui-resizable-s").style.width =
+                      (newW+2)+"px";
                   });
               }
             }
             else
               $wall.wall ("fixSize");
 
-            plugin.unedit ();
+            this.unedit ();
           });
       }
-      else
-        $header.find(".title").html (title ? title : "&nbsp;");
     },
 
     // METHOD edit ()
@@ -485,7 +482,7 @@
     {
       this.setCurrent ();
 
-      _originalObject = _serializeOne (this.element);
+      _originalObject = _serializeOne (this.element[0]);
 
       if (!this.settings.wall[0].dataset.shared)
         return success_cb && success_cb ();
@@ -518,14 +515,14 @@
     // METHOD setCurrent ()
     setCurrent: function ()
     {
-      this.element.addClass ("current");
+      this.element[0].classList.add ("current");
     },
 
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
       S.reset ("header");
-      this.element.removeClass ("current");
+      this.element[0].classList.remove ("current");
     },
 
     // METHOD cancelEdit ()
@@ -553,18 +550,14 @@
     // METHOD serialize ()
     serialize: function ()
     {
-      const $wall = this.settings.wall,
+      const wall = this.settings.wall[0],
             headers = {cols: [], rows: []};
 
-      $wall.find("thead th:not(:eq(0))").each (function()
-        {
-          headers.cols.push (_serializeOne ($(this)));
-        });
+      wall.querySelectorAll("thead th").forEach ((header)=>
+        (header.cellIndex > 0) && headers.cols.push (_serializeOne (header)));
 
-      $wall.find("tbody th").each (function()
-        {
-          headers.rows.push (_serializeOne ($(this)));
-        });
+      wall.querySelectorAll("tbody th").forEach (
+        (header)=> headers.rows.push (_serializeOne (header)));
 
       return headers;
     },
@@ -591,7 +584,7 @@
       }
 
       // Update header only if it has changed
-      if (H.updatedObject(_originalObject, _serializeOne (this.element)))
+      if (H.updatedObject(_originalObject, _serializeOne (this.element[0])))
       {
         data = {
           headers: this.serialize (),
@@ -599,10 +592,7 @@
           wall: {width: Math.trunc($wall.outerWidth ())}
         };
 
-        $wall.find("tbody td").each (function ()
-          {
-            $(this).cell ("reorganize");
-          });
+        $wall.find("tbody td").cell ("reorganize");
       }
       else if (!this.settings.wall[0].dataset.shared)
         return this.cancelEdit (args.bubble_cb);

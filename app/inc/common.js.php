@@ -259,13 +259,6 @@ class WSharer
 
     switch (item)
     {
-      case "sandbox":
-
-        if (!this.sandbox)
-          this.sandbox = $("#sandbox");
-
-        return this.sandbox;
-
       case "wall":
 
         if (!this.wall.length)
@@ -287,6 +280,24 @@ class WSharer
 
         return this.header;
 
+      case "tag-picker":
+
+        if (!this.tagPicker)
+          this.tagPicker = $("#tag-picker");
+
+        return this.tagPicker;
+
+      case "walls":
+
+        return this.walls;
+
+      case "sandbox":
+
+        if (!this.sandbox)
+          this.sandbox = $("#sandbox");
+
+        return this.sandbox;
+
       case "chatroom":
 
         if (!this.chatroom.length)
@@ -307,10 +318,6 @@ class WSharer
          this.arrows = this.walls.find(".tab-pane.active .arrows");
 
         return this.arrows;
-
-      case "walls":
-
-        return this.walls;
     }
   }
 }
@@ -1227,7 +1234,7 @@ class WHelp
             this.displayMsg ({
               type: "warning",
               msg: args.msg ||
-                     "<?=_("An error occured while uploading file.")?>"
+                     "<?=_("An error occured while uploading file!")?>"
             });
         }
       };
@@ -1240,20 +1247,30 @@ class WHelp
       const blob = req.response,
             fname = args.fname,
             contentType = req.getResponseHeader ("Content-Type");
-  
-      if (window.navigator.msSaveOrOpenBlob)
-        window.navigator.msSaveOrOpenBlob (
-          new Blob([blob], {type: contentType}), fname);
+
+      if (contentType == 404)
+      {
+        this.displayMsg ({
+          type: "warning",
+          msg: "<?=_("The requested file is no longer available for download!")?>"
+        });
+      }
       else
       {
-        const el = document.createElement ("a");
-  
-        el.href = window.URL.createObjectURL (blob);
-        el.download = fname;
-        el.click ();
+        if (window.navigator.msSaveOrOpenBlob)
+          window.navigator.msSaveOrOpenBlob (
+            new Blob([blob], {type: contentType}), fname);
+        else
+        {
+          const el = document.createElement ("a");
+
+          el.href = window.URL.createObjectURL (blob);
+          el.download = fname;
+          el.click ();
+        }
       }
     };
-  
+
     req.send ();
   }
   
@@ -1460,26 +1477,15 @@ class WHelp
   // METHOD headerRemoveContentKeepingWallSize ()
   headerRemoveContentKeepingWallSize (args)
   {
-    const $wall = S.getCurrent ("wall");
-    let tdW = 0;
-  
-    // Get row TD total width
-    $wall.find("tbody tr:eq(0) td").each (function ()
-      {
-        tdW += $(this).outerWidth ();
-      });
+    const $wall = S.getCurrent ("wall"),
+          firstTh = $wall[0].querySelector ("thead th");
   
     args.cb ();
   
-    $wall.find("tbody tr th").css ("width", 1);
+    $wall[0].style.width = "auto";
+    firstTh.style.width = 0;
   
-    const newW = $wall.find("thead th:eq(0)").outerWidth ();
-  
-    if (newW != args.oldW)
-    {
-      $wall.wall ("fixSize", args.oldW, newW);
-      $wall.css ("width", tdW + newW);
-    }
+    $wall.wall ("fixSize", args.oldW, firstTh.getBoundingClientRect().width);
   }
   
   // METHOD waitForDOMUpdate ()
