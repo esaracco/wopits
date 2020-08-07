@@ -885,35 +885,37 @@
     // METHOD applyTheme ()
     applyTheme: function ()
     {
-      $(".postit.with-plugs").each (function ()
+      document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
         {
-          $(this).postit ("applyThemeToPlugs");
+          $(p).postit ("applyThemeToPlugs");
         });
     },
 
     // METHOD resetPlugsUndo ()
     resetPlugsUndo: function ()
     {
-      this.settings.wall.find(".postit").each (function ()
+      this.settings.wall[0].querySelectorAll(".postit").forEach ((postit)=>
         {
-          this.dataset.undo = "";
+          const link = postit.querySelector (
+                         ".postit-menu [data-action='undo-plug'] a");
 
-          $(this).find(".postit-menu [data-action='undo-plug'] a")
-            .addClass("disabled")
-            .find("span").text ("");
+          postit.dataset.undo = "";
+
+          link.classList.add ("disabled");
+          link.querySelector("span").innerText = "";
         });
     },
 
     // METHOD checkPlugsMenu ()
     checkPlugsMenu: function ()
     {
-      const $menu = this.element.find (
-        ".postit-menu li[data-action='delete-plugs'] .dropdown-item");
+      const menu = this.element.find (
+        ".postit-menu li[data-action='delete-plugs'] .dropdown-item")[0];
 
       if (this.havePlugs ())
-        $menu.removeClass ("disabled");
+        menu.classList.remove ("disabled");
       else
-        $menu.addClass ("disabled");
+        menu.classList.add ("disabled");
     },
 
     // METHOD updatePlugLabel ()
@@ -951,14 +953,18 @@
     {
       const labelId = plug.startId+"-"+plug.endId,
             $div = this.settings.plugsContainer;
+      let svg;
 
       if ($svg)
+      {
         $svg.appendTo ($div);
+        svg = $svg[0];
+      }
       else
-        $svg = $div.find ("svg.leader-line[data-id='"+labelId+"']");
+        svg = $div[0].querySelector ("svg.leader-line[data-id='"+labelId+"']");
 
-      const $text = $svg.find ("text"),
-            pos = $text.position ();
+      const text = svg.querySelector ("text"),
+            pos = text ? text.getBoundingClientRect () : null;
 
       if (pos)
       {
@@ -1147,7 +1153,9 @@
       this.settings._plugs.forEach ((plug) =>
         {
           plug.obj.show ();
-          plug.labelObj.show ();
+
+          if (plug.labelObj)
+            plug.labelObj.show ();
         });
     },
 
@@ -1160,11 +1168,16 @@
         {
           plug.obj.position ();
 
-          const p = div.querySelector("svg.leader-line[data-id='"+
-            plug.startId+"-"+plug.endId+"'] text").getBoundingClientRect ();
+          const label = div.querySelector("svg.leader-line[data-id='"+
+            plug.startId+"-"+plug.endId+"'] text");
 
-          plug.labelObj[0].style.top = p.top+"px";
-          plug.labelObj[0].style.left = p.left+"px";
+          if (label)
+          {
+            const p = label.getBoundingClientRect ();
+
+            plug.labelObj[0].style.top = p.top+"px";
+            plug.labelObj[0].style.left = p.left+"px";
+          }
         });
     },
 
@@ -1505,14 +1518,14 @@
     setCurrent: function ()
     {
       S.reset ("postit");
-      this.element.addClass ("current")
+      this.element[0].classList.add ("current")
     },
 
     // METHOD unsetCurrent ()
     unsetCurrent: function ()
     {
       S.reset ("postit");
-      this.element.removeClass ("current");
+      this.element[0].classList.remove ("current");
     },
 
     // METHOD insert ()

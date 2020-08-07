@@ -200,10 +200,8 @@
     // METHOD removePostitsPlugs ()
     removePostitsPlugs: function ()
     {
-      this.element.find(".postit.with-plugs").each (function ()
-        {
-          $(this).postit ("removePlugs", true);
-        });
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
+        (p)=> $(p).postit ("removePlugs", true));
     },
 
     // METHOD getId ()

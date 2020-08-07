@@ -119,21 +119,19 @@
 
     saveOpenedWalls: function (activeWall)
     {
-      const plugin = this;
       let openedWalls = [];
 
-      $(".nav-tabs.walls a.nav-link").each (function ()
+      document.querySelectorAll(".nav-tabs.walls a.nav-link").forEach ((tab)=>
         {
-          const $tab = $(this),
-                wallId = $tab.attr("href").split('-')[1];
+          const wallId = tab.getAttribute("href").split('-')[1];
 
           openedWalls.push (wallId);
 
-          if (!activeWall && $tab.hasClass ("active"))
+          if (!activeWall && tab.classList.contains ("active"))
             activeWall = wallId;
         });
 
-      plugin.set ({
+      this.set ({
         openedWalls: openedWalls,
         activeWall: (openedWalls.length) ? activeWall : ""
       });

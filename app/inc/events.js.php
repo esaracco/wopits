@@ -159,7 +159,10 @@ $(function()
   $(document).on("hidden.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
-      $_walls.wall ("hidePostitsPlugs");
+      const $wall = S.getCurrent ("wall");
+
+      $wall.wall ("hidePostitsPlugs");
+      $wall.wall ("closeAllMenus");
     });
 
   // EVENT shown.bs.tab on walls tabs

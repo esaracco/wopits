@@ -1491,10 +1491,7 @@ class WHelp
   // METHOD waitForDOMUpdate ()
   waitForDOMUpdate (cb)
   {
-    //FIXME
-    setTimeout (
-      () => window.requestAnimationFrame (
-              () => window.requestAnimationFrame (cb)), 150);
+    window.requestAnimationFrame (() => window.requestAnimationFrame (cb));
   }
   
   // METHOD checkForAppUpgrade ()

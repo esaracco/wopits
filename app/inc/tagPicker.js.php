@@ -80,11 +80,9 @@
 
       $picker.find(".selected").removeClass ("selected");
 
-      $postit.find(".postit-tags i").each (function ()
-        {
-          $picker.find ("i.fa-"+this.dataset.tag).parent()
-            .addClass ("selected");
-        });
+      $postit[0].querySelectorAll(".postit-tags i").forEach ((tag)=>
+        $picker[0].querySelector("i.fa-"+tag.dataset.tag)
+          .parentNode.classList.add ("selected"));
 
       if (x + _width > wW)
         x = wW - _width - 20;
@@ -116,25 +114,21 @@
     // METHOD refreshPostitDataTag ()
     refreshPostitDataTag: function ($postit)
     {
+      const postit0 = $postit ? $postit[0] : S.getCurrent("postit")[0];
       let dataTag = "";
 
-      if (!$postit)
-        $postit = S.getCurrent ("postit");
-
-      $postit.find(".postit-tags i").each (function ()
-        {
-          dataTag += ','+this.dataset.tag;
-        });
+      postit0.querySelectorAll(".postit-tags i").forEach (
+        (tag) => dataTag += ','+tag.dataset.tag);
 
       if (dataTag)
         dataTag += ",";
 
-      $postit[0].dataset.tags = dataTag;
+      postit0.dataset.tags = dataTag;
 
       if (dataTag)
-        $postit.find(".postit-tags").show ();
+        postit0.querySelector(".postit-tags").style.display = "block";
       else
-        $postit.find(".postit-tags").hide ();
+        postit0.querySelector(".postit-tags").style.display = "none";
     },
 
     // METHOD getHTMLFromString ()

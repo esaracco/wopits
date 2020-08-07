@@ -363,19 +363,9 @@
     // METHOD closeAllMenus ()
     closeAllMenus: function ()
     {
-      const $wall = this.element;
-
       // Postits menu
-      $wall.find("td div.postit-menu.on").each (function ()
-        {
-          $(this).parent().postit ("closeMenu");
-        });
-    
-      // Col/row headers menu
-      $wall.find("th div[class*='-menu'].on").each (function ()
-        {
-          $(this).parent().find(".btn-menu").click ();
-        });
+      this.element[0].querySelectorAll("td div.postit-menu.on").forEach (
+        (p) => $(p).parent().postit ("closeMenu"));
     },
 
     // METHOD refreshUsersview ()
@@ -388,28 +378,22 @@
     // METHOD checkPostitsPlugsMenu ()
     checkPostitsPlugsMenu: function ()
     {
-      this.element.find(".postit").each (function ()
-        {
-          $(this).postit ("checkPlugsMenu");
-        });
+      this.element[0].querySelectorAll(".postit").forEach (
+        (p) => $(p).postit ("checkPlugsMenu"));
     },
 
     // METHOD repositionPostitsPlugs ()
     repositionPostitsPlugs: function ()
     {
-      this.element.find(".postit.with-plugs").each (function ()
-        {
-          $(this).postit ("repositionPlugs");
-        });
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
+        (p) => $(p).postit ("repositionPlugs"));
     },
 
     // METHOD removePostitsPlugs ()
     removePostitsPlugs: function ()
     {
-      this.element.find(".postit.with-plugs").each (function ()
-        {
-          $(this).postit ("removePlugs", true);
-        });
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
+        (p) => $(p).postit ("removePlugs", true));
 
       this.settings.plugsContainer.remove ();
     },
@@ -418,7 +402,7 @@
     //FIXME //TODO Optimize
     refreshPostitsPlugs: function (plugs, partial = false)
     {
-      const $wall = this.element,
+      const wall = this.element[0],
             hidePlugs = S.getCurrent("filters").hasClass ("plugs-hidden");
       let idsNew = {};
 
@@ -426,20 +410,23 @@
         {
           const startId = plug.item_start,
                 endId = plug.item_end,
-                $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
-                $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
+                start = wall.querySelector (
+                          ".postit[data-id='postit-"+startId+"']"),
+                $start = $(start),
                 label = plug.label || "...";
 
           idsNew[startId+""+endId] = 1;
 
-          if (($start[0].dataset.plugs||"").indexOf (endId) == -1)
+          if ((start.dataset.plugs||"").indexOf (endId) == -1)
           {
-            const newPlug = {
-              startId: startId,
-              endId: endId,
-              label: label,
-              obj: $start.postit ("getPlugTemplate", $start[0], $end[0], label)
-            };
+            const end = wall.querySelector (
+                          ".postit[data-id='postit-"+endId+"']"),
+                  newPlug = {
+                    startId: startId,
+                    endId: endId,
+                    label: label,
+                    obj: $start.postit ("getPlugTemplate", start, end, label)
+                  };
 
             $start.postit ("addPlug", newPlug);
 
@@ -452,13 +439,14 @@
 
         // Remove obsolete plugs
         if (!partial)
-          $wall.find(".postit.with-plugs").each (function ()
+          wall.querySelectorAll(".postit.with-plugs").forEach ((postit)=>
           {
-            $(this).postit("getSettings")._plugs.forEach ((plug)=>
+            $(postit).postit("getSettings")._plugs.forEach ((plug)=>
               {
                 if (!idsNew[plug.startId+""+plug.endId])
-                  $wall.find(".postit[data-id='postit-"+plug.endId+"']")
-                    .postit("removePlug", plug, true);
+                  $(wall.querySelector(
+                      ".postit[data-id='postit-"+plug.endId+"']"))
+                    .postit ("removePlug", plug, true);
               });
           });
     },
@@ -466,10 +454,8 @@
     // METHOD hidePostitsPlugs ()
     hidePostitsPlugs: function ()
     {
-      this.element.find(".postit").each (function ()
-        {
-          $(this).postit ("hidePlugs");
-        });
+      this.element[0].querySelectorAll(".postit").forEach (
+        (p) => $(p).postit ("hidePlugs"));
     },
 
     // METHOD showPostitsPlugs ()
@@ -478,10 +464,8 @@
       this.repositionPostitsPlugs ();
 
       H.waitForDOMUpdate (()=>
-        this.element.find(".postit").each (function ()
-          {
-            $(this).postit ("showPlugs");
-          }));
+        this.element[0].querySelectorAll(".postit").forEach (
+          (p) => $(p).postit ("showPlugs")));
     },
 
     // METHOD refresh ()
@@ -517,15 +501,16 @@
     {
       const plugin = this,
             $wall = plugin.element,
+            wall0 = $wall[0],
             $filters = S.getCurrent ("filters"),
             $arrows = S.getCurrent ("arrows");
 
       function __refreshWallBasicProperties (d)
       {
         if (d.shared)
-          $wall[0].dataset.shared = 1;
+          wall0.dataset.shared = 1;
         else
-          $wall[0].removeAttribute ("data-shared");
+          wall0.removeAttribute ("data-shared");
 
         plugin.setName (d.name);
         plugin.setDescription (d.description);
@@ -588,14 +573,14 @@
 
         _refreshing = true;
 
-        $wall[0].dataset.cols = colsCount;
-        $wall[0].dataset.rows = rowsCount;
-        $wall[0].dataset.oldwidth = d.width;
+        wall0.dataset.cols = colsCount;
+        wall0.dataset.rows = rowsCount;
+        wall0.dataset.oldwidth = d.width;
 
         __refreshWallBasicProperties (d);
 
         //FIXME
-        $wall.css ("width", d.width + 1);
+//        $wall.css ("width", d.width + 1);
 
         for (let i = 0; i < colsCount; i++)
         {
@@ -623,9 +608,9 @@
         for (let i = 0; i < rowsCount; i++)
           rowsHeadersIds[d.headers.rows[i].id] = true;
 
-        $wall.find("tbody th").each (function ()
+        wall0.querySelectorAll("tbody th").forEach ((th)=>
           {
-            const $header = $(this);
+            const $header = $(th);
 
             if (!rowsHeadersIds[$header.header ("getId")])
             {
@@ -641,9 +626,9 @@
         for (let i = 0; i < colsCount; i++)
           colsHeadersIds[d.headers.cols[i].id] = true;
 
-        $wall.find("thead th").each (function ()
+        wall0.querySelectorAll("thead th").forEach ((th)=>
           {
-            const $header = $(this),
+            const $header = $(th),
                   idx = $header.index ();
 
             if (idx > 0)
@@ -651,9 +636,9 @@
               if (!colsHeadersIds[$header.header ("getId")])
               {
                 $wall.find("thead th:eq("+idx+")").remove ();
-                $wall.find("tbody tr").each(function()
+                wall0.querySelectorAll("tbody tr").forEach ((tr)=>
                   {
-                    const $cell = $(this).find("td:eq("+(idx-1)+")");
+                    const $cell = $(tr).find("td:eq("+(idx-1)+")");
 
                     $cell.cell ("removePostitsPlugs");
                     $cell.remove();
@@ -685,10 +670,8 @@
           if (!$wall.find('td[data-id="cell-'+row[0].id+'"]').length)
             plugin.addRow (header, row);
           else
-          {
             $wall.find('tbody th[data-id="header-'+header.id+'"]')
               .header ("update", header);
-          }
 
           for (let j = 0, jLen = row.length; j < jLen; j++)
           {
@@ -719,14 +702,14 @@
               $cell.cell ("update", cell);
 
               // Remove deleted post-its
-              $cell.find(".postit").each (function ()
+              $cell[0].querySelectorAll(".postit").forEach ((p)=>
                 {
-                  const $postit = $(this);
+                  const $postit = $(p);
 
                   if (!postitsIds[$postit.postit ("getId")])
                   {
                     $postit.postit ("removePlugs", true);
-                    $postit.remove ();
+                    p.remove ();
                   }
                 });
             }
@@ -945,8 +928,6 @@
       const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
 
-      this.closeAllMenus ();
-
       $tr.find("td").cell ("removePostitsPlugs");
 
       H.headerRemoveContentKeepingWallSize ({
@@ -971,8 +952,6 @@
               wall: {width: oldW},
               width: Math.trunc ($header.outerWidth ())
             };
-
-      this.closeAllMenus ();
 
      $header.remove ();
 
