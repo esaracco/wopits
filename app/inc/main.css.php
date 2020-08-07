@@ -256,11 +256,6 @@ i.settings {
   background:white;
 }
 
-.nav-tabs.walls a.active[data-access="2"],
-.nav-tabs.walls a.active[data-access="3"] {
-  cursor:auto !important;
-}
-
 .nav-tabs.walls button.close {
   display:none;
   margin-top:-10px;

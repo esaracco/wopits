@@ -139,7 +139,7 @@ $(function()
       const close = $(e.target).hasClass ("close"),
             rename = (!close && $(this).hasClass ("active"));
 
-      if (rename && H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
+      if (rename)
         S.getCurrent("wall").wall ("openPropertiesPopup", {renaming: true});
 
       if (!rename && !close)
@@ -156,11 +156,11 @@ $(function()
     });
 
   // EVENT hidden.bs.tab on walls tabs
-  $(document).on("hidden.bs.tab", ".walls a[data-toggle='tab']",
+  $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
-      $_walls.wall ("hidePostitsPlugs");
-      $_walls.wall ("closeAllMenus");
+      document.querySelectorAll(".walls table.wall").forEach (
+        (w)=> $(w).wall ("hidePostitsPlugs"));
     });
 
   // EVENT shown.bs.tab on walls tabs
