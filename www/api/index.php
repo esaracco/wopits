@@ -198,6 +198,10 @@
 
         switch (getParam ('action'))
         {
+          case 'setExternalRef':
+            $ret = $User->setExternalRef (getParam ('wallId'));
+            break;
+
           case 'login':
             $ret = $User->login ($data->remember);
             break;

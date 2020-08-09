@@ -34,6 +34,7 @@
     {
       const plugin = this,
             $wall = plugin.element,
+            wall0 = $wall[0],
             settings = plugin.settings,
             wallId = settings.id,
             access = settings.access,
@@ -45,7 +46,7 @@
           .appendTo ("body");
 
       if (settings.restoring)
-        $wall[0].dataset.restoring = 1;
+        wall0.dataset.restoring = 1;
 
       plugin.setName (settings.name, true);
 
@@ -62,7 +63,7 @@
       }
 
       if (settings.shared)
-        $wall[0].dataset.shared = 1;
+        wall0.dataset.shared = 1;
 
       $wall
         .hide()
@@ -141,8 +142,8 @@
 
           $wall.show ("fade");
 
-          $wall[0].dataset.cols = hcols.length;
-          $wall[0].dataset.rows = hrows.length;
+          wall0.dataset.cols = hcols.length;
+          wall0.dataset.rows = hrows.length;
 
           plugin.setName (settings.name);
           plugin.setDescription (settings.description);
@@ -152,7 +153,7 @@
           if (settings.restoring)
           {
             delete settings.restoring;
-            $wall[0].removeAttribute ("data-restoring");
+            wall0.removeAttribute ("data-restoring");
           }
 
           // Set wall users view count if needed
@@ -177,7 +178,7 @@
               // Save only when all walls has been loaded.
               const t = setInterval (()=>
                 {
-                  if (!$('.walls i.fa-cog').length)
+                  if (!$(".walls i.fa-cog").length)
                   {
                     $("#settingsPopup").settings ("saveOpenedWalls");
                     clearInterval (t);
@@ -188,6 +189,8 @@
 
           H.waitForDOMUpdate (()=>
           {
+            plugin.displayExternalRef ();
+
             // Display postit dealine alert or specific wall if needed.
             if (settings.fromDirectURL)
             {
@@ -266,7 +269,6 @@
     menu: function (args)
     {
       const $menu = $("#main-menu"),
-            $wall = S.getCurrent ("wall"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
             adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>");
@@ -303,14 +305,14 @@
                 break;
     
               case "have-wall":
-    
+
                 $menu.find(
                   '[data-action="view-properties"] a,'+
                   '[data-action="clone"] a,'+
                   '[data-action="export"] a,'+
                   '[data-action="search"] a,'+
                   '[data-action="close-walls"] a').removeClass ("disabled");
-    
+
                 if (adminAccess)
                   $menu.find(
                     '[data-action="delete"] a,'+
@@ -328,6 +330,18 @@
 
             switch (args.type)
             {
+              case "unblock-externalref":
+
+                $menu.find("[data-action='block-externalref']").show ();
+                $menu.find("[data-action='unblock-externalref']").hide ();
+                break;
+
+              case "block-externalref":
+
+                $menu.find("[data-action='block-externalref']").hide ();
+                $menu.find("[data-action='unblock-externalref']").show ();
+                break;
+
               // Activate normal view item
               case "zoom-normal-on":
 
@@ -1640,7 +1654,39 @@
         // error cb
         error_cb
       );
-    }
+    },
+
+    // METHOD displayExternalRef ()
+    displayExternalRef: function (v)
+    {
+      const update = (v !== undefined),
+            val = update ? v : this.settings.displayexternalref,
+            type = (val == 1) ? "unblock" : "block";
+
+      if (update)
+      {
+        this.settings.displayexternalref = val;
+
+        this.element[0].querySelectorAll(".postit").forEach (
+          (p) => $(p).postit (type+"ExternalRef"));
+
+        H.request_ajax (
+          "POST",
+          "user/wall/"+this.settings.id+"/setExternalRef",
+          {display: val});
+      }
+
+      if (this.element.is (":visible"))
+        this.menu ({from: "display", type: type+"-externalref"});
+
+      return val;
+    },
+
+    // METHOD haveExternalRef ()
+    haveExternalRef: function ()
+    {
+      return this.element[0].querySelector (".postit[data-haveexternalref]");
+    },
 
   });
 
@@ -1850,6 +1896,18 @@
               case "zoom-normal":
 
                 $wall.wall ("zoom", {type: "normal"});
+
+                break;
+
+              case "unblock-externalref":
+
+                $wall.wall ("displayExternalRef", 1, true)
+
+                break;
+
+              case "block-externalref":
+
+                $wall.wall ("displayExternalRef", 0, true)
 
                 break;
 

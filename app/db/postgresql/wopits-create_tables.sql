@@ -94,7 +94,8 @@ CREATE TABLE _perf_walls_users
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   -- ADMIN(1), RW(2), RO(3)
-  access SMALLINT NOT NULL
+  access SMALLINT NOT NULL,
+  displayexternalref SMALLINT NOT NULL DEFAULT 0
 );
 CREATE INDEX "_perf_walls_users-access-idx" ON _perf_walls_users (access);
 

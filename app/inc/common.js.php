@@ -916,38 +916,11 @@ class WHelp
     $layer.prependTo("body").show ();
   }
   
-  // METHOD openInputPopup ()
-  openInputPopup (args)
-  {
-    const $popup = $("#updateOneInputPopup");
-  
-    this.cleanPopupDataAttr ($popup)
-  
-    if (args.before)
-      args.before ($popup);
-  
-    $popup.find(".modal-title").html (args.title);
-    $popup.find("input").val (args.defaultValue||'');
-  
-    $popup.find(".btn-primary").off("click").on("click", function (e)
-      {
-        args.cb_save ($popup.find("input").val(), $popup);
-        if (args.closure === undefined || args.closure == true)
-        $popup.modal ("hide");
-      });
-  
-    $popup.find(".btn-secondary").off("click").on("click", function (e)
-      {
-        args.cb_close ();
-      });
-  
-    $popup.modal ("show");
-  }
-  
   // METHOD openConfirmPopup ()
   openConfirmPopup (args)
   {
-    const $popup = $("#confirmPopup");
+    const $popup = $("#confirmPopup"),
+          popup0 = $popup[0];
   
     S.set ("confirmPopup", {
       cb_ok: args.cb_ok,
@@ -958,30 +931,33 @@ class WHelp
           S.unset ("confirmPopup");
         }
     });
-  
+
     this.cleanPopupDataAttr ($popup);
   
-    $popup.find(".modal-title").html (
-      `<i class="fas fa-${args.icon} fa-fw"></i> <?=_("Confirmation")?>`);
-    $popup.find(".modal-body").html (args.content);
-  
-    $popup[0].dataset.popuptype = args.type;
-  
+    popup0.querySelector(".modal-title").innerHTML = `<i class="fas fa-${args.icon} fa-fw"></i> ${args.title||"<?=_("Confirmation")?>"}`;
+    popup0.querySelector(".modal-body").innerHTML = args.content;
+
+    popup0.dataset.popuptype = args.type;
+
     this.openModal ($popup);
   }
   
   // METHOD openConfirmPopover ()
   openConfirmPopover (args)
   {
+    let btn;
+
     if ($.support.touch)
       this.fixVKBScrollStart ();
   
     this.openPopupLayer (() =>
-      { 
-        $(".popover").popover ("dispose");
-  
+      {
+        const $popover = $(".popover");
+
         if (args.cb_close)
-          args.cb_close ();
+          args.cb_close ($popover[0].dataset.btnclicked);
+
+        $popover.popover ("dispose");
   
         if ($.support.touch)
           this.fixVKBScrollStop ();
@@ -1003,14 +979,17 @@ class WHelp
     switch (args.type)
     {
       case "update":
+        btn = {primary:"save", secondary: "close"};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
         break;
 
       case "info":
+        btn = {secondary: "close"};
         buttons = `<button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
         break;
 
       default:
+        btn = {primary:"yes", secondary: "no"};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
@@ -1023,10 +1002,16 @@ class WHelp
   
     $body.find("button").on("click", function (e)
       {
-        const $btn = $(this);
+        const $btn = $(this),
+              $popover = $btn.closest(".popover");
   
         if ($btn.hasClass ("btn-primary"))
-          args.cb_ok ($btn.closest(".popover"));
+        {
+          $popover[0].dataset.btnclicked = btn.primary;
+          args.cb_ok ($popover);
+        }
+        else
+          $popover[0].dataset.btnclicked = btn.secondary;
   
         $("#popup-layer").click ();
       });

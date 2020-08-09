@@ -216,7 +216,10 @@ $(function()
 
       // Refresh wall if it has not just been opened
       if (!S.get ("newWall"))
+      {
         $wall.wall ("refresh");
+        $wall.wall ("displayExternalRef");
+      }
 
       $wall.wall ("menu", {from: "wall", type: "have-wall"});
 
@@ -415,8 +418,10 @@ $(function()
           break;
 
         case "confirmPopup":
+
           S.get("confirmPopup").cb_cancel ();
-          // No break
+          break;
+
         case "usersSearchPopup":
         case "groupAccessPopup":
         case "groupPopup":

@@ -835,6 +835,12 @@
         ];
       elseif (!$basic)
       {
+        $stmt = $this->prepare ('
+          SELECT displayexternalref
+          FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1');
+        $stmt->execute ([$this->wallId, $this->userId]);
+        $data['displayexternalref'] = $stmt->fetch()['displayexternalref'];
+
         // Get headers
         $stmt = $this->prepare ("
           SELECT id, item_type, item_order, width, height, title, picture

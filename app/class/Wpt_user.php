@@ -452,6 +452,26 @@
       return $ret;
     }
 
+    public function setExternalRef ($wallId)
+    {
+      $ret = [];
+      $data = [];
+
+      try
+      {
+        $this->executeQuery ('UPDATE _perf_walls_users',
+          ['displayexternalref' => intval ($this->data->display)],
+          ['users_id' => $this->userId, 'walls_id' => $wallId]);
+      }
+      catch (Exception $e)
+      {
+        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+        $ret['error'] = 1;
+      }
+
+      return $ret;
+    }
+
     public function getPicture ($args)
     {
       $userId = $args['userId'];

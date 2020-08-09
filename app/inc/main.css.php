@@ -894,6 +894,21 @@ div.postit div.postit-tags i {
   text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
 }
 
+.postit-edit [external-src] {
+  background:content-box radial-gradient(#ffa012, #313131);
+  box-shadow:0 0 10px #797979;
+  min-width:50px;
+  min-height:50px;
+}
+
+#main-menu [data-action="block-externalref"] {
+  display:none;
+}
+
+#main-menu [data-action="block-externalref"] span {
+  margin-left:-6px;
+}
+
 <?php
   foreach (WPT_MODULES['tagPicker']['items'] as $item => $color)
   {
@@ -1655,7 +1670,7 @@ button.ui-datepicker-close {
 }
 
 #main-menu.nofullview ul.display-section li[data-action^=zoom],
-#main-menu.nofullview ul.display-section .dropdown-divider {
+#main-menu.nofullview ul.display-section .dropdown-divider.volatile {
   display:none;
 }
 
@@ -1666,7 +1681,7 @@ button.ui-datepicker-close {
 @media (max-width:576px) {
   /*FIXME zoom does not work with some mobile browsers*/
   #main-menu ul.display-section li[data-action^=zoom],
-  #main-menu ul.display-section .dropdown-divider {
+  #main-menu ul.display-section .dropdown-divider.volatile {
     display:none;
   }
   .navbar-nav .dropdown-menu {

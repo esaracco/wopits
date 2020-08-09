@@ -232,7 +232,7 @@
           appendTo: "parent",
           revert: "invalid",
           cursor: "pointer",
-          containment: plugin.settings.wall.find("tbody"),
+          containment: $wall.find ("tbody"),
           scrollSensitivity: 50,
           opacity: 0.35,
           scope: "dzone",
@@ -446,21 +446,15 @@
             // Open modal with read rights only
             if (!writeAccess)
             {
-              const content = $postit.find(".postit-edit").html (),
-                    title = $postit.find(".postit-header span.title").text (),
-                    $popup = $("#postitViewPopup");
-
-              plugin.setCurrent ();
-
-              H.cleanPopupDataAttr ($popup);
-
-              $popup.find(".modal-body").html ((content) ?
-                content : "<i><?=_("No content.")?></i>");
-
-              $popup.find(".modal-title").html (
-                `<i class="fas fa-sticky-note"></i> ${title}`);
-
-              H.openModal ($popup, _getMaxEditModalWidth (content));
+              if (!plugin.openAskForExternalRefPopup ({
+                     cb_ok: () =>
+                       {
+                         $wall.wall ("displayExternalRef", 1);
+                         plugin.open ();
+                       }}))
+              {
+                plugin.open ();
+              }
             }
             // Open modal with write rights
             else
@@ -495,37 +489,22 @@
     
                     // OPEN post-it edit popup
                     case "edit":
-    
-                      const $popup = $("#postitUpdatePopup"),
-                            title = postit0.querySelector(
-                                      ".postit-header span.title").innerText,
-                            content = postit0.querySelector(
-                                        ".postit-edit").innerHTML||"";
 
-                      S.set ("postit-data", {
-                        title: (title != "...")?title.replace(/&amp;/g, "&"):""
-                      });
-    
-                      $("#postitUpdatePopupTitle")
-                        .val (S.get("postit-data").title);
+                      if (!plugin.openAskForExternalRefPopup ({
+                             cb_close: (btn) =>
+                               {
+                                 if (btn != "yes")
+                                   plugin.unedit ();
+                               },
+                             cb_ok: () =>
+                               {
+                                 $wall.wall ("displayExternalRef", 1);
+                                 plugin.open ();
+                               }}))
+                      {
+                        plugin.open ();
+                      }
 
-                      //FIXME
-                      $(".tox-toolbar__overflow").show ();
-                      $(".tox-mbtn--active").removeClass ("tox-mbtn--active");
-
-                      // Check if post-it content has pictures
-                      if (content.match (/\/postit\/\d+\/picture\/\d+/))
-                        postit0.dataset.hadpictures = true;
-                      else
-                        postit0.removeAttribute ("data-hadpictures");
-
-                      tinymce.activeEditor.setContent (content);
-
-                      if ($.support.touch)
-                        H.fixVKBScrollStart ();
-
-                      H.openModal ($popup, _getMaxEditModalWidth (content));
-    
                       break;
     
                     // OPEN tags picker
@@ -649,9 +628,8 @@
                       {
                         const startId = plugin.settings.id,
                               [endId, label] = item.split (";"),
-                              $end =
-                                settings.wall
-                                  .find(".postit[data-id='postit-"+endId+"']");
+                              $end = $wall.find (
+                                       ".postit[data-id='postit-"+endId+"']");
   
                         if ($end.length)
                         {
@@ -758,8 +736,67 @@
       }
 
       if (settings.creationdate)
-        setTimeout (
-          () => plugin.update (settings), (!!settings.isNewCell) ? 150 : 0);
+        //FIXME setTimeout ()
+        setTimeout (() => plugin.update ($.extend (settings, {init: true})),
+          !!settings.isNewCell ? 150 : 0);
+    },
+
+    // METHOD open ()
+    open: function ()
+    {
+      const plugin = this,
+            postit = plugin.element[0],
+            title = postit.querySelector(
+                      ".postit-header span.title").innerText,
+            content = postit.querySelector(
+                        ".postit-edit").innerHTML||"",
+            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>",
+                                         this.settings.access);
+
+      if (writeAccess)
+      {
+        const $popup = $("#postitUpdatePopup");
+
+        S.set ("postit-data", {
+          title: (title != "...")?title.replace(/&amp;/g, "&"):""
+        });
+
+        $("#postitUpdatePopupTitle")
+          .val (S.get("postit-data").title);
+
+        //FIXME
+        $(".tox-toolbar__overflow").show ();
+        $(".tox-mbtn--active").removeClass ("tox-mbtn--active");
+
+        // Check if post-it content has pictures
+        if (content.match (/\/postit\/\d+\/picture\/\d+/))
+          postit.dataset.hadpictures = true;
+        else
+          postit.removeAttribute ("data-hadpictures");
+
+        tinymce.activeEditor.setContent (content);
+
+        if ($.support.touch)
+          H.fixVKBScrollStart ();
+
+        H.openModal ($popup, _getMaxEditModalWidth (content));
+      }
+      else
+      {
+        const $popup = $("#postitViewPopup");
+
+        plugin.setCurrent ();
+
+        H.cleanPopupDataAttr ($popup);
+
+        $popup.find(".modal-body").html ((content) ?
+          content : "<i><?=_("No content.")?></i>");
+
+        $popup.find(".modal-title").html (
+          `<i class="fas fa-sticky-note"></i> ${title}`);
+
+        H.openModal ($popup, _getMaxEditModalWidth (content));
+      }
     },
 
     // METHOD displayDeadlineAlert ()
@@ -1220,11 +1257,14 @@
     // METHOD serialize ()
     serialize: function ()
     {
-      const postits = [];
+      const postits = [],
+            displayExternalRef =
+              (this.settings.wall.wall ("displayExternalRef") == 1);
 
       this.element.each (function ()
       {
-        const postitId = this.dataset.id.substring (7);
+        const $postit = $(this),
+              postitId = this.dataset.id.substring (7);
         let data = {};
 
         if (this.dataset.todelete)
@@ -1233,6 +1273,7 @@
         {
           const title =
                   this.querySelector(".postit-header span.title").innerText,
+                content = this.querySelector(".postit-edit").innerHTML||"",
                 classcolor = this.className.match(/(color\-[a-z]+)/),
                 deadline = (this.dataset.deadlineepoch) ?
                   this.dataset.deadlineepoch :
@@ -1251,7 +1292,9 @@
             item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
-            content: this.querySelector(".postit-edit").innerHTML,
+            content: displayExternalRef ?
+                       content :
+                       $postit.postit ("unblockExternalRef", content),
             tags: (tags.length) ? ","+tags.join(",")+"," : null,
             deadline: (deadline == "...") ? "" : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?
@@ -1260,7 +1303,7 @@
             obsolete: this.classList.contains ("obsolete"),
             attachmentscount:
               this.querySelector(".attachmentscount span").innerText,
-            plugs: $(this).postit ("serializePlugs"),
+            plugs: $postit.postit ("serializePlugs"),
             hadpictures: !!this.dataset.hadpictures,
             hasuploadedpictures: !!this.dataset.hasuploadedpictures
           };
@@ -1344,10 +1387,87 @@
     },
 
     // METHOD setContent ()
-    setContent: function (newContent)
+    setContent: function (newContent, isInit)
     {
-      if (newContent !== this.element.find("div.postit-edit").html ())
-        this.element.find("div.postit-edit").html (newContent);
+      const postit = this.element[0],
+            edit = postit.querySelector ("div.postit-edit");
+
+      if (newContent !== edit.innerHTML)
+      {
+        const externalRef = this.getExternalRef (newContent);
+
+        if (externalRef)
+        {
+          postit.dataset.haveexternalref = 1;
+
+          if (this.settings.wall.wall ("displayExternalRef") != 1)
+            newContent = this.blockExternalRef (newContent, externalRef);
+        }
+        else
+          postit.removeAttribute ("data-haveexternalref");
+
+        edit.innerHTML = newContent;
+      }
+    },
+
+    // METHOD openAskForExternalRefPopup ()
+    openAskForExternalRefPopup: function (args)
+    {
+      let ask = (this.getExternalRef () &&
+                 this.settings.wall.wall ("displayExternalRef") != 1);
+
+      if (ask)
+        H.openConfirmPopover ({
+          item: this.element,
+          title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
+          content: "<?=_("This sticky note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>",
+          cb_close: args.cb_close,
+          cb_ok: args.cb_ok
+        });
+
+      return ask;
+    },
+
+    // METHOD getExternalRef ()
+    getExternalRef: function (content)
+    {
+      return (content !== undefined) ?
+               content.match (/(src\s*=\s*["']?http[^"'\s]+")/ig) :
+               this.element[0].dataset.haveexternalref;
+    },
+
+    // METHOD blockExternalRef ()
+    blockExternalRef: function (content, externalRef)
+    {
+      const el = this.element.find("div.postit-edit")[0];
+      let c = content||el.innerHTML;
+
+      if (!externalRef)
+        externalRef = this.getExternalRef (c);
+
+      if (externalRef)
+      {
+        externalRef.forEach ((src) =>
+          c = c.replace (new RegExp ("[^\-]"+src, "g"), " external-"+src+" "));
+
+        if (content === undefined)
+          el.innerHTML = c;
+        else
+          return c;
+      }
+    },
+
+    // METHOD unblockExternalRef ()
+    unblockExternalRef: function (content)
+    {
+      if (content !== undefined)
+        return content.replace (/external\-src/, "src");
+      else
+        this.element[0].querySelectorAll("[external-src]").forEach ((el)=>
+          {
+            el.setAttribute ("src", el.getAttribute ("external-src"));
+            el.removeAttribute ("external-src");
+          });
     },
 
     // METHOD setPosition ()
@@ -1576,7 +1696,7 @@
       if (cell && cell.id != this.settings.cellId)
       {
         this.settings.cell =
-          cell.obj || this.settings.wall.find("[data-id='cell-"+cell.id+"']");
+          cell.obj||this.settings.wall.find("[data-id='cell-"+cell.id+"']");
         this.settings.cellId = cell.id;
 
         $postit.appendTo (this.settings.cell);
@@ -1594,7 +1714,7 @@
 
       this.setTitle (d.title);
 
-      this.setContent (d.content);
+      this.setContent (d.content, d.init);
 
       this.setAttachmentsCount (d.attachmentscount);
 

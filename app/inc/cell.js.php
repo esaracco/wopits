@@ -258,9 +258,9 @@
 
       args.wall = settings.wall;
       args.wallId = settings.wallId;
-      args.plugsContainer = settings.plugsContainer;
       args.cell = $cell;
       args.cellId = settings.id;
+      args.plugsContainer = settings.plugsContainer;
 
       // CREATE post-it
       $postit.postit (args);
