@@ -7,7 +7,7 @@
       __DIR__.'/../site-config.php');
 
   // Version
-  define ('WPT_VERSION', '0.23alpha5');
+  define ('WPT_VERSION', '0.24alpha1');
   define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
   // Paths
