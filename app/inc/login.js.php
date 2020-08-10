@@ -14,8 +14,24 @@
     init: function (args)
     {
       const plugin = this,
-            $login = plugin.element;
+            $login = plugin.element,
+            $welcome = $("#desc-container");
       let $popup;
+
+      if ($welcome.length && !ST.get ("no-welcome"))
+      {
+        $welcome.html (`<div class="alert alert-primary alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source post-its manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s to install it yourself..."), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p>
+<div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("Do not display anymore")?></button></div>
+
+</div>`);
+
+        $welcome.find("button.nowelcome").on("click", function ()
+          {
+            ST.set ("no-welcome", true);
+
+            $(this).closest(".alert").remove ();
+          });
+      }
 
       $(".login-page .modal")
         .on('hidden.bs.modal', function(e)

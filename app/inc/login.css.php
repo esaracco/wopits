@@ -23,6 +23,10 @@ html {
   cursor: pointer;
 }
 
+.login-page .nowelcome label {
+  color:#35b351;
+}
+
 .container {
   position: relative;
   top: 45%;

@@ -152,6 +152,6 @@ span.wpt-badge {
 
 .login-page .ldap-msg,
 .login-page .links a,
-.login-page .custom-checkbox label {
+.login-page .custom-checkbox.remember label {
   color: #e0e0e0 !important;
 }

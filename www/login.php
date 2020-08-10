@@ -51,14 +51,7 @@
   <div class="main-login<?=WPT_USE_LDAP?' ldap':''?>">
 
   <?php if (WPT_LOGIN_WELCOME):?>
-  <div id="desc-container">
-    <div class="alert alert-primary alert-dismissible fade show" role="alert">
-    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span></button>
-    <h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4>
-    <p><?=sprintf(_("A free, open-source post-its manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p>
-    <hr>
-    <p class="mb-0"><?=sprintf(_("Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s to install it yourself..."), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p></div>
-  </div>
+  <div id="desc-container"></div>
   <?php endif?>
 
     <div class="container h-100" id="login">
@@ -89,7 +82,7 @@
                 <input type="password" class="form-control" name="password" value="" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'password')?>" required placeholder="<?=_("password")?>">
               </div>
               <div class="form-group">
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox remember">
                   <input type="checkbox" class="custom-control-input" id="remember" value="1">
                   <label class="custom-control-label" for="remember"><?=_("Remember me")?></label>
                 </div>
