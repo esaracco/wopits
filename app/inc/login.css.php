@@ -29,6 +29,25 @@ html {
   transform: translateY(-50%);
 }
 
+#desc-container {
+  position:fixed;
+  top:80px;
+  width:100%;
+  z-index:2;
+}
+
+#desc-container .alert {
+  margin-left:auto;
+  margin-right:auto;
+  max-width:600px;
+  text-align: justify;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -o-hyphens: auto;
+   hyphens: auto;
+}
+
 .user-card {
   z-index:5006; 
   height: 440px;

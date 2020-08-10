@@ -78,6 +78,9 @@
         // "Privacy policy" section
         'privacy' => true
       ],
+      // Welcome message on login page
+      // Display/hide welcome message.
+      'login_welcome' => false,
       // Emails
       'emails' => [
         'from' => 'contact@wopits.com',
@@ -160,6 +163,9 @@
         // "Privacy policy" section
         'privacy' => true
       ],
+      // Welcome message on login page
+      // Display/hide welcome message.
+      'login_welcome' => true,
       // Emails
       'emails' => [
         'from' => 'team@domain.com',

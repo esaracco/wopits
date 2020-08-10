@@ -44,6 +44,11 @@
   // Example: false
   define ('WPT_ABOUT_PRIVACY', "");
 
+  // Welcome message on login page
+  // Display/hide welcome message.
+  // Example: false
+  define ('WPT_LOGIN_WELCOME', "");
+
   // Emails
   // Example: noreply@domain.com
   define ('WPT_EMAIL_FROM', "");

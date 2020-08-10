@@ -517,6 +517,12 @@
         $this->_updateConf ('WPT_ABOUT_PRIVACY', false);
       }
 
+      if (!empty ($env['login_welcome']))
+        $this->_updateConf ('WPT_LOGIN_WELCOME',
+                              boolval(@$env['login_welcome']));
+      else
+        $this->_updateConf ('WPT_LOGIN_WELCOME', false);
+
       if (!empty ($env['dkim']))
       {
         foreach (['WPT_USE_DKIM' => true,
