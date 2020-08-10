@@ -667,7 +667,10 @@
             if (writeAccess)
               $postit.find(".postit-menu [data-action='attachments']").click ();
             else
-              plugin.edit (null, () => plugin.displayAttachments ());
+            {
+              plugin.setCurrent ();
+              plugin.displayAttachments ();
+            }
           });
   
       const $tags = $(`<div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`);
@@ -1792,8 +1795,7 @@
         _originalObject = this.serialize()[0];
       }
 
-      if (!this.settings.wall[0].dataset.shared ||
-          !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+      if (!this.settings.wall[0].dataset.shared)
         return success_cb && success_cb ();
 
       H.request_ws (
