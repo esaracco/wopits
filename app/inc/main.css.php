@@ -895,10 +895,11 @@ div.postit div.postit-tags i {
 }
 
 .postit-edit [external-src] {
-  background:content-box radial-gradient(#ffa012, #313131);
-  box-shadow:0 0 10px #797979;
-  min-width:50px;
-  min-height:50px;
+  background-color:#f1f1f1;
+  border: 2px dashed #cecece;
+  box-shadow: 0 0 10px #c5c5c5;
+  width:50px;
+  height:50px;
 }
 
 #main-menu [data-action="block-externalref"] {

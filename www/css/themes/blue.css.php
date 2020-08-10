@@ -13,6 +13,7 @@
 
 .wall th,
 .wall tbody th div.row-menu,
+.postit-edit [external-src],
 .dropdown-item:active,
 .dropdown-item:hover {
   background-color: #eef7ff;
