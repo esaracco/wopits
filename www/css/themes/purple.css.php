@@ -128,6 +128,7 @@ span.wpt-badge {
   background-color: #4694e6 !important;
 }
 
+.accordion kbd,
 .btn-secondary,
 .btn-info {
   background-color: #b967df !important;

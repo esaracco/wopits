@@ -70,15 +70,13 @@ img {
 
 .accordion kbd {
   padding:2px;
-  background:#343a40;
   font-size:0.7rem;
+  background-color: #6c757d;
+  border-color: #6c757d;
 }
 
 .accordion .btn-link {
   text-decoration:none !important;
-}
-
-.accordion .btn-link {
   color:#555;
   width:100%;
   text-align:left;
