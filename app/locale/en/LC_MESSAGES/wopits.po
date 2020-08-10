@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-10 12:35+0200\n"
+"POT-Creation-Date: 2020-08-10 13:20+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -363,6 +363,9 @@ msgid "Deprecated browser"
 msgstr ""
 
 msgid "Description"
+msgstr ""
+
+msgid "Do not display anymore"
 msgstr ""
 
 msgid "Do you really want to logout from wopits?"
