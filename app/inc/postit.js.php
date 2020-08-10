@@ -1952,7 +1952,7 @@
           content_style: "p {margin: 0}",
           language: (locale != "en_US") ? locale : null,
           branding: false,
-          plugins: "autoresize link image charmap hr searchreplace visualchars fullscreen insertdatetime",
+          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime",
 
           setup: function (editor)
           {
@@ -1995,6 +1995,10 @@
                 }
               });
           },
+
+          // "media" plugin options.
+          media_alt_source: false,
+          media_poster: false,
 
           // "image" plugin options
           image_description: false,
