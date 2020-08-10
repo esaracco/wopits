@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-10 13:20+0200\n"
+        "POT-Creation-Date: 2020-08-10 13:33+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,7 +111,7 @@ msgid   "Bad email address"
 msgstr  ""
 
 #, php-format
-msgid   "Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s to install it yourself..."
+msgid   "Besides, if you are suspicious, nobody is forcing you to use it here online! You can %sget the code%s and install it yourself."
 msgstr  ""
 
 msgid   "Block external content"
