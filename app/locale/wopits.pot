@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-10 00:02+0200\n"
+        "POT-Creation-Date: 2020-08-10 12:35+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,10 @@ msgid   "<p>To create a sticky note, double-click inside a cell. You can then mo
 msgstr  ""
 
 msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename it, associate an image or completely delete the item. Editing header titles can also be done more directly by clicking on them.</p><p>You can edit the name and description of a wall via the menu <kbd>Edit</kbd>&rarr;<kbd>Properties...</kbd> or by clicking directly on the name of the wall.</p><p>To add a row or column, use the menu <kbd>Edit</kbd>.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify sticky notes.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create sticky notes and manage the wall. It's the sharing that gives you the most rights. You will also have partial group management.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the top of the wall on the left.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. In this mode, the wall will no longer be editable. To be able to edit it again, click on <i class='fas fa-crosshairs'></i> or on <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Depending on its content, the export size can be substantial! Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu. Depending on its content, the cloning of a wall can take a long time!</p>"
+msgstr  ""
+
+#, php-format
+msgid   "A free, open-source post-its manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."
 msgstr  ""
 
 msgid   "A new release of wopits is available!"
@@ -104,6 +108,10 @@ msgid   "Back to standard view"
 msgstr  ""
 
 msgid   "Bad email address"
+msgstr  ""
+
+#, php-format
+msgid   "Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s to install it yourself..."
 msgstr  ""
 
 msgid   "Block external content"
@@ -837,6 +845,9 @@ msgid   "Warning"
 msgstr  ""
 
 msgid   "We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded."
+msgstr  ""
+
+msgid   "Welcome to wopits!"
 msgstr  ""
 
 msgid   "When you delete your account, your walls and all your personnal data are permanently erased."

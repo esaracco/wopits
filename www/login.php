@@ -57,7 +57,7 @@
     <h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4>
     <p><?=sprintf(_("A free, open-source post-its manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p>
     <hr>
-    <p class="mb-0"><?=sprintf(_("Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s and install it at home..."), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p></div>
+    <p class="mb-0"><?=sprintf(_("Besides, if you are suspicious, nobody is forcing you to use it here online! You just have to %sget the code%s to install it yourself..."), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p></div>
   </div>
   <?php endif?>
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-10 00:02+0200\n"
+"POT-Creation-Date: 2020-08-10 12:35+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -133,6 +133,13 @@ msgid ""
 "a wall can take a long time!</p>"
 msgstr ""
 
+#, php-format
+msgid ""
+"A free, open-source post-its manager that respects your privacy, that's "
+"good, right? %s will let you do a lot of things, without ever having to "
+"worrying about where your data is going to or how it is monetized."
+msgstr ""
+
 msgid "A new release of wopits is available!"
 msgstr ""
 
@@ -204,6 +211,12 @@ msgid "Back to standard view"
 msgstr ""
 
 msgid "Bad email address"
+msgstr ""
+
+#, php-format
+msgid ""
+"Besides, if you are suspicious, nobody is forcing you to use it here online! "
+"You just have to %sget the code%s to install it yourself..."
 msgstr ""
 
 msgid "Block external content"
@@ -984,6 +997,9 @@ msgstr ""
 msgid ""
 "We are sorry for the inconvenience, but due to a maintenance operation, the "
 "application must be reloaded."
+msgstr ""
+
+msgid "Welcome to wopits!"
 msgstr ""
 
 msgid ""
