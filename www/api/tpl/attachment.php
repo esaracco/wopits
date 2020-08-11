@@ -1,4 +1,5 @@
 <?php
+  require_once (__DIR__.'/../../../app/class/Wpt_common.php');
   require_once (__DIR__.'/../../../app/class/Wpt_dbCache.php');
 ?>
 <div id="attachmentPopup" class="modal-collapse">
