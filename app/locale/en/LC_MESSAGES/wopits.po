@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-10 13:33+0200\n"
+"POT-Creation-Date: 2020-08-11 16:46+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -597,6 +597,9 @@ msgid ""
 "before logging in again on wopits."
 msgstr ""
 
+msgid "No further information"
+msgstr ""
+
 msgid "No result"
 msgstr ""
 
@@ -927,6 +930,9 @@ msgid "This sticky note will expire in about %s day(s)."
 msgstr ""
 
 msgid "This sticky note will expire soon."
+msgstr ""
+
+msgid "This title already exists."
 msgstr ""
 
 msgid "This wall is not shared with any group!"

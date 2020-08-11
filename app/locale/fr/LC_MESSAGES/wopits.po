@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-10 13:33+0200\n"
-"PO-Revision-Date: 2020-08-10 13:34+0200\n"
+"POT-Creation-Date: 2020-08-11 16:46+0200\n"
+"PO-Revision-Date: 2020-08-11 16:47+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@leroulard.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -778,6 +778,9 @@ msgstr ""
 "Aucune adresse email n'est configurée dans votre compte LDAP. Veuillez "
 "corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits."
 
+msgid "No further information"
+msgstr "Aucune information complémentaire"
+
 msgid "No result"
 msgstr "Aucun résultat"
 
@@ -1134,6 +1137,9 @@ msgstr "Ce post-it expirera dans environ %s jour(s)."
 
 msgid "This sticky note will expire soon."
 msgstr "Ce post-it expire bientôt."
+
+msgid "This title already exists."
+msgstr "Ce titre existe déjà."
 
 msgid "This wall is not shared with any group!"
 msgstr "Ce mur n'est partagé avec aucun groupe!"
