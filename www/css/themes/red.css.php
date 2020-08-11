@@ -102,10 +102,10 @@ span.wpt-badge {
 }
 
 .list-group-item  {
-  border-color: #ffd5d9;
+  border-color: #ffd5d9 !important;
 }
 
-.list-group-item:hover,
+.list-group-item:not(.collapse):hover,
 .list-group-item.title {
   background-color:#ffeaec !important;
 }

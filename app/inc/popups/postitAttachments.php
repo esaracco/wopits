@@ -9,7 +9,9 @@
       </div>
       <div class="modal-body">
         <a class="download"></a>
-        <div><ul class="list-group"></ul></div>
+        <div class="accordion" id="pa-accordion">
+          <ul class="list-group"></ul>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> <?=_("Add")?></button>

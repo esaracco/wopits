@@ -467,13 +467,19 @@ select.timezone {
   font-size:0.8rem;
 }
 
-.list-group-item .item-right-icon {
+.list-group-item .right-icons {
   position:absolute;
   right:0;
   top:3px;
-  border:0;
+}
+
+.list-group-item .right-icons button {
+  float:left;
   font-size:1.5rem;
   background-color:transparent;
+  border:0;
+  margin:0;
+  padding:0;
 }
 
 .list-group-item .item-infos {
@@ -1169,6 +1175,53 @@ button.btn-primary i {
   overflow:hidden !important;
 }
 
+#postitAttachmentsPopup .list-group-item.collapse:hover {
+  cursor:auto !important;
+}
+
+#postitAttachmentsPopup .collapsing {
+  -webkit-transition:none;
+  transition:none;
+  display:none;
+}
+
+#postitAttachmentsPopup .list-group-item[aria-expanded=true] {
+  border-bottom:2px solid silver;
+}
+
+#attachmentPopup img {
+  max-width:250px;
+  cursor:zoom-in;
+}
+
+#attachmentPopup .file {
+  text-align:center;
+  font-weight:bold;
+}
+
+#attachmentPopup .modal-body {
+  padding-top:0;
+  padding-bottom:0;
+}
+
+.no-details {
+  font-style: italic;
+  text-align:center;
+  opacity:0.5;
+}
+
+#img-viewer img {
+  position:absolute;
+  left: 50%;
+  top: 50%;
+  max-height:100%;
+  max-width:100%;
+  transform: translate(-50%, -50%);
+  border-radius:10px;
+  box-shadow: 1px 1px 12px #555;
+  z-index:5017;;
+}
+
 #shareWallPopup div.scroll {
   max-height:300px;
   overflow-y:auto;
@@ -1310,6 +1363,10 @@ div.postit div.attachmentscount span.wpt-badge {
 
 .list-group-item:hover  {
   background:#f5f5f5;
+}
+
+#postitAttachmentsPopup .list-group-item.collapse:hover {
+  background:inherit;
 }
 
 .list-group-item.active {

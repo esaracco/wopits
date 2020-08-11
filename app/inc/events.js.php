@@ -233,7 +233,10 @@ $(function()
       if (e.which == 13 && e.target.tagName == "INPUT")
       {
         const $popup = $(this);
-        let $btn = $popup.find (".btn-primary");
+        let $btn = $popup.find (".btn-primary.btn-sm");
+
+        if (!$btn.length)
+          $btn = $popup.find (".btn-primary");
 
         if (!$btn.length)
           $btn = $popup.find (".btn-success");

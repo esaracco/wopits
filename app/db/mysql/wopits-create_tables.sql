@@ -226,6 +226,8 @@ CREATE TABLE postits_attachments
   link VARCHAR(2000) NOT NULL,
   size INT NOT NULL,
   creationdate INT UNSIGNED NOT NULL,
+  title VARCHAR(255),
+  description VARCHAR(2000),
 
   PRIMARY KEY (id),
   CONSTRAINT `postits_attachments-postits_id-fk` FOREIGN KEY (postits_id)

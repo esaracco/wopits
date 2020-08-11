@@ -105,7 +105,7 @@ span.wpt-badge {
   border-color: #caecd2 !important;
 }
 
-.list-group-item:hover,
+.list-group-item:not(.collapse):hover,
 .list-group-item.title {
   background-color:#e9ffee !important;
 }

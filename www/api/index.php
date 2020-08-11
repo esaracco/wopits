@@ -192,29 +192,47 @@
     // POST
     case 'POST':
 
-      if ($class == 'user')
+      switch ($class)
       {
-        $User = new Wpt_user (['data' => $data]);
+        case 'user':
+          $User = new Wpt_user (['data' => $data]);
 
-        switch (getParam ('action'))
-        {
-          case 'setExternalRef':
-            $ret = $User->setExternalRef (getParam ('wallId'));
-            break;
+          switch (getParam ('action'))
+          {
+            case 'setExternalRef':
+              $ret = $User->setExternalRef (getParam ('wallId'));
+              break;
 
-          case 'login':
-            $ret = $User->login ($data->remember);
-            break;
+            case 'login':
+              $ret = $User->login ($data->remember);
+              break;
 
-          case 'logout':
-            $ret = $User->logout ();
-            break;
+            case 'logout':
+              $ret = $User->logout ();
+              break;
 
-          case 'resetPassword':
-            $ret = $User->resetPassword ();
-            break;
-        }
+            case 'resetPassword':
+              $ret = $User->resetPassword ();
+              break;
+          }
+
+          break;
+
+        case 'postit':
+          $Postit = new Wpt_postit ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId'),
+            'data' => $data
+          ]);
+
+          if (getParam ('item') == 'attachment')
+            $ret = $Postit->updateAttachment ([
+                     'attachmentId' => getParam ('itemId')]);
+
+          break;
       }
+
       break;
 
     // DELETE

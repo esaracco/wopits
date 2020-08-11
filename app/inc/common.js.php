@@ -1147,12 +1147,15 @@ class WHelp
       $target = args.target;
     else
     {
-      const $modals = $(".modal:visible");
-  
+      let $modals = $(".modal-collapse:visible");
+
+      if (!$modals.length)
+        $modals = $(".modal:visible");
+
       $target = $modals.length ?
                   $modals.last().find(".modal-body") : $("#msg-container");
     }
-  
+
     $target.find(".alert[data-timeoutid='noclosure']").remove ();
   
     if (args.reset)
@@ -1309,6 +1312,7 @@ class WHelp
   request_ajax (method, service, args, success_cb, error_cb)
   {
     const _H = this,
+///FIXME attachment reconnu comme fileUpload alors que popup liste attachements
           fileUpload = !!service.match(/attachment|picture|import|export$/),
           // No timeout for file upload
           timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
@@ -1322,31 +1326,34 @@ class WHelp
         xhr: function ()
         {
           const xhr = new window.XMLHttpRequest ();
-  
-          function __progress (e)
+
+          if (fileUpload)
           {
-            if (e.lengthComputable)
-              {
-                const $progress = $("#loader .progress"),
-                      percentComplete = e.loaded / e.total,
-                      display = Math.trunc(percentComplete*100)+"%";
-  
-                $progress.text(display).css ("width", display);
-  
-                if (percentComplete < 0.5)
-                  $progress.css ("background", "#ea6966");
-                else if (percentComplete < 0.9)
-                  $progress.css ("background", "#f5b240");
-                else if (percentComplete < 1)
-                  $progress.css ("background", "#6ece4b");
-                else
-                  $progress.text ("<?=_("Upload completed.")?>");
-              }
+            function __progress (e)
+            {
+              if (e.lengthComputable)
+                {
+                  const $progress = $("#loader .progress"),
+                        percentComplete = e.loaded / e.total,
+                        display = Math.trunc(percentComplete*100)+"%";
+
+                  $progress.text(display).css ("width", display);
+
+                  if (percentComplete < 0.5)
+                    $progress.css ("background", "#ea6966");
+                  else if (percentComplete < 0.9)
+                    $progress.css ("background", "#f5b240");
+                  else if (percentComplete < 1)
+                    $progress.css ("background", "#6ece4b");
+                  else
+                    $progress.text ("<?=_("Upload completed.")?>");
+                }
+            }
+
+            xhr.upload.addEventListener ("progress", __progress, false);
+            xhr.addEventListener ("progress", __progress, false);
           }
-  
-          xhr.upload.addEventListener ("progress", __progress, false);
-          xhr.addEventListener ("progress", __progress, false);
-  
+
           return xhr;
         },
         type: method,

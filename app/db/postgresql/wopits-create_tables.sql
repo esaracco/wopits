@@ -171,7 +171,9 @@ CREATE TABLE postits_attachments
   name VARCHAR(255) NOT NULL,
   link VARCHAR(2000) NOT NULL,
   size INTEGER NOT NULL,
-  creationdate INTEGER NOT NULL
+  creationdate INTEGER NOT NULL,
+  title VARCHAR(255),
+  description VARCHAR(2000)
 );
 CREATE INDEX "postits_attachments-creationdate:name-idx"
   ON postits_attachments (creationdate, name);

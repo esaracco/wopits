@@ -274,6 +274,42 @@
       return $ret;
     }
  
+    public function updateAttachment ($args)
+    {
+      $ret = [];
+      $attachmentId = $args['attachmentId'];
+
+      $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
+      if (!$r['ok'])
+        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+
+      if (!empty ($this->data->title))
+      {
+        $stmt = $this->prepare ('
+          SELECT 1 FROM postits_attachments
+          WHERE postits_id = ? AND title = ? AND id <> ?');
+        $stmt->execute ([$this->postitId, $this->data->title, $attachmentId]);
+        if ($stmt->fetch ())
+          return ['error_msg' => _("This title already exists.")];
+      }
+
+      try
+      {
+        $this->executeQuery ('UPDATE postits_attachments', [
+          'title' => $this->data->title,
+          'description' => $this->data->description,
+        ],
+        ['id' => $attachmentId]);
+      }
+      catch (Exception $e)
+      {
+        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+        $ret['error'] = 1;
+      }
+
+      return $ret;
+    }
+
     public function addAttachment ()
     {
       $ret = [];
@@ -294,9 +330,19 @@
         $rdir = 'postit/'.$this->postitId;
         $file = Wpt_common::getSecureSystemName (
           "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
+        $fname = basename ($file);
 
-        if (file_exists ($file))
-          $ret['error_msg'] = _("The file is already linked to the sticky note.");
+        $stmt = $this->prepare ('
+          SELECT 1 FROM postits_attachments
+          WHERE postits_id = ? AND link LIKE ?');
+        $stmt->execute ([
+          $this->postitId,
+          '%'.substr($fname, 0, strrpos($fname, '.')).'%'
+        ]);
+
+        if ($stmt->fetch ())
+          $ret['error_msg'] =
+            _("The file is already linked to the sticky note.");
         else
         {
           file_put_contents (
@@ -373,6 +419,8 @@
             ,postits_attachments.item_type
             ,postits_attachments.name
             ,postits_attachments.size
+            ,postits_attachments.title
+            ,postits_attachments.description
             ,users.id AS ownerid
             ,users.fullname AS ownername
             ,postits_attachments.creationdate
