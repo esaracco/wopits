@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-12 07:19+0200\n"
+        "POT-Creation-Date: 2020-08-12 10:17+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> an
 msgstr  ""
 
 #, php-format
-msgid   "A free, open-source post-its manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."
+msgid   "A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."
 msgstr  ""
 
 msgid   "A new release of wopits is available!"
