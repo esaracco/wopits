@@ -779,7 +779,7 @@ msgstr ""
 "corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits."
 
 msgid "No further information"
-msgstr "Aucune information complémentaire"
+msgstr "Pas d'informations complémentaires"
 
 msgid "No result"
 msgstr "Aucun résultat"

@@ -283,11 +283,8 @@ $(function()
             this.className = this.className.replace (/color\-[a-z]+/, "");
           });
 
-      // Set focus on first autofocus field if not touch device
-      if (!$.support.touch)
-        setTimeout (() => $popup.find("[autofocus]:eq(0)").focus (), 150);
+      H.setAutofocus ($popup);
     });  
-
 
   // EVENT hide.bs.modal on popups
   $(".modal").on("hide.bs.modal",

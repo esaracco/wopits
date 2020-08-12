@@ -1189,22 +1189,25 @@ button.btn-primary i {
   border-bottom:2px solid silver;
 }
 
-#attachmentPopup img {
+#postitAttachmentsPopup .edit-popup {
+  display:none;
+}
+
+#postitAttachmentsPopup .edit-popup .img {
+  text-align:center;
+}
+
+#postitAttachmentsPopup .edit-popup .img img {
   max-width:250px;
   cursor:zoom-in;
 }
 
-#attachmentPopup .file {
+#postitAttachmentsPopup .edit-popup .file {
   text-align:center;
   font-weight:bold;
 }
 
-#attachmentPopup .modal-body {
-  padding-top:0;
-  padding-bottom:0;
-}
-
-.no-details {
+#postitAttachmentsPopup .edit-popup .no-details {
   font-style: italic;
   text-align:center;
   opacity:0.5;

@@ -8,6 +8,7 @@
   const _defaultClassColor =
           "color-<?=array_keys(WPT_MODULES['colorPicker']['items'])[0]?>";
   let $_attachmentsPopup,
+      $_attachmentEditPopup,
       _originalObject,
       _plugRabbit = {
         line: null,
@@ -1634,8 +1635,6 @@
     // METHOD uploadAttachment ()
     uploadAttachment: function ()
     {
-      $_attachmentsPopup.find("div.collapse.show").collapse ("hide");
-
       $(".upload.postit-attachment").click ();
     },
 
@@ -1751,15 +1750,15 @@
     },
 
     // METHOD deleteAttachment ()
-    deleteAttachment: function ()
+    deleteAttachment: function (id)
     {
-      const $attachment = $_attachmentsPopup.find ("li.todelete");
+      const $li = $_attachmentsPopup.find ("li[data-id='"+id+"']");
 
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
-            "/attachment/"+$attachment[0].dataset.id,
+            "/attachment/"+id,
         null,
         // success cb
         (d) =>
@@ -1768,19 +1767,18 @@
             H.raiseError (null, d.error_msg);
           else
           {
-            const $next = $attachment.next ();
+            const $next = $li.next ();
 
             if ($next.length && $next.hasClass ("collapse"))
               $next.remove ();
-            $attachment.remove ();
+
+            $li.remove ();
 
             this.decAttachmentsCount ();
-  
-            if (!$_attachmentsPopup.find("ul.list-group li:first-child").length)
-            {
+
+            if (!$_attachmentsPopup[0].querySelector ("li"))
               $_attachmentsPopup.find("ul.list-group").html (
                 "<?=_("This sticky note has no attachment")?>");
-            }
           }
         }
       );
@@ -1963,6 +1961,7 @@
     $(function()
       {
         $_attachmentsPopup = $("#postitAttachmentsPopup");
+        $_attachmentEditPopup = $_attachmentsPopup.find (".edit-popup");
 
         // To fix tinymce bootstrap compatibility with popups
         $(document).on("focusin",
@@ -2166,6 +2165,8 @@
                       const $body = $_attachmentsPopup.find("ul.list-group");
 
                       $_attachmentsPopup.find(".modal-body").scrollTop (0);
+                      $_attachmentsPopup.find("div.collapse.show")
+                        .collapse ("hide");
 
                       if (d.error_msg)
                         return H.displayMsg ({
@@ -2271,7 +2272,9 @@
 
             if (action == "delete")
             {
-              $item.addClass ("active todelete");
+              const id = $item[0].dataset.id;
+
+              $item.addClass ("active");
 
               H.openConfirmPopover ({
                 item: $(this),
@@ -2281,21 +2284,20 @@
                 cb_close: ()=>
                   {
                     const el = document.querySelector (
-                                 ".modal li.list-group-item.active.todelete");
+                                 ".modal li.list-group-item.active");
 
-                    el.classList.remove ("todelete");
-
-                    if (el.getAttribute ("aria-expanded") != "true")
+                    if (el && el.getAttribute ("aria-expanded") != "true")
                       el.classList.remove ("active");
                   },
-                cb_ok: ()=> S.getCurrent("postit").postit ("deleteAttachment")
+                cb_ok: () =>
+                  S.getCurrent("postit").postit ("deleteAttachment", id)
               });
             }
             else
               H.download ($item[0].dataset);
           });
 
-        $(document).on("click", "#attachmentPopup img",
+        $(document).on("click", "#postitAttachmentsPopup .edit-popup img",
           function (e)
           {
             const div = document.createElement ("div"),
@@ -2313,83 +2315,97 @@
               () => document.getElementById("img-viewer").remove());
           });
 
-        $(document).on("click", "#attachmentPopup .btn-primary",
+        $(document).on("click",
+                       "#postitAttachmentsPopup .edit-popup .btn-primary",
           function (e)
           {
-            const $popup = $("#attachmentPopup");
+            const popup = $_attachmentEditPopup[0];
 
             e.stopImmediatePropagation ();
 
             S.getCurrent("postit").postit ("updateAttachment", {
-              id: $popup[0].dataset.id,
-              title: H.noHTML ($popup.find("input").val ()),
-              description: H.noHTML ($popup.find ("textarea").val ())
+              id: popup.dataset.id,
+              title: H.noHTML (popup.querySelector("input").value),
+              description: H.noHTML (popup.querySelector("textarea").value)
             });
           });
 
-        $(document).on("hide.bs.collapse",
+        $(document).on("hidden.bs.collapse",
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)
           {
-            this.innerHTML = "";
-
-            $(this).prev().removeClass ("active");
+            this.previousSibling.classList.remove ("active");
           });
 
         $(document).on("show.bs.collapse",
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)
           {
-            $(this).load ("/api/tpl/attachment.php", function ()
-              {
-                const $li = $(this).prev (),
-                      li0 = $li[0],
-                      $popup = $(this).find("#attachmentPopup"),
-                      file = li0.dataset.fname,
-                      title = li0.dataset.title,
-                      description = li0.dataset.description,
-                      isImg = file.match (/\.(jpe?g|gif|png)$/);
+            const li = $(this).prev()[0],
+                  popup = $_attachmentEditPopup[0],
+                  liActive = $_attachmentsPopup[0].querySelector ("li.active"),
+                  fileVal = li.dataset.fname,
+                  titleVal = li.dataset.title,
+                  descVal = li.dataset.description,
+                  img = popup.querySelector (".img"),
+                  isImg = fileVal.match (/\.(jpe?g|gif|png)$/);
 
-                $li.addClass ("active");
+            liActive && liActive.classList.remove ("active");
+            li.classList.add ("active");
 
-                $popup[0].dataset.id = li0.dataset.id;
+            popup.dataset.id = li.dataset.id;
 
-                $popup.find(".file").text (file);
+            popup.querySelector(".no-details").style.display = "none";
+            popup.querySelector(".title").style.display = "block";
+            popup.querySelector(".description").style.display = "block";
+            img.querySelector("img").setAttribute ("src", "");
+            img.style.display = "none";
 
-                if (isImg)
-                  $popup.find(".img img").attr ("src", li0.dataset.url);
-                else
-                  $popup.find(".img").hide ();
+            popup.querySelector(".file").innerText = fileVal;
 
-                if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-                {
-                  $popup.find(".ro").hide ();
+            if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
+            {
+              popup.querySelector(".btn-primary").style.display = "block";
+              popup.querySelectorAll(".ro").forEach (
+                (el) => el.style.display = "none");
+              popup.querySelectorAll(".adm").forEach (
+                (el) => el.style.display = "block");
 
-                  $popup.find(".title input").val (title);
-                  $popup.find(".description textarea").val (description);
+              popup.querySelector(".title input").value = titleVal;
+              popup.querySelector(".description textarea").value = descVal;
 
-                  //setTimeout (() => $popup.find("[autofocus]").focus (), 150);
-                }
-                else
-                {
-                  $popup.find(".btn-primary").hide ();
-                  $popup.find(".adm").hide ();
+              H.setAutofocus ($(popup));
+            }
+            else
+            {
+              popup.querySelector(".btn-primary").style.display = "none";
+              popup.querySelectorAll(".ro").forEach (
+                (el) => el.style.display = "block");
+              popup.querySelectorAll(".adm").forEach (
+                (el) => el.style.display = "none");
 
-                  if (!isImg && !title && !description)
-                    $(`<div class="no-details"><?=_("No further information")?></div>`).insertAfter ($popup.find(".file"));
+              if (!isImg && !titleVal && !descVal)
+                popup.querySelector(".no-details").style.display = "block";
 
-                  if (title)
-                    $popup.find(".title .ro").html (H.nl2br (title));
-                  else
-                    $popup.find(".title").hide ();
+              if (titleVal)
+                popup.querySelector(".title .ro").innerText = titleVal;
+              else
+                popup.querySelector(".title").style.display = "none";
 
-                  if (description)
-                    $popup.find(".description .ro").html (
-                      H.nl2br(description));
-                  else
-                    $popup.find(".description").hide ();
-                }
-            });
+              if (descVal)
+                popup.querySelector(".description .ro")
+                  .innerHTML = H.nl2br (descVal);
+              else
+                popup.querySelector(".description").style.display = "none";
+            }
+
+            if (isImg)
+            {
+              img.querySelector("img").setAttribute ("src", li.dataset.url);
+              img.style.display = "block";
+            }
+
+            $(this.appendChild (popup)).show ("fade");
           });
       });
 

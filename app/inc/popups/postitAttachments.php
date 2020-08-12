@@ -19,4 +19,28 @@
       </div>
     </div>
   </div>
+
+  <div class="edit-popup modal-collapse">
+    <div class="modal-body justify">
+      <dd class="file"></dd>
+      <div class="no-details"><?=_("No further information")?></div>
+      <div class="title">
+        <dt><?=_("Title")?></dt>
+        <dd>
+          <div class="input-group"><input autofocus type="text" class="form-control adm" maxlength="<?=Wpt_dbCache::getFieldLength('postits_attachments', 'title')?>"></div>
+         <div class="ro"></div>
+        </dd>
+      </div>
+      <div class="description">
+        <dt><?=_("Description")?></dt>
+        <dd>
+          <textarea class="form-control adm" maxlength="<?=Wpt_dbCache::getFieldLength('postits_attachments', 'description')?>"></textarea>
+          <div class="ro"></div>
+        </dd>
+      </div>
+      <div class="img"><img src="" class="mt-3 mb-3"></div>
+      <button type="button" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> <?=_("Save")?></button>
+      </div>
   </div>
+
+ </div>

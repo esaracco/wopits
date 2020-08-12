@@ -641,6 +641,14 @@ class WHelp
     };
   }
 
+  // METHOD setAutofocus ()
+  setAutofocus ($el)
+  {
+    // Set focus on first autofocus field if not touch device
+    if (!$.support.touch)
+      setTimeout (() => $el.find("[autofocus]:eq(0)").focus (), 150);
+  }
+
   // METHOD testImage ()
   testImage (url, timeout = 5000)
   {
