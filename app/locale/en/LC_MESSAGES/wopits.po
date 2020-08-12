@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 04:51+0200\n"
+"POT-Creation-Date: 2020-08-12 07:19+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -516,11 +516,6 @@ msgstr ""
 msgid "If so, do not hesitate to test others:"
 msgstr ""
 
-msgid ""
-"If you delete this <b>generic</b> group, it will no longer be available for "
-"the current wall or for your other walls.<p/>Delete it anyway?"
-msgstr ""
-
 #, php-format
 msgid ""
 "If you need professional hosting or special features, don't hesitate to "
@@ -900,6 +895,11 @@ msgid "This group does not contain any users!"
 msgstr ""
 
 msgid ""
+"This group will no longer be available for the current wall or for your "
+"other walls.<p/>Delete it anyway?"
+msgstr ""
+
+msgid ""
 "This is not a professional hosting site but a place allowing you to easily "
 "use wopits without having to install it yourself on a server."
 msgstr ""
@@ -983,6 +983,9 @@ msgid "User guide"
 msgstr ""
 
 msgid "Users in this group:"
+msgstr ""
+
+msgid "Users will lose their access to the wall.<p/>Unshare anyway?"
 msgstr ""
 
 msgid "View"

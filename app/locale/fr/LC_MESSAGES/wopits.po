@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 04:51+0200\n"
+"POT-Creation-Date: 2020-08-12 07:19+0200\n"
 "PO-Revision-Date: 2020-08-12 04:51+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@leroulard.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -689,13 +689,6 @@ msgstr "Aide"
 msgid "If so, do not hesitate to test others:"
 msgstr "Si c'est le cas, n'hésitez pas à en tester d'autres:"
 
-msgid ""
-"If you delete this <b>generic</b> group, it will no longer be available for "
-"the current wall or for your other walls.<p/>Delete it anyway?"
-msgstr ""
-"Si vous supprimez ce groupe <b>générique</b>, il ne sera plus disponible "
-"pour aucun de vos murs.<p/>Le supprimer quand même?"
-
 #, php-format
 msgid ""
 "If you need professional hosting or special features, don't hesitate to "
@@ -1102,6 +1095,14 @@ msgstr "Ce groupe existe déjà."
 msgid "This group does not contain any users!"
 msgstr "Ce groupe ne contient pas d'utilisateurs!"
 
+#, fuzzy
+msgid ""
+"This group will no longer be available for the current wall or for your "
+"other walls.<p/>Delete it anyway?"
+msgstr ""
+"Si vous supprimez ce groupe <b>générique</b>, il ne sera plus disponible "
+"pour aucun de vos murs.<p/>Le supprimer quand même?"
+
 msgid ""
 "This is not a professional hosting site but a place allowing you to easily "
 "use wopits without having to install it yourself on a server."
@@ -1192,6 +1193,9 @@ msgstr "Guide d'utilisation"
 
 msgid "Users in this group:"
 msgstr "Utilisateurs dans ce groupe:"
+
+msgid "Users will lose their access to the wall.<p/>Unshare anyway?"
+msgstr ""
 
 msgid "View"
 msgstr "Affichage"

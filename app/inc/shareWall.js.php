@@ -119,7 +119,7 @@
               H.openConfirmPopover ({
                  item: $btn.parent().find(".name"),
                  title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
-                 content: "<?=_("Users in this group will lose their access to the wall.<p/>Unshare anyway?")?>",
+                 content: "<?=_("Users will lose their access to the wall.<p/>Unshare anyway?")?>",
                  cb_close: () =>
                    $share.find("li.list-group-item.active")
                      .removeClass ("active todelete"),
