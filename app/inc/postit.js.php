@@ -2330,7 +2330,10 @@
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)
           {
-            this.previousSibling.classList.remove ("active");
+            const li = this.previousSibling;
+
+            li.classList.remove ("no-bottom-radius");
+            li.classList.remove ("active");
           });
 
         $(document).on("show.bs.collapse",
@@ -2345,6 +2348,8 @@
                   descVal = li.dataset.description,
                   img = popup.querySelector (".img"),
                   isImg = fileVal.match (/\.(jpe?g|gif|png)$/);
+
+            li.classList.add ("no-bottom-radius");
 
             liActive && liActive.classList.remove ("active");
             li.classList.add ("active");

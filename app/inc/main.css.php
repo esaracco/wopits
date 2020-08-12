@@ -1213,6 +1213,16 @@ button.btn-primary i {
   opacity:0.5;
 }
 
+#postitAttachmentsPopup .list-group-item:nth-last-child(2) {
+  border-bottom-left-radius:inherit;
+  border-bottom-right-radius:inherit;
+}
+
+#postitAttachmentsPopup .list-group-item.no-bottom-radius {
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+}
+
 #img-viewer img {
   position:absolute;
   left: 50%;
