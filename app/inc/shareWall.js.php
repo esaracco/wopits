@@ -101,7 +101,7 @@
               var content =
                ($row.parent().hasClass ("gtype-<?=WPT_GTYPES_DED?>"))?
                  `<?=_("Delete this group?")?>`:
-                 `<?=_("If you delete this <b>generic</b> group, it will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
+                 `<?=_("This group will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
 
               H.openConfirmPopover ({
                  item: $btn.parent().find(".name"),
