@@ -1255,6 +1255,11 @@ button.btn-primary i {
   color:#fff;
 }
 
+#shareWallPopup li .btn-share {
+  float:right;
+  margin-right:10px;
+}
+
 #shareWallPopup span.nogroup,
 #usersSearchPopup label.nousers-title {
   font-style:italic;
