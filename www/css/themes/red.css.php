@@ -3,6 +3,10 @@
   background-color:#dc3545 !important;
 }
 
+#img-viewer .close {
+  color:#ffeaec;
+}
+
 .arrows .goto-box {
   color:#dc3545;
 }

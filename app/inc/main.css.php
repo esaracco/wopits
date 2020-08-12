@@ -1225,6 +1225,16 @@ button.btn-primary i {
   z-index:5017;;
 }
 
+#img-viewer .close {
+  position:fixed;
+  left:10px;
+  top:50%;
+  margin-top:-24px;
+  z-index:5018;
+  color:#f1f1f1;
+  cursor:pointer;
+}
+
 #shareWallPopup div.scroll {
   max-height:300px;
   overflow-y:auto;

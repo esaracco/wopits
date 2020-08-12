@@ -2300,16 +2300,12 @@
         $(document).on("click", "#postitAttachmentsPopup .edit-popup img",
           function (e)
           {
-            const div = document.createElement ("div"),
-                  img = document.createElement ("img")
-
-            div.setAttribute ("id", "img-viewer");
-            img.setAttribute ("src", this.getAttribute("src"));
-
-            div.appendChild (img);
-            document.body.appendChild (div);
-
-            div.style.display = "block";
+            const viewer = `<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${this.getAttribute("src")}"></div>`;
+            $("body").append(viewer).show().find(".close")
+              .on("click", function ()
+              {
+                $("#popup-layer").click ();
+              });
 
             H.openPopupLayer (
               () => document.getElementById("img-viewer").remove());
