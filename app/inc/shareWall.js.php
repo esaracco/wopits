@@ -116,14 +116,27 @@
 
             case "unlink-group":
 
-              $share.find(".nav-link.active").removeClass ("active");
-              $share.find(".tab-content .tab-pane.active")
-                .removeClass ("show active");
+              H.openConfirmPopover ({
+                 item: $btn.parent().find(".name"),
+                 title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
+                 content: "<?=_("Users in this group will lose their access to the wall.<p/>Unshare anyway?")?>",
+                 cb_close: () =>
+                   $share.find("li.list-group-item.active")
+                     .removeClass ("active todelete"),
+                 cb_ok: () =>
+                   {
+                     $share.find(".nav-link.active").removeClass ("active");
+                     $share.find(".tab-content .tab-pane.active")
+                       .removeClass ("show active");
 
-              $share.find(".nav-tabs .gtype-"+groupType).addClass ("active");
-              $share.find(".tab-content #gtype-"+groupType).tab ("show");
+                     $share.find(".nav-tabs .gtype-"+groupType)
+                       .addClass ("active");
 
-              plugin.unlinkGroup ({id: id});
+                     $share.find(".tab-content #gtype-"+groupType).tab ("show");
+
+                     plugin.unlinkGroup ({id: id});
+                   }
+               });
               break;
 
             case "link-group":
