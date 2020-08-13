@@ -155,13 +155,22 @@ img {
   max-width:400px;
 }
 
-.alert b {
-  font-size:0.9rem;
+.alert {
+  min-width:300px;
+  max-width:500px;
+  position:fixed;
+  left:50%;
+  transform:translate(-50%, -50%);
+  box-shadow: 0 0 20px #cecece;
+  z-index:60000;
 }
 
-.alert {
-  box-shadow: 0 0 20px #cecece;
-  z-index:60000 !important;
+.alert-dismissible {
+  padding-right:2rem;
+}
+
+.alert b {
+  font-size:0.9rem;
 }
 
 .alert ul {

@@ -1147,7 +1147,7 @@ class WHelp
     if ($(".tox-dialog").is(":visible"))
       return tinymce.activeEditor.windowManager.alert (args.msg);
   
-    const $previous = $(".alert").eq(0),
+    const $previous = $(".alert:eq(0)"),
           id = (args.noclosure) ? "noclosure": "timeout-"+Math.random();
     let $target;
   
@@ -1160,8 +1160,8 @@ class WHelp
       if (!$modals.length)
         $modals = $(".modal:visible");
 
-      $target = $modals.length ?
-                  $modals.last().find(".modal-body") : $("#msg-container");
+      $target = $modals.length ? $modals.last().find(".modal-body:visible") :
+                                 $("#msg-container");
     }
 
     $target.find(".alert[data-timeoutid='noclosure']").remove ();
@@ -1171,8 +1171,11 @@ class WHelp
   
     if (!($previous.length && $previous.find("span").text () == args.msg))
     {
+      if ($previous.length)
+        $previous.css ("z-index", $previous.css("z-index") - 1);
+
       $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<b>"+args.title+"</b><br>":""}<span>${args.msg}</span></div>`);
-  
+
       if (!args.noclosure)
         setTimeout (() =>
           {
