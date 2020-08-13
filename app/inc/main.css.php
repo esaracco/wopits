@@ -301,8 +301,7 @@ i.settings {
   border-bottom:none;
 }
 
-.popover,
-.postit-mark {
+.popover {
   z-index:5017;
 }
 
@@ -774,12 +773,6 @@ th .submenu .dropdown-menu {
   top:-28px !important;
   left:15px !important;
   z-index:5003!important;
-}
-
-div.postit-mark {
-  color:#343a40;
-  position:absolute;
-  display:inline-block;
 }
 
 div.postit {
