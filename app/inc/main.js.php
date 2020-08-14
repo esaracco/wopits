@@ -1828,7 +1828,8 @@
           {
             const a = $(this)[0],
                   $popup = $("#userViewPopup"),
-                  $userPicture = $popup.find (".user-picture");
+                  $userPicture = $popup.find (".user-picture"),
+                  $about = $popup.find (".about");
 
             if (a.dataset.picture)
             {
@@ -1845,8 +1846,14 @@
 
             $popup.find(".modal-title span").text (a.dataset.title);
             $popup.find(".name dd").text (a.dataset.title);
-            $popup.find(".about dd").html ((a.dataset.about) ?
-              H.nl2br(a.dataset.about) : "<i><?=_("No description.")?></i>");
+
+            if (a.dataset.about)
+            {
+              $about.find("dd").html (H.nl2br (a.dataset.about));
+              $about.show ();
+            }
+            else
+              $about.hide ();
 
             H.openModal ($popup);
           });
