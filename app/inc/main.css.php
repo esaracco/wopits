@@ -155,7 +155,7 @@ img {
   max-width:400px;
 }
 
-.alert {
+.alert:not(.welcome) {
   min-width:300px;
   max-width:500px;
   position:fixed;
