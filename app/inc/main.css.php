@@ -166,7 +166,7 @@ img {
 }
 
 .alert-dismissible {
-  padding-right:2rem;
+  padding-right:3rem;
 }
 
 .alert b {
@@ -228,6 +228,30 @@ i.settings {
 
 .tooltip {
   z-index:5050;
+}
+
+/*
+.tooltip-inner {
+  font-style:italic;
+}
+
+.tooltip.bs-tooltip-right .arrow:before {
+  border-right-color:#663000 !important;
+}
+.tooltip.bs-tooltip-left .arrow:before {
+    border-left-color:#663000 !important;
+}
+.tooltip.bs-tooltip-bottom .arrow:before {
+    border-bottom-color:#663000 !important;
+}
+.tooltip.bs-tooltip-top .arrow:before {
+    border-top-color:#663000 !important;
+}
+*/
+
+i.fa-info-circle[data-toggle="tooltip"] {
+  position:absolute;
+  cursor:help;
 }
 
 .navbar.fixed-top {
@@ -299,7 +323,7 @@ i.settings {
   left:0;
   width:100%;
   height:100%;
-  z-index:5016;
+  z-index:5018;
 }
 
 .bs-popover-auto[x-placement^=bottom] .arrow:after {
@@ -311,7 +335,7 @@ i.settings {
 }
 
 .popover {
-  z-index:5017;
+  z-index:5019;
 }
 
 .popover p {
@@ -349,6 +373,15 @@ form span.required {
   height:100px;
 }
 
+#accountPopup .user-picture {
+  cursor:pointer;
+}
+
+#accountPopup div.delete {
+  font-size:0.8rem;
+  text-align:center;
+}
+
 .user-picture {
   display:inline-block;
   color:#555;
@@ -357,10 +390,6 @@ form span.required {
 div.content-centered {
   width:100%;
   text-align:center;
-}
-
-#accountPopup .user-picture {
-  cursor:pointer;
 }
 
 .user-picture img {
@@ -379,6 +408,18 @@ dd {
 
 .navbar-brand {
   margin-right:20px !important;
+}
+
+.navbar-brand i:hover {
+  opacity:0.6;
+}
+
+.navbar-brand i.invisible-mode {
+  display:none;
+  position:absolute;
+  margin-top:-10px;
+  margin-left:-15px;
+  cursor:help;
 }
 
 .login-page .navbar-brand {
@@ -405,11 +446,6 @@ select.timezone {
   margin-right:5px !important;
   opacity:0.8 !important;
   padding:3px !important;
-}
-
-.navbar-brand i:hover {
-  cursor:pointer;
-  opacity:0.6;
 }
 
 .modal {
@@ -653,8 +689,7 @@ th .close.img-delete {
   margin-top:5px;
 }
 
-.wall[data-access="2"] th div.img,
-.wall[data-access="3"] th div.img {
+.wall:not([data-access="<?=WPT_WRIGHTS_ADMIN?>"]) th div.img {
   cursor:auto !important;
 }
 
@@ -703,8 +738,8 @@ div.plug-label {
   margin-left:-4px;
 }
 
-div[data-access="3"] div.plug-label,
-div[data-access="3"] div.plug-label a {
+div[data-access="<?=WPT_WRIGHTS_RO?>"] div.plug-label,
+div[data-access="<?=WPT_WRIGHTS_RO?>"] div.plug-label a {
   cursor:auto !important;
 }
 
@@ -785,12 +820,6 @@ th .submenu .dropdown-menu {
 }
 
 div.postit {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-/*  user-select: none;*/
   z-index:1010;
   position:absolute !important;
   background:#ffffc6;
@@ -801,6 +830,15 @@ div.postit {
   border-radius:0 3px 3px 3px;
   border:2px solid #cecece;
   box-shadow: 0 0 5px #cecece;
+}
+
+.wall:not([data-access="<?=WPT_WRIGHTS_RO?>"]) .postit {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  /*  user-select: none;*/
 }
 
 div.postit .postit-header {
@@ -833,10 +871,6 @@ div.postit div.attachmentscount i {
 div.postit .postit-header i {
   cursor:pointer;
   margin-right:10px;
-}
-
-.wall[data-access="3"] div.postit .postit-header i {
-  cursor:auto !important;
 }
 
 div.postit .postit-header .title {
@@ -887,10 +921,9 @@ div.postit div.postit-tags {
   padding: 0;
   cursor:pointer;
   line-height: 20px;
-  z-index:10000;
 }
 
-.wall[data-access="3"] div.postit div.postit-tags {
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit div.postit-tags {
   cursor:auto !important;
 }
 
@@ -1191,6 +1224,10 @@ button.btn-primary i {
   border-bottom:2px solid silver;
 }
 
+#postitAttachmentsPopup .edit-popup .modal-body {
+  padding:0;
+}
+
 #postitAttachmentsPopup .edit-popup {
   display:none;
 }
@@ -1335,7 +1372,6 @@ div.postit div.attachmentscount {
   padding-left: 5px;
   cursor:pointer;
   line-height: 20px;
-  z-index:10000;
   font-size:12px;
 }
 
@@ -1437,8 +1473,9 @@ input.form-control.autocomplete {
   border:1px solid #ced4da;
 }
 
-#groupAccessPopup .input-group-prepend span {
-  margin-right: 10px;
+.input-group-prepend.icon {
+  color:#555;
+  margin-right:10px;
 }
 
 #groupAccessPopup .send-msg * {
@@ -1500,6 +1537,10 @@ EOC;
 .modal a:not(.list-group-item):not(.close),
 .modal span.name i {
   color: #343a40;
+}
+
+#accountPopup i.fa-bomb {
+  color:#555;
 }
 
 i.fa-xs {
@@ -1636,7 +1677,7 @@ div.postit .end {
   cursor:pointer;
 }
 
-.wall[data-access="3"] div.postit .end {
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit .end {
   cursor:auto !important;
 }
 
@@ -1672,14 +1713,6 @@ button.ui-datepicker-close {
 }
 
 #tag-picker {
-  display:none;
-  position:absolute;
-  cursor:pointer;
-  background-color:#fff;
-  border:1px solid silver;
-  padding: 3px;
-  border-radius:5px;
-  z-index:5016;
   width:100px;
   text-align:center;
 }
@@ -1713,7 +1746,9 @@ button.ui-datepicker-close {
   width:20px;
 }
 
+#tag-picker,
 .color-picker {
+  z-index:5020;
   display:none;
   position:absolute;
   cursor:pointer;
@@ -1721,7 +1756,9 @@ button.ui-datepicker-close {
   border:1px solid silver;
   padding: 3px;
   border-radius:5px;
-  z-index:5020;
+}
+
+.color-picker {
   width:87px;
 }
 

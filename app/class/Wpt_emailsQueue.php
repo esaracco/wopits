@@ -171,7 +171,7 @@
         $mail->Body =
           $args['msg'].
           "\n\n"._("The wopits team,")."\n\n--\n".
-          _("This message was sent automatically.")."\n".WPT_URL;
+          _("Message sent automatically.")."\n".WPT_URL;
 
         $mail->send ();
       }

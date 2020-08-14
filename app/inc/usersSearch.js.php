@@ -39,7 +39,7 @@
         });
    
       $(document)
-        .on("click", "#usersSearchPopup .list-group-item",function (e)
+        .on("click", "#usersSearchPopup .list-group-item", function (e)
         {
           const $el = $(this),
                 args = {
@@ -54,7 +54,14 @@
           if ($el[0].dataset.action == "add")
             plugin.addGroupUser (args);
           else
-            plugin.removeGroupUser (args);
+          {
+            H.openConfirmPopover ({
+              item: $el.find("span"),
+              title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
+              content: "<?=_("This user will lose their access to the wall.<p/>Remove anyway?")?>",
+              cb_ok: () => plugin.removeGroupUser (args)
+            }); 
+          }
         });
 
       $search.find('input')
@@ -143,6 +150,12 @@
         // success cb
         (d) =>
         {
+          if (d.notfound)
+            H.displayMsg ({
+              type: "warning",
+              msg: "<?=_("This user is no longer available!")?>"
+            });
+
           this.displayUsers (args);
 
           args["str"] = this.element.find("input").val ();

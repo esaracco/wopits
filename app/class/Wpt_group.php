@@ -2,6 +2,7 @@
 
   require_once (__DIR__.'/Wpt_wall.php');
   require_once (__DIR__.'/Wpt_emailsQueue.php');
+  require_once (__DIR__.'/Wpt_user.php');
 
   class Wpt_group extends Wpt_wall
   {
@@ -29,6 +30,7 @@
           SELECT id, fullname
           FROM users
           WHERE id <> :users_id
+            AND visible = 1
             AND searchdata LIKE :search
             AND id NOT IN
             (
@@ -97,6 +99,10 @@
       if (!$this->_checkGroupAccess ())
         return ['error' => _("Access forbidden")];
 
+      // If user does not exists anymore.
+      if (!(new Wpt_user)->exists ($groupUserId))
+        return ['notfound' => 1];
+
       try
       {
         $this->beginTransaction ();
@@ -148,6 +154,10 @@
       if (!$this->_checkGroupAccess ())
         return ['error' => _("Access forbidden")];
 
+      // If user does not exists anymore.
+      if (!(new Wpt_user)->exists ($groupUserId))
+        return ['notfound' => 1];
+
       try
       {
         $this->beginTransaction ();
@@ -184,7 +194,7 @@
 
         $ret['wall'] = [
           'id' => $this->wallId,
-          'unlinked' => sprintf(_("You no longer have the necessary rights to access the «%s» wall!"), $this->getWallName ())
+          'unlinked' => $this->getWallName ()
         ];
       }
       catch (Exception $e) 
@@ -415,12 +425,12 @@
             WHERE groups_id = ? AND walls_id = ?')
           ->execute ([$this->groupId, $this->wallId]);
 
+        $this->commit ();
+
         $ret['wall'] = [
           'id' => $this->wallId,
-          'removed' => $this->getRemovedWallMessage ()
+          'unlinked' => $this->getWallName ()
         ];
-
-        $this->commit ();
       }
       catch (Exception $e)
       {
@@ -431,6 +441,38 @@
       }
   
       return $ret;
+    }
+
+    public function unlinkUserFromOthersGroups ()
+    {
+      // Decrement userscount from user's groups.
+      $this
+        ->prepare ("
+          UPDATE groups SET userscount = userscount - 1
+          WHERE id IN (
+            SELECT groups_id FROM _perf_walls_users
+            WHERE users_id = ? AND groups_id IS NOT NULL)")
+        ->execute ([$this->userId]);
+
+      $this
+        ->prepare ('DELETE FROM users_groups WHERE users_id = ?')
+        ->execute ([$this->userId]);
+
+      $this
+        ->prepare ('
+          DELETE FROM _perf_walls_users
+          WHERE users_id = ? AND groups_id IS NOT NULL')
+        ->execute ([$this->userId]);
+
+      $this
+        ->prepare ('
+          DELETE FROM walls_groups
+          WHERE walls_id IN (SELECT walls.id FROM walls
+            INNER JOIN walls_groups ON walls_groups.walls_id = walls.id
+            INNER JOIN groups ON groups.id = walls_groups.groups_id
+            INNER JOIN users ON users.id = groups.users_id
+          WHERE users.id = ?)')
+        ->execute ([$this->userId]);
     }
 
     public function link ()

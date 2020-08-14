@@ -28,14 +28,25 @@
               $account.modal ("hide");
             });
 
+      // Update "invisible mode" icon in main menu.
+      plugin.updateMainMenu ();
+
+      // Main menu account link.
+      $("#account").on("click", function (e)
+        {
+          H.closeMainMenu ();
+
+          H.cleanPopupDataAttr ($account);
+          H.openModal ($account);
+        });
+
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
           H.openConfirmPopup ({
-            type: "delete-account",
             icon: "sad-tear",
             content: `<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>`,
-            cb_ok: () => $("#accountPopup").account ("delete")
+            cb_ok: () => plugin.delete ()
           });
         });
 
@@ -79,22 +90,15 @@
 
           // If delete img
           if (e.target.tagName == "SPAN")
-            H.openConfirmPopup ({
-              type: "delete-account-picture",
-              icon: "trash",
-              content: `<?=_("Delete your profile photo?")?>`,
-              cb_ok: () => $("#accountPopup").account ("deletePicture")
+            H.openConfirmPopover ({
+              item: $account.find (".img-delete"),
+              placement: "right",
+              title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+              content: "<?=_("Delete your profile photo?")?>",
+              cb_ok: () => plugin.deletePicture ()
             });
           else
             $(".upload.account-picture").click ();
-        });
-
-      $("#account").on("click", function (e)
-        {
-          H.closeMainMenu ();
-
-          H.cleanPopupDataAttr ($account);
-          H.openModal ($account);
         });
 
       $account
@@ -171,6 +175,21 @@
 
           switch (name)
           {
+            case "visible":
+
+              if ($field[0].checked)
+                H.openConfirmPopover ({
+                  item: $field,
+                  placement: "top",
+                  title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
+                  content: "<?=_("Sharing walls will become impossible, and you will be removed from all your current groups.<p/>Other users will also be removed from any groups you created.<p/>Become invisible anyway?")?>",
+                  cb_close: (btn) => (btn != "yes")&&($field[0].checked= false),
+                  cb_ok: () => plugin.updateField ({visible: 0}, true)
+                });
+              else
+                plugin.updateField ({visible: 1}, true);
+              break;
+
             case "password":
 
               $popup = $("#changePasswordPopup");
@@ -240,6 +259,13 @@
         })
     },
 
+    // METHOD updateMainMenu ()
+    updateMainMenu: function ()
+    {
+      document.querySelector(".invisible-mode").style.display =
+        (wpt_userData.settings.visible == 1) ? "none" : "inline-block";
+    },
+
     // METHOD getProp ()
     getProp: function (prop)
     {
@@ -284,7 +310,7 @@
     },
 
     // METHOD updateField ()
-    updateField: function (args)
+    updateField: function (args, noclosure)
     {
       const $account = this.element;
 
@@ -305,20 +331,44 @@
       
               if (field)
               {
-                field.dataset.oldvalue = d[k] || '';
-                field.value = d[k] || '';
+                if (k == "visible")
+                {
+                  const $wall = S.getCurrent ("wall");
+
+                  wpt_userData.settings.visible = d[k];
+
+                  if (d[k] != 1)
+                  {
+                    // Close all current opened walls and reload session.
+                    if ($wall.length)
+                    {
+                      $wall.wall("closeAllWalls", false);
+                      $wall.wall("restorePreviousSession");
+                    }
+                  }
+                  else if ($wall.length)
+                    $wall.wall ("menu", {from: "wall", type: "have-wall"});
+
+                  // Update "invisible mode" icon in main menu.
+                  this.updateMainMenu ();
+                }
+                else
+                {
+                  field.dataset.oldvalue = d[k]||'';
+                  field.value = d[k]||'';
+                }
               }
             }
 
             if (!args.about)
-              H.displayMsg (
-                {
-                  target: $account.find (".modal-body"),
-                  type: "success",
-                  msg: "<?=_("Your account has been updated")?>"
-                });
+              H.displayMsg ({
+                target: $account.find (".modal-body"),
+                type: "success",
+                msg: "<?=_("Your profile has been updated")?>"
+              });
 
-            $(".modal:visible").last().modal ("hide");
+            if (!noclosure)
+              $(".modal:visible").last().modal ("hide");
           }
         });
     }

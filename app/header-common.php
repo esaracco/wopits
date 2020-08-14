@@ -5,6 +5,9 @@
   $slocale = $_SESSION['slocale'];
   $userId = $_SESSION['userId'] ?? 0;
 
+  if ($userId)
+    $User->userId = $userId;
+
   //<WPTPROD-remove>
   if (WPT_DEV_MODE)
   {
@@ -38,7 +41,7 @@
 
   <script>window.onload=function(){try{eval("var f=(x)=>x")}catch(e){document.title="<?=_("Deprecated browser")?>";document.body.innerHTML = "<center><?=sprintf (_("Please use the latest version of a recent browser like %s or %s."), "<a href='https://www.mozilla.org'>Firefox</a>", "<a href='https://www.google.com/chrome'>Chrome</a>")?></center>"}}</script>
 
-  <script>var wpt_userData={<?php if ($userId):?>token:"<?=$_SESSION['userToken']??''?>",id:<?=$userId?>,settings:<?=(new Wpt_user())->getSettings()?>,walls:<?=json_encode ((new Wpt_wall())->getWall())?>,<?php else:?>id:0,settings:{},walls:[]<?php endif?>}</script>
+  <script>var wpt_userData=<?=$User->getUserDataJson()?></script>
 
   <link rel="manifest" href="/manifest.json?<?=$version?>">
 

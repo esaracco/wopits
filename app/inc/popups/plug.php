@@ -8,13 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
-
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="<?=_("Relationship name")?>" autofocus>
-          </div>
-
-        </form>
+        <input type="text" class="form-control" placeholder="<?=_("Relationship name")?>" autofocus>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> <?=_("Add")?></button>

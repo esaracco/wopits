@@ -423,24 +423,17 @@ class WSocket
                   .chatroom ("refreshUserscount", data.count);
               break;
 
-            // deletedwall
-            case "deletedwall":
-            // unlinkedwall
-            case "unlinkedwall":
+            // unlinked
+            // Either the wall has been deleted
+            // or the user no longer have necessary right to access the wall.
+            case "unlinked":
               if (!isResponse)
               {
-                H.displayMsg ({type: "warning", msg: data.wall.removed}); 
-                $wall.wall ("close");
-              }
-              break;
+                const msg = data.wall.unlinked ?
+                  "<?=_("You no longer have access to the «%s» wall!")?>".replace("%s", data.wall.unlinked) :
+                 "<?=_("You no longer have access to some of your previously opened walls!")?>";
 
-            // unlinkeduser
-            // If user has been unlinked from group and do not have any
-            // right on the wall.
-            case "unlinkeduser":
-              if (!isResponse)
-              {
-                H.displayMsg ({type: "warning", msg: data.wall.unlinked});
+                H.displayMsg ({type: "warning", msg: msg});
                 $wall.wall ("close");
               }
               break;
@@ -851,6 +844,11 @@ class WHelp
     return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
              .format(fmt||"Y-MM-DD");
   }
+
+  checkUserVisible ()
+  {
+    return (wpt_userData.settings && wpt_userData.settings.visible == 1);
+  }
   
   // METHOD loader ()
   loader (action, force = false, xhr = null)
@@ -932,10 +930,10 @@ class WHelp
   
     S.set ("confirmPopup", {
       cb_ok: args.cb_ok,
-      cb_cancel: () =>
+      cb_close: () =>
         {
-          if (args.cb_cancel)
-            args.cb_cancel ();
+          args.cb_close && args.cb_close ();
+
           S.unset ("confirmPopup");
         }
     });
@@ -962,8 +960,7 @@ class WHelp
       {
         const $popover = $(".popover");
 
-        if (args.cb_close)
-          args.cb_close ($popover[0].dataset.btnclicked);
+        args.cb_close && args.cb_close ($popover[0].dataset.btnclicked);
 
         $popover.popover ("dispose");
   
@@ -1085,12 +1082,14 @@ class WHelp
       backdrop: true,
       show: true
     })
+/*
     .draggable({
       //FIXME "distance" is deprecated -> is there any alternative?
       distance: 10,
       handle: ".modal-header",
       cursor: "pointer"
     })
+*/
     .css({
       top: 0,
       left: 0
@@ -1277,7 +1276,12 @@ class WHelp
   enableTooltips ($item)
   {
     if (!$.support.touch)
+    {
+      // Enable tooltips on the element.
       $item.tooltip ();
+      // Enable tooltips on children.
+      $item.find("[data-toggle='tooltip']").tooltip ();
+    }
   }
   
   // METHOD request_ws ()

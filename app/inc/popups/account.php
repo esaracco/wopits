@@ -62,10 +62,16 @@
         </div>
         </div>
 
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" name="visible" id="visible"<?=($user['visible'] != 1)?' checked':''?>>
+            <label class="custom-control-label" for="visible"> <?=_("Invisible mode")?> <i class="fas fa-info-circle fa-xs" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"></i></label>
+        </div>
+
         </form>
 
         <?php if (!WPT_USE_LDAP):?>
-          <a href="#" data-action="delete-account"><?=_("Delete my account")?></a>
+          <hr>
+          <div class="delete"><a href="#" data-action="delete-account"><i class="fas fa-bomb fa-lg"></i> <?=_("Delete my account")?></a></div>
         <?php endif?>
 
       </div>

@@ -133,14 +133,12 @@
               {
                 $ret = $this->deleteWall (false, true);
   
+                // Will be broadcast to users who have this
                 if (!isset ($ret['error']))
                   $ret = [
                     'wall' => [
                       'id' => $this->wallId,
-                      // This message will be broadcast to users who have this
-                      // wall opened
-                      'removed' => sprintf (
-                        _("The «%s» wall has been deleted!"), $ret['name'])
+                      'unlinked' => $ret['name']
                     ]
                   ];
               }

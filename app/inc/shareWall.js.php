@@ -116,27 +116,20 @@
 
             case "unlink-group":
 
-              H.openConfirmPopover ({
-                 item: $btn.parent().find(".name"),
-                 title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
-                 content: "<?=_("Users will lose their access to the wall.<p/>Unshare anyway?")?>",
-                 cb_close: () =>
-                   $share.find("li.list-group-item.active")
-                     .removeClass ("active todelete"),
-                 cb_ok: () =>
-                   {
-                     $share.find(".nav-link.active").removeClass ("active");
-                     $share.find(".tab-content .tab-pane.active")
-                       .removeClass ("show active");
-
-                     $share.find(".nav-tabs .gtype-"+groupType)
-                       .addClass ("active");
-
-                     $share.find(".tab-content #gtype-"+groupType).tab ("show");
-
-                     plugin.unlinkGroup ({id: id});
-                   }
-               });
+              // Ask confirmation only if they are some users in the group to
+              // unlink.
+              if ($row.find(".userscount .wpt-badge").text() == 0)
+                plugin.unlinkGroup ({id: id}, groupType);
+              else
+                H.openConfirmPopover ({
+                   item: $btn.parent().find(".name"),
+                   title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
+                   content: "<?=_("Users will lose their access to the wall.<p/>Unshare anyway?")?>",
+                   cb_close: () =>
+                     $share.find("li.list-group-item.active")
+                       .removeClass ("active todelete"),
+                   cb_ok: () => plugin.unlinkGroup ({id: id}, groupType)
+                 });
               break;
 
             case "link-group":
@@ -219,6 +212,7 @@
         });
     },
 
+    // METHOD openAddGroup ()
     openAddGroup: function (type)
     {
       let title,
@@ -251,6 +245,7 @@
       H.openModal ($_groupPopup);
     },
 
+    // METHOD openUpdateGroup ()
     openUpdateGroup: function (args)
     {
       H.cleanPopupDataAttr ($_groupPopup);
@@ -314,9 +309,15 @@
     },
 
     // METHOD unlinkGroup ()
-    unlinkGroup: function (args)
+    unlinkGroup: function (args, groupType)
     {
-      const wallId = S.getCurrent("wall").wall ("getId");
+      const $share = this.element,
+            wallId = S.getCurrent("wall").wall ("getId");
+
+      $share.find(".nav-link.active").removeClass ("active");
+      $share.find(".tab-content .tab-pane.active").removeClass ("show active");
+      $share.find(".nav-tabs .gtype-"+groupType).addClass ("active");
+      $share.find(".tab-content #gtype-"+groupType).tab ("show");
 
       H.request_ws (
         "POST",
@@ -399,6 +400,7 @@
         });
     },
 
+    // METHOD displayGroups ()
     displayGroups: function ()
     {
       const $share = this.element,
@@ -471,8 +473,7 @@
             $body.find(".delegate-admin-only").show ();
           }
 
-          H.enableTooltips (
-            $share.find(".modal-body [data-toggle='tooltip']"));
+          H.enableTooltips ($share.find(".modal-body [data-toggle='tooltip']"));
 
           H.openModal ($share);
         });

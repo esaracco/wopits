@@ -1,6 +1,7 @@
 <?php
 
   require_once (__DIR__.'/Wpt_wall.php');
+  require_once (__DIR__.'/Wpt_group.php');
   require_once (__DIR__.'/Wpt_emailsQueue.php');
   if (WPT_USE_LDAP)
     require_once (__DIR__.'/Wpt_ldap.php');
@@ -107,7 +108,7 @@
       $ret = [];
 
       $stmt = $this->prepare ('
-        SELECT email, username, fullname, about, picture FROM users
+        SELECT email, username, fullname, about, visible, picture FROM users
         WHERE id = ?');
       $stmt->execute ([$this->userId]);
       
@@ -115,6 +116,35 @@
         $ret['error'] = _("Unable to retrieve your account information");
 
       return $ret;
+    }
+
+    public function getUserDataJson ()
+    {
+      return json_encode ($this->userId ?
+        [
+          'id' => $this->userId,
+          'settings' => $this->getSettings (false),
+          'walls' => (new Wpt_wall())->getWall(),
+          'token' => $_SESSION['userToken']??''
+        ]
+        :
+        [
+          'id' => 0,
+          'settings' => [],
+          'walls' => []
+        ]);
+    }
+
+    public function exists ($id = null)
+    {
+      if (!$id)
+        $id = $this->userId;
+
+      $stmt = $this->prepare ('
+        SELECT visible FROM users WHERE id = ? AND visible = 1');
+      $stmt->execute ([$id]);
+
+      return $stmt->fetch ();
     }
 
     public function delete ()
@@ -387,7 +417,7 @@
       return $ret;
     }
 
-    public function getSettings ()
+    public function getSettings ($json = true)
     {
       $stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?');
       $stmt->execute ([$this->userId]);
@@ -402,7 +432,7 @@
         $this->saveSettings ($ret); 
       }
       
-      return $ret;
+      return $json ? $ret : json_decode ($ret);
     }
 
     public function getSetting ($key)
@@ -607,7 +637,7 @@
           $field = preg_replace('/^[^a-z]+$/', '', array_keys($data)[0]);
           $value = $data[$field];
   
-          if (!isset ($data['about']) &&
+          if (!isset ($data['about']) && !isset ($data['visible']) &&
               ($dbl = $this->_isDuplicate ([$field => $value])) )
             $ret['error_msg'] = sprintf (($dbl == 'username') ?
               _("The login `%s` already exists.") :
@@ -622,17 +652,39 @@
               ->execute ([$field => $value, 'id' => $this->userId]);
 
             $stmt = $this->prepare ('
-              SELECT username, fullname, email, about, picture
+              SELECT username, fullname, email, about, visible, picture
               FROM users where id = ?');
             $stmt->execute ([$this->userId]);
             $ret = $stmt->fetch ();
 
-            $this->executeQuery ('UPDATE users',
-              ['searchdata' =>
-                Wpt_common::unaccent ($ret['username'].','.$ret['fullname'])],
-              ['id' => $this->userId]);
+            if ($field == 'visible')
+            {
+              $settings = json_decode ($this->getSettings ());
+              $settings->visible = $value;
+              $this->saveSettings (json_encode ($settings));
+            }
+            else
+              $this->executeQuery ('UPDATE users',
+                ['searchdata' =>
+                  Wpt_common::unaccent ($ret['username'].','.$ret['fullname'])],
+                ['id' => $this->userId]);
 
             $this->commit ();
+
+            // Remove user from all groups except his own.
+            if ($field == 'visible' && $value == 0)
+            {
+              // Deassociate user from all groups and user's groups users too.
+              (new Wpt_group(['userId' => $this->userId]))
+                ->unlinkUserFromOthersGroups ();
+
+              // Get all user's walls to disconnect users from them.
+              $stmt = $this->prepare ('
+                SELECT id FROM walls WHERE users_id = ?');
+              $stmt->execute ([$this->userId]);
+              if (!empty ( ($r = $stmt->fetchAll (PDO::FETCH_COLUMN)) ))
+                $ret['closewalls'] = $r;
+            }
           }
         }
         else
@@ -736,7 +788,8 @@
           'lastconnectiondate' => $currentDate,
           'settings' => json_encode ([
             'locale' => $_SESSION['slocale']??WPT_DEFAULT_LOCALE,
-            'timezone' => $this->getTimezone ()
+            'timezone' => $this->getTimezone (),
+            'visible' => 1
           ])
         ]);
 

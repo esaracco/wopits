@@ -22,6 +22,7 @@ CREATE TABLE users
   picture VARCHAR(2000),
   filetype VARCHAR(50),
   filesize INT,
+  visible SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   settings VARCHAR(2000) NOT NULL DEFAULT '{}',
 
   PRIMARY KEY (id),

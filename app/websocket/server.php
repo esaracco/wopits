@@ -126,6 +126,7 @@ class Wopits implements MessageComponentInterface
     {
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
+      $wallsIds = null;
       $postitId = null;
       $push = false;
       $action = '';
@@ -224,7 +225,18 @@ class Wopits implements MessageComponentInterface
         }
         // User's data update
         elseif ($type == 'update')
+        {
           $ret = $User->update ();
+
+          // If user has checked the invisibility mode, disconnect all users
+          // from its walls.
+          if (isset ($ret['closewalls']))
+          {
+            $action = 'closewalls';
+            $wallsIds = $ret['closewalls'];
+            unset ($ret['closewalls']);
+          }
+        }
 
         // Reload all current user sessions if any.
         if (!$client->final)
@@ -275,7 +287,7 @@ class Wopits implements MessageComponentInterface
             {
               $push = true;
 
-              if (empty ($ret['wall']['removed']))
+              if (empty ($ret['wall']['unlinked']))
               {
                 $action = 'refreshwall';
 
@@ -283,7 +295,7 @@ class Wopits implements MessageComponentInterface
                   $postitId = $itemId;
               }
               else
-                $action = 'deletedwall';
+                $action = 'unlinked';
             }
             break;
         }
@@ -317,13 +329,11 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
-
             $ret = ($userId) ?
               $this->_removeUserFromGroup ([
                 'obj' => $Group,
                 'userId' => $userId,
-                'wallIds' => $Group->getWallsByGroup (),
-                'ret' => &$ret
+                'wallIds' => $Group->getWallsByGroup ()
               ]) : $Group->delete ();
             break;
         }
@@ -355,7 +365,7 @@ class Wopits implements MessageComponentInterface
               if (!isset ($ret['error']))
               {
                 $push = true;
-                $action = 'unlinkedwall';
+                $action = 'unlinked';
               }
             }
             break;
@@ -369,13 +379,11 @@ class Wopits implements MessageComponentInterface
 
           // DELETE
           case 'DELETE':
-
             $ret = ($userId) ?
               $this->_removeUserFromGroup ([
                 'obj' => $Group,
                 'userId' => $userId,
-                'wallIds' => [$wallId],
-                'ret' => &$ret
+                'wallIds' => [$wallId]
               ]) : $Group->delete ();
             break;
         }
@@ -482,36 +490,58 @@ class Wopits implements MessageComponentInterface
         _debug ($data);
       //</WPTPROD-remove>
 
-      $ret['action'] = $action;
-
-      // Boadcast results if needed
-      if ($push)
+      // If current user has just activated its invisibility mode, close its
+      // walls for all current users.
+      if ($action == 'closewalls')
       {
-        $clients = ($action == 'chat') ? $this->openedWalls:$this->activeWalls;
+        $userId = $client->id;
+        $clients = $this->openedWalls;
 
-        if (isset ($clients[$wallId]))
-        {
-          $userId = $client->id;
-          $json = json_encode ($ret);
-
-          foreach ($clients[$wallId] as $_connId => $_userId)
-          {
-            // Message sender material will be broadcasted later.
-            if ($_connId != $connId)
-            {
-              // If we are broadcasting on other sender user's sessions.
-              if ($_userId == $userId)
+        foreach ($wallsIds as $_wallId)
+          if (isset ($clients[$_wallId]))
+            foreach ($clients[$_wallId] as $_connId => $_userId)
+              if ($_userId != $userId)
               {
-                // Keep broadcasting only for walls updates.
-                if ($action == 'refreshwall')
-                  $this->clients[$_connId]->conn->send (
-                    ($postitId) ?
-                      // If postit update, send user's specific data too.
-                      json_encode (_injectUserSpecificData ($ret, $postitId)) :
-                      $json);
+                $this->clients[$_connId]->conn->send (json_encode ([
+                  'action' => 'unlinked',
+                  'wall' => ['id' => $_wallId]
+                ]));
               }
-              else
-                $this->clients[$_connId]->conn->send ($json);
+      }
+      else
+      {
+        $ret['action'] = $action;
+
+        // Boadcast results if needed
+        if ($push)
+        {
+          $clients =($action == 'chat' || $action == 'unlinked') ?
+            $this->openedWalls : $this->activeWalls;
+
+          if (isset ($clients[$wallId]))
+          {
+            $userId = $client->id;
+            $json = json_encode ($ret);
+
+            foreach ($clients[$wallId] as $_connId => $_userId)
+            {
+              // Message sender material will be broadcasted later.
+              if ($_connId != $connId)
+              {
+                // If we are broadcasting on other sender user's sessions.
+                if ($_userId == $userId)
+                {
+                  // Keep broadcasting only for walls updates.
+                  if ($action == 'refreshwall')
+                    $this->clients[$_connId]->conn->send (
+                      ($postitId) ?
+                        // If postit update, send user's specific data too.
+                        json_encode (_injectUserSpecificData($ret, $postitId)) :
+                        $json);
+                }
+                else
+                  $this->clients[$_connId]->conn->send ($json);
+              }
             }
           }
         }
@@ -728,12 +758,12 @@ class Wopits implements MessageComponentInterface
     $userId = $args['userId'];
     $wallIds = $args['wallIds'];
 
-    $args['ret'] = $Group->removeUser (['userId' => $userId]);
+    $ret = $Group->removeUser (['userId' => $userId]);
 
-    if (!isset ($args['ret']['error']))
+    if (isset ($ret['wall']))
     {
-      $toSend = $args['ret'];
-      $toSend['action'] = 'unlinkeduser';
+      $toSend = $ret;
+      $toSend['action'] = 'unlinked';
 
       foreach ($wallIds as $_wallId)
       {
@@ -752,7 +782,11 @@ class Wopits implements MessageComponentInterface
           }
         }
       }
+
+      $ret = [];
     }
+
+    return $ret;
   }
 
   private function _unsetChatUsers ($wallId, $connId)

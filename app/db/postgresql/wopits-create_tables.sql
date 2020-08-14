@@ -24,6 +24,7 @@ CREATE TABLE users
   picture VARCHAR(2000),
   filetype VARCHAR(50),
   filesize INTEGER,
+  visible SMALLINT NOT NULL DEFAULT 1,
   settings VARCHAR(2000) NOT NULL DEFAULT '{}'
 );
 CREATE UNIQUE INDEX "users-email-uidx" ON users (email);

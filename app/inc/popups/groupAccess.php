@@ -10,7 +10,7 @@
       <div class="modal-body">
 
         <div class="input-group">
-          <div class="input-group-prepend"><span><i class="fas fa-eye fa-fw"></i></span></div>
+          <div class="input-group-prepend icon"><span><i class="fas fa-eye fa-fw"></i></span></div>
           <div class="custom-control custom-radio">
             <input type="radio" value="<?=WPT_WRIGHTS_RO?>" class="custom-control-input" id="_access1" name="access" checked>
             <label class="custom-control-label" for="_access1"><?=_("Read only")?></label>
@@ -18,7 +18,7 @@
         </div>
         
         <div class="input-group">
-          <div class="input-group-prepend"><span><i class="fas fa-edit fa-fw"></i></span></div>
+          <div class="input-group-prepend icon"><span><i class="fas fa-edit fa-fw"></i></span></div>
           <div class="custom-control custom-radio">
             <input type="radio" value="<?=WPT_WRIGHTS_RW?>" class="custom-control-input" id="_access2" name="access">
             <label class="custom-control-label" for="_access2"><?=_("Sticky note creation")?></label>
@@ -26,7 +26,7 @@
         </div>
         
         <div class="input-group">
-          <div class="input-group-prepend"><span><i class="fas fa-shield-alt fa-fw"></i></span></div>
+          <div class="input-group-prepend icon"><span><i class="fas fa-shield-alt fa-fw"></i></span></div>
           <div class="custom-control custom-radio">
             <input type="radio" value="<?=WPT_WRIGHTS_ADMIN?>" class="custom-control-input" id="_access3" name="access">
             <label class="custom-control-label" for="_access3"><?=_("Full access (admin)")?></label>

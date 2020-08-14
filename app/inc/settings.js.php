@@ -44,14 +44,13 @@
             type: "reload-app",
             icon: "sync-alt",
             content: `<?=_("Reload wopits to apply the new timezone?")?>`,
-            cb_ok: () =>
-              $("#settingsPopup").settings ("applyTimezone", timezone),
-            cb_cancel: () =>
+            cb_ok: () => plugin.applyTimezone (timezone),
+            cb_close: () =>
               {
                 const tz = $(this)[0].dataset.timezone;
 
                 if (tz !== undefined)
-                  $("#settingsPopup select.timezone").val (tz);
+                  $settings.find("select.timezone").val (tz);
               }
           });
         });
@@ -73,8 +72,7 @@
                   type: "reload-app",
                   icon: "sync-alt",
                   content: `<?=_("Reload wopits to apply the new language?")?>`,
-                  cb_ok: () =>
-                    $("#settingsPopup").settings ("applyLocale", locale)
+                  cb_ok: () => plugin.applyLocale (locale)
                   });
               }
             })

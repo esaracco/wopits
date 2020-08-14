@@ -38,7 +38,11 @@
             settings = plugin.settings,
             wallId = settings.id,
             access = settings.access,
+            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>", access),
             rows = [];
+
+      settings.tabLink =
+        $(".nav-tabs.walls").find ('a[href="#wall-'+settings.id+'"]');
 
       // Create plugs container
       settings.plugsContainer =
@@ -76,6 +80,7 @@
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           cursor: "grab",
+          cancel: (writeAccess) ? null : "span,.title,.postit-edit",
           start: function ()
             {
               S.set ("wall-dragging", true);
@@ -254,7 +259,7 @@
     {
       S.reset ();
 
-      $("a[href='#wall-"+this.settings.id+"']").click ();
+      this.settings.tabLink.click ();
       $("#wall-"+this.settings.id).addClass ("active");
 
       this.menu ({from: "wall", type: "have-wall"});
@@ -372,6 +377,9 @@
                 break;
             }
         } 
+
+        if (!H.checkUserVisible ())
+          $menu.find('[data-action="share"] a').addClass ("disabled");
     },
 
     // METHOD closeAllMenus ()
@@ -483,31 +491,17 @@
     },
 
     // METHOD refresh ()
-    refresh: function (data)
+    refresh: function (d)
     {
-      const plugin = this;
-
-      function __refresh (d)
-      {
-        if (d.removed)
-        { 
-          H.displayMsg ({type: "warning", msg: d.removed});
-          
-          plugin.close ();
-        }
-        else
-          plugin._refresh (d);
-      }
-
-      if (data)
-        __refresh (data);
+      if (d)
+        this._refresh (d);
       else
         H.request_ajax (
           "GET",
-          "wall/"+plugin.settings.id,
+          "wall/"+this.settings.id,
           null,
           // success cb
-          __refresh);
+          (d) => this._refresh (d));
     },
 
     // METHOD _refresh ()
@@ -784,7 +778,6 @@
     openCloseAllWallsPopup: function ()
     {
       H.openConfirmPopup ({
-        type: "close-walls",
         icon: "times",
         content: `<?=_("Close the walls?")?>`,
         cb_ok: () => this.closeAllWalls ()
@@ -792,17 +785,17 @@
     },
 
     // METHOD closeAllWalls ()
-    closeAllWalls: function ()
+    closeAllWalls: function (saveSession = true)
     {
       // Tell the other methods that we are massively closing the walls
-      S.set ("closingAll", true);
+      S.set ("closing-all", true);
       S.getCurrent("walls").find("table.wall").each (function ()
         {
           $(this).wall ("close");
         });
-      S.unset ("closingAll");
+      S.unset ("closing-all");
 
-      $("#settingsPopup").settings ("saveOpenedWalls");
+      saveSession && $("#settingsPopup").settings ("saveOpenedWalls");
     },
 
     // METHOD close ()
@@ -819,7 +812,9 @@
       if ($chatroom.is (":visible"))
         $chatroom.chatroom ("leave");
 
-      $(".modal.show").modal ("hide");
+      // If account popup is opend, do not close it: we are dealing with the
+      // "invisible mode" option.
+      $(".modal.show:not(#accountPopup)").modal ("hide");
 
       this.removePostitsPlugs ();
 
@@ -836,14 +831,14 @@
   
         this.menu ({from: "wall", type: "no-wall"});
 
-        $("#welcome").show ("fade");
+        $("#welcome").show (S.get ("closing-all") ? null : "fade");
       }
       // Active another tabs after deletion
       else
         $(".nav-tabs.walls").find('a[href="'+newActiveTabId+'"]').tab ("show");
 
       // If we are not massively closing all walls
-      if (!S.get ("closingAll"))
+      if (!S.get ("closing-all"))
         $("#settingsPopup").settings ("saveOpenedWalls");
 
       //FIXME
@@ -855,12 +850,13 @@
     {
       this.edit (() =>
         {
-          H.openConfirmPopup ({
-            type: "delete-wall",
-            icon: "trash",
-            content: `<?=_("Delete this wall?")?>`,
-            cb_ok: () => this.delete (),
-            cb_cancel: () => this.unedit ()
+          H.openConfirmPopover ({
+            item: this.settings.tabLink,
+            placement: "left",
+            title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+            content: "<?=_("Delete this wall?")?>",
+            cb_close: () => this.unedit (),
+            cb_ok: () => this.delete ()
           });
         }, null, true);
     },
@@ -1043,12 +1039,12 @@
             d.fromDirectURL = true;
           }
 
-          // If we are retoring a wall
+          // If we are restoring a wall.
           if (args.restoring)
             d.restoring = 1;
 
           // The wall does not exists anymore.
-          if (d.removed && (d.fromDirectURL || d.restoring))
+          if (d.removed)
           {
             $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
 
@@ -1067,7 +1063,7 @@
                 S.set ("save-opened-walls", true);
             }
 
-            return H.displayMsg ({type: "warning", msg: d.removed});
+            return H.displayMsg ({type: "warning", msg: "<?=_("You no longer have access to some of your previously opened walls!")?>"});
           }
 
           if (d.error_msg)
@@ -1087,7 +1083,7 @@
             .on("click",function()
             {
               H.openConfirmPopover ({
-                item: $(this),
+                item: $(this).parent (),
                 placement: "left",
                 title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
                 content: "<?=_("Close this wall?")?>",
@@ -1135,7 +1131,6 @@
     clone: function ()
     {
       H.openConfirmPopup ({
-        type: "clone-wall",
         icon: "clone",
         content: `<?=_("Depending on its content, cloning a wall can take time.<br>Do you confirm this request?")?>`,
         cb_ok: () =>
@@ -1168,7 +1163,6 @@
     export: function ()
     {
       H.openConfirmPopup ({
-        type: "export-wall",
         icon: "file-export",
         content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm this request?")?>`,
         cb_ok: () => H.download ({
@@ -1379,13 +1373,13 @@
     // METHOD getName ()
     getName: function ()
     {
-      return $('a[href="#wall-'+this.settings.id+'"] span.val').text ();
+      return this.settings.tabLink.find("span.val").text ();
     },
 
     // METHOD setName ()
     setName: function (name, noicon)
     {
-      const $div = $('a[href="#wall-'+this.settings.id+'"]');
+      const $div = this.settings.tabLink;
 
       let html = (noicon) ?
         `<i class="fas fa-cog fa-spin fa-fw"></i>` :
@@ -1401,14 +1395,13 @@
     // METHOD getDescription ()
     getDescription: function ()
     {
-      return $('a[href="#wall-'+this.settings.id+'"]')[0].dataset.description;
+      return this.settings.tabLink[0].dataset.description;
     },
 
     // METHOD setDescription ()
     setDescription: function (description)
     {
-      $('a[href="#wall-'+this.settings.id+'"]')[0]
-        .dataset.description = H.noHTML (description);
+      this.settings.tabLink[0].dataset.description = H.noHTML (description);
     },
 
     // METHOD fixSize ()
@@ -1592,13 +1585,7 @@
         // success cb
         (d) =>
         {
-          if (d.removed)
-          {
-            H.displayMsg ({type: "warning", msg: d.removed});
-
-            this.close ();
-          }
-          else if (d.error_msg)
+          if (d.error_msg)
             H.raiseError (() => error_cb && error_cb (), d.error_msg);
           else if (success_cb)
             success_cb (d);
@@ -1745,6 +1732,8 @@
             if (!wpt_userData.settings.theme)
               setTimeout(()=>
                 $("#settingsPopup").settings ("openThemeChooser"), 1000);
+
+            H.enableTooltips ($("body"));
           });
 
         H.fixMenuHeight ();

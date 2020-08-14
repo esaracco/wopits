@@ -170,7 +170,7 @@ $(function()
           // If we are massively restoring all walls, do nothing here
       if ($_walls.find(".wall[data-restoring]").length ||
           // If we are massively closing all walls, do nothing here
-          S.get ("closingAll"))
+          S.get ("closing-all"))
         return;
 
       S.reset ();
@@ -305,7 +305,7 @@ $(function()
 
           const title = $("#postitUpdatePopupTitle").val (),
                 content = tinymce.activeEditor.getContent (),
-                cb_cancel = () =>
+                cb_close = () =>
                   {
                     S.set ("postit-data", {closing: true});
 
@@ -345,13 +345,13 @@ $(function()
 
                   $postit[0].removeAttribute ("data-uploadedpictures");
                 },
-              cb_cancel: cb_cancel
+              cb_close: cb_close
             });
 
             S.set ("postit-data", data);
           }
           else
-            cb_cancel ();
+            cb_close ();
           break;
       }
 
@@ -419,7 +419,7 @@ $(function()
 
         case "confirmPopup":
 
-          S.get("confirmPopup").cb_cancel ();
+          S.get("confirmPopup").cb_close ();
           break;
 
         case "usersSearchPopup":
@@ -440,7 +440,6 @@ $(function()
     {
       const $popup = $(this).closest (".modal"),
             $wall = S.getCurrent ("wall"),
-            type = $popup[0].dataset.popuptype,
             closePopup = !!!$popup[0].dataset.noclosure,
             $postit = S.getCurrent ("postit"),
             $header = S.getCurrent ("header");

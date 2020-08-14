@@ -233,6 +233,7 @@
           appendTo: "parent",
           revert: "invalid",
           cursor: "pointer",
+          //cancel: "span,.title",
           containment: $wall.find ("tbody"),
           scrollSensitivity: 50,
           opacity: 0.35,

@@ -37,24 +37,7 @@
         LIMIT 1");
       $stmt->execute ([$this->userId, $this->wallId]);
 
-      if ( !($allowed = $stmt->fetch ()) )
-      {
-        $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
-        $stmt->execute ([$this->wallId]);
-
-        if ( !($r = $stmt->fetch ()) )
-          return [
-            'ok' => 0,
-            'id' => $this->wallId,
-            // This message will be broadcast to users who have this
-            // wall opened
-            'error_msg' =>
-              sprintf (_("The «%s» wall has been deleted!"), $r['name']),
-            'action' => 'deletedwall'
-          ];
-      }
-      
-      return ['ok' => $allowed];
+      return ['ok' => !empty ($stmt->fetch())];
     }
 
     public function checkWallName ($name)
@@ -85,13 +68,6 @@
       }
 
       return $this->wallName;
-    }
-
-    protected function getRemovedWallMessage ()
-    {
-      return ( ($name = $this->getWallName ()) ) ?
-        sprintf(_("You no longer have the necessary rights to access the «%s» wall!"), $name):
-        _("One of your opened walls has been deleted!");
     }
 
     protected function isWallCreator ($userId)
@@ -618,12 +594,6 @@
       ]);
       $data = $stmt->fetch ();
 
-      if (!$data)
-        return [
-          'id' => $this->wallId,
-          'removed' => $this->getRemovedWallMessage ()
-        ];
-
       $data['_exportInfos'] = [
         'date' => date ('Y-m-d H:i:s'),
         'user' => $this->userId,
@@ -826,14 +796,11 @@
         ':users_id_2' => $this->userId,
         ':walls_id_2' => $this->wallId
       ]);
-      $data = $stmt->fetch ();
 
-      if (!$data)
-        return [
-          'id' => $this->wallId,
-          'removed' => $this->getRemovedWallMessage ()
-        ];
-      elseif (!$basic)
+      if ( !($data = $stmt->fetch ()) )
+        return ['removed' => true];
+
+      if (!$basic)
       {
         $stmt = $this->prepare ('
           SELECT displayexternalref
@@ -902,7 +869,7 @@
           WHERE walls_id = ?");
         $stmt->execute ([$this->wallId]); 
         $data['postits_plugs'] = $stmt->fetchAll ();
-       }
+      }
 
       // Check if the wall is shared with other users
       $stmt = $this->prepare ('
