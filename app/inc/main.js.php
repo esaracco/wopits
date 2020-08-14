@@ -1132,7 +1132,7 @@
     {
       H.openConfirmPopup ({
         icon: "clone",
-        content: `<?=_("Depending on its content, cloning a wall can take time.<br>Do you confirm this request?")?>`,
+        content: `<?=_("Depending on its content, cloning a wall can take time.<br>Clone anyway?")?>`,
         cb_ok: () =>
           {
             H.request_ajax (
@@ -1164,7 +1164,7 @@
     {
       H.openConfirmPopup ({
         icon: "file-export",
-        content: `<?=_("Depending on its content, the export size can be substantial.<br>Do you confirm this request?")?>`,
+        content: `<?=_("Depending on its content, the export size can be substantial.<br>Export anyway?")?>`,
         cb_ok: () => H.download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",

@@ -58,7 +58,7 @@
             H.openConfirmPopover ({
               item: $el.find("span"),
               title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
-              content: "<?=_("This user will lose their access to the wall.<p/>Remove anyway?")?>",
+              content: "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>",
               cb_ok: () => plugin.removeGroupUser (args)
             }); 
           }

@@ -13,9 +13,10 @@
   // METHOD _displaySection ()
   function _displaySection ($div, type, items)
   {
+    const pClass = $div[0].parentNode.classList;
     let html = '';
 
-    $div.parent().removeClass ("scroll");
+    pClass.remove ("scroll");
 
     items.forEach ((item) =>
       {
@@ -27,12 +28,12 @@
 
     if (html)
     {
-      $div.parent().addClass ("scroll");
+      pClass.add ("scroll");
 
       if ($div.find("li").length == 1)
-        $div.parent().addClass ("one");
+        pClass.add ("one");
       else
-        $div.parent().removeClass ("one");
+        pClass.remove ("one");
     }
   }
 
@@ -101,7 +102,7 @@
               var content =
                ($row.parent().hasClass ("gtype-<?=WPT_GTYPES_DED?>"))?
                  `<?=_("Delete this group?")?>`:
-                 `<?=_("This group will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?")?>`;
+                 `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`;
 
               H.openConfirmPopover ({
                  item: $btn.parent().find(".name"),
@@ -124,7 +125,7 @@
                 H.openConfirmPopover ({
                    item: $btn.parent().find(".name"),
                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
-                   content: "<?=_("Users will lose their access to the wall.<p/>Unshare anyway?")?>",
+                   content: "<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>",
                    cb_close: () =>
                      $share.find("li.list-group-item.active")
                        .removeClass ("active todelete"),
@@ -417,14 +418,15 @@
           if (d.error_msg)
             return H.raiseError (null, d.error_msg);
         
-          const $div = $body.find (".list-group.attr");
+          const div = $body.find(".list-group.attr")[0],
+                pClass = div.parentNode.classList;
           let html = '';
 
           if (d.in.length)
           {
             $wall[0].dataset.shared = 1;
 
-            $div.parent().addClass ("scroll");
+            pClass.add ("scroll");
             $share.find(".grp-lb").text ("<?=_("Other available groups:")?>");
 
             html = `<label><?=_("The wall is shared with the following groups:")?></label>`;
@@ -439,9 +441,9 @@
               });
 
             if (d.in.length == 1)
-              $div.parent().addClass ("one");
+              pClass.add ("one");
             else
-              $div.parent().removeClass ("one");
+              pClass.remove ("one");
           }
           else
           {
@@ -452,10 +454,10 @@
             html = (d.delegateAdminId) ?
               "<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>" :
               "<span class='nogroup'><?=_("This wall is not shared with any group!")?></span>";
-            $div.parent().removeClass ("scroll");
+            pClass.remove ("scroll");
           }
 
-          $div.html (html);
+          div.innerHTML = html;
 
           if (!d.delegateAdminId)
           {

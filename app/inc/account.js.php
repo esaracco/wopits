@@ -182,7 +182,7 @@
                   item: $field,
                   placement: "top",
                   title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
-                  content: "<?=_("Sharing will be impossible, and you will be removed from all groups.<p/>Become invisible anyway?")?>",
+                  content: "<?=_("Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>",
                   cb_close: (btn) => (btn != "yes")&&($field[0].checked= false),
                   cb_ok: () => plugin.updateField ({visible: 0}, true)
                 });
