@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-12 10:17+0200\n"
+        "POT-Creation-Date: 2020-08-15 12:03+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,6 +24,9 @@ msgid   "%s sticky notes match your search."
 msgstr  ""
 
 msgid   "1 sticky note match your search."
+msgstr  ""
+
+msgid   "<b>Invisible mode</b>: sharing is not possible and no one can see you"
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify sticky notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create sticky notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
@@ -111,7 +114,7 @@ msgid   "Bad email address"
 msgstr  ""
 
 #, php-format
-msgid   "Besides, if you are suspicious, nobody is forcing you to use it here online! You can %sget the code%s and install it yourself."
+msgid   "Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"
 msgstr  ""
 
 msgid   "Block external content"
@@ -244,10 +247,10 @@ msgstr  ""
 msgid   "Delete your profile photo?"
 msgstr  ""
 
-msgid   "Depending on its content, cloning a wall can take time.<br>Do you confirm this request?"
+msgid   "Depending on its content, cloning a wall can take time.<br>Clone anyway?"
 msgstr  ""
 
-msgid   "Depending on its content, the export size can be substantial.<br>Do you confirm this request?"
+msgid   "Depending on its content, the export size can be substantial.<br>Export anyway?"
 msgstr  ""
 
 msgid   "Deprecated browser"
@@ -405,6 +408,9 @@ msgstr  ""
 msgid   "Information"
 msgstr  ""
 
+msgid   "Invisible mode"
+msgstr  ""
+
 msgid   "Language"
 msgstr  ""
 
@@ -427,6 +433,9 @@ msgid   "Login is not valid"
 msgstr  ""
 
 msgid   "Manage users"
+msgstr  ""
+
+msgid   "Message sent automatically."
 msgstr  ""
 
 msgid   "Name"
@@ -459,9 +468,6 @@ msgstr  ""
 msgid   "No content."
 msgstr  ""
 
-msgid   "No description."
-msgstr  ""
-
 msgid   "No email address is configured in your LDAP account. Please fix the problem before logging in again on wopits."
 msgstr  ""
 
@@ -484,9 +490,6 @@ msgid   "OK"
 msgstr  ""
 
 msgid   "Of course we are doing everything to ensure a quality service, but the best solution is hosting on your own servers or with a professional host. wopits is a free project, anyone can get it and install it!"
-msgstr  ""
-
-msgid   "One of your opened walls has been deleted!"
 msgstr  ""
 
 msgid   "One of your sessions has just been closed. All of your sessions will end. Please log in again."
@@ -551,6 +554,9 @@ msgstr  ""
 msgid   "Remember me"
 msgstr  ""
 
+msgid   "Remove"
+msgstr  ""
+
 msgid   "Rename"
 msgstr  ""
 
@@ -606,6 +612,9 @@ msgid   "Sharing management"
 msgstr  ""
 
 msgid   "Sharing type"
+msgstr  ""
+
+msgid   "Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?"
 msgstr  ""
 
 msgid   "Show external content"
@@ -737,10 +746,6 @@ msgstr  ""
 msgid   "The wopits team,"
 msgstr  ""
 
-#, php-format
-msgid   "The «%s» wall has been deleted!"
-msgstr  ""
-
 msgid   "Theme"
 msgstr  ""
 
@@ -750,7 +755,7 @@ msgstr  ""
 msgid   "This group does not contain any users!"
 msgstr  ""
 
-msgid   "This group will no longer be available for the current wall or for your other walls.<p/>Delete it anyway?"
+msgid   "This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?"
 msgstr  ""
 
 msgid   "This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server."
@@ -760,9 +765,6 @@ msgid   "This item has been deleted"
 msgstr  ""
 
 msgid   "This item has been deleted!"
-msgstr  ""
-
-msgid   "This message was sent automatically."
 msgstr  ""
 
 msgid   "This relationship already exists"
@@ -785,6 +787,12 @@ msgid   "This sticky note will expire soon."
 msgstr  ""
 
 msgid   "This title already exists."
+msgstr  ""
+
+msgid   "This user is no longer available!"
+msgstr  ""
+
+msgid   "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr  ""
 
 msgid   "This wall is not shared with any group!"
@@ -835,7 +843,7 @@ msgstr  ""
 msgid   "Users in this group:"
 msgstr  ""
 
-msgid   "Users will lose their access to the wall.<p/>Unshare anyway?"
+msgid   "Users will lose their access to the wall.<br>Unshare anyway?"
 msgstr  ""
 
 msgid   "View"
@@ -857,6 +865,9 @@ msgid   "Warning"
 msgstr  ""
 
 msgid   "We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded."
+msgstr  ""
+
+msgid   "We are sorry for the inconvenience, but due to a system error you will be logged out. Please try again later."
 msgstr  ""
 
 msgid   "Welcome to wopits!"
@@ -896,11 +907,11 @@ msgstr  ""
 msgid   "You must have write access to perform this action."
 msgstr  ""
 
-#, php-format
-msgid   "You no longer have the necessary rights to access the «%s» wall!"
+msgid   "You no longer have access to some of the walls you had opened!"
 msgstr  ""
 
-msgid   "Your account has been updated"
+#, php-format
+msgid   "You no longer have access to the «%s» wall!"
 msgstr  ""
 
 msgid   "Your connection attempt failed!"
@@ -919,6 +930,9 @@ msgid   "Your password must contain at least:<ul><li><b>6</b> characters</li><li
 msgstr  ""
 
 msgid   "Your password reset"
+msgstr  ""
+
+msgid   "Your profile has been updated"
 msgstr  ""
 
 msgid   "Zoom +"

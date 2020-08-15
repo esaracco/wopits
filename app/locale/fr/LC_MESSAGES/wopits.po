@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 10:17+0200\n"
-"PO-Revision-Date: 2020-08-12 10:21+0200\n"
+"POT-Creation-Date: 2020-08-15 12:03+0200\n"
+"PO-Revision-Date: 2020-08-15 12:04+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -28,6 +28,10 @@ msgstr "%s post-its correspondent à votre recherche."
 
 msgid "1 sticky note match your search."
 msgstr "1 post-it correspond à votre recherche."
+
+msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
+msgstr ""
+"<b>Mode invisible</b>: aucun partage possible, et personne ne peut vous voir"
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -331,12 +335,11 @@ msgstr "Mauvaise adresse email"
 
 #, php-format
 msgid ""
-"Besides, if you are suspicious, nobody is forcing you to use it here online! "
-"You can %sget the code%s and install it yourself."
+"Besides, you don't have to use it online: you can %sget the code%s and "
+"install it yourself!"
 msgstr ""
-"D'ailleurs, si vous n'avez pas confiance, personne ne vous oblige à "
-"l'utiliser ici en ligne! Vous pouvez %srécupérer le code%s et l'installer "
-"vous-même."
+"D'ailleurs, vous n'êtes pas obligé de l'utiliser en ligne: Vous pouvez "
+"%srécupérer le code%s et l'installer vous-même!"
 
 msgid "Block external content"
 msgstr "Bloquer les contenus externes"
@@ -469,18 +472,17 @@ msgid "Delete your profile photo?"
 msgstr "Supprimer votre photo de profil?"
 
 msgid ""
-"Depending on its content, cloning a wall can take time.<br>Do you confirm "
-"this request?"
+"Depending on its content, cloning a wall can take time.<br>Clone anyway?"
 msgstr ""
 "En fonction de son contenu, le clonage d'un mur peut prendre du temps."
-"<br>Confirmez-vous cette demande?"
+"<br>Cloner quand même?"
 
 msgid ""
-"Depending on its content, the export size can be substantial.<br>Do you "
-"confirm this request?"
+"Depending on its content, the export size can be substantial.<br>Export "
+"anyway?"
 msgstr ""
 "En fonction de son contenu, la taille d'un export peut-être conséquente."
-"<br>Confirmez-vous cette demande?"
+"<br>Exporter quand même?"
 
 msgid "Deprecated browser"
 msgstr "Navigateur obsolète"
@@ -703,6 +705,9 @@ msgstr "Importer..."
 msgid "Information"
 msgstr "Information"
 
+msgid "Invisible mode"
+msgstr "Mode invisible"
+
 msgid "Language"
 msgstr "Langue"
 
@@ -726,6 +731,9 @@ msgstr "L'identifiant n'est pas valide"
 
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
+
+msgid "Message sent automatically."
+msgstr "Message envoyé automatiquement."
 
 msgid "Name"
 msgstr "Nom"
@@ -761,9 +769,6 @@ msgstr "Non"
 msgid "No content."
 msgstr "Aucun contenu."
 
-msgid "No description."
-msgstr "Aucune description."
-
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
 "before logging in again on wopits."
@@ -798,9 +803,6 @@ msgstr ""
 "qualité, mais la meilleure solution reste l'hébergement sur vos propres "
 "serveurs ou chez un hébergeur professionnel. wopits étant un projet libre, "
 "tout le monde peut l'obtenir et l'installer!"
-
-msgid "One of your opened walls has been deleted!"
-msgstr "L'un de vos murs ouverts a été supprimé!"
 
 msgid ""
 "One of your sessions has just been closed. All of your sessions will end. "
@@ -872,6 +874,9 @@ msgstr "Recharger wopits pour appliquer le nouveau fuseau horaire?"
 msgid "Remember me"
 msgstr "Se souvenir de moi"
 
+msgid "Remove"
+msgstr "Retirer"
+
 msgid "Rename"
 msgstr "Renommer"
 
@@ -928,6 +933,13 @@ msgstr "Gestion des partages"
 
 msgid "Sharing type"
 msgstr "Type de partage"
+
+msgid ""
+"Sharing will be impossible, and you will be removed from all groups."
+"<br>Become invisible anyway?"
+msgstr ""
+"Il ne sera plus possible de partager, et vous serez retiré de tous les "
+"groupes.<br>Devenir invisible quand même?"
 
 msgid "Show external content"
 msgstr "Afficher les contenus externes"
@@ -1082,10 +1094,6 @@ msgstr "Ce mur est partagé avec les groupes suivants:"
 msgid "The wopits team,"
 msgstr "L'équipe de wopits,"
 
-#, php-format
-msgid "The «%s» wall has been deleted!"
-msgstr "Le mur «%s» a été supprimé!"
-
 msgid "Theme"
 msgstr "Thème"
 
@@ -1097,10 +1105,10 @@ msgstr "Ce groupe ne contient pas d'utilisateurs!"
 
 msgid ""
 "This group will no longer be available for the current wall or for your "
-"other walls.<p/>Delete it anyway?"
+"other walls.<br>Delete it anyway?"
 msgstr ""
 "Ce groupe ne sera plus disponible pour le mur courant ni pour aucun de vos "
-"autres murs.<p/>Le supprimer quand même?"
+"autres murs.<br>Le supprimer quand même?"
 
 msgid ""
 "This is not a professional hosting site but a place allowing you to easily "
@@ -1115,9 +1123,6 @@ msgstr "Cet élément a été supprimé"
 
 msgid "This item has been deleted!"
 msgstr "Cet élément a été supprimé!"
-
-msgid "This message was sent automatically."
-msgstr "Ce message a été envoyé automatiquement."
 
 msgid "This relationship already exists"
 msgstr "Cette relation existe déjà"
@@ -1140,6 +1145,12 @@ msgstr "Ce post-it expire bientôt."
 
 msgid "This title already exists."
 msgstr "Ce titre existe déjà."
+
+msgid "This user is no longer available!"
+msgstr "Cet utilisateur n'est plus disponible!"
+
+msgid "This user will lose their access to the wall.<br>Remove anyway?"
+msgstr "Cet utilisateur perdra l'accès au mur.<br>Retirer quand même?"
 
 msgid "This wall is not shared with any group!"
 msgstr "Ce mur n'est partagé avec aucun groupe!"
@@ -1193,9 +1204,9 @@ msgstr "Guide d'utilisation"
 msgid "Users in this group:"
 msgstr "Utilisateurs dans ce groupe:"
 
-msgid "Users will lose their access to the wall.<p/>Unshare anyway?"
+msgid "Users will lose their access to the wall.<br>Unshare anyway?"
 msgstr ""
-"Les utilisateurs perdront leur accès au mur.<p/>Annuler le partage quand "
+"Les utilisateurs perdront leur accès au mur.<br>Annuler le partage quand "
 "même?"
 
 msgid "View"
@@ -1222,6 +1233,13 @@ msgid ""
 msgstr ""
 "Nous sommes désolés pour le dérangement, mais à la suite d'une opération de "
 "maintenance l'application doit être rechargée."
+
+msgid ""
+"We are sorry for the inconvenience, but due to a system error you will be "
+"logged out. Please try again later."
+msgstr ""
+"Nous sommes désolés pour le dérangement, mais à la suite d'une erreur "
+"système vous allez être déconnecté. Veuillez réessayer plus tard."
 
 msgid "Welcome to wopits!"
 msgstr "Bienvenue sur wopits!"
@@ -1264,12 +1282,12 @@ msgstr "Vous devez avoir un accès administrateur pour effectuer cette action."
 msgid "You must have write access to perform this action."
 msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
 
-#, php-format
-msgid "You no longer have the necessary rights to access the «%s» wall!"
-msgstr "Vous n'avez plus les droits suffisants pour accéder au mur «%s»!"
+msgid "You no longer have access to some of the walls you had opened!"
+msgstr "Vous n'avez plus accès à certains des murs que vous aviez ouverts!"
 
-msgid "Your account has been updated"
-msgstr "Votre compte a été modifié"
+#, php-format
+msgid "You no longer have access to the «%s» wall!"
+msgstr "Vous n'avez plus accès au mur «%s»!"
 
 msgid "Your connection attempt failed!"
 msgstr "Votre tentative de connexion a échoué!"
@@ -1298,6 +1316,9 @@ msgstr ""
 
 msgid "Your password reset"
 msgstr "Réinitialisation de votre mot de passe"
+
+msgid "Your profile has been updated"
+msgstr "Votre profil a été modifié"
 
 msgid "Zoom +"
 msgstr "Zoom +"
@@ -1380,6 +1401,15 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "No description."
+#~ msgstr "Aucune description."
+
+#~ msgid "One of your opened walls has been deleted!"
+#~ msgstr "L'un de vos murs ouverts a été supprimé!"
+
+#~ msgid "The «%s» wall has been deleted!"
+#~ msgstr "Le mur «%s» a été supprimé!"
 
 #~ msgid "You have reached the maximum number of tags."
 #~ msgstr "Vous avez atteint le nombre maximum d'étiquettes."

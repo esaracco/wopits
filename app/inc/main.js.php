@@ -1079,7 +1079,7 @@
                 S.set ("save-opened-walls", true);
             }
 
-            return H.displayMsg ({type: "warning", msg: "<?=_("You no longer have access to some of your previously opened walls!")?>"});
+            return H.displayMsg ({type: "warning", msg: "<?=_("You no longer have access to some of the walls you had opened!")?>"});
           }
 
           if (d.error_msg)

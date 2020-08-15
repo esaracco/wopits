@@ -415,7 +415,7 @@ class WSocket
               {
                 const msg = data.wall.unlinked ?
                   "<?=_("You no longer have access to the «%s» wall!")?>".replace("%s", data.wall.unlinked) :
-                 "<?=_("You no longer have access to some of your previously opened walls!")?>";
+                 "<?=_("You no longer have access to some of the walls you had opened!")?>";
 
                 H.displayMsg ({type: "warning", msg: msg});
                 $wall.wall ("close");

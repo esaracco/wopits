@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 10:17+0200\n"
+"POT-Creation-Date: 2020-08-15 12:03+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -24,6 +24,9 @@ msgid "%s sticky notes match your search."
 msgstr ""
 
 msgid "1 sticky note match your search."
+msgstr ""
+
+msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
 msgstr ""
 
 msgid ""
@@ -215,8 +218,8 @@ msgstr ""
 
 #, php-format
 msgid ""
-"Besides, if you are suspicious, nobody is forcing you to use it here online! "
-"You can %sget the code%s and install it yourself."
+"Besides, you don't have to use it online: you can %sget the code%s and "
+"install it yourself!"
 msgstr ""
 
 msgid "Block external content"
@@ -350,13 +353,12 @@ msgid "Delete your profile photo?"
 msgstr ""
 
 msgid ""
-"Depending on its content, cloning a wall can take time.<br>Do you confirm "
-"this request?"
+"Depending on its content, cloning a wall can take time.<br>Clone anyway?"
 msgstr ""
 
 msgid ""
-"Depending on its content, the export size can be substantial.<br>Do you "
-"confirm this request?"
+"Depending on its content, the export size can be substantial.<br>Export "
+"anyway?"
 msgstr ""
 
 msgid "Deprecated browser"
@@ -528,6 +530,9 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
+msgid "Invisible mode"
+msgstr ""
+
 msgid "Language"
 msgstr ""
 
@@ -550,6 +555,9 @@ msgid "Login is not valid"
 msgstr ""
 
 msgid "Manage users"
+msgstr ""
+
+msgid "Message sent automatically."
 msgstr ""
 
 msgid "Name"
@@ -584,9 +592,6 @@ msgstr ""
 msgid "No content."
 msgstr ""
 
-msgid "No description."
-msgstr ""
-
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
 "before logging in again on wopits."
@@ -614,9 +619,6 @@ msgid ""
 "Of course we are doing everything to ensure a quality service, but the best "
 "solution is hosting on your own servers or with a professional host. wopits "
 "is a free project, anyone can get it and install it!"
-msgstr ""
-
-msgid "One of your opened walls has been deleted!"
 msgstr ""
 
 msgid ""
@@ -684,6 +686,9 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
+msgid "Remove"
+msgstr ""
+
 msgid "Rename"
 msgstr ""
 
@@ -739,6 +744,11 @@ msgid "Sharing management"
 msgstr ""
 
 msgid "Sharing type"
+msgstr ""
+
+msgid ""
+"Sharing will be impossible, and you will be removed from all groups."
+"<br>Become invisible anyway?"
 msgstr ""
 
 msgid "Show external content"
@@ -881,10 +891,6 @@ msgstr ""
 msgid "The wopits team,"
 msgstr ""
 
-#, php-format
-msgid "The «%s» wall has been deleted!"
-msgstr ""
-
 msgid "Theme"
 msgstr ""
 
@@ -896,7 +902,7 @@ msgstr ""
 
 msgid ""
 "This group will no longer be available for the current wall or for your "
-"other walls.<p/>Delete it anyway?"
+"other walls.<br>Delete it anyway?"
 msgstr ""
 
 msgid ""
@@ -908,9 +914,6 @@ msgid "This item has been deleted"
 msgstr ""
 
 msgid "This item has been deleted!"
-msgstr ""
-
-msgid "This message was sent automatically."
 msgstr ""
 
 msgid "This relationship already exists"
@@ -933,6 +936,12 @@ msgid "This sticky note will expire soon."
 msgstr ""
 
 msgid "This title already exists."
+msgstr ""
+
+msgid "This user is no longer available!"
+msgstr ""
+
+msgid "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr ""
 
 msgid "This wall is not shared with any group!"
@@ -985,7 +994,7 @@ msgstr ""
 msgid "Users in this group:"
 msgstr ""
 
-msgid "Users will lose their access to the wall.<p/>Unshare anyway?"
+msgid "Users will lose their access to the wall.<br>Unshare anyway?"
 msgstr ""
 
 msgid "View"
@@ -1009,6 +1018,11 @@ msgstr ""
 msgid ""
 "We are sorry for the inconvenience, but due to a maintenance operation, the "
 "application must be reloaded."
+msgstr ""
+
+msgid ""
+"We are sorry for the inconvenience, but due to a system error you will be "
+"logged out. Please try again later."
 msgstr ""
 
 msgid "Welcome to wopits!"
@@ -1050,11 +1064,11 @@ msgstr ""
 msgid "You must have write access to perform this action."
 msgstr ""
 
-#, php-format
-msgid "You no longer have the necessary rights to access the «%s» wall!"
+msgid "You no longer have access to some of the walls you had opened!"
 msgstr ""
 
-msgid "Your account has been updated"
+#, php-format
+msgid "You no longer have access to the «%s» wall!"
 msgstr ""
 
 msgid "Your connection attempt failed!"
@@ -1078,6 +1092,9 @@ msgid ""
 msgstr ""
 
 msgid "Your password reset"
+msgstr ""
+
+msgid "Your profile has been updated"
 msgstr ""
 
 msgid "Zoom +"
