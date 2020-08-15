@@ -8,9 +8,9 @@
     private $cellId;
     private $postitId;
 
-    public function __construct ($args = [])
+    public function __construct ($args = [], $wsSessionId = null)
     {
-      parent::__construct ($args);
+      parent::__construct ($args, $wsSessionId);
 
       $this->cellId = $args['cellId']??null;
       $this->postitId = $args['postitId']??null;

@@ -437,8 +437,7 @@
 
     public function getSetting ($key)
     {
-      $userId = $this->userId ?? $GLOBALS['userId'] ??
-                  $_SESSION['userId'] ?? null;
+      $userId = $this->userId??$this->getSessionValue('userId')??null;
 
       if ($userId && !isset ($this->settings[$key]))
       {
@@ -453,8 +452,8 @@
 
     public function getTimezone ()
     {
-      $defaultLocale = WPT_LOCALES[$GLOBALS['slocale'] ??
-                                     $_SESSION['slocale'] ?? 'en'];
+      $slocale = $this->getSessionValue('slocale')??'en';
+      $defaultLocale = WPT_LOCALES[$slocale];
 
       return (empty ($ret = $this->getSetting('timezone'))) ?
                 $defaultLocale : $ret;

@@ -230,8 +230,7 @@
 
     public static function getBrowserLocale ()
     {
-      $l = $GLOBALS['Accept-Language'] ??
-           $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+      $l = $_SERVER['HTTP_ACCEPT_LANGUAGE']??null;
 
       if ($l && preg_match_all ('/([a-z]{2})[,-;$]/', $l, $m))
       {

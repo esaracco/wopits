@@ -8,15 +8,40 @@
     public $wallId;
     public $data;
     public $wallName;
+    public $wsSessionId;
+    private $mc;
 
-    public function __construct ($args = null)
+    public function __construct ($args = [], $wsSessionId = null)
     {
       parent::__construct ();
 
-      $this->userId = $args['userId'] ?? $GLOBALS['userId'] ??
-                      $_SESSION['userId'] ?? null;
       $this->wallId = $args['wallId']??null;
       $this->data = $args['data']??null;
+      // $wsSessionId is set only when instanciation comes from the websocket
+      // server, otherwise, we use $_SESSION.
+      $this->wsSessionId = $wsSessionId??null;
+
+      if ($this->wsSessionId)
+      {
+        $this->mc = new Memcached ();
+        $this->mc->addServer ('localhost', 11211);
+
+        Wpt_common::changeLocale ($this->getSessionValue ('slocale'));
+      }
+
+      $this->userId = $args['userId']??$this->getSessionValue('userId')??null;
+    }
+
+    protected function getSessionValue ($key, $use_SERVER = false)
+    {
+      $ret = null;
+
+      if ($this->wsSessionId)
+        $ret = $this->mc->get("session::{$this->wsSessionId}")->$key??null;
+      else
+        $ret = ($use_SERVER) ? $_SERVER[$key] : $_SESSION[$key]??null;
+
+      return $ret;
     }
 
     public function checkWallAccess ($requiredRole)
