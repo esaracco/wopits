@@ -643,7 +643,7 @@ class WHelp
   }
 
   // METHOD testImage ()
-  testImage (url, timeout = 5000)
+  testImage (url, timeout = 10000)
   {
     return new Promise ((resolve, reject) =>
       {
