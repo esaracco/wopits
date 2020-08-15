@@ -830,9 +830,6 @@ div.postit {
   border-radius:0 3px 3px 3px;
   border:2px solid #cecece;
   box-shadow: 0 0 5px #cecece;
-}
-
-.wall:not([data-access="<?=WPT_WRIGHTS_RO?>"]) .postit {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -921,10 +918,6 @@ div.postit div.postit-tags {
   padding: 0;
   cursor:pointer;
   line-height: 20px;
-}
-
-.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit div.postit-tags {
-  cursor:auto !important;
 }
 
 div.postit div.postit-tags i {
@@ -1677,8 +1670,8 @@ div.postit .end {
   cursor:pointer;
 }
 
-.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit .end {
-  cursor:auto !important;
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit {
+  cursor:pointer;
 }
 
 div.postit .end.with-alert {

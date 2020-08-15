@@ -218,11 +218,6 @@
         }
       });
 
-      $postit.find(".postit-edit"+(writeAccess?"":",.postit-header,.dates"))
-        // EVENT doubletap
-        .doubletap (() =>
-          $postit.find(".postit-menu [data-action='edit']").click ());
-
       if (writeAccess)
       {
         $postit  
@@ -356,7 +351,17 @@
                   });
             }
           });
+
+          $postit.find(".postit-edit")
+            // EVENT doubletap
+            .doubletap (() =>
+              $postit.find(".postit-menu [data-action='edit']").click ());
         }
+        else
+          $postit.find(".postit-edit,.postit-header,.dates")
+            // EVENT click
+            .click (() =>
+              $postit.find(".postit-menu [data-action='edit']").click ());
   
       const $header = $(`
         <i class="far fa-caret-square-down" data-action="menu"></i>`)
