@@ -358,7 +358,7 @@
               $postit.find(".postit-menu [data-action='edit']").click ());
         }
   
-      const $header = $(`
+      const $btnMenu = $(`
         <i class="far fa-caret-square-down" data-action="menu"></i>`)
         .on("click", function(e)
           {
@@ -399,9 +399,9 @@
           });
   
       if (!writeAccess)
-        $header.css("visibility", "hidden");
+        $btnMenu.css ("visibility", "hidden");
 
-      $header.prependTo ($postit.find (".postit-header"));
+      $btnMenu.prependTo ($postit.find (".postit-header"));
 
       // Post-it menu
       const $menu = $(`
@@ -472,7 +472,7 @@
                     case "delete":
 
                       H.openConfirmPopover ({
-                        item: $header,
+                        item: $btnMenu,
                         placement: "right",
                         title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                         content: "<?=_("Delete this sticky note?")?>",
