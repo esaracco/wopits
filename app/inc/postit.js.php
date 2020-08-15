@@ -357,11 +357,6 @@
             .doubletap (() =>
               $postit.find(".postit-menu [data-action='edit']").click ());
         }
-        else
-          $postit.find(".postit-edit,.postit-header,.dates")
-            // EVENT click
-            .click (() =>
-              $postit.find(".postit-menu [data-action='edit']").click ());
   
       const $header = $(`
         <i class="far fa-caret-square-down" data-action="menu"></i>`)
@@ -744,6 +739,11 @@
           }
         });
       }
+      else
+        $postit.find(".postit-edit,.postit-header,.postit-tags,.dates")
+          // EVENT click
+          .click (() =>
+            $postit.find(".postit-menu [data-action='edit']").click ());
 
       if (settings.creationdate)
         //FIXME setTimeout ()
