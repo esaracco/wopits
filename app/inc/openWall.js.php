@@ -14,15 +14,24 @@
       const plugin = this,
             $openWall = plugin.element;
 
+
       $openWall.find('input').on("keyup", function (e)
         {
-          plugin.search ($(this).val().trim ())
+          plugin.search (this.value.trim ())
+        });
+
+      $openWall
+        .on("keypress", function (e)
+        {
+          if (e.which == 13 &&
+              $openWall.find(".list-group-item-action").length == 1)
+            $openWall.find(".list-group-item-action").click ();
         });
 
       // EVENT CLICK on open wall popup
       $(document).on("click", "#openWallPopup .modal-body li", function(e)
       {
-        $("<div/>").wall ("open", {wallId: $(this)[0].dataset.id});
+        $("<div/>").wall ("open", {wallId: this.dataset.id});
   
         $openWall.modal ("hide");
       });
@@ -54,12 +63,13 @@
       this.displayWalls (walls);
     },
 
+    // METHOD displayWalls ()
     displayWalls: function (walls)
     {
       const $openWall = this.element;
       let body = "";
 
-      walls = walls || wpt_userData.walls;
+      walls = walls||wpt_userData.walls;
 
       $openWall.find(".input-group").hide ();
 

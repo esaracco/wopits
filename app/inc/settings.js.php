@@ -20,8 +20,10 @@
         {
           if (!wpt_userData.settings.theme)
             plugin.set ({theme: "theme-default"});
-        })
-        .find(".settings").on("click", function ()
+        });
+
+      $tc.find(".settings")
+        .on("click", function ()
         {
           $tc.modal ("hide");
           plugin.open ();
@@ -31,14 +33,13 @@
         .on("click", function ()
         {
           plugin.set ({theme: this.dataset.theme});
-
           plugin.applyTheme ();
         });
 
       $settings.find(".timezone")
         .on ("change", function (e)
         {
-          const timezone = $(this).val ();
+          const timezone = this.value;
 
           H.openConfirmPopup ({
             type: "reload-app",
@@ -47,7 +48,7 @@
             cb_ok: () => plugin.applyTimezone (timezone),
             cb_close: () =>
               {
-                const tz = $(this)[0].dataset.timezone;
+                const tz = this.dataset.timezone;
 
                 if (tz !== undefined)
                   $settings.find("select.timezone").val (tz);
@@ -73,10 +74,10 @@
                   icon: "sync-alt",
                   content: `<?=_("Reload wopits to apply the new language?")?>`,
                   cb_ok: () => plugin.applyLocale (locale)
-                  });
+                });
               }
             })
-            .append ("<img src='/img/locale/"+locale+"-24.png'>");
+            .append (`<img src='/img/locale/${locale}-24.png'>`);
         });
     },
 
@@ -115,6 +116,7 @@
       setTimeout (() => $("<div/>").postit ("applyTheme"), 250);
     },
 
+    // METHOD saveOpenedWalls ()
     saveOpenedWalls: function (activeWall)
     {
       let openedWalls = [];
@@ -181,9 +183,7 @@
         return ret;
       }
       else if (key == "openedWalls")
-      {
         return wpt_userData.settings.openedWalls;
-      }
     },
 
     // METHOD removeWallBackground ()
@@ -227,7 +227,7 @@
             $settings = plugin.element,
             $wall = S.getCurrent ("wall"),
             wallId = ($wall.length) ? $wall.wall ("getId") : null,
-            $colorPicker = $settings.find(".cp"),
+            $colorPicker = $settings.find (".cp"),
             loaded = $settings[0].dataset.loaded,
             ww = $(window).width ();
       let setColorTimeout;
@@ -237,7 +237,7 @@
 
       if ($wall.length)
         $settings.find(".wall-color").html (
-          "<?=_("Color of the wall «&nbsp;%s&nbsp;»:")?>"
+          `<?=_("Color of the wall «&nbsp;%s&nbsp;»:")?>`
             .replace("%s", $wall.wall ("getName")));
       else
         $settings.find(".wall-color").html ("<?=_("Default walls color:")?>");
@@ -312,7 +312,6 @@
         $settings.find(".modal-body").show ("fade");
       }
     }
-
   };
 
   /////////////////////////// AT LOAD INIT //////////////////////////////

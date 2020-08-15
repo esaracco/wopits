@@ -273,7 +273,8 @@
 
     menu: function (args)
     {
-      const $menu = $("#main-menu"),
+      const $wall = S.getCurrent ("wall"),
+            $menu = $("#main-menu"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
             adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>");
@@ -310,6 +311,20 @@
                 break;
     
               case "have-wall":
+
+                if ($wall.length && $wall[0].dataset.shared)
+                  $menu.find('[data-action="chatroom"] a')
+                    .removeClass ("disabled");
+                else
+                {
+                  const $chatroom = S.getCurrent("chatroom");
+
+                  if ($chatroom.length)
+                    $chatroom.chatroom ("hide");
+
+                  $menu.find('[data-action="chatroom"] a')
+                    .addClass ("disabled");
+                }
 
                 $menu.find(
                   '[data-action="view-properties"] a,'+
@@ -379,7 +394,8 @@
         } 
 
         if (!H.checkUserVisible ())
-          $menu.find('[data-action="share"] a').addClass ("disabled");
+          $menu.find('[data-action="share"] a,'+
+                     '[data-action="chatroom"] a').addClass ("disabled");
     },
 
     // METHOD closeAllMenus ()
@@ -1755,7 +1771,7 @@
 
         $("#createWallPopup #w-grid").on("change", function ()
           {
-            const el = $(this)[0],
+            const btn = this,
                   $popup = $(this).closest (".modal");
 
             $popup.find("span.required").remove ();
@@ -1763,12 +1779,12 @@
             $popup.find(".width-height input").val ("");
             $popup.find(".cols-rows,.width-height").hide ();
 
-            if (el.checked)
+            if (btn.checked)
               $(this).parent().removeClass ("disabled");
             else
               $(this).parent().addClass ("disabled");
 
-            $popup.find(el.checked?".cols-rows":".width-height").show ("fade");
+            $popup.find(btn.checked?".cols-rows":".width-height").show ("fade");
           });
 
         $(`<input type="file" accept=".zip" class="upload import-wall">`)
@@ -1826,7 +1842,7 @@
         $("#wallUsersviewPopup")
           .on("click",".list-group a",function (e)
           {
-            const a = $(this)[0],
+            const a = this,
                   $popup = $("#userViewPopup"),
                   $userPicture = $popup.find (".user-picture"),
                   $about = $popup.find (".about");
@@ -1865,9 +1881,8 @@
                        ".nav-tabs.walls a[data-action='new'],"+
                        "#welcome",function(e)
           {
-            const $wall = S.getCurrent ("wall");
-            const action = $(this)[0].dataset.action ||
-                             $(this).parent()[0].dataset.action;
+            const $wall = S.getCurrent ("wall"),
+                  action = this.dataset.action||this.parentNode.dataset.action;
 
             switch (action)
             {

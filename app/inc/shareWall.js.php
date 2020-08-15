@@ -53,6 +53,12 @@
       $_groupAccessPopup = $("#groupAccessPopup");
       $_usersSearchPopup = $("#usersSearchPopup");
 
+      $share
+        .on("hidden.bs.modal", function (e)
+        {
+          S.getCurrent("wall").wall ("menu", {from: "wall", type:"have-wall"});
+        });
+
       $(document)
         .on("click", "#shareWallPopup .list-group-item button,"+
                      "#shareWallPopup .list-group-item div.userscount",
@@ -164,8 +170,7 @@
       $share.find("button")
         .on("click", function (e)
         {
-          const $btn = $(this),
-                action = $btn[0].dataset.action;
+          const action = this.dataset.action;
 
           if (action == "add-gtype-<?=WPT_GTYPES_GEN?>" ||
               action == "add-gtype-<?=WPT_GTYPES_DED?>")
@@ -175,9 +180,9 @@
       $_groupPopup.find(".btn-primary")
         .on("click", function (e)
         {
-          const type = $(this)[0].dataset.type,
-                groupId = $(this)[0].dataset.groupid,
-                $inputs = $_groupPopup.find("input");
+          const type = this.dataset.type,
+                groupId = this.dataset.groupid,
+                $inputs = $_groupPopup.find ("input");
 
           e.stopImmediatePropagation ();
 
@@ -279,8 +284,8 @@
     {
       const $wall = S.getCurrent ("wall"),
             wallId = $wall.wall ("getId"),
-            $group = this.element.find("li.todelete"),
-            $sendMsg = $_groupAccessPopup.find(".send-msg"),
+            $group = this.element.find ("li.todelete"),
+            $sendMsg = $_groupAccessPopup.find (".send-msg"),
             data = {
               type:
                 $group.parent().hasClass("gtype-<?=WPT_GTYPES_DED?>") ?
@@ -410,7 +415,7 @@
 
       H.request_ajax (
         "GET",
-        "wall/"+S.getCurrent("wall").wall("getId")+"/group",
+        "wall/"+$wall.wall("getId")+"/group",
         null,
         // success cb
         (d) =>
