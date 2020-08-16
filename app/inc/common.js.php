@@ -371,7 +371,6 @@ class WSocket
               $wall = (data.wall && data.wall.id) ?
                 $(".wall[data-id='wall-"+data.wall.id+"']") : [],
               isResponse = (this._send_cb[data.msgId] !== undefined);
-        let msg;
 
         //console.log ("RECEIVED "+data.msgId+"\n");
         //console.log (data);
@@ -380,6 +379,23 @@ class WSocket
         {
           switch (data.action)
           {
+            // exitsession
+            case "exitsession":
+              var $popup = $("#infoPopup");
+
+              $(".modal").modal ("hide");
+
+              H.cleanPopupDataAttr ($popup);
+
+              $popup.find(".modal-body").html ("<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>");
+              $popup.find(".modal-title").html (
+                '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
+              $popup[0].dataset.popuptype = "app-logout";
+              H.openModal ($popup);
+
+              setTimeout (() => $popup.modal ("hide"), 3000);
+              break;
+
             // refreshwall
             case "refreshwall":
               if ($wall.length && data.wall)
@@ -445,29 +461,6 @@ class WSocket
 
               $popup[0].dataset.popuptype = "app-reload";
               H.openModal ($popup);
-              break;
-
-            // System error.
-            case "systemerror":
-              msg = "<?=_("We are sorry for the inconvenience, but due to a system error you will be logged out. Please try again later.")?>";
-            // exitsession
-            case "exitsession":
-              var $popup = $("#infoPopup");
-
-              if (msg === undefined)
-                msg = "<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>";
-
-              $(".modal").modal ("hide");
-
-              H.cleanPopupDataAttr ($popup);
-
-              $popup.find(".modal-body").html (msg);
-              $popup.find(".modal-title").html (
-                '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
-              $popup[0].dataset.popuptype = "app-logout";
-              H.openModal ($popup);
-
-              setTimeout (() => $popup.modal ("hide"), 5000);
               break;
           }
         }

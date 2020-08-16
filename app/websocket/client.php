@@ -11,22 +11,6 @@ $options = getopt ('prnd::s::');
   {
     global $options;
 
-    function _connectCache ()
-    {
-      $cache = new Memcached ();
-      $cache->addServer ('localhost', 11211);
-
-      // Test the connection to the cache server.
-      $cache->set ('test', 'test');
-      if (!$cache->getStats ())
-      {
-        echo "xxxxxxxxxx Can't connect to memcache server! xxxxxxxxxx\n";
-        exit (1);
-      }
-
-      return $cache;
-    }
-
     $conn->on('message', function($msg) use ($conn)
     {
       echo "{$msg}\n";
@@ -37,22 +21,20 @@ $options = getopt ('prnd::s::');
     // Broadcast reload order.
     if (isset ($options['r']))
     {
-      $cache = _connectCache ();
       $conn->send (json_encode ([
         'action' => 'reload'
       ]));
-      $cache->flush ();
+
       $conn->close ();
     }
     // Broadcast new release announce.
     elseif (isset ($options['n']))
     {
-      $cache = _connectCache ();
       $conn->send (json_encode ([
         'action' => 'mainupgrade',
         'version' => WPT_VERSION
       ]));
-      $cache->flush ();
+
       $conn->close ();
     }
     // Keep WS connection and database persistent connection alive
@@ -93,6 +75,5 @@ $options = getopt ('prnd::s::');
   },
   function ($e)
   {
-    echo "xxxxxxxxxx Can't connect to WebSocker server! xxxxxxxxxx\n".
-         "{$e->getMessage()} xxxxxxxxxx\n";
+    echo "Could not connect: {$e->getMessage()}\n";
   });

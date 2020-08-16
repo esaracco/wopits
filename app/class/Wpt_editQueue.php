@@ -7,9 +7,9 @@
     private $item;
     private $itemId;
 
-    public function __construct ($args = [], $wsSessionId = null)
+    public function __construct ($args = null)
     {
-      parent::__construct ($args, $wsSessionId);
+      parent::__construct ($args);
 
       $this->item = $args['item']??null;
       $this->itemId = $args['itemId']??null;
@@ -40,7 +40,7 @@
               AND session_id <> :session_id LIMIT 1");
           $stmt->execute ([
             ':walls_id' => $this->wallId,
-            ':session_id' => $this->wsSessionId
+            ':session_id' => $GLOBALS['sessionId']
           ]);
         }
         else
@@ -71,7 +71,7 @@
         if ($r = $stmt->fetch ())
         {
           // If item is already edited by other user, error
-          if ($r['session_id'] != $this->wsSessionId)
+          if ($r['session_id'] != $GLOBALS['sessionId'])
             $ret['error_msg'] = _("Someone is editing this item.");
         }
         // If item is free for editing
@@ -90,7 +90,7 @@
               'walls_id' => $this->wallId,
               'item_id' => $id,
               'users_id' => $this->userId,
-              'session_id' => $this->wsSessionId,
+              'session_id' => $GLOBALS['sessionId'],
               'item' => $item
             ]);
         }
@@ -108,7 +108,7 @@
     {
       $this
         ->prepare('DELETE FROM edit_queue WHERE session_id = ?')
-        ->execute ([$this->wsSessionId]);
+        ->execute ([$GLOBALS['sessionId']]);
     }
 
     public function removeFrom ()

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-15 12:03+0200\n"
-"PO-Revision-Date: 2020-08-15 12:04+0200\n"
+"POT-Creation-Date: 2020-08-16 13:26+0200\n"
+"PO-Revision-Date: 2020-08-16 13:26+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -1234,13 +1234,6 @@ msgstr ""
 "Nous sommes désolés pour le dérangement, mais à la suite d'une opération de "
 "maintenance l'application doit être rechargée."
 
-msgid ""
-"We are sorry for the inconvenience, but due to a system error you will be "
-"logged out. Please try again later."
-msgstr ""
-"Nous sommes désolés pour le dérangement, mais à la suite d'une erreur "
-"système vous allez être déconnecté. Veuillez réessayer plus tard."
-
 msgid "Welcome to wopits!"
 msgstr "Bienvenue sur wopits!"
 
@@ -1401,36 +1394,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid "No description."
-#~ msgstr "Aucune description."
-
-#~ msgid "One of your opened walls has been deleted!"
-#~ msgstr "L'un de vos murs ouverts a été supprimé!"
-
-#~ msgid "The «%s» wall has been deleted!"
-#~ msgstr "Le mur «%s» a été supprimé!"
-
-#~ msgid "You have reached the maximum number of tags."
-#~ msgstr "Vous avez atteint le nombre maximum d'étiquettes."
-
-#~ msgid "Login must contain at least 3 characters"
-#~ msgstr "L'identifiant doit contenir au moins 3 caractères"
-
-#~ msgid "Login must not be a email address"
-#~ msgstr "L'identifiant ne doit pas être une adresse email"
-
-#~ msgid ""
-#~ "Either you no longer have the right to access this wall, or it has been "
-#~ "deleted."
-#~ msgstr ""
-#~ "Soit vous n'avez plus le droit d'accéder à ce mur, soit il a été supprimé."
-
-#~ msgid "This item has been deleted."
-#~ msgstr "Cet élément a été supprimé."
-
-#~ msgid "You have been removed from a group associated with this wall."
-#~ msgstr "Vous avez été retiré d'un groupe associé à ce mur."
-
-#~ msgid "Send an email to notify group users."
-#~ msgstr "Envoyer un mail pour prévenir les utilisateurs du groupe."

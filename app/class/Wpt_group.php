@@ -8,9 +8,9 @@
   {
     public $groupId;
 
-    public function __construct ($args = [], $wsSessionId = null)
+    public function __construct ($args)
     {
-      parent::__construct ($args, $wsSessionId);
+      parent::__construct ($args);
 
       $this->groupId = $args['groupId']??null;
     }
