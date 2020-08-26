@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-16 13:26+0200\n"
+        "POT-Creation-Date: 2020-08-26 14:33+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1002,4 +1002,7 @@ msgid   "wall name"
 msgstr  ""
 
 msgid   "wopits is a multilingual application through which you can manage all kinds of projects by simply using sticky notes to share and collaborate with other users simultaneously."
+msgstr  ""
+
+msgid   "wopits is multilingual application with which you can manage all kinds of projects just using sticky notes to share and collaborate with other users simultaneously."
 msgstr  ""
