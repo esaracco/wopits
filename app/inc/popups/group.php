@@ -14,11 +14,11 @@
         <div class="desc mb-2"></div>
 
         <div class="input-group mb-1">
-          <input type="text" class="form-control" value="" required placeholder="<?=_("group name")?>" autofocus maxlength="<?=Wpt_dbCache::getFieldLength('groups', 'name')?>">
+          <input type="text" class="form-control" value="" required placeholder="<?=_("group name")?>" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('groups', 'name')?>">
         </div>
 
         <div class="input-group mb-1">
-          <input type="text" class="form-control" value="" placeholder="<?=_("group description")?>" maxlength="<?=Wpt_dbCache::getFieldLength('groups', 'description')?>">
+          <input type="text" class="form-control" value="" placeholder="<?=_("group description")?>" maxlength="<?=Wopits\DbCache::getFieldLength('groups', 'description')?>">
         </div>
 
         </form>

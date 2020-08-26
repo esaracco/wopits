@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('openWall');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('openWall');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $openWall = plugin.element;
@@ -38,13 +39,13 @@
     },
 
     // METHOD reset ()
-    reset: function ()
+    reset ()
     {
       this.element.find("input").val ("");
     },
 
     // METHOD search ()
-    search: function (str)
+    search (str)
     {
       const openedWalls = wpt_userData.settings.openedWalls,
             userId = wpt_userData.id,
@@ -64,7 +65,7 @@
     },
 
     // METHOD displayWalls ()
-    displayWalls: function (walls)
+    displayWalls (walls)
     {
       const $openWall = this.element;
       let body = "";

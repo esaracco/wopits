@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('cell', 'width: 300, height: 200');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('cell', 'width: 300, height: 200');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const plugin = this,
             $cell = plugin.element,
@@ -198,20 +199,20 @@
     },
 
     // METHOD removePostitsPlugs ()
-    removePostitsPlugs: function ()
+    removePostitsPlugs ()
     {
       this.element[0].querySelectorAll(".postit.with-plugs").forEach (
         (p)=> $(p).postit ("removePlugs", true));
     },
 
     // METHOD getId ()
-    getId: function ()
+    getId ()
     {
       return this.settings.id;
     },
 
     // METHOD reorganize ()
-    reorganize: function ()
+    reorganize ()
     {
       this.element.each (function ()
       {
@@ -227,7 +228,7 @@
     },
 
     // METHOD serialize ()
-    serialize: function ()
+    serialize ()
     {
       const cells = [];
 
@@ -250,7 +251,7 @@
     },
 
     // METHOD addPostit ()
-    addPostit: function (args, noinsert)
+    addPostit (args, noinsert)
     {
       const $cell = this.element,
             settings = this.settings,
@@ -279,7 +280,7 @@
     },
 
     // METHOD update ()
-    update: function (d)
+    update (d)
     {
       const $cell = this.element,
             cell0 = $cell[0],
@@ -303,7 +304,7 @@
     },
 
     // METHOD edit ()
-    edit: function (error_cb)
+    edit (error_cb)
     {
       if (!this.settings.wall[0].dataset.shared)
         return;
@@ -319,7 +320,7 @@
     },
 
     // METHOD unedit ()
-    unedit: function ()
+    unedit ()
     {
       H.request_ws (
         "DELETE",

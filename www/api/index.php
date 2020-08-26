@@ -1,5 +1,14 @@
 <?php
-  require_once (__DIR__."/../../app/class/Wpt_common.php");
+  require_once (__DIR__."/../../app/class/Common.php");
+  require_once (__DIR__."/../../app/class/User.php");
+  require_once (__DIR__."/../../app/class/Wall.php");
+  require_once (__DIR__."/../../app/class/Wall/Postit.php");
+  require_once (__DIR__."/../../app/class/Wall/Group.php");
+
+  use Wopits\User;
+  use Wopits\Wall;
+  use Wopits\Wall\Postit;
+  use Wopits\Wall\Group;
 
   // Ajax access point
   //
@@ -13,9 +22,6 @@
   $class = getParam ('class');
   $data = json_decode (urldecode (file_get_contents("php://input")));
 
-  if (preg_match ('/^postit|user|wall|group$/', $class))
-    require_once (__DIR__."/../../app/class/Wpt_$class.php");
-
   switch ($_SERVER['REQUEST_METHOD'])
   {
     // PUT
@@ -25,7 +31,7 @@
       {
         case 'user':
           $action = getParam ('action');
-          $User = new Wpt_user(['data' => $data]);
+          $User = new User(['data' => $data]);
 
           switch ($action)
           {
@@ -41,7 +47,7 @@
         case 'wall':
           $item = getParam ('item');
           $action = getParam ('action');
-          $Wall = new Wpt_wall ([
+          $Wall = new Wall ([
             'wallId' => getParam ('wallId'),
             'data' => $data
           ]);
@@ -69,7 +75,7 @@
 
         case 'postit':
           $item = getParam ('item');
-          $Postit = new Wpt_postit ([
+          $Postit = new Postit ([
             'wallId' => getParam ('wallId'),
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId'),
@@ -102,7 +108,7 @@
 
         case 'postit':
           $item = getParam ('item');
-          $Postit = new Wpt_postit ([
+          $Postit = new Postit ([
               'wallId' => getParam ('wallId'),
               'cellId' => getParam ('cellId'),
               'postitId' => getParam ('postitId')
@@ -124,7 +130,7 @@
 
         case 'user':
           $action = getParam ('action');
-          $User = new Wpt_user ();
+          $User = new User ();
           switch ($action)
           {
             case 'ping':
@@ -139,7 +145,7 @@
 
         case 'wall':
           $action = getParam ('action');
-          $Wall = new Wpt_wall (['wallId' => getParam ('wallId')]);
+          $Wall = new Wall (['wallId' => getParam ('wallId')]);
 
           switch ($action)
           {
@@ -167,7 +173,7 @@
           $wallId = getParam ('wallId');
           if (!$wallId && $data && $data->wallId)
             $wallId = $data->wallId;
-          $Group = new Wpt_group ([
+          $Group = new Group ([
             'wallId' => $wallId,
             'groupId' => getParam ('groupId')
           ]);
@@ -195,7 +201,7 @@
       switch ($class)
       {
         case 'user':
-          $User = new Wpt_user (['data' => $data]);
+          $User = new User (['data' => $data]);
 
           switch (getParam ('action'))
           {
@@ -219,7 +225,7 @@
           break;
 
         case 'postit':
-          $Postit = new Wpt_postit ([
+          $Postit = new Postit ([
             'wallId' => getParam ('wallId'),
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId'),
@@ -239,7 +245,7 @@
     case 'DELETE':
 
       if ($class == 'user')
-        $ret = (new Wpt_user())->delete ();
+        $ret = (new User())->delete ();
       break;
   }
 

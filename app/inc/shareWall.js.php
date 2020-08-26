@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('shareWall');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('shareWall');
   echo $Plugin->getHeader ();
 ?>
 
@@ -44,7 +45,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $share = plugin.element;
@@ -219,7 +220,7 @@
     },
 
     // METHOD openAddGroup ()
-    openAddGroup: function (type)
+    openAddGroup (type)
     {
       let title,
           desc;
@@ -252,7 +253,7 @@
     },
 
     // METHOD openUpdateGroup ()
-    openUpdateGroup: function (args)
+    openUpdateGroup (args)
     {
       H.cleanPopupDataAttr ($_groupPopup);
 
@@ -274,13 +275,13 @@
     },
 
     // METHOD open ()
-    open: function ()
+    open ()
     {
       this.displayGroups ();
     },
 
     // METHOD linkGroup ()
-    linkGroup: function (args)
+    linkGroup (args)
     {
       const $wall = S.getCurrent ("wall"),
             wallId = $wall.wall ("getId"),
@@ -315,7 +316,7 @@
     },
 
     // METHOD unlinkGroup ()
-    unlinkGroup: function (args, groupType)
+    unlinkGroup (args, groupType)
     {
       const $share = this.element,
             wallId = S.getCurrent("wall").wall ("getId");
@@ -340,7 +341,7 @@
     },
 
     // METHOD deleteGroup ()
-    deleteGroup: function ()
+    deleteGroup ()
     {
       const $group = this.element.find("li.todelete"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES_DED?>) ?
@@ -363,7 +364,7 @@
     },
 
     // METHOD createGroup ()
-    createGroup: function (type, args)
+    createGroup (type, args)
     {
       const service = (type == <?=WPT_GTYPES_DED?>) ?
               "wall/"+S.getCurrent("wall").wall("getId")+"/group" :
@@ -387,7 +388,7 @@
     },
 
     // METHOD updateGroup ()
-    updateGroup: function (args)
+    updateGroup (args)
     {
       H.request_ws (
         "POST",
@@ -407,7 +408,7 @@
     },
 
     // METHOD displayGroups ()
-    displayGroups: function ()
+    displayGroups ()
     {
       const $share = this.element,
             $wall = S.getCurrent ("wall"),

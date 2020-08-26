@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('colorPicker');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('colorPicker');
   echo $Plugin->getHeader ();
 ?>
 
@@ -13,7 +14,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const $picker = this.element;
       let html = "";
@@ -45,13 +46,13 @@
     },
 
     // METHOD getColorsList ()
-    getColorsList: function ()
+    getColorsList ()
     {
       return _COLOR_PICKER_COLORS;
     },
 
     // METHOD open ()
-    open: function (args)
+    open (args)
     {
       const $picker = this.element,
             wW = $(window).outerWidth (),
@@ -77,7 +78,7 @@
     },
 
     // METHOD close ()
-    close: function ()
+    close ()
     { 
       const $picker = this.element;
 

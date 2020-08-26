@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('chatroom');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('chatroom');
   echo $Plugin->getHeader ();
 ?>
 
@@ -11,7 +12,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const plugin = this,
             $chatroom = plugin.element;
@@ -105,14 +106,14 @@
     },
 
     // METHOD hide ()
-    hide: function ()
+    hide ()
     {
       if (this.element.is (":visible"))
         $("#main-menu").find("li[data-action='chatroom'] a").click ();
     },
 
     // METHOD join ()
-    join: function ()
+    join ()
     {
       H.request_ws (
         "PUT",
@@ -120,7 +121,7 @@
     },
 
     // METHOD leave ()
-    leave: function ()
+    leave ()
     {
       H.request_ws (
         "DELETE",
@@ -128,14 +129,14 @@
     },
 
     // METHOD setFocus ()
-    setFocus: function (delay = 0)
+    setFocus (delay = 0)
     {
       if (!$.support.touch)
         setTimeout (() => this.element.find("[autofocus]").focus (), delay);
     },
 
     // METHOD toggle ()
-    toggle: function ()
+    toggle ()
     {
       const $chatroom = this.element,
             wallId = this.settings.wallId;
@@ -168,7 +169,7 @@
     },
 
     // METHOD removeAlert ()
-    removeAlert: function ()
+    removeAlert ()
     {
       const $el = $("#wall-"+this.settings.wallId+" .chatroom-alert");
 
@@ -177,7 +178,7 @@
     },
 
     // METHOD closeUsersTooltip ()
-    closeUsersTooltip: function (full = false)
+    closeUsersTooltip (full = false)
     {
       const $tooltip = this.element.find (".usersviewcounts");
 
@@ -192,7 +193,7 @@
     },
 
     // METHOD refreshUserscount ()
-    refreshUserscount: function (args)
+    refreshUserscount (args)
     {
       const $chatroom = this.element,
             $tooltip = $chatroom.find(".usersviewcounts");
@@ -220,7 +221,7 @@
     },
 
     // METHOD addMsg ()
-    addMsg: function (args)
+    addMsg (args)
     {
       const plugin = this,
             $chatroom = plugin.element,
@@ -270,7 +271,7 @@
     },
 
     // METHOD setCursorToEnd ()
-    setCursorToEnd: function ()
+    setCursorToEnd ()
     {
       const area = this.element.find(".textarea")[0];
 
@@ -278,7 +279,7 @@
     },
 
     // METHOD sendMsg ()
-    sendMsg: function (msg)
+    sendMsg (msg)
     {
       H.request_ws (
         "POST",
@@ -287,7 +288,7 @@
     },
 
     // METHOD reset ()
-    reset: function ()
+    reset ()
     {
       const $chatroom = this.element;
 

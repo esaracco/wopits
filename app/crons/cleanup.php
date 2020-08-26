@@ -1,8 +1,9 @@
 #!/usr/bin/php
 <?php
 
-  require_once (__DIR__.'/../class/Wpt_common.php');
+require_once (__DIR__.'/../config.php');
 
-  // Remove expired authentication users tokens
-  (new Wpt_user())->purgeTokens ();
+// Remove expired authentication users tokens
+(new Wopits\User())->purgeTokens ();
+
 ?>

@@ -1,6 +1,8 @@
 <?php
   include (__DIR__.'/../app/header-common.php');
 
+  use Wopits\DbCache;
+
   $_SESSION['_check'] = time ();
 
   if (isset ($_SESSION['_directURL']))
@@ -75,11 +77,11 @@
 
               <div class="input-group mb-1">
                 <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user"></i></span></div>
-                <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="none" autofocus>
+                <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=DbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="none" autofocus>
               </div>
               <div class="input-group mb-2">
                 <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key"></i></span></div>
-                <input type="password" class="form-control" name="password" value="" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'password')?>" required placeholder="<?=_("password")?>">
+                <input type="password" class="form-control" name="password" value="" maxlength="<?=DbCache::getFieldLength('users', 'password')?>" required placeholder="<?=_("password")?>">
               </div>
               <div class="form-group">
                 <div class="custom-control custom-checkbox remember">

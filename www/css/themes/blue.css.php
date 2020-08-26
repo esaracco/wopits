@@ -1,4 +1,6 @@
-<?php require_once (__DIR__.'/../../../app/class/Wpt_common.php')?>
+<?php
+  require_once (__DIR__.'/../../../app/class/Common.php');
+?>
 .bg-dark {
   background-color:#007bff !important;
 }

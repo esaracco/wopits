@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-  require_once (__DIR__.'/../class/Wpt_common.php');
-  require_once (__DIR__.'/../class/Wpt_postit.php');
+require_once (__DIR__.'/../config.php');
 
-  // Check deadline and set "obsolete" flag as needed
-  (new Wpt_postit())->checkDeadline ();
+// Check deadline and set "obsolete" flag as needed
+(new Wopits\Wall\Postit())->checkDeadline ();
+
 ?>

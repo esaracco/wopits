@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('postitsSearch');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('postitsSearch');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $search = plugin.element;
@@ -26,20 +27,20 @@
         });
     },
 
-    open: function ()
+    open ()
     {
       H.openModal (this.element); 
     },
 
     // METHOD restore ()
-    restore: function (str)
+    restore (str)
     {
       this.element.find("input").val (str);
       this.element.find("input").trigger ("keyup");
     },
 
     // METHOD replay ()
-    replay: function ()
+    replay ()
     {
       const $input = this.element.find("input");
 
@@ -48,7 +49,7 @@
     },
 
     // METHOD reset ()
-    reset: function (args)
+    reset (args)
     {
       const $wall = S.getCurrent ("wall");
 
@@ -63,7 +64,7 @@
     },
 
     // METHOD search ()
-    search: function (args)
+    search (args)
     {
       const plugin = this,
             $search = plugin.element,

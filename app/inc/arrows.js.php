@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('arrows');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('arrows');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       this.settings["walls"] = S.getCurrent ("walls");
 
@@ -17,7 +18,7 @@
     },
 
     // METHOD reset ()
-    reset: function ()
+    reset ()
     {
       const $walls = this.settings.walls;
 
@@ -26,14 +27,14 @@
     },
 
     // METHOD hide ()
-    hide: function ()
+    hide ()
     {
       if (this.element.is (":visible"))
         $("#main-menu").find("li[data-action='arrows'] a").click ();
     },
 
     // METHOD toggle ()
-    toggle: function ()
+    toggle ()
     {
       const $arrows = this.element;
 
@@ -47,7 +48,7 @@
     },
 
     // METHOD update ()
-    update: function ()
+    update ()
     {
       const $arrows = this.element,
             bounding = S.getCurrent("wall")[0].getBoundingClientRect ();

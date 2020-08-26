@@ -1,7 +1,9 @@
 <?php
+  require_once (__DIR__.'/../class/Common.php');
 
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('header');
+  use Wopits\DbCache;
+
+  $Plugin = new Wopits\jQueryPlugin ('header');
   echo $Plugin->getHeader ();
 ?>
 
@@ -61,7 +63,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $header = plugin.element,
@@ -177,7 +179,7 @@
                     type: "update",
                     item: $li.parent().parent().find(".btn-menu"),
                     title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
-                      content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=Wpt_dbCache::getFieldLength('headers', 'title')?>">`,
+                      content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
                       cb_close: () =>
                         {
                           if (!S.get ("no-unedit"))
@@ -199,7 +201,7 @@
         $header.find(".title").editable ({
           wall: $wall,
           container: $header,
-          maxLength: <?=Wpt_dbCache::getFieldLength('headers', 'title')?>,
+          maxLength: <?=DbCache::getFieldLength('headers', 'title')?>,
           triggerTags: ["th", "div"],
           fontSize: "14px",
           callbacks: {
@@ -220,21 +222,21 @@
     },
 
     // METHOD useFocusTrick ()
-    useFocusTrick: function ()
+    useFocusTrick ()
     {
       return (this.settings.wall[0].dataset.shared &&
               !$.support.touch && !H.navigatorIsEdge ());
     },
 
     // METHOD saveCurrentWidth ()
-    saveCurrentWidth: function ()
+    saveCurrentWidth ()
     {
       // Save current TH width
       this.settings.thwidth = this.element.outerWidth ();
     },
 
     // METHOD addUploadLayer ()
-    addUploadLayer: function ()
+    addUploadLayer ()
     {
       const plugin = this;
 
@@ -254,7 +256,7 @@
     // callback
     // -> This trick does not fully work with edge!
     // METHOD uploadPicture ()
-    uploadPicture: function ($item)
+    uploadPicture ($item)
     {
       const plugin = this,
             $header = plugin.element,
@@ -285,19 +287,19 @@
     },
 
     // METHOD removeUploadLayer ()
-    removeUploadLayer: function ()
+    removeUploadLayer ()
     {
       $("#upload-layer").hide ();
     },
 
-    openMenu: function ()
+    openMenu ()
     {
       if (!this.element.find(".btn-menu.fas").length)
         this.element.find(".btn-menu").click ();
     },
 
     // METHOD getImgTemplate ()
-    getImgTemplate: function (src)
+    getImgTemplate (src)
     {
       const plugin = this,
             $header = plugin.element,
@@ -371,7 +373,7 @@
     },
 
     // METHOD setImg ()
-    setImg: function (src)
+    setImg (src)
     {
       const $header = this.element,
             $img = $header.find(".img img");
@@ -388,7 +390,7 @@
     },
 
     // METHOD deleteImg ()
-    deleteImg: function ()
+    deleteImg ()
     {
       H.request_ws (
         "DELETE",
@@ -420,7 +422,7 @@
     },
 
     // METHOD update ()
-    update: function (header)
+    update (header)
     {
       if (header.hasOwnProperty ("title"))
         this.setTitle (header.title);
@@ -430,7 +432,7 @@
     },
 
     // METHOD setTitle ()
-    setTitle: function (title, resize)
+    setTitle (title, resize)
     {
       const header = this.element[0];
 
@@ -478,7 +480,7 @@
     },
 
     // METHOD edit ()
-    edit: function (success_cb, error_cb)
+    edit (success_cb, error_cb)
     {
       this.setCurrent ();
 
@@ -513,20 +515,20 @@
     },
 
     // METHOD setCurrent ()
-    setCurrent: function ()
+    setCurrent ()
     {
       this.element[0].classList.add ("current");
     },
 
     // METHOD unsetCurrent ()
-    unsetCurrent: function ()
+    unsetCurrent ()
     {
       S.reset ("header");
       this.element[0].classList.remove ("current");
     },
 
     // METHOD cancelEdit ()
-    cancelEdit: function (bubble_event_cb)
+    cancelEdit (bubble_event_cb)
     {
       const $header = this.element,
             $wall = this.settings.wall;
@@ -548,7 +550,7 @@
     },
 
     // METHOD serialize ()
-    serialize: function ()
+    serialize ()
     {
       const wall = this.settings.wall[0],
             headers = {cols: [], rows: []};
@@ -563,7 +565,7 @@
     },
 
     // METHOD unedit ()
-    unedit: function (args = {})
+    unedit (args = {})
     {
       const $wall = this.settings.wall;
       let data = null;
@@ -609,13 +611,13 @@
     },
 
     // METHOD getId ()
-    getId: function ()
+    getId ()
     {
       return this.settings.id;
     },
 
     // METHOD getSettings ()
-    getSettings: function ()
+    getSettings ()
     {
       return this.settings;
     }

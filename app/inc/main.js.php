@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('wall');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('wall');
   echo $Plugin->getHeader ();
 ?>
 
@@ -30,7 +31,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const plugin = this,
             $wall = plugin.element,
@@ -74,13 +75,16 @@
         .css({
           width: (settings.width) ? settings.width : "",
           "background-color": (settings["background-color"]) ?
-                                settings["background-color"] : "auto"
+                                 settings["background-color"] : "auto"
         })
-        .draggable({
+        .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
+
+      if (!$.support.touch)
+        $wall.draggable({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           cursor: "grab",
-          cancel: (writeAccess) ? null : "span,.title,.postit-edit",
+//          cancel: (writeAccess) ? null : "span,.title,.postit-edit",
           start: function ()
             {
               S.set ("wall-dragging", true);
@@ -100,7 +104,6 @@
               S.unset ("wall-dragging", true);
             }
         })
-        .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
       H.waitForDOMUpdate (() =>
         {
@@ -234,7 +237,7 @@
     },
 
     // METHOD displayShareAlert ()
-    displayShareAlert: function ()
+    displayShareAlert ()
     {
       const walls = wpt_userData.walls.list;
       let owner;
@@ -255,7 +258,7 @@
     },
 
     // METHOD setActive ()
-    setActive: function ()
+    setActive ()
     {
       S.reset ();
 
@@ -266,12 +269,12 @@
     },
 
     // METHOD getId ()
-    getId: function ()
+    getId ()
     {
       return this.settings.id;
     },
 
-    menu: function (args)
+    menu (args)
     {
       const $wall = S.getCurrent ("wall"),
             $menu = $("#main-menu"),
@@ -399,7 +402,7 @@
     },
 
     // METHOD closeAllMenus ()
-    closeAllMenus: function ()
+    closeAllMenus ()
     {
       // Postits menu
       this.element[0].querySelectorAll("td div.postit-menu.on").forEach (
@@ -407,28 +410,28 @@
     },
 
     // METHOD refreshUsersview ()
-    refreshUsersview: function (count)
+    refreshUsersview (count)
     {
       this.element.find("thead th:eq(0)").html ((count) ?
         `<div class="usersviewcounts"><i class="fas fa-user-friends fa-lg"></i> <span class="wpt-badge">${count}</span></div>` : "&nbsp;");
     },
 
     // METHOD checkPostitsPlugsMenu ()
-    checkPostitsPlugsMenu: function ()
+    checkPostitsPlugsMenu ()
     {
       this.element[0].querySelectorAll(".postit").forEach (
         (p) => $(p).postit ("checkPlugsMenu"));
     },
 
     // METHOD repositionPostitsPlugs ()
-    repositionPostitsPlugs: function ()
+    repositionPostitsPlugs ()
     {
       this.element[0].querySelectorAll(".postit.with-plugs").forEach (
         (p) => $(p).postit ("repositionPlugs"));
     },
 
     // METHOD removePostitsPlugs ()
-    removePostitsPlugs: function ()
+    removePostitsPlugs ()
     {
       this.element[0].querySelectorAll(".postit.with-plugs").forEach (
         (p) => $(p).postit ("removePlugs", true));
@@ -438,7 +441,7 @@
 
     // METHOD refreshPostitsPlugs ()
     //FIXME //TODO Optimize
-    refreshPostitsPlugs: function (plugs, partial = false)
+    refreshPostitsPlugs (plugs, partial = false)
     {
       const wall = this.element[0],
             hidePlugs = S.getCurrent("filters").hasClass ("plugs-hidden");
@@ -490,14 +493,14 @@
     },
 
     // METHOD hidePostitsPlugs ()
-    hidePostitsPlugs: function ()
+    hidePostitsPlugs ()
     {
       this.element[0].querySelectorAll(".postit").forEach (
         (p) => $(p).postit ("hidePlugs"));
     },
 
     // METHOD showPostitsPlugs ()
-    showPostitsPlugs: function ()
+    showPostitsPlugs ()
     {
       this.repositionPostitsPlugs ();
 
@@ -507,7 +510,7 @@
     },
 
     // METHOD refresh ()
-    refresh: function (d)
+    refresh (d)
     {
       if (d)
         this._refresh (d);
@@ -521,7 +524,7 @@
     },
 
     // METHOD _refresh ()
-    _refresh: function (d)
+    _refresh (d)
     {
       const plugin = this,
             $wall = plugin.element,
@@ -791,7 +794,7 @@
     },
 
     // METHOD openCloseAllWallsPopup ()
-    openCloseAllWallsPopup: function ()
+    openCloseAllWallsPopup ()
     {
       H.openConfirmPopup ({
         icon: "times",
@@ -801,7 +804,7 @@
     },
 
     // METHOD closeAllWalls ()
-    closeAllWalls: function (saveSession = true)
+    closeAllWalls (saveSession = true)
     {
       // Tell the other methods that we are massively closing the walls
       S.set ("closing-all", true);
@@ -815,7 +818,7 @@
     },
 
     // METHOD close ()
-    close: function ()
+    close ()
     {
       const activeTabId = "wall-"+this.settings.id,
             $activeTab = $('a[href="#'+activeTabId+'"]'),
@@ -862,7 +865,7 @@
     },
 
     // METHOD openDeletePopup ()
-    openDeletePopup: function ()
+    openDeletePopup ()
     {
       this.edit (() =>
         {
@@ -878,7 +881,7 @@
     },
 
     // METHOD delete ()
-    delete: function ()
+    delete ()
     {
       this.element[0].dataset.todelete = true;
 
@@ -892,7 +895,7 @@
     },
 
     // METHOD createColRow ()
-    createColRow: function (type)
+    createColRow (type)
     {
       const wall = this.element[0];
 
@@ -909,7 +912,7 @@
     },
 
     // METHOD addRow ()
-    addRow: function (header, row)
+    addRow (header, row)
     {
       const plugin = this,
             $wall = plugin.element,
@@ -949,7 +952,7 @@
     },
 
     // METHOD deleteRow ()
-    deleteRow: function (rowIdx)
+    deleteRow (rowIdx)
     {
       const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
@@ -968,7 +971,7 @@
     },
 
     // METHOD deleteCol ()
-    deleteCol: function (idx)
+    deleteCol (idx)
     {
       const $wall = this.element,
             $header = $wall.find("thead tr th:eq("+idx+")"),
@@ -998,7 +1001,7 @@
     },
 
     // METHOD addNew ()
-    addNew: function (args, $popup)
+    addNew (args, $popup)
     {
       const plugin = this,
             $tabs = $(".nav-tabs.walls"),
@@ -1136,7 +1139,7 @@
     },
 
     // METHOD open ()
-    open: function (args)
+    open (args)
     {
       args.load = true;
 
@@ -1144,7 +1147,7 @@
     },
 
     // METHOD clone ()
-    clone: function ()
+    clone ()
     {
       H.openConfirmPopup ({
         icon: "clone",
@@ -1176,7 +1179,7 @@
     },
 
     // METHOD export ()
-    export: function ()
+    export ()
     {
       H.openConfirmPopup ({
         icon: "file-export",
@@ -1190,13 +1193,13 @@
     },
 
     // METHOD import ()
-    import: function ()
+    import ()
     {
       $(".upload.import-wall").click ();
     },
 
     // METHOD restorePreviousSession ()
-    restorePreviousSession: function (args)
+    restorePreviousSession (args)
     {
       const walls = wpt_userData.settings.openedWalls;
 
@@ -1223,7 +1226,7 @@
     },
 
     // METHOD loadSpecific ()
-    loadSpecific: function (args)
+    loadSpecific (args)
     {
       const {wallId, postitId} = args;
 
@@ -1240,7 +1243,7 @@
     },
 
     // METHOD refreshUserWallsData ()
-    refreshUserWallsData: function (success_cb)
+    refreshUserWallsData (success_cb)
     {
       H.request_ajax (
         "GET",
@@ -1257,7 +1260,7 @@
     },
 
     // METHOD openOpenWallPopup ()
-    openOpenWallPopup: function ()
+    openOpenWallPopup ()
     {
       this.refreshUserWallsData (() =>
         {
@@ -1271,7 +1274,7 @@
     },
 
     // METHOD openNamePopup ()
-    openNamePopup: function ()
+    openNamePopup ()
     {
       const $popup = $("#createWallPopup");
 
@@ -1281,7 +1284,7 @@
     },
 
     // METHOD displayWallUsersview()
-    displayWallUsersview: function ()
+    displayWallUsersview ()
     {
       //TODO We should use ajax instead of ws
       H.request_ws (
@@ -1307,7 +1310,7 @@
     },
 
     // METHOD displayWallProperties ()
-    displayWallProperties: function (args)
+    displayWallProperties (args)
     {
       const $wall = this.element;
 
@@ -1378,7 +1381,7 @@
     },
 
     // METHOD openPropertiesPopup ()
-    openPropertiesPopup: function (args)
+    openPropertiesPopup (args)
     {
       if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
         this.edit (() => this.displayWallProperties (args));
@@ -1387,41 +1390,45 @@
     },
 
     // METHOD getName ()
-    getName: function ()
+    getName ()
     {
       return this.settings.tabLink.find("span.val").text ();
     },
 
     // METHOD setName ()
-    setName: function (name, noicon)
+    setName (name, noIcon)
     {
-      const $div = this.settings.tabLink;
+      const $div = this.settings.tabLink,
+            notOwner = (this.settings.ownerid != wpt_userData.id);
 
-      let html = (noicon) ?
+      let html = (noIcon) ?
         `<i class="fas fa-cog fa-spin fa-fw"></i>` :
          H.getAccessIcon (this.settings.access);
 
-      if (!noicon && this.settings.ownerid != wpt_userData.id)
-        html = `<i class="fas fa-user-slash notowner" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
+      if (!noIcon && notOwner)
+        html = `<i class="fas fa-user-slash notowner" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
 
       $div.find('span.icon').html (html);
       $div.find('span.val').text (H.noHTML (name));
+
+      if (!noIcon && notOwner)
+        H.enableTooltips ($div.find('span.icon'));
     },
 
     // METHOD getDescription ()
-    getDescription: function ()
+    getDescription ()
     {
       return this.settings.tabLink[0].dataset.description;
     },
 
     // METHOD setDescription ()
-    setDescription: function (description)
+    setDescription (description)
     {
       this.settings.tabLink[0].dataset.description = H.noHTML (description);
     },
 
     // METHOD fixSize ()
-    fixSize: function (oldW, newW)
+    fixSize (oldW, newW)
     {
       if (_refreshing)
         return;
@@ -1447,7 +1454,7 @@
 
     // METHOD zoom ()
     //FIXME KO with some browsers and touch devices
-    zoom: function (args)
+    zoom (args)
     {
       const $zoom = $(".tab-content.walls"),
             zoom0 = $zoom[0],
@@ -1554,7 +1561,7 @@
     },
 
     // METHOD screen ()
-    screen: function ()
+    screen ()
     {
       const step = .005,
             wall = this.element[0],
@@ -1587,7 +1594,7 @@
     },
 
     // METHOD edit ()
-    edit: function (success_cb, error_cb, todelete = false)
+    edit (success_cb, error_cb, todelete = false)
     {
       _originalObject = this.serialize ();
 
@@ -1609,7 +1616,8 @@
       );
     },
 
-    serialize: function ()
+    // METHOD serialize ()
+    serialize ()
     {
       return {
         name: this.getName (),
@@ -1618,7 +1626,7 @@
     },
 
     // METHOD unedit ()
-    unedit: function (success_cb, error_cb)
+    unedit (success_cb, error_cb)
     {
       let data = null;
 
@@ -1660,7 +1668,7 @@
     },
 
     // METHOD displayExternalRef ()
-    displayExternalRef: function (v)
+    displayExternalRef (v)
     {
       const update = (v !== undefined),
             val = update ? v : this.settings.displayexternalref,
@@ -1686,7 +1694,7 @@
     },
 
     // METHOD haveExternalRef ()
-    haveExternalRef: function ()
+    haveExternalRef ()
     {
       return this.element[0].querySelector (".postit[data-haveexternalref]");
     },

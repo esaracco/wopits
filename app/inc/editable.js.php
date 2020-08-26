@@ -1,7 +1,7 @@
 <?php
+  require_once (__DIR__.'/../class/Common.php');
 
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('editable');
+  $Plugin = new Wopits\jQueryPlugin ('editable');
   echo $Plugin->getHeader ();
 ?>
 
@@ -43,7 +43,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             editable = plugin.element[0],
@@ -161,13 +161,13 @@
     },
 
     // METHOD setValue ()
-    setValue: function (v)
+    setValue (v)
     {
       this.settings._input.value = v;
     },
 
     // METHOD cancelAll ()
-    cancelAll: function ()
+    cancelAll ()
     {
       this.element.each (function ()
       {
@@ -176,14 +176,14 @@
     },
 
     // METHOD cancel ()
-    cancel: function ()
+    cancel ()
     {
       if (this.element.hasClass ("editing"))
         $(this.settings._input).trigger ("blur");
     },
 
     // METHOD disablePlugins ()
-    disablePlugins: function (type)
+    disablePlugins (type)
     {
       const settings = this.settings;
       let $plug;
@@ -201,7 +201,7 @@
 
     // METHOD resize ()
     // We also pass the value to enable text pasting.
-    resize: function (v)
+    resize (v)
     {
       const settings = this.settings,
             input = settings._input;

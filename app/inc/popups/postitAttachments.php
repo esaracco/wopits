@@ -27,14 +27,14 @@
       <div class="title">
         <dt><?=_("Title")?></dt>
         <dd>
-          <div class="input-group"><input autofocus type="text" class="form-control adm" maxlength="<?=Wpt_dbCache::getFieldLength('postits_attachments', 'title')?>"></div>
+          <div class="input-group"><input autofocus type="text" class="form-control adm" maxlength="<?=Wopits\DbCache::getFieldLength('postits_attachments', 'title')?>"></div>
          <div class="ro"></div>
         </dd>
       </div>
       <div class="description">
         <dt><?=_("Description")?></dt>
         <dd>
-          <textarea class="form-control adm" maxlength="<?=Wpt_dbCache::getFieldLength('postits_attachments', 'description')?>"></textarea>
+          <textarea class="form-control adm" maxlength="<?=Wopits\DbCache::getFieldLength('postits_attachments', 'description')?>"></textarea>
           <div class="ro"></div>
         </dd>
       </div>

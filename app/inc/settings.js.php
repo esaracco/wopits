@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('settings');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('settings');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $tc = $("#themeChooserPopup"),
@@ -82,7 +83,7 @@
     },
 
     // METHOD applyLocale ()
-    applyLocale: function (locale)
+    applyLocale (locale)
     {
       this.set ({locale: locale}, () =>
         {
@@ -93,7 +94,7 @@
     },
 
     // METHOD applyTimezone ()
-    applyTimezone: function (timezone)
+    applyTimezone (timezone)
     {
       this.set ({timezone: timezone}, () =>
         {
@@ -104,7 +105,7 @@
     },
 
     // METHOD applyTheme ()
-    applyTheme: function ()
+    applyTheme ()
     {
       const theme = wpt_userData.settings.theme||"theme-default";
 
@@ -117,7 +118,7 @@
     },
 
     // METHOD saveOpenedWalls ()
-    saveOpenedWalls: function (activeWall)
+    saveOpenedWalls (activeWall)
     {
       let openedWalls = [];
 
@@ -138,7 +139,7 @@
     },
 
     // METHOD set ()
-    set: function (keyVal, cb)
+    set (keyVal, cb)
     {
       wpt_userData.settings = $.extend (wpt_userData.settings, keyVal);
 
@@ -162,7 +163,7 @@
     },
 
     // METHOD getVersion ()
-    get: function (key, wallId)
+    get (key, wallId)
     {
       // version
       if (key == "version")
@@ -187,7 +188,7 @@
     },
 
     // METHOD removeWallBackground ()
-    removeWallBackground: function (wallId)
+    removeWallBackground (wallId)
     {
       if (wpt_userData.settings.walls &&
           wpt_userData.settings.walls.specific[wallId])
@@ -198,7 +199,7 @@
     },
 
     // METHOD setWallBackground ()
-    setWallBackground: function (data, wallId)
+    setWallBackground (data, wallId)
     {
       if (!wpt_userData.settings.walls)
         wpt_userData.settings["walls"] = {
@@ -215,13 +216,13 @@
     },
 
     // METHOD openThemeChooser ()
-    openThemeChooser: function ()
+    openThemeChooser ()
     {
       H.openModal ($("#themeChooserPopup"));
     },
 
     // METHOD open ()
-    open: function ()
+    open ()
     {
       const plugin = this,
             $settings = plugin.element,

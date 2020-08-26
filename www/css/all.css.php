@@ -1,5 +1,5 @@
 <?php
-  require_once (__DIR__.'/../../app/class/Wpt_common.php');
+  require_once (__DIR__.'/../../app/class/Common.php');
 
   if (php_sapi_name() != 'cli')
     header ('Content-type: text/css');

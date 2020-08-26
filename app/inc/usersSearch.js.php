@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('usersSearch');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('usersSearch');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $ac = plugin.element,
@@ -86,7 +87,7 @@
     },
 
     // METHOD reset ()
-    reset: function (args)
+    reset (args)
     {
       const $ac = this.element;
 
@@ -111,7 +112,7 @@
     },
 
     // METHOD removeGroupUser ()
-    removeGroupUser: function (args)
+    removeGroupUser (args)
     {
       let service = "group/"+args.groupId+"/removeUser/"+args.userId;
 
@@ -136,7 +137,7 @@
     },
 
     // METHOD addGroupUser ()
-    addGroupUser: function (args)
+    addGroupUser (args)
     {
       let service = "group/"+args.groupId+"/addUser/"+args.userId;
 
@@ -167,7 +168,7 @@
     },
 
     // METHOD displayUsers ()
-    displayUsers: function (args)
+    displayUsers (args)
     {
       const $ac = this.element,
             delegateAdminId = $ac[0].dataset.delegateadminid||0;
@@ -214,7 +215,7 @@
     },
 
     // METHOD search ()
-    search: function (args)
+    search (args)
     {
       const $ac = this.element,
             wallId = S.getCurrent("wall").wall ("getId"),

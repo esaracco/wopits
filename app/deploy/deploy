@@ -21,7 +21,8 @@
 
   require ($appConf);
   require ($deployConf);
-  require (__DIR__.'/../class/Wpt_common.php');
+
+  use Wopits\DbCache;
 
   $options = getopt ('hve:');
 
@@ -427,7 +428,7 @@
       foreach ($phps as $php => $obj)
       {
         if (preg_match ('/\.(example|template)\./', $php) ||
-            !preg_match ('/[^css,js].php$/', $php)) continue;
+            !preg_match ('/(?<!css|js)\.php$/', $php)) continue;
 
         $dest = str_replace ($this->srcAppPath, $env['build-path'], $php);
         $destdir = dirname ($dest);
@@ -441,10 +442,10 @@
         $data = $this->_processWptCode (file_get_contents ("$dest-tmp"));
 
         // Add static data about DB structure.
-        if (strpos ($dest, 'Wpt_dbCache.php') !== false)
+        if (strpos ($dest, 'DbCache.php') !== false)
           $data = preg_replace ('/}\s*$/',
             'public static function getDBDescription(){return '.
-             var_export(Wpt_dbCache::getDBDescription(),true).';}}', $data);
+             var_export(DbCache::getDBDescription(),true).';}}', $data);
 
         file_put_contents ("$dest-tmp", $data);
     
@@ -649,7 +650,8 @@
             {
               case 'WPT_POPUPS':
                 foreach (constant($m1[1])[$m1[2]] as $f)
-                  $inject .= file_get_contents(__DIR__."/../inc/popups/$f.php");
+                  $inject .= $this->_processWptCode (
+                    file_get_contents(__DIR__."/../inc/popups/$f.php"));
                 break;
             }
           }

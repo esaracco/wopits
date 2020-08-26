@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('tagPicker');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('tagPicker');
   echo $Plugin->getHeader ();
 ?>
 
@@ -20,7 +21,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $picker = plugin.element;
@@ -62,13 +63,13 @@
     },
 
     // METHOD getTagsList ()
-    getTagsList: function ()
+    getTagsList ()
     {
       return [<?='"'.join ('","', array_keys (WPT_MODULES['tagPicker']['items'])).'"'?>];
     },
 
     // METHOD open ()
-    open: function (args)
+    open (args)
     {
       const plugin = this,
             $picker = plugin.element,
@@ -102,7 +103,7 @@
     },
 
     // METHOD close ()
-    close: function ()
+    close ()
     { 
       if (this.element.length)
       {
@@ -112,7 +113,7 @@
     },
 
     // METHOD refreshPostitDataTag ()
-    refreshPostitDataTag: function ($postit)
+    refreshPostitDataTag ($postit)
     {
       const postit0 = $postit ? $postit[0] : S.getCurrent("postit")[0];
       let dataTag = "";
@@ -132,7 +133,7 @@
     },
 
     // METHOD getHTMLFromString ()
-    getHTMLFromString: function (str)
+    getHTMLFromString (str)
     {
       str = str.replace(/(^,|,$)/g, '');
 

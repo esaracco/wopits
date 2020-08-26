@@ -1,7 +1,9 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  require_once (__DIR__.'/../class/Wpt_dbCache.php');
-  $Plugin = new Wpt_jQueryPlugins ('postit');
+  require_once (__DIR__.'/../class/Common.php');
+
+  use Wopits\DbCache;
+
+  $Plugin = new Wopits\jQueryPlugin ('postit');
   echo $Plugin->getHeader ();
 ?>
 
@@ -64,7 +66,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const plugin = this,
             $postit = plugin.element,
@@ -724,7 +726,7 @@
         $postit.find(".title").editable ({
           wall: $wall,
           container: $postit.find (".postit-header"),
-          maxLength: <?=Wpt_dbCache::getFieldLength('postits', 'title')?>,
+          maxLength: <?=DbCache::getFieldLength('postits', 'title')?>,
           triggerTags: ["span"],
           fontSize: "14px",
           callbacks: {
@@ -752,7 +754,7 @@
     },
 
     // METHOD open ()
-    open: function ()
+    open ()
     {
       const plugin = this,
             postit = plugin.element[0],
@@ -810,7 +812,7 @@
     },
 
     // METHOD displayDeadlineAlert ()
-    displayDeadlineAlert: function ()
+    displayDeadlineAlert ()
     {
       const data = this.element[0].dataset;
       let content;
@@ -848,7 +850,7 @@
     },
 
     // METHOD cancelPlugAction ()
-    cancelPlugAction: function (full = true, unedit = true)
+    cancelPlugAction (full = true, unedit = true)
     {
       if (_plugRabbit.line)
       {
@@ -870,19 +872,19 @@
     },
 
     // METHOD havePlugs ()
-    havePlugs: function ()
+    havePlugs ()
     {
       return (this.settings._plugs||[]).length;
     },
 
     // METHOD getPlugsIds ()
-    getPlugsIds: function ()
+    getPlugsIds ()
     {
       return this.element[0].dataset.plugs.split (",");
     },
 
     // METHOD getPlugTemplate ()
-    getPlugTemplate: function (start, end, label)
+    getPlugTemplate (start, end, label)
     {
       const line = new LeaderLine (
               start,
@@ -910,7 +912,7 @@
     },
 
     // METHOD applyThemeToPlugs ()
-    applyThemeToPlugs: function ()
+    applyThemeToPlugs ()
     {
       const settings = this.settings,
             shadowColor = $(".bg-dark").css ("background-color");
@@ -930,7 +932,7 @@
     },
 
     // METHOD applyTheme ()
-    applyTheme: function ()
+    applyTheme ()
     {
       document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
         {
@@ -939,7 +941,7 @@
     },
 
     // METHOD resetPlugsUndo ()
-    resetPlugsUndo: function ()
+    resetPlugsUndo ()
     {
       this.settings.wall[0].querySelectorAll(".postit").forEach ((postit)=>
         {
@@ -954,7 +956,7 @@
     },
 
     // METHOD checkPlugsMenu ()
-    checkPlugsMenu: function ()
+    checkPlugsMenu ()
     {
       const menu = this.element.find (
         ".postit-menu li[data-action='delete-plugs'] .dropdown-item")[0];
@@ -966,7 +968,7 @@
     },
 
     // METHOD updatePlugLabel ()
-    updatePlugLabel: function (args)
+    updatePlugLabel (args)
     {
       const label = H.noHTML (args.label);
 
@@ -996,7 +998,7 @@
     },
 
     // METHOD addPlugLabel ()
-    addPlugLabel: function (plug, $svg)
+    addPlugLabel (plug, $svg)
     {
       const labelId = plug.startId+"-"+plug.endId,
             $div = this.settings.plugsContainer;
@@ -1024,7 +1026,7 @@
     },
 
     // METHOD addPlug ()
-    addPlug: function (plug)
+    addPlug (plug)
     {
       const $start = this.element,
             $end = $(plug.obj.end),
@@ -1054,7 +1056,7 @@
     },
 
     // METHOD defragPlugsArray ()
-    defragPlugsArray: function ()
+    defragPlugsArray ()
     {
       const $postit = this.element,
             settings = this.settings;
@@ -1079,7 +1081,7 @@
     },
 
     // METHOD getPlugById ()
-    getPlugById: function (plugId)
+    getPlugById (plugId)
     {
       for (let i = 0, iLen = this.settings._plugs.length; i < iLen; i++)
       {
@@ -1091,7 +1093,7 @@
     },
 
     // METHOD removePlug ()
-    removePlug: function (plug, noedit)
+    removePlug (plug, noedit)
     {
       let toDefrag = {};
 
@@ -1128,7 +1130,7 @@
     },
 
     // METHOD removePlugs ()
-    removePlugs: function (noedit)
+    removePlugs (noedit)
     {
       const $postit = this.element,
             settings = this.settings,
@@ -1177,7 +1179,7 @@
     },
 
     // METHOD hidePlugs ()
-    hidePlugs: function ()
+    hidePlugs ()
     {
       if (!this.settings.wall) return;
 
@@ -1191,7 +1193,7 @@
     },
 
     // METHOD showPlugs ()
-    showPlugs: function ()
+    showPlugs ()
     {
       if (!this.settings.wall) return;
 
@@ -1207,7 +1209,7 @@
     },
 
     // METHOD repositionPlugs ()
-    repositionPlugs: function ()
+    repositionPlugs ()
     {
       const div = this.settings.plugsContainer[0];
 
@@ -1229,25 +1231,25 @@
     },
 
     // METHOD getSettings ()
-    getSettings: function ()
+    getSettings ()
     {
       return this.settings;
     },
 
     // METHOD getId ()
-    getId: function ()
+    getId ()
     {
       return this.settings.id;
     },
 
     // METHOD getCellId ()
-    getCellId: function ()
+    getCellId ()
     {
       return this.settings.cellId;
     },
 
     // METHOD serializePlugs ()
-    serializePlugs: function ()
+    serializePlugs ()
     {
       const settings = this.settings;
       let ret = {};
@@ -1265,7 +1267,7 @@
     },
 
     // METHOD serialize ()
-    serialize: function ()
+    serialize ()
     {
       const postits = [],
             displayExternalRef =
@@ -1326,7 +1328,7 @@
     },
 
     // METHOD setDeadline ()
-    setDeadline: function (args)
+    setDeadline (args)
     {
       const postit = this.element[0],
             date = postit.querySelector (".dates .end"),
@@ -1378,26 +1380,26 @@
     },
 
     // METHOD resetDeadline ()
-    resetDeadline: function ()
+    resetDeadline ()
     {
       this.setDeadline ({deadline: "..."});
     },
 
     // METHOD setCreationDate ()
-    setCreationDate: function (date)
+    setCreationDate (date)
     {
       this.element.find(".dates .creation span").text (date.trim ());
     },
 
     // METHOD setTitle ()
-    setTitle: function (title)
+    setTitle (title)
     {
       this.element.find(".postit-header span.title")
         .text (H.noHTML(title) || "...");
     },
 
     // METHOD setContent ()
-    setContent: function (newContent, isInit)
+    setContent (newContent, isInit)
     {
       const postit = this.element[0],
             edit = postit.querySelector ("div.postit-edit");
@@ -1421,7 +1423,7 @@
     },
 
     // METHOD openAskForExternalRefPopup ()
-    openAskForExternalRefPopup: function (args)
+    openAskForExternalRefPopup (args)
     {
       let ask = (this.getExternalRef () &&
                  this.settings.wall.wall ("displayExternalRef") != 1);
@@ -1439,7 +1441,7 @@
     },
 
     // METHOD getExternalRef ()
-    getExternalRef: function (content)
+    getExternalRef (content)
     {
       return (content !== undefined) ?
                content.match (/(src\s*=\s*["']?http[^"'\s]+")/ig) :
@@ -1447,7 +1449,7 @@
     },
 
     // METHOD blockExternalRef ()
-    blockExternalRef: function (content, externalRef)
+    blockExternalRef (content, externalRef)
     {
       const el = this.element.find("div.postit-edit")[0];
       let c = content||el.innerHTML;
@@ -1468,7 +1470,7 @@
     },
 
     // METHOD unblockExternalRef ()
-    unblockExternalRef: function (content)
+    unblockExternalRef (content)
     {
       if (content !== undefined)
         return content.replace (/external\-src/, "src");
@@ -1481,7 +1483,7 @@
     },
 
     // METHOD setPosition ()
-    setPosition: function (args)
+    setPosition (args)
     {
       const postit = this.element[0];
 
@@ -1493,7 +1495,7 @@
     },
 
     // METHOD fixPosition ()
-    fixPosition: function (cPos, cH, cW)
+    fixPosition (cPos, cH, cW)
     {
        const postit = this.element[0],
              phTop = postit.querySelector(".postit-header")
@@ -1534,7 +1536,7 @@
     },
 
     // METHOD getClassColor ()
-    getClassColor: function ()
+    getClassColor ()
     {
       const classe = this.element[0].className.match(/color\-[a-z]+/);
 
@@ -1542,7 +1544,7 @@
     },
 
     // METHOD setClassColor ()
-    setClassColor: function (newClass, $item)
+    setClassColor (newClass, $item)
     {
        const item = ($item) ? $item[0] : this.element[0],
              classes = item.className.replace(/color\-[a-z]+/, "");
@@ -1551,7 +1553,7 @@
     },
 
     // METHOD setPopupColor ()
-    setPopupColor: function ($popup)
+    setPopupColor ($popup)
     {
       const classe = this.getClassColor ();
 
@@ -1561,7 +1563,7 @@
     },
 
     // METHOD setAttachmentsCount ()
-    setAttachmentsCount: function (count)
+    setAttachmentsCount (count)
     {
       this.element.find(".attachmentscount")
         .css("display", (count) ? "inline-block": "none")
@@ -1570,7 +1572,7 @@
 
     //TODO Attachments plugin?
     // METHOD getAttachmentTemplate ()
-    getAttachmentTemplate: function (item, noWriteAccess)
+    getAttachmentTemplate (item, noWriteAccess)
     {
       const tz = wpt_userData.settings.timezone,
             d = `<button type="button" data-action="delete"><i class="fas fa-trash fa-xs fa-fw"></i></button>`,
@@ -1581,13 +1583,13 @@
     },
 
     // METHOD getAttachmentsCount ()
-    getAttachmentsCount: function ()
+    getAttachmentsCount ()
     {
       return parseInt (this.element.find(".attachmentscount span").text ());
     },
 
     // METHOD displayAttachments ()
-    displayAttachments: function ()
+    displayAttachments ()
     {
       const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
@@ -1627,39 +1629,39 @@
     },
 
     // METHOD incAttachmentsCount ()
-    incAttachmentsCount: function ()
+    incAttachmentsCount ()
     {
       this.setAttachmentsCount (this.getAttachmentsCount () + 1);
     },
 
     // METHOD decAttachmentsCount ()
-    decAttachmentsCount: function ()
+    decAttachmentsCount ()
     {
       this.setAttachmentsCount (this.getAttachmentsCount () - 1);
     },
 
     // METHOD uploadAttachment ()
-    uploadAttachment: function ()
+    uploadAttachment ()
     {
       $(".upload.postit-attachment").click ();
     },
 
     // METHOD setCurrent ()
-    setCurrent: function ()
+    setCurrent ()
     {
       S.reset ("postit");
       this.element[0].classList.add ("current")
     },
 
     // METHOD unsetCurrent ()
-    unsetCurrent: function ()
+    unsetCurrent ()
     {
       S.reset ("postit");
       this.element[0].classList.remove ("current");
     },
 
     // METHOD insert ()
-    insert: function ()
+    insert ()
     {
       const $postit = this.element,
             data = this.serialize()[0];
@@ -1695,7 +1697,7 @@
     },
 
     // METHOD update ()
-    update: function (d, cell)
+    update (d, cell)
     {
       const $postit = this.element,
             postit0 = $postit[0],
@@ -1748,7 +1750,7 @@
     },
 
     // METHOD delete ()
-    delete: function ()
+    delete ()
     {
       S.reset ();
 
@@ -1756,7 +1758,7 @@
     },
 
     // METHOD deleteAttachment ()
-    deleteAttachment: function (id)
+    deleteAttachment (id)
     {
       const $li = $_attachmentsPopup.find ("li[data-id='"+id+"']");
 
@@ -1791,7 +1793,7 @@
     },
 
     // METHOD updateAttachment ()
-    updateAttachment: function (args)
+    updateAttachment (args)
     {
       H.request_ajax (
         "POST",
@@ -1811,7 +1813,7 @@
     },
 
     // METHOD edit ()
-    edit: function (args, success_cb, error_cb)
+    edit (args, success_cb, error_cb)
     {
       const data = {cellId: this.settings.cellId};
 
@@ -1856,7 +1858,7 @@
     },
 
     // METHOD unedit ()
-    unedit: function (args = {})
+    unedit (args = {})
     {
       const $postit = this.element,
             plugsToSave = S.get ("plugs-to-save");
@@ -1922,7 +1924,7 @@
     },
 
     // METHOD cancelEdit ()
-    cancelEdit: function (args = {})
+    cancelEdit (args = {})
     {
       $("body").css ("cursor", "auto");
 
@@ -1939,21 +1941,21 @@
     },
 
     // METHOD openMenu ()
-    openMenu: function ()
+    openMenu ()
     {
       if (!this.element.find(".postit-menu.on").length)
         this.element.find(".postit-header [data-action='menu']").click ();
     },
 
     // METHOD closePlugMenu ()
-    closePlugMenu: function ()
+    closePlugMenu ()
     {
       if (this.element.find(".postit-menu.on").length)
         this.element.find(".postit-menu .dropdown-menu").dropdown ("hide");
     },
 
     // METHOD closeMenu ()
-    closeMenu: function ()
+    closeMenu ()
     {
       if (this.element.find(".postit-menu.on").length)
         this.element.find(".postit-header [data-action='menu']").click ();
@@ -2090,7 +2092,7 @@
                       type: "update",
                       item: $label,
                       title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relationship name")?>`,
-                      content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=Wpt_dbCache::getFieldLength('postits_plugs', 'label')?>">`,
+                      content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
                       cb_close: __unedit,
                       cb_ok: ($popover) =>
                         {

@@ -1,35 +1,39 @@
 <?php
-  require_once (__DIR__.'/class/Wpt_common.php');
 
-  $version = Wpt_common::getWopitsVersion ();
-  $slocale = $_SESSION['slocale'];
-  $userId = $_SESSION['userId'] ?? 0;
+require_once (__DIR__.'/class/Common.php');
 
-  if ($userId)
-    $User->userId = $userId;
+use Wopits\Common;
 
-  //<WPTPROD-remove>
-  if (WPT_DEV_MODE)
-  {
-    $css = '/css/all.css.php';
-    $js = '/js/all.js.php';
-  }
-  else
-  {
-  //</WPTPROD-remove>
-    $css = '/css/all.css';
-    $js = "/js/all-$slocale.js";
-  }//WPTPROD-remove
+$version = Common::getWopitsVersion ();
+$slocale = $_SESSION['slocale'];
+$userId = $_SESSION['userId'] ?? 0;
 
-  $css .= "?$version";
-  $js .= "?$version";
+if ($userId)
+  $User->userId = $userId;
 
-  if (!empty($_SESSION['upgradeDone']))
-  {
-    $upgradeDone = true;
+//<WPTPROD-remove>
+if (WPT_DEV_MODE)
+{
+  $css = '/css/all.css.php';
+  $js = '/js/all.js.php';
+}
+else
+{
+//</WPTPROD-remove>
+  $css = '/css/all.css';
+  $js = "/js/all-$slocale.js";
+}//WPTPROD-remove
 
-    unset ($_SESSION['upgradeDone']);
-  }
+$css .= "?$version";
+$js .= "?$version";
+
+if (!empty($_SESSION['upgradeDone']))
+{
+  $upgradeDone = true;
+
+  unset ($_SESSION['upgradeDone']);
+}
+
 ?>
 <!doctype html>
 <html lang="<?=$slocale?>" data-fulllocale="<?=$_SESSION['locale']?>" data-version="<?=$version?>" <?=(isset ($upgradeDone))?'data-upgradedone="1"':''?>>

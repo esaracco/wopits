@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('datePicker');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('datePicker');
   echo $Plugin->getHeader ();
 ?>
 
@@ -9,7 +10,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const $popup = this.element,
             $picker = $popup.find (".date-picker"),
@@ -57,7 +58,7 @@
     },
 
     // METHOD open ()
-    open: function ()
+    open ()
     {
       const $popup = this.element,
             $picker = this.settings.$picker,
@@ -100,7 +101,7 @@
     },
 
     // METHOD close ()
-    save: function ()
+    save ()
     {
       const $popup = this.element,
             $picker = this.settings.$picker,

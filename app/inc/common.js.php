@@ -1275,13 +1275,14 @@ class WHelp
   // METHOD enableTooltips ()
   enableTooltips ($item)
   {
-    if (!$.support.touch)
-    {
-      // Enable tooltips on the element.
-      $item.tooltip ();
-      // Enable tooltips on children.
-      $item.find("[data-toggle='tooltip']").tooltip ();
-    }
+//    if (!$.support.touch)
+//    {
+      $item
+        // Enable tooltips on the element.
+        .tooltip()
+        // Enable tooltips on children.
+        .find("[data-toggle='tooltip']").tooltip ();
+//    }
   }
   
   // METHOD request_ws ()

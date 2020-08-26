@@ -9,7 +9,7 @@ wopits - _A world of post-its_
 
 **wopits is multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes** to share and collaborate with other users simultaneously.
 
-It is possible to edit several post-its walls at the same time, to add attachments, to insert images, to create relationships etc.
+It is possible to edit several walls of sticky notes at the same time, to add attachments, to insert images, to create relationships etc.
 
 Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
@@ -18,14 +18,14 @@ If you don't want to bother to install it yourself, just create an account on th
 INSTALLATION
 ------------
 
-> You will only need Apache, MySQL or PostgreSQL and PHP 7 to make it work!
-> Even deployment is not required (although recommended): you can directly use the directory `www/` of the Git repository as Apache DocumentRoot.
+> You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis ans Swoole to make it work.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install Apache, MySQL or PostgreSQL and PHP 7 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from source (branch v4.4.x).
+- Install Apache, MySQL or PostgreSQL, Redis and PHP >= 7.3 (with `php-redis`, `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
-- Create a database and a user (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
+- Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
 
 - With **MySQL**:
 

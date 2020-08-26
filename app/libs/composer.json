@@ -1,7 +1,6 @@
 {
   "require": {
     "phpmailer/phpmailer": "^6.1",
-    "cboden/ratchet": "^0.4",
-    "ratchet/pawl": "^0.3.4"
+    "easyswoole/redis": "^1.3"
   }
 }

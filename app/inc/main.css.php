@@ -1,4 +1,8 @@
-<?php require_once (__DIR__.'/../class/Wpt_common.php')?>
+<?php
+  require_once (__DIR__.'/../class/Common.php');
+
+  use Wopits\Common;
+?>
 * {
   outline: none !important;
 }
@@ -230,11 +234,11 @@ i.settings {
   z-index:5050;
 }
 
-/*
 .tooltip-inner {
-  font-style:italic;
+  text-align:left;
 }
 
+/*
 .tooltip.bs-tooltip-right .arrow:before {
   border-right-color:#663000 !important;
 }
@@ -249,8 +253,13 @@ i.settings {
 }
 */
 
-i.fa-info-circle[data-toggle="tooltip"] {
+button[data-toggle="tooltip"].help {
+  margin:0 0 0 5px;
+  padding:0;
+  border:0;
+  background:transparent;
   position:absolute;
+  top:-5px;
   cursor:help;
 }
 

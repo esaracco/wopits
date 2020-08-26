@@ -1,6 +1,9 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('account');
+  require_once (__DIR__.'/../class/Common.php');
+
+  use Wopits\DbCache;
+
+  $Plugin = new Wopits\jQueryPlugin ('account');
   echo $Plugin->getHeader ();
 ?>
 
@@ -16,7 +19,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $account = plugin.element;
@@ -221,7 +224,7 @@
                 case "username":
                   title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
                   $input
-                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'username')?>")
+                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
                     .attr("placeholder", "<?=_("username")?>")
                     .attr("autocorrect", "off")
                     .attr ("autocapitalize", "none");
@@ -229,13 +232,13 @@
                 case "fullname":
                   title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
                   $input
-                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'fullname')?>")
+                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
                     .attr("placeholder", "<?=_("full name")?>");
                   break;
                 case "email":
                   title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
                   $input
-                    .attr("maxlength", "<?=Wpt_dbCache::getFieldLength('users', 'email')?>")
+                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
                     .attr("placeholder", "<?=_("email")?>")
                     .attr("autocorrect", "off")
                     .attr ("autocapitalize", "none");
@@ -260,20 +263,20 @@
     },
 
     // METHOD updateMainMenu ()
-    updateMainMenu: function ()
+    updateMainMenu ()
     {
       document.querySelector(".invisible-mode").style.display =
         (wpt_userData.settings.visible == 1) ? "none" : "inline-block";
     },
 
     // METHOD getProp ()
-    getProp: function (prop)
+    getProp (prop)
     {
       return this.element.find("input[name='"+prop+"']").val ();
     },
 
     // METHOD deletePicture ()
-    deletePicture: function ()
+    deletePicture ()
     {
       const $account = this.element;
 
@@ -293,7 +296,7 @@
     },
 
     // METHOD delete ()
-    delete: function ()
+    delete ()
     {
       H.request_ajax (
         "DELETE",
@@ -310,7 +313,7 @@
     },
 
     // METHOD updateField ()
-    updateField: function (args, noclosure)
+    updateField (args, noclosure)
     {
       const $account = this.element;
 

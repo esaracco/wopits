@@ -1,5 +1,5 @@
 <?php
-  $user = (new Wpt_user (['userId' => $_SESSION['userId']]))->getUser();
+  $user = (new Wopits\User (['userId' => $_SESSION['userId']]))->getUser();
 ?>
 <div class="modal m-fullscreen" id="accountPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
@@ -58,13 +58,13 @@
 
         <div class="input-group mb-3">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-address-card fa-fw"></i></span></div>
-          <textarea class="form-control" name="about" data-oldvalue="<?=htmlentities($user['about'])?>" placeholder="<?=_("About you")?>" maxlength="<?=Wpt_dbCache::getFieldLength('users', 'about')?>"><?=$user['about']?></textarea>
+          <textarea class="form-control" name="about" data-oldvalue="<?=htmlentities($user['about'])?>" placeholder="<?=_("About you")?>" maxlength="<?=Wopits\DbCache::getFieldLength('users', 'about')?>"><?=$user['about']?></textarea>
         </div>
         </div>
 
           <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" name="visible" id="visible"<?=($user['visible'] != 1)?' checked':''?>>
-            <label class="custom-control-label" for="visible"> <?=_("Invisible mode")?> <i class="fas fa-info-circle fa-xs" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"></i></label>
+            <label class="custom-control-label" for="visible"> <?=_("Invisible mode")?></label> <button type="button" class="help" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"><i class="fas fa-info-circle fa-xs"></i></button>
         </div>
 
         </form>

@@ -1,6 +1,7 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('login');
+  require_once (__DIR__.'/../class/Common.php');
+
+  $Plugin = new Wopits\jQueryPlugin ('login');
   echo $Plugin->getHeader ();
 ?>
 
@@ -11,7 +12,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function (args)
+    init (args)
     {
       const plugin = this,
             $login = plugin.element,
@@ -182,7 +183,7 @@
     },
 
     // METHOD resetCreateUserForm ()
-    resetCreateUserForm: function ()
+    resetCreateUserForm ()
     {
       const $popup = $("#createAccountPopup");
 
@@ -195,7 +196,7 @@
     },
 
     // METHOD login ()
-    login: function (args)
+    login (args)
     {
       H.request_ajax (
         "POST",
@@ -213,7 +214,7 @@
     },
 
     // METHOD logout ()
-    logout: function (args = {})
+    logout (args = {})
     {
       location.href = "/login.php";
 
@@ -226,7 +227,7 @@
     },
 
     // METHOD createUser ()
-    createUser: function (args)
+    createUser (args)
     {
       H.request_ajax (
         "PUT",
@@ -247,7 +248,7 @@
     },
 
     // METHOD resetPassword ()
-    resetPassword: function (args)
+    resetPassword (args)
     {
       H.request_ajax (
         "POST",

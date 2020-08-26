@@ -1,6 +1,9 @@
 <?php
-  require_once (__DIR__.'/../class/Wpt_jQueryPlugins.php');
-  $Plugin = new Wpt_jQueryPlugins ('filters');
+  require_once (__DIR__.'/../class/Common.php');
+
+  use Wopits\jQueryPlugin;
+
+  $Plugin = new jQueryPlugin ('filters');
   echo $Plugin->getHeader ();
 ?>
 
@@ -11,7 +14,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init: function ()
+    init ()
     {
       const plugin = this,
             $filters = plugin.element,
@@ -64,19 +67,19 @@
     },
 
     // METHOD hide ()
-    hide: function ()
+    hide ()
     {
       if (this.element.is (":visible"))
         $("#main-menu").find("li[data-action='filters'] a").click ();
     },
 
-    hidePlugs: function ()
+    hidePlugs ()
     {
       this.element.addClass ("plugs-hidden");
       S.getCurrent("wall").wall ("hidePostitsPlugs"); 
     },
 
-    showPlugs: function ()
+    showPlugs ()
     {
       this.element.removeClass ("plugs-hidden");
 
@@ -84,7 +87,7 @@
     },
 
     // METHOD toggle ()
-    toggle: function ()
+    toggle ()
     {
       const $filters = this.element,
             $wall = S.getCurrent ("wall");
@@ -106,7 +109,7 @@
     },
 
     // METHOD reset ()
-    reset: function ()
+    reset ()
     {
       this.element.find(".selected").removeClass ("selected");
 
@@ -114,7 +117,7 @@
     },
 
     // METHOD apply ()
-    apply: function ()
+    apply ()
     {
       const plugin = this,
             $filters = plugin.element,
