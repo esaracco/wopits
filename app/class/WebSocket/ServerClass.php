@@ -2,7 +2,7 @@
 
 namespace Wopits\WebSocket;
 
-require_once (__DIR__."/../../class/Common.php");
+require_once (__DIR__.'/../../class/Common.php');
 
 use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
@@ -30,7 +30,6 @@ class ServerClass
       new \EasySwoole\Redis\Config\RedisConfig([
         'host' => '127.0.0.1',
         'port' => '6379',
-        //'auth' => 'easyswoole',
         'serialize' => \EasySwoole\Redis\Config\RedisConfig::SERIALIZE_PHP]));
   }
 
