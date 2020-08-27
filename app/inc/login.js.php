@@ -1,8 +1,10 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   $Plugin = new Wopits\jQueryPlugin ('login');
   echo $Plugin->getHeader ();
+
 ?>
 
 /////////////////////////// METHODS ////////////////////////////

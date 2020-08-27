@@ -1,8 +1,10 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   $Plugin = new Wopits\jQueryPlugin ('wall');
   echo $Plugin->getHeader ();
+
 ?>
 
   let _refreshing = false,
@@ -79,7 +81,7 @@
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
-      if (writeAccess)
+      if (writeAccess || !$.support.touch)
         $wall.draggable({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,

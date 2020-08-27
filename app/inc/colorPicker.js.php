@@ -1,8 +1,10 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   $Plugin = new Wopits\jQueryPlugin ('colorPicker');
   echo $Plugin->getHeader ();
+
 ?>
 
   const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['colorPicker']['items'])).'"'?>];

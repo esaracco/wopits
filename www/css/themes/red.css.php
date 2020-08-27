@@ -1,5 +1,5 @@
 <?php
-  require_once (__DIR__.'/../../../app/class/Common.php');
+  require_once (__DIR__.'/../../../app/prepend.php');
 ?>
 .bg-dark {
   background-color:#dc3545 !important;

@@ -1,6 +1,6 @@
 <?php
 
-require_once (__DIR__.'/class/Common.php');
+require_once (__DIR__.'/prepend.php');
 
 use Wopits\Common;
 

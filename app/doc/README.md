@@ -18,11 +18,11 @@ If you don't want to bother to install it yourself, just create an account on th
 INSTALLATION
 ------------
 
-> You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis ans Swoole to make it work.
+> You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis and Swoole to make it work.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from source (branch v4.4.x).
-- Install Apache, MySQL or PostgreSQL, Redis and PHP >= 7.3 (with `php-redis`, `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from source (branch v4.4.x), and activate it only for PHP CLI.
+- Install Apache, MySQL or PostgreSQL, Redis and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
 - Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:

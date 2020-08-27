@@ -1,10 +1,12 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   use Wopits\jQueryPlugin;
 
   $Plugin = new jQueryPlugin ('filters');
   echo $Plugin->getHeader ();
+
 ?>
 
 /////////////////////////// PUBLIC METHODS ////////////////////////////

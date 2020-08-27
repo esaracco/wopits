@@ -2,7 +2,7 @@
 
 namespace Wopits\Wall;
 
-require_once (__DIR__.'/../Common.php');
+require_once (__DIR__.'/../../prepend.php');
 
 use Wopits\User;
 use Wopits\Wall;

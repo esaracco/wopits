@@ -1,8 +1,10 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   $Plugin = new Wopits\jQueryPlugin ('cell', 'width: 300, height: 200');
   echo $Plugin->getHeader ();
+
 ?>
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////

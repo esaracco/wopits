@@ -2,14 +2,14 @@
 
 namespace Wopits\WebSocket;
 
-require_once (__DIR__.'/../../class/Common.php');
+require_once (__DIR__.'/../../prepend.php');
 
 use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 
 use Wopits\Common;
-use Wopits\Dao;
+use Wopits\Base;
 use Wopits\Wall;
 use Wopits\User;
 use Wopits\Wall\Postit;
@@ -909,7 +909,7 @@ class ServerClass
 
   private function _ping ()
   {
-    (new Dao ())->ping ();
+    (new Base ())->ping ();
   }
 
   private function _log (int $fd, $type, $msg, $ip = null)

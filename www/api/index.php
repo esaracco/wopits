@@ -1,9 +1,6 @@
 <?php
-  require_once (__DIR__."/../../app/class/Common.php");
-  require_once (__DIR__."/../../app/class/User.php");
-  require_once (__DIR__."/../../app/class/Wall.php");
-  require_once (__DIR__."/../../app/class/Wall/Postit.php");
-  require_once (__DIR__."/../../app/class/Wall/Group.php");
+
+  require_once (__DIR__.'/../../app/prepend.php');
 
   use Wopits\User;
   use Wopits\Wall;
@@ -257,4 +254,5 @@
   {
     return trim ($_GET[$param]??'');
   }
+
 ?>

@@ -1,7 +1,9 @@
 <?php
 
+// Autoloader for external libs.
 require_once (__DIR__.'/libs/vendor/autoload.php');
 
+// Autoloader for wopits classes.
 spl_autoload_register (function ($class)
   {
     require_once (

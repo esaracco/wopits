@@ -2,15 +2,16 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/Common.php');
+require_once (__DIR__.'/../prepend.php');
 
-use Wopits\Ldap;
 use Wopits\Common;
+use Wopits\Base;
+use Wopits\Ldap;
 use Wopits\EmailsQueue;
 use Wopits\Wall;
 use Wopits\Wall\Group;
 
-class User extends Wall
+class User extends Base
 {
   public $settings;
 
@@ -128,7 +129,8 @@ class User extends Wall
       [
         'id' => $this->userId,
         'settings' => $this->getSettings (false),
-        'walls' => $this->getWall (),
+        'walls' => (new Wall (['userId' => $this->userId],
+                                $this->ws))->getWall (),
         'token' => $_SESSION['userToken']??''
       ]
       :

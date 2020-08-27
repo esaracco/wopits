@@ -1,10 +1,12 @@
 <?php
-  require_once (__DIR__.'/../class/Common.php');
+
+  require_once (__DIR__.'/../prepend.php');
 
   use Wopits\DbCache;
 
   $Plugin = new Wopits\jQueryPlugin ('header');
   echo $Plugin->getHeader ();
+
 ?>
 
   let _realEdit = false,

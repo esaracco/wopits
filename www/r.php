@@ -1,13 +1,15 @@
 <?php
-  require_once (__DIR__.'/../app/class/Common.php');
 
-  if ($_SERVER['QUERY_STRING'] == 'u')
-    $_SESSION['upgradeDone'] = true;
+require_once (__DIR__.'/../app/prepend.php');
 
-  header ('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1
-  header ('Pragma: no-cache'); // HTTP 1.0
-  header ('Expires: Mon, 26 Jul 1997 00:00:00 GMT'); // Proxies
+if ($_SERVER['QUERY_STRING'] == 'u')
+  $_SESSION['upgradeDone'] = true;
 
-  header ("Location: /\n\n", 'refresh');
-  exit ();
+header ('Cache-Control: no-cache, no-store, must-revalidate'); // HTTP 1.1
+header ('Pragma: no-cache'); // HTTP 1.0
+header ('Expires: Mon, 26 Jul 1997 00:00:00 GMT'); // Proxies
+
+header ("Location: /\n\n", 'refresh');
+exit ();
+
 ?>

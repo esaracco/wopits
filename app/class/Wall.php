@@ -2,43 +2,14 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/Common.php');
+require_once (__DIR__.'/../prepend.php');
 
 use Wopits\Common;
 use Wopits\DbCache;
-use Wopits\Dao;
+use Wopits\Base;
 
-class Wall extends Dao
+class Wall extends Base
 {
-  public $userId;
-  public $wallId;
-  public $data;
-  public $wallName;
-  public $sessionId;
-  public $slocale;
-  protected $ws;
-
-  public function __construct ($args = null, $ws = null)
-  {
-    parent::__construct ();
-
-    if ($ws)
-    {
-      Common::changeLocale ($ws->slocale);
-
-      $this->userId = $ws->id;
-      $this->sessionId = $ws->sessionId;
-
-      $this->ws = $ws;
-    }
-    else
-      $this->userId = $args['userId']??$_SESSION['userId']??null;
-
-    $this->slocale = $this->ws->slocale??$_SESSION['slocale']??'en';
-    $this->wallId = $args['wallId']??null;
-    $this->data = $args['data']??null;
-  }
-
   public function checkWallAccess ($requiredRole)
   {
     // Wall admin has full access
@@ -111,20 +82,6 @@ class Wall extends Dao
     $stmt->execute ([$this->wallId, $userId]);
 
     return $stmt->fetch ();
-  }
-
-  protected function getUserDir ($type = null)
-  {
-    return ($type) ?
-      WPT_DATA_WPATH."/users/{$this->userId}" :
-      Common::getSecureSystemName ("/users/{$this->userId}");
-  }
-
-  protected function getWallDir ($type = null)
-  {
-    return ($type == 'web') ?
-      WPT_DATA_WPATH."/walls/{$this->wallId}" :
-      Common::getSecureSystemName ("/walls/{$this->wallId}");
   }
 
   public function getWallInfos ()

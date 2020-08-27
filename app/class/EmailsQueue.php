@@ -2,15 +2,15 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/Common.php');
+require_once (__DIR__.'/../prepend.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 
 use Wopits\Common;
-use Wopits\Dao;
+use Wopits\Base;
 use Wopits\User;
 
-class EmailsQueue extends Dao
+class EmailsQueue extends Base
 {
   public function addTo ($data)
   {
