@@ -7,13 +7,14 @@ wopits - _A world of post-its_
 
 [Project homepage](https://wopits.esaracco.fr) | [wopits homepage](https://www.wopits.com)
 
-**wopits is multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes** to share and collaborate with other users simultaneously.
+**wopits is a multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes** to share and collaborate with other users simultaneously.
 
-It is possible to edit several walls of sticky notes at the same time, to add attachments, to insert images, to create relationships etc.
-
+It is possible to edit several walls of sticky notes at the same time, to add attachments, insert images, create relationships etc.
 Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
 If you don't want to bother to install it yourself, just create an account on the [official wopits website](https://www.wopits.com)!
+
+*wopits uses [Swoole](https://www.swoole.co.uk) as a WebSocket server and [Redis](https://redis.io/) for the management of volatile data.*
 
 INSTALLATION
 ------------
