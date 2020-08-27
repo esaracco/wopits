@@ -2,14 +2,12 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/../prepend.php');
-
 class DbCache
 {
   // This method parse raw MySQL creation tables script to extract fields
   // descriptions.
   //
-  // During the deployment, this method will be deleted replaced by another
+  // During the deployment, this method will be deleted and replaced by another
   // one that will return cached data instead of parsing file.
   //<WPTPROD-remove>
   public static function getDBDescription ()
