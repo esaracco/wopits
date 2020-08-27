@@ -12,7 +12,7 @@ wopits - _A world of post-its_
 It is possible to edit several walls of sticky notes at the same time, to add attachments, insert images, create relationships etc.
 Group management makes it possible to finely control the sharing of data, and a chat is available for each of the walls.
 
-If you don't want to bother to install it yourself, just create an account on the [official wopits website](https://www.wopits.com)!
+If you don't want to bother installing it yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
 *wopits uses [Swoole](https://www.swoole.co.uk) as a WebSocket server and [Redis](https://redis.io/) for the management of volatile data.*
 
