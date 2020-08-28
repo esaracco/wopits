@@ -2,7 +2,7 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/../prepend.php');
+require_once (__DIR__.'/../config.php');
 
 use Wopits\Common;
 use Wopits\DbCache;
@@ -107,23 +107,6 @@ class Wall extends Base
     $stmt->execute ([$this->wallId]);
 
     return $stmt->fetch ();
-  }
-
-  public function getUploadedFileInfos ($data)
-  {
-    $ret = [];
-
-    if (!is_object ($data) ||
-        !$data->size ||
-        !preg_match ('#\.([a-z0-9]+)$#i', $data->name, $m1) ||
-        !preg_match ('#data:([^;]+);base64,(.*)#', $data->content, $m2))
-    {
-      $ret = [null, null, _("Empty file or bad file format")];
-    }
-    else
-      $ret = [$m1[1], $m2[2], null];
-
-    return $ret;
   }
 
   public function addHeaderPicture ($args)
