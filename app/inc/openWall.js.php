@@ -17,7 +17,6 @@
       const plugin = this,
             $openWall = plugin.element;
 
-
       $openWall.find('input').on("keyup", function (e)
         {
           plugin.search (this.value.trim ())
