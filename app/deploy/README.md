@@ -12,13 +12,7 @@
 # chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
 ```
-- At each deployment you must broadcast new release announce to all connected clients, reload apache and restart the WebSocket daemon.
-```bash
-$ /var/www/wopits.domain.com/app/websocket/client.php -n
-# systemctl reload apache2
-# systemctl restart wopits
-```
-The post-deployment script will do this for you (execute it as root):
+Right after each deployment you must execute as soon as possible the following post-deployment script **as root**:
 ```bash
 # /var/www/wopits.domain.com/app/deploy/bin/post-deploy.php
 ```
