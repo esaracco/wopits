@@ -2,7 +2,7 @@
 
 namespace Wopits\Wall;
 
-require_once (__DIR__.'/../../prepend.php');
+require_once (__DIR__.'/../../config.php');
 
 use Wopits\Common;
 use Wopits\EmailsQueue;

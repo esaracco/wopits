@@ -1,10 +1,5 @@
 <?php
 
-// Important!
-// Apache and wopits WebSocket server manipulate the same files.
-// They must have the same system group and umask must be 002.
-umask (002);
-
 require_once (__DIR__.'/config.php');
 
 use Wopits\Common;

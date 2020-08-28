@@ -2,7 +2,7 @@
 
 namespace Wopits;
 
-require_once (__DIR__.'/../prepend.php');
+require_once (__DIR__.'/../config.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 

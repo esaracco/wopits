@@ -2,7 +2,7 @@
 
 namespace Wopits\WebSocket;
 
-require_once (__DIR__.'/../../prepend.php');
+require_once (__DIR__.'/../../config.php');
 
 use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
