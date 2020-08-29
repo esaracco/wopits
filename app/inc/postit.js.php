@@ -1973,6 +1973,7 @@
         $_attachmentsPopup = $("#postitAttachmentsPopup");
         $_attachmentEditPopup = $_attachmentsPopup.find (".edit-popup");
 
+        // EVENT focusin.
         // To fix tinymce bootstrap compatibility with popups
         $(document).on("focusin",
           function (e)
@@ -2061,7 +2062,7 @@
           statusbar: false
         });
 
-        // EVENT click on plug label
+        // EVENT click on plug label.
         $(document).on ("click", ".plug-label li", function ()
           {
             const $item = $(this),
@@ -2133,6 +2134,7 @@
             }
           });
 
+      // Attachment upload.
       $(`<input type="file" class="upload postit-attachment">`)
         .on("change", function (e)
         {
@@ -2199,6 +2201,7 @@
           }
         }).appendTo ("body");
 
+        // Picture upload.
         $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
             class="upload postit-picture">`)
           .on("change", function ()
@@ -2272,6 +2275,7 @@
 
           }).appendTo("body");
 
+        // EVENT click on attachment line buttons.
         $(document).on("click", "#postitAttachmentsPopup .modal-body li button",
           function (e)
           {
@@ -2307,6 +2311,7 @@
               H.download ($item[0].dataset);
           });
 
+        // EVENT click on attachment thumbnail.
         $(document).on("click", "#postitAttachmentsPopup .edit-popup img",
           function (e)
           {
@@ -2321,6 +2326,7 @@
               () => document.getElementById("img-viewer").remove());
           });
 
+        // EVENT click on edit popup "Save" button.
         $(document).on("click",
                        "#postitAttachmentsPopup .edit-popup .btn-primary",
           function (e)
@@ -2336,6 +2342,7 @@
             });
           });
 
+        // EVENT hidden.bs.collapse attachment row.
         $(document).on("hidden.bs.collapse",
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)
@@ -2346,6 +2353,7 @@
             li.classList.remove ("active");
           });
 
+        // EVENT dhow.bs.collapse attachment row.
         $(document).on("show.bs.collapse",
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)
