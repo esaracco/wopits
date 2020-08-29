@@ -1452,11 +1452,17 @@ class WHelper
   }
   
   // METHOD getUploadedFiles ()
-  getUploadedFiles (files, success_cb, error_cb, cb_msg)
+  getUploadedFiles (files, type, success_cb, error_cb, cb_msg)
   {
     const _H = this,
           reader = new FileReader (),
           file = files[0];
+
+    if (type != "all" && !file.name.match (new RegExp (type, 'i')))
+      return _H.displayMsg ({
+        type: "warning",
+        msg: "<?=_("Wrong file type for %s!")?>".replace("%s", file.name)
+      });
   
     reader.readAsDataURL (file);
   

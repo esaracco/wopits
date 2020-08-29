@@ -55,7 +55,7 @@
           });
         });
 
-      $(`<input type="file" accept=".jpg,.gif,.png"
+      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
           class="upload account-picture">`)
         .on("change",function (e)
           {
@@ -63,7 +63,7 @@
 
             if (e.target.files && e.target.files.length)
             {
-              H.getUploadedFiles (e.target.files,
+              H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
                 (e, file) =>
                 {
                   $upload.val ("");

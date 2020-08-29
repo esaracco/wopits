@@ -2012,8 +2012,19 @@
 
                         H.loader ("show");
                         H.testImage(src)
-                          .then (null, ()=>
+                          .then (
+                          // Needed for some Safari on iOS that do not support
+                          // Promise finally() callback.
+                          ()=>
                           {
+                            H.loader("hide");
+
+                            editor.setContent (c);
+                          },
+                          ()=>
+                          {
+                            H.loader("hide");
+
                             c = c.replace(new RegExp (H.quoteRegex(img)), "");
 
                             editor.setContent (c);
@@ -2026,8 +2037,7 @@
                               type: "warning",
                               msg: "<?=_("The image %s was not available! It has been removed from the sticky note content.")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
-                          })
-                          .finally (()=> H.loader("hide"));
+                          });
                       }
                     });
                 }
@@ -2144,7 +2154,7 @@
 
           if (e.target.files && e.target.files.length)
           {
-            H.getUploadedFiles (e.target.files,
+            H.getUploadedFiles (e.target.files, "all",
               (e, file) =>
               {
                 $upload.val ("");
@@ -2206,7 +2216,8 @@
             class="upload postit-picture">`)
           .on("change", function ()
           {
-            const $upload = $(this);
+            const $upload = $(this),
+                  fname = this.files[0].name;
 
             function __error_cb (d)
             {
@@ -2217,8 +2228,7 @@
                 });
             }
 
-            H.getUploadedFiles (
-              this.files,
+            H.getUploadedFiles (this.files, "\.(jpe?g|gif|png)$",
               (e, file) =>
                 {
                   $upload.val ("");
@@ -2272,7 +2282,6 @@
                 },
                 null,
                 __error_cb);
-
           }).appendTo("body");
 
         // EVENT click on attachment line buttons.

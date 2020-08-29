@@ -1734,7 +1734,7 @@
             {
               if (e.target.files && e.target.files.length)
               {
-                H.getUploadedFiles (e.target.files,
+                H.getUploadedFiles (e.target.files, "\.zip$",
                   (e, file) =>
                   {
                     $(this).val ("");

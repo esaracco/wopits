@@ -656,7 +656,7 @@
             {
               _realEdit = true;
 
-              H.getUploadedFiles (e.target.files,
+              H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
                 (e, file) =>
                 {
                   $upload.val ("");
