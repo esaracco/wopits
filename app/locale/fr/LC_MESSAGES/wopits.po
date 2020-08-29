@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-29 07:04+0200\n"
-"PO-Revision-Date: 2020-08-29 07:07+0200\n"
+"POT-Creation-Date: 2020-08-29 18:02+0200\n"
+"PO-Revision-Date: 2020-08-29 18:02+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -1255,6 +1255,10 @@ msgstr "Avec quadrillage"
 
 msgid "Wrong current password."
 msgstr "Mauvais mot de passe actuel."
+
+#, php-format
+msgid "Wrong file type for %s!"
+msgstr "Mauvais type de fichier pour %s!"
 
 msgid "Yes"
 msgstr "Oui"

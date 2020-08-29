@@ -70,6 +70,10 @@ It is important to optimize the SGBD configuration as much as possible. Default 
 
 #### PHP
 
+Edit PHP configuration file for apache and tweak the `post_max_size`:
+```ini
+post_max_size = 20M
+```
 Edit PHP configuration file for both apache and CLI and remove the memory limit allowed for scripts:
 ```ini
 memory_limit = -1
