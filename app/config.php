@@ -23,7 +23,7 @@ require (
     __DIR__.'/../site-config.php');
 
 // Version
-define ('WPT_VERSION', '0.30alpha1');
+define ('WPT_VERSION', '0.30alpha2');
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
 // Paths
