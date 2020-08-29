@@ -4,7 +4,6 @@ $(function()
 
   const $_walls = S.getCurrent ("walls");
 
-  // EVENT resize on window
   if (!document.querySelector ("body.login-page"))
   {
     // EVENT onbeforeunload
