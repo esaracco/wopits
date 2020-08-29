@@ -12,8 +12,7 @@ require_once (__DIR__.'/libs/vendor/autoload.php');
 spl_autoload_register (function ($class)
   {
     require_once (
-      __DIR__.'/class/'.
-      str_replace (['Wopits\\', '\\'], ['', '/'], $class).'.php');
+      __DIR__.'/class/'.str_replace ('\\', '/', substr ($class, 7)).'.php');
   });
 
 require (
