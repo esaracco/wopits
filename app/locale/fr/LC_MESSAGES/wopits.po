@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-26 14:33+0200\n"
-"PO-Revision-Date: 2020-08-26 14:34+0200\n"
+"POT-Creation-Date: 2020-08-29 07:04+0200\n"
+"PO-Revision-Date: 2020-08-29 07:07+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -352,6 +352,9 @@ msgstr "Impossible de contacter le serveur LDAP!"
 
 msgid "Cancel"
 msgstr "Abandonner"
+
+msgid "Cancel sharing"
+msgstr "Retirer le partage"
 
 msgid "Cancel sharing for this group"
 msgstr "Annuler le partage pour ce groupe"
@@ -1281,6 +1284,9 @@ msgstr "Vous n'avez plus accès à certains des murs que vous aviez ouverts!"
 #, php-format
 msgid "You no longer have access to the «%s» wall!"
 msgstr "Vous n'avez plus accès au mur «%s»!"
+
+msgid "You will lose your access to the wall.<br>Cancel anyway?"
+msgstr "Vous perdrez votre accès au mur.<br>Retirer quand même?"
 
 msgid "Your connection attempt failed!"
 msgstr "Votre tentative de connexion a échoué!"

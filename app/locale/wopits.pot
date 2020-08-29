@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-26 14:33+0200\n"
+        "POT-Creation-Date: 2020-08-29 07:04+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,6 +127,9 @@ msgid   "Can't contact LDAP server!"
 msgstr  ""
 
 msgid   "Cancel"
+msgstr  ""
+
+msgid   "Cancel sharing"
 msgstr  ""
 
 msgid   "Cancel sharing for this group"
@@ -909,6 +912,9 @@ msgstr  ""
 
 #, php-format
 msgid   "You no longer have access to the «%s» wall!"
+msgstr  ""
+
+msgid   "You will lose your access to the wall.<br>Cancel anyway?"
 msgstr  ""
 
 msgid   "Your connection attempt failed!"
