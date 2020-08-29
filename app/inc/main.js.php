@@ -1311,84 +1311,16 @@
       );
     },
 
-    // METHOD displayWallProperties ()
-    displayWallProperties (args)
-    {
-      const $wall = this.element;
-
-      H.request_ajax (
-        "GET",
-        "wall/"+this.settings.id+"/infos",
-        null,
-        // success cb
-        (d) =>
-        {
-          const $popup = $("#wallPropertiesPopup");
-
-          H.cleanPopupDataAttr ($popup);
-
-          $popup.find(".description").show ();
-
-          $popup.find(".creator").text (d.user_fullname);
-          $popup.find(".creationdate").text (
-            H.getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
-
-          $popup.find(".size").hide ();
-
-          if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-          {
-            const $input = $popup.find(".name input");
-
-            $popup.find(".btn-primary").show ();
-            $popup.find(".ro").hide ();
-            $popup.find(".adm").show ();
-
-            $input.val(d.name);
-            $popup.find(".description textarea").val(d.description);
-
-            if (args && args.renaming)
-              $input.attr ("autofocus", "autofocus");
-            else
-              $input.removeAttr ("autofocus");
-
-            if ($wall[0].dataset.rows == 1 && $wall[0].dataset.cols == 1)
-            {
-              const $div = $popup.find(".wall-size"),
-                    $cell = $wall.find ("td");
-
-              $popup.find("[name='wall-width']")
-                .val (Math.floor ($cell.outerWidth ()));
-              $popup.find("[name='wall-height']")
-                .val (Math.floor ($cell.outerHeight ()));
-              $popup.find(".size").show ();
-            }
-          }
-          else
-          {
-            $popup.find(".btn-primary").hide ();
-            $popup.find(".adm").hide ();
-            $popup.find(".ro").show ();
-
-            $popup.find(".name .ro").html(H.nl2br (d.name));
-            if (d.description)
-              $popup.find(".description .ro").html(H.nl2br (d.description));
-            else
-              $popup.find(".description").hide ();
-          }
-      
-          $popup[0].dataset.noclosure = true;
-          H.openModal ($popup);
-        }
-      );
-    },
-
     // METHOD openPropertiesPopup ()
-    openPropertiesPopup (args)
+    openPropertiesPopup (args = {})
     {
+      args.wall = this.element;
+
       if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-        this.edit (() => this.displayWallProperties (args));
+        this.edit (() =>
+          $("#wallPropertiesPopup").wallProperties ("open", args));
       else
-        this.displayWallProperties ();
+        $("#wallPropertiesPopup").wallProperties ("open", args);
     },
 
     // METHOD getName ()

@@ -106,7 +106,16 @@ class Wall extends Base
       WHERE walls.id = ?');
     $stmt->execute ([$this->wallId]);
 
-    return $stmt->fetch ();
+    if ( ($ret = $stmt->fetch ()) )
+    {
+      $stmt = $this->prepare ('
+        SELECT groups_id FROM _perf_walls_users
+        WHERE walls_id = ? AND users_id = ?');
+      $stmt->execute ([$this->wallId, $this->userId]);
+      $ret['groups'] = $stmt->fetchAll (\PDO::FETCH_COLUMN, 0);
+    }
+
+    return $ret;
   }
 
   public function addHeaderPicture ($args)

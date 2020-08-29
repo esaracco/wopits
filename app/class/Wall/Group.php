@@ -151,17 +151,33 @@ class Group extends Wall
     return $ret;
   }
 
-  public function removeUser ($args)
+  public function removeMe ($groupIds)
+  {
+    foreach ($groupIds as $groupId)
+    {
+      $this->groupId = $groupId;
+      $ret = $this->removeUser (['userId' => $this->userId], true);
+      if (isset ($ret['error']))
+        return $ret;
+    }
+
+    return [];
+  }
+
+  public function removeUser ($args, $me = false)
   {
     $ret = [];
     $groupUserId = $args['userId'];
 
-    if (!$this->_checkGroupAccess ())
-      return ['error' => _("Access forbidden")];
+    if (!$me)
+    {
+      if (!$this->_checkGroupAccess ())
+        return ['error' => _("Access forbidden")];
 
-    // If user does not exists anymore.
-    if (!(new User([], $this->ws))->exists ($groupUserId))
-      return ['notfound' => 1];
+      // If user does not exists anymore.
+      if (!(new User([], $this->ws))->exists ($groupUserId))
+        return ['notfound' => 1];
+    }
 
     try
     {
@@ -197,10 +213,11 @@ class Group extends Wall
 
       $this->commit ();
 
-      $ret['wall'] = [
-        'id' => $this->wallId,
-        'unlinked' => $this->getWallName ()
-      ];
+      if (!$me)
+        $ret['wall'] = [
+          'id' => $this->wallId,
+          'unlinked' => $this->getWallName ()
+        ];
     }
     catch (\Exception $e) 
     {

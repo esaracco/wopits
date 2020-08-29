@@ -391,6 +391,10 @@ form span.required {
   text-align:center;
 }
 
+#wallPropertiesPopup .cancel-sharing {
+  text-align: center;
+}
+
 .user-picture {
   display:inline-block;
   color:#555;

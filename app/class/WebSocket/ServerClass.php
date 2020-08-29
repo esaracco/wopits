@@ -374,6 +374,16 @@ class ServerClass
             break;
         }
       }
+      // ROUTE Remove user from group.
+      elseif (preg_match ('#^wall/(\d+)/group/([\d,]+)/removeMe$#',
+                $msg->route, $m))
+      {
+        @list (, $wallId, $groupIds) = $m;
+
+        if ($msg->method == 'DELETE')
+          (new Group (['wallId' => $wallId], $client))
+             ->removeMe (explode (',', $groupIds));
+      }
       // ROUTE Wall users view
       //TODO We should use ajax instead of ws
       elseif (preg_match ('#^wall/(\d+)/usersview$#',
@@ -765,7 +775,7 @@ class ServerClass
               $this->server->push ($fd,
                 json_encode ([
                   'action' => 'chatcount',
-                  'count' => count ($chatUsers) - 1,
+                  'count' => count ($_chatUsers) - 1,
                   'wall' => ['id' => $_wallId]
                 ]));
           }

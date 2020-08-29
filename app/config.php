@@ -161,7 +161,8 @@ define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
     'shareWall' => [],
     'usersSearch' => [],
     'postitsSearch' => [],
-    'openWall' => []
+    'openWall' => [],
+    'wallProperties' => []
   ]);
 
 //</WPTPROD-remove>
