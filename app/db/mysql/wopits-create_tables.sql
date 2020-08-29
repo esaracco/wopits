@@ -78,7 +78,6 @@ CREATE TABLE groups
   userscount TINYINT UNSIGNED NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id),
-  UNIQUE KEY (name, users_id),
   CONSTRAINT `groups-users_id-fk` FOREIGN KEY (users_id)
     REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT `groups-walls_id-fk` FOREIGN KEY (walls_id)

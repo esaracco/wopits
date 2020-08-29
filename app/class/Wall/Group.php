@@ -217,16 +217,25 @@ class Group extends Wall
   {
     $ret = [];
     $type = $args['type'];
+    $isDed = ($type == WPT_GTYPES_DED);
 
-    // only wall creator can create dedicated group
-    // and a user must be logged to create generic group
-    if ($type == WPT_GTYPES_DED &&
+    // Only wall creator can create dedicated group
+    // and a user must be logged to create generic group.
+    if ($isDed &&
         !$this->isWallCreator ($this->userId) || empty ($this->userId))
       return ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
-      SELECT name FROM groups WHERE users_id = ? AND name = ?');
-    $stmt->execute ([$this->userId, $this->data->name]);
+    $sql = 'SELECT name FROM groups WHERE users_id = ? AND name = ?';
+    $data = [$this->userId, $this->data->name];
+
+    if ($isDed)
+    {
+      $sql .= ' AND walls_id = ?';
+      $data[] = $this->wallId;
+    }
+
+    $stmt = $this->prepare ($sql);
+    $stmt->execute ($data);
     if ($stmt->fetch ())
       $ret['error_msg'] = _("This group already exists.");
     else
@@ -239,8 +248,7 @@ class Group extends Wall
           'description' => ($this->data->description) ?
             $this->data->description : null,
           'users_id' => $this->userId
-        ], ($type == WPT_GTYPES_DED) ?
-             ['walls_id' => $this->wallId] : []));
+        ], ($isDed) ? ['walls_id' => $this->wallId] : []));
       }
       catch (\Exception $e)
       {
