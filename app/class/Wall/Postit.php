@@ -4,7 +4,7 @@ namespace Wopits\Wall;
 
 require_once (__DIR__.'/../../config.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\EmailsQueue;
 use Wopits\Wall;
 use Wopits\User;
@@ -267,7 +267,7 @@ class Postit extends Wall
     
       $this->commit ();
 
-      Common::rm (WPT_ROOT_PATH.$attach['link']);
+      Helper::rm (WPT_ROOT_PATH.$attach['link']);
     }
     catch (\Exception $e)
     {
@@ -334,7 +334,7 @@ class Postit extends Wall
     else
     {
       $rdir = 'postit/'.$this->postitId;
-      $file = Common::getSecureSystemName (
+      $file = Helper::getSecureSystemName (
         "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
       $fname = basename ($file);
 
@@ -357,7 +357,7 @@ class Postit extends Wall
         // Fix wrong MIME type for images
         if (preg_match ('/(jpe?g|gif|png)/i', $ext))
           list ($file, $this->data->item_type, $this->data->name) =
-            Common::checkRealFileType ($file, $this->data->name);
+            Helper::checkRealFileType ($file, $this->data->name);
 
         $ret = [
           'postits_id' => $this->postitId,
@@ -384,7 +384,7 @@ class Postit extends Wall
               WHERE id = ?')
             ->execute ([$this->postitId]);
           
-          $ret['icon'] = Common::getImgFromMime ($this->data->item_type);
+          $ret['icon'] = Helper::getImgFromMime ($this->data->item_type);
           $ret['link'] =
             "/api/wall/{$this->wallId}/cell/{$this->cellId}".
             "/postit/{$this->postitId}/attachment/{$ret['id']}";
@@ -439,7 +439,7 @@ class Postit extends Wall
 
       while ($row = $stmt->fetch ())
       {
-        $row['icon'] = Common::getImgFromMime ($row['item_type']);
+        $row['icon'] = Helper::getImgFromMime ($row['item_type']);
         $row['link'] =
           "/api/wall/{$this->wallId}/cell/{$this->cellId}/postit/".
           "{$this->postitId}/attachment/{$row['id']}";
@@ -461,7 +461,7 @@ class Postit extends Wall
       else
         $data['path'] = WPT_ROOT_PATH.$data['link'];
 
-      Common::download ($data);
+      Helper::download ($data);
     }
 
     return $ret;
@@ -486,7 +486,7 @@ class Postit extends Wall
       try
       {
         $rdir = 'postit/'.$this->postitId;
-        $file = Common::getSecureSystemName (
+        $file = Helper::getSecureSystemName (
           "$dir/$rdir/picture-".hash('sha1', $this->data->content).".$ext");
 
         file_put_contents (
@@ -496,7 +496,7 @@ class Postit extends Wall
           throw new \Exception (_("An error occured while uploading file."));
 
         list ($file, $this->data->item_type, $width, $height) =
-          Common::resizePicture ($file, 800, 0, false);
+          Helper::resizePicture ($file, 800, 0, false);
 
         $stmt = $this->prepare ('
           SELECT * FROM postits_pictures WHERE postits_id = ? AND link = ?');
@@ -522,7 +522,7 @@ class Postit extends Wall
           $ret['id'] = $this->lastInsertId ();
         }
 
-        $ret['icon'] = Common::getImgFromMime ($this->data->item_type);
+        $ret['icon'] = Helper::getImgFromMime ($this->data->item_type);
         $ret['width'] = $width;
         $ret['height'] = $height;
         $ret['link'] =
@@ -567,7 +567,7 @@ class Postit extends Wall
 
     $data['path'] = WPT_ROOT_PATH.$data['link'];
 
-    Common::download ($data);
+    Helper::download ($data);
   }
 
   public function deletePictures ($data)
@@ -587,7 +587,7 @@ class Postit extends Wall
       if (!in_array ($pic['id'], $pics))
       {
         $toDelete[] = $pic['id'];
-        Common::rm (WPT_ROOT_PATH.$pic['link']);
+        Helper::rm (WPT_ROOT_PATH.$pic['link']);
       }
     }
 
@@ -614,7 +614,7 @@ class Postit extends Wall
         ->execute ([$this->postitId]);
 
       // Delete postit files
-      Common::rm ("$dir/postit/{$this->postitId}");
+      Helper::rm ("$dir/postit/{$this->postitId}");
     }
     catch (\Exception $e)
     {

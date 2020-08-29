@@ -4,7 +4,7 @@ namespace Wopits\Wall;
 
 require_once (__DIR__.'/../../config.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\EmailsQueue;
 use Wopits\Wall;
 use Wopits\User;
@@ -28,7 +28,7 @@ class Group extends Wall
     if (empty ($this->userId))
       return ['error' => _("Access forbidden")];
 
-    if ( ($search = Common::unaccent ($args['search'])) )
+    if ( ($search = Helper::unaccent ($args['search'])) )
     {
       //FIXME SQL optimization.
       $stmt = $this->prepare ('

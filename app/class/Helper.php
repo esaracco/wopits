@@ -2,7 +2,7 @@
 
 namespace Wopits;
 
-class Common
+class Helper
 {
   // Keep WS connection and database persistent connection alive 
   public static function ping ()
@@ -34,7 +34,7 @@ class Common
       $slocale = @(json_decode ($User->getSettings()))->locale;
 
     if (!$slocale)
-      $slocale = Common::getBrowserLocale ();
+      $slocale = self::getBrowserLocale ();
 
     return $slocale;
   }

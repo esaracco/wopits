@@ -2,7 +2,7 @@
 
 require_once (__DIR__.'/config.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\User;
 
 $isCLI = (php_sapi_name () == 'cli');
@@ -43,7 +43,7 @@ else
   // else from users settings if user is auth,
   // else from browser
   if ( !($slocale = filter_input (INPUT_GET, 'l', FILTER_SANITIZE_STRING)))
-    $slocale = Common::getsLocale ($User);
+    $slocale = Helper::getsLocale ($User);
 }
 
 // Locale "en" by default if no valid locale
@@ -51,7 +51,7 @@ if  (!isset (WPT_LOCALES[$slocale]))
   $slocale = 'en';
 
 // Apply new locale
-$locale = Common::changeLocale ($slocale);
+$locale = Helper::changeLocale ($slocale);
 
 // Only in web mode
 if (!$isCLI)

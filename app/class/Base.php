@@ -4,6 +4,7 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
+use Wopits\Helper;
 use Wopits\DbCache;
 
 class Base extends \PDO
@@ -23,7 +24,7 @@ class Base extends \PDO
 
     if ($ws)
     {
-      Common::changeLocale ($ws->slocale);
+      Helper::changeLocale ($ws->slocale);
 
       $this->userId = $ws->id;
       $this->sessionId = $ws->sessionId;
@@ -203,13 +204,13 @@ class Base extends \PDO
   {
     return ($type) ?
       WPT_DATA_WPATH."/users/{$this->userId}" :
-      Common::getSecureSystemName ("/users/{$this->userId}");
+      Helper::getSecureSystemName ("/users/{$this->userId}");
   }
 
   protected function getWallDir ($type = null)
   {
     return ($type == 'web') ?
       WPT_DATA_WPATH."/walls/{$this->wallId}" :
-      Common::getSecureSystemName ("/walls/{$this->wallId}");
+      Helper::getSecureSystemName ("/walls/{$this->wallId}");
   }
 }

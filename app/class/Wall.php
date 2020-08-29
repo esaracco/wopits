@@ -4,7 +4,7 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\DbCache;
 use Wopits\Base;
 
@@ -130,7 +130,7 @@ class Wall extends Base
         $wdir = $this->getWallDir ('web');
         $rdir = "header/$headerId";
 
-        $file = Common::getSecureSystemName (
+        $file = Helper::getSecureSystemName (
           "$dir/$rdir/img-".hash('sha1', $this->data->content).".$ext");
 
         file_put_contents (
@@ -144,7 +144,7 @@ class Wall extends Base
         $previousPicture = $stmt->fetch()['picture'];
 
         list ($file, $this->data->item_type) =
-          Common::resizePicture ($file, 100);
+          Helper::resizePicture ($file, 100);
 
         $img = "$wdir/$rdir/".basename($file);
         $this->executeQuery ('UPDATE headers', [
@@ -158,7 +158,7 @@ class Wall extends Base
 
         // delete old picture if needed
         if ($previousPicture && $previousPicture != $img)
-          Common::rm (WPT_ROOT_PATH.$previousPicture);
+          Helper::rm (WPT_ROOT_PATH.$previousPicture);
       }
       catch (\ImagickException $e)
       {
@@ -206,7 +206,7 @@ class Wall extends Base
       ],
       ['id' => $headerId]); 
 
-      Common::rm (WPT_ROOT_PATH.$r['picture']);
+      Helper::rm (WPT_ROOT_PATH.$r['picture']);
     }
     catch (\Exception $e)
     {
@@ -284,7 +284,7 @@ class Wall extends Base
         mkdir ($tmpPath);
 
       if (file_exists ($importPath))
-        Common::rm ($importPath);
+        Helper::rm ($importPath);
 
       mkdir ($importPath);
 
@@ -519,7 +519,7 @@ class Wall extends Base
         unlink ($exportFile);
 
       if (file_exists ($importPath))
-        Common::rm ($importPath);
+        Helper::rm ($importPath);
     }
 
     return $ret;
@@ -644,7 +644,7 @@ class Wall extends Base
 
     return ($clone) ?
       $zipPath :
-      Common::download ([
+      Helper::download ([
         'item_type' => 'application/zip',
         'name' => basename ($zipPath),
         'size' => filesize ($zipPath),
@@ -911,7 +911,7 @@ class Wall extends Base
     $stmt->execute ([$headerId]);
 
     if ( ($r = $stmt->fetch ()) )
-      return Common::download ([
+      return Helper::download ([
         'item_type' => $r['filetype'],
         'name' => basename ($r['picture']),
         'size' => $r['filesize'],
@@ -947,7 +947,7 @@ class Wall extends Base
         ':item_type' => $item,
         ':item_order' => $itemPos]);
 
-      Common::rm ("$dir/header/".($stmt->fetch ())['id']);
+      Helper::rm ("$dir/header/".($stmt->fetch ())['id']);
 
       // Delete header
       $this
@@ -988,7 +988,7 @@ class Wall extends Base
         ':item' => $itemPos
       ]);
       while ($row = $stmt->fetch ())
-        Common::rm ("$dir/postit/{$row['id']}");
+        Helper::rm ("$dir/postit/{$row['id']}");
 
       // Delete
       $this
@@ -1311,7 +1311,7 @@ class Wall extends Base
         ->prepare('DELETE FROM walls WHERE id = ?')
         ->execute ([$this->wallId]);
 
-      Common::rm ($this->getWallDir());
+      Helper::rm ($this->getWallDir ());
     }
     catch (\Exception $e)
     {

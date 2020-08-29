@@ -8,7 +8,7 @@ use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\Base;
 use Wopits\Wall;
 use Wopits\User;
@@ -674,7 +674,7 @@ class ServerClass
         'sessionId' => $req->fd,
         'id' => $r['users_id'],
         'username' => $r['username'],
-        'slocale' => Common::getsLocale ($User),
+        'slocale' => Helper::getsLocale ($User),
         'settings' => json_decode ($User->getSettings()??'{}'),
         'openedChats' => [],
         'final' => false

@@ -6,7 +6,7 @@ require_once (__DIR__.'/../config.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\Base;
 use Wopits\User;
 
@@ -47,7 +47,7 @@ class EmailsQueue extends Base
       {
         $User = new User (['userId' => $item['users_id']]);
 
-        Common::changeLocale (Common::getsLocale ($User));
+        Helper::changeLocale (Helper::getsLocale ($User));
         date_default_timezone_set ($User->getTimezone ());
 
         $data = json_decode ($item['data']??'{}');

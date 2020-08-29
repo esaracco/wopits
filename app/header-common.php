@@ -2,9 +2,9 @@
 
 require_once (__DIR__.'/prepend.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 
-$version = Common::getWopitsVersion ();
+$version = Helper::getWopitsVersion ();
 $slocale = $_SESSION['slocale'];
 $userId = $_SESSION['userId'] ?? 0;
 

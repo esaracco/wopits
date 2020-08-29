@@ -4,7 +4,7 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Common;
+use Wopits\Helper;
 use Wopits\Base;
 use Wopits\Ldap;
 use Wopits\EmailsQueue;
@@ -28,7 +28,7 @@ class User extends Base
       session_destroy ();
       session_start ();
 
-      Common::deleteCookie ();
+      Helper::deleteCookie ();
 
       $this->userId = null;
     }
@@ -191,7 +191,7 @@ class User extends Base
       while ($item = $stmt->fetch ())
       {
         $this->wallId = $item['id'];
-        Common::rm ($this->getWallDir ());
+        Helper::rm ($this->getWallDir ());
       }
 
       // Delete user
@@ -203,7 +203,7 @@ class User extends Base
 
       $this->logout ();
 
-      Common::rm ($dir);
+      Helper::rm ($dir);
     }
     catch (\Exception $e)
     {
@@ -227,7 +227,7 @@ class User extends Base
 
   public function loginByCookie ()
   {
-    if ( ($token = Common::getCookie ()) )
+    if ( ($token = Helper::getCookie ()) )
     {
       $stmt = $this->prepare ('
         SELECT
@@ -516,7 +516,7 @@ class User extends Base
     $stmt->execute ([$userId]);
 
     if ( ($r = $stmt->fetch ()) )
-      return Common::download ([
+      return Helper::download ([
         'item_type' => $r['filetype'],
         'name' => basename ($r['picture']),
         'size' => $r['filesize'],
@@ -544,7 +544,7 @@ class User extends Base
       ],
       ['id' => $this->userId]);
 
-      Common::rm (WPT_ROOT_PATH.$r['picture']);
+      Helper::rm (WPT_ROOT_PATH.$r['picture']);
     }
     catch (\Exception $e)
     {
@@ -573,7 +573,7 @@ class User extends Base
         $dir = $this->getUserDir ();
         $wdir = $this->getUserDir ('web');
 
-        $file = Common::getSecureSystemName (
+        $file = Helper::getSecureSystemName (
           "$dir/img-".hash('sha1', $this->data->content).".$ext");
 
         file_put_contents (
@@ -587,7 +587,7 @@ class User extends Base
         $previousPicture = $stmt->fetch()['picture'];
 
         list ($file, $this->data->item_type) =
-          Common::resizePicture ($file, 200);
+          Helper::resizePicture ($file, 200);
 
         $img = "$wdir/".basename($file);
         $this->executeQuery ('UPDATE users', [
@@ -599,7 +599,7 @@ class User extends Base
 
         // delete old picture if needed
         if ($previousPicture && $previousPicture != $img)
-          Common::rm (WPT_ROOT_PATH.$previousPicture);
+          Helper::rm (WPT_ROOT_PATH.$previousPicture);
 
         $ret = ['src' => $img];
       }
@@ -668,7 +668,7 @@ class User extends Base
           else
             $this->executeQuery ('UPDATE users',
               ['searchdata' =>
-                Common::unaccent ($ret['username'].','.$ret['fullname'])],
+                Helper::unaccent ($ret['username'].','.$ret['fullname'])],
               ['id' => $this->userId]);
 
           $this->commit ();
@@ -737,7 +737,7 @@ class User extends Base
     ]);
 
     if ($remember)
-      Common::setCookie ($token);
+      Helper::setCookie ($token);
 
     $this->register (@json_decode($settings));
 
@@ -783,7 +783,7 @@ class User extends Base
         'password' => hash ('sha1', $this->data->password),
         'username' => $this->data->username,
         'fullname' => $this->data->fullname,
-        'searchdata' => Common::unaccent (
+        'searchdata' => Helper::unaccent (
                           "{$this->data->username},{$this->data->fullname}"),
         'creationdate' => $currentDate,
         'updatedate' => $currentDate,

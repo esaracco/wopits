@@ -620,8 +620,8 @@ class WSocket
   }
 }
 
-// CLASS WHelp
-class WHelp
+// CLASS WHelper
+class WHelper
 {
   constructor ()
   {
@@ -1603,7 +1603,7 @@ class WHelp
 }
 
 // GLOBAL VARS
-const H = new WHelp (),
+const H = new WHelper (),
       S = new WSharer (),
       ST = new WStorage (),
       WS = new WSocket ();
