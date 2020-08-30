@@ -11,7 +11,7 @@
 
       <form>
 
-      <div class="mb-2 cancel-sharing"><button type="button" class="btn btn-sm btn-secondary"><?=_("Cancel sharing")?></button></div>
+      <div class="mb-2 cancel-sharing"><button type="button" class="btn btn-sm btn-secondary"><?=_("Delete sharing")?></button></div>
 
       <dl>
         <!-- Wall creator -->
