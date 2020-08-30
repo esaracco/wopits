@@ -1,5 +1,9 @@
 <?php
 
+// Version
+define ('WPT_VERSION', '0.30alpha3');
+define ('WPT_EXPORT_MIN_VERSION', '0.21');
+
 // Important!
 // Apache and wopits WebSocket server manipulate the same files.
 // They must have the same system group and umask must be 002.
@@ -21,10 +25,6 @@ require (
       __DIR__.'/../site-config.template.php' :
   //</WPTPROD-remove>
     __DIR__.'/../site-config.php');
-
-// Version
-define ('WPT_VERSION', '0.30alpha2');
-define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
 // Paths
 define ('WPT_ROOT_PATH', realpath (__DIR__.'/..'));
