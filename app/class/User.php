@@ -158,6 +158,22 @@ class User extends Base
     $ret = [];
     $dir = $this->getUserDir ();
 
+    // Close opened user's walls opened by others.
+    $tmp = (new Wall (['userId' => $this->userId]))->getWall ();
+    if (!empty ($tmp['list']))
+    {
+      $wallIds = [];
+      foreach ($tmp['list'] as $_wall)
+        $wallIds[] = $_wall['id'];
+
+      // Push WS close request.
+      $this->sendWsClient (json_encode ([
+        'action' => 'close-walls',
+        'userId' => $this->userId,
+        'ids' => $wallIds
+      ]));
+    }
+
     try
     {
       $this->beginTransaction ();

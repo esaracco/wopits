@@ -6,6 +6,7 @@ require_once (__DIR__.'/../config.php');
 
 use Wopits\Helper;
 use Wopits\DbCache;
+use Wopits\WebSocket\ClientClass;
 
 class Base extends \PDO
 {
@@ -69,6 +70,14 @@ class Base extends \PDO
       $ret = [$m1[1], $m2[2], null];
 
     return $ret;
+  }
+
+  protected function sendWsClient ($msg)
+  {
+    $client = new ClientClass ('127.0.0.1', WPT_WS_PORT);
+    $data = $client->connect();
+
+    $client->send ($msg);
   }
 
   // Very basic DB fields validator.

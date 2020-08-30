@@ -546,42 +546,34 @@ class ServerClass
       $ret['msgId'] = $msg->msgId ?? null;
       $this->server->push ($fd, json_encode ($ret));
     }
-    // Internal wopits client (broadcast msg to all clients)
+    // Internal wopits communication.
     else
     {
       switch ($msg->action)
       {
+        // ping
         case 'ping':
 
           $this->_ping ();
 
           break;
+
+        // close-walls
+        case 'close-walls':
+
+          foreach ($this->cache->hGetAll('openedWalls') as $_wallId => $_item)
+            if ($_wallId == in_array ($_wallId, $msg->ids))
+              foreach ($_item as $_fd => $_userId)
+                if ($_userId != $msg->userId)
+                  $this->server->push ($_fd,
+                    json_encode ([
+                      'action' => 'unlinked',
+                      'wall' => ['id' => $_wallId]
+                    ]));
+
+          break;
     
-        case 'dump-all':
-
-          $this->server->push ($fd,
-            "* activeWalls array:\n".
-            print_r ($this->cache->hGetAll('activeWalls'), true)."\n".
-            "* openedWalls array:\n".
-            print_r ($this->cache->hGetAll('openedWalls'), true)."\n".
-            "* chatUsers array:\n".
-            print_r ($this->cache->hGetAll('chatUsers'), true)."\n"
-
-          );
-
-          break;
-
-        case 'stat-users':
-
-          $this->server->push ($fd, ("\n".
-            '* Sessions: '.$this->cache->hLen('clients')."\n".
-            '* Active walls: '.$this->cache->hLen('activeWalls')."\n".
-            '* Opened walls: '.$this->cache->hLen('openedWalls')."\n".
-            '* Current chats: '.$this->cache->hlen('chatUsers')."\n"
-          ));
-
-          break;
-
+        // reload & mainupgrade
         //FIXME TODO If a user has something being edited, wait for him to
         //           finish.
         case 'reload':
@@ -597,6 +589,33 @@ class ServerClass
 
           foreach ($clients as $_fd => $_client)
             $this->server->push ($_fd, json_encode ($msg));
+
+          break;
+
+        // dump-all
+        case 'dump-all':
+
+          $this->server->push ($fd,
+            "* activeWalls array:\n".
+            print_r ($this->cache->hGetAll('activeWalls'), true)."\n".
+            "* openedWalls array:\n".
+            print_r ($this->cache->hGetAll('openedWalls'), true)."\n".
+            "* chatUsers array:\n".
+            print_r ($this->cache->hGetAll('chatUsers'), true)."\n"
+
+          );
+
+          break;
+
+        // stat-users
+        case 'stat-users':
+
+          $this->server->push ($fd, ("\n".
+            '* Sessions: '.$this->cache->hLen('clients')."\n".
+            '* Active walls: '.$this->cache->hLen('activeWalls')."\n".
+            '* Opened walls: '.$this->cache->hLen('openedWalls')."\n".
+            '* Current chats: '.$this->cache->hlen('chatUsers')."\n"
+          ));
 
           break;
 
@@ -748,8 +767,8 @@ class ServerClass
       foreach ($oldSettings->openedWalls as $_oldWallId)
         $this->_unsetOpenedWalls ($_oldWallId, $fd);
 
-      foreach ($diff = array_diff ($oldSettings->openedWalls,
-                                   $newSettings->openedWalls??[]) as $_wallId)
+      foreach (array_diff ($oldSettings->openedWalls,
+                           $newSettings->openedWalls??[]) as $_wallId)
         $this->_unsetItem ('chatUsers', $_wallId, $fd);
     }
 
@@ -766,27 +785,20 @@ class ServerClass
 
     if ($haveOld)
     {
-      foreach ($diff = array_diff ($oldSettings->openedWalls,
-                                   $newSettings->openedWalls??[]) as $_wallId)
+      foreach (array_diff ($oldSettings->openedWalls,
+                           $newSettings->openedWalls??[]) as $_wallId)
       {
         $this->_unsetItem ('chatUsers', $_wallId, $fd);
 
-        $_openedWalls = $this->cache->hGet ('openedWalls', $_wallId);
-        if ($_openedWalls)
-        {
+        if ( ($_openedWalls = $this->cache->hGet ('openedWalls', $_wallId)) )
           foreach ($_openedWalls as $_fd => $_userId)
-          {
-            $_chatUsers = $this->cache->hGet ('chatUsers', $_wallId);
-
-            if ($_chatUsers && $this->cache->hExists ('clients', $_fd))
+            if ( ($_chatUsers = $this->cache->hGet ('chatUsers', $_wallId)) )
               $this->server->push ($fd,
                 json_encode ([
                   'action' => 'chatcount',
                   'count' => count ($_chatUsers) - 1,
                   'wall' => ['id' => $_wallId]
                 ]));
-          }
-        }
       }
     }
   }
@@ -896,24 +908,18 @@ class ServerClass
   private function _pushWallsUsersCount ($diff)
   {
     foreach ($diff as $_wallId)
-    {
-      if ($this->cache->hExists ('activeWalls', $_wallId))
+      if ( ($activeWalls = $this->cache->hGet ('activeWalls', $_wallId)) )
       {
-        $usersCount = count ($this->cache->hGet('activeWallsUnique', $_wallId));
         $json = json_encode ([
           'action' => 'viewcount',
-          'count' => $usersCount - 1,
+          'count' =>
+            count ($this->cache->hGet('activeWallsUnique', $_wallId)) - 1,
           'wall' => ['id' => $_wallId]
         ]);
 
-        foreach ($this->cache->hGet ('activeWalls', $_wallId)
-                   as $_fd => $_userId)
-        {
-          if ($this->cache->hExists ('clients', $_fd))
-            $this->server->push ($_fd, $json);
-        }
+        foreach ($activeWalls as $_fd => $_userId)
+          $this->server->push ($_fd, $json);
       }
-    }
   }
 
   private function _injectUserSpecificData ($ret, $postitId, $client)
