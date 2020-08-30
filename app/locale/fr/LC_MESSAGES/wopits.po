@@ -1202,7 +1202,7 @@ msgid "Upload has been canceled."
 msgstr "Le dépôt a été abandonné."
 
 msgid "User guide"
-msgstr "Guide d'utilisation"
+msgstr "Guide utilisateur"
 
 msgid "Users in this group:"
 msgstr "Utilisateurs dans ce groupe:"
