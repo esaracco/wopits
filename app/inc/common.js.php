@@ -451,6 +451,9 @@ class WSocket
             case "reload":
               var $popup = $("#infoPopup");
 
+              // No need to deactivate it afterwards: page will be reloaded.
+              S.set ("block-msg", true);
+
               $(".modal").modal ("hide");
 
               H.cleanPopupDataAttr ($popup);
@@ -461,6 +464,7 @@ class WSocket
 
               $popup[0].dataset.popuptype = "app-reload";
               H.openModal ($popup);
+
               break;
           }
         }
@@ -1141,6 +1145,9 @@ class WHelper
   // METHOD displayMsg ()
   displayMsg (args)
   {
+    if (S.get ("block-msg"))
+      return;
+
     // If a TinyMCE plugin is running, display message using the editor window
     // manager.
     if ($(".tox-dialog").is(":visible"))
