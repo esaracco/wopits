@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-29 18:02+0200\n"
+        "POT-Creation-Date: 2020-08-30 07:53+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,9 +129,6 @@ msgstr  ""
 msgid   "Cancel"
 msgstr  ""
 
-msgid   "Cancel sharing"
-msgstr  ""
-
 msgid   "Cancel sharing for this group"
 msgstr  ""
 
@@ -218,6 +215,9 @@ msgid   "Delete my account"
 msgstr  ""
 
 msgid   "Delete relationships"
+msgstr  ""
+
+msgid   "Delete sharing"
 msgstr  ""
 
 msgid   "Delete this column?"
@@ -918,7 +918,7 @@ msgstr  ""
 msgid   "You no longer have access to the «%s» wall!"
 msgstr  ""
 
-msgid   "You will lose your access to the wall.<br>Cancel anyway?"
+msgid   "You will lose your access to the wall.<br>Delete anyway?"
 msgstr  ""
 
 msgid   "Your connection attempt failed!"
