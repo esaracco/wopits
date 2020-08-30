@@ -110,6 +110,11 @@ class EditQueue extends Wall
     return $ret;
   }
 
+  public function purge ()
+  {
+    $this->exec ('DELETE FROM edit_queue');
+  }
+
   public function removeUser ()
   {
     $this

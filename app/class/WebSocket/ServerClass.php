@@ -582,11 +582,18 @@ class ServerClass
 
           break;
 
+        //FIXME TODO If a user has something being edited, wait for him to
+        //           finish.
         case 'reload':
         case 'mainupgrade':
 
           $clients = $this->cache->hGetAll ('clients');
+
+          // Purge Redis data.
           $this->cache->flushDb ();
+
+          // Purge SQL editing queue.
+          (new EditQueue())->purge ();
 
           foreach ($clients as $_fd => $_client)
             $this->server->push ($_fd, json_encode ($msg));
