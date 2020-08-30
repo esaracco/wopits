@@ -21,8 +21,8 @@
         {
           H.openConfirmPopover ({
             item: $(this),
-            title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Cancel sharing")?>`,
-            content: "<?=_("You will lose your access to the wall.<br>Cancel anyway?")?>",
+            title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Delete sharing")?>`,
+            content: "<?=_("You will lose your access to the wall.<br>Delete anyway?")?>",
             cb_close: () =>
               setTimeout(()=> S.unset ("cancel-sharing-data"), 500),
             cb_ok: () => plugin.removeGroupUser (S.get ("cancel-sharing-data"))
