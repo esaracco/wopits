@@ -49,7 +49,7 @@
           <h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2>
           <div>
             <div class="textarea form-control">
-              <button type="button" class="erase"><span><i class="fas fa-times-circle fa-sm"></i></span></button>
+              <button type="button" class="erase"><span><i class="fas fa-broom fa-sm"></i></span></button>
               <ul>
 
               </ul>

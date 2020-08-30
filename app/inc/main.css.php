@@ -1054,7 +1054,6 @@ EOC;
 .chatroom button.erase {
   position:fixed;
   margin-top:-10px;
-  margin-left:-7px;
   padding: 0;
   background-color: transparent;
   border: 0;
