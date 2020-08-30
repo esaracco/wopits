@@ -75,7 +75,8 @@ class Base extends \PDO
   protected function sendWsClient ($msg)
   {
     $client = new ClientClass ('127.0.0.1', WPT_WS_PORT);
-    $data = $client->connect();
+
+    $client->connect ();
 
     $client->send ($msg);
   }
