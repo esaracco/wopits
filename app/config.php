@@ -1,7 +1,7 @@
 <?php
 
 // Version
-define ('WPT_VERSION', '0.30alpha3');
+define ('WPT_VERSION', '0.30alpha4');
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
 // Important!
