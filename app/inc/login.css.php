@@ -34,7 +34,7 @@ html {
 }
 
 #desc-container {
-  position:fixed;
+  position:absolute;
   top:80px;
   width:100%;
   z-index:2;
