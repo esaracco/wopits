@@ -678,6 +678,12 @@ class WHelper
       });
   }
 
+  // METHOD isMainMenuCollapsed ()
+  isMainMenuCollapsed ()
+  {
+    return $("button[data-target='#main-menu']").is (":visible");
+  }
+
   // METHOD quoteRegex ()
   quoteRegex (str)
   {

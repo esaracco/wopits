@@ -871,14 +871,24 @@
     {
       this.edit (() =>
         {
-          H.openConfirmPopover ({
-            item: this.settings.tabLink,
-            placement: "left",
-            title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-            content: "<?=_("Delete this wall?")?>",
-            cb_close: () => this.unedit (),
-            cb_ok: () => this.delete ()
-          });
+          // H.openConfirmPopover() does not display the popover on some
+          // devices when button menu is visible.
+          if (H.isMainMenuCollapsed ())
+            H.openConfirmPopup ({
+              icon: "trash",
+              content: `<?=_("Delete this wall?")?>`,
+              cb_ok: () => this.delete (),
+              cb_close: () => this.unedit ()
+            });
+          else
+            H.openConfirmPopover ({
+              item: this.settings.tabLink,
+              placement: "left",
+              title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+              content: "<?=_("Delete this wall?")?>",
+              cb_close: () => this.unedit (),
+              cb_ok: () => this.delete ()
+            });
         }, null, true);
     },
 
