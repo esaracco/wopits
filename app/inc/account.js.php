@@ -178,10 +178,9 @@
           let title,
               $popup;
 
-          <?php if (WPT_USE_LDAP):?>
-          if (e.target.tagName == 'INPUT' && name != "fullname")
+          if ($account.find(".ldap-msg").length &&
+              e.target.tagName == 'INPUT' && name != "fullname")
             return;
-          <?php endif?>
 
           switch (name)
           {
