@@ -620,7 +620,8 @@ class ServerClass
           break;
 
         default:
-          $this->_log ($fd, 'error', "Unknown internal action {$msg->action}");
+          $this->_log ($fd, 'error',
+                       "Unknown action `{$msg->action}`", 'internal');
       }
     }
   }
@@ -937,12 +938,7 @@ class ServerClass
 
   private function _log (int $fd, $type, $msg, $ip = null)
   {
-    printf ("%s:%s [%s][%s] %s\n",
-      $ip,
-      $fd,
-      date('Y-m-d H:i:s'),
-      strtoupper ($type),
-      $msg);
+    printf ("[%s][%s:%s] %s\n", strtoupper ($type), $ip, $fd, $msg);
   }
 
   //<WPTPROD-remove>
