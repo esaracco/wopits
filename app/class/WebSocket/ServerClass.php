@@ -612,8 +612,12 @@ class ServerClass
 
           $this->server->push ($fd, ("\n".
             '* Sessions: '.$this->cache->hLen('clients')."\n".
-            '* Active walls: '.$this->cache->hLen('activeWalls')."\n".
+            '* Unique users: '.$this->cache->hLen('usersUnique')."\n".
+            "----------\n".
             '* Opened walls: '.$this->cache->hLen('openedWalls')."\n".
+            '* Active walls: '.$this->cache->hLen('activeWalls')."\n".
+            '* Unique active walls: '.$this->cache->hLen('activeWallsUnique')."\n".
+            "----------\n".
             '* Current chats: '.$this->cache->hLen('chatUsers')."\n"
           ));
 
