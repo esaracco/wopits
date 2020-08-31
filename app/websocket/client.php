@@ -11,9 +11,7 @@ $data = $client->connect();
 // Broadcast reload order.
 if (isset ($options['r']))
 {
-  $client->send (json_encode ([
-    'action' => 'reload'
-  ]));
+  $client->send (json_encode (['action' => 'reload']));
 }
 // Broadcast new release announce.
 elseif (isset ($options['n']))
@@ -26,27 +24,25 @@ elseif (isset ($options['n']))
 // Keep WS connection and database persistent connection alive
 elseif (isset ($options['p']))
 {
-  $client->send (json_encode ([
-    'action' => 'ping'
-  ]));
+  $client->send (json_encode (['action' => 'ping']));
 }
 // Display server statistics
 elseif (isset ($options['s']))
 {
   $action = empty($options['s'])?'users':$options['s'];
 
-  $client->send (json_encode ([
-    'action' => "stat-$action"
-  ]));
+  $client->send (json_encode (['action' => "stat-$action"]));
+
+  echo $client->recv()."\n";
 }
 // Dump server data
 elseif (isset ($options['d']))
 {
   $action = empty($options['d'])?'all':$options['d'];
 
-  $client->send (json_encode ([
-    'action' => "dump-$action"
-  ]));
+  $client->send (json_encode (['action' => "dump-$action"]));
+
+  echo $client->recv()."\n";
 }
 else
   exit ("Usage: ./client [OPTION]...\n".
