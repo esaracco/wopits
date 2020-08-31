@@ -614,7 +614,7 @@ class ServerClass
             '* Sessions: '.$this->cache->hLen('clients')."\n".
             '* Active walls: '.$this->cache->hLen('activeWalls')."\n".
             '* Opened walls: '.$this->cache->hLen('openedWalls')."\n".
-            '* Current chats: '.$this->cache->hlen('chatUsers')."\n"
+            '* Current chats: '.$this->cache->hLen('chatUsers')."\n"
           ));
 
           break;
@@ -658,13 +658,6 @@ class ServerClass
       if (isset ($client->settings->openedWalls))
         foreach ($client->settings->openedWalls as $_wallId)
           $this->_unsetOpenedWalls ($_wallId, $fd);
-
-      foreach ($client->openedChats as $_wallId => $_dum)
-      {
-        $_chatUsers = $this->cache->hGet ('chatUsers', $_wallId);
-        unset ($_chatUsers[$fd]);
-        $this->cache->hSet ('chatUsers', $_wallId, $_chatUsers);
-      }
 
       $this->cache->hDel ('clients', $fd);
 
