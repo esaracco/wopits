@@ -221,11 +221,10 @@ class ServerClass
         if (!$client->final)
         {
           foreach ($this->cache->hGet ('usersUnique', $User->userId) as $_fd)
-          {
-            $_client = $this->cache->hGet ('clients', $_fd);
-
-            if ($_client && $_fd != $fd)
+            if ($_fd != $fd)
             {
+              $_client = $this->cache->hGet ('clients', $_fd);
+
               $toSend = ['action' => 'reloadsession'];
               if (isset ($newSettings->locale))
                 $toSend['locale'] = $newSettings->locale;
@@ -235,7 +234,6 @@ class ServerClass
 
               $this->server->push ($_fd, json_encode ($toSend));
             }
-          }
         }
         else
         {
@@ -632,13 +630,10 @@ class ServerClass
 
   public function onClose (int $fd)
   {
-    $internals = $this->cache->hGet ('internals', $fd);
-
     // Internal wopits client
-    if ($internals)
+    if ($this->cache->hGet ('internals', $fd))
     {
-      unset ($internals[$fd]);
-      $this->cache->hSet ('internals', $fd, $internals);
+      $this->cache->hDel ('internals', $fd);
     }
     // Common wopits client
     elseif ( ($client = $this->cache->hGet ('clients', $fd)) )
@@ -671,15 +666,15 @@ class ServerClass
         $json = json_encode (['action' => 'exitsession']);
 
         foreach ($this->cache->hGet ('usersUnique', $userId) as $_fd)
-        {
-          if ($_fd != $fd && ($_client = $this->cache->hGet ('clients', $_fd)))
+          if ($_fd != $fd &&
+              $this->server->exist ($_fd) &&
+              ($_client = $this->cache->hGet ('clients', $_fd)) )
           {
             $_client->final = true;
             $this->cache->hSet ('clients', $_fd, $_client);
 
             $this->server->push ($_fd, $json);
           }
-        }
       }
 
       $usersUnique = $this->cache->hGet ('usersUnique', $userId);
