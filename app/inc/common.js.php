@@ -549,7 +549,7 @@ class WSocket
   // METHOD displayNetworkErrorMsg ()
   displayNetworkErrorMsg ()
   {
-    $("body").html (`<div class="global-error"><?=_("Either the network is unavailable or maintenance operation is in progress. Please reload this page or try again later.")?></div>`);
+    $("body").html (`<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`);
   }
 
   // METHOD ready ()
