@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-08-30 07:53+0200\n"
+        "POT-Creation-Date: 2020-09-01 09:59+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -274,7 +274,7 @@ msgstr  ""
 msgid   "Edit"
 msgstr  ""
 
-msgid   "Either the network is unavailable or maintenance operation is in progress. Please reload this page or try again later."
+msgid   "Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later."
 msgstr  ""
 
 msgid   "Email"
