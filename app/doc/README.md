@@ -1,8 +1,6 @@
 wopits - _A world of post-its_
 ==============================
 
->***This manual is in beta state. Do not hesitate to help us improve it according to your experience!***
-
 [Project homepage](https://wopits.esaracco.fr) | [wopits homepage](https://www.wopits.com)
 
 <table>
