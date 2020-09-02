@@ -34,16 +34,8 @@ class Wall extends Base
   public function checkWallName ($name)
   {
     $stmt = $this->prepare ('
-      SELECT id
-      FROM walls
-      WHERE id <> :id
-        AND name = :name
-        AND users_id = :users_id');
-    $stmt->execute ([
-      ':id' => $this->wallId?$this->wallId:'0',
-      ':name' => $name,
-      ':users_id' => $this->userId
-    ]);
+      SELECT id FROM walls WHERE id <> ? AND name = ? AND users_id = ?');
+    $stmt->execute ([$this->wallId?$this->wallId:'0', $name, $this->userId]);
 
     return $stmt->rowCount ();
   }
@@ -224,30 +216,6 @@ class Wall extends Base
     }
 
     return $ret;
-  }
-
-  private function _getImportItemData ($item, $replace = null, $unset = null)
-  {
-    $data = (array) $item;
-
-    if (array_key_exists ('id', $data))
-      unset ($data['id']);
-
-    if (array_key_exists ('walls_id', $data))
-      $data['walls_id'] = $this->wallId;
-
-    if (array_key_exists ('users_id', $data))
-      $data['users_id'] = $this->userId;
-
-    if (is_array ($replace))
-      foreach ($replace as $k => $v)
-        $data[$k] = $v;
-
-    if (is_array ($unset))
-      foreach ($unset as $k)
-        unset ($data[$k]);
-
-    return $data;
   }
 
   public function clone ()
@@ -1422,5 +1390,29 @@ class Wall extends Base
 
       throw $e;
     }
+  }
+
+  private function _getImportItemData ($item, $replace = null, $unset = null)
+  {
+    $data = (array) $item;
+
+    if (array_key_exists ('id', $data))
+      unset ($data['id']);
+
+    if (array_key_exists ('walls_id', $data))
+      $data['walls_id'] = $this->wallId;
+
+    if (array_key_exists ('users_id', $data))
+      $data['users_id'] = $this->userId;
+
+    if (is_array ($replace))
+      foreach ($replace as $k => $v)
+        $data[$k] = $v;
+
+    if (is_array ($unset))
+      foreach ($unset as $k)
+        unset ($data[$k]);
+
+    return $data;
   }
 }
