@@ -49,7 +49,7 @@ if (!empty($_SESSION['upgradeDone']))
 
   <link rel="manifest" href="/manifest.json?<?=$version?>">
 
-  <link rel="stylesheet" href="/libs/bootstrap-4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libs/bootstrap-4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="/libs/font-awesome-5.13.1/css/all.min.css">
   <link rel="stylesheet" href="/libs/jquery-ui-1.12.1/jquery-ui.min.css">
   <link rel="stylesheet" href="/libs/colorpicker-1.2.20/jquery.colorpicker.css">
@@ -61,7 +61,7 @@ if (!empty($_SESSION['upgradeDone']))
 
   <script src="/libs/jquery-3.5.1.min.js"></script>
   <script src="/libs/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-  <script src="/libs/bootstrap-4.5.0/js/bootstrap.bundle.min.js"></script>
+  <script src="/libs/bootstrap-4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="/libs/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
   <script src="/libs/jquery.double-tap-wopits.js?<?=$version?>"></script>
   <script src="/libs/moment-2.27.0/moment.min.js"></script>
