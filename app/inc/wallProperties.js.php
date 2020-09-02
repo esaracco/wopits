@@ -16,16 +16,16 @@
     {
       const plugin = this;
 
-      plugin.element.find(".cancel-sharing")
+      plugin.element.find(".reject-sharing button")
         .on ("click", function ()
         {
           H.openConfirmPopover ({
             item: $(this),
-            title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Delete sharing")?>`,
-            content: "<?=_("You will lose your access to the wall.<br>Delete anyway?")?>",
+            title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
+            content: "<?=_("You will lose your access to the wall.<br>Reject anyway?")?>",
             cb_close: () =>
-              setTimeout(()=> S.unset ("cancel-sharing-data"), 500),
-            cb_ok: () => plugin.removeGroupUser (S.get ("cancel-sharing-data"))
+              setTimeout(()=> S.unset ("reject-sharing-data"), 500),
+            cb_ok: () => plugin.removeGroupUser (S.get ("reject-sharing-data"))
           });
         });
     },
@@ -110,12 +110,12 @@
           }
 
           if (isCreator)
-            $popup.find(".cancel-sharing").hide ();
+            $popup.find(".reject-sharing").hide ();
           else
           {
-            $popup.find(".cancel-sharing").show ();
+            $popup.find(".reject-sharing").show ();
 
-            S.set ("cancel-sharing-data", {
+            S.set ("reject-sharing-data", {
               wall: args.wall,
               groups: d.groups
             });

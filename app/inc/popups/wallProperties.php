@@ -11,7 +11,7 @@
 
       <form>
 
-      <div class="mb-2 cancel-sharing"><button type="button" class="btn btn-sm btn-secondary"><?=_("Delete sharing")?></button></div>
+      <div class="mb-2 reject-sharing"><button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-heart-broken fa-sm"></i> <?=_("Reject sharing")?></button></div>
 
       <dl>
         <!-- Wall creator -->

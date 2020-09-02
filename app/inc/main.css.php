@@ -391,7 +391,7 @@ form span.required {
   text-align:center;
 }
 
-#wallPropertiesPopup .cancel-sharing {
+#wallPropertiesPopup .reject-sharing {
   text-align: center;
 }
 
