@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-01 09:59+0200\n"
+"POT-Creation-Date: 2020-09-02 15:07+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -320,9 +320,6 @@ msgid "Delete my account"
 msgstr ""
 
 msgid "Delete relationships"
-msgstr ""
-
-msgid "Delete sharing"
 msgstr ""
 
 msgid "Delete this column?"
@@ -672,6 +669,9 @@ msgid "Properties..."
 msgstr ""
 
 msgid "Read only"
+msgstr ""
+
+msgid "Reject sharing"
 msgstr ""
 
 msgid "Relationship name"
@@ -1073,7 +1073,7 @@ msgstr ""
 msgid "You no longer have access to the «%s» wall!"
 msgstr ""
 
-msgid "You will lose your access to the wall.<br>Delete anyway?"
+msgid "You will lose your access to the wall.<br>Reject anyway?"
 msgstr ""
 
 msgid "Your connection attempt failed!"
