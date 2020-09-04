@@ -15,7 +15,7 @@ Groups management makes it possible to finely control the sharing of data, and a
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
-*wopits uses [Swoole](https://www.swoole.co.uk) as a WebSocket server and [Redis](https://redis.io/) for the management of volatile data.*
+*wopits is **Node.js free** ;-) It uses [Swoole](https://www.swoole.co.uk) as a WebSocket server and [Redis](https://redis.io/) for the management of volatile data.*
 
 INSTALLATION
 ------------
