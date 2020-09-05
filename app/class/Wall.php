@@ -4,10 +4,6 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Helper;
-use Wopits\DbCache;
-use Wopits\Base;
-
 class Wall extends Base
 {
   public function checkWallAccess ($requiredRole)

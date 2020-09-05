@@ -6,18 +6,6 @@ $(function()
 
   if (!document.querySelector ("body.login-page"))
   {
-    // EVENT onbeforeunload
-    window.onbeforeunload = function ()
-      {
-        $(".chatroom").each (function ()
-          {
-            const $chatroom = $(this);
-
-            if ($chatroom.css("display") == "table")
-              $chatroom.chatroom ("leave");
-          });
-      };
-
     // EVENTS resize & orientationchange
     $(window)
       .on("resize orientationchange", function()

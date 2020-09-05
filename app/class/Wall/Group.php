@@ -5,7 +5,7 @@ namespace Wopits\Wall;
 require_once (__DIR__.'/../../config.php');
 
 use Wopits\Helper;
-use Wopits\EmailsQueue;
+use Wopits\Services\Task;
 use Wopits\Wall;
 use Wopits\User;
 
@@ -86,7 +86,7 @@ class Group extends Wall
       return ['error' => _("Access forbidden")];
 
     $stmt = $this->prepare ('
-      SELECT id, fullname
+      SELECT id, email, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?
@@ -433,14 +433,6 @@ class Group extends Wall
     {
       $this->beginTransaction ();
 
-      $this
-        ->prepare("
-          DELETE FROM emails_queue
-          WHERE item_type = 'wallSharing'
-            AND walls_id = ?
-            AND groups_id = ?")
-        ->execute ([$this->wallId, $this->groupId]);
-
       // Unlink group from wall
       $this
         ->prepare('
@@ -543,26 +535,22 @@ class Group extends Wall
 
       if ($this->data->sendmail)
       {
-        $EmailsQueue = new EmailsQueue ();
         $sharerName = $this->data->sendmail->userFullname;
         $wallTitle = $this->data->sendmail->wallTitle;
         $access = $this->data->access;
 
         foreach ($this->getUsers()['users'] as $user)
-        {
-          $EmailsQueue->addTo ([
-            'item_type' => 'wallSharing',
-            'users_id' => $user['id'],
-            'walls_id' => $this->wallId,
-            'groups_id' => $this->groupId,
-            'data' => [
-              'recipientName' => $user['fullname'],
-              'sharerName' => $sharerName,
-              'wallTitle' => $wallTitle,
-              'access' => $access
-            ]
+          (new Task())->execute ([
+            'event' => Task::EVENT_TYPE_SEND_MAIL,
+            'method' => 'wallSharing',
+            'userId' => $user['id'],
+            'email' => $user['email'],
+            'wallId' => $this->wallId,
+            'recipientName' => $user['fullname'],
+            'sharerName' => $sharerName,
+            'wallTitle' => $wallTitle,
+            'access' => $access
           ]);
-        }
       }
 
       $this->commit ();

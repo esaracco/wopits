@@ -7,7 +7,7 @@ class Helper
   // Keep WS connection and database persistent connection alive 
   public static function ping ()
   {
-    exec (WPT_ROOT_PATH.'/app/websocket/client.php -p');
+    exec (WPT_ROOT_PATH.'/app/services/websocket/client.php -p');
   }
 
   public static function changeLocale ($slocale)
@@ -24,13 +24,13 @@ class Helper
     return $locale;
   }
 
-  public static function getsLocale ($User)
+  public static function getsLocale ($User = null)
   {
     $slocale = '';
 
     if (isset ($_SESSION['slocale']))
       $slocale = $_SESSION['slocale'];
-    elseif ($User->userId)
+    elseif (!empty ($User->userId))
       $slocale = @(json_decode ($User->getSettings()))->locale;
 
     if (!$slocale)

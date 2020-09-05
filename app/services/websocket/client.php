@@ -1,12 +1,20 @@
 #!/usr/bin/php
 <?php
 
-require_once (__DIR__."/../config.php");
+require_once (__DIR__.'/../../config.php');
 
 $options = getopt ('prnd::s::');
 
-$client = new Wopits\WebSocket\ClientClass ('127.0.0.1', WPT_WS_PORT);
-$data = $client->connect();
+$client = new Wopits\Services\WebSocket\Client ('127.0.0.1', WPT_WS_PORT);
+
+if (!@$client->connect ())
+{
+  fwrite (STDERR,
+    "[\e[1;95;38;5;214mWARNING\e[0m] WebSocket server was not listening on port ".WPT_WS_PORT."\e[0m!\n".
+    "\e[3mIf this is the first time you execute this script, you can ignore this warning.\n".
+    "If not, please investigate!\e[0m\n");
+  exit (1);
+}
 
 // Broadcast reload order.
 if (isset ($options['r']))

@@ -111,14 +111,22 @@
         $this->help ("Conf `websocket->server` section is empty!");
       if (!preg_match ('/^\d+$/', $env['websocket']['server']['port']))
         $this->help ("Conf `websocket->server->port` is not valid!");
+      if (empty ($env['task']))
+        $this->help ("Conf `task` section is empty!");
+      if (empty ($env['task']['server']))
+        $this->help ("Conf `task->server` section is empty!");
+      if (!preg_match ('/^\d+$/', $env['task']['server']['port']))
+        $this->help ("Conf `task->server->port` is not valid!");
       if (empty ($env['db']))
         $this->help ("Conf `db` is empty!");
       if (empty ($env['cmd']))
         $this->help ("Conf `cmd` is empty!");
       if (empty ($env['cmd']['apache-restart']))
         $this->help ("Conf `cmd->apache-restart` is empty!");
-      if (empty ($env['cmd']['wopits-restart']))
-        $this->help ("Conf `cmd->wopits-restart` is empty!");
+      if (empty ($env['cmd']['wopits-ws-restart']))
+        $this->help ("Conf `cmd->wopits-ws-restart` is empty!");
+      if (empty ($env['cmd']['wopits-task-restart']))
+        $this->help ("Conf `cmd->wopits-task-restart` is empty!");
       if (empty ($env['emails']))
         $this->help ("Conf `emails` section is empty!");
       if (empty ($env['emails']['from']))
@@ -201,7 +209,8 @@
       // Prepare working directory
       echo "Preparing working directory \e[1m{$env['build-path']}\e[0m...\n";
       foreach (['app/dkim',
-                'app/websocket',
+                'app/services/websocket',
+                'app/services/task',
                 'app/deploy/bin',
                 'app/inc',
                 'www/css/themes',
@@ -400,8 +409,12 @@
         'cp -a '.__DIR__.'/../libs '."{$env['build-path']}/app/");
 
       $this->_exec (
-        'cp -a '.__DIR__.'/../websocket/*.php '.
-        "{$env['build-path']}/app/websocket/");
+        'cp -a '.__DIR__.'/../services/websocket/*.php '.
+        "{$env['build-path']}/app/services/websocket/");
+
+      $this->_exec (
+        'cp -a '.__DIR__.'/../services/task/*.php '.
+        "{$env['build-path']}/app/services/task/");
 
       foreach (['libs', 'img', '*.php', '*.json', '*.ico', 'robots.txt'] as $d)
         $this->_exec (
@@ -456,7 +469,8 @@
 
         // Prepend first exec line on CLI scripts
         if (strpos ($dest, '/crons/') !== false ||
-            strpos ($dest, '/websocket/') !== false ||
+            strpos ($dest, '/services/websocket/') !== false ||
+            strpos ($dest, '/services/task/') !== false ||
             strpos ($dest, '/ldap/') !== false)
         {
           $tmp = file_get_contents ($dest);
@@ -471,16 +485,24 @@
       $this->minifyHTML (); 
     
       // Set cron scripts executable
-      $this->_exec ("chmod 755 {$env['build-path']}/app/crons/*.php");
+      $this->_exec (
+        "chmod 755 {$env['build-path']}/app/crons/*.php");
 
-      // Set websocket client / server executable
-      $this->_exec ("chmod 755 {$env['build-path']}/app/websocket/*.php");
+      // Set websocket scripts executable.
+      $this->_exec (
+        "chmod 755 {$env['build-path']}/app/services/websocket/*.php");
+
+      // Set task scripts executable.
+      $this->_exec (
+        "chmod 755 {$env['build-path']}/app/services/task/*.php");
 
       foreach (['WPT_DEV_MODE' => false,
                 'WPT_URL' => $env['url'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
-                'WPT_WOPITS_RESTART' => $env['cmd']['wopits-restart'],
+                'WPT_WOPITS_WS_RESTART' => $env['cmd']['wopits-ws-restart'],
+                'WPT_WOPITS_TASK_RESTART'=>$env['cmd']['wopits-task-restart'],
                 'WPT_WS_PORT' => $env['websocket']['server']['port'],
+                'WPT_TASK_PORT' => $env['task']['server']['port'],
                 'WPT_DB_USER' => $env['db']['user'],
                 'WPT_DB_PASSWORD' => $env['db']['password'],
                 'WPT_DSN' => $env['db']['dsn'],
@@ -616,7 +638,9 @@
                  "# chown {$env['www-system-user']} app/dkim/dkim.private\n".
                  "# chmod 400 app/dkim/dkim.private\n\n";
   
-          echo "* Create a service in order to run the WebSocket server `{$this->targetPath}/app/websocket/server.php` as a daemon (read the `README.md` file for details).\n\n";
+          echo "* Create a service in order to run the WebSocket server `{$this->targetPath}/app/services/websocket/server.php` as a daemon (read the `README.md` file for details).\n\n";
+
+          echo "* Create a service in order to run the Task server `{$this->targetPath}/app/services/task/server.php` as a daemon (read the `README.md` file for details).\n\n";
         }
 
         // Instructions for each deployments

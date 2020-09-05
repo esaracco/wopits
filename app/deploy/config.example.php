@@ -42,12 +42,19 @@
         // * If local, "path" must be the apache document root
         'path' => 'root@www.wopits.com:/var/www/www.wopits.com'
       ],
-      // WebSocket
+      // WebSocket server
       'websocket' => [
         'server' => [
           // Port of the WebSocket server (must be se same as the one you
           // used in your apache proxy section conf)
           'port' => 8080
+        ]
+      ],
+      // Task server
+      'task' => [
+        'server' => [
+          // Port of the task server.
+          'port' => 9501
         ]
       ],
       // SMTP if empty, localhost will be used by default.
@@ -67,8 +74,9 @@
         'apache-restart' =>
           'systemctl reload apache2;'.
           'systemctl reload php-fpm.service',
-        // System command to restart wopits daemon
-        'wopits-restart' => 'systemctl restart wopits1',
+        // System commands to restart wopits daemons
+        'wopits-ws-restart' => 'systemctl restart wopits1-ws',
+        'wopits-task-restart' => 'systemctl restart wopits1-task'
       ],
       // About popup
       // Display/hide about popup informations
@@ -152,8 +160,9 @@
       'cmd' => [
         // System command(s) to reload apache
         'apache-restart' => 'systemctl reload apache2',
-        // System command to restart wopits daemon
-        'wopits-restart' => 'systemctl restart wopits2',
+        // System commands to restart wopits daemons
+        'wopits-ws-restart' => 'systemctl restart wopits2-ws',
+        'wopits-task-restart' => 'systemctl restart wopits2-task'
       ],
       // About popup
       // Display/hide about popup informations

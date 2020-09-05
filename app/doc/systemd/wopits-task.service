@@ -1,0 +1,18 @@
+[Unit]
+Description=wopits Task server
+##StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+##RestartSec=1
+User=wopits
+# This group must be the same as the group of the wopits DocumentRoot "data/"
+# directory
+Group=www-data
+ExecStart=/var/www/wopits.domain.fr/app/services/task/server.php
+
+LimitNOFILE=1000000
+
+[Install]
+WantedBy=multi-user.target

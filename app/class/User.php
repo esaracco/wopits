@@ -4,11 +4,7 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Helper;
-use Wopits\Base;
-use Wopits\Ldap;
-use Wopits\EmailsQueue;
-use Wopits\Wall;
+use Wopits\Services\Task;
 use Wopits\Wall\Group;
 
 class User extends Base
@@ -88,14 +84,14 @@ class User extends Base
         ],
         ['id' => $r['id']]);
 
-        (new EmailsQueue())->addTo ([
-          'item_type' => 'resetPassword',
-          'users_id' => $r['id'],
-          'data' => [
-            'username' => $r['username'],
-            'fullname' => $r['fullname'],
-            'password' => $password
-          ]
+        (new Task())->execute ([
+          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'method' => 'resetPassword',
+          'userId' => $r['id'],
+          'email' => $this->data->email,
+          'username' => $r['username'],
+          'fullname' => $r['fullname'],
+          'password' => $password
         ]);
       }
     }
@@ -818,13 +814,13 @@ class User extends Base
 
       // Send account creation email only in standard auth mode.
       if (!WPT_USE_LDAP)
-        (new EmailsQueue())->addTo ([
-          'item_type' => 'accountCreation',
-          'users_id' => $this->userId,
-          'data' => [
-            'username' => $this->data->username,
-            'fullname' => $this->data->fullname
-          ]
+        (new Task())->execute ([
+          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'method' => 'accountCreation',
+          'userId' => $this->userId,
+          'email' => $this->data->email,
+          'username' => $this->data->username,
+          'fullname' => $this->data->fullname
         ]);
 
       mkdir ("{$this->getUserDir()}/tmp", 02770, true);

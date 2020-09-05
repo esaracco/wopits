@@ -13,9 +13,12 @@ define ('WPT_URL', "");
 // System command to reload apache
 // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
 define ('WPT_APACHE_RESTART', "");
-// System command to restart wopits daemon
-// Example: systemctl restart wopits
-define ('WPT_WOPITS_RESTART', "");
+// System command to restart WebSocket daemon
+// Example: systemctl restart wopits-ws
+define ('WPT_WOPITS_WS_RESTART', "");
+// System command to restart task daemon
+// Example: systemctl restart wopits-task
+define ('WPT_WOPITS_TASK_RESTART', "");
 
 // Database
 // Example: mysql:host=localhost;dbname=wopits;port=3306
@@ -29,6 +32,10 @@ define ('WPT_DB_PASSWORD', "");
  // Websockets server
 // Example: 8080
 define ('WPT_WS_PORT', "");
+
+ // Task server
+// Example: 9501
+define ('WPT_TASK_PORT', "");
 
 // SMTP if empty, localhost will be used by default.
 // Example: smtp.free.fr

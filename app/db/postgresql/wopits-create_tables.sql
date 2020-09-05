@@ -204,19 +204,6 @@ CREATE TABLE postits_alerts
   PRIMARY KEY (postits_id, users_id)
 );
 
-DROP TABLE IF EXISTS emails_queue CASCADE;
-CREATE TABLE emails_queue
-(
-  id SERIAL PRIMARY KEY,
-  users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  walls_id INTEGER REFERENCES walls(id) ON DELETE CASCADE,
-  groups_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
-  postits_id INTEGER REFERENCES postits(id) ON DELETE CASCADE,
-  item_type VARCHAR(50) NOT NULL,
-  data VARCHAR(2000),
-  processed INT NOT NULL DEFAULT 0
-);
-
 DROP TABLE IF EXISTS edit_queue CASCADE;
 CREATE TABLE edit_queue
 (

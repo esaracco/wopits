@@ -1,8 +1,8 @@
 <?php
 
-namespace Wopits\WebSocket;
+namespace Wopits\Services\WebSocket;
 
-class ClientClass
+class Client
 {
     const VERSION = '0.1.4';
     const TOKEN_LENGHT = 16;
@@ -78,8 +78,11 @@ class ClientClass
      */
     public function disconnect()
     {
+      if ($this->connected)
+      {
         $this->connected = false;
         $this->socket->close();
+      }
     }
 
     public function recv()

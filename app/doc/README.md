@@ -15,7 +15,7 @@ Groups management makes it possible to finely control the sharing of data, and a
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
-*wopits is **Node.js free** ;-) It uses [Swoole](https://www.swoole.co.uk) as a WebSocket server and [Redis](https://redis.io/) for the management of volatile data.*
+*wopits is **Node.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server + [Redis](https://redis.io/) for the management of volatile data.*
 
 INSTALLATION
 ------------
@@ -23,7 +23,10 @@ INSTALLATION
 > You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis and Swoole to make it work.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest tag](https://github.com/swoole/swoole-src/tags), and activate it for both CLI and Apache.
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+```ini
+swoole.enable_preemptive_scheduler=On
+```
 - Install Apache, MySQL or PostgreSQL, Redis and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
@@ -117,13 +120,22 @@ BUILD & DEPLOYMENT
 
 In order to run the WebSocket server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
 
- 1. Create `/etc/systemd/system/wopits.service` (using the `app/doc/systemd/wopits.service` template file).
- 2. Execute `systemctl start wopits` and `systemctl enable wopits`.
- 3. To see the daemon logs, use `journalctl -f -u wopits`.
+ 1. Create `/etc/systemd/system/wopits-ws.service` (using the `app/doc/systemd/wopits-ws.service` template file).
+ 2. Execute `systemctl start wopits-ws` and `systemctl enable wopits-ws`.
+ 3. To see the daemon logs, use `journalctl -f -u wopits-ws`.
 
 **Make sure that the WebSocket server daemon's group can write to the `data/` directory** of the wopits DocumentRoot. **It must be the same as the wopits `data/` directory group** (which has been chmoded with 2770).
 
-> ***Do not forget to restart this daemon after each deployment!***
+### Task server
+
+In order to run the task server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
+
+ 1. Create `/etc/systemd/system/wopits-task.service` (using the `app/doc/systemd/wopits-task.service` template file).
+ 2. Execute `systemctl start wopits-task` and `systemctl enable wopits-task`.
+ 3. To see the daemon logs, use `journalctl -f -u wopits-task`.
+
+**Make sure that the task server daemon's group can write to the `data/` directory** of the wopits DocumentRoot. **It must be the same as the wopits `data/` directory group** (which has been chmoded with 2770).
+
 ### From the Git repository
 
 If you are using the Git repository as your Apache DocumentRoot, create a `data/` directory and give the Apache user all rights on it:
@@ -217,4 +229,3 @@ Create a `/var/log/wopits.domain.com/` directory and customize the following lin
 1 0 * * * /var/www/wopits.domain.com/app/crons/cleanup.php >> /var/log/wopits.domain.com/cleanup.log 2>&1
 1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits.domain.com/check-deadline.log 2>&1
 */15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits.domain.com/ping.log 2>&1
-* * * * * /var/www/wopits.domain.com/app/crons/processEmailsQueue.php >> /var/log/wopits.domain.com/processEmailsQueue.log 2>&1

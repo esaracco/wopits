@@ -5,7 +5,7 @@ namespace Wopits\Wall;
 require_once (__DIR__.'/../../config.php');
 
 use Wopits\Helper;
-use Wopits\EmailsQueue;
+use Wopits\Services\Task;
 use Wopits\Wall;
 use Wopits\User;
 
@@ -136,15 +136,9 @@ class Postit extends Wall
 
     $now = new \DateTime ();
 
-    $EmailsQueue = new EmailsQueue ();
-    $oldTZ = date_default_timezone_get ();
     while ($item = $stmt->fetch ())
     {
       $deleteAlert = false;
-
-      $User = new User (['userId' => $item['alert_user_id']]);
-
-      date_default_timezone_set ($User->getTimezone ());
 
       $dlEpoch = $item['postit_deadline'];
       $dl = new \DateTime("@{$dlEpoch}");
@@ -159,37 +153,38 @@ class Postit extends Wall
         $this->exec ("
           UPDATE postits SET obsolete = 1 WHERE id = {$item['postit_id']}");
 
-        if (!is_null ($User->userId))
+        if (!is_null ($item['alert_user_id']))
         {
           $deleteAlert = true;
 
-          $EmailsQueue->addTo ([
-            'item_type' => 'deadlineAlert_1',
-            'users_id' => $item['alert_user_id'],
-            'walls_id' => $item['wall_id'],
-            'postits_id' => $item['postit_id'],
-            'data' => [
-              'fullname' => $item['alert_user_fullname'],
-              'title' => $item['postit_title']
-            ]
+          (new Task())->execute ([
+            'event' => Task::EVENT_TYPE_SEND_MAIL,
+            'method' => 'deadlineAlert_1',
+            'userId' => $item['alert_user_id'],
+            'email' => $item['alert_user_email'],
+            'wallId' => $item['wall_id'],
+            'postitId' => $item['postit_id'],
+            'fullname' => $item['alert_user_fullname'],
+            'title' => $item['postit_title']
           ]);
         }
       }
-      elseif (!is_null ($User->userId) && $item['alert_shift'] >= $days)
+      elseif (!is_null ($item['alert_user_id']) &&
+              $item['alert_shift'] >= $days)
       {
         $deleteAlert = true;
 
-        $EmailsQueue->addTo ([
-          'item_type' => 'deadlineAlert_2',
-          'users_id' => $item['alert_user_id'],
-          'walls_id' => $item['wall_id'],
-          'postits_id' => $item['postit_id'],
-          'data' => [
-            'fullname' => $item['alert_user_fullname'],
-            'title' => $item['postit_title'],
-            'days' => $days,
-            'hours' => $hours
-          ]
+        (new Task())->execute ([
+          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'method' => 'deadlineAlert_2',
+          'userId' => $item['alert_user_id'],
+          'email' => $item['alert_user_email'],
+          'wallId' => $item['wall_id'],
+          'postitId' => $item['postit_id'],
+          'fullname' => $item['alert_user_fullname'],
+          'title' => $item['postit_title'],
+          'days' => $days,
+          'hours' => $hours
         ]);
       }
 
@@ -199,8 +194,6 @@ class Postit extends Wall
           WHERE postits_id = {$item['postit_id']}
             AND users_id = {$item['alert_user_id']}");
     }
-
-    date_default_timezone_set ($oldTZ);
   }
 
   public function addRemovePlugs ($plugs, $postitId = null)

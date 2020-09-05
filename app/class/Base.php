@@ -4,10 +4,6 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Helper;
-use Wopits\DbCache;
-use Wopits\WebSocket\ClientClass;
-
 class Base extends \PDO
 {
   public $userId;
@@ -25,12 +21,11 @@ class Base extends \PDO
 
     if ($ws)
     {
-      Helper::changeLocale ($ws->slocale);
-
+      $this->ws = $ws;
       $this->userId = $ws->id;
       $this->sessionId = $ws->sessionId;
 
-      $this->ws = $ws;
+      Helper::changeLocale ($ws->slocale);
     }
     else
       $this->userId = $args['userId']??$_SESSION['userId']??null;
@@ -57,24 +52,20 @@ class Base extends \PDO
 
   public function getUploadedFileInfos ($data)
   {
-    $ret = [];
-
-    if (!is_object ($data) ||
+    return
+      (
+        !is_object ($data) ||
         !$data->size ||
         !preg_match ('#\.([a-z0-9]+)$#i', $data->name, $m1) ||
-        !preg_match ('#data:([^;]+);base64,(.*)#', $data->content, $m2))
-    {
-      $ret = [null, null, _("Empty file or bad file format")];
-    }
-    else
-      $ret = [$m1[1], $m2[2], null];
-
-    return $ret;
+        !preg_match ('#data:([^;]+);base64,(.*)#', $data->content, $m2)
+      ) ?
+      [null, null, _("Empty file or bad file format")] :
+      [$m1[1], $m2[2], null];
   }
 
   protected function sendWsClient ($msg)
   {
-    $client = new ClientClass ('127.0.0.1', WPT_WS_PORT);
+    $client = new Services\WebSocket\Client ('127.0.0.1', WPT_WS_PORT);
 
     $client->connect ();
 

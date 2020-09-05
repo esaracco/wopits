@@ -6,7 +6,6 @@ require_once (__DIR__.'/../../config.php');
 
 use Wopits\User;
 use Wopits\Wall;
-use Wopits\Wall\Postit;
 
 class EditQueue extends Wall
 {
