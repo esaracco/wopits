@@ -4,17 +4,10 @@ namespace Wopits\Services\WebSocket;
 
 require_once (__DIR__.'/../../../config.php');
 
-use Swoole\WebSocket\Server as SwooleServer;
-use Swoole\Http\Request;
-use Swoole\WebSocket\Frame;
+use Swoole\{Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
 
-use Wopits\Helper;
-use Wopits\Base;
-use Wopits\User;
-use Wopits\Wall;
-use Wopits\Wall\Postit;
-use Wopits\Wall\Group;
-use Wopits\Wall\EditQueue;
+use Wopits\{Base, Helper, User, Wall};
+use Wopits\Wall\{EditQueue, Group, Postit};
 
 class Server
 {

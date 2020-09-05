@@ -4,10 +4,7 @@ namespace Wopits\Wall;
 
 require_once (__DIR__.'/../../config.php');
 
-use Wopits\Helper;
-use Wopits\Services\Task;
-use Wopits\Wall;
-use Wopits\User;
+use Wopits\{Helper, User, Wall, Services\Task};
 
 class Group extends Wall
 {

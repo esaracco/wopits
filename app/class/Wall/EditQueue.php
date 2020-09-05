@@ -4,8 +4,7 @@ namespace Wopits\Wall;
 
 require_once (__DIR__.'/../../config.php');
 
-use Wopits\User;
-use Wopits\Wall;
+use Wopits\{User, Wall};
 
 class EditQueue extends Wall
 {

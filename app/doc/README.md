@@ -23,7 +23,7 @@ INSTALLATION
 > You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis and Swoole to make it work.
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```

@@ -7,8 +7,7 @@
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\User;
-use Wopits\Ldap;
+use Wopits\{Ldap, User};
 
 if (!WPT_USE_LDAP)
   exit ("ERROR wopits has not been configured to manage LDAP ".

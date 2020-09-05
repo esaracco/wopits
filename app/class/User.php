@@ -4,8 +4,7 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-use Wopits\Services\Task;
-use Wopits\Wall\Group;
+use Wopits\{Services\Task, Wall\Group};
 
 class User extends Base
 {

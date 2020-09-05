@@ -2,8 +2,7 @@
 
 require_once (__DIR__.'/config.php');
 
-use Wopits\Helper;
-use Wopits\User;
+use Wopits\{Helper, User};
 
 $isCLI = (php_sapi_name () == 'cli');
 $scriptName = '';
