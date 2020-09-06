@@ -23,9 +23,7 @@
             item: $(this),
             title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
             content: "<?=_("You will lose your access to the wall.<br>Reject anyway?")?>",
-            cb_close: () =>
-              setTimeout(()=> S.unset ("reject-sharing-data"), 500),
-            cb_ok: () => plugin.removeGroupUser (S.get ("reject-sharing-data"))
+            cb_ok: () => plugin.removeGroupUser ()
           });
         });
     },
@@ -33,14 +31,14 @@
     // METHOD removeGroupUser ()
     removeGroupUser (args)
     {
-      const wallId = args.wall.wall ("getId"),
-            groupIds = args.groups.join (",");
+      const $wall = S.getCurrent ("wall"),
+            wallId = $wall.wall ("getId");
 
-      args.wall.wall ("close");
+      $wall.wall ("close");
 
       H.request_ws (
         "DELETE",
-        "wall/"+wallId+"/group/"+groupIds+"/removeMe");
+        "wall/"+wallId+"/group/"+this.element[0].dataset.groups+"/removeMe");
     },
 
     // METHOD open ()
@@ -114,11 +112,7 @@
           else
           {
             $popup.find(".reject-sharing").show ();
-
-            S.set ("reject-sharing-data", {
-              wall: args.wall,
-              groups: d.groups
-            });
+            $popup[0].dataset.groups = d.groups.join (",");
           }
 
           $popup[0].dataset.noclosure = true;
