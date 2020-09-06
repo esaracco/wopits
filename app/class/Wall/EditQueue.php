@@ -38,10 +38,10 @@ class EditQueue extends Wall
       {
         $item = 'wall-delete';
 
-        ($stmt = $this->prepare ("
+        ($stmt = $this->prepare ('
           SELECT session_id FROM edit_queue
           WHERE walls_id = :walls_id
-            AND session_id <> :session_id LIMIT 1"))
+            AND session_id <> :session_id LIMIT 1'))
            ->execute ([
              ':walls_id' => $this->wallId,
              ':session_id' => $this->sessionId
@@ -53,10 +53,10 @@ class EditQueue extends Wall
         // plugged with it.
         if ($item == 'postit')
         {
-          ($stmt = $this->prepare ("
+          ($stmt = $this->prepare ('
             SELECT item_start, item_end
             FROM postits_plugs
-            WHERE item_start = ? OR item_end = ?"))
+            WHERE item_start = ? OR item_end = ?'))
              ->execute ([$this->itemId, $this->itemId]);
           while ($plug = $stmt->fetch ())
             $editIds[] = ($plug['item_start'] == $this->itemId) ?
@@ -67,7 +67,7 @@ class EditQueue extends Wall
           SELECT session_id FROM edit_queue
           WHERE item = ?
             AND item_id IN ('.
-              implode(",", array_map ([$this, 'quote'], $editIds)).
+              implode(',', array_map ([$this, 'quote'], $editIds)).
             ') LIMIT 1'))
            ->execute ([$item]);
       }
@@ -164,7 +164,7 @@ class EditQueue extends Wall
                 ]];
               }
               else
-                $ret['error_msg']=
+                $ret['error_msg'] =
                   _("A wall with the same name already exists.");
             }
 
@@ -268,15 +268,15 @@ class EditQueue extends Wall
                   // Clear all alerts if deadline is reset.
                   if (!$deadline)
                     $this
-                      ->prepare ("
-                          DELETE FROM postits_alerts WHERE postits_id = ?")
+                      ->prepare('
+                          DELETE FROM postits_alerts WHERE postits_id = ?')
                       ->execute ([$this->data->id]);
                   // Remove user deadline alert if not set
                   elseif (is_null ($alertShift))
                     $this
-                      ->prepare ("
+                      ->prepare('
                           DELETE FROM postits_alerts
-                          WHERE postits_id = ? AND users_id = ?")
+                          WHERE postits_id = ? AND users_id = ?')
                       ->execute ([$this->data->id, $this->userId]);
                   else
                   {
@@ -287,21 +287,20 @@ class EditQueue extends Wall
                     $this->checkDBValue (
                       'postits_alerts', 'alertshift', $alertShift);
 
-                    $stmt = $this->prepare ("
+                    ($stmt = $this->prepare ("
                       INSERT INTO postits_alerts (
                         postits_id, users_id, alertshift
                       ) VALUES (
                         :postits_id, :users_id, :alertshift
                       ) {$this->getDuplicateQueryPart (
                          ['postits_id', 'users_id'])}
-                      alertshift = :alertshift_1");
-
-                    $stmt->execute ([
-                      ':postits_id' => $this->data->id,
-                      ':users_id' => $this->userId,
-                      ':alertshift' => $alertShift,
-                      ':alertshift_1' => $alertShift
-                    ]);
+                      alertshift = :alertshift_1"))
+                       ->execute ([
+                         ':postits_id' => $this->data->id,
+                         ':users_id' => $this->userId,
+                         ':alertshift' => $alertShift,
+                         ':alertshift_1' => $alertShift
+                       ]);
                   }
 
                   // Delete postit content pictures if necessary

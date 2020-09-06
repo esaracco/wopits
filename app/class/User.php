@@ -187,10 +187,10 @@ class User extends Base
 
       // Decrement userscount from user's groups.
       $this
-        ->prepare ("
+        ->prepare('
           UPDATE groups SET userscount = userscount - 1
           WHERE id IN (
-            SELECT groups_id FROM _perf_walls_users WHERE users_id = ?)")
+            SELECT groups_id FROM _perf_walls_users WHERE users_id = ?)')
         ->execute ([$this->userId]);
 
       // Remove user's walls directories.
@@ -658,7 +658,7 @@ class User extends Base
 
           $this->checkDBValue ('users', $field, $value);
           $this
-            ->prepare ("UPDATE users SET $field = :$field WHERE id = :id")
+            ->prepare("UPDATE users SET $field = :$field WHERE id = :id")
             ->execute ([$field => $value, 'id' => $this->userId]);
 
           ($stmt = $this->prepare ('

@@ -341,7 +341,7 @@ class Group extends Wall
       $ret['in'] = $stmt->fetchAll ();
 
       // NOT INT
-      ($stmt = $this->prepare ("
+      ($stmt = $this->prepare ('
         SELECT
           userscount,
           item_type,
@@ -353,12 +353,12 @@ class Group extends Wall
           (
             (
               users_id = :users_id_1 AND
-              item_type = ".WPT_GTYPES_GEN."
+              item_type = '.WPT_GTYPES_GEN.'
             )
             OR
             (
               users_id = :users_id_2 AND
-              item_type = ".WPT_GTYPES_DED." AND
+              item_type = '.WPT_GTYPES_DED.' AND
               walls_id = :walls_id_1
             )
           )
@@ -371,7 +371,7 @@ class Group extends Wall
             WHERE groups.users_id = :users_id_3
               AND walls_groups.walls_id = :walls_id_2
           )
-        ORDER BY name"))
+        ORDER BY name'))
          ->execute ([
            ':users_id_1' => $this->userId,
            ':users_id_2' => $this->userId,
@@ -466,25 +466,25 @@ class Group extends Wall
   {
     // Decrement userscount from user's groups.
     $this
-      ->prepare ("
+      ->prepare('
         UPDATE groups SET userscount = userscount - 1
         WHERE id IN (
           SELECT groups_id FROM _perf_walls_users
-          WHERE users_id = ? AND groups_id IS NOT NULL)")
+          WHERE users_id = ? AND groups_id IS NOT NULL)')
       ->execute ([$this->userId]);
 
     $this
-      ->prepare ('DELETE FROM users_groups WHERE users_id = ?')
+      ->prepare('DELETE FROM users_groups WHERE users_id = ?')
       ->execute ([$this->userId]);
 
     $this
-      ->prepare ('
+      ->prepare('
         DELETE FROM _perf_walls_users
         WHERE users_id = ? AND groups_id IS NOT NULL')
       ->execute ([$this->userId]);
 
     $this
-      ->prepare ('
+      ->prepare('
         DELETE FROM walls_groups
         WHERE walls_id IN (SELECT walls.id FROM walls
           INNER JOIN walls_groups ON walls_groups.walls_id = walls.id
@@ -515,20 +515,21 @@ class Group extends Wall
 
       // Performance helper:
       // Link group's users to wall with specific access.
-      $stmt = $this->prepare ("
-        INSERT INTO _perf_walls_users (
-          groups_id,
-          walls_id,
-          users_id,
-          access
-        )
-        SELECT
-          {$this->groupId} AS groups_id,
-          {$this->wallId} AS walls_id,
-          users_id,
-          {$this->data->access} AS access
-        FROM users_groups WHERE groups_id = ?");
-      $stmt->execute ([$this->groupId]);
+      $this
+        ->prepare("
+          INSERT INTO _perf_walls_users (
+            groups_id,
+            walls_id,
+            users_id,
+            access
+          )
+          SELECT
+            {$this->groupId} AS groups_id,
+            {$this->wallId} AS walls_id,
+            users_id,
+            {$this->data->access} AS access
+          FROM users_groups WHERE groups_id = ?")
+        ->execute ([$this->groupId]);
 
       if ($this->data->sendmail)
       {
@@ -592,8 +593,7 @@ class Group extends Wall
       $this
         ->prepare('
           DELETE FROM groups
-          WHERE id = ?
-            AND users_id = ?')
+          WHERE id = ? AND users_id = ?')
         ->execute ([$this->groupId, $this->userId]);
     }
     catch (\Exception $e)

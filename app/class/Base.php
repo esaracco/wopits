@@ -161,7 +161,7 @@ class Base extends \PDO
       // MySQL
       ' ON DUPLICATE KEY UPDATE ' :
       // PostgreSQL
-      " ON CONFLICT (".implode(',',$fields).") DO UPDATE SET ";
+      ' ON CONFLICT ('.implode(',',$fields).') DO UPDATE SET ';
   }
 
   protected function executeQuery ($sql, $data, $where = null)

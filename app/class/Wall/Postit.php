@@ -76,10 +76,10 @@ class Postit extends Wall
   public function getPlugs ($all = false)
   {
     // Get postits plugs
-    ($stmt = $this->prepare ("
+    ($stmt = $this->prepare ('
       SELECT item_start, item_end, label
       FROM postits_plugs
-      WHERE ".(($all)?'walls_id':'item_start')." = ?"))
+      WHERE '.(($all)?'walls_id':'item_start').' = ?'))
        ->execute ([($all)?$this->wallId:$this->postitId]);
 
     return $stmt->fetchAll ();
@@ -87,13 +87,13 @@ class Postit extends Wall
 
   public function getPostit ()
   {
-    ($stmt = $this->prepare ("
+    ($stmt = $this->prepare ('
       SELECT
         id, cells_id, width, height, item_top, item_left, classcolor,
         title, content, tags, creationdate, deadline, timezone, obsolete,
         attachmentscount
       FROM postits
-      WHERE postits.id = ?"))
+      WHERE postits.id = ?'))
        ->execute ([$this->postitId]);
 
     return $stmt->fetch ();
@@ -101,10 +101,10 @@ class Postit extends Wall
 
   public function getPostitAlertShift ()
   {
-    ($stmt = $this->prepare ("
+    ($stmt = $this->prepare ('
       SELECT alertshift
       FROM postits_alerts
-      WHERE postits_id = ? AND users_id = ?"))
+      WHERE postits_id = ? AND users_id = ?'))
        ->execute ([$this->postitId, $this->userId]);
 
     return ($r = $stmt->fetch ()) ? $r['alertshift'] : null;
@@ -139,7 +139,7 @@ class Postit extends Wall
       $deleteAlert = false;
 
       $dlEpoch = $item['postit_deadline'];
-      $dl = new \DateTime("@{$dlEpoch}");
+      $dl = new \DateTime ("@{$dlEpoch}");
       $days = $dl->diff($now)->days;
       $hours = $dl->diff($now)->h;
 
@@ -204,10 +204,10 @@ class Postit extends Wall
       $postitId = $this->postitId;
 
     $this
-      ->prepare("
+      ->prepare('
         DELETE FROM postits_plugs
-        WHERE item_start = ? AND item_end NOT IN (".
-          implode(",",array_map([$this, 'quote'], array_keys($plugs))).")")
+        WHERE item_start = ? AND item_end NOT IN ('.
+          implode(',',array_map([$this, 'quote'], array_keys($plugs))).')')
       ->execute ([$postitId]);
 
     $stmt = $this->prepare ("
@@ -215,8 +215,7 @@ class Postit extends Wall
         walls_id, item_start, item_end, label
       ) VALUES (
         :walls_id, :item_start, :item_end, :label
-      ) {$this->getDuplicateQueryPart (
-           ['walls_id', 'item_start', 'item_end'])}
+      ) {$this->getDuplicateQueryPart (['walls_id', 'item_start', 'item_end'])}
        label = :label_1");
 
     foreach ($plugs as $_id => $_label)
