@@ -536,18 +536,36 @@ class Group extends Wall
         $wallTitle = $this->data->sendmail->wallTitle;
         $access = $this->data->access;
 
-        foreach ($this->getUsers()['users'] as $user)
-          (new Task())->execute ([
-            'event' => Task::EVENT_TYPE_SEND_MAIL,
-            'method' => 'wallSharing',
-            'userId' => $user['id'],
-            'email' => $user['email'],
-            'wallId' => $this->wallId,
-            'recipientName' => $user['fullname'],
-            'sharerName' => $sharerName,
-            'wallTitle' => $wallTitle,
-            'access' => $access
-          ]);
+        $_args = [
+          'users' => $this->getUsers()['users'],
+          'wallId' => $this->wallId,
+          'sharerName' => $sharerName,
+          'wallTitle' => $wallTitle,
+          'access' => $access
+       ];
+
+       // Use async Coroutine to safely use sleep in order to relieve SMTP.
+       go (function () use ($_args)
+       {
+         $Task = new Task ();
+
+         foreach ($_args['users'] as $user)
+         {
+           $Task->execute ([
+             'event' => Task::EVENT_TYPE_SEND_MAIL,
+             'method' => 'wallSharing',
+             'userId' => $user['id'],
+             'email' => $user['email'],
+             'wallId' => $_args['wallId'],
+             'recipientName' => $user['fullname'],
+             'sharerName' => $_args['sharerName'],
+             'wallTitle' => $_args['wallTitle'],
+             'access' => $_args['access']
+           ]);
+
+           \Swoole\Coroutine::sleep (2);
+         }
+       });
       }
 
       $this->commit ();

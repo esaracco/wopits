@@ -132,6 +132,7 @@ class Postit extends Wall
         AND deadline IS NOT NULL');
 
     $now = new \DateTime ();
+    $Task = new Task ();
 
     while ($item = $stmt->fetch ())
     {
@@ -154,7 +155,7 @@ class Postit extends Wall
         {
           $deleteAlert = true;
 
-          (new Task())->execute ([
+          $Task->execute ([
             'event' => Task::EVENT_TYPE_SEND_MAIL,
             'method' => 'deadlineAlert_1',
             'userId' => $item['alert_user_id'],
@@ -164,6 +165,8 @@ class Postit extends Wall
             'fullname' => $item['alert_user_fullname'],
             'title' => $item['postit_title']
           ]);
+
+          sleep (2);
         }
       }
       elseif (!is_null ($item['alert_user_id']) &&
@@ -171,7 +174,7 @@ class Postit extends Wall
       {
         $deleteAlert = true;
 
-        (new Task())->execute ([
+        $Task->execute ([
           'event' => Task::EVENT_TYPE_SEND_MAIL,
           'method' => 'deadlineAlert_2',
           'userId' => $item['alert_user_id'],
@@ -183,6 +186,8 @@ class Postit extends Wall
           'days' => $days,
           'hours' => $hours
         ]);
+
+        sleep (2);
       }
 
       if ($deleteAlert)
