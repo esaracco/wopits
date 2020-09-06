@@ -28,7 +28,7 @@ class Group extends Wall
     if ( ($search = Helper::unaccent ($args['search'])) )
     {
       //FIXME SQL optimization.
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT id, fullname
         FROM users
         WHERE id <> :users_id
@@ -44,13 +44,13 @@ class Group extends Wall
             SELECT users_id FROM groups
             WHERE id = :groups_id_2
           )
-        LIMIT 10');
-      $stmt->execute ([
-        ':users_id' => $this->userId,
-        ':search' => "%$search%",
-        ':groups_id_1' => $this->groupId,
-        ':groups_id_2' => $this->groupId
-      ]);
+        LIMIT 10'))
+         ->execute ([
+           ':users_id' => $this->userId,
+           ':search' => "%$search%",
+           ':groups_id_1' => $this->groupId,
+           ':groups_id_2' => $this->groupId
+         ]);
 
       $ret['users'] = $stmt->fetchAll ();
     }
@@ -65,11 +65,11 @@ class Group extends Wall
     if (!$this->_checkGroupAccess ())
       return ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT walls_id
       FROM walls_groups
-      WHERE walls_groups.groups_id = ?');
-    $stmt->execute ([$groupId ?? $this->groupId]);
+      WHERE walls_groups.groups_id = ?'))
+       ->execute ([$groupId??$this->groupId]);
 
     while ($item = $stmt->fetch ())
       $ret[] = $item['walls_id'];
@@ -82,13 +82,13 @@ class Group extends Wall
     if (!$this->_checkGroupAccess ())
       return ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT id, email, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?
-      ORDER BY fullname');
-    $stmt->execute ([$this->groupId]);
+      ORDER BY fullname'))
+       ->execute ([$this->groupId]);
 
     return ['users' => $stmt->fetchAll ()];
   }
@@ -116,9 +116,9 @@ class Group extends Wall
 
       // Performance helper:
       // Link user to group's walls with specific access.
-      $stmt = $this->prepare ('
-        SELECT walls_id, access FROM walls_groups WHERE groups_id = ?');
-      $stmt->execute ([$this->groupId]);
+      ($stmt = $this->prepare ('
+        SELECT walls_id, access FROM walls_groups WHERE groups_id = ?'))
+         ->execute ([$this->groupId]);
       while ( ($item = $stmt->fetch ()) )
       {
         $this->executeQuery ('INSERT INTO _perf_walls_users', [
@@ -190,10 +190,10 @@ class Group extends Wall
 
       // Performance helper:
       // Get wall id.
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT walls_id FROM _perf_walls_users
-        WHERE groups_id = ? AND users_id = ?');
-      $stmt->execute ($params);
+        WHERE groups_id = ? AND users_id = ?'))
+         ->execute ($params);
       $this->wallId = $stmt->fetch()['walls_id'];
       // Unlink user to group's walls.
       $this
@@ -248,8 +248,7 @@ class Group extends Wall
       $data[] = $this->wallId;
     }
 
-    $stmt = $this->prepare ($sql);
-    $stmt->execute ($data);
+    ($stmt = $this->prepare ($sql))->execute ($data);
     if ($stmt->fetch ())
       $ret['error_msg'] = _("This group already exists.");
     else
@@ -280,9 +279,9 @@ class Group extends Wall
 
     // no need to check rights here (users_id = users_id in WHERE clause)
 
-    $stmt = $this->prepare ('
-      SELECT name FROM groups WHERE id <> ? AND users_id = ? AND name = ?');
-    $stmt->execute ([$this->groupId, $this->userId, $this->data->name]);
+    ($stmt = $this->prepare ('
+      SELECT name FROM groups WHERE id <> ? AND users_id = ? AND name = ?'))
+       ->execute ([$this->groupId, $this->userId, $this->data->name]);
     if ($stmt->fetch ())
       $ret['error_msg'] = _("This group already exists.");
     else
@@ -319,7 +318,7 @@ class Group extends Wall
     if ($isCreator)
     {
       // IN
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT
           groups.userscount,
           groups.item_type,
@@ -333,16 +332,16 @@ class Group extends Wall
             ON groups.id = walls_groups.groups_id
         WHERE groups.users_id = :users_id
           AND walls_groups.walls_id = :walls_id
-        ORDER BY name, access');
-      $stmt->execute ([
-        ':users_id' => $this->userId,
-        ':walls_id' => $this->wallId
-      ]);
+        ORDER BY name, access'))
+         ->execute ([
+           ':users_id' => $this->userId,
+           ':walls_id' => $this->wallId
+         ]);
+
       $ret['in'] = $stmt->fetchAll ();
 
       // NOT INT
-
-      $stmt = $this->prepare ("
+      ($stmt = $this->prepare ("
         SELECT
           userscount,
           item_type,
@@ -372,14 +371,14 @@ class Group extends Wall
             WHERE groups.users_id = :users_id_3
               AND walls_groups.walls_id = :walls_id_2
           )
-        ORDER BY name");
-      $stmt->execute ([
-        ':users_id_1' => $this->userId,
-        ':users_id_2' => $this->userId,
-        ':walls_id_1' => $this->wallId,
-        ':users_id_3' => $this->userId,
-        ':walls_id_2' => $this->wallId
-      ]);
+        ORDER BY name"))
+         ->execute ([
+           ':users_id_1' => $this->userId,
+           ':users_id_2' => $this->userId,
+           ':walls_id_1' => $this->wallId,
+           ':users_id_3' => $this->userId,
+           ':walls_id_2' => $this->wallId
+         ]);
 
       $ret['notin'] = $stmt->fetchAll ();
     }
@@ -392,7 +391,7 @@ class Group extends Wall
       ];
 
       // IN
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT
           groups.userscount,
           groups.item_type,
@@ -406,8 +405,9 @@ class Group extends Wall
             ON groups.id = walls_groups.groups_id
         WHERE walls_groups.walls_id = ?
           AND groups.item_type = '.WPT_GTYPES_DED.'
-        ORDER BY name, access');
-      $stmt->execute ([$this->wallId]);
+        ORDER BY name, access'))
+         ->execute ([$this->wallId]);
+
       $ret['in'] = $stmt->fetchAll ();
     }
     // only wall creator and wall delegate admin can view groups
@@ -607,11 +607,11 @@ class Group extends Wall
 
   private function _checkGroupAccess ()
   {
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT 1 FROM _perf_walls_users
       WHERE access = '.WPT_WRIGHTS_ADMIN.' AND users_id = ?
-      LIMIT 1');
-    $stmt->execute ([$this->userId]);
+      LIMIT 1'))
+       ->execute ([$this->userId]);
 
     return $stmt->fetch ();
   }

@@ -38,14 +38,14 @@ class EditQueue extends Wall
       {
         $item = 'wall-delete';
 
-        $stmt = $this->prepare ("
+        ($stmt = $this->prepare ("
           SELECT session_id FROM edit_queue
           WHERE walls_id = :walls_id
-            AND session_id <> :session_id LIMIT 1");
-        $stmt->execute ([
-          ':walls_id' => $this->wallId,
-          ':session_id' => $this->sessionId
-        ]);
+            AND session_id <> :session_id LIMIT 1"))
+           ->execute ([
+             ':walls_id' => $this->wallId,
+             ':session_id' => $this->sessionId
+           ]);
       }
       else
       {
@@ -53,23 +53,23 @@ class EditQueue extends Wall
         // plugged with it.
         if ($item == 'postit')
         {
-          $stmt = $this->prepare ("
+          ($stmt = $this->prepare ("
             SELECT item_start, item_end
             FROM postits_plugs
-            WHERE item_start = ? OR item_end = ?");
-          $stmt->execute ([$this->itemId, $this->itemId]);
+            WHERE item_start = ? OR item_end = ?"))
+             ->execute ([$this->itemId, $this->itemId]);
           while ($plug = $stmt->fetch ())
             $editIds[] = ($plug['item_start'] == $this->itemId) ?
                            $plug['item_end'] : $plug['item_start'];
         }
 
-        $stmt = $this->prepare ('
+        ($stmt = $this->prepare ('
           SELECT session_id FROM edit_queue
           WHERE item = ?
             AND item_id IN ('.
               implode(",", array_map ([$this, 'quote'], $editIds)).
-            ') LIMIT 1');
-        $stmt->execute ([$item]);
+            ') LIMIT 1'))
+           ->execute ([$item]);
       }
 
       if ($r = $stmt->fetch ())
@@ -81,8 +81,8 @@ class EditQueue extends Wall
       // If item is free for editing
       elseif (
         ($item == 'postit' || $item == 'header') &&
-        ($stmt = $this->prepare ("SELECT 1 FROM {$item}s WHERE id = ?")) &&
-        $stmt->execute ([$this->itemId]) &&
+        ($stmt = $this->prepare ("
+         SELECT 1 FROM {$item}s WHERE id = ?"))->execute ([$this->itemId]) &&
         !$stmt->fetch ())
       {
         $ret['error_msg'] = _("This item has been deleted!");

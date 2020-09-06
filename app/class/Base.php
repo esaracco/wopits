@@ -47,7 +47,7 @@ class Base extends \PDO
   // Dummy access to the DB, to preserve persistent connexion
   public function ping ()
   {
-    $this->query ("SELECT 1");
+    $this->query ('SELECT 1');
   }
 
   public function getUploadedFileInfos ($data)

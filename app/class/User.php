@@ -71,9 +71,9 @@ class User extends Base
 
     try
     {
-      $stmt = $this->prepare ('
-        SELECT id, username, fullname FROM users WHERE email = ?');
-      $stmt->execute ([$this->data->email]);
+      ($stmt = $this->prepare ('
+        SELECT id, username, fullname FROM users WHERE email = ?'))
+         ->execute ([$this->data->email]);
 
       if ($r = $stmt->fetch ())
       {
@@ -107,10 +107,10 @@ class User extends Base
   {
     $ret = [];
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT email, username, fullname, about, visible, picture FROM users
-      WHERE id = ?');
-    $stmt->execute ([$this->userId]);
+      WHERE id = ?'))
+       ->execute ([$this->userId]);
     
     if (! ($ret = $stmt->fetch ()))
       $ret['error'] = _("Unable to retrieve your account information");
@@ -138,12 +138,9 @@ class User extends Base
 
   public function exists ($id = null)
   {
-    if (!$id)
-      $id = $this->userId;
-
-    $stmt = $this->prepare ('
-      SELECT visible FROM users WHERE id = ? AND visible = 1');
-    $stmt->execute ([$id]);
+    ($stmt = $this->prepare ('
+      SELECT visible FROM users WHERE id = ? AND visible = 1'))
+       ->execute ([$id??$this->userId]);
 
     return $stmt->fetch ();
   }
@@ -175,10 +172,10 @@ class User extends Base
 
       // No SQL CASCADE here. We delete attachments manually and decrement
       // postit attachments count.
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT id, postits_id
-        FROM postits_attachments WHERE users_id = ?');
-      $stmt->execute ([$this->userId]);
+        FROM postits_attachments WHERE users_id = ?'))
+         ->execute ([$this->userId]);
       while ($r = $stmt->fetch ())
       {
         $this->exec ("
@@ -197,8 +194,8 @@ class User extends Base
         ->execute ([$this->userId]);
 
       // Remove user's walls directories.
-      $stmt = $this->prepare ('SELECT id FROM walls WHERE users_id = ?');
-      $stmt->execute ([$this->userId]);
+      ($stmt = $this->prepare ('
+        SELECT id FROM walls WHERE users_id = ?'))->execute ([$this->userId]);
       while ($item = $stmt->fetch ())
       {
         $this->wallId = $item['id'];
@@ -229,8 +226,8 @@ class User extends Base
 
   public function checkSession ()
   {
-    $stmt = $this->prepare('SELECT 1 FROM users_tokens WHERE users_id = ?');
-    $stmt->execute ([$_SESSION['userId']]);
+    ($stmt = $this->prepare('SELECT 1 FROM users_tokens WHERE users_id = ?'))
+      ->execute ([$_SESSION['userId']]);
 
     if (!$stmt->fetch ())
       $this->logout ();
@@ -240,15 +237,15 @@ class User extends Base
   {
     if ( ($token = Helper::getCookie ()) )
     {
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT
           users_id,
           users.settings
         FROM users_tokens
           INNER JOIN users ON users_tokens.users_id = users.id
         WHERE expiredate IS NOT NULL
-          AND token = ?');
-      $stmt->execute ([hash ('sha1', $_SERVER['REMOTE_ADDR']).$token]);
+          AND token = ?'))
+         ->execute ([hash ('sha1', $_SERVER['REMOTE_ADDR']).$token]);
 
       if ($r = $stmt->fetch ())
       {
@@ -266,14 +263,14 @@ class User extends Base
   {
     $ret = null;
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT
         users_id,
         users.username
       FROM users_tokens
         INNER JOIN users ON users_tokens.users_id = users.id
-      WHERE token = ? LIMIT 1');
-    $stmt->execute ([hash ('sha1', $ip).$token]);
+      WHERE token = ? LIMIT 1'))
+       ->execute ([hash ('sha1', $ip).$token]);
 
     if ( ($ret = $stmt->fetch ()) )
       $this->userId = $ret['users_id'];
@@ -333,9 +330,9 @@ class User extends Base
     $fromScript = isset ($args['fromScript']);
     $data = null;
 
-    $stmt = $this->prepare ('
-      SELECT id, settings FROM users WHERE username = ?');
-    $stmt->execute ([$args['username']]);
+    ($stmt = $this->prepare ('
+      SELECT id, settings FROM users WHERE username = ?'))
+       ->execute ([$args['username']]);
     $data = $stmt->fetch ();
 
     // If user account has not been yet created on wopits, silently
@@ -406,12 +403,12 @@ class User extends Base
     }
     else
     {
-      $stmt = $this->prepare ('
-        SELECT id, settings FROM users WHERE username = ? AND password = ?');
-      $stmt->execute ([
-        $this->data->username,
-        hash ('sha1', $this->data->password)
-      ]);
+      ($stmt = $this->prepare ('
+        SELECT id, settings FROM users WHERE username = ? AND password = ?'))
+         ->execute ([
+           $this->data->username,
+           hash ('sha1', $this->data->password)
+         ]);
       $data = $stmt->fetch ();
     }
 
@@ -436,8 +433,8 @@ class User extends Base
 
   public function getSettings ($json = true)
   {
-    $stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?');
-    $stmt->execute ([$this->userId]);
+    ($stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?'))
+      ->execute ([$this->userId]);
 
     $ret = ( ($ret = $stmt->fetch ()) ) ? $ret['settings'] : '[]';
 
@@ -458,8 +455,8 @@ class User extends Base
 
     if ($userId && !isset ($this->settings[$key]))
     {
-      $stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?');
-      $stmt->execute ([$userId]);
+      ($stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?'))
+        ->execute ([$userId]);
       if ( ($r = $stmt->fetch ()) )
         $this->settings = (array) @json_decode($r['settings']);
     }
@@ -522,9 +519,9 @@ class User extends Base
     if (!$this->userId)
       return ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
-      SELECT picture, filetype, filesize FROM users WHERE id = ?');
-    $stmt->execute ([$userId]);
+    ($stmt = $this->prepare ('
+      SELECT picture, filetype, filesize FROM users WHERE id = ?'))
+       ->execute ([$userId]);
 
     if ( ($r = $stmt->fetch ()) )
       return Helper::download ([
@@ -544,8 +541,8 @@ class User extends Base
 
     try
     {
-      $stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?');
-      $stmt->execute ([$this->userId]);
+      ($stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?'))
+        ->execute ([$this->userId]);
       $r = $stmt->fetch ();
 
       $this->executeQuery ('UPDATE users', [
@@ -593,8 +590,8 @@ class User extends Base
         if (!file_exists ($file))
           throw new \Exception (_("An error occured while uploading file."));
 
-        $stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?');
-        $stmt->execute ([$this->userId]);
+        ($stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?'))
+          ->execute ([$this->userId]);
         $previousPicture = $stmt->fetch()['picture'];
 
         list ($file, $this->data->item_type) =
@@ -664,10 +661,10 @@ class User extends Base
             ->prepare ("UPDATE users SET $field = :$field WHERE id = :id")
             ->execute ([$field => $value, 'id' => $this->userId]);
 
-          $stmt = $this->prepare ('
+          ($stmt = $this->prepare ('
             SELECT username, fullname, email, about, visible, picture
-            FROM users where id = ?');
-          $stmt->execute ([$this->userId]);
+            FROM users where id = ?'))
+             ->execute ([$this->userId]);
           $ret = $stmt->fetch ();
 
           if ($field == 'visible')
@@ -692,9 +689,9 @@ class User extends Base
               ->unlinkUserFromOthersGroups ();
 
             // Get all user's walls to disconnect users from them.
-            $stmt = $this->prepare ('
-              SELECT id FROM walls WHERE users_id = ?');
-            $stmt->execute ([$this->userId]);
+            ($stmt = $this->prepare ('
+              SELECT id FROM walls WHERE users_id = ?'))
+               ->execute ([$this->userId]);
             if (!empty ( ($r = $stmt->fetchAll (\PDO::FETCH_COLUMN)) ))
               $ret['closewalls'] = $r;
           }
@@ -704,9 +701,9 @@ class User extends Base
       {
         $pwd = $this->data->password;
 
-        $stmt = $this->prepare ('
-          SELECT id FROM users WHERE password = ? AND id = ?');
-        $stmt->execute ([hash ('sha1', $pwd->current), $this->userId]);
+        ($stmt = $this->prepare ('
+          SELECT id FROM users WHERE password = ? AND id = ?'))
+           ->execute ([hash ('sha1', $pwd->current), $this->userId]);
         if (!$stmt->fetch ())
           throw new \Exception (_("Wrong current password."));
 
@@ -885,9 +882,9 @@ class User extends Base
     }
 
     // Check for duplicate (username or email)
-    $stmt = $this->prepare ("
-      SELECT ".implode(',', $keys)." FROM users WHERE $where");
-    $stmt->execute ($data);
+    ($stmt = $this->prepare ("
+      SELECT ".implode(',', $keys)." FROM users WHERE $where"))
+       ->execute ($data);
     
     if ($dbl = $stmt->fetch ())
     {

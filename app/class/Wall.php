@@ -18,20 +18,20 @@ class Wall extends Base
     elseif ($requiredRole == WPT_WRIGHTS_RO)
       $in .= ','.WPT_WRIGHTS_RO.','.WPT_WRIGHTS_RW;
 
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT 1 FROM _perf_walls_users
       WHERE users_id = ? AND walls_id = ? AND access IN($in)
-      LIMIT 1");
-    $stmt->execute ([$this->userId, $this->wallId]);
+      LIMIT 1"))
+       ->execute ([$this->userId, $this->wallId]);
 
     return ['ok' => !empty ($stmt->fetch())];
   }
 
   public function checkWallName ($name)
   {
-    $stmt = $this->prepare ('
-      SELECT id FROM walls WHERE id <> ? AND name = ? AND users_id = ?');
-    $stmt->execute ([$this->wallId?$this->wallId:'0', $name, $this->userId]);
+    ($stmt = $this->prepare ('
+      SELECT id FROM walls WHERE id <> ? AND name = ? AND users_id = ?'))
+       ->execute ([$this->wallId?$this->wallId:'0', $name, $this->userId]);
 
     return $stmt->rowCount ();
   }
@@ -40,8 +40,8 @@ class Wall extends Base
   {
     if (!$this->wallName)
     {
-      $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
-      $stmt->execute ([$this->wallId]);
+      ($stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?'))
+        ->execute ([$this->wallId]);
 
       $this->wallName = $stmt->fetch()['name'];
     }
@@ -51,23 +51,23 @@ class Wall extends Base
 
   protected function isWallCreator ($userId)
   {
-    $stmt = $this->prepare ('
-      SELECT 1 FROM walls WHERE id = ? AND users_id = ?');
-    $stmt->execute ([$this->wallId, $userId]);
+    ($stmt = $this->prepare ('
+      SELECT 1 FROM walls WHERE id = ? AND users_id = ?'))
+       ->execute ([$this->wallId, $userId]);
 
     return $stmt->fetch ();
   }
 
   protected function isWallDelegateAdmin ($userId)
   {
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT 1 FROM _perf_walls_users
       WHERE access = '.WPT_WRIGHTS_ADMIN.'
         AND groups_id IS NOT NULL
         AND walls_id = ?
         AND users_id = ?
-      LIMIT 1');
-    $stmt->execute ([$this->wallId, $userId]);
+      LIMIT 1'))
+       ->execute ([$this->wallId, $userId]);
 
     return $stmt->fetch ();
   }
@@ -78,7 +78,7 @@ class Wall extends Base
     if (!$r['ok'])
       return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT
         walls.creationdate,
         walls.name,
@@ -91,15 +91,15 @@ class Wall extends Base
       FROM walls
         INNER JOIN users
           ON users.id = walls.users_id
-      WHERE walls.id = ?');
-    $stmt->execute ([$this->wallId]);
+      WHERE walls.id = ?'))
+       ->execute ([$this->wallId]);
 
     if ( ($ret = $stmt->fetch ()) )
     {
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT groups_id FROM _perf_walls_users
-        WHERE walls_id = ? AND users_id = ?');
-      $stmt->execute ([$this->wallId, $this->userId]);
+        WHERE walls_id = ? AND users_id = ?'))
+         ->execute ([$this->wallId, $this->userId]);
       $ret['groups'] = $stmt->fetchAll (\PDO::FETCH_COLUMN, 0);
     }
 
@@ -136,8 +136,8 @@ class Wall extends Base
         if (!file_exists ($file))
           throw new \Exception (_("An error occured while uploading file."));
 
-        $stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?');
-        $stmt->execute ([$headerId]);
+        ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
+          ->execute ([$headerId]);
         $previousPicture = $stmt->fetch()['picture'];
 
         list ($file, $this->data->item_type) =
@@ -192,8 +192,8 @@ class Wall extends Base
 
     try
     {
-      $stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?');
-      $stmt->execute ([$headerId]);
+      ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
+        ->execute ([$headerId]);
       $r = $stmt->fetch ();
 
       $this->executeQuery ('UPDATE headers', [
@@ -296,9 +296,9 @@ class Wall extends Base
         $wallName = $wall->name;
 
         // Change wall name if it already exists
-        $stmt = $this->prepare ('
-          SELECT name FROM walls WHERE users_id = ?');
-        $stmt->execute ([$this->userId]);
+        ($stmt = $this->prepare ('
+          SELECT name FROM walls WHERE users_id = ?'))
+           ->execute ([$this->userId]);
 
         if ( ($names = $stmt->fetchAll ()) )
         {
@@ -502,7 +502,7 @@ class Wall extends Base
   {
     // If a user is in more than one groups for the same wall, with
     // different rights, take the more powerful right (ORDER BY access)
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT *
       FROM walls
       WHERE users_id = :users_id_1
@@ -517,14 +517,13 @@ class Wall extends Base
         INNER JOIN users_groups
           ON users_groups.groups_id = walls_groups.groups_id
       WHERE users_groups.users_id = :users_id_2
-        AND walls.id = :walls_id_2");
-
-    $stmt->execute ([
-      ':users_id_1' => $this->userId,
-      ':walls_id_1' => $this->wallId,
-      ':users_id_2' => $this->userId,
-      ':walls_id_2' => $this->wallId
-    ]);
+        AND walls.id = :walls_id_2"))
+       ->execute ([
+         ':users_id_1' => $this->userId,
+         ':walls_id_1' => $this->wallId,
+         ':users_id_2' => $this->userId,
+         ':walls_id_2' => $this->wallId
+       ]);
     $data = $stmt->fetch ();
 
     $data['_exportInfos'] = [
@@ -544,8 +543,8 @@ class Wall extends Base
       return ['error' => _("An error occurred while exporting wall data.")];
 
     // Get headers
-    $stmt = $this->prepare ('SELECT * FROM headers WHERE walls_id = ?');
-    $stmt->execute ([$this->wallId]);
+    ($stmt = $this->prepare ('SELECT * FROM headers WHERE walls_id = ?'))
+      ->execute ([$this->wallId]);
     $data['headers'] = [];
     while ( ($header = $stmt->fetch ()) )
     {
@@ -557,9 +556,8 @@ class Wall extends Base
     }
 
     // Get cells and postits
-    $stmt = $this->prepare ('
-      SELECT * FROM cells WHERE walls_id = ?');
-    $stmt->execute ([$this->wallId]);
+    ($stmt = $this->prepare ('SELECT * FROM cells WHERE walls_id = ?'))
+      ->execute ([$this->wallId]);
     // Get postits
     $stmt1 = $this->prepare ('
       SELECT * FROM postits WHERE cells_id = ?');
@@ -633,7 +631,7 @@ class Wall extends Base
     // Return walls list
     if (!$this->wallId)
     {
-      $stmt = $this->prepare ("
+      ($stmt = $this->prepare ("
         SELECT
           walls.id,
           walls.creationdate,
@@ -665,12 +663,11 @@ class Wall extends Base
             ON walls.users_id = users.id
         WHERE users_groups.users_id = :users_id_2
 
-        ORDER BY creationdate DESC, ownername, name, access
-      ");
-      $stmt->execute ([
-          ':users_id_1' => $this->userId,
-          ':users_id_2' => $this->userId
-      ]);
+        ORDER BY creationdate DESC, ownername, name, access"))
+         ->execute ([
+           ':users_id_1' => $this->userId,
+           ':users_id_2' => $this->userId
+         ]);
 
       // If a user is in more than one groups for the same wall, with
       // different rights, take the more powerful right
@@ -690,7 +687,7 @@ class Wall extends Base
 
     // If a user is in more than one groups for the same wall, with
     // different rights, take the more powerful right (ORDER BY access)
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT
         id,
         users_id AS ownerid,
@@ -721,33 +718,32 @@ class Wall extends Base
       WHERE users_groups.users_id = :users_id_2
         AND walls.id = :walls_id_2
       
-      ORDER BY access");
-
-    $stmt->execute ([
-      ':users_id_1' => $this->userId,
-      ':walls_id_1' => $this->wallId,
-      ':users_id_2' => $this->userId,
-      ':walls_id_2' => $this->wallId
-    ]);
+      ORDER BY access"))
+       ->execute ([
+         ':users_id_1' => $this->userId,
+         ':walls_id_1' => $this->wallId,
+         ':users_id_2' => $this->userId,
+         ':walls_id_2' => $this->wallId
+       ]);
 
     if ( !($data = $stmt->fetch ()) )
       return ['removed' => true];
 
     if (!$basic)
     {
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT displayexternalref
-        FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1');
-      $stmt->execute ([$this->wallId, $this->userId]);
+        FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1'))
+         ->execute ([$this->wallId, $this->userId]);
       $data['displayexternalref'] = $stmt->fetch()['displayexternalref'];
 
       // Get headers
-      $stmt = $this->prepare ("
+      ($stmt = $this->prepare ("
         SELECT id, item_type, item_order, width, height, title, picture
         FROM headers
         WHERE walls_id = ?
-        ORDER BY item_type, item_order ASC");
-      $stmt->execute ([$this->wallId]);
+        ORDER BY item_type, item_order ASC"))
+         ->execute ([$this->wallId]);
       $data['headers'] = ['cols' => [], 'rows' => []];
       while ($row = $stmt->fetch ())
       {
@@ -760,11 +756,11 @@ class Wall extends Base
       }
 
       // Get cells and postits
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT id, height, width, item_col, item_row
         FROM cells
-        WHERE walls_id = ?');
-      $stmt->execute ([$this->wallId]);
+        WHERE walls_id = ?'))
+         ->execute ([$this->wallId]);
       // Get postits
       $stmt1 = $this->prepare (($withAlerts) ?
         "SELECT
@@ -796,18 +792,18 @@ class Wall extends Base
       }
 
       // Get postits plugs
-      $stmt = $this->prepare ("
+      ($stmt = $this->prepare ("
         SELECT item_start, item_end, label
         FROM postits_plugs
-        WHERE walls_id = ?");
-      $stmt->execute ([$this->wallId]); 
+        WHERE walls_id = ?"))
+         ->execute ([$this->wallId]);
       $data['postits_plugs'] = $stmt->fetchAll ();
     }
 
     // Check if the wall is shared with other users
-    $stmt = $this->prepare ('
-      SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1');
-    $stmt->execute ([$this->wallId]);
+    ($stmt = $this->prepare ('
+      SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1'))
+       ->execute ([$this->wallId]);
     $data['shared'] = boolval ($stmt->fetch ());
 
     return $data;
@@ -820,7 +816,7 @@ class Wall extends Base
     // WebSocket server)
     $ids = implode ("','", $usersIds);
 
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
      SELECT
         users.id,
         users.username,
@@ -848,11 +844,11 @@ class Wall extends Base
        INNER JOIN walls ON walls.users_id = users.id
      WHERE walls.id = :walls_id_2
        AND users.id IN ('$ids')
-     ORDER BY access, fullname");
-    $stmt->execute ([
-      ':walls_id_1' => $this->wallId,
-      ':walls_id_2' => $this->wallId
-    ]);
+     ORDER BY access, fullname"))
+      ->execute ([
+        ':walls_id_1' => $this->wallId,
+        ':walls_id_2' => $this->wallId
+      ]);
 
     //FIXME
     //$ret['list'] = $stmt->fetchAll ();
@@ -879,9 +875,9 @@ class Wall extends Base
     if (!$r['ok'])
       return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('
-      SELECT picture, filetype, filesize FROM headers WHERE id = ?');
-    $stmt->execute ([$headerId]);
+    ($stmt = $this->prepare ('
+      SELECT picture, filetype, filesize FROM headers WHERE id = ?'))
+       ->execute ([$headerId]);
 
     if ( ($r = $stmt->fetch ()) )
       return Helper::download ([
@@ -911,14 +907,15 @@ class Wall extends Base
       $this->beginTransaction ();
 
       // Delete headers documents
-      $stmt = $this->prepare("
+      ($stmt = $this->prepare("
         SELECT id FROM headers
         WHERE walls_id = :walls_id
-          AND item_type = :item_type AND item_order = :item_order");
-      $stmt->execute ([
-        ':walls_id' => $this->wallId,
-        ':item_type' => $item,
-        ':item_order' => $itemPos]);
+          AND item_type = :item_type AND item_order = :item_order"))
+         ->execute ([
+           ':walls_id' => $this->wallId,
+           ':item_type' => $item,
+           ':item_order' => $itemPos
+         ]);
 
       Helper::rm ("$dir/header/".($stmt->fetch ())['id']);
 
@@ -950,16 +947,16 @@ class Wall extends Base
           ]);
 
       // Delete files for all postits
-      $stmt = $this->prepare ("
+      ($stmt = $this->prepare ("
         SELECT postits.id
         FROM cells
           INNER JOIN postits ON postits.cells_id = cells.id
         WHERE cells.walls_id = :walls_id
-          AND cells.item_$item = :item");
-      $stmt->execute ([
-        ':walls_id' => $this->wallId,
-        ':item' => $itemPos
-      ]);
+          AND cells.item_$item = :item"))
+         ->execute ([
+           ':walls_id' => $this->wallId,
+           ':item' => $itemPos
+         ]);
       while ($row = $stmt->fetch ())
         Helper::rm ("$dir/postit/{$row['id']}");
 
@@ -1026,14 +1023,14 @@ class Wall extends Base
     {
       $this->beginTransaction ();
 
-      $stmt = $this->prepare("
-      SELECT item_order FROM headers
-      WHERE walls_id = :walls_id
-        AND item_type = :item_type ORDER BY item_order DESC LIMIT 1");
-      $stmt->execute ([
-        ':walls_id' => $this->wallId,
-        ':item_type' => $item
-      ]);
+      ($stmt = $this->prepare ("
+        SELECT item_order FROM headers
+        WHERE walls_id = :walls_id
+          AND item_type = :item_type ORDER BY item_order DESC LIMIT 1"))
+         ->execute ([
+           ':walls_id' => $this->wallId,
+           ':item_type' => $item
+         ]);
       $order = $stmt->fetch()['item_order'];
 
       $this->executeQuery ('INSERT INTO headers', [
@@ -1048,19 +1045,15 @@ class Wall extends Base
       mkdir ("$dir/header/".$this->lastInsertId());
 
       if ($item == 'col')
-      {
-        $stmt = $this->prepare("
+        ($stmt = $this->prepare("
           SELECT item_row, item_col FROM cells
-          WHERE walls_id = ? AND item_$item = ?");
-        $stmt->execute ([$this->wallId, $order]);
-      }
+          WHERE walls_id = ? AND item_$item = ?"))
+           ->execute ([$this->wallId, $order]);
       else
-      {
-        $stmt = $this->prepare('
+        ($stmt = $this->prepare('
           SELECT item_row, item_col FROM cells
-          WHERE walls_id = ? ORDER BY item_row DESC, item_col ASC');
-        $stmt->execute ([$this->wallId]);
-      }
+          WHERE walls_id = ? ORDER BY item_row DESC, item_col ASC'))
+           ->execute ([$this->wallId]);
 
       $r = null;
       while ($e = $stmt->fetch ())
@@ -1275,8 +1268,8 @@ class Wall extends Base
     {
       if ($returnName)
       {
-        $stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?');
-        $stmt->execute ([$this->wallId]);
+        ($stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?'))
+          ->execute ([$this->wallId]);
         $ret['name'] = $stmt->fetch()['name'];
       }
 

@@ -32,8 +32,8 @@ class Postit extends Wall
 
     // Check for the col/row (it could have been removed while user was
     // creating the new post-it.
-    $stmt = $this->prepare ('SELECT 1 FROM cells WHERE id = ?');
-    $stmt->execute ([$this->cellId]);
+    ($stmt = $this->prepare ('SELECT 1 FROM cells WHERE id = ?'))
+      ->execute ([$this->cellId]);
     if (!$stmt->fetch ())
       return ['error_msg' => _("The row/column has been deleted!")];
 
@@ -76,36 +76,36 @@ class Postit extends Wall
   public function getPlugs ($all = false)
   {
     // Get postits plugs
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT item_start, item_end, label
       FROM postits_plugs
-      WHERE ".(($all)?'walls_id':'item_start')." = ?");
-    $stmt->execute ([($all)?$this->wallId:$this->postitId]);
+      WHERE ".(($all)?'walls_id':'item_start')." = ?"))
+       ->execute ([($all)?$this->wallId:$this->postitId]);
 
     return $stmt->fetchAll ();
   }
 
   public function getPostit ()
   {
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT
         id, cells_id, width, height, item_top, item_left, classcolor,
         title, content, tags, creationdate, deadline, timezone, obsolete,
         attachmentscount
       FROM postits
-      WHERE postits.id = ?");
-    $stmt->execute ([$this->postitId]);
+      WHERE postits.id = ?"))
+       ->execute ([$this->postitId]);
 
     return $stmt->fetch ();
   }
 
   public function getPostitAlertShift ()
   {
-    $stmt = $this->prepare ("
+    ($stmt = $this->prepare ("
       SELECT alertshift
       FROM postits_alerts
-      WHERE postits_id = ? AND users_id = ?");
-    $stmt->execute ([$this->postitId, $this->userId]);
+      WHERE postits_id = ? AND users_id = ?"))
+       ->execute ([$this->postitId, $this->userId]);
 
     return ($r = $stmt->fetch ()) ? $r['alertshift'] : null;
   }
@@ -245,9 +245,9 @@ class Postit extends Wall
     {
       $this->beginTransaction ();
 
-      $stmt = $this->prepare ('
-        SELECT link FROM postits_attachments WHERE id = ?');
-      $stmt->execute ([$attachmentId]);
+      ($stmt = $this->prepare ('
+        SELECT link FROM postits_attachments WHERE id = ?'))
+         ->execute ([$attachmentId]);
       $attach = $stmt->fetch ();
 
       $this
@@ -286,10 +286,10 @@ class Postit extends Wall
 
     if (!empty ($this->data->title))
     {
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT 1 FROM postits_attachments
-        WHERE postits_id = ? AND title = ? AND id <> ?');
-      $stmt->execute ([$this->postitId, $this->data->title, $attachmentId]);
+        WHERE postits_id = ? AND title = ? AND id <> ?'))
+         ->execute ([$this->postitId, $this->data->title, $attachmentId]);
       if ($stmt->fetch ())
         return ['error_msg' => _("This title already exists.")];
     }
@@ -333,13 +333,13 @@ class Postit extends Wall
         "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
       $fname = basename ($file);
 
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT 1 FROM postits_attachments
-        WHERE postits_id = ? AND link LIKE ?');
-      $stmt->execute ([
-        $this->postitId,
-        '%'.substr($fname, 0, strrpos($fname, '.')).'%'
-      ]);
+        WHERE postits_id = ? AND link LIKE ?'))
+         ->execute ([
+           $this->postitId,
+           '%'.substr($fname, 0, strrpos($fname, '.')).'%'
+        ]);
 
       if ($stmt->fetch ())
         $ret['error_msg'] =
@@ -413,7 +413,7 @@ class Postit extends Wall
     {
       $data = [];
 
-      $stmt = $this->prepare ('
+      ($stmt = $this->prepare ('
         SELECT
            postits_attachments.id
           ,postits_attachments.link
@@ -429,8 +429,8 @@ class Postit extends Wall
           LEFT JOIN users
             ON postits_attachments.users_id = users.id
         WHERE postits_id = ?
-        ORDER BY postits_attachments.creationdate DESC, name ASC');
-      $stmt->execute ([$this->postitId]);
+        ORDER BY postits_attachments.creationdate DESC, name ASC'))
+         ->execute ([$this->postitId]);
 
       while ($row = $stmt->fetch ())
       {
@@ -445,9 +445,9 @@ class Postit extends Wall
     }
     else
     {
-      $stmt = $this->prepare ('
-        SELECT * FROM postits_attachments WHERE id = ?');
-      $stmt->execute ([$attachmentId]);
+      ($stmt = $this->prepare ('
+        SELECT * FROM postits_attachments WHERE id = ?'))
+         ->execute ([$attachmentId]);
 
       // If the file has been deleted by admin while a user with readonly
       // access was taking a look at the attachments list.
@@ -493,9 +493,9 @@ class Postit extends Wall
         list ($file, $this->data->item_type, $width, $height) =
           Helper::resizePicture ($file, 800, 0, false);
 
-        $stmt = $this->prepare ('
-          SELECT * FROM postits_pictures WHERE postits_id = ? AND link = ?');
-        $stmt->execute ([$this->postitId, "$wdir/$rdir/".basename($file)]);
+        ($stmt = $this->prepare ('
+          SELECT * FROM postits_pictures WHERE postits_id = ? AND link = ?'))
+           ->execute ([$this->postitId, "$wdir/$rdir/".basename($file)]);
 
         $ret = $stmt->fetch ();
 
@@ -556,8 +556,8 @@ class Postit extends Wall
     if (!$r['ok'])
       return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
 
-    $stmt = $this->prepare ('SELECT * FROM postits_pictures WHERE id = ?');
-    $stmt->execute ([$picId]);
+    ($stmt = $this->prepare ('SELECT * FROM postits_pictures WHERE id = ?'))
+      ->execute ([$picId]);
     $data = $stmt->fetch ();
 
     $data['path'] = WPT_ROOT_PATH.$data['link'];
@@ -570,11 +570,11 @@ class Postit extends Wall
     $pics = (preg_match_all (
       "#/postit/\d+/picture/(\d+)#", $data->content, $m)) ? $m[1] : [];
 
-    $stmt = $this->prepare ('
+    ($stmt = $this->prepare ('
       SELECT id, link
       FROM postits_pictures
-      WHERE postits_id = ?');
-    $stmt->execute ([$data->id]);
+      WHERE postits_id = ?'))
+       ->execute ([$data->id]);
 
     $toDelete = [];
     while ( ($pic = $stmt->fetch ()) )
