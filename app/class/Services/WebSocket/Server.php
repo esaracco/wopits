@@ -8,6 +8,7 @@ use Swoole\{Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
 
 use Wopits\{Base, Helper, User, Wall};
 use Wopits\Wall\{EditQueue, Group, Postit};
+use Wopits\Services\Task;
 
 class Server
 {
@@ -468,7 +469,7 @@ class Server
       // Keep WS connection and database persistent connection alive
       elseif ($msg->route == 'ping')
       {
-        $this->_ping ();
+        $this->_ping (false);
       }
       // ROUTE debug
       // Debug
@@ -962,9 +963,12 @@ class Server
     return $ret;
   }
 
-  private function _ping ()
+  private function _ping ($full = true)
   {
-    (new Base ())->ping ();
+    (new Base())->ping ();
+
+    if ($full)
+      (new Task())->execute (['event' => Task::EVENT_TYPE_DUM]);
   }
 
   private function _log (int $fd, $type, $msg, $ip = null)

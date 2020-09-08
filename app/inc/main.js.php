@@ -1687,7 +1687,6 @@
             // Keep WS connection and database persistent connection alive and
             // prevent PHP timeout
             // -> 15mn
-/*
             setInterval (()=>
               {
                 // WebSocket ping
@@ -1696,7 +1695,6 @@
                 $.get ("/api/user/ping");
 
               }, 15*60*1000);
-*/
 
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)

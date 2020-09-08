@@ -9,6 +9,7 @@ class Task
   private $client;
 
   const EVENT_TYPE_SEND_MAIL = 'send-mail';
+  const EVENT_TYPE_DUM = 'dum';
 
   public function __construct ()
   {

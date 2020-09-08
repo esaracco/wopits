@@ -21,6 +21,13 @@ class Run
           $this->_log ('info', Task::EVENT_TYPE_SEND_MAIL,
             'Executing task');
           return (new \Wopits\Mailer())->send ($data);
+
+        case Task::EVENT_TYPE_DUM:
+          $this->_log ('info', Task::EVENT_TYPE_DUM, 'Ping...');
+          break;
+
+        default:
+          $this->_log ('warning', $data['event'], 'Unknown event!');
       }
     }
     catch (\Exception $e)
