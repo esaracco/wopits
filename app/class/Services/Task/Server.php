@@ -11,12 +11,12 @@ class Server
 
   public function __construct()
   {
+    $workerNum = swoole_cpu_num() * 2;
     $this->_server = new \Swoole\Server ('127.0.0.1', WPT_TASK_PORT);
     $this->_server->set ([
-      'worker_num' => 2,
+      'worker_num' => $workerNum,
       'daemonize' => false,
-      'task_worker_num' => 4,
-      'task_max_request' => 2000
+      'task_worker_num' => $workerNum * 2
     ]);
 
     // Attach events.
