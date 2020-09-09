@@ -23,7 +23,7 @@ class Run
           return (new \Wopits\Mailer())->send ($data);
 
         case Task::EVENT_TYPE_DUM:
-          $this->_log ('info', Task::EVENT_TYPE_DUM, 'Ping...');
+          //$this->_log ('info', Task::EVENT_TYPE_DUM, 'Ping...');
           break;
 
         default:

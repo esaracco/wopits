@@ -269,6 +269,12 @@
             },
           stop: function(e, ui)
             {
+              const $editable = $postit.find (".editable");
+
+              // Cancel editable.
+              if ($editable.length)
+                $editable.editable ("cancel");
+
               S.set ("still-dragging", true, 500);
 
               if (S.get("revertData").revert)
