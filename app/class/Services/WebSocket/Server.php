@@ -667,7 +667,7 @@ class Server
 
           foreach ($this->_cache->hGetAll('openedWalls')[$wallId]
                      as $_fd => $_userId)
-            if ($_fd != $fd)
+            if ($_fd != $fd && $server->exist ($_fd))
               $server->push ($_fd, $_json);
         }
       }
@@ -684,8 +684,7 @@ class Server
         $json = json_encode (['action' => 'exitsession']);
 
         foreach ($this->_cache->hGet ('usersUnique', $userId) as $_fd)
-          if ($_fd != $fd &&
-              $server->exist ($_fd) &&
+          if ($_fd != $fd && $server->exist ($_fd) &&
               ($_client = $this->_cache->hGet ('clients', $_fd)) )
           {
             $_client->final = true;
