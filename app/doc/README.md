@@ -20,20 +20,20 @@ If you don't want to bother installing wopits yourself, just create an account o
 INSTALLATION
 ------------
 
-> You will need PHP >= 7.3, Apache, MySQL or PostgreSQL, Redis & Swoole to make it work.
+> You will need PHP, Apache, MariaDB or PostgreSQL, Redis & Swoole to make it work.
 
 - `git clone git@github.com:esaracco/wopits.git`.
 - Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
-- Install composer & yarn.
-- install Apache, MySQL or PostgreSQL, Redis and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Install composer >= 1.8.4 & yarn >= 1.13.0.
+- Install Apache >= 2.4.38, MariaDB >= 10.3.23 or PostgreSQL >= 11.7, Redis >= 5.0.3 and PHP >= 7.3.19 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
-- Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MySQL) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
+- Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MariaDB) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
 
-- With **MySQL**:
+- With **MariaDB**:
 
 ```bash
 $ sudo -uroot mysql < app/db/mysql/wopits-create_db.example.sql
@@ -69,7 +69,7 @@ $ psql wopits -Uwopits -W < app/db/postgresql/wopits-create_tables.sql
 
 First of all, install wopits on a decently sized server with at least 16GB of RAM, good bandwidth and high-performance I/O disks.
 
-#### MySQL / PostgreSQL
+#### MariaDB / PostgreSQL
 
 It is important to optimize the SGBD configuration as much as possible. Default settings will give poor results.
 
