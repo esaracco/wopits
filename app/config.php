@@ -10,7 +10,8 @@ define ('WPT_EXPORT_MIN_VERSION', '0.21');
 umask (002);
 
 // Autoloader for external libs.
-require_once (__DIR__.'/libs/vendor/autoload.php');
+if (file_exists (__DIR__.'/libs/vendor/autoload.php'))//WPTPROD-remove
+  require_once (__DIR__.'/libs/vendor/autoload.php');
 
 // Autoloader for wopits classes.
 spl_autoload_register (function ($class)

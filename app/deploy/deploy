@@ -19,20 +19,6 @@
                    '/site-config.template.php':'')."\e[0m\n\n".
       "\e[1;31mDeployment has been aborted!\n\e[0m");
 
-  // Check for external PHP modules.
-  if (!file_exists (__DIR__.'/../libs/vendor'))
-    exit (
-      "\nYou must install PHP dependencies in \e[1mapp/libs/\e[0m before ".
-      "deploying.\n\n".
-      "\e[1;31mDeployment has been aborted!\n\e[0m");
-
-  // Check for external Javascript modules.
-  if (!file_exists (__DIR__.'/../../www/libs/node_modules'))
-    exit (
-      "\nYou must install Javascript dependencies in \e[1mwww/libs/\e[0m ".
-      "before deploying.\n\n".
-      "\e[1;31mDeployment has been aborted!\n\e[0m");
-
   require ($appConf);
   require ($deployConf);
 
@@ -47,6 +33,7 @@
 
   $Deploy->checkRights ();
   $Deploy->checkMinifiers ();
+  $Deploy->updateExternalLibs ();
   $Deploy->initWorkingPath ();
   $Deploy->createLocales (); 
   $Deploy->createJS (); 
@@ -205,6 +192,15 @@
       $this->isFirstDeployment = $this->_exec (
         "chmod 644 {$this->targetPath}/site-config.php",
         $this->isRemoteTarget, true);
+    }
+
+    public function updateExternalLibs ()
+    {
+      echo "Updating PHP external modules...\n";
+      $this->_exec ('composer update -qn --working-dir='.__DIR__.'/../libs');
+
+      echo "Updating Javascript external modules...\n";
+      $this->_exec ('cd '.__DIR__.'/../../www/libs && yarn');
     }
 
     public function initWorkingPath ()
