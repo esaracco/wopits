@@ -45,7 +45,8 @@ class Run
 
   private function _log ($type, $event, $msg)
   {
-    error_log (sprintf ("[%s][%s] %s\n", strtoupper ($type), $event, $msg));
+    error_log (sprintf ("%s [%s][%s] %s",
+      date('Y-m-d H:i:s'), strtoupper ($type), $event, $msg));
   }
 }
 

@@ -39,9 +39,9 @@ class Server
 
   public function onStart ($server)
   {
-    error_log (
-      "[INFO][internal] wopits Task server is listening on port ".
-      WPT_TASK_PORT);
+    error_log (date('Y-m-d H:i:s').
+      ' [INFO][internal] wopits Task server is listening on port '.
+        WPT_TASK_PORT);
   }
 
   public function onWorkerStart ($server, $workerId)

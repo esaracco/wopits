@@ -47,9 +47,9 @@ class Server
 
   public function onStart (SwooleServer $server)
   {
-    error_log (
-      "[INFO][internal] wopits WebSocket server is listening on port ".
-      WPT_WS_PORT);
+    error_log (date('Y-m-d H:i:s').
+      ' [INFO][internal] wopits WebSocket server is listening on port '.
+         WPT_WS_PORT);
   }
 
   public function onOpen (SwooleServer $server, Request $req)
@@ -981,7 +981,8 @@ class Server
 
   private function _log (int $fd, $type, $msg, $ip = null)
   {
-    error_log (sprintf("[%s][%s:%s] %s\n",strtoupper ($type), $ip, $fd, $msg));
+    error_log (sprintf("%s [%s][%s:%s] %s",
+      date('Y-m-d H:i:s'), strtoupper ($type), $ip, $fd, $msg));
   }
 
   //<WPTPROD-remove>
