@@ -27,7 +27,15 @@ INSTALLATION
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
-- Install composer >= 1.8.4 & yarn >= 1.13.0.
+- Install composer >= 1.8.4 & yarn >= 1.13.0. If you are using Debian **do not install the cmdtest package**. Remove it instead, and proceed like this:
+```bash
+# apt install nodejs npm
+# curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+# echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+# apt update
+# apt install yarn
+```
+See https://classic.yarnpkg.com/en/docs/install for help installing yarn.
 - Install Apache >= 2.4.38, MariaDB >= 10.3.23 or PostgreSQL >= 11.7, Redis >= 5.0.3 and PHP >= 7.3.19 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
