@@ -1994,7 +1994,8 @@
         tinymce.init ({
           selector: "#postitUpdatePopupBody",
           content_style: "p {margin: 0}",
-          language: (locale != "en_US") ? locale : null,
+          language: (locale != "en_US")?locale:null,
+          language_url: (locale != "en_US")?'/libs/tinymce-'+locale+'.js':null,
           branding: false,
           plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime",
 
