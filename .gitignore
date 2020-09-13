@@ -2,10 +2,13 @@ site-config.php
 app/deploy/config.php
 app/dkim/dkim.*
 html-minifier
-data
-app/services/run
-*.jar
 *~
+*.jar
 .*.swp
 *.old
 *.new
+*.lock
+data/
+app/services/run/
+app/libs/vendor/
+www/libs/node_modules/
