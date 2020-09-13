@@ -2,7 +2,7 @@
 <?php
 
 // This script synchronize LDAP users to wopits database.
-// -> Execute it with a user who has the right to write in the wopits
+// -> Execute it with a user who has the right to write into the wopits
 //    directory "data/".
 
 require_once (__DIR__.'/../config.php');
@@ -17,13 +17,12 @@ if (!WPT_USE_LDAP)
 $flag = WPT_DATA_SPATH.'/.'.time();
 if (!@mkdir ($flag, 02770))
   exit ("ERROR This script must be executed on the wopits server by a ".
-        "user who has the right to write in the wopits ".
+        "user who has the right to write into the wopits ".
         "directory `".WPT_DATA_SPATH."`!\n\n");
 rmdir ($flag);
 
 // Connect to the LDAP server
-$Ldap = new Ldap ();
-if (!$Ldap->connect ())
+if (!($Ldap = new Ldap ())->connect ())
   exit ("ERROR LDAP connection failed!\n\n");
 
 // Get all LDAP users
