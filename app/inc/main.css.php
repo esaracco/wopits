@@ -213,6 +213,14 @@ i.settings {
   vertical-align:top;
 }
 
+.cp .ui-widget.ui-widget-content {
+  border:none;
+}
+
+.cp .ui-colorpicker-border {
+  border-color:#ced4da;
+}
+
 #welcome {
   z-index:1;
   position: absolute;

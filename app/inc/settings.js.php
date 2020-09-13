@@ -274,16 +274,7 @@
 
         // Load color picker
         $settings.find(".cp").colorpicker({
-          parts:  ["swatches", "bar", "map"],
-          layout: {
-            swatches: [0, 0, 2, 1],
-            bar: [0, 1, 1, 1],
-            map: [1, 1, 1, 1]
-          },
-          part: {
-            bar: { size: 128 },
-            map: { size: 128 }
-          },
+          parts:  ["swatches"],
           swatchesWidth: ww < 435 ? ww - 90 : 435,
           color: plugin.get ("wall-background", wallId),
           select: function (e, color)
