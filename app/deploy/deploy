@@ -95,6 +95,8 @@
         $this->help ("Unknown environment `{$this->opt['env']}`!");
       if (empty ($env['url']))
         $this->help ("Conf `url` is empty!");
+      if (empty ($env['service-user']))
+        $this->help ("Conf `service-user` is empty!");
       if (empty ($env['www-system-user']))
         $this->help ("Conf `www-system-user` is empty!");
       if (empty ($env['build-path']))
@@ -498,6 +500,8 @@
 
       foreach (['WPT_DEV_MODE' => false,
                 'WPT_URL' => $env['url'],
+                'WPT_LOG_PATH' => $env['log-path'],
+                'WPT_SERVICE_USER' => $env['service-user'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_WS_RESTART' => $env['cmd']['wopits-ws-restart'],
                 'WPT_WOPITS_TASK_RESTART'=>$env['cmd']['wopits-task-restart'],
@@ -598,6 +602,7 @@
         $rsyncOptions =
           ' -ac --delete '.
           ' --exclude=data '.
+          ' --exclude=app/services/run '.
           ' --exclude=app/dkim/*private '.
           ' --exclude=.* '.
           ' --exclude=*.example.* '.
@@ -638,9 +643,9 @@
                  "# chown {$env['www-system-user']} app/dkim/dkim.private\n".
                  "# chmod 400 app/dkim/dkim.private\n\n";
   
-          echo "* Create a service in order to run the WebSocket server `{$this->targetPath}/app/services/websocket/server.php` as a daemon (read the `README.md` file for details).\n\n";
+          echo "* Create a service in order to run the WebSocket server `{$this->targetPath}/app/services/websocket/server-ws.php` as a daemon (read the `README.md` file for details).\n\n";
 
-          echo "* Create a service in order to run the Task server `{$this->targetPath}/app/services/task/server.php` as a daemon (read the `README.md` file for details).\n\n";
+          echo "* Create a service in order to run the Task server `{$this->targetPath}/app/services/task/server-task.php` as a daemon (read the `README.md` file for details).\n\n";
         }
 
         // Instructions for each deployments

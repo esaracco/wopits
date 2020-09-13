@@ -10,6 +10,14 @@
 // Example: "https://www.domain.com"
 define ('WPT_URL', "");
 
+// The user set in wopits ws & task systemd units conf.
+// Example: "wopits"
+define ('WPT_SERVICE_USER', "");
+
+// Wopits log path
+// Example: "/var/log/wopits"
+define ('WPT_LOG_PATH', "");
+
 // System command to reload apache
 // Example: "systemctl reload apache2;systemctl reload php-fpm.service"
 define ('WPT_APACHE_RESTART', "");

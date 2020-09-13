@@ -28,6 +28,8 @@
     'wopits1' => [
       // Wopits URL
       'url' => 'https://www.wopits.com',
+      // The user set in wopits ws & task systemd units conf
+      'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory
@@ -42,6 +44,8 @@
         // * If local, "path" must be the apache document root
         'path' => 'root@www.wopits.com:/var/www/www.wopits.com'
       ],
+      // Log path
+      'log-path' => '/var/log/wopits',
       // WebSocket server
       'websocket' => [
         'server' => [
@@ -123,6 +127,8 @@
     'wopits2' => [
       // Wopits URL
       'url' => 'https://wopits-preprod.domain.com',
+      // The user set in wopits ws & task systemd units conf
+      'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
       // Local working directory
@@ -137,6 +143,8 @@
         // * If local, "path" must be the apache document root
         'path' => '/var/www/wopits-preprod.domain.com'
       ],
+      // Log path
+      'log-path' => '/var/log/wopits',
       // WebSocket
       'websocket' => [
         'server' => [

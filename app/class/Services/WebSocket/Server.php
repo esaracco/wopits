@@ -18,7 +18,16 @@ class Server
 
   public function __construct ()
   {
+    $workerNum = swoole_cpu_num() * 2;
+
     $this->_server = new SwooleServer ('127.0.0.1', WPT_WS_PORT);
+    $this->_server->set ([
+      'daemonize' => true,
+      'log_file' => WPT_LOG_PATH.'/server-ws.log',
+      'pid_file' => __DIR__.'/../../../services/run/server-ws.pid',
+      'worker_num' => $workerNum,
+      'reactor_num' => $workerNum * 2
+    ]);
 
     $this->_cache = new \EasySwoole\Redis\Redis (
       new \EasySwoole\Redis\Config\RedisConfig([

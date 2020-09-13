@@ -120,9 +120,10 @@ BUILD & DEPLOYMENT
 
 In order to run the WebSocket server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
 
- 1. Create `/etc/systemd/system/wopits-ws.service` (using the `app/doc/systemd/wopits-ws.service` template file).
- 2. Execute `systemctl start wopits-ws` and `systemctl enable wopits-ws`.
- 3. To see the daemon logs, use `journalctl -f -u wopits-ws`.
+ 1. Create a `/var/log/wopits/` directory and give the wopits user full rights on it.
+ 2. Create `/etc/systemd/system/wopits-ws.service` (using the `app/doc/systemd/wopits-ws.service` template file).
+ 3. Execute `systemctl start wopits-ws` and `systemctl enable wopits-ws`.
+ 4. To see the daemon logs, use `journalctl -fu wopits-ws`. To see the WebSocket server logs, open `/var/log/wopits/server-ws.log`.
 
 **Make sure that the WebSocket server daemon's group can write to the `data/` directory** of the wopits DocumentRoot. **It must be the same as the wopits `data/` directory group** (which has been chmoded with 2770).
 
@@ -130,9 +131,10 @@ In order to run the WebSocket server as a daemon you must add it to the startup 
 
 In order to run the task server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
 
- 1. Create `/etc/systemd/system/wopits-task.service` (using the `app/doc/systemd/wopits-task.service` template file).
- 2. Execute `systemctl start wopits-task` and `systemctl enable wopits-task`.
- 3. To see the daemon logs, use `journalctl -f -u wopits-task`.
+ 1. Create a `/var/log/wopits/` directory and give the wopits user full rights on it.
+ 2. Create `/etc/systemd/system/wopits-task.service` (using the `app/doc/systemd/wopits-task.service` template file).
+ 3. Execute `systemctl start wopits-task` and `systemctl enable wopits-task`.
+ 4. To see the daemon logs, use `journalctl -fu wopits-task`. To see the Task server logs, open `/var/log/wopits/server-task.log`.
 
 **Make sure that the task server daemon's group can write to the `data/` directory** of the wopits DocumentRoot. **It must be the same as the wopits `data/` directory group** (which has been chmoded with 2770).
 
@@ -224,8 +226,8 @@ After deploying wopits, run the script `app/ldap/synchro.php` in order to synchr
 
 > ***Do not forget to add wopits crons to crontab!***
 
-Create a `/var/log/wopits.domain.com/` directory and customize the following lines before adding them into the wopits user crontab:
+Create a `/var/log/wopits/` directory and customize the following lines before adding them into the wopits user crontab:
 ```bash
-1 0 * * * /var/www/wopits.domain.com/app/crons/cleanup.php >> /var/log/wopits.domain.com/cleanup.log 2>&1
-1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits.domain.com/check-deadline.log 2>&1
-*/15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits.domain.com/ping.log 2>&1
+1 0 * * * /var/www/wopits.domain.com/app/crons/cleanup.php >> /var/log/wopits/cleanup.log 2>&1
+1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits/check-deadline.log 2>&1
+*/15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits/ping.log 2>&1

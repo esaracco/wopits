@@ -3,6 +3,7 @@ app/deploy/config.php
 app/dkim/dkim.*
 html-minifier
 data
+app/services/run
 *.jar
 *~
 .*.swp
