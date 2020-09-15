@@ -22,11 +22,11 @@ INSTALLATION
 
 > You will need PHP, Apache, MariaDB or PostgreSQL, Redis & Swoole to make it work.
 
+### On the source host
+
+The following actions have to be done on the machine you installed the Git repository. Which is not necessarily the target host where the wopits website will run.
+
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
-```ini
-swoole.enable_preemptive_scheduler=On
-```
 - Install composer >= 1.8.4 & yarn >= 1.13.0. If you are using Debian **do not install the cmdtest package**. Remove it instead, and proceed like this:
 ```bash
 # apt install nodejs npm
@@ -36,6 +36,15 @@ swoole.enable_preemptive_scheduler=On
 # apt install yarn
 ```
 See https://classic.yarnpkg.com/en/docs/install for help installing yarn.
+
+### On the target host
+
+The following actions have to be done on the machine that will host the wopits website. Which is not necessarily the source machine where you installed the Git repository.
+
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+```ini
+swoole.enable_preemptive_scheduler=On
+```
 - Install Apache >= 2.4.38, MariaDB >= 10.3.23 or PostgreSQL >= 11.7, Redis >= 5.0.3 and PHP >= 7.3.19 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
