@@ -24,11 +24,14 @@
 
   use Wopits\DbCache;
 
-  $options = getopt ('hve:');
+  $options = getopt ('Muhve:');
 
   $Deploy = new Deploy ([
+    'no-min' => isset ($options['M']),
+    'update' => isset ($options['u']),
+    'help' => isset ($options['h']),
     'verbose' => isset ($options['v']),
-    'env' => @$options['e']
+    'env' => @$options['e'],
   ]);
 
   $Deploy->checkRights ();
@@ -89,6 +92,9 @@
     private function _checkConfig ()
     {
       $env = @ENV[$this->opt['env']];
+
+      if (!empty ($this->opt['help']))
+        $this->help ();
 
       if (empty ($this->opt['env']))
         $this->help ("Which environment should we deploy?");
@@ -167,6 +173,24 @@
         if (empty ($env['ldap']['basedn']))
           $this->help ("Conf `ldap->basedn` is empty!");
       }
+
+      if (!empty ($this->opt['no-min']))
+        echo "\e[95;38;5;214mCode will not be minifyied\e[0m\n";
+
+      if (empty ($this->opt['update']))
+      {
+        if (!file_exists (__DIR__.'/../libs/vendor') ||
+            !file_exists (__DIR__.'/../../www/libs/node_modules'))
+        {
+          echo "External modules are required.\n";
+          if (readline ('Install them now from the network? [N/y] : ') == 'y')
+            $this->updateExternalLibs (true);
+          else
+            exit ("\e[1;31mDeployment has been aborted!\n\e[0m");
+        }
+      }
+      else
+        echo "\e[95;38;5;214mExternal modules will be updated\e[0m\n";
     }
 
     public function checkRights ()
@@ -194,12 +218,17 @@
         $this->isRemoteTarget, true);
     }
 
-    public function updateExternalLibs ()
+    public function updateExternalLibs ($force = false)
     {
-      echo "Updating PHP external modules...\n";
+      if (empty ($this->opt['update']) && !$force)
+        return;
+
+      $a = ($force) ? 'Installing' : 'Updating';
+
+      echo "$a PHP external modules...\n";
       $this->_exec ('composer update -qn --working-dir='.__DIR__.'/../libs');
 
-      echo "Updating Javascript external modules...\n";
+      echo "$a JS external modules...\n";
       $this->_exec ('cd '.__DIR__.'/../../www/libs && yarn');
     }
 
@@ -238,7 +267,7 @@
     public function checkMinifiers ()
     {
       // Check minifiers
-      if (!empty (ENV['minifiers']))
+      if (!empty (ENV['minifiers']) && empty ($this->opt["no-min"]))
       {
         foreach (['js', 'css', 'html'] as $type)
         {
@@ -474,9 +503,12 @@
 
         file_put_contents ("$dest-tmp", $data);
     
+        // Do not minify PHP code.
+        if (!empty ($this->opt['no-min']))
+          copy ("$dest-tmp", $dest);
         // Minify PHP code.
-        $this->_exec ("php -w $dest-tmp > $dest");
-//        copy ("$dest-tmp", $dest);
+        else
+          $this->_exec ("php -w $dest-tmp > $dest");
         unlink ("$dest-tmp");
 
         // Prepend first exec line on CLI scripts
@@ -599,9 +631,13 @@
         $this->_exec ("rm -rf {$env['build-path']}/app/ldap");
       }
 
-      $dest = "{$env['build-path']}/site-config.php";
-      $this->_exec ("php -w $dest > $dest-tmp");
-      rename ("$dest-tmp", $dest);
+      // Minify config PHP code.
+      if (empty ($this->opt['no-min']))
+      {
+        $dest = "{$env['build-path']}/site-config.php";
+        $this->_exec ("php -w $dest > $dest-tmp");
+        rename ("$dest-tmp", $dest);
+      }
 
       echo "Directory \e[1m{$this->targetPath}".
            "\e[0m will be updated".(
@@ -745,7 +781,7 @@
           "ssh {$this->deployUser}@{$this->targetHost} $cmd";
   
       if ($this->opt['verbose'])
-        echo "\n[$cmd]\n";
+        echo "\n[\e[32m$cmd\e[0m]\n";
   
       exec ("$cmd 2>&1", $o, $r);
 
@@ -783,15 +819,15 @@
         "perl -pi -e 's/(.$k.),\s*\"\"\)/$1, $tmp)/' ".$this->siteConfPath);
     }
 
-    private function help ($msg)
+    private function help ($msg = null)
     {
-      if ($msg)
-        echo "\n\e[1m$msg\e[0m\n\n";
-
-      exit ("Usage: ./deploy [OPTION]...\n".
+      exit ((($msg) ? "\n\e[1m$msg\e[0m\n\n" : "\n").
+            "Usage: ./deploy [OPTION]...\n".
             "Synchronize wopits plateforms.\n\n".
             "  -e\tenvironment to synchronize\n".
-            "  -v\tdisplay executed commands\n");
+            "  -u\tupdate external modules before deploying\n".
+            "  -M\tdo not minify\n".
+            "  -v\tdisplay executed commands\n\n");
     }
   }
 ?>
