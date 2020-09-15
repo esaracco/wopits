@@ -30,19 +30,54 @@
             $openWall.find(".list-group-item-action").click ();
         });
 
+      // EVENT CLICK on Open button.
+      $openWall.find(".btn-primary")
+        .on("click", function ()
+        {
+          plugin.getChecked().forEach (
+            (id) => $("<div/>").wall ("open", {wallId: id}));
+
+          $openWall.modal ("hide");
+        });
+
       // EVENT CLICK on open wall popup
       $(document).on("click", "#openWallPopup .modal-body li", function(e)
       {
-        $("<div/>").wall ("open", {wallId: this.dataset.id});
-  
-        $openWall.modal ("hide");
+        const tag = e.target.tagName;
+
+        if (e.target.tagName == "INPUT")
+        {
+          if (plugin.getChecked().length)
+            $openWall.find(".btn-primary").show ();
+          else
+            $openWall.find(".btn-primary").hide ();
+        }
+        else if (tag != "LABEL")
+        {
+          $("<div/>").wall ("open", {wallId: this.dataset.id});
+          $openWall.modal ("hide");
+        }
       });
+    },
+
+    // METHOD getChecked ()
+    getChecked ()
+    {
+      let checked = [];
+
+      this.element[0].querySelectorAll("input:checked").forEach (
+        (el) => checked.push (el.id.substring(1)));
+
+      return checked;
     },
 
     // METHOD reset ()
     reset ()
     {
-      this.element.find("input").val ("");
+      const $openWall = this.element;
+
+      $openWall.find("input").val ("");
+      $openWall.find("input:checked").prop ("checked", false);
     },
 
     // METHOD search ()
@@ -68,12 +103,14 @@
     // METHOD displayWalls ()
     displayWalls (walls)
     {
-      const $openWall = this.element;
+      const $openWall = this.element,
+            checked = this.getChecked ();
       let body = "";
 
       walls = walls||wpt_userData.walls;
 
       $openWall.find(".input-group").hide ();
+      $openWall.find(".btn-primary").hide ();
 
       if (!wpt_userData.walls.length)
         body = "<?=_("No walls available")?>";
@@ -96,10 +133,10 @@
               if (dt1 != dt)
               {
                 dt = dt1;
-                body += `<li href="" class="list-group-item title">${dt1}</li>`;
+                body += `<li class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li href="#" data-id="${item.id}" class="list-group-item list-group-item-action"> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;  
+              body += `<li data-id="${item.id}" class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
             }
           });
   
@@ -115,6 +152,17 @@
       }
 
       $openWall.find (".modal-body .list-group").html (body);
+
+      checked.forEach ((id) =>
+        {
+          const el = document.getElementById ("_"+id);
+
+          if (el)
+            el.checked = true;
+        });
+
+      if (this.getChecked().length)
+        $openWall.find(".btn-primary").show ();
     }
   };
 

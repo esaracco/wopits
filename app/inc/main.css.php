@@ -575,6 +575,11 @@ select.timezone {
   height:55px;
 }
 
+#openWallPopup .list-group-item .custom-checkbox {
+  display:inline-block;
+  top:-1px;
+}
+
 .dropdown-item.disabled i {
   color: #6c757d;
   pointer-events: none;
