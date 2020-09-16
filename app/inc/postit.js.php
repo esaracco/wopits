@@ -1997,7 +1997,7 @@
           language: (locale != "en_US")?locale:null,
           language_url: (locale != "en_US")?'/libs/tinymce-'+locale+'.js':null,
           branding: false,
-          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime",
+          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime lists",
 
           setup: function (editor)
           {
@@ -2076,6 +2076,7 @@
           mobile: {menubar: "edit view format insert"},
           menubar: "edit view format insert",
           menu:{view:{title:"<?=_("View")?>", items:"fullscreen"}},
+          toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image",
           statusbar: false
         });
 
