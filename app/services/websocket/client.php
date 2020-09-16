@@ -53,10 +53,10 @@ elseif (isset ($options['d']))
   echo $client->recv()."\n";
 }
 else
-  exit ("Usage: ./client [OPTION]...\n".
+  exit ("\nUsage: ./client [OPTION]...\n".
         "Communicate with wopits WebSocket server.\n\n".
         "  -d\tdump server data\n".
-        "  -n\tannounce new release to connected clients if needed\n".
-        "  -p\tping WS and DB to keep them alive\n".
+        "  -n\tannounce new release to connected clients\n".
+        "  -p\tping Redis, Swoole and DB to keep connection alive\n".
         "  -r\treload clients\n".
-        "  -s\tdisplay server statistics\n");
+        "  -s\tdisplay server statistics\n\n");

@@ -14,7 +14,7 @@ class Server
 {
   private $_server;
   private $_cache;
-  private $_internals = [];
+  private $_isInternal = false;
 
   public function __construct ()
   {
@@ -59,7 +59,7 @@ class Server
     // Internal wopits client
     if (empty ($req->header['x-forwarded-server']))
     {
-      $this->_internals[$fd] = 1;
+      $this->_isInternal = true;
     }
     else
     {
@@ -107,7 +107,7 @@ class Server
     $msg = json_decode ($frame->data);
 
     // Common wopits client
-    if (!isset ($this->_internals[$fd]))
+    if (!$this->_isInternal)
     {
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
@@ -116,6 +116,11 @@ class Server
       $push = false;
       $action = '';
       $ret = [];
+
+      // ROUTE ping
+      // Nothing special: just keep WS connection with client alive.
+      if ($msg->route == 'ping')
+        return;
   
       $client = $this->_cache->hGet ('clients', $fd);
 
@@ -474,12 +479,6 @@ class Server
         if ($msg->method == 'DELETE')
           $ret = (new User (['data' => $data], $client))->deletePicture ();
       }
-      // ROUTE ping
-      // Keep WS connection and database persistent connection alive
-      elseif ($msg->route == 'ping')
-      {
-        $this->_ping (false);
-      }
       // ROUTE debug
       // Debug
       //<WPTPROD-remove>
@@ -634,9 +633,9 @@ class Server
   public function onClose (SwooleServer $server, int $fd)
   {
     // Internal wopits client
-    if (isset ($this->_internals[$fd]))
+    if ($this->_isInternal)
     {
-      unset ($this->_internals[$fd]);
+      $this->_isInternals = false;
     }
     // Common wopits client
     elseif ( ($client = $this->_cache->hGet ('clients', $fd)) )
@@ -971,12 +970,16 @@ class Server
     return $ret;
   }
 
-  private function _ping ($full = true)
+  private function _ping ()
   {
+    // Keep database connection alive.
     (new Base())->ping ();
 
-    if ($full)
-      (new Task())->execute (['event' => Task::EVENT_TYPE_DUM]);
+    // Keep Redis server connection alive.
+    $this->_cache->set ('dum', 1) && $this->_cache->del ('dum');
+
+    // Keep Task server connection alive.
+    (new Task())->execute (['event' => Task::EVENT_TYPE_DUM]);
   }
 
   private function _log (int $fd, $type, $msg, $ip = null)
