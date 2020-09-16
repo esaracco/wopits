@@ -635,7 +635,7 @@ class Server
     // Internal wopits client
     if ($this->_isInternal)
     {
-      $this->_isInternals = false;
+      $this->_isInternal = false;
     }
     // Common wopits client
     elseif ( ($client = $this->_cache->hGet ('clients', $fd)) )
