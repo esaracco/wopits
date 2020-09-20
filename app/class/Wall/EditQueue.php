@@ -11,7 +11,7 @@ class EditQueue extends Wall
   private $item;
   private $itemId;
 
-  public function __construct ($args = null, $ws = null)
+  public function __construct (array $args = null, object $ws = null)
   {
     parent::__construct ($args, $ws);
 
@@ -19,7 +19,7 @@ class EditQueue extends Wall
     $this->itemId = $args['itemId']??null;
   }
 
-  public function addTo ()
+  public function addTo ():array
   {
     $item = $this->item;
     $editIds = [$this->itemId];
@@ -108,19 +108,19 @@ class EditQueue extends Wall
     return $ret;
   }
 
-  public function purge ()
+  public function purge ():void
   {
     $this->exec ('DELETE FROM edit_queue');
   }
 
-  public function removeUser ()
+  public function removeUser ():void
   {
     $this
       ->prepare('DELETE FROM edit_queue WHERE session_id = ?')
       ->execute ([$this->sessionId]);
   }
 
-  public function removeFrom ()
+  public function removeFrom ():array
   {
     $User = new User ([], $this->ws);
 
@@ -366,7 +366,7 @@ class EditQueue extends Wall
     return $ret;
   }
 
-  private function _checkQueueAccess ($item)
+  private function _checkQueueAccess (string $item):array
   {
     $needAdminAccess = ($item == 'header' || $item == 'wall');
 

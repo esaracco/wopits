@@ -19,7 +19,7 @@ class Task
       throw new \Exception ("Error: swoole client connect failed");
   }
 
-  public function execute ($data)
+  public function execute (array $data):void
   {
     $this->client->send (json_encode ($data));
   }

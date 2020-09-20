@@ -6,7 +6,7 @@ require_once (__DIR__.'/../config.php');
 
 class Wall extends Base
 {
-  public function checkWallAccess ($requiredRole)
+  public function checkWallAccess (int $requiredRole):array
   {
     // Wall admin has full access
     $in = WPT_WRIGHTS_ADMIN;
@@ -27,7 +27,7 @@ class Wall extends Base
     return ['ok' => !empty ($stmt->fetch())];
   }
 
-  public function checkWallName ($name)
+  public function checkWallName (string $name):int
   {
     ($stmt = $this->prepare ('
       SELECT id FROM walls WHERE id <> ? AND name = ? AND users_id = ?'))
@@ -36,7 +36,7 @@ class Wall extends Base
     return $stmt->rowCount ();
   }
 
-  protected function getWallName ()
+  protected function getWallName ():string
   {
     if (!$this->wallName)
     {
@@ -49,16 +49,16 @@ class Wall extends Base
     return $this->wallName;
   }
 
-  protected function isWallCreator ($userId)
+  protected function isWallCreator (int $userId):int
   {
     ($stmt = $this->prepare ('
       SELECT 1 FROM walls WHERE id = ? AND users_id = ?'))
        ->execute ([$this->wallId, $userId]);
 
-    return $stmt->fetch ();
+    return $stmt->rowCount ();
   }
 
-  protected function isWallDelegateAdmin ($userId)
+  protected function isWallDelegateAdmin (int $userId):int
   {
     ($stmt = $this->prepare ('
       SELECT 1 FROM _perf_walls_users
@@ -69,10 +69,10 @@ class Wall extends Base
       LIMIT 1'))
        ->execute ([$this->wallId, $userId]);
 
-    return $stmt->fetch ();
+    return $stmt->rowCount ();
   }
 
-  public function getWallInfos ()
+  public function getWallInfos ():array
   {
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
@@ -106,7 +106,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function addHeaderPicture ($args)
+  public function addHeaderPicture (array $args):array
   {
     $ret = [];
     $headerId = $args['headerId'];
@@ -181,7 +181,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function deleteHeaderPicture ($args)
+  public function deleteHeaderPicture (array $args):array
   {
     $ret = [];
     $headerId = $args['headerId'];
@@ -214,12 +214,12 @@ class Wall extends Base
     return $ret;
   }
 
-  public function clone ()
+  public function clone ():array
   {
-    return $this->import ($this->export (true));;
+    return $this->import ($this->export (true));
   }
 
-  public function setBasicProperties ()
+  public function setBasicProperties ():void
   {
     $this->executeQuery ('UPDATE walls', [
       'name' => $this->data->name,
@@ -228,7 +228,7 @@ class Wall extends Base
     ['id' => $this->wallId]);
   }
 
-  public function import ($exportFile = null)
+  public function import (string $exportFile = null):array
   {
     $ret = [];
     $error = null;
@@ -498,7 +498,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function export ($clone = false)
+  public function export (bool $clone = false):?string
   {
     // If a user is in more than one groups for the same wall, with
     // different rights, take the more powerful right (ORDER BY access)
@@ -624,7 +624,7 @@ class Wall extends Base
       ]);
   }
 
-  public function getWall ($withAlerts = false, $basic = false)
+  public function getWall (bool $withAlerts = false, bool $basic = false):array
   {
     $ret = [];
 
@@ -809,7 +809,7 @@ class Wall extends Base
     return $data;
   }
 
-  public function getUsersview (array $usersIds)
+  public function getUsersview (array $usersIds):array
   {
     $ret = ['list' => []];
     // No quotes needed. $usersIds contains trusted values (from the
@@ -867,7 +867,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function getHeaderPicture ($args)
+  public function getHeaderPicture (array $args):?array
   {
     $headerId = $args['headerId'];
 
@@ -888,7 +888,7 @@ class Wall extends Base
       ]);
   }
 
-  public function deleteWallColRow ($args)
+  public function deleteWallColRow (array $args):array
   {
     $item = $args['item'];
     $itemPos = $args['itemPos'];
@@ -1004,7 +1004,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function createWallColRow ($args)
+  public function createWallColRow (array $args):array
   {
     $item = $args['item'];
     $dir = $this->getWallDir ();
@@ -1105,7 +1105,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function createWall ()
+  public function createWall ():array
   {
     $ret = [];
     $noGrid = !$this->data->grid;
@@ -1253,7 +1253,8 @@ class Wall extends Base
     return $ret;
   }
 
-  public function deleteWall ($force = false, $returnName = false)
+  public function deleteWall (bool $force = false,
+                              bool $returnName = false):array
   {
     $ret = [];
 
@@ -1288,7 +1289,7 @@ class Wall extends Base
     return $ret;
   }
 
-  public function updateCells ()
+  public function updateCells ():void
   {
     $newTransaction = (!\PDO::inTransaction ());
 
@@ -1340,7 +1341,7 @@ class Wall extends Base
     }
   }
 
-  public function updateHeaders ()
+  public function updateHeaders ():void
   {
     $newTransaction = (!\PDO::inTransaction ());
 
@@ -1381,7 +1382,8 @@ class Wall extends Base
     }
   }
 
-  private function _getImportItemData ($item, $replace = null, $unset = null)
+  private function _getImportItemData (object $item, array $replace = null,
+                                       array $unset = null):array
   {
     $data = (array) $item;
 

@@ -13,7 +13,6 @@ use Wopits\Services\Task;
 class Server
 {
   private $_server;
-  private $_cache;
   private $_isInternal = false;
 
   public function __construct ()
@@ -21,6 +20,7 @@ class Server
     $workerNum = swoole_cpu_num() * 2;
 
     $this->_server = new SwooleServer ('127.0.0.1', WPT_WS_PORT);
+
     $this->_server->set ([
       'daemonize' => true,
       'log_file' => WPT_LOG_PATH.'/server-ws.log',
@@ -29,30 +29,26 @@ class Server
       'reactor_num' => $workerNum * 2
     ]);
 
-    $this->_cache = new \EasySwoole\Redis\Redis (
-      new \EasySwoole\Redis\Config\RedisConfig([
-        'host' => '127.0.0.1',
-        'port' => '6379',
-        'serialize' => \EasySwoole\Redis\Config\RedisConfig::SERIALIZE_PHP]));
+    $this->_server->db = new VolatileTables ();
 
     // Attach events.
     foreach (['start', 'open', 'message', 'close' ] as $e)
       $this->_server->on ($e, [$this, "on$e"]);
   }
 
-  public function start ()
+  public function start ():void
   {
     $this->_server->start ();
   }
 
-  public function onStart (SwooleServer $server)
+  public function onStart (SwooleServer $server):void
   {
     error_log (date('Y-m-d H:i:s').
       ' [INFO][internal] wopits WebSocket server is listening on port '.
          WPT_WS_PORT);
   }
 
-  public function onOpen (SwooleServer $server, Request $req)
+  public function onOpen (SwooleServer $server, Request $req):void
   {
     $fd = $req->fd;
 
@@ -69,12 +65,12 @@ class Server
       if ($client)
       {
         $userId = $client->id;
-        $settings = $client->settings;
+        $settings = json_decode ($client->settings);
 
-        $this->_cache->hSet ('clients', $fd, $client);
-  
+        $this->_server->db->tSet ('clients', $fd, $client);
+
         $this->_log ($fd, 'info',
-          "OPEN (".$this->_cache->hLen('clients').
+          "OPEN (".$this->_server->db->clients->count().
           " connected clients)", $client->ip);
 
         // Register user opened walls
@@ -86,9 +82,7 @@ class Server
         if (isset ($settings->activeWall))
           $this->_pushWallsUsersCount ([$settings->activeWall]);
 
-        $usersUnique = $this->_cache->hGet('usersUnique', $userId)??[];
-        $usersUnique[] = $fd;
-        $this->_cache->hSet ('usersUnique', $userId, $usersUnique);
+        $this->_server->db->lAdd ('usersUnique', $userId, $fd);
       }
       else
       {
@@ -101,7 +95,7 @@ class Server
     }
   }
 
-  public function onMessage (SwooleServer $server, Frame $frame)
+  public function onMessage (SwooleServer $server, Frame $frame):void
   {
     $fd = $frame->fd;
     $msg = json_decode ($frame->data);
@@ -122,7 +116,7 @@ class Server
       if ($msg->route == 'ping')
         return;
   
-      $client = $this->_cache->hGet ('clients', $fd);
+      $client = $this->_server->db->tGet ('clients', $fd);
 
       //////////////////////////// ROUTING PATHS /////////////////////////////
 
@@ -147,39 +141,40 @@ class Server
         {
           $ret['internal'] = 1;
 
-          $chatUsers = $this->_cache->hGet('chatUsers', $wallId)??[];
+          $openedChats = explode (',', $client->openedChats);
+          $cu = $this->_server->db->jGet ('chatUsers', $wallId);
 
           switch ($msg->method)
           {
             case 'PUT':
-              $chatUsers[$fd] = [
-                'id' => $client->id,
-                'name' => $client->username
-              ];
+              $cu->$fd = (object)['id' => $client->id,
+                                  'name' => $client->username];
+              $this->_server->db->jSet ('chatUsers', $wallId, $cu);
 
-              $client->openedChats[$wallId] = 1;
-              $this->_cache->hSet ('clients', $fd, $client);
-              $this->_cache->hSet ('chatUsers', $wallId, $chatUsers);
+              $openedChats[] = $wallId;
+              $client->openedChats = implode (',', $openedChats);
+              $this->_server->db->tSet ('clients', $fd, $client);
 
               $ret['msg'] = '_JOIN_';
               break;
 
             case 'DELETE':
               // Handle some random case (user close its browser...)
-              if (!empty ($chatUsers))
+              if (!$this->_server->db->isEmpty ($cu))
               {
                 $this->_unsetItem ('chatUsers', $wallId, $fd);
 
-                unset ($client->openedChats[$wallId]);
-                $this->_cache->hSet ('clients', $fd, $client);
+                array_splice ($openedChats,
+                  array_search ($wallId, $openedChats), 1);
+                $client->openedChats = implode (',', $openedChats);
+                $this->_server->db->tSet ('clients', $fd, $client);
 
                 $ret['msg'] = '_LEAVE_';
               }
               break;
           }
 
-          $this->_injectChatUsersData (
-            $this->_cache->hGet ('chatUsers', $wallId), $ret);
+          $this->_injectChatUsersData ($wallId, $ret);
         }
       }
       // ROUTE User
@@ -193,20 +188,22 @@ class Server
         // User's settings
         if ($type == 'settings')
         {
+          $settings = json_decode ($client->settings);
           $oldSettings = json_decode ($User->getSettings()??'{}');
           $newSettings = json_decode ($data->settings);
   
           // Active wall
           $this->_registerActiveWall (
             $fd, $User->userId, $oldSettings, $newSettings);
-          $client->settings->activeWall = $newSettings->activeWall??null;
+          $settings->activeWall = $newSettings->activeWall??null;
   
           // Opened walls
           $this->_registerOpenedWalls (
             $fd, $User->userId, $oldSettings, $newSettings);
-          $client->settings->openedWalls = $newSettings->openedWalls??[];
+          $settings->openedWalls = $newSettings->openedWalls??[];
 
-          $this->_cache->hSet ('clients', $fd, $client);
+          $client->settings = json_encode ($settings);
+          $this->_server->db->tSet ('clients', $fd, $client);
 
           $ret = $User->saveSettings ();
         }
@@ -228,25 +225,28 @@ class Server
         // Reload all current user sessions if any.
         if (!$client->final)
         {
-          foreach ($this->_cache->hGet ('usersUnique', $User->userId) as $_fd)
+          foreach (
+            $this->_server->db->lGet ('usersUnique', $User->userId) as $_fd)
+          {
             if ($_fd != $fd)
             {
-              $_client = $this->_cache->hGet ('clients', $_fd);
+              $_client = $this->_server->db->tGet ('clients', $_fd);
 
               $toSend = ['action' => 'reloadsession'];
               if (isset ($newSettings->locale))
                 $toSend['locale'] = $newSettings->locale;
 
-              $_client->final = true;
-              $this->_cache->hSet ('clients', $_fd, $_client);
+              $_client->final = 1;
+              $this->_server->db->tSet ('clients', $_fd, $_client);
 
               $server->push ($_fd, json_encode ($toSend));
             }
+          }
         }
         else
         {
-          $client->final = false;
-          $this->_cache->hSet ('clients', $fd, $client);
+          $client->final = 0;
+          $this->_server->db->tSet ('clients', $fd, $client);
         }
       }
       // ROUTE edit queue
@@ -397,11 +397,10 @@ class Server
       {
         @list (,$wallId) = $m;
 
-        $Wall = new Wall (['wallId' => $wallId], $client);
-
         if ($msg->method == 'GET')
-          $ret = $Wall->getUsersview (
-            array_keys ($this->_cache->hGet ('activeWallsUnique', $wallId)));
+          $ret = (new Wall (['wallId' => $wallId], $client))->getUsersview (
+            array_keys ((array)$this->_server->db->jGet ('activeWallsUnique',
+                                                         $wallId)));
       }
       // ROUTE Postit creation
       elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/postit$#', $msg->route, $m))
@@ -491,16 +490,18 @@ class Server
       if ($action == 'closewalls')
       {
         $userId = $client->id;
-        $clients = $this->_cache->hGetAll ('openedWalls');
 
         foreach ($wallsIds as $_wallId)
-          if (isset ($clients[$_wallId]))
-            foreach ($clients[$_wallId] as $_fd => $_userId)
-              if ($_userId != $userId)
-                $server->push ($_fd, json_encode ([
-                  'action' => 'unlinked',
-                  'wall' => ['id' => $_wallId]
-                ]));
+          foreach (
+            $this->_server->db->jGet ('openedWalls', $_wallId)
+              as $_fd => $_userId)
+          {
+            if ($_userId != $userId)
+              $server->push ($_fd, json_encode ([
+                'action' => 'unlinked',
+                'wall' => ['id' => $_wallId]
+              ]));
+          }
       }
       else
       {
@@ -509,16 +510,16 @@ class Server
         // Boadcast results if needed
         if ($push)
         {
-          $clients = $this->_cache->hGetAll (
-            ($action == 'chat' || $action == 'unlinked') ?
-              'openedWalls' : 'activeWalls');
+          $cacheName = ($action == 'chat' || $action == 'unlinked') ?
+            'openedWalls' : 'activeWalls';
 
-          if (isset ($clients[$wallId]))
+          $w = $this->_server->db->jGet ($cacheName, $wallId);
+          if (!$this->_server->db->isEmpty ($w))
           {
             $userId = $client->id;
             $json = json_encode ($ret);
 
-            foreach ($clients[$wallId] as $_fd => $_userId)
+            foreach ($w as $_fd => $_userId)
             {
               // Message sender material will be broadcasted later.
               if ($_fd != $fd)
@@ -543,7 +544,7 @@ class Server
       }
 
       // Respond to the sender.
-      $ret['msgId'] = $msg->msgId ?? null;
+      $ret['msgId'] = $msg->msgId??null;
       $server->push ($fd, json_encode ($ret));
     }
     // Internal wopits communication.
@@ -561,15 +562,26 @@ class Server
         // close-walls
         case 'close-walls':
 
-          foreach ($this->_cache->hGetAll('openedWalls') as $_wallId => $_item)
-            if ($_wallId == in_array ($_wallId, $msg->ids))
-              foreach ($_item as $_fd => $_userId)
+          $walls = $this->_server->db->openedWalls;
+          for ($walls->rewind (); $walls->current (); $walls->next ())
+          {
+            $_wallId = $walls->key ();
+
+            if (in_array ($_wallId, $msg->ids))
+            {
+              foreach (
+                $this->_server->db->jGet ('openedWalls', $_wallId)
+                  as $_fd => $_userId)
+              {
                 if ($_userId != $msg->userId)
                   $server->push ($_fd,
                     json_encode ([
                       'action' => 'unlinked',
                       'wall' => ['id' => $_wallId]
                     ]));
+              }
+            }
+          }
 
           break;
     
@@ -579,31 +591,30 @@ class Server
         case 'reload':
         case 'mainupgrade':
 
-          $clients = $this->_cache->hGetAll ('clients');
-
-          // Purge Redis data.
-          $this->_cache->flushDb ();
-
           // Purge SQL editing queue.
           (new EditQueue())->purge ();
 
-          foreach ($clients as $_fd => $_client)
-            $server->push ($_fd, json_encode ($msg));
+          $_json = json_encode ($msg);
+          $clients = $this->_server->db->clients;
+          for ($clients->rewind (); $clients->current (); $clients->next ())
+            $server->push ($clients->key (), $_json);
 
           break;
 
         // dump-all
         case 'dump-all':
 
-          $server->push ($fd,
-            "* activeWalls array:\n".
-            print_r ($this->_cache->hGetAll('activeWalls'), true)."\n".
-            "* openedWalls array:\n".
-            print_r ($this->_cache->hGetAll('openedWalls'), true)."\n".
-            "* chatUsers array:\n".
-            print_r ($this->_cache->hGetAll('chatUsers'), true)."\n"
+          $tmp = '';
 
-          );
+          foreach (['clients', 'openedWalls', 'activeWalls', 'chatUsers'] as $t)
+          {
+            $tmp .= "\n* $t:\n";
+            $tb = $this->_server->db->$t;
+            for ($tb->rewind (); $tb->current (); $tb->next ())
+              $tmp .= print_r ($tb->get ($tb->key ()), true);
+          }
+
+          $server->push ($fd, $tmp);
 
           break;
 
@@ -611,14 +622,19 @@ class Server
         case 'stat-users':
 
           $server->push ($fd, ("\n".
-            '* Sessions: '.$this->_cache->hLen('clients')."\n".
-            '* Unique users: '.$this->_cache->hLen('usersUnique')."\n".
+            '* Sessions: '.(count($this->_server->connection_list())-1)."\n".
+            '* Unique users: '.
+              $this->_server->db->usersUnique->count()."\n".
             "----------\n".
-            '* Opened walls: '.$this->_cache->hLen('openedWalls')."\n".
-            '* Active walls: '.$this->_cache->hLen('activeWalls')."\n".
-            '* Unique active walls: '.$this->_cache->hLen('activeWallsUnique')."\n".
+            '* Opened walls: '.
+              $this->_server->db->openedWalls->count()."\n".
+            '* Active walls: '.
+              $this->_server->db->activeWalls->count()."\n".
+            '* Unique active walls: '.
+              $this->_server->db->activeWallsUnique->count()."\n".
             "----------\n".
-            '* Current chats: '.$this->_cache->hLen('chatUsers')."\n"
+            '* Current chats: '.
+              $this->_server->db->chatUsers->count()."\n"
           ));
 
           break;
@@ -630,7 +646,7 @@ class Server
     }
   }
 
-  public function onClose (SwooleServer $server, int $fd)
+  public function onClose (SwooleServer $server, int $fd):void
   {
     // Internal wopits client
     if ($this->_isInternal)
@@ -638,13 +654,15 @@ class Server
       $this->_isInternal = false;
     }
     // Common wopits client
-    elseif ( ($client = $this->_cache->hGet ('clients', $fd)) )
+    elseif ( ($client = $this->_server->db->tGet ('clients', $fd)) &&
+             !$this->_server->db->isEmpty ($client))
     {
       $userId = $client->id;
+      $settings = json_decode ($client->settings);
 
-      if (isset ($client->settings->activeWall))
+      if (isset ($settings->activeWall))
       {
-        $wallId = $client->settings->activeWall;
+        $wallId = $settings->activeWall;
 
         // Remove user's action from DB edit queue
         (new EditQueue([], $client))->removeUser ();
@@ -656,7 +674,8 @@ class Server
         $this->_pushWallsUsersCount ([$wallId]);
 
         // Leave wall's chat if needed.
-        if (isset (($this->_cache->hGet('chatUsers', $wallId)??[])[$fd]))
+        if ( ($cu = $this->_server->db->jGet ('chatUsers', $wallId)) &&
+             isset ($cu->$fd))
         {
           $this->_unsetItem ('chatUsers', $wallId, $fd);
 
@@ -669,54 +688,69 @@ class Server
             'msg' => '_LEAVE_'
           ];
 
-          $this->_injectChatUsersData (
-            $this->_cache->hGet('chatUsers', $wallId)??[], $_ret);
+          $this->_injectChatUsersData ($wallId, $_ret);
           $_json = json_encode ($_ret);
 
-          foreach ($this->_cache->hGetAll('openedWalls')[$wallId]
-                     as $_fd => $_userId)
+          foreach (
+            $this->_server->db->jGet ('openedWalls', $wallId)
+              as $_fd => $_userId)
+          {
             if ($_fd != $fd && $server->exist ($_fd))
               $server->push ($_fd, $_json);
+          }
         }
       }
 
-      if (isset ($client->settings->openedWalls))
-        foreach ($client->settings->openedWalls as $_wallId)
+      if (isset ($settings->openedWalls))
+      {
+        foreach ($settings->openedWalls as $_wallId)
           $this->_unsetOpenedWalls ($_wallId, $fd);
+      }
 
-      $this->_cache->hDel ('clients', $fd);
+      $this->_server->db->clients->del ($fd);
 
       // Close all current user sessions if any.
       if (!$client->final)
       {
         $json = json_encode (['action' => 'exitsession']);
 
-        foreach ($this->_cache->hGet ('usersUnique', $userId) as $_fd)
+        foreach ($this->_server->db->lGet('usersUnique', $userId) as $_fd)
+        {
           if ($_fd != $fd && $server->exist ($_fd) &&
-              ($_client = $this->_cache->hGet ('clients', $_fd)) )
+              ($_client = $this->_server->db->tGet ('clients', $_fd)) &&
+              !$this->_server->db->isEmpty ($_client))
           {
-            $_client->final = true;
-            $this->_cache->hSet ('clients', $_fd, $_client);
-
+            $_client->final = 1;
+            $this->_server->db->tSet ('clients', $_fd, $_client);
             $server->push ($_fd, $json);
           }
+        }
       }
 
-      $usersUnique = $this->_cache->hGet ('usersUnique', $userId);
-      unset ($usersUnique[array_search ($fd, $usersUnique)]);
-
-      if (empty ($usersUnique))
-        $this->_cache->hDel ('usersUnique', $userId);
-      else
-        $this->_cache->hSet ('usersUnique', $userId, $usersUnique);
+      $this->_server->db->lDel ('usersUnique', $userId, $fd);
 
       $this->_log ($fd, 'info',
-        "CLOSE (".$this->_cache->hLen('clients').
+        "CLOSE (".$this->_server->db->clients->count().
         " connected clients)", $client->ip);
     }
   }
 
-  private function _createClient (Request $req)
+/*
+  public function onManagerStart (SwooleServer $server):void
+  {
+    // Maintain WS connection with clients.
+    $server->tick (30000, function () use ($server)
+      {
+        foreach ($server->connections as $fd)
+        {
+          if ($server->isEstablished($fd))
+            $server->push ($fd, 'ping', WEBSOCKET_OPCODE_PING);
+        }
+      });
+  }
+*/
+
+  private function _createClient (Request $req):array
   {
     $ret = null;
     $User = new User ();
@@ -729,28 +763,29 @@ class Server
         'id' => $r['users_id'],
         'username' => $r['username'],
         'slocale' => Helper::getsLocale ($User),
-        'settings' => json_decode ($User->getSettings()??'{}'),
-        'openedChats' => [],
-        'final' => false
+        'settings' => $User->getSettings(),
+        'openedChats' => '',
+        'final' => 0
       ];
 
     return [$ret, $ip];
   }
 
-  private function _injectChatUsersData ($chatUsers, &$ret)
+  private function _injectChatUsersData (int $wallId, array &$ret):void
   {
     $ret['userslist'] = [];
 
-    if ($chatUsers)
+    if (!$this->_server->db->isEmpty (
+           ($cu = $this->_server->db->jGet ('chatUsers', $wallId)) ))
     {
       $dbl = [];
 
       // If a user has more than one session opened, count only one.
-      foreach ($chatUsers as $_wallId => $_fd)
+      foreach ($cu as $_fd => $_user)
       {
-        if (!isset ($dbl[$_fd['id']]))
-          $ret['userslist'][] = $_fd;
-        $dbl[$_fd['id']] = true;
+        if (!isset ($dbl[$_user->id]))
+          $ret['userslist'][] = (array)$_user;
+        $dbl[$_user->id] = true;
       }
 
       $ret['userscount'] = count ($ret['userslist']) - 1;
@@ -759,13 +794,16 @@ class Server
       $ret['userscount'] = 0;
   }
 
-  private function _registerActiveWall ($fd, $userId,
-                                        $oldSettings, $newSettings)
+  private function _registerActiveWall (int $fd, int $userId,
+                                        ?object $oldSettings,
+                                        object $newSettings):void
   {
+    $oldWallId = null;
+
     if ($oldSettings)
     {
       // Deassociate previous wall from user
-      if ( ($oldWallId = $oldSettings->activeWall ?? null) )
+      if ( ($oldWallId = $oldSettings->activeWall??null) )
       {
         $this->_unsetItem ('activeWalls', $oldWallId, $fd);
         $this->_unsetActiveWallsUnique ($oldWallId, $userId);
@@ -773,32 +811,34 @@ class Server
     }
 
     // Associate new wall to user
-    if ( ($newWallId = $newSettings->activeWall ?? null) )
+    if ( ($newWallId = $newSettings->activeWall??null) )
     {
-      $activeWalls = $this->_cache->hGet ('activeWalls', $newWallId);
+      $aw = $this->_server->db->jGet ('activeWalls', $newWallId);
+      $awu = $this->_server->db->jGet ('activeWallsUnique', $newWallId);
 
-      if (!$activeWalls)
-      {
-        $activeWalls = [];
-        $activeWallsUnique = [];
-      }
-      else
-        $activeWallsUnique =
-          $this->_cache->hGet ('activeWallsUnique', $newWallId);
+      $aw->$fd = $userId;
+      $awu->$userId = $fd;
 
-      $activeWalls[$fd] = $userId;
-      $activeWallsUnique[$userId] = $fd;
-
-      $this->_cache->hSet ('activeWalls', $newWallId, $activeWalls);
-      $this->_cache->hSet ('activeWallsUnique', $newWallId, $activeWallsUnique);
+      $this->_server->db->jSet ('activeWalls', $newWallId, $aw);
+      $this->_server->db->jSet ('activeWallsUnique', $newWallId, $awu);
     }
 
-    $this->_pushWallsUsersCount ((!$oldSettings) ?
-      [$newWallId] : [$oldWallId, $newWallId]);
+    if ($oldWallId || $newWallId)
+    {
+      $args = [];
+
+      if ($oldWallId)
+        $args[] = $oldWallId;
+      if ($newWallId)
+        $args[] = $newWallId;
+
+      $this->_pushWallsUsersCount ($args);
+    }
   }
 
-  private function _registerOpenedWalls ($fd, $userId,
-                                         $oldSettings, $newSettings)
+  private function _registerOpenedWalls (int $fd, int $userId,
+                                         ?object $oldSettings,
+                                         object $newSettings):void
   {
     $haveOld = ($oldSettings && isset ($oldSettings->openedWalls));
 
@@ -807,9 +847,12 @@ class Server
       foreach ($oldSettings->openedWalls as $_oldWallId)
         $this->_unsetOpenedWalls ($_oldWallId, $fd);
 
-      foreach (array_diff ($oldSettings->openedWalls,
-                           $newSettings->openedWalls??[]) as $_wallId)
+      foreach (
+        array_diff ($oldSettings->openedWalls, $newSettings->openedWalls??[])
+          as $_wallId)
+      {
         $this->_unsetItem ('chatUsers', $_wallId, $fd);
+      }
     }
 
     // Associate new wall to user
@@ -817,33 +860,40 @@ class Server
     {
       foreach ($newSettings->openedWalls as $_newWallId)
       {
-        $_openedWalls = $this->_cache->hGet('openedWalls', $_newWallId)??[];
-        $_openedWalls[$fd] = $userId;
-        $this->_cache->hSet ('openedWalls', $_newWallId, $_openedWalls);
+        $_ow = $this->_server->db->jGet ('openedWalls', $_newWallId);
+        $_ow->$fd = $userId;
+        $this->_server->db->jSet ('openedWalls', $_newWallId, $_ow);
       }
     }
 
     if ($haveOld)
     {
-      foreach (array_diff ($oldSettings->openedWalls,
-                           $newSettings->openedWalls??[]) as $_wallId)
+      foreach (
+        array_diff ($oldSettings->openedWalls, $newSettings->openedWalls??[])
+          as $_wallId)
       {
         $this->_unsetItem ('chatUsers', $_wallId, $fd);
 
-        if ( ($_openedWalls = $this->_cache->hGet ('openedWalls', $_wallId)) )
-          foreach ($_openedWalls as $_fd => $_userId)
-            if ( ($_chatUsers = $this->_cache->hGet ('chatUsers', $_wallId)) )
-              $this->_server->push ($fd,
-                json_encode ([
-                  'action' => 'chatcount',
-                  'count' => count ($_chatUsers) - 1,
-                  'wall' => ['id' => $_wallId]
-                ]));
+        foreach (
+          $this->_server->db->jGet ('openedWalls', $_wallId)
+            as $_fd => $_userId)
+        {
+          $_count =
+            count ((array)$this->_server->db->jGet ('chatUsers', $_wallId));
+
+          if ($_count)
+            $this->_server->push ($fd,
+              json_encode ([
+                'action' => 'chatcount',
+                'count' => $_count - 1,
+                'wall' => ['id' => $_wallId]
+              ]));
+        }
       }
     }
   }
 
-  private function _removeUserFromGroup ($args)
+  private function _removeUserFromGroup (array $args):array
   {
     $Group = $args['obj'];
     $userId = $args['userId'];
@@ -858,19 +908,17 @@ class Server
 
       foreach ($wallIds as $_wallId)
       {
-        $_openedWalls = $this->_cache->hGet ('openedWalls', $_wallId);
-        if ($_openedWalls)
-        {
-          $toSend['wall']['id'] = $_wallId;
-          $json = json_encode ($toSend);
+        $toSend['wall']['id'] = $_wallId;
+        $json = json_encode ($toSend);
 
-          foreach ($_openedWalls as $_fd => $_userId)
+        foreach (
+          $this->_server->db->jGet ('openedWalls', $_wallId)
+            as $_fd => $_userId)
+        {
+          if ($_userId == $userId)
           {
-            if ($_userId == $userId)
-            {
-              $this->_server->push ($_fd, $json);
-              break;
-            }
+            $this->_server->push ($_fd, $json);
+            break;
           }
         }
       }
@@ -881,88 +929,75 @@ class Server
     return $ret;
   }
 
-  private function _unsetItem ($key, $wallId, $fd)
+  private function _unsetItem (string $key, int $wallId, int $fd):void
   {
-    $items = $this->_cache->hGet ($key, $wallId);
+    $items = $this->_server->db->jGet ($key, $wallId);
 
-    if (isset ($items[$fd]))
+    if (isset ($items->$fd))
     {
-      unset ($items[$fd]);
-
-      if (empty ($items))
-        $this->_cache->hDel ($key, $wallId);
-      else
-        $this->_cache->hSet ($key, $wallId, $items);
+      unset ($items->$fd);
+      $this->_server->db->jSet ($key, $wallId, $items);
     }
   }
 
-  private function _unsetActiveWallsUnique ($wallId, $userId)
+  private function _unsetActiveWallsUnique (int $wallId, int $userId):void
   {
-    $activeWallsUnique = $this->_cache->hGet ('activeWallsUnique', $wallId);
-
-    if (isset ($activeWallsUnique[$userId]))
+    $awu = $this->_server->db->jGet ('activeWallsUnique', $wallId);
+    if (isset ($awu->$userId))
     {
       $remove = true;
 
-      $activeWalls = $this->_cache->hGet ('activeWalls', $wallId);
-
-      if ($activeWalls)
+      foreach (
+        $this->_server->db->jGet ('activeWalls', $wallId) as $_fd => $_userId)
       {
-        foreach ($activeWalls as $_fd => $_userId)
+        if ($_userId == $userId)
         {
-          if ($_userId == $userId)
-          {
-            $remove = false;
-            break;
-          }
+          $remove = false;
+          break;
         }
       }
 
       if ($remove)
       {
-        unset ($activeWallsUnique[$userId]);
-
-        if (empty ($activeWallsUnique))
-          $this->_cache->hDel ('activeWallsUnique', $wallId);
-        else
-          $this->_cache->hSet ('activeWallsUnique', $wallId, $activeWallsUnique);
+        unset ($awu->$userId);
+        $this->_server->db->jSet ('activeWallsUnique', $wallId, $awu);
       }
     }
   }
 
-  private function _unsetOpenedWalls ($wallId, $fd)
+  private function _unsetOpenedWalls (int $wallId, int $fd):void
   {
-    $openedWalls = $this->_cache->hGet ('openedWalls', $wallId);
+    $ow = $this->_server->db->jGet ('openedWalls', $wallId);
 
-    if (isset ($openedWalls[$fd]))
+    if (isset ($ow->$fd))
     {
-      unset ($openedWalls[$fd]);
-
-      if (empty ($openedWalls))
-        $this->_cache->hDel ('openedWalls', $wallId);
-      else
-        $this->_cache->hSet ('openedWalls', $wallId, $openedWalls);
+      unset ($ow->$fd);
+      $this->_server->db->jSet ('openedWalls', $wallId, $ow);
     }
   }
 
-  private function _pushWallsUsersCount ($diff)
+  private function _pushWallsUsersCount (array $diff):void
   {
     foreach ($diff as $_wallId)
-      if ( ($activeWalls = $this->_cache->hGet ('activeWalls', $_wallId)) )
-      {
-        $json = json_encode ([
-          'action' => 'viewcount',
-          'count' =>
-            count ($this->_cache->hGet('activeWallsUnique', $_wallId)) - 1,
-          'wall' => ['id' => $_wallId]
-        ]);
+    {
+      $json = json_encode ([
+        'action' => 'viewcount',
+        'count' => count (
+          (array)$this->_server->db->jGet ('activeWallsUnique', $_wallId)) - 1,
+        'wall' => ['id' => $_wallId]
+      ]);
 
-        foreach ($activeWalls as $_fd => $_userId)
-          $this->_server->push ($_fd, $json);
+      foreach (
+        $this->_server->db->jGet ('activeWalls', $_wallId)
+          as $_fd => $_userId)
+      {
+        $this->_server->push ($_fd, $json);
       }
+    }
   }
 
-  private function _injectUserSpecificData ($ret, $postitId, $client)
+  private function _injectUserSpecificData (array $ret, int $postitId,
+                                            object $client):array
   {
     $ret['wall']['postit']['alertshift'] =
       (new Postit (['postitId' => $postitId], $client))->getPostitAlertShift ();
@@ -970,26 +1005,24 @@ class Server
     return $ret;
   }
 
-  private function _ping ()
+  private function _ping ():void
   {
     // Keep database connection alive.
     (new Base())->ping ();
-
-    // Keep Redis server connection alive.
-    $this->_cache->set ('dum', 1) && $this->_cache->del ('dum');
 
     // Keep Task server connection alive.
     (new Task())->execute (['event' => Task::EVENT_TYPE_DUM]);
   }
 
-  private function _log (int $fd, $type, $msg, $ip = null)
+  private function _log (int $fd, string $type, string $msg,
+                         string $ip = null):void
   {
     error_log (sprintf("%s [%s][%s:%s] %s",
       date('Y-m-d H:i:s'), strtoupper ($type), $ip, $fd, $msg));
   }
 
   //<WPTPROD-remove>
-  private function _debug ($data)
+  private function _debug ($data):void
   {
     error_log (print_r ($data, true));
   }

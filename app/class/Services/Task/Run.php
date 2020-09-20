@@ -4,13 +4,16 @@ namespace Wopits\Services\Task;
 
 require_once (__DIR__.'/../../../config.php');
 
+use \Swoole\Server;
 use \Wopits\Services\Task;
 
 class Run
 {
-  public function receive ($serv, $fd, $fromId, $data) { }
+  public function receive (Server $server, int $fd, int $fromId,
+                           array $data):void { }
 
-  public function task ($serv, $taskId, $fromId, $data)
+  public function task (Server $server, int $taskId, int $fromId,
+                        array $data):void
   {
     try
     {
@@ -20,7 +23,8 @@ class Run
         case Task::EVENT_TYPE_SEND_MAIL:
           $this->_log ('info', Task::EVENT_TYPE_SEND_MAIL,
             'Executing task');
-          return (new \Wopits\Mailer())->send ($data);
+          (new \Wopits\Mailer())->send ($data);
+          return;
 
         case Task::EVENT_TYPE_DUM:
           //$this->_log ('info', Task::EVENT_TYPE_DUM, 'Ping...');
@@ -38,12 +42,12 @@ class Run
     }
   }
 
-  public function finish ($serv, $taskId, $data)
+  public function finish (Server $server, int $taskId, $data):bool
   {
     return true;
   }
 
-  private function _log ($type, $event, $msg)
+  private function _log (string $type, string $event, string $msg):void
   {
     error_log (sprintf ("%s [%s][%s] %s",
       date('Y-m-d H:i:s'), strtoupper ($type), $event, $msg));

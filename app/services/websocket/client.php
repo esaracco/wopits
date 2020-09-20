@@ -57,6 +57,6 @@ else
         "Communicate with wopits WebSocket server.\n\n".
         "  -d\tdump server data\n".
         "  -n\tannounce new release to connected clients\n".
-        "  -p\tping Redis, Swoole and DB to keep connection alive\n".
+        "  -p\tping Swoole and DB to keep connection alive\n".
         "  -r\treload clients\n".
         "  -s\tdisplay server statistics\n\n");

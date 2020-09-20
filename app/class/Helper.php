@@ -10,7 +10,7 @@ class Helper
     exec (WPT_ROOT_PATH.'/app/services/websocket/client.php -p');
   }
 
-  public static function changeLocale ($slocale)
+  public static function changeLocale (string $slocale):string
   {
     $locale =
       $slocale.'_'.(($slocale == 'en') ? 'US' : strtoupper ($slocale));
@@ -24,7 +24,7 @@ class Helper
     return $locale;
   }
 
-  public static function getsLocale ($User = null)
+  public static function getsLocale (User $User = null):string
   {
     $slocale = '';
 
@@ -39,7 +39,7 @@ class Helper
     return $slocale;
   }
 
-  public static function unaccent ($str)
+  public static function unaccent (string $str):string
   {
     //FIXME iconv does not work with user search.
     //return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
@@ -54,7 +54,7 @@ class Helper
               htmlentities ($str, ENT_NOQUOTES, 'utf-8')))));
   }
 
-  public static function rm ($path, $firstCall = true)
+  public static function rm (string $path, bool $firstCall = true):bool
   {
     // First call? -> check the path
     if ($firstCall)
@@ -69,7 +69,7 @@ class Helper
 
       // If directory does not exists, return.
       if (!file_exists ($path))
-        return;
+        return false;
 
       // If the item to delete is a file (and not directory) and return.
       if (is_file ($path))
@@ -86,7 +86,7 @@ class Helper
     return rmdir ($path);
   }
 
-  public static function getWopitsVersion ()
+  public static function getWopitsVersion ():string
   {
     //<WPTPROD-remove>
     if (WPT_DEV_MODE)
@@ -96,7 +96,7 @@ class Helper
       return WPT_VERSION;
   }
 
-  public static function getSecureSystemName ($name)
+  public static function getSecureSystemName (string $name):string
   {
     do
     {
@@ -117,19 +117,19 @@ class Helper
     setcookie ('wopits', '', time () - 86400, '/', null, true, true);
   }
 
-  public static function setCookie ($value)
+  public static function setCookie (string $value):void
   {
     setcookie ('wopits', $value, mktime (0, 0, 0, 1, 1, 2035),
                '/', null, true, true);
   }
 
-  public static function getCookie ()
+  public static function getCookie ():string
   {
     return (preg_match ('/wopits=([^;]+)/',
             $_SERVER['HTTP_COOKIE'] ?? '', $m)) ? $m[1] : '';
   }
 
-  public static function getBrowserLocale ()
+  public static function getBrowserLocale ():string
   {
     $l = $_SERVER['HTTP_ACCEPT_LANGUAGE']??null;
 
@@ -145,7 +145,7 @@ class Helper
     return WPT_DEFAULT_LOCALE;
   }
 
-  public static function download ($args)
+  public static function download (array $args):void
   {
     $itemType = $args['item_type'];
 
@@ -173,7 +173,7 @@ class Helper
     exit;
   }
 
-  public static function getImgFromMime ($mime)
+  public static function getImgFromMime (string $mime):string
   {
     foreach ([
       // Media
@@ -209,8 +209,9 @@ class Helper
     return 'fa-file';
   }
 
-  public static function checkRealFileType ($filename, $name = null,
-                                            $_imagick = null)
+  public static function checkRealFileType (string $filename,
+                                            string $name = null,
+                                            \Imagick $_imagick = null):array
   {
     $imagick = ($_imagick) ? $_imagick : new \Imagick ($filename);
 
@@ -234,9 +235,9 @@ class Helper
     return [$filename, $mime, $name];
   }
 
-  public static function resizePicture ($filename,
-                                        $newWidth , $newHeight = 0,
-                                        $force = true)
+  public static function resizePicture (string $filename,
+                                        int $newWidth , int $newHeight = 0,
+                                        bool $force = true):array
   {
     $imagick = new \Imagick ($filename);
 

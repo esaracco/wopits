@@ -11,7 +11,7 @@ class Postit extends Wall
   private $cellId;
   private $postitId;
 
-  public function __construct ($args = [], $ws = null)
+  public function __construct (array $args = [], object $ws = null)
   {
     parent::__construct ($args, $ws);
 
@@ -19,7 +19,7 @@ class Postit extends Wall
     $this->postitId = $args['postitId']??null;
   }
 
-  public function create ()
+  public function create ():array
   {
     $ret = [];
     $dir = $this->getWallDir ();
@@ -73,7 +73,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function getPlugs ($all = false)
+  public function getPlugs (bool $all = false):array
   {
     // Get postits plugs
     ($stmt = $this->prepare ('
@@ -85,7 +85,7 @@ class Postit extends Wall
     return $stmt->fetchAll ();
   }
 
-  public function getPostit ()
+  public function getPostit ():array
   {
     ($stmt = $this->prepare ('
       SELECT
@@ -99,7 +99,7 @@ class Postit extends Wall
     return $stmt->fetch ();
   }
 
-  public function getPostitAlertShift ()
+  public function getPostitAlertShift ():?int
   {
     ($stmt = $this->prepare ('
       SELECT alertshift
@@ -110,7 +110,7 @@ class Postit extends Wall
     return ($r = $stmt->fetch ()) ? $r['alertshift'] : null;
   }
 
-  public function checkDeadline ()
+  public function checkDeadline ():void
   {
     // Get all postits with a deadline, and associated alerts if available.
     $stmt = $this->query ('
@@ -198,7 +198,7 @@ class Postit extends Wall
     }
   }
 
-  public function addRemovePlugs ($plugs, $postitId = null)
+  public function addRemovePlugs (array $plugs, int $postitId = null):void
   {
     if (!$postitId)
       $postitId = $this->postitId;
@@ -231,7 +231,7 @@ class Postit extends Wall
     }
   }
 
-  public function deleteAttachment ($args)
+  public function deleteAttachment (array $args):array
   {
     $ret = [];
     $attachmentId = $args['attachmentId'];
@@ -274,7 +274,7 @@ class Postit extends Wall
     return $ret;
   }
  
-  public function updateAttachment ($args)
+  public function updateAttachment (array $args):array
   {
     $ret = [];
     $attachmentId = $args['attachmentId'];
@@ -310,7 +310,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function addAttachment ()
+  public function addAttachment ():array
   {
     $ret = [];
     $dir = $this->getWallDir ();
@@ -398,7 +398,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function getAttachment ($args)
+  public function getAttachment (array $args):array
   {
     $attachmentId = $args['attachmentId']??null;
     $ret = [];
@@ -461,7 +461,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function addPicture ()
+  public function addPicture ():array
   {
     $ret = [];
     $dir = $this->getWallDir ();
@@ -547,7 +547,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function getPicture ($args)
+  public function getPicture (array $args):?array
   {
     $picId = $args['pictureId'];
 
@@ -564,7 +564,7 @@ class Postit extends Wall
     Helper::download ($data);
   }
 
-  public function deletePictures ($data)
+  public function deletePictures (object $data):void
   {
     $pics = (preg_match_all (
       "#/postit/\d+/picture/(\d+)#", $data->content, $m)) ? $m[1] : [];
@@ -591,7 +591,7 @@ class Postit extends Wall
         WHERE id IN ('.implode(',', $toDelete).')');
   }
 
-  public function deletePostit ()
+  public function deletePostit ():array
   {
     $ret = [];
     $dir = $this->getWallDir ();

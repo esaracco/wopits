@@ -10,14 +10,14 @@ class Group extends Wall
 {
   public $groupId;
 
-  public function __construct ($args = null, $ws = null)
+  public function __construct (array $args = null, object $ws = null)
   {
     parent::__construct ($args, $ws);
 
     $this->groupId = $args['groupId']??null;
   }
 
-  public function searchUser ($args)
+  public function searchUser (array $args):array
   {
     $ret = ['users' => null];
 
@@ -58,7 +58,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function getWallsByGroup ($groupId = null)
+  public function getWallsByGroup (int $groupId = null):array
   {
     $ret = [];
 
@@ -77,7 +77,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function getUsers ()
+  public function getUsers ():array
   {
     if (!$this->_checkGroupAccess ())
       return ['error' => _("Access forbidden")];
@@ -93,7 +93,7 @@ class Group extends Wall
     return ['users' => $stmt->fetchAll ()];
   }
 
-  public function addUser ($args)
+  public function addUser (array $args):array
   {
     $ret = [];
     $groupUserId = $args['userId'];
@@ -148,7 +148,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function removeMe ($groupIds)
+  public function removeMe (array $groupIds):array
   {
     foreach ($groupIds as $groupId)
     {
@@ -161,7 +161,7 @@ class Group extends Wall
     return [];
   }
 
-  public function removeUser ($args, $me = false)
+  public function removeUser (array $args, bool $me = false):array
   {
     $ret = [];
     $groupUserId = $args['userId'];
@@ -227,7 +227,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function create ($args)
+  public function create (array $args):array
   {
     $ret = [];
     $type = $args['type'];
@@ -273,7 +273,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function update ()
+  public function update ():array
   {
     $ret = [];
 
@@ -308,7 +308,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function getGroup ()
+  public function getGroup ():array
   {
     $isCreator = $this->isWallCreator ($this->userId);
     $ret = [];
@@ -418,7 +418,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function unlink ()
+  public function unlink ():array
   {
     $ret = [];
 
@@ -462,7 +462,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function unlinkUserFromOthersGroups ()
+  public function unlinkUserFromOthersGroups ():void
   {
     // Decrement userscount from user's groups.
     $this
@@ -494,7 +494,7 @@ class Group extends Wall
       ->execute ([$this->userId]);
   }
 
-  public function link ()
+  public function link ():array
   {
     $ret = [];
 
@@ -582,7 +582,7 @@ class Group extends Wall
     return $ret;
   }
 
-  public function delete ()
+  public function delete ():array
   {
     $ret = [];
 
@@ -605,7 +605,7 @@ class Group extends Wall
     return $ret;
   }
 
-  private function _checkGroupAccess ()
+  private function _checkGroupAccess ():int
   {
     ($stmt = $this->prepare ('
       SELECT 1 FROM _perf_walls_users
@@ -613,6 +613,6 @@ class Group extends Wall
       LIMIT 1'))
        ->execute ([$this->userId]);
 
-    return $stmt->fetch ();
+    return $stmt->rowCount ();
   }
 }

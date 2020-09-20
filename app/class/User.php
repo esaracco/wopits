@@ -10,7 +10,7 @@ class User extends Base
 {
   public $settings;
 
-  public function logout ()
+  public function logout ():array
   {
     $ret = [];
 
@@ -36,7 +36,7 @@ class User extends Base
     return $ret;
   }
 
-  public function getUnixDate ($dt)
+  public function getUnixDate (string $dt):string
   {
     $oldTZ = date_default_timezone_get ();
 
@@ -47,7 +47,8 @@ class User extends Base
     return $ret;
   }
 
-  public function getDate ($dt, $tz = null, $fmt = '%Y-%m-%d')
+  public function getDate (int $dt, string $tz = null,
+                           string $fmt = '%Y-%m-%d'):string
   {
     $oldTZ = date_default_timezone_get ();
     $newTZ = $tz ?? $this->getTimezone ();
@@ -64,7 +65,7 @@ class User extends Base
     return $ret;
   }
 
-  public function resetPassword ()
+  public function resetPassword ():array
   {
     $ret = [];
     $password = $this->_generatePassword ();
@@ -103,7 +104,7 @@ class User extends Base
     return $ret;
   }
 
-  public function getUser ()
+  public function getUser ():array
   {
     $ret = [];
 
@@ -118,7 +119,7 @@ class User extends Base
     return $ret;
   }
 
-  public function getUserDataJson ()
+  public function getUserDataJson ():string
   {
     return json_encode ($this->userId ?
       [
@@ -136,16 +137,16 @@ class User extends Base
       ]);
   }
 
-  public function exists ($id = null)
+  public function exists (int $id = null):int
   {
     ($stmt = $this->prepare ('
       SELECT visible FROM users WHERE id = ? AND visible = 1'))
        ->execute ([$id??$this->userId]);
 
-    return $stmt->fetch ();
+    return $stmt->rowCount ();
   }
 
-  public function delete ()
+  public function delete ():array
   {
     $ret = [];
     $dir = $this->getUserDir ();
@@ -159,11 +160,11 @@ class User extends Base
         $wallIds[] = $_wall['id'];
 
       // Push WS close request.
-      $this->sendWsClient (json_encode ([
+      $this->sendWsClient ([
         'action' => 'close-walls',
         'userId' => $this->userId,
         'ids' => $wallIds
-      ]));
+      ]);
     }
 
     try
@@ -224,7 +225,7 @@ class User extends Base
     return $ret;
   }
 
-  public function checkSession ()
+  public function checkSession ():void
   {
     ($stmt = $this->prepare('SELECT 1 FROM users_tokens WHERE users_id = ?'))
       ->execute ([$_SESSION['userId']]);
@@ -233,7 +234,7 @@ class User extends Base
       $this->logout ();
   }
 
-  public function loginByCookie ()
+  public function loginByCookie ():bool
   {
     if ( ($token = Helper::getCookie ()) )
     {
@@ -257,9 +258,11 @@ class User extends Base
         return true;
       }
     }
+
+    return false;
   }
 
-  public function loadByToken ($token, $ip)
+  public function loadByToken (string $token, string $ip):?array
   {
     $ret = null;
 
@@ -278,7 +281,7 @@ class User extends Base
     return $ret;
   }
 
-  public function register ($settings = null)
+  public function register (object $settings = null):void
   {
     $this->executeQuery ('UPDATE users',
       ['lastconnectiondate' => time ()],
@@ -296,14 +299,14 @@ class User extends Base
     }
   }
 
-  public function ping ()
+  public function ping ():void
   {
     $this->executeQuery ('UPDATE users',
     ['updatedate' => time ()],
     ['id' => $this->userId]);
   }
 
-  public function purgeTokens ()
+  public function purgeTokens ():void
   {
     $current = time ();
     $diff = 30 * 60; // 30mn
@@ -325,7 +328,7 @@ class User extends Base
           AND $current - users.updatedate > $diff)");
   }
 
-  public function createUpdateLdapUser ($args)
+  public function createUpdateLdapUser (array $args):?array
   {
     $fromScript = isset ($args['fromScript']);
     $data = null;
@@ -370,7 +373,7 @@ class User extends Base
     return $data;
   }
 
-  public function login ($remember = false)
+  public function login (bool $remember = false):array
   {
     $ret = [];
     $data = null;
@@ -431,7 +434,7 @@ class User extends Base
     return $ret;
   }
 
-  public function getSettings ($json = true)
+  public function getSettings (bool $json = true)
   {
     ($stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?'))
       ->execute ([$this->userId]);
@@ -449,7 +452,7 @@ class User extends Base
     return $json ? $ret : json_decode ($ret);
   }
 
-  public function getSetting ($key)
+  public function getSetting (string $key):string
   {
     $userId = $this->userId??$_SESSION['userId']??null;
 
@@ -464,13 +467,13 @@ class User extends Base
     return $this->settings[$key]??'';
   }
 
-  public function getTimezone ()
+  public function getTimezone ():string
   {
     return (empty ($ret = $this->getSetting ('timezone'))) ?
               WPT_LOCALES[$this->slocale] : $ret;
   }
 
-  public function saveSettings ($settings = null)
+  public function saveSettings (string $settings = null):array
   {
     $settings = $settings ?? $this->data->settings;
     $ret = [];
@@ -492,7 +495,7 @@ class User extends Base
     return $ret;
   }
 
-  public function setExternalRef ($wallId)
+  public function setExternalRef (int $wallId):array
   {
     $ret = [];
     $data = [];
@@ -512,7 +515,7 @@ class User extends Base
     return $ret;
   }
 
-  public function getPicture ($args)
+  public function getPicture (array $args):?array
   {
     $userId = $args['userId'];
 
@@ -524,7 +527,7 @@ class User extends Base
        ->execute ([$userId]);
 
     if ( ($r = $stmt->fetch ()) )
-      return Helper::download ([
+      Helper::download ([
         'item_type' => $r['filetype'],
         'name' => basename ($r['picture']),
         'size' => $r['filesize'],
@@ -532,7 +535,7 @@ class User extends Base
       ]);
   }
 
-  public function deletePicture ()
+  public function deletePicture ():array
   {
     $ret = [];
 
@@ -563,7 +566,7 @@ class User extends Base
     return $ret;
   }
 
-  public function updatePicture ()
+  public function updatePicture ():array
   {
     $ret = [];
 
@@ -635,7 +638,7 @@ class User extends Base
     return $ret;
   }
 
-  public function update ()
+  public function update ():array
   {
     $ret = [];
 
@@ -726,7 +729,8 @@ class User extends Base
     return $ret;
   }
 
-  private function _createToken ($settings = null, $remember = false)
+  private function _createToken (string $settings = null,
+                                 bool $remember = false)
   {
     session_regenerate_id ();
 
@@ -752,7 +756,7 @@ class User extends Base
     $_SESSION['userToken'] = $token;
   }
 
-  public function create ($createToken = true)
+  public function create (bool $createToken = true):array
   {
     $ret = [];
 
@@ -837,7 +841,7 @@ class User extends Base
     return $ret;
   }
 
-  private function _generatePassword ()
+  private function _generatePassword ():string
   {
     // Randomize letters pool order
     // -> No "I", "l" nor "0" to prevent user reading errors.
@@ -860,7 +864,7 @@ class User extends Base
     return $result;
   }
 
-  private function _isDuplicate ($args)
+  private function _isDuplicate (array $args):?array
   {
     $ret = null;
     $keys = array_keys ($args);
