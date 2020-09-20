@@ -15,7 +15,7 @@ class Base extends \PDO
   protected $ws;
   private $_dbDescription;
 
-  function __construct ($args = null, $ws = null)
+  function __construct (array $args = null, object $ws = null)
   {
     $this->_dbDescription = DbCache::getDBDescription ();
 
@@ -45,12 +45,12 @@ class Base extends \PDO
   }
 
   // Dummy access to the DB, to preserve persistent connexion
-  public function ping ()
+  public function ping ():void
   {
     $this->query ('SELECT 1');
   }
 
-  public function getUploadedFileInfos ($data)
+  public function getUploadedFileInfos (?object $data):array
   {
     return
       (
@@ -63,17 +63,17 @@ class Base extends \PDO
       [$m1[1], $m2[2], null];
   }
 
-  protected function sendWsClient ($msg)
+  protected function sendWsClient (array $msg):void
   {
     $client = new Services\WebSocket\Client ('127.0.0.1', WPT_WS_PORT);
 
     $client->connect ();
 
-    $client->send ($msg);
+    $client->send (json_encode ($msg));
   }
 
   // Very basic DB fields validator.
-  protected function checkDBValue ($table, $field, &$value)
+  protected function checkDBValue (string $table, string $field, &$value):void
   {
     $f = $this->_dbDescription[$table][$field];
 
@@ -155,7 +155,7 @@ class Base extends \PDO
       throw new \Exception ("Bad DB field value `$value` for $table::$field");
   }
 
-  protected function getDuplicateQueryPart ($fields)
+  protected function getDuplicateQueryPart (array $fields):string
   {
     return ($this->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql') ?
       // MySQL
@@ -164,7 +164,8 @@ class Base extends \PDO
       ' ON CONFLICT ('.implode(',',$fields).') DO UPDATE SET ';
   }
 
-  protected function executeQuery ($sql, $data, $where = null)
+  protected function executeQuery (string $sql, array $data,
+                                   array $where = null)
   {
     preg_match ('/(INSERT\s+INTO|UPDATE)\s+([a-z_]+)$/', $sql, $m);
     $table = $m[2];
@@ -201,14 +202,14 @@ class Base extends \PDO
     return $stmt->rowCount ();
   }
 
-  protected function getUserDir ($type = null)
+  protected function getUserDir (string $type = null):string
   {
-    return ($type) ?
+    return ($type == 'web') ?
       WPT_DATA_WPATH."/users/{$this->userId}" :
       Helper::getSecureSystemName ("/users/{$this->userId}");
   }
 
-  protected function getWallDir ($type = null)
+  protected function getWallDir (string $type = null):string
   {
     return ($type == 'web') ?
       WPT_DATA_WPATH."/walls/{$this->wallId}" :

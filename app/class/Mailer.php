@@ -8,7 +8,7 @@ class Mailer
 {
   private $_mailer;
 
-  public function __construct ($persist = false)
+  public function __construct (bool $persist = false)
   {
     $this->_mailer = new \PHPMailer\PHPMailer\PHPMailer ();
 
@@ -38,7 +38,7 @@ class Mailer
     $this->_mailer->setFrom (WPT_EMAIL_FROM, 'wopits');
   }
 
-  public function send ($args)
+  public function send (array $args):void
   {
     $User = new User (['userId' => $args['userId']]);
     Helper::changeLocale ((json_decode($User->getSettings()))->locale);
@@ -47,7 +47,7 @@ class Mailer
     $this->{$args['method']}($args);
   }
 
-  private function accountCreation ($args)
+  private function accountCreation (array $args):void
   {
     $this->_send ([
       'email' => $args['email'],
@@ -56,7 +56,7 @@ class Mailer
     ]);
   }
 
-  private function resetPassword ($args)
+  private function resetPassword (array $args):void
   {
     $this->_send ([
       'email' => $args['email'],
@@ -65,7 +65,7 @@ class Mailer
     ]);
   }
 
-  private function deadlineAlert_1 ($args)
+  private function deadlineAlert_1 (array $args):void
   {
     $this->_send ([
       'email' => $args['email'],
@@ -74,7 +74,7 @@ class Mailer
     ]);
   }
 
-  private function deadlineAlert_2 ($args)
+  private function deadlineAlert_2 (array $args):void
   {
     $days = $args['days'];
     $hours = $args['hours'];
@@ -87,7 +87,7 @@ class Mailer
     ]);
   }
 
-  private function wallSharing ($args)
+  private function wallSharing (array $args):void
   {
     $msg = '';
 
@@ -111,7 +111,7 @@ class Mailer
     ]);
   }
 
-  private function _send ($args)
+  private function _send (array $args):void
   {
     //<WPTPROD-remove>
     if (WPT_DEV_MODE)

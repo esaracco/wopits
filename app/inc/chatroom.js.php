@@ -198,28 +198,24 @@
     refreshUserscount (args)
     {
       const $chatroom = this.element,
-            $tooltip = $chatroom.find(".usersviewcounts");
+            $tooltip = $chatroom.find (".usersviewcounts"),
+            userId = wpt_userData.id;
 
-      if ($chatroom.is(":visible"))
-      {
-        const userId = wpt_userData.id;
+      if (!args)
+        args = {userscount: 0, userslist: []};
 
-        if (!args)
-          args = {userscount: 0, userslist: []};
+      this.closeUsersTooltip (true);
 
-        this.closeUsersTooltip (true);
-
-        $chatroom.find("h2 .wpt-badge").html (args.userscount);
+      $chatroom.find("h2 .wpt-badge").html (args.userscount);
   
-         let title = "";
-         args.userslist.forEach (
-           (user) => (user.id != userId) ? title += `${user.name}<br>`:'');
-         $tooltip.attr("title", title);
-         $tooltip.tooltip ({
-           html: true,
-           trigger: ($.support.touch) ? "click" : "hover focus"
-         });
-      }
+       let title = "";
+       args.userslist.forEach (
+         (user) => (user.id != userId) ? title += `${user.name}<br>`:'');
+       $tooltip.attr ("title", title);
+       $tooltip.tooltip ({
+         html: true,
+         trigger: ($.support.touch) ? "click" : "hover focus"
+       });
     },
 
     // METHOD addMsg ()
@@ -227,7 +223,7 @@
     {
       const plugin = this,
             $chatroom = plugin.element,
-            $area = $chatroom.find(".textarea"),
+            $area = $chatroom.find (".textarea"),
             isHidden = $chatroom.is (":hidden");
       let html;
 

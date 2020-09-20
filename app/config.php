@@ -51,6 +51,9 @@ define ('WPT_WRIGHTS_RO', 3);
 // Themes
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 
+// Size of the Swoole volatile session tables.
+define ('WPT_SWOOLE_TABLE_SIZE', 1024);
+
 //////////////// This section will be removed after deployment //////////////
 
 //<WPTPROD-remove>

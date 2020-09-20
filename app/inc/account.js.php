@@ -179,7 +179,8 @@
               $popup;
 
           if ($account.find(".ldap-msg").length &&
-              e.target.tagName == 'INPUT' && name != "fullname")
+              e.target.tagName == 'INPUT' &&
+              name != "fullname" && name != "visible")
             return;
 
           switch (name)

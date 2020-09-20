@@ -10,7 +10,7 @@ class DbCache
   // During the deployment, this method will be deleted and replaced by another
   // one that will return cached data instead of parsing file.
   //<WPTPROD-remove>
-  public static function getDBDescription ()
+  public static function getDBDescription ():array
   {
     static $ret = [];
 
@@ -59,10 +59,9 @@ class DbCache
   }
   //</WPTPROD-remove>
 
-  public static function getFieldLength ($table, $field)
+  public static function getFieldLength (string $table, string $field):?int
   {
-    $ret = self::getDBDescription()[$table][$field]['length'];
-
-    return ($ret) ? $ret : null;
+    return ( ($ret = self::getDBDescription()[$table][$field]['length']) ) ?
+             $ret : null;
   }
 }

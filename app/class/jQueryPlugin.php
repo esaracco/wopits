@@ -6,13 +6,13 @@ class jQueryPlugin
 {
   private $name, $defaultSettings;
 
-  public function __construct ($name, $defaultSettings = '')
+  public function __construct (string $name, string $defaultSettings = '')
   {
     $this->name = $name;
     $this->defaultSettings = $defaultSettings;
   }
 
-  public function getHeader ()
+  public function getHeader ():string
   {
     return <<<EOC
 ;(function ($, window, document, undefined)
@@ -26,7 +26,7 @@ const Plugin = function (element)
 EOC;
   }
 
-  public function getFooter ()
+  public function getFooter ():string
   {
     return <<<EOC
 $.fn["{$this->name}"] = function (arg)

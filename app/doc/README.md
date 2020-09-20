@@ -15,12 +15,12 @@ Groups management makes it possible to finely control the sharing of data, and a
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
-*wopits is **Node.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server + [Redis](https://redis.io/) for the management of volatile data.*
+*wopits is **Node.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
 
 INSTALLATION
 ------------
 
-> You will need PHP, Apache, MariaDB or PostgreSQL, Redis & Swoole to make it work.
+> You will need PHP, Apache, MariaDB or PostgreSQL, and Swoole to make it work.
 
 ### On the source host
 
@@ -45,7 +45,7 @@ The following actions have to be done on the machine that will host the wopits w
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
-- Install Apache >= 2.4.38, MariaDB >= 10.3.23 or PostgreSQL >= 11.7, Redis >= 5.0.3 and PHP >= 7.3.19 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Install Apache >= 2.4, MariaDB >= 10.3 or PostgreSQL >= 11.7 and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
 - Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MariaDB) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:

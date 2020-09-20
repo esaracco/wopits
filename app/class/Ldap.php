@@ -6,9 +6,9 @@ class Ldap
 {
   private $ldap;
 
-  public function connect ()
+  public function connect ():bool
   {
-    $ret = null;
+    $ret = false;
 
     if ( !($host = $this->checkHost (WPT_LDAP_HOST)) ||
          !($ret = $this->ldap = ldap_connect ($host)) )
@@ -20,7 +20,7 @@ class Ldap
     return $ret;
   }
 
-  public function checkHost ()
+  public function checkHost ():?string
   {
     $host = WPT_LDAP_HOST;
     $ret = null;
@@ -43,15 +43,15 @@ class Ldap
     return $ret;
   }
 
-  public function bind ($dn, $pw)
+  public function bind (string $dn, string $pw):bool
   {
-    if ( !($r = ldap_bind ($this->ldap, $dn, $pw)) )
+    if ( !($r = @ldap_bind ($this->ldap, $dn, $pw)) )
       error_log (__METHOD__.':'.__LINE__.":ldap_bind `$dn` failed!");
 
     return $r;
   }
 
-  public function getUsers ($fromScript = false)
+  public function getUsers (bool $fromScript = false):array
   {
     $ret = [];
     $filter = '(objectClass='.WPT_LDAP_OBJECTCLASS.')';
@@ -96,7 +96,7 @@ class Ldap
     return $ret;
   }
 
-  public function getUserData ($uid)
+  public function getUserData (string $uid):?array
   {
     $filter = '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')'.
               '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
