@@ -79,7 +79,7 @@ class Server
         // Register user active wall
         $this->_registerActiveWall ($fd, $userId, null, $settings);
   
-        if (isset ($settings->activeWall))
+        if (!empty ($settings->activeWall))
           $this->_pushWallsUsersCount ([$settings->activeWall]);
 
         $this->_server->db->lAdd ('usersUnique', $userId, $fd);
@@ -660,7 +660,7 @@ class Server
       $userId = $client->id;
       $settings = json_decode ($client->settings);
 
-      if (isset ($settings->activeWall))
+      if (!empty ($settings->activeWall))
       {
         $wallId = $settings->activeWall;
 
@@ -701,7 +701,7 @@ class Server
         }
       }
 
-      if (isset ($settings->openedWalls))
+      if (!empty ($settings->openedWalls))
       {
         foreach ($settings->openedWalls as $_wallId)
           $this->_unsetOpenedWalls ($_wallId, $fd);
@@ -840,7 +840,7 @@ class Server
                                          ?object $oldSettings,
                                          object $newSettings):void
   {
-    $haveOld = ($oldSettings && isset ($oldSettings->openedWalls));
+    $haveOld = ($oldSettings && !empty ($oldSettings->openedWalls));
 
     if ($haveOld)
     {
@@ -856,7 +856,7 @@ class Server
     }
 
     // Associate new wall to user
-    if (isset ($newSettings->openedWalls))
+    if (!empty ($newSettings->openedWalls))
     {
       foreach ($newSettings->openedWalls as $_newWallId)
       {
