@@ -655,7 +655,9 @@ class Server
     }
     // Common wopits client
     elseif ( ($client = $this->_server->db->tGet ('clients', $fd)) &&
-             !$this->_server->db->isEmpty ($client))
+             !$this->_server->db->isEmpty ($client) &&
+             //FIXME
+             !empty ($client->id))
     {
       $userId = $client->id;
       $settings = json_decode ($client->settings);
