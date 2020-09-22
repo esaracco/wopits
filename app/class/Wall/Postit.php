@@ -85,7 +85,8 @@ class Postit extends Wall
     return $stmt->fetchAll ();
   }
 
-  public function getPostit ():array
+  // Return type is mixed: array or false.
+  public function getPostit ()
   {
     ($stmt = $this->prepare ('
       SELECT

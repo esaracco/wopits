@@ -262,10 +262,9 @@ class User extends Base
     return false;
   }
 
-  public function loadByToken (string $token, string $ip):?array
+  // Return type is mixed: array or false.
+  public function loadByToken (string $token, string $ip)
   {
-    $ret = null;
-
     ($stmt = $this->prepare ('
       SELECT
         users_id,

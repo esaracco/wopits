@@ -32,6 +32,12 @@ class VolatileTables
       'final' => [SwooleTable::TYPE_INT]
     ]);
 
+    // internals
+    //
+    // -> key: fd
+    //
+    $this->_addTable ('internals', WPT_SWOOLE_TABLE_SIZE, []);
+
     // usersUnique
     //
     // -> key: userId

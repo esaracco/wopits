@@ -13,7 +13,6 @@ use Wopits\Services\Task;
 class Server
 {
   private $_server;
-  private $_isInternal = false;
 
   public function __construct ()
   {
@@ -51,11 +50,13 @@ class Server
   public function onOpen (SwooleServer $server, Request $req):void
   {
     $fd = $req->fd;
+    $header = $req->header;
 
     // Internal wopits client
-    if (empty ($req->header['x-forwarded-server']))
+    if (empty ($header['x-forwarded-server']) &&
+        strpos ($header['user-agent'], 'PHPWebSocketClient') !== false)
     {
-      $this->_isInternal = true;
+      $this->_server->db->internals->set ($fd, []);
     }
     else
     {
@@ -86,7 +87,8 @@ class Server
       }
       else
       {
-        $this->_log ($fd, 'error', "UNAUTHORIZED login attempt!", $ip);
+        $this->_log ($fd, 'error',
+          'UNAUTHORIZED login attempt! ('.print_r((array)$req, true).')', $ip);
 
         //FIXME
         $server->push ($fd, json_encode (['action' => 'exitsession']));
@@ -101,7 +103,7 @@ class Server
     $msg = json_decode ($frame->data);
 
     // Common wopits client
-    if (!$this->_isInternal)
+    if (!$this->_server->db->internals->exist ($fd))
     {
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
@@ -649,9 +651,9 @@ class Server
   public function onClose (SwooleServer $server, int $fd):void
   {
     // Internal wopits client
-    if ($this->_isInternal)
+    if ($this->_server->db->internals->exist ($fd))
     {
-      $this->_isInternal = false;
+      $this->_server->db->internals->del ($fd);
     }
     // Common wopits client
     elseif ( ($client = $this->_server->db->tGet ('clients', $fd)) &&
@@ -757,8 +759,10 @@ class Server
     $ret = null;
     $User = new User ();
     $ip = $req->header['x-forwarded-for']??'127.0.0.1';
+    $token = $req->get['token']??null;
 
-    if ( ($r = $User->loadByToken ($req->get['token'], $ip)) )
+    if ( ($token = $req->get['token']??null) &&
+         ($r = $User->loadByToken ($token, $ip)) )
       $ret = (object) [
         'ip' => $ip,
         'sessionId' => $req->fd,
