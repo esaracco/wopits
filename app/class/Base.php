@@ -44,7 +44,7 @@ class Base extends \PDO
         ]);
   }
 
-  // Dummy access to the DB, to preserve persistent connexion
+  // Dummy access to the DB, to preserve persistent connection
   public function ping ():void
   {
     $this->query ('SELECT 1');
