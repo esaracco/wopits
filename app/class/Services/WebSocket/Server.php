@@ -87,14 +87,10 @@ class Server
       }
       else
       {
-        $this->_log ($fd, 'error',
-          'UNAUTHORIZED login attempt! ('.print_r((array)$req, true).')', $ip);
+        $this->_log ($fd, 'warning',
+          'UNAUTHORIZED connexion attempt!', $ip, (array)$req);
 
-        if ($server->exist ($fd))
-        {
-          $server->push ($fd, json_encode (['action' => 'exitsession']));
-          $server->disconnect ($fd);
-        }
+        $server->disconnect ($fd);
       }
     }
   }
@@ -107,6 +103,11 @@ class Server
     // Common wopits client
     if (!$server->db->internals->exist ($fd))
     {
+      // ROUTE ping
+      // Nothing special: just keep WS connection with client alive.
+      if ($msg->route == 'ping')
+        return;
+
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
       $wallsIds = null;
@@ -115,11 +116,6 @@ class Server
       $action = '';
       $ret = [];
 
-      // ROUTE ping
-      // Nothing special: just keep WS connection with client alive.
-      if ($msg->route == 'ping')
-        return;
-  
       $client = $server->db->tGet ('clients', $fd);
 
       //////////////////////////// ROUTING PATHS /////////////////////////////
@@ -643,7 +639,7 @@ class Server
 
         default:
           $this->_log ($fd, 'error',
-                       "Unknown action `{$msg->action}`", 'internal');
+            'Unknown action!', 'internal', (array)$msg);
       }
     }
   }
@@ -656,30 +652,36 @@ class Server
       $server->db->internals->del ($fd);
     }
     // Common wopits client
-    elseif ( ($client = $server->db->tGet ('clients', $fd)) &&
-             !$server->db->isEmpty ($client) &&
-             //FIXME
-             !empty ($client->id))
+    else
     {
+      $client = $server->db->tGet ('clients', $fd);
       $userId = $client->id;
       $settings = json_decode ($client->settings);
 
+      // If user have at least one wall opened.
       if (!empty ($settings->activeWall))
       {
         $wallId = $settings->activeWall;
 
-        // Remove user's action from DB edit queue
+        // Purge user's actions from edit queue.
         (new EditQueue([], $client))->removeUser ();
 
-        // Remove user from local view queue
+        // Purge from opened walls queue.
+        if (!empty ($settings->openedWalls))
+        {
+          foreach ($settings->openedWalls as $_wallId)
+            $this->_unsetOpenedWalls ($_wallId, $fd);
+        }
+
+        // Purge from active walls queue.
         $this->_unsetItem ('activeWalls', $wallId, $fd); 
         $this->_unsetActiveWallsUnique ($wallId, $userId);
 
+        // Push new walls users count.
         $this->_pushWallsUsersCount ([$wallId]);
 
-        // Leave wall's chat if needed.
-        if ( ($cu = $server->db->jGet ('chatUsers', $wallId)) &&
-             isset ($cu->$fd))
+        // Leave wall's chat.
+        if (isset (($server->db->jGet ('chatUsers', $wallId))->$fd))
         {
           $this->_unsetItem ('chatUsers', $wallId, $fd);
 
@@ -704,31 +706,23 @@ class Server
         }
       }
 
-      if (!empty ($settings->openedWalls))
-      {
-        foreach ($settings->openedWalls as $_wallId)
-          $this->_unsetOpenedWalls ($_wallId, $fd);
-      }
-
+      $server->db->lDel ('usersUnique', $userId, $fd);
       $server->db->clients->del ($fd);
 
       // Close all current user sessions if any.
       if (!$client->final)
       {
-        $json = json_encode (['action' => 'exitsession']);
+        $_json = json_encode (['action' => 'exitsession']);
 
         foreach ($server->db->lGet('usersUnique', $userId) as $_fd)
         {
-          if ($_fd != $fd && ($_client = $server->db->tGet ('clients', $_fd)))
-          {
-            $_client->final = 1;
-            $server->db->tSet ('clients', $_fd, $_client);
-            $server->push ($_fd, $json);
-          }
+          $_client = $server->db->tGet ('clients', $_fd);
+
+          $_client->final = 1;
+          $server->db->tSet ('clients', $_fd, $_client);
+          $server->push ($_fd, $_json);
         }
       }
-
-      $server->db->lDel ('usersUnique', $userId, $fd);
 
       $this->_log ($fd, 'info',
         "CLOSE (".$server->db->clients->count().
@@ -756,7 +750,6 @@ class Server
     $ret = null;
     $User = new User ();
     $ip = $req->header['x-forwarded-for']??'127.0.0.1';
-    $token = $req->get['token']??null;
 
     if ( ($token = $req->get['token']??null) &&
          ($r = $User->loadByToken ($token, $ip)) )
@@ -1018,10 +1011,13 @@ class Server
   }
 
   private function _log (int $fd, string $type, string $msg,
-                         string $ip = null):void
+                         string $ip = null, array $details = null):void
   {
     error_log (sprintf("%s [%s][%s:%s] %s",
-      date('Y-m-d H:i:s'), strtoupper ($type), $ip, $fd, $msg));
+      date ('Y-m-d H:i:s'), strtoupper ($type), $ip, $fd, $msg));
+
+    if (WPT_LOG_DETAILS && $details)
+      error_log (print_r ($details, true));
   }
 
   //<WPTPROD-remove>
