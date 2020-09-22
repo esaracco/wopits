@@ -699,7 +699,7 @@ class Server
             $this->_server->db->jGet ('openedWalls', $wallId)
               as $_fd => $_userId)
           {
-            if ($_fd != $fd && $server->exist ($_fd))
+            if ($_fd != $fd)
               $server->push ($_fd, $_json);
           }
         }
@@ -720,9 +720,8 @@ class Server
 
         foreach ($this->_server->db->lGet('usersUnique', $userId) as $_fd)
         {
-          if ($_fd != $fd && $server->exist ($_fd) &&
-              ($_client = $this->_server->db->tGet ('clients', $_fd)) &&
-              !$this->_server->db->isEmpty ($_client))
+          if ($_fd != $fd &&
+              ($_client = $this->_server->db->tGet ('clients', $_fd)))
           {
             $_client->final = 1;
             $this->_server->db->tSet ('clients', $_fd, $_client);
