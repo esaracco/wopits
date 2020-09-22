@@ -56,7 +56,7 @@ class Server
     if (empty ($header['x-forwarded-server']) &&
         strpos ($header['user-agent'], 'PHPWebSocketClient') !== false)
     {
-      $this->_server->db->internals->set ($fd, []);
+      $server->db->internals->set ($fd, []);
     }
     else
     {
@@ -68,10 +68,10 @@ class Server
         $userId = $client->id;
         $settings = json_decode ($client->settings);
 
-        $this->_server->db->tSet ('clients', $fd, $client);
+        $server->db->tSet ('clients', $fd, $client);
 
         $this->_log ($fd, 'info',
-          "OPEN (".$this->_server->db->clients->count().
+          "OPEN (".$server->db->clients->count().
           " connected clients)", $client->ip);
 
         // Register user opened walls
@@ -83,16 +83,18 @@ class Server
         if (!empty ($settings->activeWall))
           $this->_pushWallsUsersCount ([$settings->activeWall]);
 
-        $this->_server->db->lAdd ('usersUnique', $userId, $fd);
+        $server->db->lAdd ('usersUnique', $userId, $fd);
       }
       else
       {
         $this->_log ($fd, 'error',
           'UNAUTHORIZED login attempt! ('.print_r((array)$req, true).')', $ip);
 
-        //FIXME
-        $server->push ($fd, json_encode (['action' => 'exitsession']));
-        $server->disconnect ($fd);
+        if ($server->exist ($fd))
+        {
+          $server->push ($fd, json_encode (['action' => 'exitsession']));
+          $server->disconnect ($fd);
+        }
       }
     }
   }
@@ -103,7 +105,7 @@ class Server
     $msg = json_decode ($frame->data);
 
     // Common wopits client
-    if (!$this->_server->db->internals->exist ($fd))
+    if (!$server->db->internals->exist ($fd))
     {
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
@@ -118,7 +120,7 @@ class Server
       if ($msg->route == 'ping')
         return;
   
-      $client = $this->_server->db->tGet ('clients', $fd);
+      $client = $server->db->tGet ('clients', $fd);
 
       //////////////////////////// ROUTING PATHS /////////////////////////////
 
@@ -144,32 +146,32 @@ class Server
           $ret['internal'] = 1;
 
           $openedChats = explode (',', $client->openedChats);
-          $cu = $this->_server->db->jGet ('chatUsers', $wallId);
+          $cu = $server->db->jGet ('chatUsers', $wallId);
 
           switch ($msg->method)
           {
             case 'PUT':
               $cu->$fd = (object)['id' => $client->id,
                                   'name' => $client->username];
-              $this->_server->db->jSet ('chatUsers', $wallId, $cu);
+              $server->db->jSet ('chatUsers', $wallId, $cu);
 
               $openedChats[] = $wallId;
               $client->openedChats = implode (',', $openedChats);
-              $this->_server->db->tSet ('clients', $fd, $client);
+              $server->db->tSet ('clients', $fd, $client);
 
               $ret['msg'] = '_JOIN_';
               break;
 
             case 'DELETE':
               // Handle some random case (user close its browser...)
-              if (!$this->_server->db->isEmpty ($cu))
+              if (!$server->db->isEmpty ($cu))
               {
                 $this->_unsetItem ('chatUsers', $wallId, $fd);
 
                 array_splice ($openedChats,
                   array_search ($wallId, $openedChats), 1);
                 $client->openedChats = implode (',', $openedChats);
-                $this->_server->db->tSet ('clients', $fd, $client);
+                $server->db->tSet ('clients', $fd, $client);
 
                 $ret['msg'] = '_LEAVE_';
               }
@@ -205,7 +207,7 @@ class Server
           $settings->openedWalls = $newSettings->openedWalls??[];
 
           $client->settings = json_encode ($settings);
-          $this->_server->db->tSet ('clients', $fd, $client);
+          $server->db->tSet ('clients', $fd, $client);
 
           $ret = $User->saveSettings ();
         }
@@ -227,19 +229,18 @@ class Server
         // Reload all current user sessions if any.
         if (!$client->final)
         {
-          foreach (
-            $this->_server->db->lGet ('usersUnique', $User->userId) as $_fd)
+          foreach ($server->db->lGet ('usersUnique', $User->userId) as $_fd)
           {
             if ($_fd != $fd)
             {
-              $_client = $this->_server->db->tGet ('clients', $_fd);
+              $_client = $server->db->tGet ('clients', $_fd);
 
               $toSend = ['action' => 'reloadsession'];
               if (isset ($newSettings->locale))
                 $toSend['locale'] = $newSettings->locale;
 
               $_client->final = 1;
-              $this->_server->db->tSet ('clients', $_fd, $_client);
+              $server->db->tSet ('clients', $_fd, $_client);
 
               $server->push ($_fd, json_encode ($toSend));
             }
@@ -248,7 +249,7 @@ class Server
         else
         {
           $client->final = 0;
-          $this->_server->db->tSet ('clients', $fd, $client);
+          $server->db->tSet ('clients', $fd, $client);
         }
       }
       // ROUTE edit queue
@@ -401,7 +402,7 @@ class Server
 
         if ($msg->method == 'GET')
           $ret = (new Wall (['wallId' => $wallId], $client))->getUsersview (
-            array_keys ((array)$this->_server->db->jGet ('activeWallsUnique',
+            array_keys ((array)$server->db->jGet ('activeWallsUnique',
                                                          $wallId)));
       }
       // ROUTE Postit creation
@@ -495,7 +496,7 @@ class Server
 
         foreach ($wallsIds as $_wallId)
           foreach (
-            $this->_server->db->jGet ('openedWalls', $_wallId)
+            $server->db->jGet ('openedWalls', $_wallId)
               as $_fd => $_userId)
           {
             if ($_userId != $userId)
@@ -515,8 +516,8 @@ class Server
           $cacheName = ($action == 'chat' || $action == 'unlinked') ?
             'openedWalls' : 'activeWalls';
 
-          $w = $this->_server->db->jGet ($cacheName, $wallId);
-          if (!$this->_server->db->isEmpty ($w))
+          $w = $server->db->jGet ($cacheName, $wallId);
+          if (!$server->db->isEmpty ($w))
           {
             $userId = $client->id;
             $json = json_encode ($ret);
@@ -564,7 +565,7 @@ class Server
         // close-walls
         case 'close-walls':
 
-          $walls = $this->_server->db->openedWalls;
+          $walls = $server->db->openedWalls;
           for ($walls->rewind (); $walls->current (); $walls->next ())
           {
             $_wallId = $walls->key ();
@@ -572,8 +573,7 @@ class Server
             if (in_array ($_wallId, $msg->ids))
             {
               foreach (
-                $this->_server->db->jGet ('openedWalls', $_wallId)
-                  as $_fd => $_userId)
+                $server->db->jGet ('openedWalls', $_wallId) as $_fd => $_userId)
               {
                 if ($_userId != $msg->userId)
                   $server->push ($_fd,
@@ -597,7 +597,7 @@ class Server
           (new EditQueue())->purge ();
 
           $_json = json_encode ($msg);
-          $clients = $this->_server->db->clients;
+          $clients = $server->db->clients;
           for ($clients->rewind (); $clients->current (); $clients->next ())
             $server->push ($clients->key (), $_json);
 
@@ -611,7 +611,7 @@ class Server
           foreach (['clients', 'openedWalls', 'activeWalls', 'chatUsers'] as $t)
           {
             $tmp .= "\n* $t:\n";
-            $tb = $this->_server->db->$t;
+            $tb = $server->db->$t;
             for ($tb->rewind (); $tb->current (); $tb->next ())
               $tmp .= print_r ($tb->get ($tb->key ()), true);
           }
@@ -624,19 +624,19 @@ class Server
         case 'stat-users':
 
           $server->push ($fd, ("\n".
-            '* Sessions: '.(count($this->_server->connection_list())-1)."\n".
+            '* Sessions: '.(count($server->connection_list())-1)."\n".
             '* Unique users: '.
-              $this->_server->db->usersUnique->count()."\n".
+              $server->db->usersUnique->count()."\n".
             "----------\n".
             '* Opened walls: '.
-              $this->_server->db->openedWalls->count()."\n".
+              $server->db->openedWalls->count()."\n".
             '* Active walls: '.
-              $this->_server->db->activeWalls->count()."\n".
+              $server->db->activeWalls->count()."\n".
             '* Unique active walls: '.
-              $this->_server->db->activeWallsUnique->count()."\n".
+              $server->db->activeWallsUnique->count()."\n".
             "----------\n".
             '* Current chats: '.
-              $this->_server->db->chatUsers->count()."\n"
+              $server->db->chatUsers->count()."\n"
           ));
 
           break;
@@ -651,13 +651,13 @@ class Server
   public function onClose (SwooleServer $server, int $fd):void
   {
     // Internal wopits client
-    if ($this->_server->db->internals->exist ($fd))
+    if ($server->db->internals->exist ($fd))
     {
-      $this->_server->db->internals->del ($fd);
+      $server->db->internals->del ($fd);
     }
     // Common wopits client
-    elseif ( ($client = $this->_server->db->tGet ('clients', $fd)) &&
-             !$this->_server->db->isEmpty ($client) &&
+    elseif ( ($client = $server->db->tGet ('clients', $fd)) &&
+             !$server->db->isEmpty ($client) &&
              //FIXME
              !empty ($client->id))
     {
@@ -678,7 +678,7 @@ class Server
         $this->_pushWallsUsersCount ([$wallId]);
 
         // Leave wall's chat if needed.
-        if ( ($cu = $this->_server->db->jGet ('chatUsers', $wallId)) &&
+        if ( ($cu = $server->db->jGet ('chatUsers', $wallId)) &&
              isset ($cu->$fd))
         {
           $this->_unsetItem ('chatUsers', $wallId, $fd);
@@ -696,8 +696,7 @@ class Server
           $_json = json_encode ($_ret);
 
           foreach (
-            $this->_server->db->jGet ('openedWalls', $wallId)
-              as $_fd => $_userId)
+            $server->db->jGet ('openedWalls', $wallId) as $_fd => $_userId)
           {
             if ($_fd != $fd)
               $server->push ($_fd, $_json);
@@ -711,29 +710,28 @@ class Server
           $this->_unsetOpenedWalls ($_wallId, $fd);
       }
 
-      $this->_server->db->clients->del ($fd);
+      $server->db->clients->del ($fd);
 
       // Close all current user sessions if any.
       if (!$client->final)
       {
         $json = json_encode (['action' => 'exitsession']);
 
-        foreach ($this->_server->db->lGet('usersUnique', $userId) as $_fd)
+        foreach ($server->db->lGet('usersUnique', $userId) as $_fd)
         {
-          if ($_fd != $fd &&
-              ($_client = $this->_server->db->tGet ('clients', $_fd)))
+          if ($_fd != $fd && ($_client = $server->db->tGet ('clients', $_fd)))
           {
             $_client->final = 1;
-            $this->_server->db->tSet ('clients', $_fd, $_client);
+            $server->db->tSet ('clients', $_fd, $_client);
             $server->push ($_fd, $json);
           }
         }
       }
 
-      $this->_server->db->lDel ('usersUnique', $userId, $fd);
+      $server->db->lDel ('usersUnique', $userId, $fd);
 
       $this->_log ($fd, 'info',
-        "CLOSE (".$this->_server->db->clients->count().
+        "CLOSE (".$server->db->clients->count().
         " connected clients)", $client->ip);
     }
   }
