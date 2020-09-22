@@ -108,6 +108,8 @@
         $this->help ("Conf `www-system-user` is empty!");
       if (empty ($env['build-path']))
         $this->help ("Conf `build-path` is empty!");
+      if (empty ($env['log-path']))
+        $this->help ("Conf `log-path` is empty!");
       if (empty ($env['target']))
         $this->help ("Conf `target` section is empty!");
       if (!preg_match ('/^local|remote$/', $env['target']['type']))
@@ -543,6 +545,9 @@
       foreach (['WPT_DEV_MODE' => false,
                 'WPT_URL' => $env['url'],
                 'WPT_LOG_PATH' => $env['log-path'],
+                'WPT_LOG_DETAILS' =>
+                  (!empty($env['log-details']) &&
+                   $env['log-details'] == 'true'),
                 'WPT_SERVICE_USER' => $env['service-user'],
                 'WPT_APACHE_RESTART' => $env['cmd']['apache-restart'],
                 'WPT_WOPITS_WS_RESTART' => $env['cmd']['wopits-ws-restart'],

@@ -17,6 +17,9 @@ define ('WPT_SERVICE_USER', "");
 // Wopits log path
 // Example: "/var/log/wopits"
 define ('WPT_LOG_PATH', "");
+// Wopits log details
+// Example: true
+define ('WPT_LOG_DETAILS', "");
 
 // System command to reload apache
 // Example: "systemctl reload apache2;systemctl reload php-fpm.service"

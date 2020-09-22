@@ -46,6 +46,8 @@
       ],
       // Log path
       'log-path' => '/var/log/wopits',
+      // Log details
+      'log-details' => true,
       // WebSocket server
       'websocket' => [
         'server' => [
@@ -145,6 +147,8 @@
       ],
       // Log path
       'log-path' => '/var/log/wopits',
+      // Log details
+      'log-details' => true,
       // WebSocket
       'websocket' => [
         'server' => [
