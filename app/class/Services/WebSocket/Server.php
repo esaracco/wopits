@@ -52,6 +52,10 @@ class Server
     $fd = $req->fd;
     $header = $req->header;
 
+    // If fd does not exist, silently quit.
+    if (!$server->exist ($fd))
+      return;
+
     // Internal wopits client
     if (empty ($header['x-forwarded-server']) &&
         strpos ($header['user-agent'], 'PHPWebSocketClient') !== false)
@@ -88,7 +92,7 @@ class Server
       else
       {
         $this->_log ($fd, 'warning',
-          'UNAUTHORIZED connexion attempt!', $ip, (array)$req);
+          'UNAUTHORIZED connection attempt!', $ip, (array)$req);
 
         $server->disconnect ($fd);
       }
