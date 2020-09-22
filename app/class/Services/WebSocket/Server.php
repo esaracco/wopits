@@ -652,9 +652,8 @@ class Server
       $server->db->internals->del ($fd);
     }
     // Common wopits client
-    else
+    elseif (isset ( ($client = $server->db->tGet ('clients', $fd))->id ))
     {
-      $client = $server->db->tGet ('clients', $fd);
       $userId = $client->id;
       $settings = json_decode ($client->settings);
 
