@@ -652,80 +652,94 @@ class Server
       $server->db->internals->del ($fd);
     }
     // Common wopits client
-    elseif (isset ( ($client = $server->db->tGet ('clients', $fd))->id ))
+    else
     {
-      $userId = $client->id;
-      $settings = json_decode ($client->settings);
-
-      // If user have at least one wall opened.
-      if (!empty ($settings->activeWall))
-      {
-        $wallId = $settings->activeWall;
-
-        // Purge user's actions from edit queue.
-        (new EditQueue([], $client))->removeUser ();
-
-        // Purge from opened walls queue.
-        if (!empty ($settings->openedWalls))
-        {
-          foreach ($settings->openedWalls as $_wallId)
-            $this->_unsetOpenedWalls ($_wallId, $fd);
-        }
-
-        // Purge from active walls queue.
-        $this->_unsetItem ('activeWalls', $wallId, $fd); 
-        $this->_unsetActiveWallsUnique ($wallId, $userId);
-
-        // Push new walls users count.
-        $this->_pushWallsUsersCount ([$wallId]);
-
-        // Leave wall's chat.
-        if (isset (($server->db->jGet ('chatUsers', $wallId))->$fd))
-        {
-          $this->_unsetItem ('chatUsers', $wallId, $fd);
-
-          $_ret = [
-            'method' => 'DELETE',
-            'wall' => ['id' => $wallId],
-            'username' =>$client->username,
-            'action' => 'chat',
-            'internal' => 1,
-            'msg' => '_LEAVE_'
-          ];
-
-          $this->_injectChatUsersData ($wallId, $_ret);
-          $_json = json_encode ($_ret);
-
-          foreach (
-            $server->db->jGet ('openedWalls', $wallId) as $_fd => $_userId)
-          {
-            if ($_fd != $fd)
-              $server->push ($_fd, $_json);
-          }
-        }
-      }
-
-      $server->db->lDel ('usersUnique', $userId, $fd);
+      // Get client infos and delete from cache.
+      $client = $server->db->tGet ('clients', $fd);
       $server->db->clients->del ($fd);
 
-      // Close all current user sessions if any.
-      if (!$client->final)
+      // If closure is from a valid wopits client.
+      if (!empty ($client->id))
       {
-        $_json = json_encode (['action' => 'exitsession']);
+        $userId = $client->id;
+        $settings = json_decode ($client->settings);
 
-        foreach ($server->db->lGet('usersUnique', $userId) as $_fd)
+        // Get user's sessions and delete from cache.
+        $sessions = $server->db->lGet ('usersUnique', $userId);
+        $server->db->lDel ('usersUnique', $userId, $fd);
+
+        // If user have at least one wall opened.
+        if (!empty ( ($wallId = $settings->activeWall) ))
         {
-          $_client = $server->db->tGet ('clients', $_fd);
+          // Purge user's actions from edit queue.
+          (new EditQueue([], $client))->removeUser ();
 
-          $_client->final = 1;
-          $server->db->tSet ('clients', $_fd, $_client);
-          $server->push ($_fd, $_json);
+          // Purge from opened walls queue.
+          if (!empty ( ($ow = $settings->openedWalls) ))
+          {
+            foreach ($ow as $_wallId)
+              $this->_unsetOpenedWalls ($_wallId, $fd);
+          }
+
+          // Purge from active walls queue.
+          $this->_unsetItem ('activeWalls', $wallId, $fd);
+          $this->_unsetActiveWallsUnique ($wallId, $userId);
+
+          // Leave wall's chat.
+          if (isset (($server->db->jGet ('chatUsers', $wallId))->$fd))
+          {
+            $this->_unsetItem ('chatUsers', $wallId, $fd);
+
+            $_ret = [
+              'method' => 'DELETE',
+              'wall' => ['id' => $wallId],
+              'username' =>$client->username,
+              'action' => 'chat',
+              'internal' => 1,
+              'msg' => '_LEAVE_'
+            ];
+
+            $this->_injectChatUsersData ($wallId, $_ret);
+            $_json = json_encode ($_ret);
+
+            foreach (
+              $server->db->jGet ('openedWalls', $wallId) as $_fd => $_userId)
+            {
+              if ($_fd != $fd)
+                $server->push ($_fd, $_json);
+            }
+          }
         }
-      }
 
-      $this->_log ($fd, 'info',
-        "CLOSE (".$server->db->clients->count().
-        " connected clients)", $client->ip);
+        $sessionsCount = count ($sessions);
+
+        // Close all user's sessions.
+        if (!$client->final && $sessionsCount > 1)
+        {
+          $_json = json_encode (['action' => 'exitsession']);
+
+          foreach ($sessions as $_fd)
+          {
+            if ($_fd != $fd &&
+                ($_client = $server->db->tGet ('clients', $_fd)) &&
+                (!$server->db->isEmpty ($_client)))
+            {
+              $_client->final = 1;
+              $server->db->tSet ('clients', $_fd, $_client);
+
+              $server->push ($_fd, $_json);
+            }
+          }
+        }
+
+        // Push new walls users count.
+        if ($sessionsCount == 1)
+          $this->_pushWallsUsersCount ([$wallId]);
+
+        $this->_log ($fd, 'info',
+          "CLOSE (".$server->db->clients->count().
+          " connected clients)", $client->ip);
+      }
     }
   }
 
