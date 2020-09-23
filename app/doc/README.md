@@ -6,7 +6,7 @@ wopits - _A world of post-its_
 <table>
   <tr>
     <td><img src="https://www.wopits.com/img/wopits.png"></td>
-    <td>wopits is a multilingual free software under GPL license with which you can manage all kinds of projects just using sticky notes to share and collaborate with other users simultaneously.</td>
+    <td>A app for managing projects online just using sticky notes to share and collaborate with others.</td>
   </tr>
 </table>
 

@@ -12,7 +12,7 @@
         <p><i><b>w</b>orld <b>o</b>f <b>p</b>ost-<b>its</b></i></p>
 
         <p class="mt-2 mb-2">
-          <?=_("wopits is multilingual application with which you can manage all kinds of projects just using sticky notes to share and collaborate with other users simultaneously.")?>
+          <?=_("A app for managing projects online just using sticky notes to share and collaborate with others.")?>
         </p>
 
         <p class="desc mb-2">
