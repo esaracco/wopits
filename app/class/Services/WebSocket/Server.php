@@ -850,7 +850,7 @@ class Server
   {
     $server = $this->_server;
     $db = $server->db;
-    $haveOld = ($oldSettings && !empty ($oldSettings->openedWalls));
+    $haveOld = !empty ($oldSettings->openedWalls);
 
     if ($haveOld)
     {
