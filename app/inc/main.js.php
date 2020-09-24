@@ -554,6 +554,11 @@
           case "postit":
 
             const $postit = $wall.find("[data-id='postit-"+d.postit.id+"']");
+
+            // Rare case, when user have multiple sessions opened
+            if (!$postit.length)
+              return;
+
             switch (d.action)
             {
               // Insert postit

@@ -142,6 +142,20 @@ $(function()
 
     });
 
+  // Usefull in rare case, when user have multiple sessions opened
+  $(window).focus (
+    function (e)
+    {
+      setTimeout (()=>
+        {
+          const $wall = S.getCurrent ("wall");
+
+          if ($wall)
+            $wall.wall ("refresh");
+
+        }, 150);
+    });
+
   // EVENT hidden.bs.tab on walls tabs
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
