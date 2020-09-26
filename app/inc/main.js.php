@@ -1689,6 +1689,7 @@
             if (directURLData)
               $("<div/>").wall ("loadSpecific", directURLData);
 
+/*FIXME TODO Useful?
             // Keep WS connection and database persistent connection alive and
             // prevent PHP timeout
             // -> 15mn
@@ -1700,6 +1701,7 @@
                 $.get ("/api/user/ping");
 
               }, 15*60*1000);
+*/
 
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)
