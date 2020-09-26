@@ -1,7 +1,5 @@
 #!/usr/bin/php
 <?php
-  putenv ('DEPLOY=1');
-
   $siteConf = realpath (__DIR__.'/../../site-config.template.php');
   $deployConf = __DIR__.'/config.php';
   $appConf = realpath (__DIR__.'/../config.php');

@@ -19,6 +19,7 @@ class Base extends \PDO
   {
     $this->_dbDescription = DbCache::getDBDescription ();
 
+    // Set context from WebSocket server
     if ($ws)
     {
       $this->ws = $ws;
@@ -34,14 +35,13 @@ class Base extends \PDO
     $this->wallId = $args['wallId']??null;
     $this->data = $args['data']??null;
 
-    if (!getenv('DEPLOY'))//WPTPROD-remove
-      parent::__construct (
-        WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [
-          \PDO::ATTR_PERSISTENT => true,
-          \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-          \PDO::ATTR_EMULATE_PREPARES => false,
-          \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-        ]);
+    parent::__construct (
+      WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [
+        \PDO::ATTR_PERSISTENT => true,
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+        \PDO::ATTR_EMULATE_PREPARES => false,
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+      ]);
   }
 
   // Dummy access to the DB, to preserve persistent connection
