@@ -86,18 +86,15 @@ class Server
   
         $db->lAdd ('usersUnique', $userId, $fd);
 
-/*TODO
-        // Ping WS client to check if it is still alive
-        $server->tick (1000, function ($id) use ($server, $fd)
+        // Ping WS client to maintain connection and check if it is still alive
+        $server->tick (30000, function ($id) use ($server, $fd)
         {
-          if (!$server->isEstablished ($fd) ||
-              !$server->push ($fd, 'ping', WEBSOCKET_OPCODE_PING))
+          if (!$server->isEstablished ($fd) || !$server->push ($fd, 'ping'))
           {
             $server->clearTimer ($id);
             $this->onClose ($server, $fd);
           }
         });
-*/
 
         $this->_log ($fd, 'info',
           'OPEN ('.(count($server->connection_list())).' connected clients)',
@@ -122,10 +119,12 @@ class Server
     // Common wopits client
     if (!$db->internals->exist ($fd))
     {
+      /*FIXME TODO Useful?
       // ROUTE ping
       // Nothing special: just keep WS connection with client alive.
       if ($msg->route == 'ping')
         return;
+      */
 
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;

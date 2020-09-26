@@ -367,6 +367,8 @@ class WSocket
     // EVENT message
     this.cnx.onmessage = (e) =>
       {
+        // if this is just a server ping, ignore it
+        if (e.data == "ping") return;
         const data = JSON.parse (e.data||"{}"),
               $wall = (data.wall && data.wall.id) ?
                 $(".wall[data-id='wall-"+data.wall.id+"']") : [],
