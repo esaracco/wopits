@@ -119,12 +119,10 @@ class Server
     // Common wopits client
     if (!$db->internals->exist ($fd))
     {
-      /*FIXME TODO Useful?
       // ROUTE ping
       // Nothing special: just keep WS connection with client alive.
       if ($msg->route == 'ping')
         return;
-      */
 
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
