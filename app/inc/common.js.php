@@ -602,12 +602,6 @@ class WSocket
     }
   }
 
-  // METHOD ping ()
-  ping ()
-  {
-    this.cnx.send ('{"route":"ping","data":""}');
-  }
-
   // METHOD pushResponse ()
   pushResponse (type, response)
   {
