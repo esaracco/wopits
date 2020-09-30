@@ -226,9 +226,13 @@
       $a = ($force) ? 'Installing' : 'Updating';
 
       echo "$a PHP external modules...\n";
+      $this->_exec ('rm -f '.__DIR__.'/../libs/composer.lock');
+      $this->_exec ('rm -rf '.__DIR__.'/../libs/vendor');
       $this->_exec ('composer update -qn --working-dir='.__DIR__.'/../libs');
 
       echo "$a JS external modules...\n";
+      $this->_exec ('rm -f '.__DIR__.'/../../www/libs/yarn.lock');
+      $this->_exec ('rm -rf '.__DIR__.'/../../www/libs/node_modules');
       $this->_exec ('cd '.__DIR__.'/../../www/libs && yarn');
     }
 
