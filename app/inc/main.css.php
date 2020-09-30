@@ -1289,7 +1289,7 @@ button.btn-primary i {
   transform: translate(-50%, -50%);
   border-radius:10px;
   box-shadow: 1px 1px 12px #555;
-  z-index:5017;;
+  z-index:5017;
 }
 
 #img-viewer .close {
