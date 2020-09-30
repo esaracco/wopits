@@ -300,9 +300,8 @@ class Wall extends Base
           SELECT name FROM walls WHERE users_id = ?'))
            ->execute ([$this->userId]);
 
-        if ( ($names = $stmt->fetchAll ()) )
+        if ( ($names = $stmt->fetchAll (\PDO::FETCH_COLUMN, 0)) )
         {
-          $names = array_column ($names, 'name');
           $maxLength = DbCache::getFieldLength ('walls', 'name');
           $v = '';
           $i = 0;
