@@ -11,7 +11,7 @@
   }
 
   // Tell WS clients to load the new release.
-  exec (__DIR__.'/../../services/websocket/client.php -n');
+  exec (__DIR__.'/../../services/websocket/client.php -n --from-script');
 
   // Restart apache.
   exec (WPT_APACHE_RESTART);

@@ -612,10 +612,20 @@ class Server
 
           foreach (['clients', 'openedWalls', 'activeWalls', 'chatUsers'] as $t)
           {
-            $tmp .= "\n* $t:\n";
+            $tmp .= "\n\e[1;34m$t\e[0m:\n";
             $tb = $db->$t;
             for ($tb->rewind (); $tb->current (); $tb->next ())
-              $tmp .= print_r ($tb->get ($tb->key ()), true);
+            {
+              $k = $tb->key ();
+              $item = (array)$tb->get ($k);
+
+              $tmp .= "\e[33m$k\e[0m: ";
+
+              if (count ($item) == 1)
+                $tmp .= print_r(array_shift ($item), true)."\n";
+              else
+                $tmp .= "\n".print_r($item, true);
+            }
           }
 
           $server->push ($fd, $tmp);
@@ -626,14 +636,16 @@ class Server
         case 'stat-users':
 
           $server->push ($fd, ("\n".
-            '* Sessions: '.(count($server->connection_list())-1)."\n".
-            '* Unique users: '.$db->usersUnique->count()."\n".
+            "\e[1;34mSessions\e[0m: ".
+              (count($server->connection_list())-1)."\n".
+            "\e[1;34mUnique users\e[0m: ".$db->usersUnique->count()."\n".
             "----------\n".
-            '* Opened walls: '.$db->openedWalls->count()."\n".
-            '* Active walls: '.$db->activeWalls->count()."\n".
-            '* Unique active walls: '.$db->activeWallsUnique->count()."\n".
+            "\e[1;34mOpened walls\e[0m: ".$db->openedWalls->count()."\n".
+            "\e[1;34mActive walls\e[0m: ".$db->activeWalls->count()."\n".
+            "\e[1;34mUnique active walls\e[0m: ".
+              $db->activeWallsUnique->count()."\n".
             "----------\n".
-            '* Current chats: '.$db->chatUsers->count()."\n"
+            "\e[1;34mCurrent chats\e[0m: ".$db->chatUsers->count()."\n"
           ));
 
           break;

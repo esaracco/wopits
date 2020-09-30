@@ -3,16 +3,21 @@
 
 require_once (__DIR__.'/../../config.php');
 
-$options = getopt ('prnd::s::');
+$options = getopt ('prnd::s::', ['from-script']);
 
 $client = new Wopits\Services\WebSocket\Client ('127.0.0.1', WPT_WS_PORT);
 
 if (!@$client->connect ())
 {
-  fwrite (STDERR,
-    "[\e[1;95;38;5;214mWARNING\e[0m] WebSocket server was not listening on port ".WPT_WS_PORT."\e[0m!\n".
-    "\e[3mIf this is the first time you execute this script, you can ignore this warning.\n".
-    "If not, please investigate!\e[0m\n");
+  if (isset ($options['from-script']) &&
+      (isset ($options['r']) || isset ($options['n'])))
+    fwrite (STDERR,
+      "[\e[1;95;38;5;214mWARNING\e[0m] WebSocket server was not listening on port ".WPT_WS_PORT."\e[0m!\n".
+      "\e[3mIf this is the first time you execute this script, you can ignore this warning.\n".
+      "If not, please investigate!\e[0m\n");
+  else
+    fwrite (STDERR,
+      "[\e[1;95;38;5;214mWARNING\e[0m] WebSocket server is not listening on port ".WPT_WS_PORT."\e[0m!\n");
   exit (1);
 }
 
@@ -53,7 +58,7 @@ elseif (isset ($options['d']))
   echo $client->recv()."\n";
 }
 else
-  exit ("\nUsage: ./client [OPTION]...\n".
+  exit ("\nUsage: ./".basename($argv[0])." [OPTION]...\n".
         "Communicate with wopits WebSocket server.\n\n".
         "  -d\tdump server data\n".
         "  -n\tannounce new release to connected clients\n".
