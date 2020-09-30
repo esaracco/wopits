@@ -96,9 +96,7 @@ class Server
           }
         });
 
-        $this->_log ($fd, 'info',
-          'OPEN ('.(count($server->connection_list())).' connected clients)',
-          $client->ip);
+        $this->_log ($fd, 'info', 'OPEN', $client->ip);
       }
       else
       {
@@ -737,9 +735,7 @@ class Server
         if ($sessionsCount == 1 && $activeWallId)
           $this->_pushWallsUsersCount ([$activeWallId], $fd);
 
-        $this->_log ($fd, 'info',
-          'CLOSE ('.(count($server->connection_list())-1).
-          ') connected clients)', $client->ip);
+        $this->_log ($fd, 'info', 'CLOSE', $client->ip);
       }
     }
   }
