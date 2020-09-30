@@ -150,7 +150,7 @@ $(function()
         {
           const $wall = S.getCurrent ("wall");
 
-          if ($wall)
+          if ($wall.length)
             $wall.wall ("refresh");
 
         }, 150);
