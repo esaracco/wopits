@@ -735,7 +735,7 @@ class Server
 
         // Push new walls users count
         if ($sessionsCount == 1 && $activeWallId)
-          $this->_pushWallsUsersCount ([$activeWallId]);
+          $this->_pushWallsUsersCount ([$activeWallId], $fd);
 
         $this->_log ($fd, 'info',
           'CLOSE ('.(count($server->connection_list())-1).
@@ -977,7 +977,7 @@ class Server
     }
   }
 
-  private function _pushWallsUsersCount (array $diff):void
+  private function _pushWallsUsersCount (array $diff, int $fd = null):void
   {
     $server = $this->_server;
     $db = $server->db;
@@ -991,7 +991,7 @@ class Server
       ]);
 
       foreach ($db->jGet ('activeWalls', $_wallId) as $_fd => $_userId)
-        if ($server->isEstablished ($_fd))
+        if ($_fd != $fd && $server->isEstablished ($_fd))
           $server->push ($_fd, $_json);
     }
   }
