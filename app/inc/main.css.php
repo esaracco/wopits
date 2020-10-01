@@ -640,6 +640,10 @@ select.timezone {
   min-height:200px;
   height:200px;
   min-width:300px;
+  border-right:1px solid #f2f2f2;
+}
+
+.wall tr {
   border:1px solid #f2f2f2;
 }
 

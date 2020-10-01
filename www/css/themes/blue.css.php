@@ -34,7 +34,11 @@ div.postit .postit-header {
 }
 
 .wall td {
-  border-color: #dfefff !important;
+  border-right-color: #dfefff;
+}
+
+.wall tr {
+  border-color: #dfefff;
 }
 
 .modal a:not(.list-group-item):not(.close),

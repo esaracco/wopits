@@ -34,7 +34,11 @@ div.postit .postit-header {
 }
 
 .wall td {
-  border-color: #fdeec0 !important;
+  border-right-color: #fdeec0;
+}
+
+.wall tr {
+  border-color: #fdeec0;
 }
 
 a.nav-link {
