@@ -255,6 +255,8 @@ class User extends Base
 
         $_SESSION['userToken'] = $token;
 
+        $this->refreshUpdateDate ();
+
         return true;
       }
     }
@@ -298,11 +300,11 @@ class User extends Base
     }
   }
 
-  public function ping ():void
+  public function refreshUpdateDate ():void
   {
     $this->executeQuery ('UPDATE users',
-    ['updatedate' => time ()],
-    ['id' => $this->userId]);
+      ['updatedate' => time ()],
+      ['id' => $this->userId]);
   }
 
   public function purgeTokens ():void
@@ -423,6 +425,8 @@ class User extends Base
     try
     {
       $this->_createToken ($data['settings']??null, $remember);
+
+      $this->refreshUpdateDate ();
     }
     catch (\Exception $e)
     {

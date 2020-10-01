@@ -140,7 +140,7 @@
           {
             case 'ping':
 
-              $ret = $User->ping ();
+              $ret = $User->refreshUpdateDate ();
               break;
             
             case 'getFile':
