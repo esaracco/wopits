@@ -17,7 +17,7 @@
       const plugin = this,
             $openWall = plugin.element;
 
-      $openWall.find('input').on("keyup", function (e)
+      $openWall.find('input:eq(0)').on("keyup", function (e)
         {
           plugin.search (this.value.trim ())
         });
@@ -26,8 +26,8 @@
         .on("keypress", function (e)
         {
           if (e.which == 13 &&
-              $openWall.find(".list-group-item-action").length == 1)
-            $openWall.find(".list-group-item-action").click ();
+              $openWall.find(".list-group-item-action:visible").length == 1)
+            $openWall.find(".list-group-item-action:visible").click ();
         });
 
       // EVENT CLICK on Open button.
@@ -36,8 +36,37 @@
         {
           plugin.getChecked().forEach (
             (id) => $("<div/>").wall ("open", {wallId: id}));
+        });
 
-          $openWall.modal ("hide");
+      // EVENT CLICK on filters
+      $openWall.find(".ow-filters input")
+        .on("click", function (e)
+        {
+          switch (e.target.id)
+          {
+            case "ow-all":
+              $openWall.find(".list-group li").show ();
+              break;
+
+            case "ow-recent":
+//TODO
+              break;
+
+            case "ow-shared":
+              $openWall[0].querySelectorAll(".list-group li").forEach ((li)=>
+                {
+                  if (li.dataset.shared === undefined)
+                    li.style.display = "none";
+                  else
+                  {
+                    li.style.display = "block";
+                    li.parentNode.querySelector("li.title[data-idx='"+li.dataset.idx+"']").style.display = "block";
+                  }
+                });
+              break;
+          }
+
+          plugin.controlOpenButton ();
         });
 
       // EVENT CLICK on open wall popup
@@ -60,13 +89,22 @@
       });
     },
 
+    // METHOD controlOpenButton ()
+    controlOpenButton ()
+    {
+      this.element[0].querySelector (".btn-primary").style.display = this.getChecked().length ? "block" : "none";
+    },
+
     // METHOD getChecked ()
     getChecked ()
     {
       let checked = [];
 
-      this.element[0].querySelectorAll("input:checked").forEach (
-        (el) => checked.push (el.id.substring(1)));
+      this.element.find(".list-group input:checked").each (function ()
+        {
+          if ($(this).is(":visible"))
+            checked.push (this.id.substring(1));
+        });
 
       return checked;
     },
@@ -76,8 +114,11 @@
     {
       const $openWall = this.element;
 
+      $openWall[0].dataset.noclosure = 1;
+
+      $openWall.find("#ow-all").prop ("checked", true);
       $openWall.find("input").val ("");
-      $openWall.find("input:checked").prop ("checked", false);
+      $openWall.find(".list-group input:checked").prop ("checked", false);
     },
 
     // METHOD search ()
@@ -109,40 +150,40 @@
 
       walls = walls||wpt_userData.walls;
 
-      $openWall.find(".input-group").hide ();
-      $openWall.find(".btn-primary").hide ();
+      $openWall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
       if (!wpt_userData.walls.length)
         body = "<?=_("No walls available")?>";
       else
       { 
-        $openWall.find(".input-group").show ();
+        $openWall.find(".ow-filters,.input-group").show ();
 
         if (walls.length)
         {
-          let dt = '';
+          let dt = '',
+              i = 0;
 
           walls.forEach ((item) =>
           { 
             if (!$('[data-id="wall-'+item.id+'"]').length)
             {
-              const owner = (item.ownerid != wpt_userData.id) ?
-                `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
+              const shared = (item.ownerid != wpt_userData.id),
+                    owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
               let dt1 = H.getUserDate (item.creationdate);
 
               if (dt1 != dt)
               {
                 dt = dt1;
-                body += `<li class="list-group-item title">${dt1}</li>`;
+                body += `<li class="list-group-item title" data-idx="${++i}">${dt1}</li>`;
               }
   
-              body += `<li data-id="${item.id}" class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
+              body += `<li data-id="${item.id}" data-idx="${i}" ${shared?"data-shared":""} class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
             }
           });
   
           if (!body)
           {
-            $openWall.find(".input-group").hide ();
+            $openWall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
             body = "<i><?=_("All available walls are opened.")?></i>";
           }
@@ -161,8 +202,9 @@
             el.checked = true;
         });
 
-      if (this.getChecked().length)
-        $openWall.find(".btn-primary").show ();
+      $openWall.find(".ow-filters input:checked").click ();
+
+      this.controlOpenButton ();
     }
   };
 

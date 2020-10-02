@@ -12,6 +12,25 @@
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-sm fa-fw"></i></span></div>
           <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus>
         </div>
+
+      <div class="text-center ow-filters">
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="ow-all" name="ow-filter" class="custom-control-input" checked>
+          <label class="custom-control-label" for="ow-all"><?=_("All")?></label>
+        </div>
+<!--//TODO
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="ow-recent" name="ow-filter" class="custom-control-input">
+          <label class="custom-control-label" for="ow-recent"><?=_("Recently viewed")?></label>
+        </div>
+-->
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="ow-shared" name="ow-filter" class="custom-control-input">
+          <label class="custom-control-label" for="ow-shared"><?=_("Shared")?></label>
+        </div>
+        <hr>
+      </div>
+
         <div class="list-group"></div>
       </div>
       <div class="modal-footer">
