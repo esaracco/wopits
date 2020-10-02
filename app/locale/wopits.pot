@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-02 13:38+0200\n"
+        "POT-Creation-Date: 2020-10-02 15:38+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -620,7 +620,7 @@ msgstr  ""
 msgid   "Share..."
 msgstr  ""
 
-msgid   "Shared"
+msgid   "Shared with you"
 msgstr  ""
 
 msgid   "Sharing"
