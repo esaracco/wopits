@@ -129,6 +129,8 @@ $(function()
             share = (isActive && tab.classList.contains ("fa-share")),
             rename = (isActive && !share && !close);
 
+      $(this).parent().find("[data-toggle='tooltip']").tooltip ("hide");
+
       if (share)
         return $("#shareWallPopup").shareWall ("open");
 
@@ -166,8 +168,6 @@ $(function()
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
-      $(this).parent().find("[data-toggle='tooltip']").tooltip ("hide");
-
       document.querySelectorAll(".walls table.wall").forEach (
         (w)=> $(w).wall ("hidePostitsPlugs"));
     });
