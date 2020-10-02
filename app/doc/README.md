@@ -6,7 +6,7 @@ wopits - _A world of post-its_
 <table>
   <tr>
     <td><img src="https://www.wopits.com/img/wopits.png"></td>
-    <td>A app for managing projects online just using sticky notes to share and collaborate with others.</td>
+    <td>A app for managing projects online just using sticky notes to share and collaborate.</td>
   </tr>
 </table>
 
