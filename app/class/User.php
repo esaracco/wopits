@@ -867,7 +867,7 @@ class User extends Base
     return $result;
   }
 
-  private function _isDuplicate (array $args):?array
+  private function _isDuplicate (array $args):?string
   {
     $ret = null;
     $keys = array_keys ($args);
