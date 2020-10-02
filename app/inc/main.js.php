@@ -70,7 +70,7 @@
       }
 
       if (settings.shared)
-        wall0.dataset.shared = 1;
+        plugin.setShared (true);
 
       $wall
         .hide()
@@ -536,11 +536,7 @@
 
       function __refreshWallBasicProperties (d)
       {
-        if (d.shared)
-          wall0.dataset.shared = 1;
-        else
-          wall0.removeAttribute ("data-shared");
-
+        plugin.setShared (d.shared);
         plugin.setName (d.name);
         plugin.setDescription (d.description);
       }
@@ -1355,13 +1351,49 @@
          H.getAccessIcon (this.settings.access);
 
       if (!noIcon && notOwner)
-        html = `<i class="fas fa-user-slash notowner" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
+        html = `<i class="fas fa-user-slash wallname-icon" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
 
       $div.find('span.icon').html (html);
       $div.find('span.val').text (H.noHTML (name));
 
-      if (!noIcon && notOwner)
-        H.enableTooltips ($div.find('span.icon'));
+      if (!noIcon)
+      {
+        if (notOwner)
+          H.enableTooltips ($div.find('span.icon'));
+
+        this.refreshSharedIcon ();
+      }
+    },
+
+    // METHOD setShared ()
+    setShared (isShared)
+    {
+      const wall = this.element[0];
+
+      if (isShared)
+        wall.dataset.shared = 1;
+      else
+        wall.removeAttribute ("data-shared");
+
+      this.refreshSharedIcon ();
+    },
+
+    // METHOD refreshSharedIcon ()
+    refreshSharedIcon ()
+    {
+      const $div = this.settings.tabLink,
+            $span = $div.find ('span.icon');
+
+      if (this.element[0].dataset.shared)
+      {
+        if (!$span.find(".wallname-icon").length)
+        {
+          $span.prepend (`<i class="fas fa-share wallname-icon" data-toggle="tooltip" title="<?=_("You shared this wall")?>"></i>`);
+          H.enableTooltips ($span);
+        }
+      }
+      else
+        $span.find(".wallname-icon").remove ();
     },
 
     // METHOD getDescription ()

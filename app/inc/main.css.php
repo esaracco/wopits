@@ -1436,12 +1436,19 @@ div.postit div.attachmentscount span.wpt-badge {
   color: silver;
 }
 
-.nav-item .icon i.notowner {
+.nav-item .icon i.wallname-icon {
   font-size:0.7rem;
   position:absolute;
-  margin-left:-14px;
   margin-top:-4px;
   opacity:0.6;
+}
+
+.nav-item .icon i.fa-user-slash.wallname-icon {
+  margin-left:-14px;
+}
+
+.nav-item .icon i.fa-share.wallname-icon {
+  margin-left:-10px;
 }
 
 .list-group-item i.fa {

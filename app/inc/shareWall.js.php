@@ -432,7 +432,7 @@
 
           if (d.in.length)
           {
-            $wall[0].dataset.shared = 1;
+            $wall.wall ("setShared", true);
 
             pClass.add ("scroll");
             $share.find(".grp-lb").text ("<?=_("Other available groups:")?>");
@@ -455,7 +455,8 @@
           }
           else
           {
-            $wall[0].removeAttribute ("data-shared");
+            $wall.wall ("setShared", false);
+
             $share.find(".grp-lb").text ("<?=_("Available groups:")?>");
             $wall.find("thead th:eq(0)").html ("&nbsp;");
 
