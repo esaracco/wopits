@@ -59,6 +59,15 @@ img {
   font-weight:bold;
 }
 
+p.project-title {
+  line-height:1rem;
+  font-style:italic;
+}
+
+p.project-title span {
+  font-size:0.8rem;
+}
+
 .accordion {
   font-size:0.9rem;
 }

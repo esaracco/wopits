@@ -9,17 +9,20 @@
       </div>
       <div class="modal-body justify">
 
-        <p><i><b>w</b>orld <b>o</b>f <b>p</b>ost-<b>its</b></i></p>
-
-        <p class="mt-2 mb-2">
-          <?=_("A app for managing projects online just using sticky notes to share and collaborate with others.")?>
+        <p class="project-title">
+          <b>w</b>orld <b>o</b>f <b>p</b>ost-<b>its</b><br>
+          <span class="desc"><?=sprintf(_("developed by %s"), '<a href="https://www.esaracco.fr" target="_blank">Emmanuel Saracco</a>')?></span>
         </p>
 
-        <p class="desc mb-2">
+        <p class="mt-2 mb-3">
+          <?=_("A app for managing projects online just using sticky notes to share and collaborate.")?>
+        </p>
+
+        <p class="desc mb-1">
           <?=sprintf(_("Project source files are hosted on %s and distributed under the %s license."), '<a href="https://github.com/esaracco/wopits" target="_blank">GitHub</a>', '<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPL</a>')?>
         </p>
 
-        <p class="desc mb-2">
+        <p class="desc mb-1">
           <?=sprintf(_("If you need professional hosting or special features, don't hesitate to contact %s."), '<a href="https://www.easter-eggs.com" target="_blank">Easter-eggs</a>')?>
         </p>
 
