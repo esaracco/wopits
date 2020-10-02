@@ -123,13 +123,20 @@ $(function()
   $(document).on("mousedown", ".nav-tabs.walls a.nav-link",
     function (e)
     {
-      const close = $(e.target).hasClass ("close"),
-            rename = (!close && $(this).hasClass ("active"));
+      const tab = e.target,
+            isActive = this.classList.contains ("active"),
+            close = tab.classList.contains ("close"),
+            share = (isActive && tab.classList.contains ("fa-share")),
+            rename = (isActive && !share && !close);
+
+      if (share)
+        return $("#shareWallPopup").shareWall ("open");
 
       if (rename)
-        S.getCurrent("wall").wall ("openPropertiesPopup", {renaming: true});
+        return S.getCurrent("wall")
+                 .wall ("openPropertiesPopup", {renaming: true});
 
-      if (!rename && !close)
+      if (!close)
       {
         const $chatroom = S.getCurrent ("chatroom");
 
