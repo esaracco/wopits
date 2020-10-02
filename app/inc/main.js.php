@@ -179,7 +179,8 @@
 
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
-            if (S.get ("save-opened-walls"))
+            if (S.get ("save-opened-walls") ||
+                !(wpt_userData.settings.recentWalls||[]).length)
             {
               S.unset ("save-opened-walls");
 
@@ -516,7 +517,7 @@
     {
       if (d)
         this._refresh (d);
-      else
+      else if (this.settings.id)
         H.request_ajax (
           "GET",
           "wall/"+this.settings.id,
@@ -817,7 +818,8 @@
         });
       S.unset ("closing-all");
 
-      saveSession && $("#settingsPopup").settings ("saveOpenedWalls");
+      saveSession &&
+        $("#settingsPopup").settings ("saveOpenedWalls", null, false);
     },
 
     // METHOD close ()
@@ -861,7 +863,7 @@
 
       // If we are not massively closing all walls
       if (!S.get ("closing-all"))
-        $("#settingsPopup").settings ("saveOpenedWalls");
+        $("#settingsPopup").settings ("saveOpenedWalls", null, false);
 
       //FIXME
       setTimeout (()=> S.reset (), 250);
@@ -1388,7 +1390,7 @@
       {
         if (!$span.find(".wallname-icon").length)
         {
-          $span.prepend (`<i class="fas fa-share wallname-icon" data-toggle="tooltip" title="<?=_("You shared this wall")?>"></i>`);
+          $span.prepend (`<i class="fas fa-share wallname-icon" data-toggle="tooltip" title="<?=_("This wall is shared")?>"></i>`);
           H.enableTooltips ($span);
         }
       }

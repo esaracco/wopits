@@ -567,6 +567,17 @@ select.timezone {
   max-width:70% !important;
 }
 
+.list-group li.list-group-item-action.first {
+  border-width:1px;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+}
+
+.list-group li.list-group-item-action.last {
+  border-bottom-left-radius: .25rem;
+  border-bottom-right-radius: .25rem;
+}
+
 #openWallPopup .list-group-item .item-infos {
   left:50px;
 }

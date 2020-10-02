@@ -120,24 +120,40 @@
     },
 
     // METHOD saveOpenedWalls ()
-    saveOpenedWalls (activeWall)
+    saveOpenedWalls (activeWall, updateRecent = true)
     {
-      let openedWalls = [];
+      const openedWalls = [],
+            recentWalls = wpt_userData.settings.recentWalls||[];
 
       document.querySelectorAll(".nav-tabs.walls a.nav-link").forEach ((tab)=>
         {
-          const wallId = tab.getAttribute("href").split('-')[1];
+          const wallId = tab.getAttribute("href").split('-')[1],
+                idx = recentWalls.indexOf (wallId);
 
           openedWalls.push (wallId);
 
           if (!activeWall && tab.classList.contains ("active"))
             activeWall = wallId;
+
+          if (idx > -1)
+            recentWalls.splice (idx, 1);
+
+          recentWalls.unshift (wallId);
         });
 
-      this.set ({
+      let args = {
         openedWalls: openedWalls,
         activeWall: (openedWalls.length) ? activeWall : ""
-      });
+      };
+
+      if (updateRecent)
+      {
+        // Display max 10 recent opened walls
+        recentWalls.splice (10);
+        args.recentWalls = recentWalls;
+      }
+
+      this.set (args);
     },
 
     // METHOD set ()

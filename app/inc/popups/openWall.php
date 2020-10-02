@@ -18,12 +18,10 @@
           <input type="radio" id="ow-all" name="ow-filter" class="custom-control-input" checked>
           <label class="custom-control-label" for="ow-all"><?=_("All")?></label>
         </div>
-<!--//TODO
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="ow-recent" name="ow-filter" class="custom-control-input">
-          <label class="custom-control-label" for="ow-recent"><?=_("Recently viewed")?></label>
+          <label class="custom-control-label" for="ow-recent"><?=_("Recently opened")?></label>
         </div>
--->
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="ow-shared" name="ow-filter" class="custom-control-input">
           <label class="custom-control-label" for="ow-shared"><?=_("Shared")?></label>

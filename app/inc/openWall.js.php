@@ -40,29 +40,52 @@
 
       // EVENT CLICK on filters
       $openWall.find(".ow-filters input")
-        .on("click", function (e)
+        .on("click", function (e, auto)
         {
           switch (e.target.id)
           {
             case "ow-all":
-              $openWall.find(".list-group li").show ();
+              $openWall.find(".list-group li.first,.list-group li.last")
+                .removeClass("first last");
+
+              if (!auto)
+                plugin.displayWalls (null, false);
               break;
 
             case "ow-recent":
-//TODO
+              const recentWalls = wpt_userData.settings.recentWalls||[],
+                    walls = [];
+
+              recentWalls.forEach ((wallId) =>
+                  wpt_userData.walls.forEach ((wall) =>
+                    (wall.id == wallId) &&  walls.push (wall)));
+
+              if (!auto)
+                plugin.displayWalls (walls, false);
+
+              $openWall.find(".list-group li.title").hide ();
+              $openWall.find(".list-group li:visible")
+                .first().addClass("first");
               break;
 
             case "ow-shared":
+              if (!auto)
+                plugin.displayWalls (null, false);
+
               $openWall[0].querySelectorAll(".list-group li").forEach ((li)=>
                 {
-                  if (li.dataset.shared === undefined)
-                    li.style.display = "none";
-                  else
+                  if (li.dataset.shared !== undefined)
                   {
                     li.style.display = "block";
-                    li.parentNode.querySelector("li.title[data-idx='"+li.dataset.idx+"']").style.display = "block";
                   }
+                  else
+                    li.style.display = "none";
                 });
+
+              $openWall.find(".list-group li:visible")
+                .first().addClass("first");
+              $openWall.find(".list-group li:visible")
+                .last().addClass("last");
               break;
           }
 
@@ -92,7 +115,8 @@
     // METHOD controlOpenButton ()
     controlOpenButton ()
     {
-      this.element[0].querySelector (".btn-primary").style.display = this.getChecked().length ? "block" : "none";
+      this.element[0].querySelector (".btn-primary").style.display =
+        this.getChecked().length ? "block" : "none";
     },
 
     // METHOD getChecked ()
@@ -117,7 +141,7 @@
       $openWall[0].dataset.noclosure = 1;
 
       $openWall.find("#ow-all").prop ("checked", true);
-      $openWall.find("input").val ("");
+      $openWall.find("input[type='text']").val ("");
       $openWall.find(".list-group input:checked").prop ("checked", false);
     },
 
@@ -142,7 +166,7 @@
     },
 
     // METHOD displayWalls ()
-    displayWalls (walls)
+    displayWalls (walls, recurse = true)
     {
       const $openWall = this.element,
             checked = this.getChecked ();
@@ -160,8 +184,7 @@
 
         if (walls.length)
         {
-          let dt = '',
-              i = 0;
+          let dt = '';
 
           walls.forEach ((item) =>
           { 
@@ -174,14 +197,14 @@
               if (dt1 != dt)
               {
                 dt = dt1;
-                body += `<li class="list-group-item title" data-idx="${++i}">${dt1}</li>`;
+                body += `<li class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li data-id="${item.id}" data-idx="${i}" ${shared?"data-shared":""} class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
+              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
             }
           });
   
-          if (!body)
+          if (!body && $openWall.find("#ow-all")[0].checked)
           {
             $openWall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
@@ -202,7 +225,10 @@
             el.checked = true;
         });
 
-      $openWall.find(".ow-filters input:checked").click ();
+      if (recurse)
+        $openWall.find(".ow-filters input:checked").trigger ("click", true);
+      else
+        $openWall.find("input[type='text']").val ("");
 
       this.controlOpenButton ();
     }
