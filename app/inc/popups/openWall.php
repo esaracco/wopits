@@ -24,7 +24,7 @@
         </div>
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="ow-shared" name="ow-filter" class="custom-control-input">
-          <label class="custom-control-label" for="ow-shared"><?=_("Shared")?></label>
+          <label class="custom-control-label" for="ow-shared"><?=_("Shared with you")?></label>
         </div>
         <hr>
       </div>
