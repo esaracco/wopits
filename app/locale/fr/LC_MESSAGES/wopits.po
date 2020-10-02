@@ -863,7 +863,7 @@ msgstr "Politique de confidentialité"
 msgid ""
 "Project source files are hosted on %s and distributed under the %s license."
 msgstr ""
-"Les fichiers source du projet sont hébergés sur %s et distribués sous "
+"Les fichiers sources du projet sont hébergés sur %s et distribués sous "
 "licence %s."
 
 msgid "Properties..."
