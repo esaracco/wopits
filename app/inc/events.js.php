@@ -144,9 +144,8 @@ $(function()
           $chatroom.chatroom ("closeUsersTooltip");
 
         $("#settingsPopup").settings (
-          "saveOpenedWalls", $(this).attr("href").split("-")[1]);
+          "saveOpenedWalls", $(this).attr("href").split("-")[1], false);
       }
-
     });
 
   // Usefull in rare case, when user have multiple sessions opened

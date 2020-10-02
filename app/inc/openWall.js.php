@@ -58,7 +58,7 @@
 
               recentWalls.forEach ((wallId) =>
                   wpt_userData.walls.forEach ((wall) =>
-                    (wall.id == wallId) &&  walls.push (wall)));
+                    (wall.id == wallId) && walls.push (wall)));
 
               if (!auto)
                 plugin.displayWalls (walls, false);
