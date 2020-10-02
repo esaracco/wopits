@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-02 15:38+0200\n"
+"POT-Creation-Date: 2020-10-02 17:20+0200\n"
 "PO-Revision-Date: 2020-10-02 08:28+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -249,10 +249,10 @@ msgstr ""
 
 msgid ""
 "A app for managing projects online just using sticky notes to share and "
-"collaborate with others."
+"collaborate."
 msgstr ""
 "Une application pour gérer des projets en ligne en utilisant simplement des "
-"post-its pour partager et collaborer avec d'autres."
+"post-its pour partager et collaborer."
 
 #, php-format
 msgid ""
@@ -1366,6 +1366,10 @@ msgstr "mot de passe actuel"
 msgid "day(s) before"
 msgstr "jour(s) avant"
 
+#, php-format
+msgid "developed by %s"
+msgstr "développé par %s"
+
 msgid "email"
 msgstr "email"
 
@@ -1426,6 +1430,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid "Shared"
-#~ msgstr "Partagés"
