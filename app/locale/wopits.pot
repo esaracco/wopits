@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-09-23 09:31+0200\n"
+        "POT-Creation-Date: 2020-10-02 08:26+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,6 +77,9 @@ msgid   "Add relationship"
 msgstr  ""
 
 msgid   "Add row"
+msgstr  ""
+
+msgid   "All"
 msgstr  ""
 
 msgid   "All available walls are opened."
@@ -545,6 +548,9 @@ msgstr  ""
 msgid   "Read only"
 msgstr  ""
 
+msgid   "Recently viewed"
+msgstr  ""
+
 msgid   "Reject sharing"
 msgstr  ""
 
@@ -612,6 +618,9 @@ msgid   "Share with this group"
 msgstr  ""
 
 msgid   "Share..."
+msgstr  ""
+
+msgid   "Shared"
 msgstr  ""
 
 msgid   "Sharing"
@@ -922,6 +931,9 @@ msgstr  ""
 
 #, php-format
 msgid   "You no longer have access to the «%s» wall!"
+msgstr  ""
+
+msgid   "You shared this wall"
 msgstr  ""
 
 msgid   "You will lose your access to the wall.<br>Reject anyway?"

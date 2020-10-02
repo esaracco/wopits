@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-23 09:31+0200\n"
-"PO-Revision-Date: 2020-09-23 09:34+0200\n"
+"POT-Creation-Date: 2020-10-02 08:26+0200\n"
+"PO-Revision-Date: 2020-10-02 08:28+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -298,6 +298,9 @@ msgstr "Ajouter une relation"
 
 msgid "Add row"
 msgstr "Ajouter une ligne"
+
+msgid "All"
+msgstr "Tous"
 
 msgid "All available walls are opened."
 msgstr "Tous les murs disponibles sont ouverts."
@@ -869,6 +872,9 @@ msgstr "Propriétés..."
 msgid "Read only"
 msgstr "Consultation uniquement"
 
+msgid "Recently viewed"
+msgstr "Consultés récemment"
+
 msgid "Reject sharing"
 msgstr "Rejeter le partage"
 
@@ -937,6 +943,9 @@ msgstr "Partager avec ce groupe"
 
 msgid "Share..."
 msgstr "Partager..."
+
+msgid "Shared"
+msgstr "Partagés"
 
 msgid "Sharing"
 msgstr "Partage"
@@ -1298,6 +1307,9 @@ msgstr "Vous n'avez plus accès à certains des murs que vous aviez ouverts!"
 #, php-format
 msgid "You no longer have access to the «%s» wall!"
 msgstr "Vous n'avez plus accès au mur «%s»!"
+
+msgid "You shared this wall"
+msgstr "Vous avez partagé ce mur"
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
 msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
