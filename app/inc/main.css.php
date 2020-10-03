@@ -624,11 +624,11 @@ select.timezone {
 .wall th {
   vertical-align:top;
   padding:10px;
-  border: 1px solid #cecece;
   background:#f1f1f1;
   text-align:center;
   white-space:nowrap;
   font-size:14px;
+  border-right:1px solid #dfdfdf;
 }
 
 .wall th ul.navbar-nav {
@@ -660,11 +660,11 @@ select.timezone {
   min-height:200px;
   height:200px;
   min-width:300px;
-  border-right:1px solid #f2f2f2;
+  border-right:1px solid #dfdfdf;
 }
 
 .wall tr {
-  border:1px solid #f2f2f2;
+  border:1px solid #dfdfdf;
 }
 
 .wall tbody th {
