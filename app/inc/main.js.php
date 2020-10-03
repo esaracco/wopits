@@ -1283,6 +1283,7 @@
 
           $popup.openWall ("reset");
           $popup.openWall ("displayWalls");
+          $popup.openWall ("controlFiltersButtons");
 
           H.openModal ($popup);
         });

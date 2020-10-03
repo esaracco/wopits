@@ -127,18 +127,26 @@
 
       document.querySelectorAll(".nav-tabs.walls a.nav-link").forEach ((tab)=>
         {
-          const wallId = tab.getAttribute("href").split('-')[1],
-                idx = recentWalls.indexOf (wallId);
+          const wallId = tab.getAttribute("href").split('-')[1];
 
           openedWalls.push (wallId);
 
           if (!activeWall && tab.classList.contains ("active"))
             activeWall = wallId;
 
-          if (idx > -1)
-            recentWalls.splice (idx, 1);
+          if (updateRecent)
+          {
+            const idx = recentWalls.indexOf (wallId);
 
-          recentWalls.unshift (wallId);
+            if (idx > -1)
+              recentWalls.splice (idx, 1);
+
+            // Display max 10 recent opened walls
+            if (recentWalls.length >= 10)
+              recentWalls.splice (0, 1);
+
+            recentWalls.unshift (wallId);
+          }
         });
 
       let args = {
@@ -147,11 +155,7 @@
       };
 
       if (updateRecent)
-      {
-        // Display max 10 recent opened walls
-        recentWalls.splice (10);
         args.recentWalls = recentWalls;
-      }
 
       this.set (args);
     },

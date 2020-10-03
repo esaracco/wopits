@@ -42,6 +42,8 @@
       $openWall.find(".ow-filters input")
         .on("click", function (e, auto)
         {
+          let content = false;
+
           switch (e.target.id)
           {
             case "ow-all":
@@ -50,6 +52,8 @@
 
               if (!auto)
                 plugin.displayWalls (null, false);
+
+              content = true;
               break;
 
             case "ow-recent":
@@ -66,6 +70,8 @@
               $openWall.find(".list-group li.title").hide ();
               $openWall.find(".list-group li:visible")
                 .first().addClass("first");
+
+              content = walls.length;
               break;
 
             case "ow-shared":
@@ -76,6 +82,7 @@
                 {
                   if (li.dataset.shared !== undefined)
                   {
+                    content = true;
                     li.style.display = "block";
                   }
                   else
@@ -88,6 +95,10 @@
                 .last().addClass("last");
               break;
           }
+
+          if (!content)
+            $openWall.find (".modal-body .list-group").html (
+              "<span class='text-center'><?=_("No result")?></span>");
 
           plugin.controlOpenButton ();
         });
@@ -110,6 +121,53 @@
           $openWall.modal ("hide");
         }
       });
+    },
+
+    // METHOD controlFiltersButtons ()
+    controlFiltersButtons ()
+    {
+      const $openWall = this.element;
+      let i, tmp, count = 0;
+
+      $openWall.find("#ow-shared,#ow-recent").parent().hide ();
+
+      tmp = $openWall[0].querySelectorAll (".list-group li[data-shared]");
+      if (tmp.length)
+      {
+        let found;
+
+        i = 0;
+        while (
+          i < tmp.length &&
+          !(found =
+              document.querySelector('[data-id="wall-'+tmp[i].dataset.id+'"]')))
+            i++;
+
+        if (!found)
+        {
+          ++count;
+          $openWall.find("#ow-shared").parent().show ();
+        }
+      }
+
+      tmp = wpt_userData.settings.recentWalls;
+      if (tmp.length)
+      {
+        i = 0;
+        while (
+          i < tmp.length &&
+          document.querySelector('[data-id="wall-'+tmp[i]+'"]'))
+            i++;
+
+        if (i != tmp.length)
+        {
+          ++count;
+          $openWall.find("#ow-recent").parent().show ();
+        }
+      }
+
+      if (!count)
+        $openWall.find(".ow-filters").hide ();
     },
 
     // METHOD controlOpenButton ()
@@ -188,7 +246,7 @@
 
           walls.forEach ((item) =>
           { 
-            if (!$('[data-id="wall-'+item.id+'"]').length)
+            if (!document.querySelector ('[data-id="wall-'+item.id+'"]'))
             {
               const shared = (item.ownerid != wpt_userData.id),
                     owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
