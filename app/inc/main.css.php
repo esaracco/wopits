@@ -1134,7 +1134,7 @@ EOC;
   border-radius:3px;
   margin:2px;
   padding:5px;
-  border:1px solid silver;
+  border:1px solid #e6e6e6;
 }
 
 .filters-items div > div {
@@ -1143,7 +1143,7 @@ EOC;
 }
 
 .filters-items .colors > div {
-  border:1px solid silver;
+  border:1px solid #e6e6e6;
   width:20px;
   height:20px;
   border-radius:3px;
@@ -1802,7 +1802,7 @@ button.ui-datepicker-close {
   position:absolute;
   cursor:pointer;
   background-color:#fff;
-  border:1px solid silver;
+  border:1px solid #e6e6e6;
   padding: 3px;
   border-radius:5px;
 }
@@ -1816,7 +1816,7 @@ button.ui-datepicker-close {
   width:20px;
   height:20px;
   margin:3px;
-  border:1px solid silver;
+  border:1px solid #e6e6e6;
   border-radius:3px;
 }
 
