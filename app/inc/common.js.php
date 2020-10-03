@@ -680,6 +680,12 @@ class WHelper
     return $("button[data-target='#main-menu']").is (":visible");
   }
 
+  // METHOD escapeRegex ()
+  escapeRegex (str)
+  {
+    return (str+"").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
   // METHOD quoteRegex ()
   quoteRegex (str)
   {

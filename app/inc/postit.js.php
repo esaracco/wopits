@@ -1468,7 +1468,8 @@
       if (externalRef)
       {
         externalRef.forEach ((src) =>
-          c = c.replace (new RegExp ("[^\-]"+src, "g"), " external-"+src+" "));
+          c = c.replace (new RegExp ("[^\-]"+H.escapeRegex(src), "g"),
+                " external-"+src+" "));
 
         if (content === undefined)
           el.innerHTML = c;
