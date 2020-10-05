@@ -677,7 +677,7 @@ class Server
       {
         $userId = $client->id;
         $settings = json_decode ($client->settings);
-        $activeWallId = $settings->activeWall;
+        $activeWallId = $settings->activeWall??null;
 
         // Get user's sessions and delete from cache.
         $sessions = $db->lGet ('usersUnique', $userId);
