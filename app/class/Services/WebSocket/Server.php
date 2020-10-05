@@ -606,11 +606,12 @@ class Server
           break;
 
         // dump-all
-        case 'dump-all':
+        case 'dump':
 
           $tmp = '';
+          $sections = $msg->section ? [$msg->section] : WS_SERVER_SECTIONS;
 
-          foreach (['clients', 'openedWalls', 'activeWalls', 'chatUsers'] as $t)
+          foreach ($sections as $t)
           {
             $tmp .= "\n\e[1;34m$t\e[0m:\n";
             $tb = $db->$t;

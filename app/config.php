@@ -54,6 +54,10 @@ define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 // Size of the Swoole volatile session tables.
 define ('WPT_SWOOLE_TABLE_SIZE', 1024);
 
+// WebSocket server sections
+define ('WS_SERVER_SECTIONS', [
+  'clients', 'openedWalls', 'activeWalls', 'chatUsers']);
+
 //////////////// This section will be removed after deployment //////////////
 
 //<WPTPROD-remove>
