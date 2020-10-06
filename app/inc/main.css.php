@@ -943,29 +943,56 @@ div.postit .postit-header .title {
   display:inline-block;
 }
 
-div.postit div.postit-menu {
+.postit-menu .btn-circle:last-child {
+  margin-top:-2px;
+  margin-left:-3px;
+}
+
+.postit-menu.right {
   display:none;
   position:absolute;
-  min-width:230px;
-  top:-55px;
+  min-width:250px;
+  top:-53px;
   cursor:pointer;
   z-index:5000;
   left:-5px;
 }
 
-.postit-menu .btn-circle {
+.postit-menu.right .btn-circle {
   float:left;
   width:30px;
   height:30px;
   margin-right:3px;
 }
 
-.postit-menu .btn-circle i {
+.postit-menu.right .btn-circle i {
   margin-left:-2px;
 }
 
-.postit-menu .btn-circle:last-child {
-  margin-top:-2px;
+.postit-menu div.submenu {
+  display:inline-block;
+}
+
+.postit-menu.left {
+  display:none;
+  position:absolute;
+  max-width:70px;
+  min-height:150px;
+  top:-20px;
+  left:-68px;
+  cursor:pointer;
+  z-index:5000;
+}
+
+.postit-menu.left .btn-circle {
+  float:bottom;
+  width:30px;
+  height:30px;
+  margin-bottom:3px;
+}
+
+.postit-menu.left .btn-circle i {
+  margin-left:-2px;
 }
 
 div.postit div.postit-tags {

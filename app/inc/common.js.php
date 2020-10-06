@@ -1290,13 +1290,15 @@ class WHelper
   // METHOD enableTooltips ()
   enableTooltips ($item)
   {
+    const args = {delay: {"show": 500, "hide": 0}};
+
 //    if (!$.support.touch)
 //    {
       $item
         // Enable tooltips on the element.
-        .tooltip()
+        .tooltip(args)
         // Enable tooltips on children.
-        .find("[data-toggle='tooltip']").tooltip ();
+        .find("[data-toggle='tooltip']").tooltip (args);
 //    }
   }
   

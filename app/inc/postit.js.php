@@ -390,6 +390,12 @@
 
               plugin.checkPlugsMenu ();
 
+              const coord = $header[0].getBoundingClientRect ();
+              if ((coord.x||coord.left)+$menu.width()+20 > $(window).width())
+                $menu.removeClass("right").addClass ("left");
+              else
+                $menu.removeClass("left").addClass ("right");
+
               $header.addClass ("menu");
               $btn.switchClass ("far", "fas");
               $menu
@@ -403,7 +409,7 @@
               $btn.switchClass ("fas", "far");
               $menu
                 .removeClass("on")
-                .hide ("fade");
+                .hide ();
               $postit.find(".postit-delete").hide ();
             }
           });
@@ -415,15 +421,15 @@
 
       // Post-it menu
       const $menu = $(`
-        <div class="postit-menu">
+        <div class="postit-menu right">
           <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Delete")?>"><i class="fa-trash fa-fw fas"></i></span>
           <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fa-fw fas"></i></span>
           <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage tags")?>"><i class="fa-tags fa-fw fas"></i></span>
           <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Change background color")?>"><i class="fa-palette fa-fw fas"></i></span>
           <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fa-fw fas"></i></span>
           <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage attachments")?>"><i class="fa-paperclip fa-fw fas"></i></span>
-          <ul data-action="plug" class="navbar-nav mr-auto submenu">
-            <li class="nav-item dropdown">
+          <div data-action="plug" class="navbar-nav mr-auto submenu">
+            <div class="nav-item dropdown">
               <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fa-fw fas"></i></span></a>
               <ul class="dropdown-menu border-0 shadow">
                 <li data-action="add-plug"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("Add relationship")?></a></li>
@@ -431,8 +437,8 @@
                 <li class="dropdown-divider"></li>
                 <li data-action="undo-plug"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-undo-alt"></i> <?=_("Undo")?> <span></span></a></li>
               </ul>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>`);
 
         H.enableTooltips ($menu);
