@@ -618,6 +618,10 @@ select.timezone {
   box-shadow: 0 0 3px 1px #989898;
 }
 
+.btn-clear .fa-broom {
+  margin-left:-3px;
+}
+
 .dropdown-item.disabled i {
   color: #6c757d;
   pointer-events: none;
@@ -1106,21 +1110,13 @@ EOC;
   margin: 0 20px 0 10px;
 }
 
-.chatroom button.erase {
-  position:fixed;
-  margin-top:-10px;
-  padding: 0;
-  background-color: transparent;
-  border: 0;
-}
-
-.chatroom .erase {
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: .5;
+.chatroom .btn-clear {
+  position:absolute;
+  z-index:2;
+  width:30px;
+  height:30px;
+  margin-left:-5px;
+  margin-top:-25px;
 }
 
 .filters {

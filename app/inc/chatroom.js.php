@@ -49,7 +49,7 @@
           <h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2>
           <div>
             <div class="textarea form-control">
-              <button type="button" class="erase"><span><i class="fas fa-broom fa-sm"></i></span></button>
+              <span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span>
               <ul>
 
               </ul>
@@ -86,12 +86,11 @@
           plugin.hide ();
         });
 
-      $chatroom.find(".erase").on("click",
+      $chatroom.find(".btn-clear").on("click",
         function ()
         {
           $(this).parent().find("li").remove ();
         });
-
 
       $chatroom.find("button.btn-primary").on("click",
         function ()
@@ -105,6 +104,8 @@
           $chatroom.find("input").val("");
           $chatroom.chatroom ("setFocus");
         });
+
+      H.enableTooltips ($chatroom);
     },
 
     // METHOD hide ()
