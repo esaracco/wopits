@@ -600,6 +600,24 @@ select.timezone {
   top:-1px;
 }
 
+#openWallPopup .btn-clear {
+  position:absolute;
+  left:50%;
+  right:50%;
+  z-index:2;
+  width:30px;
+  height:30px;
+  margin-left:-30px;
+  margin-top:-34px;
+}
+
+.btn-circle {
+  border-radius: 50% !important;
+  text-align: center;
+  vertical-align: middle;
+  box-shadow: 0 0 3px 1px #989898;
+}
+
 .dropdown-item.disabled i {
   color: #6c757d;
   pointer-events: none;

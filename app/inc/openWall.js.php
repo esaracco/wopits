@@ -30,6 +30,15 @@
             $openWall.find(".list-group-item-action:visible").click ();
         });
 
+      // EVENT CLICK on Clear history button
+      $openWall.find(".btn-clear")
+        .on("click", function ()
+        {
+          $("#settingsPopup").settings ("set", {recentWalls: []});
+          $openWall.find("#ow-all").click ();
+          plugin.controlFiltersButtons ();
+        });
+
       // EVENT CLICK on Open button.
       $openWall.find(".btn-primary")
         .on("click", function ()
@@ -43,6 +52,8 @@
         .on("click", function (e, auto)
         {
           let content = false;
+
+          $openWall.find(".btn-clear").hide ();
 
           switch (e.target.id)
           {
@@ -59,6 +70,8 @@
             case "ow-recent":
               const recentWalls = wpt_userData.settings.recentWalls||[],
                     walls = [];
+
+              $openWall.find(".btn-clear").show ();
 
               recentWalls.forEach ((wallId) =>
                   wpt_userData.walls.forEach ((wall) =>

@@ -29,6 +29,8 @@
         <hr>
       </div>
 
+      <span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span>
+
         <div class="list-group"></div>
       </div>
       <div class="modal-footer">
