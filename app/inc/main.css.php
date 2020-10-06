@@ -929,10 +929,6 @@ div.postit .postit-header {
   box-shadow: 0 0 25px 5px #b1b1b1;
 }
 
-.postit.search-match .postit-menu {
-  border-color:#343a40;
-}
-
 div.postit div.attachmentscount i {
   background:transparent !important;
 }
@@ -950,34 +946,26 @@ div.postit .postit-header .title {
 div.postit div.postit-menu {
   display:none;
   position:absolute;
-  top:-45px;
-  width:30px;
-  margin-left:-30px;
+  min-width:230px;
+  top:-55px;
   cursor:pointer;
   z-index:5000;
-  border-radius:5px;
-  border:2px solid #cecece;
-  box-shadow: 0 0 5px #cecece;
+  left:-5px;
 }
 
-div.postit div.postit-menu > div {
-  text-align:center;
-  margin-top:3px;
+.postit-menu .btn-circle {
+  float:left;
+  width:30px;
+  height:30px;
+  margin-right:3px;
 }
 
-div.postit div.postit-menu i {
-  font-size:1rem;
+.postit-menu .btn-circle i {
+  margin-left:-2px;
 }
 
-div.postit div.postit-menu > div:first-child {
-  margin-top:0;
-  margin-left:-1px;
-}
-
-div.postit div.postit-menu > div:first-child i {
-  text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
-  font-size:1.2rem !important;
-  opacity:0.6;
+.postit-menu .btn-circle:last-child {
+  margin-top:-2px;
 }
 
 div.postit div.postit-tags {
@@ -1587,7 +1575,6 @@ echo <<<EOC
 .modal-header.color-$name h5,
 .modal-footer.color-$name,
 div.postit.color-$name .dates,
-div.postit.color-$name div.postit-menu,
 div.postit.color-$name .postit-header,
 div.postit.color-$name .postit-edit {
   background:$color;

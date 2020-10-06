@@ -27,7 +27,6 @@
 }
 
 div.postit,
-div.postit div.postit-menu,
 div.postit .postit-header {
   border-color:#caecd2;
   box-shadow:0 0 5px #caecd2;
@@ -54,10 +53,6 @@ div.postit-mark {
 .postit.search-match {
   border-color:#28a745;
   box-shadow: 0px 0px 25px 5px #7cd891;
-}
-
-.postit.search-match .postit-menu {
-  border-color:#28a745;
 }
 
 textarea:focus,

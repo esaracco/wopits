@@ -369,7 +369,7 @@
         }
   
       const $btnMenu = $(`
-        <i class="far fa-caret-square-down" data-action="menu"></i>`)
+        <i class="far fa-caret-square-up" data-action="menu"></i>`)
         .on("click", function(e)
           {
             const $btn = $(this),
@@ -394,7 +394,7 @@
               $btn.switchClass ("far", "fas");
               $menu
                 .addClass("on")
-                .show ();
+                .show ("fade");
               $postit.find(".postit-delete").show ();
             }
             else
@@ -403,7 +403,7 @@
               $btn.switchClass ("fas", "far");
               $menu
                 .removeClass("on")
-                .hide ();
+                .hide ("fade");
               $postit.find(".postit-delete").hide ();
             }
           });
@@ -416,15 +416,15 @@
       // Post-it menu
       const $menu = $(`
         <div class="postit-menu">
-          <div><i data-action="delete" class="fa-times fa-fw fas"></i></div>
-          <div><i data-action="edit" class="fa-edit fa-fw fas fa-xs"></i></div>
-          <div><i data-action="tag-picker" class="fa-tags fa-fw fas fa-xs"></i></div>
-          <div><i data-action="color-picker" class="fa-palette fa-fw fas fa-xs"></i></div>
-          <div><i data-action="date-picker" class="fa-hourglass-end fa-fw fas fa-xs"></i></div>
-          <div><i data-action="attachments" class="fa-paperclip fa-fw fas fa-xs"></i></div>
+          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Delete")?>"><i class="fa-trash fa-fw fas"></i></span>
+          <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fa-fw fas"></i></span>
+          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage tags")?>"><i class="fa-tags fa-fw fas"></i></span>
+          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Change background color")?>"><i class="fa-palette fa-fw fas"></i></span>
+          <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fa-fw fas"></i></span>
+          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage attachments")?>"><i class="fa-paperclip fa-fw fas"></i></span>
           <ul data-action="plug" class="navbar-nav mr-auto submenu">
             <li class="nav-item dropdown">
-              <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i data-action="plug" class="fa-bezier-curve fa-fw fas fa-xs"></i></a>
+              <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fa-fw fas"></i></span></a>
               <ul class="dropdown-menu border-0 shadow">
                 <li data-action="add-plug"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("Add relationship")?></a></li>
                 <li data-action="delete-plugs"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete relationships")?></a></li>
@@ -435,11 +435,13 @@
           </ul>
         </div>`);
 
+        H.enableTooltips ($menu);
+
         // Menu events
-        $menu.find(">div").on("click", function(e)
+        $menu.find(">span").on("click", function(e)
           {
-            let $btn = $(e.target),
-                action = $btn[0].dataset.action;
+            const $btn = $(this),
+                  action = $btn[0].dataset.action;
 
             plugin.closePlugMenu ();
 
@@ -448,12 +450,6 @@
             // To prevent race condition with draggable & resizable plugins.
             if (S.get ("still-dragging"))
               return;
-
-            if (!action)
-            {
-              $btn = $btn.find ("i");
-              action = $btn[0].dataset.action;
-            }
 
             // Open modal with read rights only
             if (!writeAccess)
