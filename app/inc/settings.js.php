@@ -120,10 +120,11 @@
     },
 
     // METHOD saveOpenedWalls ()
-    saveOpenedWalls (activeWall, updateRecent = true)
+    saveOpenedWalls (activeWallId, updateRecent = true)
     {
       const openedWalls = [],
             recentWalls = wpt_userData.settings.recentWalls||[];
+      let args = {};
 
       document.querySelectorAll(".nav-tabs.walls a.nav-link").forEach ((tab)=>
         {
@@ -131,31 +132,28 @@
 
           openedWalls.push (wallId);
 
-          if (!activeWall && tab.classList.contains ("active"))
-            activeWall = wallId;
-
-          if (updateRecent)
-          {
-            const idx = recentWalls.indexOf (wallId);
-
-            if (idx > -1)
-              recentWalls.splice (idx, 1);
-
-            // Display max 10 recent opened walls
-            if (recentWalls.length >= 10)
-              recentWalls.splice (0, 1);
-
-            recentWalls.unshift (wallId);
-          }
+          if (!activeWallId && tab.classList.contains ("active"))
+            activeWallId = wallId;
         });
 
-      let args = {
-        openedWalls: openedWalls,
-        activeWall: (openedWalls.length) ? activeWall : ""
-      };
+      args.openedWalls = openedWalls;
+      args.activeWall = (openedWalls.length) ? activeWallId : "";
 
-      if (updateRecent)
+      if (openedWalls.length && updateRecent)
+      {
+        const idx = recentWalls.indexOf (activeWallId);
+
+        if (idx > -1)
+          recentWalls.splice (idx, 1);
+
+        // Display max 10 recent opened walls
+        if (recentWalls.length >= 10)
+          recentWalls.splice (0, 1);
+
+        recentWalls.unshift (activeWallId);
+
         args.recentWalls = recentWalls;
+      }
 
       this.set (args);
     },

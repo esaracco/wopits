@@ -146,7 +146,7 @@ $(function()
           $chatroom.chatroom ("closeUsersTooltip");
 
         $("#settingsPopup").settings (
-          "saveOpenedWalls", $(this).attr("href").split("-")[1], false);
+          "saveOpenedWalls", $(this).attr("href").split("-")[1]);
       }
     });
 

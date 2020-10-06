@@ -863,7 +863,7 @@
 
       // If we are not massively closing all walls
       if (!S.get ("closing-all"))
-        $("#settingsPopup").settings ("saveOpenedWalls", null, false);
+        $("#settingsPopup").settings ("saveOpenedWalls");
 
       //FIXME
       setTimeout (()=> S.reset (), 250);

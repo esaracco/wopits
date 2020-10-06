@@ -20,7 +20,7 @@
         </div>
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="ow-recent" name="ow-filter" class="custom-control-input">
-          <label class="custom-control-label" for="ow-recent"><?=_("Recently opened")?></label>
+          <label class="custom-control-label" for="ow-recent"><?=_("Recently viewed")?></label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="ow-shared" name="ow-filter" class="custom-control-input">
