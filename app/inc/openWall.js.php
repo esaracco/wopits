@@ -34,6 +34,7 @@
       $openWall.find(".btn-clear")
         .on("click", function ()
         {
+          $openWall.find(".btn-clear").tooltip ("hide");
           $("#settingsPopup").settings ("set", {recentWalls: []});
           $openWall.find("#ow-all").click ();
           plugin.controlFiltersButtons ();
