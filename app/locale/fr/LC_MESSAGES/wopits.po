@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 09:21+0200\n"
+"POT-Creation-Date: 2020-10-06 12:23+0200\n"
 "PO-Revision-Date: 2020-10-02 08:28+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -368,6 +368,9 @@ msgstr "Annuler le partage pour ce groupe"
 
 msgid "Chat room"
 msgstr "Salon"
+
+msgid "Clear history"
+msgstr ""
 
 msgid "Clone"
 msgstr "Cloner"
@@ -873,7 +876,7 @@ msgid "Read only"
 msgstr "Consultation uniquement"
 
 msgid "Recently viewed"
-msgstr "Vus récemments"
+msgstr "Vus récemment"
 
 msgid "Reject sharing"
 msgstr "Rejeter le partage"
