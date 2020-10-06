@@ -100,7 +100,10 @@ class Server
       }
       else
       {
-        $this->_log ($fd, 'warning',
+        if ($server->isEstablished ($fd))
+          $server->push ($fd, json_encode (['action' => 'exitsession']));
+        else
+          $this->_log ($fd, 'warning',
           'UNAUTHORIZED connection attempt!', $ip, (array)$req);
 
         $server->disconnect ($fd);
