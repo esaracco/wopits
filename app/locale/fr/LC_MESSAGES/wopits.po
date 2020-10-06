@@ -370,7 +370,7 @@ msgid "Chat room"
 msgstr "Salon"
 
 msgid "Clear history"
-msgstr ""
+msgstr "Effacer l'historique"
 
 msgid "Clone"
 msgstr "Cloner"
