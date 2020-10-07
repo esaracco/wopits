@@ -164,7 +164,7 @@
         }
       }
 
-      tmp = wpt_userData.settings.recentWalls;
+      tmp = wpt_userData.settings.recentWalls||[];
       if (tmp.length)
       {
         i = 0;
