@@ -369,13 +369,13 @@
         }
   
       const $btnMenu = $(`
-        <i class="far fa-caret-square-up" data-action="menu"></i>`)
+        <div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
         .on("click", function(e)
           {
-            const $btn = $(this),
+            const $btn = $(this).find("i"),
                   id = settings.id,
                   $menu = $postit.find (".postit-menu"),
-                  $header = $btn.closest (".postit-header");
+                  $header = $postit.find (".postit-header");
 
             if (!$menu.hasClass ("on"))
             {
@@ -392,7 +392,14 @@
 
               const coord = $header[0].getBoundingClientRect ();
               if ((coord.x||coord.left)+$menu.width()+20 > $(window).width())
-                $menu.removeClass("right").addClass ("left");
+              {
+                $btn
+                  .removeClass("fa-caret-square-up")
+                  .addClass ("fa-caret-square-left");
+                $menu
+                  .removeClass("right")
+                  .addClass ("left");
+              }
               else
                 $menu.removeClass("left").addClass ("right");
 
@@ -401,7 +408,6 @@
               $menu
                 .addClass("on")
                 .show ("fade");
-              $postit.find(".postit-delete").show ();
             }
             else
             {
@@ -411,27 +417,29 @@
                 .removeClass("on")
                 .hide()
                 .removeClass("left").addClass ("right");
-              $postit.find(".postit-delete").hide ();
+                $btn
+                  .removeClass("fa-caret-square-left")
+                  .addClass ("fa-caret-square-up");
             }
           });
   
       if (!writeAccess)
         $btnMenu.css ("visibility", "hidden");
 
-      $btnMenu.prependTo ($postit.find (".postit-header"));
+      $btnMenu.prependTo ($postit);
 
       // Post-it menu
       const $menu = $(`
         <div class="postit-menu right">
-          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Delete")?>"><i class="fa-trash fa-fw fas"></i></span>
-          <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fa-fw fas"></i></span>
-          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage tags")?>"><i class="fa-tags fa-fw fas"></i></span>
-          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Change background color")?>"><i class="fa-palette fa-fw fas"></i></span>
-          <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fa-fw fas"></i></span>
-          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage attachments")?>"><i class="fa-paperclip fa-fw fas"></i></span>
+          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Delete")?>"><i class="fa-trash fas"></i></span>
+          <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fas"></i></span>
+          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage tags")?>"><i class="fa-tags fas"></i></span>
+          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Change background color")?>"><i class="fa-palette fas"></i></span>
+          <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fas"></i></span>
+          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage attachments")?>"><i class="fa-paperclip fas"></i></span>
           <div data-action="plug" class="navbar-nav mr-auto submenu">
             <div class="nav-item dropdown">
-              <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fa-fw fas"></i></span></a>
+              <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fas"></i></span></a>
               <ul class="dropdown-menu border-0 shadow">
                 <li data-action="add-plug"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("Add relationship")?></a></li>
                 <li data-action="delete-plugs"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete relationships")?></a></li>
@@ -1970,7 +1978,7 @@
     closeMenu ()
     {
       if (this.element.find(".postit-menu.on").length)
-        this.element.find(".postit-header [data-action='menu']").click ();
+        this.element.find(".btn-menu").click ();
     }
 
   };

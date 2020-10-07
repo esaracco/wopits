@@ -910,6 +910,17 @@ div.postit {
   /*  user-select: none;*/
 }
 
+.postit .btn-menu {
+  position:absolute;
+  padding:5px;
+  z-index:91;
+  top:-25px;
+}
+
+.postit .btn-menu i {
+  cursor: pointer;
+}
+
 div.postit .postit-header {
   position:absolute;
   font-size:14px;
@@ -917,7 +928,7 @@ div.postit .postit-header {
   background:#ffffc6;
   top:-21px;
   margin-left:-2px;
-  padding:0 5px 0 5px;
+  padding:0 5px 0 30px;
   white-space: nowrap;
   border:2px solid #cecece;
   box-shadow: 0 0 5px #cecece;
@@ -948,6 +959,10 @@ div.postit .postit-header .title {
   margin-left:-3px;
 }
 
+.postit-menu.right .btn-circle:last-child i {
+  margin-left:-2px;
+}
+
 .postit-menu.right {
   display:none;
   position:absolute;
@@ -960,13 +975,9 @@ div.postit .postit-header .title {
 
 .postit-menu.right .btn-circle {
   float:left;
-  width:30px;
-  height:30px;
+  width:32px;
+  height:32px;
   margin-right:3px;
-}
-
-.postit-menu.right .btn-circle i {
-  margin-left:-2px;
 }
 
 .postit-menu div.submenu {
@@ -979,19 +990,18 @@ div.postit .postit-header .title {
   max-width:70px;
   min-height:150px;
   top:-20px;
-  left:-68px;
+  left:-71px;
   cursor:pointer;
   z-index:5000;
 }
 
 .postit-menu.left .btn-circle {
-  float:bottom;
-  width:30px;
-  height:30px;
+  width:32px;
+  height:32px;
   margin-bottom:3px;
 }
 
-.postit-menu.left .btn-circle i {
+.postit-menu.left .btn-circle:last-child i {
   margin-left:-2px;
 }
 
@@ -1672,15 +1682,6 @@ a.download {
 
 input.upload {
   display:none;
-}
-
-div.postit .postit-delete {
-  display:none;
-  float:right;
-  margin-top:-21px;
-  margin-right:-18px;
-  padding:3px;
-  text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
 }
 
 div.postit div.postit-edit {
