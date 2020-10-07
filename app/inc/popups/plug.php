@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="text" class="form-control" placeholder="<?=_("Relationship name")?>" autofocus>
+        <input type="text" class="form-control" placeholder="<?=_("Relationship name")?>" maxlength="<?=Wopits\DbCache::getFieldLength('postits_plugs', 'label')?>"autofocus>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><i class="fas fa-plus"></i> <?=_("Add")?></button>
