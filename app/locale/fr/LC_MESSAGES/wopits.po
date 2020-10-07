@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 12:23+0200\n"
-"PO-Revision-Date: 2020-10-02 08:28+0200\n"
+"POT-Creation-Date: 2020-10-07 11:41+0200\n"
+"PO-Revision-Date: 2020-10-07 11:43+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -365,6 +365,9 @@ msgstr "Abandonner"
 
 msgid "Cancel sharing for this group"
 msgstr "Annuler le partage pour ce groupe"
+
+msgid "Change background color"
+msgstr "Changer la couleur de fond"
 
 msgid "Chat room"
 msgstr "Salon"
@@ -742,6 +745,12 @@ msgstr "Identifiant"
 msgid "Login is not valid"
 msgstr "L'identifiant n'est pas valide"
 
+msgid "Manage attachments"
+msgstr "Gérer les attachements"
+
+msgid "Manage tags"
+msgstr "Gérer les étiquettes"
+
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
 
@@ -883,6 +892,9 @@ msgstr "Rejeter le partage"
 
 msgid "Relationship name"
 msgstr "Nom de la relation"
+
+msgid "Relationships"
+msgstr "Relations"
 
 msgid "Reload needed"
 msgstr "Rechargement nécessaire"
