@@ -127,7 +127,7 @@
 
           $popup[0].dataset.noclosure = true;
 
-          H.displayMsg ({target:$popup, reset: true});
+          H.displayMsg ({target: $popup, reset: true});
 
           switch (field)
           {
@@ -135,7 +135,7 @@
             case "fullname":
             case "email":
 
-              const $input = $popup.find("input"),
+              const $input = $popup.find ("input"),
                     value = $input.val().trim ();
 
               if (value == $popup[0].dataset.oldvalue)
@@ -144,6 +144,7 @@
               if (plugin.checkRequired ($input) && plugin.validForm ($input))
               {
                 let data = {};
+
                 data[field] = value;
                 plugin.updateField (data);
               }
@@ -152,7 +153,7 @@
 
             case "password":
 
-              const $inputs = $popup.find("input");
+              const $inputs = $popup.find ("input");
 
               if (plugin.checkRequired ($inputs) && plugin.validForm ($inputs))
                 plugin.updateField ({
@@ -379,7 +380,7 @@
               });
 
             if (!noclosure)
-              $(".modal:visible").last().modal ("hide");
+              $("#updateOneInputPopup,#changePasswordPopup").modal ("hide");
           }
         });
     }
