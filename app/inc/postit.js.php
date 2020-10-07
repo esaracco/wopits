@@ -429,12 +429,12 @@
       // Post-it menu
       const $menu = $(`
         <div class="postit-menu right">
-          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Delete")?>"><i class="fa-trash fas"></i></span>
+          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Remove")?>"><i class="fa-trash fas"></i></span>
           <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fas"></i></span>
-          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage tags")?>"><i class="fa-tags fas"></i></span>
-          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Change background color")?>"><i class="fa-palette fas"></i></span>
+          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Tags")?>"><i class="fa-tags fas"></i></span>
+          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Background color")?>"><i class="fa-palette fas"></i></span>
           <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fas"></i></span>
-          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Manage attachments")?>"><i class="fa-paperclip fas"></i></span>
+          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Attachments")?>"><i class="fa-paperclip fas"></i></span>
           <div data-action="plug" class="navbar-nav mr-auto submenu">
             <div class="nav-item dropdown">
               <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fas"></i></span></a>
