@@ -294,12 +294,6 @@
       $("#upload-layer").hide ();
     },
 
-    openMenu ()
-    {
-      if (!this.element.find(".btn-menu.fas").length)
-        this.element.find(".btn-menu").click ();
-    },
-
     // METHOD getImgTemplate ()
     getImgTemplate (src)
     {

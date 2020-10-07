@@ -603,7 +603,7 @@
                 plugin.edit (null, () =>
                   {
                     H.openConfirmPopover ({
-                      item: $postit.find("[data-action='menu']"),
+                      item: $postit.find(".btn-menu"),
                       placement: "left",
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                       content: "<?=_("Delete all relationships from this sticky note?")?>",
@@ -1958,13 +1958,6 @@
         if (!this.settings.wall)
           H.raiseError (null, "<?=_("The entire column was deleted while you were editing the sticky note!")?>");
       }
-    },
-
-    // METHOD openMenu ()
-    openMenu ()
-    {
-      if (!this.element.find(".postit-menu.on").length)
-        this.element.find(".postit-header [data-action='menu']").click ();
     },
 
     // METHOD closePlugMenu ()
