@@ -409,7 +409,8 @@
               $btn.switchClass ("fas", "far");
               $menu
                 .removeClass("on")
-                .hide ();
+                .hide()
+                .removeClass("left").addClass ("right");
               $postit.find(".postit-delete").hide ();
             }
           });
