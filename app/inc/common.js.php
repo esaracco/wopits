@@ -634,6 +634,14 @@ class WHelper
     };
   }
 
+  // METHOD getBackgroundColor ()
+  getBackgroundColor (el)
+  {
+    return window.getComputedStyle ?
+      window.getComputedStyle(el, null).getPropertyValue ("background-color") :
+      el.style.backgroundColor;
+  }
+
   // METHOD setAutofocus ()
   setAutofocus ($el)
   {
@@ -925,7 +933,7 @@ class WHelper
           $(document).off ("keydown");
   
           // Remove the layer
-          $(this).remove ();
+          this.remove ();
   
           if (cb)
             cb (e);

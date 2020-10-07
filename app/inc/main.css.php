@@ -59,12 +59,12 @@ img {
   font-weight:bold;
 }
 
-p.project-title {
+.project-title {
   line-height:1rem;
   font-style:italic;
 }
 
-p.project-title span {
+.project-title span {
   font-size:0.8rem;
 }
 
@@ -255,21 +255,6 @@ i.settings {
   text-align:left;
 }
 
-/*
-.tooltip.bs-tooltip-right .arrow:before {
-  border-right-color:#663000 !important;
-}
-.tooltip.bs-tooltip-left .arrow:before {
-    border-left-color:#663000 !important;
-}
-.tooltip.bs-tooltip-bottom .arrow:before {
-    border-bottom-color:#663000 !important;
-}
-.tooltip.bs-tooltip-top .arrow:before {
-    border-top-color:#663000 !important;
-}
-*/
-
 button[data-toggle="tooltip"].help {
   margin:0 0 0 5px;
   padding:0;
@@ -403,7 +388,7 @@ form span.required {
   cursor:pointer;
 }
 
-#accountPopup div.delete {
+#accountPopup .delete {
   font-size:0.8rem;
   text-align:center;
 }
@@ -417,7 +402,7 @@ form span.required {
   color:#555;
 }
 
-div.content-centered {
+.content-centered {
   width:100%;
   text-align:center;
 }
@@ -572,17 +557,17 @@ select.timezone {
   content: " - ";
 }
 
-.list-group li div.item-infos {
+.list-group .item-infos {
   max-width:70% !important;
 }
 
-.list-group li.list-group-item-action.first {
+.list-group .list-group-item-action.first {
   border-width:1px;
   border-top-left-radius: .25rem;
   border-top-right-radius: .25rem;
 }
 
-.list-group li.list-group-item-action.last {
+.list-group .list-group-item-action.last {
   border-bottom-left-radius: .25rem;
   border-bottom-right-radius: .25rem;
 }
@@ -782,7 +767,7 @@ input::-ms-clear {
   display: none;
 }
 
-svg.leader-line text {
+.leader-line text {
   fill-opacity:0 !important;
 }
 
@@ -796,7 +781,7 @@ svg.leader-line text {
   color:#555;
 }
 
-div.plug-label {
+.plug-label {
   z-index:1000;
   position:absolute;
   cursor:pointer;
@@ -810,17 +795,17 @@ div.plug-label {
   margin-left:-4px;
 }
 
-div[data-access="<?=WPT_WRIGHTS_RO?>"] div.plug-label,
-div[data-access="<?=WPT_WRIGHTS_RO?>"] div.plug-label a {
+[data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label,
+[data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label a {
   cursor:auto !important;
 }
 
-div.plug-label > a {
+.plug-label > a {
   color:#bfbfbf;
   text-decoration:none;
 }
 
-div.plug-label:hover {
+.plug-label:hover {
   color:#a2a2a2;
 }
 
@@ -891,7 +876,7 @@ th .submenu .dropdown-menu {
   z-index:5003!important;
 }
 
-div.postit {
+.postit {
   z-index:1010;
   position:absolute !important;
   background:#ffffc6;
@@ -921,7 +906,7 @@ div.postit {
   cursor: pointer;
 }
 
-div.postit .postit-header {
+.postit .postit-header {
   position:absolute;
   font-size:14px;
   border-radius:5px 5px 5px 0;
@@ -940,16 +925,16 @@ div.postit .postit-header {
   box-shadow: 0 0 25px 5px #b1b1b1;
 }
 
-div.postit div.attachmentscount i {
+.postit .attachmentscount i {
   background:transparent !important;
 }
 
-div.postit .postit-header i {
+.postit .postit-header i {
   cursor:pointer;
   margin-right:10px;
 }
 
-div.postit .postit-header .title {
+.postit .postit-header .title {
   font-weight:bold;
   display:inline-block;
 }
@@ -1005,7 +990,7 @@ div.postit .postit-header .title {
   margin-left:-2px;
 }
 
-div.postit div.postit-tags {
+.postit .postit-tags {
   display:none;
   position:absolute;
   border-radius:0 5px 5px 0;
@@ -1017,7 +1002,7 @@ div.postit div.postit-tags {
   line-height: 20px;
 }
 
-div.postit div.postit-tags i {
+.postit .postit-tags i {
   margin-left:-2px;
   background:none !important;
   text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
@@ -1043,7 +1028,7 @@ div.postit div.postit-tags i {
   foreach (WPT_MODULES['tagPicker']['items'] as $item => $color)
   {
 echo <<<EOC
-div.postit div.postit-tags i.fa-$item,
+.postit .postit-tags i.fa-$item,
 #tag-picker i.fa-$item {
   color:$color !important;
 }
@@ -1102,7 +1087,7 @@ EOC;
   opacity:0.5;
 }
 
-.chatroom .textarea ul li.internal {
+.chatroom .textarea .internal {
   font-size:0.7rem;
   font-weight:bold;
   font-style:italic;
@@ -1113,7 +1098,7 @@ EOC;
   color:#555;
 }
 
-.chatroom .textarea ul li.internal.join i {
+.chatroom .textarea .internal.join i {
   color:green !important;
 }
 
@@ -1121,7 +1106,7 @@ EOC;
   color:red !important;
 }
 
-.chatroom button.btn-primary {
+.chatroom .btn-primary {
   margin-top:5px;
   float:right;
 }
@@ -1223,7 +1208,7 @@ EOC;
   font-size: .8rem;
 }
 
-button.btn-primary i {
+.btn-primary i {
   color:white;
 }
 
@@ -1365,13 +1350,13 @@ button.btn-primary i {
   cursor:pointer;
 }
 
-#shareWallPopup div.scroll {
+#shareWallPopup .scroll {
   max-height:300px;
   overflow-y:auto;
   border-radius:5px;
 }
 
-#shareWallPopup div.scroll.one {
+#shareWallPopup .scroll.one {
   overflow-y:unset;
 }
 
@@ -1390,8 +1375,8 @@ button.btn-primary i {
   margin-right:10px;
 }
 
-#shareWallPopup span.nogroup,
-#usersSearchPopup label.nousers-title {
+#shareWallPopup .nogroup,
+#usersSearchPopup .nousers-title {
   font-style:italic;
   opacity:0.6;
 }
@@ -1406,7 +1391,7 @@ div.userscount {
   cursor:pointer;
 }
 
-span.wpt-badge {
+.wpt-badge {
   background-color: #343a40;
   color:white;
   position: absolute;
@@ -1420,7 +1405,7 @@ span.wpt-badge {
   text-align:center;
 }
 
-div.userscount span.wpt-badge {
+div.userscount .wpt-badge {
   left: 15px;
   top:-2px;
 }
@@ -1438,12 +1423,12 @@ th .usersviewcounts {
   margin-left:-20px;
 }
 
-div.usersviewcounts span.wpt-badge,
-.chatroom .usersviewcounts span.wpt-badge {
+div.usersviewcounts .wpt-badge,
+.chatroom .usersviewcounts .wpt-badge {
   font-size:0.6rem;
 }
 
-div.postit div.attachmentscount {
+.postit .attachmentscount {
   position:absolute;
   border-radius:0 5px 5px 0;
   background:pink;
@@ -1456,7 +1441,7 @@ div.postit div.attachmentscount {
   font-size:12px;
 }
 
-div.postit div.attachmentscount span.wpt-badge {
+.postit .attachmentscount .wpt-badge {
   left:12px;
 }
 
@@ -1480,11 +1465,11 @@ div.postit div.attachmentscount span.wpt-badge {
   cursor:pointer;
 }
 
-.modal-body .list-group li span.name {
+.modal-body .list-group span.name {
   margin-left:20px;
 }
 
-.modal-body .list-group li span.desc {
+.modal-body .list-group span.desc {
   font-style:italic;
   opacity:0.5;
 }
@@ -1529,7 +1514,7 @@ div.postit div.attachmentscount span.wpt-badge {
   border: 1px solid rgba(0,0,0,.125);
 }
 
-.result button.closemenu {
+.result .closemenu {
   display:none;
   border-left:1px solid silver;
   border-right:1px solid silver;
@@ -1540,7 +1525,7 @@ div.postit div.attachmentscount span.wpt-badge {
   border-top-right-radius:0;
 }
 
-input.form-control.autocomplete {
+.form-control.autocomplete {
   border-bottom-left-radius:0;
   border-bottom-right-radius:0;
 }
@@ -1611,9 +1596,9 @@ echo <<<EOC
 .modal-header.color-$name,
 .modal-header.color-$name h5,
 .modal-footer.color-$name,
-div.postit.color-$name .dates,
-div.postit.color-$name .postit-header,
-div.postit.color-$name .postit-edit {
+.postit.color-$name .dates,
+.postit.color-$name .postit-header,
+.postit.color-$name .postit-edit {
   background:$color;
   color:#43474a;
 }
@@ -1676,15 +1661,15 @@ i.fa-xs {
   min-height:375px;
 }
 
-a.download {
+.download {
   display:none;
 }
 
-input.upload {
+.upload {
   display:none;
 }
 
-div.postit div.postit-edit {
+.postit .postit-edit {
   position:absolute;
   font-size:12px;
   height:100%;
@@ -1701,7 +1686,7 @@ div.postit div.postit-edit {
   margin:0;
 }
 
-div.postit .dates {
+.postit .dates {
   position:absolute;
   bottom:0;
   left:0;
@@ -1712,54 +1697,54 @@ div.postit .dates {
   border-radius:3px;
 }
 
-div.postit .dates i:before {
+.postit .dates i:before {
  position:absolute;
  top:3px;
 }
 
-div.postit .creation i:before {
+.postit .creation i:before {
   left:4px;
 }
 
-div.postit .end i:first-child:before {
+.postit .end i:first-child:before {
   top:2px;
   left:-20px;
 }
 
-div.postit .end i:before {
+.postit .end i:before {
   left:-5px;
 }
 
-div.postit .end i.fa-times-circle {
+.postit .end i.fa-times-circle {
   display:none;
 }
 
-div.postit.obsolete .dates,
-div.postit.obsolete .dates * {
+.postit.obsolete .dates,
+.postit.obsolete .dates * {
   color:#fff;
   font-weight:bold;
   background-color:red !important;
 }
 
-div.postit .dates div {
+.postit .dates div {
   display:inline-block;
 }
 
-div.postit .creation {
+.postit .creation {
   margin-left:10px;
 }
 
-div.postit .end {
+.postit .end {
   position:absolute;
   right:15px;
   cursor:pointer;
 }
 
-.wall[data-access="<?=WPT_WRIGHTS_RO?>"] div.postit {
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit {
   cursor:pointer;
 }
 
-div.postit .end.with-alert {
+.postit .end.with-alert {
   font-weight:bold;
   text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
 }
@@ -1795,8 +1780,8 @@ button.ui-datepicker-close {
   text-align:center;
 }
 
-#tag-picker > div.selected,
-.filters-items .tags > div.selected {
+#tag-picker > .selected,
+.filters-items .tags > .selected {
   background-color:#dadada;
   border: 1px solid silver;
   border-radius: 5px;
@@ -1862,7 +1847,7 @@ button.ui-datepicker-close {
   margin-right:3px;
 }
 
-.locale-picker > div.selected {
+.locale-picker > .selected {
   background-color:#dadada;
 }
 
@@ -1870,19 +1855,19 @@ button.ui-datepicker-close {
   margin-top:-1px;
 }
 
-#main-menu.nofullview ul.display-section li[data-action^=zoom],
-#main-menu.nofullview ul.display-section .dropdown-divider.volatile {
+#main-menu.nofullview .display-section [data-action^=zoom],
+#main-menu.nofullview .display-section .dropdown-divider.volatile {
   display:none;
 }
 
-#main-menu.noarrows ul.display-section li[data-action=arrows] {
+#main-menu.noarrows .display-section [data-action=arrows] {
   display:none;
 }
 
 @media (max-width:576px) {
   /*FIXME zoom does not work with some mobile browsers*/
-  #main-menu ul.display-section li[data-action^=zoom],
-  #main-menu ul.display-section .dropdown-divider.volatile {
+  #main-menu .display-section [data-action^=zoom],
+  #main-menu .display-section .dropdown-divider.volatile {
     display:none;
   }
   .navbar-nav .dropdown-menu {

@@ -82,7 +82,6 @@
       postit0.dataset.tags = settings.tags || "";
 
       settings._plugs = [];
-      settings._plugColor = "";
 
       const $body = $(`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
 
@@ -129,7 +128,7 @@
           });
 
       if (settings.obsolete)
-        $postit.addClass ("obsolete");
+        postit0.classList.add ("obsolete");
 
       $postit.find(".postit-edit,.postit-header,.dates")
       .on("click", function (e)
@@ -173,9 +172,7 @@
 
                 from.confirmCallback = (label) =>
                   {
-                    const color = plugin.settings._plugColor||
-                           $(".wall th:eq(0)").css("background-color"),
-                          $undo = $start.find (
+                    const $undo = $start.find (
                             ".postit-menu [data-action='undo-plug'] a");
 
                     if (!label)
@@ -184,7 +181,8 @@
                     line.label = label;
                     line.obj.setOptions ({
                       size: 4,
-                      color: color,
+                      color: H.getBackgroundColor (
+                         document.querySelector (".wall th:first-child")),
                       dash: null,
                       middleLabel: LeaderLine.captionLabel({
                         text: label,
@@ -777,12 +775,10 @@
     {
       const plugin = this,
             postit = plugin.element[0],
-            title = postit.querySelector(
-                      ".postit-header span.title").innerText,
-            content = postit.querySelector(
-                        ".postit-edit").innerHTML||"",
-            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>",
-                                         this.settings.access);
+            title = postit.querySelector(".postit-header .title").innerText,
+            content = postit.querySelector(".postit-edit").innerHTML||"",
+            writeAccess =
+              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access);
 
       if (writeAccess)
       {
@@ -792,8 +788,7 @@
           title: (title != "...")?title.replace(/&amp;/g, "&"):""
         });
 
-        $("#postitUpdatePopupTitle")
-          .val (S.get("postit-data").title);
+        $("#postitUpdatePopupTitle").val (S.get("postit-data").title);
 
         //FIXME
         $(".tox-toolbar__overflow").show ();
@@ -878,7 +873,7 @@
         $("body").off("mousemove", _plugRabbit.mouseEvent)
         _plugRabbit.line.remove ();
         _plugRabbit.line = null;
-        $("#plug-rabbit").remove ();
+        document.getElementById("plug-rabbit").remove ();
       }
 
       if (full)
@@ -913,19 +908,20 @@
                   dx: 0.2,
                   dy: 0.2,
                   blur: 1,
-                  color: $(".bg-dark").css ("background-color")
+                  color: H.getBackgroundColor (
+                           document.querySelector (".bg-dark"))
                 },
                 startPlug: "arrow1",
                 endPlug: "arrow1",
-                color: this.settings._plugColor||
-                      $(".wall th:eq(0)").css ("background-color"),
+                color: H.getBackgroundColor (
+                         document.querySelector (".wall th:first-child")),
                 middleLabel: LeaderLine.captionLabel ({
                   text: label,
                   fontSize:"13px"
                 })
               });
 
-      line.dom = document.querySelector ("svg.leader-line:last-child");
+      line.dom = document.querySelector (".leader-line:last-child");
 
       return line;
     },
@@ -933,20 +929,16 @@
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs ()
     {
-      const settings = this.settings,
-            shadowColor = $(".bg-dark").css ("background-color");
-
-      settings._plugColor = $(".wall th:eq(0)").css ("background-color");
-
-      settings._plugs.forEach (
+      this.settings._plugs.forEach (
         plug => plug.obj.setOptions ({
           dropShadow: {
             dx: 0.2,
             dy: 0.2,
             blur: 1,
-            color: shadowColor
+            color: H.getBackgroundColor (document.querySelector (".bg-dark"))
           },
-          color: settings._plugColor
+          color: H.getBackgroundColor (
+                   document.querySelector (".wall th:first-child"))
         }));
     },
 
@@ -1029,7 +1021,7 @@
         svg = $svg[0];
       }
       else
-        svg = $div[0].querySelector ("svg.leader-line[data-id='"+labelId+"']");
+        svg = $div[0].querySelector (".leader-line[data-id='"+labelId+"']");
 
       const text = svg.querySelector ("text"),
             pos = text ? text.getBoundingClientRect () : null;
@@ -1061,17 +1053,17 @@
         (dataPlugsEnd) ? dataPlugsEnd+","+plug.startId : plug.startId;
 
       // Associate SVG line to plug and set its label
-      const $svg = $("svg.leader-line:last-child");
+      const $svg = $(".leader-line:last-child");
       $svg[0].dataset.id = plug.startId+"-"+plug.endId;
       this.addPlugLabel (plug, $svg);
 
       // Register plug on start point postit (current plugin)
       this.settings._plugs.push (plug);
-      $start.addClass ("with-plugs");
+      $start[0].classList.add ("with-plugs");
 
       // Register plug on end point postit
       $end.postit("getSettings")._plugs.push (plug);
-      $end.addClass ("with-plugs");
+      $end[0].classList.add ("with-plugs");
     },
 
     // METHOD defragPlugsArray ()
@@ -1236,7 +1228,7 @@
         {
           plug.obj.position ();
 
-          const label = div.querySelector("svg.leader-line[data-id='"+
+          const label = div.querySelector(".leader-line[data-id='"+
             plug.startId+"-"+plug.endId+"'] text");
 
           if (label)
@@ -1970,7 +1962,7 @@
     // METHOD closeMenu ()
     closeMenu ()
     {
-      if (this.element.find(".postit-menu.on").length)
+      if (this.element[0].querySelector(".postit-menu.on"))
         this.element.find(".btn-menu").click ();
     }
 

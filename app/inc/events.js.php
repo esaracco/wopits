@@ -363,7 +363,6 @@ $(function()
             cb_close ();
           break;
       }
-
     });
 
   // EVENT hidden.bs.modal on popups
@@ -373,12 +372,11 @@ $(function()
       const $popup = $(this),
             $wall = S.getCurrent ("wall"),
             type = $popup[0].dataset.popuptype,
-            openedModals = $(".modal:visible").length,
             $postit = S.getCurrent ("postit"),
             $header = S.getCurrent ("header");
 
       // Prevent child popups from removing scroll to their parent
-      if (openedModals)
+      if ($(".modal:visible").length)
         $("body").addClass ("modal-open");
 
       switch (e.target.id)

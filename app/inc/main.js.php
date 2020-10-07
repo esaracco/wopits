@@ -481,18 +481,18 @@
             $start.postit ("updatePlugLabel", {endId: endId, label: label});
         });
 
-        // Remove obsolete plugs
-        if (!partial)
-          wall.querySelectorAll(".postit.with-plugs").forEach ((postit)=>
-          {
-            $(postit).postit("getSettings")._plugs.forEach ((plug)=>
-              {
-                if (!idsNew[plug.startId+""+plug.endId])
-                  $(wall.querySelector(
-                      ".postit[data-id='postit-"+plug.endId+"']"))
-                    .postit ("removePlug", plug, true);
-              });
-          });
+      // Remove obsolete plugs
+      if (!partial)
+        wall.querySelectorAll(".postit.with-plugs").forEach ((postit)=>
+        {
+          $(postit).postit("getSettings")._plugs.forEach ((plug)=>
+            {
+              if (!idsNew[plug.startId+""+plug.endId])
+                $(wall.querySelector(
+                    ".postit[data-id='postit-"+plug.endId+"']"))
+                  .postit ("removePlug", plug, true);
+            });
+        });
     },
 
     // METHOD hidePostitsPlugs ()
@@ -812,10 +812,8 @@
     {
       // Tell the other methods that we are massively closing the walls
       S.set ("closing-all", true);
-      S.getCurrent("walls").find("table.wall").each (function ()
-        {
-          $(this).wall ("close");
-        });
+      document.querySelectorAll("table.wall").forEach ((wall) =>
+        $(wall).wall ("close"));
       S.unset ("closing-all");
 
       saveSession &&
@@ -826,29 +824,30 @@
     close ()
     {
       const activeTabId = "wall-"+this.settings.id,
-            $activeTab = $('a[href="#'+activeTabId+'"]'),
-            newActiveTabId = ($activeTab.prev().length) ?
-              $activeTab.prev().attr("href") :
-                ($activeTab.next().length) ?
-                  $activeTab.next().attr("href") : null,
+            activeTab = document.querySelector('a[href="#'+activeTabId+'"]'),
+            newActiveTabId =
+              (activeTab.previousElementSibling) ?
+                activeTab.previousElementSibling.getAttribute ("href") :
+                  (activeTab.nextElementSibling) ?
+                    activeTab.nextElementSibling.getAttribute ("href") : null,
             $chatroom = S.getCurrent ("chatroom");
 
       if ($chatroom.is (":visible"))
         $chatroom.chatroom ("leave");
 
-      // If account popup is opend, do not close it: we are dealing with the
+      // If account popup is opened, do not close it: we are dealing with the
       // "invisible mode" option.
       $(".modal.show:not(#accountPopup)").modal ("hide");
 
       this.removePostitsPlugs ();
 
-      $activeTab.remove ();
-      $("#"+activeTabId).remove ();
+      activeTab.remove ();
+      document.getElementById(activeTabId).remove ();
 
       // No more wall to display
-      if (!$(".wall").length)
+      if (!document.querySelector(".wall"))
       {
-        $(".nav.walls").hide ();
+        document.querySelector(".nav.walls").style.display = "none";
 
         this.zoom ({type: "normal", "noalert": true});
         $("#dropdownView,#dropdownEdit").addClass ("disabled");
@@ -1142,7 +1141,7 @@
             S.unset ("newWall");
           }
 
-          $(".nav.walls").show ();
+          document.querySelector(".nav.walls").style.display = "block";
 
           $("#dropdownView,#dropdownEdit").removeClass ("disabled");
 
