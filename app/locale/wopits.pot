@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-07 11:41+0200\n"
+        "POT-Creation-Date: 2020-10-07 21:41+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,10 +110,16 @@ msgstr  ""
 msgid   "Associate a picture"
 msgstr  ""
 
+msgid   "Attachments"
+msgstr  ""
+
 msgid   "Available groups:"
 msgstr  ""
 
 msgid   "Back to standard view"
+msgstr  ""
+
+msgid   "Background color"
 msgstr  ""
 
 msgid   "Bad email address"
@@ -136,9 +142,6 @@ msgid   "Cancel"
 msgstr  ""
 
 msgid   "Cancel sharing for this group"
-msgstr  ""
-
-msgid   "Change background color"
 msgstr  ""
 
 msgid   "Chat room"
@@ -444,12 +447,6 @@ msgstr  ""
 msgid   "Login is not valid"
 msgstr  ""
 
-msgid   "Manage attachments"
-msgstr  ""
-
-msgid   "Manage tags"
-msgstr  ""
-
 msgid   "Manage users"
 msgstr  ""
 
@@ -681,6 +678,9 @@ msgid   "Stop"
 msgstr  ""
 
 msgid   "System error. Please report it to the administrator."
+msgstr  ""
+
+msgid   "Tags"
 msgstr  ""
 
 msgid   "Tags:"

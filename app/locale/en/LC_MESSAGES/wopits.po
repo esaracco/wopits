@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-07 11:41+0200\n"
+"POT-Creation-Date: 2020-10-07 21:41+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -215,10 +215,16 @@ msgstr ""
 msgid "Associate a picture"
 msgstr ""
 
+msgid "Attachments"
+msgstr ""
+
 msgid "Available groups:"
 msgstr ""
 
 msgid "Back to standard view"
+msgstr ""
+
+msgid "Background color"
 msgstr ""
 
 msgid "Bad email address"
@@ -243,9 +249,6 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Cancel sharing for this group"
-msgstr ""
-
-msgid "Change background color"
 msgstr ""
 
 msgid "Chat room"
@@ -568,12 +571,6 @@ msgstr ""
 msgid "Login is not valid"
 msgstr ""
 
-msgid "Manage attachments"
-msgstr ""
-
-msgid "Manage tags"
-msgstr ""
-
 msgid "Manage users"
 msgstr ""
 
@@ -819,6 +816,9 @@ msgid "Stop"
 msgstr ""
 
 msgid "System error. Please report it to the administrator."
+msgstr ""
+
+msgid "Tags"
 msgstr ""
 
 msgid "Tags:"

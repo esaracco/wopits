@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-07 11:41+0200\n"
-"PO-Revision-Date: 2020-10-07 11:43+0200\n"
+"POT-Creation-Date: 2020-10-07 21:41+0200\n"
+"PO-Revision-Date: 2020-10-07 21:41+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -334,11 +334,17 @@ msgstr "Flèches"
 msgid "Associate a picture"
 msgstr "Associer une image"
 
+msgid "Attachments"
+msgstr "Attachements"
+
 msgid "Available groups:"
 msgstr "Groupes disponibles:"
 
 msgid "Back to standard view"
 msgstr "Retour à la vue standard"
+
+msgid "Background color"
+msgstr "Couleur de fond"
 
 msgid "Bad email address"
 msgstr "Mauvaise adresse email"
@@ -365,9 +371,6 @@ msgstr "Abandonner"
 
 msgid "Cancel sharing for this group"
 msgstr "Annuler le partage pour ce groupe"
-
-msgid "Change background color"
-msgstr "Changer la couleur de fond"
 
 msgid "Chat room"
 msgstr "Salon"
@@ -745,12 +748,6 @@ msgstr "Identifiant"
 msgid "Login is not valid"
 msgstr "L'identifiant n'est pas valide"
 
-msgid "Manage attachments"
-msgstr "Gérer les attachements"
-
-msgid "Manage tags"
-msgstr "Gérer les étiquettes"
-
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
 
@@ -1014,6 +1011,9 @@ msgstr "Arrêter"
 
 msgid "System error. Please report it to the administrator."
 msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
+
+msgid "Tags"
+msgstr "Étiquettes"
 
 msgid "Tags:"
 msgstr "Étiquettes:"
@@ -1445,3 +1445,6 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "Manage tags"
+#~ msgstr "Gérer les étiquettes"
