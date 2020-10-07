@@ -1000,6 +1000,7 @@ th .submenu .dropdown-menu {
   padding: 0;
   cursor:pointer;
   line-height: 20px;
+  z-index:90;
 }
 
 .postit .postit-tags i {
