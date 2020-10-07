@@ -342,7 +342,7 @@
       
               if (field)
               {
-                if (k == "visible")
+                if (k == "visible" && wpt_userData.settings.visible != d[k])
                 {
                   const $wall = S.getCurrent ("wall");
 
@@ -380,7 +380,7 @@
               });
 
             if (!noclosure)
-              $("#updateOneInputPopup,#changePasswordPopup").modal ("hide");
+              $(".modal:visible").last().modal ("hide");
           }
         });
     }
