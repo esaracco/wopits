@@ -898,7 +898,7 @@ th .submenu .dropdown-menu {
 .postit .btn-menu {
   position:absolute;
   padding:5px;
-  z-index:91;
+  z-index:93;
   top:-25px;
 }
 
@@ -917,6 +917,7 @@ th .submenu .dropdown-menu {
   white-space: nowrap;
   border:2px solid #cecece;
   box-shadow: 0 0 5px #cecece;
+  z-index:92;
 }
 
 .postit.search-match .postit-header,
@@ -1000,7 +1001,7 @@ th .submenu .dropdown-menu {
   padding: 0;
   cursor:pointer;
   line-height: 20px;
-  z-index:90;
+  z-index:92;
 }
 
 .postit .postit-tags i {
@@ -1680,11 +1681,16 @@ i.fa-xs {
   overflow:auto;
   border-radius:0 1px 1px 1px;
   padding:5px 5px 20px 5px;
+  z-index:92;
 }
 
 .postit-edit p,
 #postitViewPopup .modal-body p {
   margin:0;
+}
+
+.ui-icon-gripsmall-diagonal-se {
+  z-index:92 !important;
 }
 
 .postit .dates {
@@ -1696,6 +1702,7 @@ i.fa-xs {
   box-shadow: 0 -5px 5px -5px #cecece;
   background:#ffffc6;
   border-radius:3px;
+  z-index:92;
 }
 
 .postit .dates i:before {
