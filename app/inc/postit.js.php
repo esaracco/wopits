@@ -247,7 +247,7 @@
                     });
 
                   $("body").on ("mousemove", _plugRabbit.mouseEvent);
-                  postitSettings.wall.find("*:not(.postit)")
+                  $("nav,.tab-pane,th,td,img,a,i,span,button")
                     .on("click", _plugRabbit.cellEvent);
 
                   S.set ("link-from", {id: postitSettings.id, obj: $postit});
@@ -921,7 +921,7 @@
       {
         $(document).off ("keydown", _plugRabbit.escapeEvent);
         $("body").off("mousemove", _plugRabbit.mouseEvent)
-        this.settings.wall.find("*:not(.postit)")
+        $("nav,.tab-pan,th,td,img,a,i,span,button")
           .off("click", _plugRabbit.cellEvent);
 
         _plugRabbit.line.remove ();
