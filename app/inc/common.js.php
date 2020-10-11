@@ -2,7 +2,7 @@
 class Wpt_forms
 {
   // METHOD checkRequired ()
-  checkRequired (fields)
+  checkRequired (fields, displayMsg = true)
   {
     const $form = $(fields[0]).closest ("form");
 
@@ -15,7 +15,7 @@ class Wpt_forms
 
       if ($f.attr("required") && !$f.val().trim().length)
       {
-        this.focusBadField ($f, "<?=_("Required field")?>");
+        this.focusBadField ($f, displayMsg ? "<?=_("Required field")?>":null);
         $f.focus ();
 
         return false;
@@ -34,7 +34,8 @@ class Wpt_forms
 
     $f.focus ();
 
-    $(`<span class="required">${msg}:</span>`).insertBefore ($group);
+    if (msg)
+      $(`<span class="required">${msg}:</span>`).insertBefore ($group);
         
     setTimeout (() => $group.removeClass ("required"), 2000);
   }
@@ -401,7 +402,10 @@ class WSocket
             // refreshwall
             case "refreshwall":
               if ($wall.length && data.wall)
+              {
+                data.wall.isResponse = isResponse;
                 $wall.wall ("refresh", data.wall);
+              }
               break;
 
             // viewcount

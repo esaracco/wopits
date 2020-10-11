@@ -60,12 +60,12 @@ img {
 }
 
 .project-title {
-  line-height:1rem;
+  line-height:1.2rem;
   font-style:italic;
 }
 
 .project-title span {
-  font-size:0.8rem;
+  font-size:0.8rem !important;
 }
 
 .accordion {
@@ -781,6 +781,10 @@ input::-ms-clear {
   color:#555;
 }
 
+#plug-rabbit {
+  position:absolute;
+}
+
 .plug-label {
   z-index:1000;
   position:absolute;
@@ -976,7 +980,7 @@ th .submenu .dropdown-menu {
   max-width:70px;
   min-height:150px;
   top:-20px;
-  left:-71px;
+  left:-72px;
   cursor:pointer;
   z-index:5000;
 }
@@ -985,6 +989,11 @@ th .submenu .dropdown-menu {
   width:32px;
   height:32px;
   margin-bottom:3px;
+  margin-left:3px;
+}
+
+.postit-menu.left .btn-circle:last-child {
+  margin-left:0;
 }
 
 .postit-menu.left .btn-circle:last-child i {
@@ -1441,6 +1450,7 @@ div.usersviewcounts .wpt-badge,
   cursor:pointer;
   line-height: 20px;
   font-size:12px;
+  z-index:92;
 }
 
 .postit .attachmentscount .wpt-badge {

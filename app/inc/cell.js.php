@@ -143,13 +143,6 @@
               // Fix issue with some touch devices
               $(".navbar-nav,.dropdown-menu").collapse ("hide");
             })
-          .on("click", function (e)
-            {
-              const currentPlug = S.get ("link-from");
-
-              if (currentPlug)
-                currentPlug.obj.postit ("cancelPlugAction");
-            })
           // EVENT MOUSEDOWN on cell
           .doubletap(function(e)
             {

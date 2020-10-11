@@ -16,6 +16,13 @@
       _originalObject,
       _plugRabbit = {
         line: null,
+        cellEvent: (e) =>
+          {
+            const currentPlug = S.get ("link-from");
+
+            if (currentPlug)
+              currentPlug.obj.postit ("cancelPlugAction");
+          },
         mouseEvent: (e) =>
           {
             const rabbit = document.getElementById ("plug-rabbit");
@@ -63,6 +70,277 @@
     S.unset ("postit-oldzindex");
   }
 
+  class _Menu
+  {
+    // METHOD constructor ()
+    constructor (postitPlugin)
+    {
+      const $currentMenu = postitPlugin.settings.wall.find (".postit-menu");
+
+      if ($currentMenu.length)
+        $currentMenu.parent().postit ("closeMenu");
+
+      this.postitPlugin = postitPlugin;
+      this.$menu = $(`<?=Wopits\Helper::buildPostitMenu ()?>`);
+
+      this.attachMenuEvents ();
+      this.postitPlugin.element.prepend (this.$menu);
+
+      this.checkPlugsMenu ();
+    }
+
+    // METHOD show ()
+    show ()
+    {
+      H.enableTooltips (this.$menu);
+
+      this.$menu.show ("fade");
+    }
+
+    // METHOD destroy ()
+    destroy ()
+    {
+      this.$menu.remove ();
+    }
+
+    // METHOD checkPlugsMenu ()
+    checkPlugsMenu (resetUndo)
+    {
+      const smenu = this.$menu[0].querySelector (
+                     "li[data-action='delete-plugs'] .dropdown-item");
+
+      if (this.postitPlugin.havePlugs ())
+        smenu.classList.remove ("disabled");
+      else
+        smenu.classList.add ("disabled");
+
+      if (resetUndo)
+        this.postitPlugin.resetPlugsUndo ();
+
+    if (this.postitPlugin.settings.wall.find(".postit").length == 1)
+        this.$menu.find("li[data-action='add-plug'] .dropdown-item")
+          .addClass ("disabled");
+      else
+        this.$menu.find("li[data-action='add-plug'] .dropdown-item")
+          .removeClass ("disabled");
+    }
+
+    // METHOD setPosition ()
+    setPosition (pos)
+    {
+      if (pos == "left")
+        this.$menu.removeClass("right").addClass ("left");
+      else
+        this.$menu.removeClass("left").addClass ("right");
+    }
+
+    // METHOD getWidth ()
+    getWidth ()
+    {
+      return this.$menu.width ();
+    }
+
+    // METHOD attachMenuEvents ()
+    attachMenuEvents ()
+    {
+      const $menu = this.$menu,
+            postitPlugin = this.postitPlugin,
+            $postit = postitPlugin.element,
+            postit0 = $postit[0],
+            postitSettings = postitPlugin.settings,
+            $wall = postitSettings.wall,
+            writeAccess = H.checkAccess (
+              "<?=WPT_WRIGHTS_RW?>", postitSettings.access);
+
+      // Menu events
+      $menu.find(">span")
+        .off().on("click", function(e)
+        {
+          const $btn = $(this),
+                action = $btn[0].dataset.action;
+
+          postitPlugin.closePlugMenu ();
+
+          e.stopImmediatePropagation ();
+
+          // To prevent race condition with draggable & resizable plugins
+          if (S.get ("still-dragging"))
+            return;
+
+          //FIXME Append after very fast drag & click right after
+          if (S.get ("link-from"))
+            postitPlugin.cancelPlugAction (true, false);
+
+          switch (action)
+          {
+            // OPEN post-it edit popup
+            case "edit": return postitPlugin.openPostit ();
+            // OPEN deadline date picker popup
+            case "date-picker": return postitPlugin.openDatePicker ();
+            // OPEN deadline date picker popup
+            case "attachments": return postitPlugin.openAttachments ();
+          }
+
+          postitPlugin.edit (null, () =>
+            {
+              switch (action)
+              {
+                case "delete":
+                  return H.openConfirmPopover ({
+                    item: $postit.find(".btn-menu"),
+                    placement: "right",
+                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                    content: "<?=_("Delete this sticky note?")?>",
+                    cb_close: () => postitPlugin.unedit (),
+                    cb_ok: () => postitPlugin.delete ()
+                  });
+
+                // OPEN tags picker
+                case "tag-picker":
+                  return S.getCurrent("tag-picker").tagPicker ("open", e);
+
+                // OPEN color picker
+                case "color-picker":
+                  return $(".color-picker").colorPicker ("open", e);
+              }
+          });
+        });
+
+      // Menu submenus events
+      $menu
+        .find("ul.dropdown-menu")
+        .off().on("mousedown", function (e)
+        {
+          e.stopImmediatePropagation ();
+        })
+        .find("li")
+        .off().on("click", function(e, d)
+        {
+          const $item = $(this);
+
+          e.stopImmediatePropagation ();
+
+          // Nothing if item menu is disabled (can change dynamically)
+          if ($item.find("a").hasClass ("disabled")) return;
+
+          postitPlugin.closePlugMenu ();
+
+          e = d||e;
+
+          switch (this.dataset.action)
+          {
+            case "add-plug":
+
+              postitPlugin.edit (null, () =>
+                {
+                  $(document)
+                    .off("keydown", _plugRabbit.escapeEvent)
+                    .on ("keydown", _plugRabbit.escapeEvent);
+
+                  _plugRabbit.line = new LeaderLine (
+                    postit0,
+                    $(`<div id="plug-rabbit" style="left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
+                    {
+                      size: 3,
+                      color: "#9b9c9c",
+                      dash: true
+                    });
+
+                  $("body").on ("mousemove", _plugRabbit.mouseEvent);
+                  postitSettings.wall.find("*:not(.postit)")
+                    .on("click", _plugRabbit.cellEvent);
+
+                  S.set ("link-from", {id: postitSettings.id, obj: $postit});
+                });
+
+              break;
+
+            case "delete-plugs":
+
+              postitPlugin.edit (null, () =>
+                {
+                  H.openConfirmPopover ({
+                    item: $postit.find(".btn-menu"),
+                    placement: "left",
+                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                    content: "<?=_("Delete all relationships from this sticky note?")?>",
+                    cb_close: () => postitPlugin.unedit (),
+                    cb_ok: () =>
+                      {
+                        postitPlugin.unedit ();
+
+                        postit0.dataset.undo =
+                          "delete|"+postitPlugin.removePlugs();
+                        $menu.find("[data-action='undo-plug'] a")
+                          .removeClass ("disabled")
+                          .find("span").text ("« <?=_("Delete")?> »");
+                      }
+                    });
+                  });
+
+              break;
+
+            case "undo-plug":
+
+              const [action, ids] = postit0.dataset.undo.split ("|");
+
+              postitPlugin.resetPlugsUndo ();
+
+              if (action == "add")
+              {
+                postitPlugin.edit (null, () =>
+                {
+                  const plugs = postitSettings._plugs;
+
+                  postitPlugin.removePlug (plugs[plugs.length - 1]);
+                  postitPlugin.unedit ();
+                });
+              }
+              else if (action == "delete")
+              {
+                postitPlugin.edit (null, () =>
+                  {
+                    const toSave = {};
+
+                    ids.split(",").forEach ((item) =>
+                    {
+                      const startId = postitSettings.id,
+                            [endId, label] = item.split (";"),
+                            $end = $wall.find (
+                                     ".postit[data-id='postit-"+endId+"']");
+
+                      if ($end.length)
+                      {
+                        toSave[startId] = $postit;
+                        toSave[endId] = $end;
+
+                        postitPlugin.addPlug ({
+                          startId: startId,
+                          endId: endId,
+                          label: label,
+                          obj: postitPlugin.getPlugTemplate (
+                                 postit0, $end[0], label)
+                        });
+                      }
+                      else
+                        H.displayMsg ({
+                          type: "warning",
+                          msg: "<?=_("This item has been deleted")?>"
+                        });
+                    });
+
+                    S.set ("plugs-to-save", toSave);
+
+                    postitPlugin.unedit ();
+                  });
+              }
+
+              break;
+          }
+        });
+    }
+  }
+
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -78,14 +356,13 @@
             writeAccess = H.checkAccess (
               "<?=WPT_WRIGHTS_RW?>", settings.access);
 
+      settings._plugs = [];
+      postit0.dataset.id = "postit-"+settings.id;
       postit0.className = settings.classes || "postit";
       postit0.dataset.tags = settings.tags || "";
 
-      settings._plugs = [];
-
-      const $body = $(`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
-
-      $postit.append ($body);
+      if (settings.obsolete)
+        postit0.classList.add ("obsolete");
 
       $postit
         .css({
@@ -125,100 +402,8 @@
             {
               _resetZIndexData ();
             }
-          });
-
-      if (settings.obsolete)
-        postit0.classList.add ("obsolete");
-
-      $postit.find(".postit-edit,.postit-header,.dates")
-      .on("click", function (e)
-      {
-        const id = plugin.settings.id,
-              from = S.get ("link-from");
-
-        if (from)
-        {
-          e.stopImmediatePropagation ();
-          e.preventDefault ();
-
-          if (from.id != id &&
-              (postit0.dataset.plugs||"").indexOf(from.id) == -1)
-          {
-            plugin.edit ({plugend: true}, ()=>
-              {
-                const $popup = $("#plugPopup"),
-                  $start = from.obj,
-                  line = {
-                    startId: from.id,
-                    endId: id,
-                    obj: plugin.getPlugTemplate ($start[0], postit0)
-                  };
-
-                line.obj.setOptions ({
-                  dropShadow: null,
-                  size: 3,
-                  color: "#bbb",
-                  dash: {animation: true}
-                });
-
-                $start.postit ("addPlug", line);
-                $start.postit ("cancelPlugAction", false);
-
-                from.cancelCallback = () =>
-                  {
-                    $start.postit ("removePlug", line);
-                    $start.postit ("cancelPlugAction");
-                  };
-
-                from.confirmCallback = (label) =>
-                  {
-                    const $undo = $start.find (
-                            ".postit-menu [data-action='undo-plug'] a");
-
-                    if (!label)
-                      label = "...";
-
-                    line.label = label;
-                    line.obj.setOptions ({
-                      size: 4,
-                      color: H.getBackgroundColor (
-                         document.querySelector (".wall th:first-child")),
-                      dash: null,
-                      middleLabel: LeaderLine.captionLabel({
-                        text: label,
-                        fontSize:"13px"
-                      })
-                    });
-
-                    $start.postit ("applyTheme");
-                    $start.postit ("addPlugLabel", line);
-
-                    $start[0].dataset.undo = "add";
-                    $undo.removeClass ("disabled");
-                    $undo.find("span").text ("« <?=_("Add")?> »");
-
-                    $start.postit ("cancelPlugAction");
-                  };
-
-                H.cleanPopupDataAttr ($popup);
-
-                S.set ("link-from", from);
-
-                H.openModal ($popup);
-              });
-          }
-          else
-          {
-            if (from.id != id)
-              H.displayMsg ({
-                type: "warning",
-                msg: "<?=_("This relationship already exists")?>"
-              });
-            else
-              plugin.cancelPlugAction ();
-          }
-        }
-      });
+          })
+        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
 
       if (writeAccess)
       {
@@ -362,363 +547,89 @@
 
           $postit.find(".postit-edit")
             // EVENT doubletap
-            .doubletap (() =>
-              $postit.find(".postit-menu [data-action='edit']").click ());
+            .doubletap (() => plugin.openPostit ());
         }
   
-      const $btnMenu = $(`
-        <div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
-        .on("click", function(e)
-          {
-            const $btn = $(this).find("i"),
-                  id = settings.id,
-                  $menu = $postit.find (".postit-menu"),
-                  $header = $postit.find (".postit-header");
-
-            if (!$menu.hasClass ("on"))
+      // Display postit menu only if user can write
+      if (writeAccess)
+      {
+        const $btnMenu = $(`
+          <div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
+          .on("click", function(e)
             {
-              $wall.wall ("closeAllMenus");
+              const $btn = $(this).find("i"),
+                    id = settings.id,
+                    $header = $postit.find (".postit-header");
 
-              if ($wall.find(".postit").length == 1)
-                $menu.find("li[data-action='add-plug'] .dropdown-item")
-                  .addClass ("disabled");
-              else
-                $menu.find("li[data-action='add-plug'] .dropdown-item")
-                  .removeClass ("disabled");
-
-              plugin.checkPlugsMenu ();
-
-              const coord = $header[0].getBoundingClientRect ();
-              if ((coord.x||coord.left)+$menu.width()+20 > $(window).width())
+              // Create postit menu and show it
+              if (!settings.Menu)
               {
-                $btn
-                  .removeClass("fa-caret-square-up")
-                  .addClass ("fa-caret-square-left");
-                $menu
-                  .removeClass("right")
-                  .addClass ("left");
+                const coord = $header[0].getBoundingClientRect ();
+
+                $wall.wall ("closeAllMenus");
+
+                settings.Menu = new _Menu (plugin);
+
+                if ((coord.x||coord.left)+settings.Menu.getWidth()+20 >
+                      $(window).width())
+                {
+                  $btn
+                    .switchClass ("fa-caret-square-up", "fa-caret-square-left");
+                  settings.Menu.setPosition ("left");
+                }
+                else
+                  settings.Menu.setPosition ("right");
+
+                $header.addClass ("menu");
+                $btn.switchClass ("far", "fas");
+
+                settings.Menu.show ();
               }
+              // Destroy postit menu
               else
-                $menu.removeClass("left").addClass ("right");
-
-              $header.addClass ("menu");
-              $btn.switchClass ("far", "fas");
-              $menu
-                .addClass("on")
-                .show ("fade");
-            }
-            else
-            {
-              $header.removeClass ("menu");
-              $btn.switchClass ("fas", "far");
-              $menu
-                .removeClass("on")
-                .hide()
-                .removeClass("left").addClass ("right");
-                $btn
-                  .removeClass("fa-caret-square-left")
-                  .addClass ("fa-caret-square-up");
-            }
-          });
-  
-      if (!writeAccess)
-        $btnMenu.css ("visibility", "hidden");
-
-      $btnMenu.prependTo ($postit);
-
-      // Post-it menu
-      const $menu = $(`
-        <div class="postit-menu right">
-          <span data-action="delete" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Remove")?>"><i class="fa-trash fas"></i></span>
-          <span data-action="edit" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Edit")?>"><i class="fa-edit fas"></i></span>
-          <span data-action="tag-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Tags")?>"><i class="fa-tags fas"></i></span>
-          <span data-action="color-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Background color")?>"><i class="fa-palette fas"></i></span>
-          <span data-action="date-picker" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Deadline")?>"><i class="fa-hourglass-end fas"></i></span>
-          <span data-action="attachments" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Attachments")?>"><i class="fa-paperclip fas"></i></span>
-          <div data-action="plug" class="navbar-nav mr-auto submenu">
-            <div class="nav-item dropdown">
-              <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="plug" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="<?=_("Relationships")?>"><i class="fa-bezier-curve fas"></i></span></a>
-              <ul class="dropdown-menu border-0 shadow">
-                <li data-action="add-plug"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("Add relationship")?></a></li>
-                <li data-action="delete-plugs"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete relationships")?></a></li>
-                <li class="dropdown-divider"></li>
-                <li data-action="undo-plug"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-undo-alt"></i> <?=_("Undo")?> <span></span></a></li>
-              </ul>
-            </div>
-          </div>
-        </div>`);
-
-        H.enableTooltips ($menu);
-
-        // Menu events
-        $menu.find(">span").on("click", function(e)
-          {
-            const $btn = $(this),
-                  action = $btn[0].dataset.action;
-
-            plugin.closePlugMenu ();
-
-            e.stopImmediatePropagation ();
-
-            // To prevent race condition with draggable & resizable plugins.
-            if (S.get ("still-dragging"))
-              return;
-
-            // Open modal with read rights only
-            if (!writeAccess)
-            {
-              if (!plugin.openAskForExternalRefPopup ({
-                     cb_ok: () =>
-                       {
-                         $wall.wall ("displayExternalRef", 1);
-                         plugin.open ();
-                       }}))
               {
-                plugin.open ();
+                $header.removeClass ("menu");
+                $btn
+                  .switchClass("fas", "far")
+                  .switchClass ("fa-caret-square-left", "fa-caret-square-up");
+
+                settings.Menu.destroy ();
+                delete settings.Menu;
               }
-            }
-            // Open modal with write rights
-            else
-            {
-              //FIXME quand drag speed et click speed apres
-              if (S.get ("link-from"))
-                plugin.cancelPlugAction (true, false);
+            });
 
-              plugin.edit (null, () =>
-                {
-                  switch ($btn[0].dataset.action)
-                  {
-                    case "delete":
+        $btnMenu.prependTo ($postit);
+      }
 
-                      H.openConfirmPopover ({
-                        item: $btnMenu,
-                        placement: "right",
-                        title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                        content: "<?=_("Delete this sticky note?")?>",
-                        cb_close: () => plugin.unedit (),
-                        cb_ok: () => plugin.delete ()
-                      });
-
-                      break;
-      
-                    // OPEN Popup of attachments
-                    case "attachments":
-    
-                      plugin.displayAttachments ();
-    
-                      break;                 
-    
-                    // OPEN post-it edit popup
-                    case "edit":
-
-                      if (!plugin.openAskForExternalRefPopup ({
-                             cb_close: (btn) =>
-                               {
-                                 if (btn != "yes")
-                                   plugin.unedit ();
-                               },
-                             cb_ok: () =>
-                               {
-                                 $wall.wall ("displayExternalRef", 1);
-                                 plugin.open ();
-                               }}))
-                      {
-                        plugin.open ();
-                      }
-
-                      break;
-    
-                    // OPEN tags picker
-                    case "tag-picker":
-
-                      S.getCurrent("tag-picker").tagPicker ("open", e);
-
-                      break;
-    
-                    // OPEN color picker
-                    case "color-picker":
-
-                      $(".color-picker").colorPicker ("open", e);
-
-                      break;
-    
-                    // OPEN date picker
-                    case "date-picker":
-
-                      $("#datePickerPopup").datePicker ("open");
-
-                      break;
-                  }
-              });
-            }
-          });
-
-        // Menu submenus events
-        $menu.find("ul.dropdown-menu li")
-          .on("click", function(e, d)
-          {
-            const $item = $(this);
-
-            e.stopImmediatePropagation ();
-
-            plugin.closePlugMenu ();
-
-            // Nothing if item menu is disabled (can change dynamically)
-            if ($item.find("a").hasClass ("disabled")) return;
-
-            e = d||e;
-
-            switch (this.dataset.action)
-            {
-              case "add-plug":
-
-                plugin.edit (null, () =>
-                  {
-                    $(document)
-                      .off("keydown", _plugRabbit.escapeEvent)
-                      .on ("keydown", _plugRabbit.escapeEvent);
-      
-                    _plugRabbit.line = new LeaderLine (
-                      postit0,
-                      $(`<div id="plug-rabbit" style="position:absolute;left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
-                      {
-                        size: 3,
-                        color: "#9b9c9c",
-                        dash: true
-                      });
-       
-                    $("body")
-                      .off("mousemove", _plugRabbit.mouseEvent)
-                      .on ("mousemove", _plugRabbit.mouseEvent);
-      
-                    S.set ("link-from", {id: settings.id, obj: $postit});
-                  });
-
-                break;
-
-              case "delete-plugs":
-
-                plugin.edit (null, () =>
-                  {
-                    H.openConfirmPopover ({
-                      item: $postit.find(".btn-menu"),
-                      placement: "left",
-                      title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                      content: "<?=_("Delete all relationships from this sticky note?")?>",
-                      cb_close: () => plugin.unedit (),
-                      cb_ok: () =>
-                        {
-                          const removedIds = plugin.removePlugs (),
-                                $undo =
-                                  $menu.find("[data-action='undo-plug'] a");
-
-                          plugin.unedit ();
-
-                          postit0.dataset.undo = "delete|"+removedIds;
-                          $undo.removeClass ("disabled");
-                          $undo.find("span").text ("« <?=_("Delete")?> »");
-                        }
-                      });
-                    });
-
-                break;
-
-              case "undo-plug":
-
-                const [action, ids] = postit0.dataset.undo.split ("|");
-
-                plugin.resetPlugsUndo ();
-
-                if (action == "add")
-                {
-                  plugin.edit (null, () =>
-                  {
-                    const plugs = plugin.settings._plugs;
-
-                    plugin.removePlug (plugs[plugs.length - 1]);
-                    plugin.unedit ();
-                  });
-                }
-                else if (action == "delete")
-                {
-                  plugin.edit (null, () =>
-                    {
-                      const toSave = {};
-
-                      ids.split(",").forEach ((item) =>
-                      {
-                        const startId = plugin.settings.id,
-                              [endId, label] = item.split (";"),
-                              $end = $wall.find (
-                                       ".postit[data-id='postit-"+endId+"']");
-  
-                        if ($end.length)
-                        {
-                          toSave[startId] = $postit;
-                          toSave[endId] = $end;
-
-                          plugin.addPlug ({
-                            startId: startId,
-                            endId: endId,
-                            label: label,
-                            obj: plugin.getPlugTemplate (
-                                   postit0, $end[0], label)
-                          });
-                        }
-                        else
-                          H.displayMsg ({
-                            type: "warning",
-                            msg: "<?=_("This item has been deleted")?>"
-                          });
-                      });
-
-                      S.set ("plugs-to-save", toSave);
-
-                      plugin.unedit ();
-                    });
-                }
-
-                break;
-            }
-          });
-
-      const $attachmentscount = $(`<div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div>`)
+      // Add attachment count and tags to postit
+      $postit
+        .append($(`<div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div>`)
         .on("click", function ()
           {
             if (writeAccess)
-              $postit.find(".postit-menu [data-action='attachments']").click ();
+              plugin.openAttachments ();
             else
             {
               plugin.setCurrent ();
               plugin.displayAttachments ();
             }
-          });
-  
-      const $tags = $(`<div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`);
+          }))
+        .append(`<div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
-        $tags.on("mousedown",
-          function (e)
+      {
+        // EVENT mousedown on tags
+        $postit.find(".postit-tags")
+          .on("mousedown", function (e)
           {
             e.stopImmediatePropagation ();
 
             plugin.edit (null, () =>
               S.getCurrent("tag-picker").tagPicker ("open", e));
           });
-      else
-        $menu.css ("visibility", "hidden");
-  
-      postit0.dataset.id = "postit-"+settings.id;
-    
-      $postit
-        .append($attachmentscount)
-        .append($tags)
-        .prepend($menu);
 
-      if (writeAccess)
-      {
-        $postit
-        .find(".dates .end")
+        // EVENT click on dates
+        $postit.find(".dates .end")
           .on("click", function(e)
             {
               const $item = $(e.target);
@@ -737,9 +648,10 @@
                 });
               }
               else
-                $menu.find ("i.fa-hourglass-end").click ();
+                plugin.openDatePicker ()
             });
 
+        // Make postit title editable
         $postit.find(".title").editable ({
           wall: $wall,
           container: $postit.find (".postit-header"),
@@ -759,15 +671,154 @@
         });
       }
       else
+        // EVENT click on postit
         $postit.find(".postit-edit,.postit-header,.postit-tags,.dates")
-          // EVENT click
-          .click (() =>
-            $postit.find(".postit-menu [data-action='edit']").click ());
+          .click (function ()
+          {
+            if (!S.get ("still-dragging"))
+              plugin.openPostit ();
+          });
+
+      // EVENT click on postit to create relationship
+      $postit.find(".postit-edit,.postit-header,.dates")
+        .click (function (e)
+        {
+          const id = plugin.settings.id,
+                from = S.get ("link-from");
+
+          if (from)
+          {
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
+
+            if (from.id != id &&
+                (postit0.dataset.plugs||"").indexOf(from.id) == -1)
+            {
+              plugin.edit ({plugend: true}, ()=>
+                {
+                  const $popup = $("#plugPopup"),
+                        $start = from.obj,
+                        line = {
+                          startId: from.id,
+                          endId: id,
+                          obj: plugin.getPlugTemplate ($start[0], postit0)
+                        };
+
+                  line.obj.setOptions ({
+                    dropShadow: null,
+                    size: 3,
+                    color: "#bbb",
+                    dash: {animation: true}
+                  });
+
+                  $start.postit ("addPlug", line);
+                  $start.postit ("cancelPlugAction", false);
+
+                  from.cancelCallback = () =>
+                    {
+                      $start.postit ("removePlug", line);
+                      $start.postit ("cancelPlugAction");
+                    };
+
+                  from.confirmCallback = (label) =>
+                    {
+                      const $undo = $start.find (
+                              ".postit-menu [data-action='undo-plug'] a");
+
+                      if (!label)
+                        label = "...";
+
+                      line.label = label;
+                      line.obj.setOptions ({
+                        size: 4,
+                        color: H.getBackgroundColor (
+                           document.querySelector (".wall th:first-child")),
+                        dash: null,
+                        middleLabel: LeaderLine.captionLabel({
+                          text: label,
+                          fontSize:"13px"
+                        })
+                      });
+
+                      $start.postit ("applyTheme");
+                      $start.postit ("addPlugLabel", line);
+
+                      $start[0].dataset.undo = "add";
+                      $undo.removeClass ("disabled");
+                      $undo.find("span").text ("« <?=_("Add")?> »");
+
+                      $start.postit ("cancelPlugAction");
+                    };
+
+                  H.cleanPopupDataAttr ($popup);
+
+                  S.set ("link-from", from);
+
+                  H.openModal ($popup);
+                });
+            }
+            else
+            {
+              if (from.id != id)
+                H.displayMsg ({
+                  type: "warning",
+                  msg: "<?=_("This relationship already exists")?>"
+                });
+              else
+                plugin.cancelPlugAction ();
+            }
+          }
+        });
 
       if (settings.creationdate)
         //FIXME setTimeout ()
         setTimeout (() => plugin.update ($.extend (settings, {init: true})),
           !!settings.isNewCell ? 150 : 0);
+    },
+
+    // METHOD openAttachments ()
+    openAttachments ()
+    {
+      this.edit (null, () => this.displayAttachments ());
+    },
+
+    // METHOD openDatePicker ()
+    openDatePicker ()
+    {
+      this.edit (null, () => $("#datePickerPopup").datePicker ("open"));
+    },
+
+    // METHOD openPostit ()
+    openPostit ()
+    {
+      const writeAccess = H.checkAccess (
+              "<?=WPT_WRIGHTS_RW?>", this.settings.access);
+
+      // Open modal with read rights only
+      if (!writeAccess)
+      {
+        if (!this.openAskForExternalRefPopup ({
+               cb_ok: () =>
+               {
+                 $wall.wall ("displayExternalRef", 1);
+                 this.open ()}}))
+            {
+              this.open ();
+            }
+       }
+       else
+         this.edit (null, () =>
+           {
+             if (!this.openAskForExternalRefPopup ({
+                    cb_close: (btn) => (btn != "yes") && this.unedit (),
+                    cb_ok: () =>
+                    {
+                      this.settings.wall.wall ("displayExternalRef", 1);
+                      this.open ()}}))
+              {
+                this.open ();
+              }
+           });
     },
 
     // METHOD open ()
@@ -869,10 +920,13 @@
       if (_plugRabbit.line)
       {
         $(document).off ("keydown", _plugRabbit.escapeEvent);
-
         $("body").off("mousemove", _plugRabbit.mouseEvent)
+        this.settings.wall.find("*:not(.postit)")
+          .off("click", _plugRabbit.cellEvent);
+
         _plugRabbit.line.remove ();
         _plugRabbit.line = null;
+
         document.getElementById("plug-rabbit").remove ();
       }
 
@@ -954,28 +1008,22 @@
     // METHOD resetPlugsUndo ()
     resetPlugsUndo ()
     {
-      this.settings.wall[0].querySelectorAll(".postit").forEach ((postit)=>
-        {
-          const link = postit.querySelector (
-                         ".postit-menu [data-action='undo-plug'] a");
+      const postit = this.element[0],
+            link = postit.querySelector (
+                     ".postit-menu [data-action='undo-plug'] a");
 
-          postit.dataset.undo = "";
+      if (!link) return;
 
-          link.classList.add ("disabled");
-          link.querySelector("span").innerText = "";
-        });
+      postit.dataset.undo = "";
+
+      link.classList.add ("disabled");
+      link.querySelector("span").innerText = "";
     },
 
     // METHOD checkPlugsMenu ()
-    checkPlugsMenu ()
+    checkPlugsMenu (resetUndo)
     {
-      const menu = this.element.find (
-        ".postit-menu li[data-action='delete-plugs'] .dropdown-item")[0];
-
-      if (this.havePlugs ())
-        menu.classList.remove ("disabled");
-      else
-        menu.classList.add ("disabled");
+      this.settings.Menu.checkPlugsMenu (resetUndo);
     },
 
     // METHOD updatePlugLabel ()
@@ -1106,7 +1154,7 @@
     // METHOD removePlug ()
     removePlug (plug, noedit)
     {
-      let toDefrag = {};
+      const toDefrag = {};
 
       this.resetPlugsUndo ();
 
@@ -1955,17 +2003,18 @@
     // METHOD closePlugMenu ()
     closePlugMenu ()
     {
-      if (this.element.find(".postit-menu.on").length)
-        this.element.find(".postit-menu .dropdown-menu").dropdown ("hide");
+      const menu = this.element[0].querySelector (".postit-menu");
+
+      if (menu)
+        $(menu.querySelector(".dropdown-menu")).dropdown ("hide");
     },
 
     // METHOD closeMenu ()
     closeMenu ()
     {
-      if (this.element[0].querySelector(".postit-menu.on"))
+      if (this.element[0].querySelector (".postit-menu"))
         this.element.find(".btn-menu").click ();
     }
-
   };
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
@@ -2077,7 +2126,16 @@
           statusbar: false
         });
 
-        // EVENT click on plug label.
+        // EVENT mousedown on plug label
+        $(document).on ("mousedown", ".plug-label", function ()
+          {
+            const currentPlug = S.get ("link-from");
+
+            if (currentPlug)
+              currentPlug.obj.postit ("cancelPlugAction");
+          });
+
+        // EVENT click on plug label
         $(document).on ("click", ".plug-label li", function ()
           {
             const $item = $(this),

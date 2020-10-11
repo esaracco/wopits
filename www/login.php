@@ -89,11 +89,11 @@
                   <label class="custom-control-label" for="remember"><?=_("Remember me")?></label>
                 </div>
               </div>
-              <div class="d-flex justify-content-center mt-3 login-container">
+              <div class="d-flex justify-content-center mt-3">
                 <button data-type="login" type="button" name="button" class="btn btn-success"><?=_("Log in")?></button>
               </div>
               <?php if (!WPT_USE_LDAP):?>
-                <div class="d-flex justify-content-center mt-3 login-container">
+                <div class="d-flex justify-content-center mt-3">
                   <button data-type="create" type="button" name="button" class="btn btn-secondary"><?=_("Create a account")?></button>
                 </div>
               <?php endif?>

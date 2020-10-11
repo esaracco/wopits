@@ -49,7 +49,7 @@
           {
             case "login":
 
-              if (plugin.checkRequired ($login.find("input")))
+              if (plugin.checkRequired ($login.find("input"), false))
               {
                 const dl = $login.find("input[name='_directURL']").val ();
 

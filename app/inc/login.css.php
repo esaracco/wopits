@@ -106,10 +106,6 @@ html {
   width: 100%;
 }
 
-.login-container {
-  padding: 0 2rem;
-}
-
 .user-card form span.required {
   background:#5e666f;
   color:#ff8383;

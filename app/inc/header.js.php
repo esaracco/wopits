@@ -299,11 +299,16 @@
     {
       const plugin = this,
             $header = plugin.element,
-            type =
-              (($header.parent().parent()[0].tagName=="TBODY")?"row":"col"),
             adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>",
                             plugin.settings.access),
             $img = $("<div class='img'><img src='"+src+"'></div>");
+
+      // Refresh postits plugs once picture has been fully loaded
+      $img.find("img")
+        .on("load", function (e)
+        {
+          plugin.settings.wall.wall ("repositionPostitsPlugs");
+        });
 
       if (!adminAccess)
         return $img;
@@ -326,11 +331,6 @@
             }
             else
               plugin.edit (() => plugin.uploadPicture ($header));
-          })
-        .find("img")
-          .on("load", function (e)
-          {
-            plugin.settings.wall.wall ("repositionPostitsPlugs");
           });
 
       // Create img delete button

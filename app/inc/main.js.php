@@ -407,9 +407,10 @@
     // METHOD closeAllMenus ()
     closeAllMenus ()
     {
-      // Postits menu
-      this.element[0].querySelectorAll("td div.postit-menu.on").forEach (
-        (p) => $(p).parent().postit ("closeMenu"));
+      const menu = this.element[0].querySelector (".postit-menu");
+
+      if (menu)
+        $(menu.parentNode).postit ("closeMenu");
     },
 
     // METHOD refreshUsersview ()
@@ -419,11 +420,13 @@
         `<div class="usersviewcounts"><i class="fas fa-user-friends fa-lg"></i> <span class="wpt-badge">${count}</span></div>` : "&nbsp;");
     },
 
-    // METHOD checkPostitsPlugsMenu ()
-    checkPostitsPlugsMenu ()
+    // METHOD checkPostitPlugsMenu ()
+    checkPostitPlugsMenu (resetUndo)
     {
-      this.element[0].querySelectorAll(".postit").forEach (
-        (p) => $(p).postit ("checkPlugsMenu"));
+      const menu = this.element[0].querySelector (".postit-menu");
+
+      if (menu)
+        $(menu.parentNode).postit ("checkPlugsMenu", resetUndo);
     },
 
     // METHOD repositionPostitsPlugs ()
@@ -549,7 +552,6 @@
         {
           // Postits
           case "postit":
-
             const $postit = $wall.find("[data-id='postit-"+d.postit.id+"']");
 
             // Rare case, when user have multiple sessions opened
@@ -562,6 +564,7 @@
               case "insert":
                 $("td[data-id='cell-"+d.postit.cells_id+"']")
                   .cell ("addPostit", d.postit, true);
+                plugin.checkPostitPlugsMenu ();
                 break;
 
               // Update postit
@@ -609,9 +612,6 @@
         wall0.dataset.oldwidth = d.width;
 
         __refreshWallBasicProperties (d);
-
-        //FIXME
-//        $wall.css ("width", d.width + 1);
 
         for (let i = 0; i < colsCount; i++)
         {
@@ -787,7 +787,8 @@
             // Refresh postits relations
             plugin.refreshPostitsPlugs (
               d.postits_plugs, d.partial && d.partial != "plugs");
-            plugin.checkPostitsPlugsMenu ();
+
+            plugin.checkPostitPlugsMenu (!d.isResponse);
 
           }, 0);
       else

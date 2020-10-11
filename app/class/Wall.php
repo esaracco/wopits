@@ -623,14 +623,16 @@ class Wall extends Base
       ]);
   }
 
-  public function getWall (bool $withAlerts = false, bool $basic = false):array
+  public function getWall (bool $withAlerts = false, bool $basic = false,
+                           bool $owner = false):array
   {
     $ret = [];
 
     // Return walls list
     if (!$this->wallId)
     {
-      ($stmt = $this->prepare ("
+      $data = [':users_id_1' => $this->userId];
+      $sql = "
         SELECT
           walls.id,
           walls.creationdate,
@@ -641,9 +643,13 @@ class Wall extends Base
           users.fullname AS ownername
         FROM walls
           INNER JOIN users ON walls.users_id = users.id
-        WHERE users_id = :users_id_1
+        WHERE users_id = :users_id_1";
 
-        UNION
+      if (!$owner)
+      {
+        $data[':users_id_2'] = $this->userId;
+        $sql .= "
+          UNION
 
         SELECT
           walls.id,
@@ -660,13 +666,12 @@ class Wall extends Base
             ON users_groups.groups_id = walls_groups.groups_id
           INNER JOIN users
             ON walls.users_id = users.id
-        WHERE users_groups.users_id = :users_id_2
+        WHERE users_groups.users_id = :users_id_2";
+      }
 
-        ORDER BY creationdate DESC, ownername, name, access"))
-         ->execute ([
-           ':users_id_1' => $this->userId,
-           ':users_id_2' => $this->userId
-         ]);
+      ($stmt = $this->prepare (
+         "$sql ORDER BY creationdate DESC, ownername, name, access"))
+         ->execute ($data);
 
       // If a user is in more than one groups for the same wall, with
       // different rights, take the more powerful right

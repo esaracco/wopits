@@ -152,7 +152,8 @@ class User extends Base
     $dir = $this->getUserDir ();
 
     // Close opened user's walls opened by others.
-    $tmp = (new Wall (['userId' => $this->userId]))->getWall ();
+    $tmp = (new Wall (['userId' =>
+              $this->userId]))->getWall (false, false, true);
     if (!empty ($tmp['list']))
     {
       $wallIds = [];
