@@ -457,14 +457,15 @@
         {
           const startId = plug.item_start,
                 endId = plug.item_end,
-                start = wall.querySelector (
+                start0 = wall.querySelector (
                           ".postit[data-id='postit-"+startId+"']"),
-                $start = $(start),
+                $start = $(start0),
+                startPlugin = $start.postit ("getClass"),
                 label = plug.label || "...";
 
           idsNew[startId+""+endId] = 1;
 
-          if ((start.dataset.plugs||"").indexOf (endId) == -1)
+          if ((start0.dataset.plugs||"").indexOf (endId) == -1)
           {
             const end = wall.querySelector (
                           ".postit[data-id='postit-"+endId+"']"),
@@ -472,16 +473,16 @@
                     startId: startId,
                     endId: endId,
                     label: label,
-                    obj: $start.postit ("getPlugTemplate", start, end, label)
+                    obj: startPlugin.getPlugTemplate (start0, end, label)
                   };
 
-            $start.postit ("addPlug", newPlug);
+            startPlugin.addPlug (newPlug);
 
             if (hidePlugs)
-              $start.postit ("hidePlugs");
+              startPlugin.hidePlugs ();
           }
           else
-            $start.postit ("updatePlugLabel", {endId: endId, label: label});
+            startPlugin.updatePlugLabel ({endId: endId, label: label});
         });
 
       // Remove obsolete plugs
@@ -621,8 +622,10 @@
 
           if (!$header.length)
           {
-            $wall.find("thead tr").append ("<th></th>");
-            $wall.find("thead tr th:last-child").header ({
+            const $th = $("<th/>");
+
+            $wall.find("thead tr").append ($th);
+            $th.header ({
               item_type: "col",
               id: header.id,
               wall: $wall,
@@ -972,7 +975,8 @@
       const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
 
-      $tr.find("td").cell ("removePostitsPlugs");
+      $tr[0].querySelectorAll("td").forEach (
+        (td)=> $(td).cell ("removePostitsPlugs"));
 
       H.headerRemoveContentKeepingWallSize ({
         oldW: $tr.find("th").outerWidth (),
@@ -1114,6 +1118,7 @@
           $tabs.find('a[href="#wall-'+d.id+'"]')
             .attr("data-access", d.access)
             .prepend($(`<button type="button" class="close"><span class="close">&times;</span></button>`)
+            // EVENT click on close wall icon
             .on("click",function()
             {
               H.openConfirmPopover ({
@@ -1747,12 +1752,15 @@
           $("#main-menu").addClass ("noarrows");
 
         $("#normal-display-btn")
+          // EVENT click on back to standard view button
           .on("click", function ()
           {
             S.getCurrent("wall").wall ("zoom", {type: "normal"});
           });
 
-        $("#createWallPopup #w-grid").on("change", function ()
+        $("#createWallPopup #w-grid")
+          // EVENT change on wall dimension in wall creation popup
+          .on("change", function ()
           {
             const btn = this,
                   $popup = $(this).closest (".modal");
@@ -1771,6 +1779,7 @@
           });
 
         $(`<input type="file" accept=".zip" class="upload import-wall">`)
+          // EVENT change for wall importation upload
           .on("change", function (e)
             {
               if (e.target.files && e.target.files.length)
@@ -1817,12 +1826,14 @@
             }).appendTo ("body");
 
         $(document)
+          // EVENT click on wall users count
           .on("click","thead th:first-child .usersviewcounts", function (e)
           {
             S.getCurrent("wall").wall ("displayWallUsersview");
           });
 
         $("#wallUsersviewPopup")
+          // EVENT click on username in wall users popup
           .on("click",".list-group a",function (e)
           {
             const a = this,
@@ -1857,8 +1868,8 @@
             H.openModal ($popup);
           });
 
-        // EVENT CLICK on menu items
         $(document)
+          // EVENT CLICK on main menu items
           .on("click", ".navbar.wopits a,"+
                        "#main-menu a:not(.disabled),"+
                        ".nav-tabs.walls a[data-action='new'],"+
@@ -2035,11 +2046,13 @@
             }
           });
       }
-      // EVENT CLICK on about at login page
       else
-        $('[data-action="about"]').on("click", function ()
-          {H.openModal ($("#aboutPopup"))});
-
+        $('[data-action="about"]')
+        // EVENT CLICK on about button in the login page
+        .on("click", function ()
+        {
+          H.openModal ($("#aboutPopup"));
+        });
   });
 
 <?php echo $Plugin->getFooter ()?>

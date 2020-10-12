@@ -16,32 +16,35 @@
       _originalObject,
       _plugRabbit = {
         line: null,
+        // EVENT mousedown on destination postit for relationship creation
         mousedownEvent: function (e)
           {
-            const $postit = $(e.target).closest (".postit"),
-                  from = S.get ("link-from");
+            const from = S.get ("link-from"),
+                  $start = from.obj,
+                  $end = $(e.target).closest (".postit");
 
             e.stopImmediatePropagation ();
             e.preventDefault ();
 
-            if (!$postit.length)
-              return from.obj.postit ("cancelPlugAction");
+            if (!$end.length)
+              return $start.postit ("cancelPlugAction");
 
-            const plugin = $postit.postit ("getClass"),
-                  postit0 = $postit[0],
-                  id = plugin.settings.id;
+            const end0 = $end[0],
+                  endPlugin = $end.postit ("getClass"),
+                  endId = endPlugin.settings.id;
 
-              if (from.id != id &&
-                  (postit0.dataset.plugs||"").indexOf(from.id) == -1)
+              if (from.id != endId &&
+                  (end0.dataset.plugs||"").indexOf(from.id) == -1)
               {
-                plugin.edit ({plugend: true}, ()=>
+                endPlugin.edit ({plugend: true}, ()=>
                   {
                     const $popup = $("#plugPopup"),
-                          $start = from.obj,
+                          start0 = $start[0],
+                          startPlugin = $start.postit ("getClass"),
                           line = {
                             startId: from.id,
-                            endId: id,
-                            obj: plugin.getPlugTemplate ($start[0], postit0)
+                            endId: endId,
+                            obj: endPlugin.getPlugTemplate (start0, end0)
                           };
 
                     line.obj.setOptions ({
@@ -51,13 +54,13 @@
                       dash: {animation: true}
                     });
 
-                    $start.postit ("addPlug", line);
-                    $start.postit ("cancelPlugAction", false);
+                    startPlugin.addPlug (line);
+                    startPlugin.cancelPlugAction (false);
 
                     from.cancelCallback = () =>
                       {
-                        $start.postit ("removePlug", line);
-                        $start.postit ("cancelPlugAction");
+                        startPlugin.removePlug (line);
+                        startPlugin.cancelPlugAction ();
                       };
 
                     from.confirmCallback = (label) =>
@@ -80,14 +83,14 @@
                           })
                         });
 
-                        $start.postit ("applyTheme");
-                        $start.postit ("addPlugLabel", line);
+                        startPlugin.applyTheme ();
+                        startPlugin.addPlugLabel (line);
 
-                        $start[0].dataset.undo = "add";
+                        start0.dataset.undo = "add";
                         $undo.removeClass ("disabled");
                         $undo.find("span").text ("« <?=_("Add")?> »");
 
-                        $start.postit ("cancelPlugAction");
+                        startPlugin.cancelPlugAction ();
                       };
 
                     H.cleanPopupDataAttr ($popup);
@@ -99,15 +102,16 @@
               }
               else
               {
-                if (from.id != id)
+                if (from.id != endId)
                   H.displayMsg ({
                     type: "warning",
                     msg: "<?=_("This relationship already exists")?>"
                   });
                 else
-                  plugin.cancelPlugAction ();
+                  endPlugin.cancelPlugAction ();
               }
           },
+        // EVENT mousemouve to track mouse pointer during relationship creation
         mousemoveEvent: (e) =>
           {
             const rabbit = document.getElementById ("plug-rabbit");
@@ -454,8 +458,7 @@
           {
             const $oldPostit = S.get ("postit-oldzindex");
 
-            if ($oldPostit &&
-                $oldPostit.obj.postit ("getId") != settings.id)
+            if ($oldPostit && $oldPostit.obj.postit ("getId") != settings.id)
               _resetZIndexData ();
 
             if (!S.get ("postit-oldzindex"))
@@ -768,7 +771,8 @@
     openPostit ()
     {
       const writeAccess = H.checkAccess (
-              "<?=WPT_WRIGHTS_RW?>", this.settings.access);
+              "<?=WPT_WRIGHTS_RW?>", this.settings.access),
+            $wall = this.settings.wall;
 
       // Open modal with read rights only
       if (!writeAccess)
@@ -789,7 +793,7 @@
                     cb_close: (btn) => (btn != "yes") && this.unedit (),
                     cb_ok: () =>
                     {
-                      this.settings.wall.wall ("displayExternalRef", 1);
+                      $wall.wall ("displayExternalRef", 1);
                       this.open ()}}))
               {
                 this.open ();
@@ -1313,10 +1317,11 @@
           data = {id: postitId, todelete: true};
         else
         {
-          const title =
+          const plugin = $postit.postit ("getClass"),
+                title =
                   this.querySelector(".postit-header span.title").innerText,
                 content = this.querySelector(".postit-edit").innerHTML||"",
-                classcolor = this.className.match(/(color\-[a-z]+)/),
+                classcolor = this.className.match (/(color\-[a-z]+)/),
                 deadline = (this.dataset.deadlineepoch) ?
                   this.dataset.deadlineepoch :
                   this.querySelector(".dates .end span").innerText.trim (),
@@ -1335,8 +1340,7 @@
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
             content: displayExternalRef ?
-                       content :
-                       $postit.postit ("unblockExternalRef", content),
+                       content : plugin.unblockExternalRef (content),
             tags: (tags.length) ? ","+tags.join(",")+"," : null,
             deadline: (deadline == "...") ? "" : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?
@@ -1345,7 +1349,7 @@
             obsolete: this.classList.contains ("obsolete"),
             attachmentscount:
               this.querySelector(".attachmentscount span").innerText,
-            plugs: $postit.postit ("serializePlugs"),
+            plugs: plugin.serializePlugs (),
             hadpictures: !!this.dataset.hadpictures,
             hasuploadedpictures: !!this.dataset.hasuploadedpictures
           };
@@ -1432,7 +1436,7 @@
     setContent (newContent)
     {
       const postit = this.element[0],
-            edit = postit.querySelector ("div.postit-edit");
+            edit = postit.querySelector (".postit-edit");
 
       if (newContent !== edit.innerHTML)
       {
@@ -1481,7 +1485,7 @@
     // METHOD blockExternalRef ()
     blockExternalRef (content, externalRef)
     {
-      const el = this.element.find("div.postit-edit")[0];
+      const el = this.element.find(".postit-edit")[0];
       let c = content||el.innerHTML;
 
       if (!externalRef)
@@ -2105,26 +2109,27 @@
                   $popup = $("#plugPopup"),
                   $wall = S.getCurrent ("wall"),
                   [startId, endId] = $label[0].dataset.id.split ("-"),
-                  $start = $wall.find(".postit[data-id='postit-"+startId+"']"),
-                  $end = $wall.find(".postit[data-id='postit-"+endId+"']"),
+                  startPlugin =
+                    $wall.find(".postit[data-id='postit-"+startId+"']")
+                      .postit("getClass"),
                   defaultLabel = H.htmlEscape ($label.find("span").text ());
 
             function __unedit ()
             {
               let toSave = {};
 
-              toSave[startId] = $start;
-              toSave[endId] = $end
+              toSave[startId] = startPlugin.element;
+              toSave[endId] = $wall.find(".postit[data-id='postit-"+endId+"']");
 
               S.set ("plugs-to-save", toSave);
-              $start.postit ("unedit");
+              startPlugin.unedit ();
             }
 
             switch ($item[0].dataset.action)
             {
               case "rename":
 
-                $start.postit ("edit", null, ()=>
+                startPlugin.edit (null, ()=>
                   {
                     H.openConfirmPopover ({
                       type: "update",
@@ -2137,8 +2142,8 @@
                           const label = $popover.find("input").val().trim ();
 
                           if (label != defaultLabel)
-                            $start.postit ("updatePlugLabel", {
-                              label: $popover.find("input").val().trim(),
+                            startPlugin.updatePlugLabel ({
+                              label: $popover.find("input").val().trim (),
                               endId: endId
                             });
                         }
@@ -2149,7 +2154,7 @@
 
               case "delete":
 
-                $start.postit ("edit", null, ()=>
+                startPlugin.edit (null, ()=>
                   {
                     H.openConfirmPopover ({
                       item: $label,
@@ -2159,8 +2164,8 @@
                       cb_close: __unedit,
                       cb_ok: () =>
                         {
-                          $start.postit ("removePlug", startId+"-"+endId);
-                          $start.postit ("resetPlugsUndo");
+                          startPlugin.removePlug (startId+"-"+endId);
+                          startPlugin.resetPlugsUndo ();
                         }
                     });
                   });
@@ -2174,8 +2179,8 @@
         .on("change", function (e)
         {
           const $upload = $(this),
-                $postit = S.getCurrent ("postit"),
-                settings = $postit.postit ("getSettings");
+                plugin = S.getCurrent("postit").postit ("getClass"),
+                settings = plugin.settings;
 
           if (e.target.files && e.target.files.length)
           {
@@ -2224,10 +2229,9 @@
                       if (!$body.find("li").length)
                         $body.html ("");
     
-                      $body.prepend (
-                        $postit.postit ("getAttachmentTemplate", d));
+                      $body.prepend (plugin.getAttachmentTemplate (d));
 
-                      $postit.postit("incAttachmentsCount");
+                      plugin.incAttachmentsCount ();
 
                       H.waitForDOMUpdate (()=>$body.find("li:eq(0)").click ());
                     });
@@ -2460,6 +2464,71 @@
             }
 
             $(this.appendChild (popup)).show ("fade");
+          });
+
+        // EVENT hide.bs.modal on postit popup
+        $("#postitUpdatePopup").on("hide.bs.modal",
+          function (e)
+          {
+            const data = S.get ("postit-data");
+
+            // Return if we are closing the postit modal from the confirmation
+            // popup
+            if (data && data.closing) return;
+
+            const $popup = $(this),
+                  plugin = S.getCurrent("postit").postit ("getClass");
+
+              const title = $("#postitUpdatePopupTitle").val (),
+                    content = tinymce.activeEditor.getContent (),
+                    cb_close = () =>
+                      {
+                        S.set ("postit-data", {closing: true});
+
+                        //FIXME
+                        $(".tox-toolbar__overflow").hide ();
+                        $(".tox-menu").hide ();
+
+                        $popup.find("input").val ("");
+                        plugin.unedit ();
+
+                        $popup.modal ("hide");
+                        S.unset ("postit-data");
+
+                        tinymce.activeEditor.resetContent ();
+
+                        if ($.support.touch)
+                          H.fixVKBScrollStop ();
+                      };
+
+              // If there is pending changes, ask confirmation to user
+              if (data && (
+                // Content change detection
+                tinymce.activeEditor.isDirty () ||
+                // Title change detection
+                H.htmlEscape(data.title) != H.htmlEscape(title)))
+              {
+                e.preventDefault ();
+
+                H.openConfirmPopup ({
+                  type: "save-postits-changes",
+                  icon: "save",
+                  content: `<?=_("Save changes?")?>`,
+                  cb_ok: () =>
+                    {
+                      plugin.setTitle (title);
+                      plugin.setContent (content);
+
+                      plugin.element[0]
+                        .removeAttribute ("data-uploadedpictures");
+                    },
+                  cb_close: cb_close
+                });
+
+                S.set ("postit-data", data);
+              }
+              else
+                cb_close ();
           });
       });
 

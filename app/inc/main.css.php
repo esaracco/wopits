@@ -1609,14 +1609,11 @@ input {
   {
 echo <<<EOC
 .color-$name,
-.modal-header.color-$name,
-.modal-header.color-$name h5,
-.modal-footer.color-$name,
 .postit.color-$name .dates,
 .postit.color-$name .postit-header,
 .postit.color-$name .postit-edit {
-  background:$color;
-  color:#43474a;
+  background:$color !important;
+  color:#43474a !important;
 }
 EOC;
   }

@@ -354,8 +354,8 @@
                     if ($wall.length)
                     {
                       S.getCurrent ("chatroom").chatroom ("hide");
-                      $wall.wall("closeAllWalls", false);
-                      $wall.wall("restorePreviousSession");
+                      $wall.wall ("closeAllWalls", false);
+                      $wall.wall ("restorePreviousSession");
                     }
                   }
                   else if ($wall.length)

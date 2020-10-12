@@ -6,8 +6,8 @@ $(function()
 
   if (!document.querySelector ("body.login-page"))
   {
-    // EVENTS resize & orientationchange
     $(window)
+      // EVENTS resize & orientationchange on window
       .on("resize orientationchange", function()
       {
         const $wall = S.getCurrent ("wall");
@@ -150,6 +150,7 @@ $(function()
       }
     });
 
+/*FIXME Useful?
   // Usefull in rare case, when user have multiple sessions opened
   $(window).focus (
     function (e)
@@ -163,6 +164,7 @@ $(function()
 
         }, 150);
     });
+*/
 
   // EVENT hidden.bs.tab on walls tabs
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
@@ -295,76 +297,6 @@ $(function()
       H.setAutofocus ($popup);
     });  
 
-  // EVENT hide.bs.modal on popups
-  $(".modal").on("hide.bs.modal",
-    function (e)
-    {
-      const $popup = $(this),
-            $postit = S.getCurrent ("postit");
-
-      switch (e.target.id)
-      {
-        case "postitUpdatePopup":
-
-          const data = S.get ("postit-data");
-
-          // Return if we are closing the postit modal from the confirmation
-          // popup
-          if (data && data.closing) return;
-
-          const title = $("#postitUpdatePopupTitle").val (),
-                content = tinymce.activeEditor.getContent (),
-                cb_close = () =>
-                  {
-                    S.set ("postit-data", {closing: true});
-
-                    //FIXME
-                    $(".tox-toolbar__overflow").hide ();
-                    $(".tox-menu").hide ();
-    
-                    $popup.find("input").val ("");
-                    $postit.postit ("unedit");
-
-                    $popup.modal ("hide");
-                    S.unset ("postit-data");
-
-                    tinymce.activeEditor.resetContent ();
-
-                    if ($.support.touch)
-                      H.fixVKBScrollStop ();
-                  };
-
-          // If there is pending changes, ask confirmation to user
-          if (data && (
-            // Content change detection
-            tinymce.activeEditor.isDirty () ||
-            // Title change detection
-            H.htmlEscape(data.title) != H.htmlEscape(title)))
-          {
-            e.preventDefault ();
-
-            H.openConfirmPopup ({
-              type: "save-postits-changes",
-              icon: "save",
-              content: `<?=_("Save changes?")?>`,
-              cb_ok: () =>
-                {
-                  $postit.postit ("setTitle", title);
-                  $postit.postit ("setContent", content);
-
-                  $postit[0].removeAttribute ("data-uploadedpictures");
-                },
-              cb_close: cb_close
-            });
-
-            S.set ("postit-data", data);
-          }
-          else
-            cb_close ();
-          break;
-      }
-    });
-
   // EVENT hidden.bs.modal on popups
   $(".modal").on("hidden.bs.modal",
     function(e)
@@ -372,8 +304,7 @@ $(function()
       const $popup = $(this),
             $wall = S.getCurrent ("wall"),
             type = $popup[0].dataset.popuptype,
-            $postit = S.getCurrent ("postit"),
-            $header = S.getCurrent ("header");
+            $postit = S.getCurrent ("postit");
 
       // Prevent child popups from removing scroll to their parent
       if ($(".modal:visible").length)
@@ -448,8 +379,7 @@ $(function()
       const $popup = $(this).closest (".modal"),
             $wall = S.getCurrent ("wall"),
             closePopup = !!!$popup[0].dataset.noclosure,
-            $postit = S.getCurrent ("postit"),
-            $header = S.getCurrent ("header");
+            $postit = S.getCurrent ("postit");
 
       $popup[0].removeAttribute ("data-noclosure");
 
@@ -470,11 +400,18 @@ $(function()
 
           case "postitUpdatePopup":
 
-            $postit.postit("setTitle", $("#postitUpdatePopupTitle").val ());
-            $postit.postit("setContent", tinymce.activeEditor.getContent());
+            $postit.postit ("setTitle", $("#postitUpdatePopupTitle").val ());
+            $postit.postit ("setContent", tinymce.activeEditor.getContent());
 
             $postit[0].removeAttribute ("data-uploadedpictures");
             S.unset ("postit-data");
+            break;
+
+          // Upload postit attachment
+          case "postitAttachmentsPopup":
+
+            $popup[0].dataset.noclosure = true;
+            $postit.postit ("uploadAttachment");
             break;
 
           case "groupAccessPopup":
@@ -486,13 +423,6 @@ $(function()
 
             if ($popup[0].dataset.action == "update")
               $popup[0].dataset.noclosure = true;
-            break;
-
-          // Upload postit attachment
-          case "postitAttachmentsPopup":
-
-            $popup[0].dataset.noclosure = true;
-            $postit.postit ("uploadAttachment");
             break;
 
           // Manage confirmations
@@ -545,14 +475,15 @@ $(function()
 
             if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
             {
-              const oldName = $wall.wall ("getName"),
-                    $cell = $wall.find("td"),
+              const wallPlugin = $wall.wall ("getClass"),
+                    oldName = wallPlugin.getName (),
+                    $cell = $wall.find ("td"),
                     oldW = $cell.outerWidth ();
 
-              $wall.wall ("setName", name);
-              $wall.wall ("setDescription", description);
+              wallPlugin.setName (name);
+              wallPlugin.setDescription (description);
 
-              $wall.wall ("unedit",
+              wallPlugin.unedit (
                 () =>
                 {
                   $popup[0].dataset.uneditdone = 1;
@@ -560,16 +491,17 @@ $(function()
                 },
                 () =>
                 {
-                  $wall.wall ("setName", oldName);
+                  wallPlugin.setName (oldName);
                   //FIXME
-                  $wall.wall ("edit");
+                  wallPlugin.edit ();
                 });
 
               if ($inputs[1] && $inputs[1].value != oldW ||
                   $inputs[2] && $inputs[2].value != $cell.outerHeight ())
               {
                 const w = Number ($inputs[1].value) + 1,
-                      h = Number ($inputs[2].value);
+                      h = Number ($inputs[2].value),
+                      cellPlugin = $cell.cell ("getClass");
 
                 function __resize (args)
                 {
@@ -582,16 +514,16 @@ $(function()
                     $wall.find(".ui-resizable-e").css ("height", args.newH+2);
                   }
 
-                  $wall.wall ("fixSize", args.oldW, args.newW);
+                  wallPlugin.fixSize (args.oldW, args.newW);
                 }
 
                 __resize ({newW: w, oldW: oldW, newH: h});
                 if ($wall.find("td").outerWidth () != w)
                   __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
 
-                $cell.cell ("edit");
-                $cell.cell ("reorganize");
-                $cell.cell ("unedit");
+                cellPlugin.edit ();
+                cellPlugin.reorganize ();
+                cellPlugin.unedit ();
               }
             }
             return;
