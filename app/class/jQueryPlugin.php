@@ -22,6 +22,12 @@ class jQueryPlugin
 const Plugin = function (element)
 {
   this.settings = {{$this->defaultSettings}};
+
+  // METHOD getClass ()
+  this.getClass = ()=> this;
+
+  // METHOD getSettings ()
+  this.getSettings = ()=> this.settings;
 }
 EOC;
   }

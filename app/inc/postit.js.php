@@ -16,14 +16,99 @@
       _originalObject,
       _plugRabbit = {
         line: null,
-        cellEvent: (e) =>
+        mousedownEvent: function (e)
           {
-            const currentPlug = S.get ("link-from");
+            const $postit = $(e.target).closest (".postit"),
+                  from = S.get ("link-from");
 
-            if (currentPlug)
-              currentPlug.obj.postit ("cancelPlugAction");
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
+
+            if (!$postit.length)
+              return from.obj.postit ("cancelPlugAction");
+
+            const plugin = $postit.postit ("getClass"),
+                  postit0 = $postit[0],
+                  id = plugin.settings.id;
+
+              if (from.id != id &&
+                  (postit0.dataset.plugs||"").indexOf(from.id) == -1)
+              {
+                plugin.edit ({plugend: true}, ()=>
+                  {
+                    const $popup = $("#plugPopup"),
+                          $start = from.obj,
+                          line = {
+                            startId: from.id,
+                            endId: id,
+                            obj: plugin.getPlugTemplate ($start[0], postit0)
+                          };
+
+                    line.obj.setOptions ({
+                      dropShadow: null,
+                      size: 3,
+                      color: "#bbb",
+                      dash: {animation: true}
+                    });
+
+                    $start.postit ("addPlug", line);
+                    $start.postit ("cancelPlugAction", false);
+
+                    from.cancelCallback = () =>
+                      {
+                        $start.postit ("removePlug", line);
+                        $start.postit ("cancelPlugAction");
+                      };
+
+                    from.confirmCallback = (label) =>
+                      {
+                        const $undo = $start.find (
+                                ".postit-menu [data-action='undo-plug'] a");
+
+                        if (!label)
+                          label = "...";
+
+                        line.label = label;
+                        line.obj.setOptions ({
+                          size: 4,
+                          color: H.getBackgroundColor (
+                             document.querySelector (".wall th:first-child")),
+                          dash: null,
+                          middleLabel: LeaderLine.captionLabel({
+                            text: label,
+                            fontSize:"13px"
+                          })
+                        });
+
+                        $start.postit ("applyTheme");
+                        $start.postit ("addPlugLabel", line);
+
+                        $start[0].dataset.undo = "add";
+                        $undo.removeClass ("disabled");
+                        $undo.find("span").text ("« <?=_("Add")?> »");
+
+                        $start.postit ("cancelPlugAction");
+                      };
+
+                    H.cleanPopupDataAttr ($popup);
+
+                    S.set ("link-from", from);
+
+                    H.openModal ($popup);
+                  });
+              }
+              else
+              {
+                if (from.id != id)
+                  H.displayMsg ({
+                    type: "warning",
+                    msg: "<?=_("This relationship already exists")?>"
+                  });
+                else
+                  plugin.cancelPlugAction ();
+              }
           },
-        mouseEvent: (e) =>
+        mousemoveEvent: (e) =>
           {
             const rabbit = document.getElementById ("plug-rabbit");
 
@@ -159,17 +244,13 @@
           const $btn = $(this),
                 action = $btn[0].dataset.action;
 
-          postitPlugin.closePlugMenu ();
-
           e.stopImmediatePropagation ();
+
+          postitPlugin.closePlugMenu ();
 
           // To prevent race condition with draggable & resizable plugins
           if (S.get ("still-dragging"))
             return;
-
-          //FIXME Append after very fast drag & click right after
-          if (S.get ("link-from"))
-            postitPlugin.cancelPlugAction (true, false);
 
           switch (action)
           {
@@ -233,9 +314,7 @@
 
               postitPlugin.edit (null, () =>
                 {
-                  $(document)
-                    .off("keydown", _plugRabbit.escapeEvent)
-                    .on ("keydown", _plugRabbit.escapeEvent);
+                  S.set ("link-from", {id: postitSettings.id, obj: $postit});
 
                   _plugRabbit.line = new LeaderLine (
                     postit0,
@@ -246,11 +325,11 @@
                       dash: true
                     });
 
-                  $("body").on ("mousemove", _plugRabbit.mouseEvent);
-                  $("nav,.tab-pane,th,td,img,a,i,span,button")
-                    .on("click", _plugRabbit.cellEvent);
+                  $(document)
+                    .on("mousedown", _plugRabbit.mousedownEvent)
+                    .on ("keydown", _plugRabbit.escapeEvent);
 
-                  S.set ("link-from", {id: postitSettings.id, obj: $postit});
+                  $("body").on ("mousemove", _plugRabbit.mousemoveEvent);
                 });
 
               break;
@@ -370,7 +449,7 @@
           top: settings.item_top,
           left: settings.item_left
         })
-        // EVENTS mouseenter focusin click
+        // EVENTS mouseenter focusin click on postit
         .on("mouseenter focusin click", function(e)
           {
             const $oldPostit = S.get ("postit-oldzindex");
@@ -389,7 +468,7 @@
               $postit.css ("z-index", 5000);
             }
           })
-        // EVENTS mouseleave focusout
+        // EVENTS mouseleave focusout on postit
         .on("mouseleave focusout",function(e)
           {
             const $currentPostit = S.getCurrent ("postit");
@@ -403,12 +482,25 @@
               _resetZIndexData ();
             }
           })
-        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div>`);
+        // Append header, dates, attachment count and tags
+        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`)
+        .find(".attachmentscount")
+        // EVENT click on attachment count
+        .on("click", function ()
+          {
+            if (writeAccess)
+              plugin.openAttachments ();
+            else
+            {
+              plugin.setCurrent ();
+              plugin.displayAttachments ();
+            }
+          });
 
       if (writeAccess)
       {
         $postit  
-        // DRAGGABLE post-it
+        // DRAGGABLE postit
         .draggable ({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
@@ -545,16 +637,13 @@
             }
           });
 
-          $postit.find(".postit-edit")
-            // EVENT doubletap
-            .doubletap (() => plugin.openPostit ());
-        }
+        $postit.find(".postit-edit")
+          // EVENT doubletap on content
+          .doubletap (() => plugin.openPostit ());
   
-      // Display postit menu only if user can write
-      if (writeAccess)
-      {
-        const $btnMenu = $(`
-          <div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
+        // Append menu button
+        $postit.prepend($(`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
+          // EVENT click on menu button
           .on("click", function(e)
             {
               const $btn = $(this).find("i"),
@@ -596,30 +685,10 @@
                 settings.Menu.destroy ();
                 delete settings.Menu;
               }
-            });
+            }));
 
-        $btnMenu.prependTo ($postit);
-      }
-
-      // Add attachment count and tags to postit
-      $postit
-        .append($(`<div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div>`)
-        .on("click", function ()
-          {
-            if (writeAccess)
-              plugin.openAttachments ();
-            else
-            {
-              plugin.setCurrent ();
-              plugin.displayAttachments ();
-            }
-          }))
-        .append(`<div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`);
-
-      if (writeAccess)
-      {
-        // EVENT mousedown on tags
         $postit.find(".postit-tags")
+          // EVENT mousedown on tags
           .on("mousedown", function (e)
           {
             e.stopImmediatePropagation ();
@@ -628,8 +697,8 @@
               S.getCurrent("tag-picker").tagPicker ("open", e));
           });
 
-        // EVENT click on dates
         $postit.find(".dates .end")
+          // EVENT click on dates
           .on("click", function(e)
             {
               const $item = $(e.target);
@@ -671,109 +740,16 @@
         });
       }
       else
-        // EVENT click on postit
         $postit.find(".postit-edit,.postit-header,.postit-tags,.dates")
+          // EVENT click on postit
           .click (function ()
           {
             if (!S.get ("still-dragging"))
               plugin.openPostit ();
           });
 
-      // EVENT click on postit to create relationship
-      $postit.find(".postit-edit,.postit-header,.dates")
-        .click (function (e)
-        {
-          const id = plugin.settings.id,
-                from = S.get ("link-from");
-
-          if (from)
-          {
-            e.stopImmediatePropagation ();
-            e.preventDefault ();
-
-            if (from.id != id &&
-                (postit0.dataset.plugs||"").indexOf(from.id) == -1)
-            {
-              plugin.edit ({plugend: true}, ()=>
-                {
-                  const $popup = $("#plugPopup"),
-                        $start = from.obj,
-                        line = {
-                          startId: from.id,
-                          endId: id,
-                          obj: plugin.getPlugTemplate ($start[0], postit0)
-                        };
-
-                  line.obj.setOptions ({
-                    dropShadow: null,
-                    size: 3,
-                    color: "#bbb",
-                    dash: {animation: true}
-                  });
-
-                  $start.postit ("addPlug", line);
-                  $start.postit ("cancelPlugAction", false);
-
-                  from.cancelCallback = () =>
-                    {
-                      $start.postit ("removePlug", line);
-                      $start.postit ("cancelPlugAction");
-                    };
-
-                  from.confirmCallback = (label) =>
-                    {
-                      const $undo = $start.find (
-                              ".postit-menu [data-action='undo-plug'] a");
-
-                      if (!label)
-                        label = "...";
-
-                      line.label = label;
-                      line.obj.setOptions ({
-                        size: 4,
-                        color: H.getBackgroundColor (
-                           document.querySelector (".wall th:first-child")),
-                        dash: null,
-                        middleLabel: LeaderLine.captionLabel({
-                          text: label,
-                          fontSize:"13px"
-                        })
-                      });
-
-                      $start.postit ("applyTheme");
-                      $start.postit ("addPlugLabel", line);
-
-                      $start[0].dataset.undo = "add";
-                      $undo.removeClass ("disabled");
-                      $undo.find("span").text ("« <?=_("Add")?> »");
-
-                      $start.postit ("cancelPlugAction");
-                    };
-
-                  H.cleanPopupDataAttr ($popup);
-
-                  S.set ("link-from", from);
-
-                  H.openModal ($popup);
-                });
-            }
-            else
-            {
-              if (from.id != id)
-                H.displayMsg ({
-                  type: "warning",
-                  msg: "<?=_("This relationship already exists")?>"
-                });
-              else
-                plugin.cancelPlugAction ();
-            }
-          }
-        });
-
       if (settings.creationdate)
-        //FIXME setTimeout ()
-        setTimeout (() => plugin.update ($.extend (settings, {init: true})),
-          !!settings.isNewCell ? 150 : 0);
+        plugin.update (settings);
     },
 
     // METHOD openAttachments ()
@@ -919,10 +895,11 @@
     {
       if (_plugRabbit.line)
       {
-        $(document).off ("keydown", _plugRabbit.escapeEvent);
-        $("body").off("mousemove", _plugRabbit.mouseEvent)
-        $("nav,.tab-pan,th,td,img,a,i,span,button")
-          .off("click", _plugRabbit.cellEvent);
+        $(document)
+          .off("mousedown", _plugRabbit.mousedownEvent)
+          .off ("keydown", _plugRabbit.escapeEvent);
+
+        $("body").off ("mousemove", _plugRabbit.mousemoveEvent);
 
         _plugRabbit.line.remove ();
         _plugRabbit.line = null;
@@ -1289,12 +1266,6 @@
         });
     },
 
-    // METHOD getSettings ()
-    getSettings ()
-    {
-      return this.settings;
-    },
-
     // METHOD getId ()
     getId ()
     {
@@ -1458,7 +1429,7 @@
     },
 
     // METHOD setContent ()
-    setContent (newContent, isInit)
+    setContent (newContent)
     {
       const postit = this.element[0],
             edit = postit.querySelector ("div.postit-edit");
@@ -1786,7 +1757,7 @@
 
       this.setTitle (d.title);
 
-      this.setContent (d.content, d.init);
+      this.setContent (d.content);
 
       this.setAttachmentsCount (d.attachmentscount);
 
@@ -2126,15 +2097,6 @@
           statusbar: false
         });
 
-        // EVENT mousedown on plug label
-        $(document).on ("mousedown", ".plug-label", function ()
-          {
-            const currentPlug = S.get ("link-from");
-
-            if (currentPlug)
-              currentPlug.obj.postit ("cancelPlugAction");
-          });
-
         // EVENT click on plug label
         $(document).on ("click", ".plug-label li", function ()
           {
@@ -2387,8 +2349,9 @@
         $(document).on("click", "#postitAttachmentsPopup .edit-popup img",
           function (e)
           {
-            const viewer = `<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${this.getAttribute("src")}"></div>`;
-            $("body").append(viewer).show().find(".close")
+            $("body")
+              .append(`<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${this.getAttribute("src")}"></div>`)
+              .find(".close")
               .on("click", function ()
               {
                 $("#popup-layer").click ();
@@ -2425,7 +2388,7 @@
             li.classList.remove ("active");
           });
 
-        // EVENT dhow.bs.collapse attachment row.
+        // EVENT show.bs.collapse attachment row.
         $(document).on("show.bs.collapse",
                        "#postitAttachmentsPopup .list-group-item.collapse",
           function (e)

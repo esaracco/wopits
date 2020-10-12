@@ -1318,6 +1318,10 @@ EOC;
   cursor:zoom-in;
 }
 
+#postitAttachmentsPopup .edit-popup i {
+  color:#fff;
+}
+
 #postitAttachmentsPopup .edit-popup .file {
   text-align:center;
   font-weight:bold;

@@ -611,13 +611,6 @@
     {
       return this.settings.id;
     },
-
-    // METHOD getSettings ()
-    getSettings ()
-    {
-      return this.settings;
-    }
-
   };
 
   $(function()
