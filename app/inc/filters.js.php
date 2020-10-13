@@ -24,17 +24,13 @@
             cList = $(".color-picker").colorPicker ("getColorsList");
 
       let tags = '';
-      for (let i = 0, iLen = tList.length; i < iLen; i++)
-      {
-        const t = tList[i];
-
+      for (const t of tList)
         tags +=
           `<div><i class="fa-${t} fa-fw fas" data-tag="${t}"></i></div>`;
-      }
 
       let colors = '';
-      for (let i = 0, iLen = cList.length; i < iLen; i++)
-        colors += `<div class="${cList[i]}">&nbsp;</div>`;
+      for (const c of cList)
+        colors += `<div class="${c}">&nbsp;</div>`;
 
       $filters
         //FIXME "distance" is deprecated -> is there any alternative?
@@ -130,7 +126,7 @@
 
       $wall.find(".postit")
         .removeClass("filter-display")
-        .show ();
+        .css ("visibility", "visible");
 
       if ($tags.length || $colors.length)
       {
@@ -156,7 +152,7 @@
         if ($wall.find(".postit.current:not(.filter-display)").length)
           $("#popup-layer").click ();
 
-        $wall.find(".postit:not(.filter-display)").hide ();
+        $wall.find(".postit:not(.filter-display)").css ("visibility", "hidden");
       }
       else
         plugin.showPlugs ();

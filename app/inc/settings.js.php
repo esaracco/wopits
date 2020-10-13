@@ -19,6 +19,7 @@
             $settings = plugin.element;
 
       $tc
+        // EVENT theme chooser popup closing
         .on("hide.bs.modal", function ()
         {
           if (!wpt_userData.settings.theme)
@@ -26,6 +27,7 @@
         });
 
       $tc.find(".settings")
+        // EVENT click on settings button in theme chooser popup
         .on("click", function ()
         {
           $tc.modal ("hide");
@@ -33,6 +35,8 @@
         });
 
       $("a.dot-theme")
+        // EVENT click on them color button (for both settings & theme chooser
+        //       popup)
         .on("click", function ()
         {
           plugin.set ({theme: this.dataset.theme});
@@ -40,7 +44,8 @@
         });
 
       $settings.find(".timezone")
-        .on ("change", function (e)
+        // EVENT change on timezone select
+        .on("change", function (e)
         {
           const timezone = this.value;
 
@@ -68,7 +73,8 @@
             $item.addClass ("selected");
 
           $item
-            .on ("click", function ()
+            // EVENT click on locale buttons
+            .on("click", function ()
             {
               if (!$(this).hasClass ("selected"))
               {

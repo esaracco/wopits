@@ -134,43 +134,50 @@
 
        if (writeAccess)
        {
-         $cell
-          // Get touch coords on touch devices
-          .on("touchstart", function (e)
+         function __dblclick (e)
+         {
+           if (e.target.tagName != 'TD')
+                return e.stopImmediatePropagation ();
+
+           const $filters = S.getCurrent ("filters"),
+                 cellOffset = $cell.offset (),
+                 pTop = ((_coords && _coords.changedTouches) ?
+                   _coords.changedTouches[0].clientY :
+                   e.pageY) - cellOffset.top,
+                 pLeft = ((_coords && _coords.changedTouches) ?
+                   _coords.changedTouches[0].clientX :
+                   e.pageX) - cellOffset.left;
+
+           _coords = null;
+
+           $wall.wall ("closeAllMenus");
+
+           if ($filters)
+             $filters.filters ("reset");
+
+           plugin.addPostit ({
+             access: settings.access,
+             item_top: pTop,
+             item_left: pLeft - 15
+           });
+         }
+
+         // Touch devices
+         if ($.support.touch)
+           $cell
+            // EVENT touchstart on cell to retrieve touch coords
+            .on("touchstart", function (e)
             {
               _coords = e;
 
               // Fix issue with some touch devices
               $(".navbar-nav,.dropdown-menu").collapse ("hide");
             })
-          // EVENT MOUSEDOWN on cell
-          .doubletap(function(e)
-            {
-              if (e.target.tagName != 'TD')
-                return e.stopImmediatePropagation ();
-  
-              const $filters = S.getCurrent ("filters"),
-                    cellOffset = $cell.offset (),
-                    pTop = ((_coords && _coords.changedTouches) ?
-                      _coords.changedTouches[0].clientY :
-                      e.pageY) - cellOffset.top,
-                    pLeft = ((_coords && _coords.changedTouches) ?
-                      _coords.changedTouches[0].clientX :
-                      e.pageX) - cellOffset.left;
-
-              _coords = null;
-
-              $wall.wall ("closeAllMenus");
-
-              if ($filters)
-                $filters.filters ("reset");
-
-              plugin.addPostit ({
-                access: settings.access,
-                item_top: pTop,
-                item_left: pLeft - 15
-              });
-            });
+            // EVENT MOUSEDOWN on cell
+            .doubletap (__dblclick);
+          // No touch device
+          else
+            $cell.dblclick (__dblclick);
         }
 
         let w, h;

@@ -1012,19 +1012,19 @@
     {
       const label = H.noHTML (args.label);
 
-      for (let i = 0, iLen = this.settings._plugs.length; i < iLen; i++)
+      for (const plug of this.settings._plugs)
       {
-        const plug = this.settings._plugs[i];
-
-        if (plug.endId == args.endId)
+        if (plug.endId == args.endId && label != plug.label)
           {
             plug.label = label;
+
             plug.obj.setOptions({
               middleLabel: LeaderLine.captionLabel ({
                 text: label,
                 fontSize: "13px"
               })
             });
+
             plug.labelObj.find("a span").html (
               (label == ""  || label == "...") ?
                 '<i class="fas fa-ellipsis-h"></i>' : label);
@@ -1040,8 +1040,7 @@
     // METHOD addPlugLabel ()
     addPlugLabel (plug, $svg)
     {
-      const labelId = plug.startId+"-"+plug.endId,
-            $div = this.settings.plugsContainer;
+      const $div = this.settings.plugsContainer;
       let svg;
 
       if ($svg)
@@ -1050,7 +1049,7 @@
         svg = $svg[0];
       }
       else
-        svg = $div[0].querySelector (".leader-line[data-id='"+labelId+"']");
+        svg = $div[0].querySelector ("#_"+plug.startId+"-"+plug.endId);
 
       const text = svg.querySelector ("text"),
             pos = text ? text.getBoundingClientRect () : null;
@@ -1059,9 +1058,9 @@
       {
         const writeAccess = H.checkAccess (
                 "<?=WPT_WRIGHTS_RW?>", this.settings.access),
-              menu = `<ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
+              menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
-        plug.labelObj = $(`<div class="plug-label nav-item dropdown submenu line-menu" data-id="${labelId}" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
+        plug.labelObj = $(`<div class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
       }
     },
 
@@ -1083,7 +1082,7 @@
 
       // Associate SVG line to plug and set its label
       const $svg = $(".leader-line:last-child");
-      $svg[0].dataset.id = plug.startId+"-"+plug.endId;
+      $svg[0].id = "_"+plug.startId+"-"+plug.endId;
       this.addPlugLabel (plug, $svg);
 
       // Register plug on start point postit (current plugin)
@@ -1123,13 +1122,9 @@
     // METHOD getPlugById ()
     getPlugById (plugId)
     {
-      for (let i = 0, iLen = this.settings._plugs.length; i < iLen; i++)
-      {
-        const plug = this.settings._plugs[i];
-
+      for (const plug of this.settings._plugs)
         if (plug.startId+"-"+plug.endId == plugId)
           return plug;
-      }
     },
 
     // METHOD removePlug ()
@@ -1257,16 +1252,12 @@
         {
           plug.obj.position ();
 
-          const label = div.querySelector(".leader-line[data-id='"+
-            plug.startId+"-"+plug.endId+"'] text");
-
-          if (label)
-          {
-            const p = label.getBoundingClientRect ();
+          const p = div.querySelector (
+                      "#_"+plug.startId+"-"+plug.endId+" text")
+                        .getBoundingClientRect ();
 
             plug.labelObj[0].style.top = p.top+"px";
             plug.labelObj[0].style.left = p.left+"px";
-          }
         });
     },
 
@@ -1644,10 +1635,8 @@
           if (!d.length)
             body = "<?=_("This sticky note has no attachment")?>";
           else
-          {
-            for (let i = 0, flen = d.length; i < flen; i++)
-              body += this.getAttachmentTemplate (d[i], !writeAccess);
-          }
+            d.forEach (
+              (a)=> body += this.getAttachmentTemplate (a, !writeAccess));
 
           if (writeAccess)
             $_attachmentsPopup.find(".btn-primary").show ();
@@ -2102,13 +2091,14 @@
         });
 
         // EVENT click on plug label
-        $(document).on ("click", ".plug-label li", function ()
+        $(document).on("click", ".plug-label li", function ()
           {
             const $item = $(this),
                   $label = $item.closest("div"),
                   $popup = $("#plugPopup"),
                   $wall = S.getCurrent ("wall"),
-                  [startId, endId] = $label[0].dataset.id.split ("-"),
+                  [,startId, endId] =
+                    $label[0].previousSibling.id.match (/^_(\d+)\-(\d+)$/),
                   startPlugin =
                     $wall.find(".postit[data-id='postit-"+startId+"']")
                       .postit("getClass"),

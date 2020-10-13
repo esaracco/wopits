@@ -9,9 +9,9 @@ class Wpt_forms
     $form.find("span.required").remove ();
     $form.find(".required").removeClass ("required");
     
-    for (let i = 0, iLen = fields.length; i < iLen; i++)
+    for (const f of fields)
     {
-      const $f = $(fields[i]);
+      const $f = $(f);
 
       if ($f.attr("required") && !$f.val().trim().length)
       {
@@ -73,12 +73,12 @@ class Wpt_accountForms extends Wpt_forms
   // METHOD validForm ()
   validForm (fields)
   {
-    for (let i = 0, iLen = fields.length; i < iLen; i++)
+    for (const f of fields)
     {
-      const $f = $(fields[i]);
+      const $f = $(f);
       let val = $f.val ();
 
-      switch ($f.attr("name"))
+      switch ($f.attr ("name"))
       {
         case "wall-width":
         case "wall-height":
@@ -924,14 +924,14 @@ class WHelper
     const $layer = $(`<div id="popup-layer" class="layer"></div>`);
   
     $(document)
-      .on ("keydown", function (e)
+      .on("keydown", function (e)
       {
         if (e.which == 27)
           $layer.click ();
       });
   
       $layer
-        .on ("click",
+        .on("click",
         function (e)
         {
           $(document).off ("keydown");
@@ -1591,6 +1591,7 @@ class WHelper
   }
   
   // METHOD fixVKBScrollStart ()
+  //FIXME
   fixVKBScrollStart ()
   {
     const body = document.body,
@@ -1615,6 +1616,7 @@ class WHelper
   }
   
   // METHOD fixVKBScrollStop ()
+  //FIXME
   fixVKBScrollStop ()
   {
     const walls = document.getElementById ("walls");

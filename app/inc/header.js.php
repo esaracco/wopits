@@ -264,13 +264,8 @@
             $header = plugin.element,
             settings = plugin.settings;
 
-      function __upload__ ()
-      {
-        $(".upload.header-picture").click ();
-      }
-
       if (!settings.wall[0].dataset.shared || H.navigatorIsEdge ())
-        __upload__ ();
+        $(".upload.header-picture").click ();
       else
       {
         clearInterval (_ffTriggerBug.i);
@@ -281,7 +276,7 @@
               if (_ffTriggerBug.run)
               {
                 clearInterval (_ffTriggerBug.i);
-                __upload__ ();
+                $(".upload.header-picture").click ();
               }
             }, 150)
         };

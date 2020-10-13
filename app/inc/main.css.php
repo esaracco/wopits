@@ -789,7 +789,6 @@ input::-ms-clear {
   z-index:1000;
   position:absolute;
   cursor:pointer;
-  padding:0 5px;
   border:1px solid #e8e8e8;
   background:#fff;
   border-radius:5px;
@@ -807,6 +806,7 @@ input::-ms-clear {
 .plug-label > a {
   color:#bfbfbf;
   text-decoration:none;
+  padding:5px;
 }
 
 .plug-label:hover {
@@ -857,16 +857,18 @@ input::-ms-clear {
   margin:0.20rem 0;
 }
 
-.submenu.line-menu {
+.plug-label.submenu {
   height:auto;
 }
 
-.submenu.line-menu:hover {
+.plug-label.submenu:hover {
   z-index:6000!important;
 }
 
-.submenu.line-menu .dropdown-menu {
+.plug-label.submenu .dropdown-menu {
   min-width:100px;
+  border:none;
+  box-shadow: 0 0 5px #cecece;
 }
 
 .submenu .dropdown-menu i.fa-edit {

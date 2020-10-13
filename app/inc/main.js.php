@@ -94,7 +94,8 @@
             },
           stop: function ()
             {
-              const $arrows = S.getCurrent ("arrows");
+              const $arrows = S.getCurrent ("arrows"),
+                    $filters = S.getCurrent ("filters");
 
               S.set ("still-dragging", true, 500);
 
@@ -102,7 +103,9 @@
               if ($arrows.is (":visible"))
                 $arrows.arrows ("update");
 
-              plugin.showPostitsPlugs ();
+              if (!$filters || !$filters.hasClass ("plugs-hidden"))
+                plugin.showPostitsPlugs ();
+
               S.unset ("wall-dragging", true);
             }
         })
@@ -225,15 +228,14 @@
                     plugin.displayShareAlert ();
                   }
 
-                  // Refresh postits relations
+                  // Refresh postits relationships
                   H.waitForDOMUpdate (() =>
                     plugin.refreshPostitsPlugs (settings.postits_plugs));
                 });
             }
-            // Refresh postits relations
+            // Refresh postits relationships
             else
               plugin.refreshPostitsPlugs (settings.postits_plugs);
-
           });
 
         });
@@ -787,7 +789,7 @@
       if (d.postits_plugs)
         setTimeout (() =>
           {
-            // Refresh postits relations
+            // Refresh postits relationships
             plugin.refreshPostitsPlugs (
               d.postits_plugs, d.partial && d.partial != "plugs");
 
