@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-07 21:41+0200\n"
+        "POT-Creation-Date: 2020-10-15 13:49+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -182,6 +182,9 @@ msgid   "Confirmation"
 msgstr  ""
 
 msgid   "Content"
+msgstr  ""
+
+msgid   "Content has been cleaned up."
 msgstr  ""
 
 msgid   "Create"
@@ -435,6 +438,9 @@ msgstr  ""
 msgid   "Linked documents"
 msgstr  ""
 
+msgid   "List mode"
+msgstr  ""
+
 msgid   "Log in"
 msgstr  ""
 
@@ -672,6 +678,9 @@ msgid   "Sticky note update"
 msgstr  ""
 
 msgid   "Sticky notes management"
+msgstr  ""
+
+msgid   "Sticky notes mode"
 msgstr  ""
 
 msgid   "Stop"

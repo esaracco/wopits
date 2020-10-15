@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-07 21:41+0200\n"
-"PO-Revision-Date: 2020-10-07 21:41+0200\n"
+"POT-Creation-Date: 2020-10-15 13:49+0200\n"
+"PO-Revision-Date: 2020-10-15 13:51+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -412,6 +412,9 @@ msgstr "Confirmation"
 msgid "Content"
 msgstr "Contenu"
 
+msgid "Content has been cleaned up."
+msgstr "Le contenu a été nettoyé."
+
 msgid "Create"
 msgstr "Créer"
 
@@ -736,6 +739,9 @@ msgstr "Laissez briller vos idées!"
 msgid "Linked documents"
 msgstr "Documents liés"
 
+msgid "List mode"
+msgstr "Mode liste"
+
 msgid "Log in"
 msgstr "Se connecter"
 
@@ -1005,6 +1011,9 @@ msgstr "Modification du post-it"
 
 msgid "Sticky notes management"
 msgstr "Gestion des post-its"
+
+msgid "Sticky notes mode"
+msgstr "Mode post-it"
 
 msgid "Stop"
 msgstr "Arrêter"
