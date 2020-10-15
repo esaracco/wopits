@@ -245,7 +245,7 @@
 
             p.style.visibility = "hidden";
 
-            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}">${title}</li>`;
+            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}"><span></span>${title}</li>`;
           });
 
         $cell.find(".cell-menu").append (
@@ -447,7 +447,7 @@
 
           if (!S.get ("still-dragging"))
             $cell.find(".postit[data-id='"+this.dataset.pid+"']")
-              .postit ("openPostit", $(this));
+              .postit ("openPostit", $(this).find("span"));
         });
     });
 
