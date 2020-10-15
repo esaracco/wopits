@@ -825,6 +825,63 @@ input::-ms-clear {
   height:1px;
 }
 
+.cell-menu {
+  position:absolute;
+  right:-1px;
+  top:-4px;
+  color:#555;
+  cursor:pointer;
+  z-index:1011;
+  padding:5px;
+}
+
+.cell-menu .wpt-badge {
+  font-size:0.6rem;
+  margin-left:-10px;
+  margin-top:-1px;
+}
+
+.cell-menu .btn-circle {
+  width:23px;
+  height:23px;
+  font-size:0.9rem;
+}
+
+.cell-menu .btn-circle i {
+  position:relative;
+  margin-left:-5px;
+  top:-4px;
+  font-size:.8rem;
+}
+
+.cell-menu .btn-circle {
+  margin-left:-5px;
+}
+
+.cell-list-mode {
+  width:100%;
+  height:100%;
+  position:absolute;
+  left:0;
+  top:0;
+  font-size:14px;
+}
+
+.cell-list-mode ul {
+  padding:0;
+  overflow-y:auto;
+}
+
+.cell-list-mode ul li {
+  padding:3px;
+  border-bottom:1px dashed #a6a6a6;
+  list-style:none;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+}
+
 .postit-menu .submenu {
   margin-left:3px;
   margin-top:-6px;

@@ -55,6 +55,8 @@
       if (settings.restoring)
         wall0.dataset.restoring = 1;
 
+      wall0.dataset.displaymode = "postit-mode";
+
       plugin.setName (settings.name, true);
 
       // Prepare rows array for display
@@ -81,7 +83,7 @@
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
-      if (writeAccess || !$.support.touch)
+      if (writeAccess && !$.support.touch)
         $wall.draggable({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
@@ -106,7 +108,7 @@
               if (!$filters || !$filters.hasClass ("plugs-hidden"))
                 plugin.showPostitsPlugs ();
 
-              S.unset ("wall-dragging", true);
+              S.unset ("wall-dragging");
             }
         })
 
@@ -320,12 +322,19 @@
     
               case "have-wall":
 
+                if ($wall.length)
+                {
+                  const view = $wall[0].dataset.displaymode;
+
+                  this.menu ({from: "display", type: view});
+                }
+
                 if ($wall.length && $wall[0].dataset.shared)
                   $menu.find('[data-action="chatroom"] a')
                     .removeClass ("disabled");
                 else
                 {
-                  const $chatroom = S.getCurrent("chatroom");
+                  const $chatroom = S.getCurrent ("chatroom");
 
                   if ($chatroom.length)
                     $chatroom.chatroom ("hide");
@@ -362,6 +371,21 @@
 
                 $menu.find("[data-action='block-externalref']").show ();
                 $menu.find("[data-action='unblock-externalref']").hide ();
+                break;
+
+              case "list-mode":
+
+                $menu.find("[data-action='list-mode'] a").addClass ("disabled");
+                $menu.find("[data-action='postit-mode'] a")
+                  .removeClass ("disabled");
+                break;
+
+              case "postit-mode":
+
+                $menu.find("[data-action='postit-mode'] a")
+                  .addClass ("disabled");
+                $menu.find("[data-action='list-mode'] a")
+                  .removeClass ("disabled");
                 break;
 
               case "block-externalref":
@@ -460,7 +484,7 @@
           const startId = plug.item_start,
                 endId = plug.item_end,
                 start0 = wall.querySelector (
-                          ".postit[data-id='postit-"+startId+"']"),
+                           ".postit[data-id='postit-"+startId+"']"),
                 $start = $(start0),
                 startPlugin = $start.postit ("getClass"),
                 label = plug.label || "...";
@@ -480,7 +504,9 @@
 
             startPlugin.addPlug (newPlug);
 
-            if (hidePlugs)
+            if (hidePlugs ||
+                end.parentNode.classList.contains("list-mode") ||
+                start0.parentNode.classList.contains("list-mode"))
               startPlugin.hidePlugs ();
           }
           else
@@ -505,7 +531,7 @@
     hidePostitsPlugs ()
     {
       this.element[0].querySelectorAll(".postit").forEach (
-        (p) => $(p).postit ("hidePlugs"));
+        (p) => $(p).postit ("hidePlugs", true));
     },
 
     // METHOD showPostitsPlugs ()
@@ -515,7 +541,7 @@
 
       H.waitForDOMUpdate (()=>
         this.element[0].querySelectorAll(".postit").forEach (
-          (p) => $(p).postit ("showPlugs")));
+          (p) => $(p).postit ("showPlugs", true)));
     },
 
     // METHOD refresh ()
@@ -539,14 +565,13 @@
             $wall = plugin.element,
             wall0 = $wall[0],
             $filters = S.getCurrent ("filters"),
-            $arrows = S.getCurrent ("arrows");
-
-      function __refreshWallBasicProperties (d)
-      {
-        plugin.setShared (d.shared);
-        plugin.setName (d.name);
-        plugin.setDescription (d.description);
-      }
+            $arrows = S.getCurrent ("arrows"),
+            __refreshWallBasicProperties = (d)=>
+            {
+              plugin.setShared (d.shared);
+              plugin.setName (d.name);
+              plugin.setDescription (d.description);
+            };
 
       // Partial wall update
       if (d.partial)
@@ -799,8 +824,20 @@
       else
         plugin.repositionPostitsPlugs ();
 
+      // Apply display mode
+      setTimeout (()=> plugin.refreshCellsToggleDisplayMode (), 0);
+
       // Replay postits search
       setTimeout (()=> $("#postitsSearchPopup").postitsSearch("replay"), 250);
+    },
+
+    // METHOD refreshCellsToggleDisplayMode ()
+    refreshCellsToggleDisplayMode ()
+    {
+      this.element.find("td.list-mode").each (function ()
+        {
+          $(this).cell ("toggleDisplayMode", true);
+        });
     },
 
     // METHOD openCloseAllWallsPopup ()
@@ -1443,6 +1480,23 @@
       wall.style.maxWidth = w+"px";
     },
 
+    // METHOD setPostitsDisplayMode ()
+    setPostitsDisplayMode (type)
+    {
+      this.menu ({from: "display", type: type});
+
+      this.element[0].dataset.displaymode = type;
+
+      this.element.find("td").each (function ()
+        {
+          $(this).cell ("setPostitsDisplayMode", type);
+        });
+
+      // Re-apply filters
+      if (S.getCurrent("filters").is (":visible"))
+        S.getCurrent("filters").filters ("apply");
+    },
+
     // METHOD zoom ()
     //FIXME KO with some browsers and touch devices
     zoom (args)
@@ -1903,6 +1957,13 @@
               case "zoom-normal":
 
                 $wall.wall ("zoom", {type: "normal"});
+
+                break;
+
+              case "list-mode":
+              case "postit-mode":
+
+                $wall.wall ("setPostitsDisplayMode", action);
 
                 break;
 

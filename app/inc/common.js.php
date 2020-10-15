@@ -1374,7 +1374,7 @@ class WHelper
 
           if (fileUpload)
           {
-            function __progress (e)
+            const __progress = (e)=>
             {
               if (e.lengthComputable)
                 {
@@ -1393,7 +1393,7 @@ class WHelper
                   else
                     $progress.text ("<?=_("Upload completed.")?>");
                 }
-            }
+            };
 
             xhr.upload.addEventListener ("progress", __progress, false);
             xhr.addEventListener ("progress", __progress, false);

@@ -196,7 +196,10 @@
     checkPlugsMenu (resetUndo)
     {
       const smenu = this.$menu[0].querySelector (
-                     "li[data-action='delete-plugs'] .dropdown-item");
+                     "[data-action='delete-plugs'] .dropdown-item");
+
+      if (S.getCurrent("filters").find(".selected").length)
+        return this.$menu.find("[data-action='plug']").hide ();
 
       if (this.postitPlugin.havePlugs ())
         smenu.classList.remove ("disabled");
@@ -207,10 +210,10 @@
         this.postitPlugin.resetPlugsUndo ();
 
     if (this.postitPlugin.settings.wall.find(".postit").length == 1)
-        this.$menu.find("li[data-action='add-plug'] .dropdown-item")
+        this.$menu.find("[data-action='add-plug'] .dropdown-item")
           .addClass ("disabled");
       else
-        this.$menu.find("li[data-action='add-plug'] .dropdown-item")
+        this.$menu.find("[data-action='add-plug'] .dropdown-item")
           .removeClass ("disabled");
     }
 
@@ -649,7 +652,7 @@
           // EVENT click on menu button
           .on("click", function(e)
             {
-              const $btn = $(this).find("i"),
+              const btn = this.querySelector ("i"),
                     id = settings.id,
                     $header = $postit.find (".postit-header");
 
@@ -665,15 +668,15 @@
                 if ((coord.x||coord.left)+settings.Menu.getWidth()+20 >
                       $(window).width())
                 {
-                  $btn
-                    .switchClass ("fa-caret-square-up", "fa-caret-square-left");
+                  btn.classList
+                    .replace ("fa-caret-square-up", "fa-caret-square-left");
                   settings.Menu.setPosition ("left");
                 }
                 else
                   settings.Menu.setPosition ("right");
 
                 $header.addClass ("menu");
-                $btn.switchClass ("far", "fas");
+                btn.classList.replace ("far", "fas");
 
                 settings.Menu.show ();
               }
@@ -681,9 +684,9 @@
               else
               {
                 $header.removeClass ("menu");
-                $btn
-                  .switchClass("fas", "far")
-                  .switchClass ("fa-caret-square-left", "fa-caret-square-up");
+                btn.classList.replace("fas", "far");
+                btn.classList
+                  .replace ("fa-caret-square-left", "fa-caret-square-up");
 
                 settings.Menu.destroy ();
                 delete settings.Menu;
@@ -768,7 +771,7 @@
     },
 
     // METHOD openPostit ()
-    openPostit ()
+    openPostit (item)
     {
       const writeAccess = H.checkAccess (
               "<?=WPT_WRIGHTS_RW?>", this.settings.access),
@@ -777,27 +780,16 @@
       // Open modal with read rights only
       if (!writeAccess)
       {
-        if (!this.openAskForExternalRefPopup ({
-               cb_ok: () =>
-               {
-                 $wall.wall ("displayExternalRef", 1);
-                 this.open ()}}))
-            {
-              this.open ();
-            }
+        if (!this.openAskForExternalRefPopup ({item: item}))
+          this.open ();
        }
        else
          this.edit (null, () =>
            {
              if (!this.openAskForExternalRefPopup ({
-                    cb_close: (btn) => (btn != "yes") && this.unedit (),
-                    cb_ok: () =>
-                    {
-                      $wall.wall ("displayExternalRef", 1);
-                      this.open ()}}))
-              {
-                this.open ();
-              }
+                    item: item,
+                    cb_close: (btn) => (btn != "yes") && this.unedit ()}))
+               this.open ();
            });
     },
 
@@ -806,7 +798,7 @@
     {
       const plugin = this,
             postit = plugin.element[0],
-            title = postit.querySelector(".postit-header .title").innerText,
+            title = this.element.find(".postit-header .title").text (),
             content = postit.querySelector(".postit-edit").innerHTML||"",
             writeAccess =
               H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access);
@@ -1214,32 +1206,55 @@
     },
 
     // METHOD hidePlugs ()
-    hidePlugs ()
+    hidePlugs (ignoreDisplayMode = false)
     {
       if (!this.settings.wall) return;
+
+      const postitId = this.settings.id;
 
       this.element.find(".postit-menu [data-action='plug']").hide ();
 
       this.settings._plugs.forEach ((plug) =>
         {
+          if (!ignoreDisplayMode)
+          {
+            if (plug.startId == postitId)
+              plug.startHidden = true;
+            else
+              plug.endHidden = true;
+          }
+
           plug.labelObj.hide ();
           plug.obj.hide ("none");
         });
     },
 
     // METHOD showPlugs ()
-    showPlugs ()
+    showPlugs (ignoreDisplayMode = false)
     {
       if (!this.settings.wall) return;
+
+      const postitId = this.settings.id;
 
       this.element.find(".postit-menu [data-action='plug']").show ();
 
       this.settings._plugs.forEach ((plug) =>
         {
-          plug.obj.show ();
+          if (!ignoreDisplayMode)
+          {
+            if (plug.startId == postitId)
+              delete plug.startHidden;
+            else
+              delete plug.endHidden;
+          }
 
-          if (plug.labelObj)
-            plug.labelObj.show ();
+          if (!plug.startHidden && !plug.endHidden)
+          {
+            plug.obj.show ();
+
+            if (plug.labelObj)
+              plug.labelObj.show ();
+          }
         });
     },
 
@@ -1309,8 +1324,7 @@
         else
         {
           const plugin = $postit.postit ("getClass"),
-                title =
-                  this.querySelector(".postit-header span.title").innerText,
+                title = $postit.find(".postit-header span.title").text (),
                 content = this.querySelector(".postit-edit").innerHTML||"",
                 classcolor = this.className.match (/(color\-[a-z]+)/),
                 deadline = (this.dataset.deadlineepoch) ?
@@ -1448,18 +1462,22 @@
     },
 
     // METHOD openAskForExternalRefPopup ()
-    openAskForExternalRefPopup (args)
+    openAskForExternalRefPopup (args = {})
     {
       let ask = (this.getExternalRef () &&
                  this.settings.wall.wall ("displayExternalRef") != 1);
 
       if (ask)
         H.openConfirmPopover ({
-          item: this.element,
+          item: args.item||this.element,
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
           content: "<?=_("This sticky note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>",
           cb_close: args.cb_close,
-          cb_ok: args.cb_ok
+          cb_ok: () =>
+          {
+            this.settings.wall.wall ("displayExternalRef", 1);
+            this.open ()
+          }
         });
 
       return ask;
@@ -2015,11 +2033,12 @@
             // -> Is there a TinyMCE callback for that?
             editor.on("change", function (e)
               {
+                let c = editor.getContent ();
+
                 // Check content only if the TinyMCE dialog is open
                 if ($(".tox-dialog").is(":visible"))
                 {
-                  let c = editor.getContent (),
-                      tmp;
+                  let tmp;
 
                   (c.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
                     {
@@ -2032,19 +2051,12 @@
                           .then (
                           // Needed for some Safari on iOS that do not support
                           // Promise finally() callback.
-                          ()=>
-                          {
-                            H.loader("hide");
-
-                            editor.setContent (c);
-                          },
+                          ()=> H.loader("hide"),
                           ()=>
                           {
                             H.loader("hide");
 
                             c = c.replace(new RegExp (H.quoteRegex(img)), "");
-
-                            editor.setContent (c);
 
                             // Return to the top of the modal if mobile device
                             if ($.support.touch)
@@ -2057,6 +2069,22 @@
                           });
                       }
                     });
+                }
+
+                // Clean up content
+                const $c = $(`<div>${c}</div>`),
+                      $badEl = $c.find("table,th,td,tbody,thead");
+                $badEl.each (function ()
+                {
+                  $(this).remove ()
+                });
+                if ($badEl.length)
+                {
+                  editor.setContent ($c.html ());
+                  H.displayMsg ({
+                    type: "warning",
+                    msg: "<?=_("Content has been cleaned up.")?>"
+                   });
                 }
               });
           },
@@ -2102,18 +2130,18 @@
                   startPlugin =
                     $wall.find(".postit[data-id='postit-"+startId+"']")
                       .postit("getClass"),
-                  defaultLabel = H.htmlEscape ($label.find("span").text ());
+                  defaultLabel = H.htmlEscape ($label.find("span").text ()),
+                  __unedit = ()=>
+                  {
+                    let toSave = {};
 
-            function __unedit ()
-            {
-              let toSave = {};
+                    toSave[startId] = startPlugin.element;
+                    toSave[endId] =
+                      $wall.find(".postit[data-id='postit-"+endId+"']");
 
-              toSave[startId] = startPlugin.element;
-              toSave[endId] = $wall.find(".postit[data-id='postit-"+endId+"']");
-
-              S.set ("plugs-to-save", toSave);
-              startPlugin.unedit ();
-            }
+                    S.set ("plugs-to-save", toSave);
+                    startPlugin.unedit ();
+                  };
 
             switch ($item[0].dataset.action)
             {
@@ -2236,16 +2264,15 @@
           .on("change", function ()
           {
             const $upload = $(this),
-                  fname = this.files[0].name;
-
-            function __error_cb (d)
-            {
-             if (d)
-                H.displayMsg ({
-                  type: "warning",
-                  msg: d.error||d
-                });
-            }
+                  fname = this.files[0].name,
+                  __error_cb = (d)=>
+                  {
+                    if (d)
+                      H.displayMsg ({
+                        type: "warning",
+                        msg: d.error||d
+                      });
+                  };
 
             H.getUploadedFiles (this.files, "\.(jpe?g|gif|png)$",
               (e, file) =>

@@ -120,44 +120,64 @@
       const plugin = this,
             $filters = plugin.element,
             $wall = S.getCurrent ("wall"),
-            $postits = $wall.find(".postit"),
-            $tags = $filters.find(".tags div.selected"),
-            $colors = $filters.find(".colors div.selected");
-
-      $wall.find(".postit")
-        .removeClass("filter-display")
-        .css ("visibility", "visible");
+            $tags = $filters.find(".tags .selected"),
+            $colors = $filters.find(".colors .selected");
 
       if ($tags.length || $colors.length)
       {
         plugin.hidePlugs ();
 
-        if ($tags.length)
-          $tags.each (function ()
-            {
-              const tag =
-                $(this).find("i").attr("class").match (/fa\-([^ ]+) /)[1];
+        $wall[0].querySelectorAll("td").forEach ((cell)=>
+        {
+          const $cell = $(cell),
+                pclass = cell.classList.contains ("list-mode") ?
+                           ".postit-min" : ".postit";
 
-              $wall.find(".postit[data-tags*=',"+tag+",']")
-                .addClass("filter-display");
-            });
+          $cell.find(pclass)
+            .removeClass("filter-display")
+            .css ("visibility", "visible");
 
-        if ($colors.length)
-          $colors.each (function ()
-            {
-              $wall.find(".postit."+this.className.split(" ")[0])
-                .addClass("filter-display");
-            });
+          if ($tags.length)
+            $tags.each (function ()
+              {
+                const tag =
+                  $(this).find("i").attr("class").match (/fa\-([^ ]+) /)[1];
+
+                $cell.find(pclass+"[data-tags*=',"+tag+",']")
+                  .addClass("filter-display");
+              });
+
+          if ($colors.length)
+            $colors.each (function ()
+              {
+                $cell.find(pclass+"."+this.className.split(" ")[0])
+                  .addClass("filter-display");
+              });
+
+          $cell.find(pclass+":not(.filter-display)")
+            .css ("visibility", "hidden");
+        });
  
+/*FIXME Useful?
         if ($wall.find(".postit.current:not(.filter-display)").length)
           $("#popup-layer").click ();
-
-        $wall.find(".postit:not(.filter-display)").css ("visibility", "hidden");
+*/
       }
       else
-        plugin.showPlugs ();
-    }
+      {
+        $wall[0].querySelectorAll("td").forEach ((cell)=>
+        {
+          const $cell = $(cell);
 
+          $cell.find(cell.classList.contains ("list-mode")?
+                       ".postit-min":".postit")
+            .removeClass("filter-display")
+            .css ("visibility", "visible");
+        });
+
+        plugin.showPlugs ();
+      }
+    }
   });
 
 <?php echo $Plugin->getFooter ()?>

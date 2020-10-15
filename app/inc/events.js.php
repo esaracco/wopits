@@ -37,7 +37,7 @@ $(function()
           if ($filters.is (":visible"))
             $filters.filters ("fixPosition");
 
-          if ($arrows.is(":visible"))
+          if ($arrows.is (":visible"))
             $arrows.arrows ("reset");
    
           if ($zoom[0].dataset.zoomlevelorigin)
@@ -70,8 +70,7 @@ $(function()
 
       if ($wall.length)
       {
-        const $arrows = S.getCurrent ("arrows"),
-              $filters = S.getCurrent ("filters");
+        const $arrows = S.getCurrent ("arrows");
 
         if (!S.get ("wall-dragging"))
         {
@@ -95,7 +94,7 @@ $(function()
           }
 
           // Reposition relationships
-          if (!$filters || !$filters.hasClass ("plugs-hidden"))
+          if (!S.getCurrent("filters").hasClass ("plugs-hidden"))
           {
             clearTimeout (_timeoutScroll);
             _timeoutScroll = setTimeout (() =>
@@ -151,7 +150,7 @@ $(function()
     });
 
 /*FIXME Useful?
-  // Usefull in rare case, when user have multiple sessions opened
+  // Useful in rare case, when user have multiple sessions opened
   $(window).focus (
     function (e)
     {
@@ -501,21 +500,24 @@ $(function()
               {
                 const w = Number ($inputs[1].value) + 1,
                       h = Number ($inputs[2].value),
-                      cellPlugin = $cell.cell ("getClass");
+                      cellPlugin = $cell.cell ("getClass"),
+                      __resize = (args)=>
+                      {
+                        $wall.find("thead th:eq(1),td")
+                          .css ("width", args.newW);
+                        $wall.find(".ui-resizable-s")
+                          .css ("width", args.newW + 2);
 
-                function __resize (args)
-                {
-                  $wall.find("thead th:eq(1),td").css ("width", args.newW);
-                  $wall.find(".ui-resizable-s").css ("width", args.newW + 2);
+                        if (args.newH)
+                        {
+                          $wall.find("tbody th,td")
+                            .css ("height", args.newH);
+                          $wall.find(".ui-resizable-e")
+                            .css ("height", args.newH+2);
+                        }
 
-                  if (args.newH)
-                  {
-                    $wall.find("tbody th,td").css ("height", args.newH);
-                    $wall.find(".ui-resizable-e").css ("height", args.newH+2);
-                  }
-
-                  wallPlugin.fixSize (args.oldW, args.newW);
-                }
+                        wallPlugin.fixSize (args.oldW, args.newW);
+                      };
 
                 __resize ({newW: w, oldW: oldW, newH: h});
                 if ($wall.find("td").outerWidth () != w)

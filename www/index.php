@@ -69,6 +69,9 @@
             <li data-action="zoom-screen"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
             <li data-action="zoom-normal"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
             <li class="dropdown-divider volatile"></li>
+            <li data-action="list-mode"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-list-ul"></i> <?=_("List mode")?></a></li>
+            <li data-action="postit-mode"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-sticky-note"></i> <?=_("Sticky notes mode")?></a></li>
+            <li class="dropdown-divider"></li>
             <li data-action="unblock-externalref"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Show external content")?></a></li>
             <li data-action="block-externalref"><a class="dropdown-item" href="#"><span class="fa-stack fa-xs"><i class="fas fa-link fa-stack-1x"></i><i class="fas fa-ban fa-stack-2x" style="color:Tomato"></i></span> <?=_("Block external content")?></a></li>
             <li class="dropdown-divider"></li>

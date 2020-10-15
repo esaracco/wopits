@@ -23,6 +23,16 @@
       // Coords of touchstart on touch devices
       let _coords = null;
 
+      $cell.addClass ($wall[0].dataset.displaymode);
+
+      $cell.prepend ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-list-ul fa-fw"></i></span></div>`)
+        // EVENT click on cell menu
+        .on("click", function ()
+        {
+          if (!S.get ("still-dragging"))
+            $(this).parent().cell ("toggleDisplayMode");
+        }));
+
       if (writeAccess)
         $cell
           // Make cell DROPPABLE
@@ -134,13 +144,13 @@
 
        if (writeAccess)
        {
-         function __dblclick (e)
+         const __dblclick = (e)=>
          {
-           if (e.target.tagName != 'TD')
+           if (e.target.tagName != 'TD' &&
+               !e.target.classList.contains("cell-list-mode"))
                 return e.stopImmediatePropagation ();
 
-           const $filters = S.getCurrent ("filters"),
-                 cellOffset = $cell.offset (),
+           const cellOffset = $cell.offset (),
                  pTop = ((_coords && _coords.changedTouches) ?
                    _coords.changedTouches[0].clientY :
                    e.pageY) - cellOffset.top,
@@ -152,15 +162,15 @@
 
            $wall.wall ("closeAllMenus");
 
-           if ($filters)
-             $filters.filters ("reset");
+           if (S.getCurrent("filters").is (":visible"))
+             S.getCurrent("filters").filters ("reset");
 
            plugin.addPostit ({
              access: settings.access,
              item_top: pTop,
              item_left: pLeft - 15
            });
-         }
+         };
 
          // Touch devices
          if ($.support.touch)
@@ -198,6 +208,94 @@
         }
 
         plugin.update ({width: w, height: h});
+    },
+
+    // METHOD setPostitsDisplayMode ()
+    setPostitsDisplayMode (type)
+    {
+      const $cell = this.element,
+            $displayMode = $cell.find (".cell-menu i");
+
+      // If we must display list
+      // list-mode
+      if (type == "list-mode")
+      {
+        const cellWidth = $cell[0].clientWidth,
+              cellHeight = $cell[0].clientHeight,
+              postits = Array.from($cell[0].querySelectorAll(".postit"));
+
+        $cell.removeClass("postit-mode").addClass ("list-mode");
+
+        $cell.resizable ("disable");
+
+        $displayMode[0].classList.replace ("fa-list-ul", "fa-sticky-note");
+
+        let html = "";
+        postits
+          // Sort by postit id DESC
+          .sort((a, b)=>b.dataset.id.substring(7) - a.dataset.id.substring(7))
+          .forEach ((p)=>
+          {
+            const color = (p.className.match (/ color\-([a-z]+)/))[1],
+                  postitPlugin = $(p).postit ("getClass"),
+                  title = postitPlugin.element.find(".title").text ();
+
+            postitPlugin.closeMenu ();
+            postitPlugin.hidePlugs ();
+
+            p.style.visibility = "hidden";
+
+            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}">${title}</li>`;
+          });
+
+        $cell.find(".cell-menu").append (
+          `<span class="wpt-badge">${postits.length}</span>`);
+        $cell.prepend (
+          `<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`);
+      }
+      // If we must display full postit
+      // postit-mode
+      else
+      {
+        $cell.removeClass("list-mode").addClass ("postit-mode");
+
+        $cell.find(".cell-list-mode").remove ();
+        $cell.find(".cell-menu .wpt-badge").remove ();
+
+        $cell[0].querySelectorAll(".postit").forEach ((p)=>
+          {
+            p.style.visibility = "visible";
+
+            $(p).postit ("showPlugs");
+          });
+
+        $displayMode[0].classList.replace ("fa-sticky-note", "fa-list-ul");
+
+        $cell.resizable ("enable");
+      }
+    },
+
+    // METHOD toggleDisplayMode ()
+    toggleDisplayMode (forceList = false)
+    {
+      const $cell = this.element;
+
+      if ($cell.hasClass ("postit-mode") || forceList)
+      {
+        if (forceList)
+        {
+          $cell.find(".cell-list-mode").remove ();
+          $cell.find(".cell-menu .wpt-badge").remove ();
+        }
+
+        this.setPostitsDisplayMode ("list-mode");
+      }
+      else
+        this.setPostitsDisplayMode ("postit-mode");
+
+      // Re-apply filters
+      if (S.getCurrent("filters").is (":visible"))
+        S.getCurrent("filters").filters ("apply");
     },
 
     // METHOD removePostitsPlugs ()
@@ -277,7 +375,7 @@
       // another user, do not add it again in DB
       if (!noinsert)
         $postit.postit ("insert");
-      else
+      else if ($cell[0].classList.contains("postit-mode"))
         $postit.css ("visibility", "visible");
     },
 
@@ -334,5 +432,23 @@
       );
     }
   };
-  
+
+  /////////////////////////// AT LOAD INIT //////////////////////////////
+
+  $(function()
+    {
+      // EVENT click on postit min li
+      $(document).on("click", ".cell-list-mode li", function (e)
+        {
+          const $cell = $(this).closest ("td");
+
+          if (e.cancelable)
+              e.preventDefault ();
+
+          if (!S.get ("still-dragging"))
+            $cell.find(".postit[data-id='"+this.dataset.pid+"']")
+              .postit ("openPostit", $(this));
+        });
+    });
+
 <?php echo $Plugin->getFooter ()?>
