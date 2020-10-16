@@ -8,6 +8,9 @@ CREATE TYPE enum_type AS ENUM ('col', 'row');
 DROP TYPE IF EXISTS enum_item CASCADE;
 CREATE TYPE enum_item AS ENUM ('wall', 'wall-delete', 'cell', 'header', 'postit', 'group');
 
+DROP TYPE IF EXISTS enum_displaymode CASCADE;
+CREATE TYPE enum_displaymode AS ENUM ('list-mode', 'postit-mode');
+
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
 (
@@ -95,7 +98,8 @@ CREATE TABLE _perf_walls_users
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   -- ADMIN(1), RW(2), RO(3)
   access SMALLINT NOT NULL,
-  displayexternalref SMALLINT NOT NULL DEFAULT 0
+  displayexternalref SMALLINT NOT NULL DEFAULT 0,
+  displaymode enum_displaymode NOT NULL DEFAULT 'postit-mode'
 );
 CREATE INDEX "_perf_walls_users-access-idx" ON _perf_walls_users (access);
 

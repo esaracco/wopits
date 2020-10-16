@@ -55,7 +55,7 @@
       if (settings.restoring)
         wall0.dataset.restoring = 1;
 
-      wall0.dataset.displaymode = "postit-mode";
+      wall0.dataset.displaymode = settings.displaymode;
 
       plugin.setName (settings.name, true);
 
@@ -205,6 +205,14 @@
 
           H.waitForDOMUpdate (()=>
           {
+            const __postInit = ()=>
+              {
+                // Refresh postits relationships
+                plugin.refreshPostitsPlugs (settings.postits_plugs);
+                // Apply display mode
+                plugin.refreshCellsToggleDisplayMode ();
+              };
+
             plugin.displayExternalRef ();
 
             // Display postit dealine alert or specific wall if needed.
@@ -230,14 +238,11 @@
                     plugin.displayShareAlert ();
                   }
 
-                  // Refresh postits relationships
-                  H.waitForDOMUpdate (() =>
-                    plugin.refreshPostitsPlugs (settings.postits_plugs));
+                  H.waitForDOMUpdate (() => __postInit ());
                 });
             }
-            // Refresh postits relationships
             else
-              plugin.refreshPostitsPlugs (settings.postits_plugs);
+              __postInit ();
           });
 
         });
@@ -1495,6 +1500,11 @@
       // Re-apply filters
       if (S.getCurrent("filters").is (":visible"))
         S.getCurrent("filters").filters ("apply");
+
+      H.request_ajax (
+        "POST",
+        "user/wall/"+this.settings.id+"/displayMode",
+        {display: type});
     },
 
     // METHOD zoom ()
@@ -1728,7 +1738,7 @@
 
         H.request_ajax (
           "POST",
-          "user/wall/"+this.settings.id+"/setExternalRef",
+          "user/wall/"+this.settings.id+"/externalRef",
           {display: val});
       }
 

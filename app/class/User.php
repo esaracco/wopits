@@ -499,10 +499,28 @@ class User extends Base
     return $ret;
   }
 
+  public function setDisplayMode (int $wallId):array
+  {
+    $ret = [];
+
+    try
+    {
+      $this->executeQuery ('UPDATE _perf_walls_users',
+        ['displaymode' => $this->data->display],
+        ['users_id' => $this->userId, 'walls_id' => $wallId]);
+    }
+    catch (\Exception $e)
+    {
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
   public function setExternalRef (int $wallId):array
   {
     $ret = [];
-    $data = [];
 
     try
     {

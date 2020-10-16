@@ -736,10 +736,12 @@ class Wall extends Base
     if (!$basic)
     {
       ($stmt = $this->prepare ('
-        SELECT displayexternalref
+        SELECT displayexternalref, displaymode
         FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1'))
          ->execute ([$this->wallId, $this->userId]);
-      $data['displayexternalref'] = $stmt->fetch()['displayexternalref'];
+      $row = $stmt->fetch ();
+      $data['displayexternalref'] = $row['displayexternalref'];
+      $data['displaymode'] = $row['displaymode'];
 
       // Get headers
       ($stmt = $this->prepare ("

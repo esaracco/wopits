@@ -221,7 +221,12 @@
 
           switch (getParam ('action'))
           {
-            case 'setExternalRef':
+            case 'displayMode':
+
+              $ret = $User->setDisplayMode (getParam ('wallId'));
+              break;
+
+            case 'externalRef':
 
               $ret = $User->setExternalRef (getParam ('wallId'));
               break;
