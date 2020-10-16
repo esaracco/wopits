@@ -83,7 +83,7 @@
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
-      if (writeAccess && !$.support.touch)
+      if (!$.support.touch)
         $wall.draggable({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
