@@ -124,6 +124,7 @@ CREATE TABLE _perf_walls_users
   access TINYINT NOT NULL, -- ADMIN(1), RW(2), RO(3)
   displayexternalref TINYINT NOT NULL DEFAULT 0,
   displaymode ENUM('list-mode', 'postit-mode') NOT NULL DEFAULT 'postit-mode',
+  settings VARCHAR(2000) NOT NULL DEFAULT '{}',
 
   CONSTRAINT `_perf_walls_users-walls_id-fk` FOREIGN KEY (walls_id)
     REFERENCES walls(id) ON DELETE CASCADE,

@@ -140,11 +140,6 @@ class Base extends \PDO
     $badValue = false;
     switch ($field)
     {
-      // `settings` must be a JSON string.
-      case 'settings':
-        $badValue = !@json_decode($value)->locale;
-        break;
-
       // `email` must be a simple valid email.
       case 'email':
         $badValue = !filter_var ($value, FILTER_VALIDATE_EMAIL);

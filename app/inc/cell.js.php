@@ -17,13 +17,15 @@
       const plugin = this,
             $cell = plugin.element,
             settings = plugin.settings,
+            cellId = settings.id,
+            usersettings = settings.usersettings,
             $wall = settings.wall,
             writeAccess =
               H.checkAccess ("<?=WPT_WRIGHTS_RW?>", settings.access);
       // Coords of touchstart on touch devices
       let _coords = null;
 
-      $cell.addClass ($wall[0].dataset.displaymode);
+      $cell.addClass (usersettings.displaymode||$wall[0].dataset.displaymode);
 
       $cell.prepend ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-list-ul fa-fw"></i></span></div>`)
         // EVENT click on cell menu
@@ -276,26 +278,43 @@
     },
 
     // METHOD toggleDisplayMode ()
-    toggleDisplayMode (forceList = false)
+    toggleDisplayMode (refresh = false)
     {
-      const $cell = this.element;
+      const $cell = this.element,
+            settings = this.settings;
+      let type;
 
-      if ($cell.hasClass ("postit-mode") || forceList)
+      if ($cell.hasClass ("postit-mode") || refresh)
       {
-        if (forceList)
+        type = "list-mode";
+
+        if (refresh)
         {
           $cell.find(".cell-list-mode").remove ();
           $cell.find(".cell-menu .wpt-badge").remove ();
         }
-
-        this.setPostitsDisplayMode ("list-mode");
       }
       else
-        this.setPostitsDisplayMode ("postit-mode");
+        type = "postit-mode";
+
+      this.setPostitsDisplayMode (type);
 
       // Re-apply filters
       if (S.getCurrent("filters").is (":visible"))
         S.getCurrent("filters").filters ("apply");
+
+      if (!refresh)
+      {
+        settings.usersettings.displaymode = type;
+
+        H.request_ajax (
+          "POST",
+          "user/wall/"+settings.wallId+"/settings",
+          {
+            key: "cell-"+settings.id,
+            value: settings.usersettings
+          });
+      }
     },
 
     // METHOD removePostitsPlugs ()

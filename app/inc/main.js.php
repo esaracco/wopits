@@ -1001,9 +1001,12 @@
       // Init cells
       $row.find("td").each (function ()
         {
+          const cellId = this.dataset.id.substring (5);
+
           $(this).cell ({
-            id: this.dataset.id.substring (5),
+            id: cellId,
             access: plugin.settings.access,
+            usersettings: plugin.settings.usersettings["cell-"+cellId]||{},
             wall: $wall,
             wallId: wallId,
             plugsContainer: plugin.settings.plugsContainer

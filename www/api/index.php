@@ -219,33 +219,42 @@
 
           $User = new User (['data' => $data]);
 
-          switch (getParam ('action'))
-          {
-            case 'displayMode':
+          if (getParam ('item') == 'wall')
+            switch (getParam ('action'))
+            {
+              case 'settings':
 
-              $ret = $User->setDisplayMode (getParam ('wallId'));
-              break;
+                $ret = $User->setWallSettings (getParam ('wallId'));
+                break;
 
-            case 'externalRef':
+              case 'displayMode':
 
-              $ret = $User->setExternalRef (getParam ('wallId'));
-              break;
+                $ret = $User->setWallDisplayMode (getParam ('wallId'));
+                break;
 
-            case 'login':
+              case 'externalRef':
 
-              $ret = $User->login ($data->remember);
-              break;
+                $ret = $User->setWallExternalRef (getParam ('wallId'));
+                break;
+            }
+          else
+            switch (getParam ('action'))
+            {
+              case 'login':
 
-            case 'logout':
+                $ret = $User->login ($data->remember);
+                break;
 
-              $ret = $User->logout ();
-              break;
+              case 'logout':
 
-            case 'resetPassword':
+                $ret = $User->logout ();
+                break;
 
-              $ret = $User->resetPassword ();
-              break;
-          }
+              case 'resetPassword':
+
+                $ret = $User->resetPassword ();
+                break;
+            }
 
           break;
 

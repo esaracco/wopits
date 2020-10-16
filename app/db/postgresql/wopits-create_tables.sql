@@ -99,7 +99,8 @@ CREATE TABLE _perf_walls_users
   -- ADMIN(1), RW(2), RO(3)
   access SMALLINT NOT NULL,
   displayexternalref SMALLINT NOT NULL DEFAULT 0,
-  displaymode enum_displaymode NOT NULL DEFAULT 'postit-mode'
+  displaymode enum_displaymode NOT NULL DEFAULT 'postit-mode',
+  settings VARCHAR(2000) NOT NULL DEFAULT '{}'
 );
 CREATE INDEX "_perf_walls_users-access-idx" ON _perf_walls_users (access);
 

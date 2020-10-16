@@ -499,14 +499,24 @@ class User extends Base
     return $ret;
   }
 
-  public function setDisplayMode (int $wallId):array
+  public function getWallSettings (int $wallId):object
+  {
+    ($stmt = $this->prepare ('
+      SELECT settings FROM _perf_walls_users
+      WHERE users_id = ? AND walls_id = ?'))
+        ->execute ([$this->userId, $wallId]);
+
+    return json_decode ($stmt->fetch (\PDO::FETCH_COLUMN));
+  }
+
+  public function saveWallSettings (int $wallId, object $settings):array
   {
     $ret = [];
 
     try
     {
       $this->executeQuery ('UPDATE _perf_walls_users',
-        ['displaymode' => $this->data->display],
+        ['settings' => json_encode ($settings)],
         ['users_id' => $this->userId, 'walls_id' => $wallId]);
     }
     catch (\Exception $e)
@@ -518,7 +528,56 @@ class User extends Base
     return $ret;
   }
 
-  public function setExternalRef (int $wallId):array
+  public function setWallSettings (int $wallId):array
+  {
+    $key = $this->data->key;
+    $value = $this->data->value;
+
+    $settings = $this->getWallSettings ($wallId);
+    $settings->$key = $value;
+
+    return $this->saveWallSettings ($wallId, $settings);
+  }
+
+  public function setWallDisplayMode (int $wallId):array
+  {
+    $ret = [];
+    $displayMode = $this->data->display;
+
+    try
+    {
+      $this->executeQuery ('UPDATE _perf_walls_users',
+        ['displaymode' => $displayMode],
+        ['users_id' => $this->userId, 'walls_id' => $wallId]);
+
+      // Update settings for all cells
+      if (!empty ( (array)($settings = $this->getWallSettings ($wallId)) ))
+      {
+        // If postit mode (standard mode), remove keys
+        $delete = ($displayMode == 'postit-mode');
+        foreach ($settings as $key => $value)
+        {
+          if (strpos ($key, 'cell') !== false)
+          {
+            if ($delete)
+              unset ($settings->$key);
+            else
+              $settings->$key->displaymode = $displayMode;
+          }
+        }
+        $this->saveWallSettings ($wallId, $settings);
+      }
+    }
+    catch (\Exception $e)
+    {
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
+  public function setWallExternalRef (int $wallId):array
   {
     $ret = [];
 
