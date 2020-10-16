@@ -328,6 +328,18 @@
     
         $this->_exec ('php '.__DIR__."/../../www/js/all.js.php $l > $js");
       }
+
+      // Create modules concatenation file
+      // Path for node modules
+      $dirNode = ' '.__DIR__.'/../../www/libs/node_modules/';
+      // Path for local modules
+      $dirLocal = ' '.__DIR__.'/../../www/libs/';
+
+      mkdir ($env['build-path'].'/www/libs', 0755);
+      $this->_exec (
+        'cat '.$dirNode.implode($dirNode, WPT_JS_NODE_MODULES).' '.
+               $dirLocal.implode($dirLocal, WPT_JS_LOCAL_MODULES).' >> '
+          .$env['build-path'].'/www/libs/modules.js');
       echo "\n";
     }
 

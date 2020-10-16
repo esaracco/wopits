@@ -173,6 +173,21 @@ define ('WS_SERVER_SECTIONS', [
     'wallProperties' => []
   ]);
 
+  // JS node modules
+  define ('WPT_JS_NODE_MODULES', [
+    'jquery/dist/jquery.min.js',
+    'jquery-ui-dist/jquery-ui.min.js',
+    'jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
+    'bootstrap/dist/js/bootstrap.bundle.min.js',
+    'vanderlee-colorpicker/jquery.colorpicker.js',
+    'leader-line/leader-line.min.js'
+  ]);
+
+  // JS local modules
+  define ('WPT_JS_LOCAL_MODULES', [
+    'jquery.double-tap-wopits.js'
+  ]);
+
 //</WPTPROD-remove>
 
 ?>

@@ -59,17 +59,22 @@ if (!empty($_SESSION['upgradeDone']))
     <link rel="stylesheet" href="/css/themes/<?=$theme?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="theme-<?=$theme?>" media="none">
   <?php } ?>
 
-  <script src="/libs/node_modules/jquery/dist/jquery.min.js?<?=$version?>"></script>
-  <script src="/libs/node_modules/jquery-ui-dist/jquery-ui.min.js?<?=$version?>"></script>
-  <script src="/libs/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js?<?=$version?>"></script>
-  <script src="/libs/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js?<?=$version?>"></script>
+<!--//<WPTPROD-remove>-->
+<?php if (WPT_DEV_MODE):?>
+  <?php foreach (WPT_JS_NODE_MODULES as $mod):?>
+    <script src="/libs/node_modules/<?=$mod?>?<?=$version?>"></script>
+  <?php endforeach?>
+  <?php foreach (WPT_JS_LOCAL_MODULES as $mod):?>
+    <script src="/libs/<?=$mod?>?<?=$version?>"></script>
+  <?php endforeach?>
+<?php else:?>
+<!--//</WPTPROD-remove>-->
+  <script src="/libs/modules.js?<?=$version?>"></script>
+<?php endif?><!--//WPTPROD-remove-->
   <script src="/libs/node_modules/moment/min/moment.min.js?<?=$version?>"></script>
   <script src="/libs/node_modules/moment-timezone/builds/moment-timezone-with-data.min.js?<?=$version?>"></script>
-  <script src="/libs/jquery.double-tap-wopits.js?<?=$version?>"></script>
   <script src="<?=$js?>"></script>
 
   <script defer src="/libs/node_modules/tinymce/tinymce.min.js?<?=$version?>"></script>
   <script defer src="/libs/node_modules/jquery-ui/ui/i18n/datepicker-<?=($slocale == 'en')?'en-GB':$slocale?>.js?<?=$version?>"></script>
-  <script defer src="/libs/node_modules/vanderlee-colorpicker/jquery.colorpicker.js?<?=$version?>"></script>
-  <script defer src="/libs/node_modules/leader-line/leader-line.min.js?<?=$version?>"></script>
 </head>
