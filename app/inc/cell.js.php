@@ -104,15 +104,13 @@
             {
               const revertData = S.get ("revertData");
 
+              S.unset ("revertData");
+
               if (revertData.revert)
-              {
                 $cell.css ({
                   width: revertData.size.width,
                   height: revertData.size.height
                 });
-
-                S.unset ("revertData");
-              }
               else
               {
                 $wall.wall("fixSize", ui.originalSize.width, ui.size.width + 3);
@@ -269,7 +267,9 @@
             {
               if (S.get("revertData").revert)
               {
+                $("body")[0].removeAttribute ("style");
                 $(this).sortable ("cancel");
+
                 return false;
               }
             },
@@ -482,16 +482,19 @@
     },
 
     // METHOD unedit ()
-    unedit (noUpdate = false)
+    unedit (noupdate = false)
     {
+      const data = noupdate ?
+              null :
+              {
+                cells: this.serialize (),
+                wall: {width: Math.trunc (this.settings.wall.outerWidth ())}
+              };
+
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
-        {
-          noupdate: noUpdate,
-          cells: this.serialize (),
-          wall: {width: Math.trunc (this.settings.wall.outerWidth ())}
-        }
+        data
       );
     }
   };

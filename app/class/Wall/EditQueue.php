@@ -125,8 +125,7 @@ class EditQueue extends Wall
     $User = new User ([], $this->ws);
 
     $item = $this->item;
-    $update = (!empty ($this->data) &&
-               (!isset ($this->data->noupdate) || !$this->data->noupdate));
+    $update = !empty ($this->data);
     $ret = $this->_checkQueueAccess ($item);
 
     if (!isset ($ret['error_msg']))
