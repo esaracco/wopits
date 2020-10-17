@@ -1033,7 +1033,7 @@
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/row/"+rowIdx,
-        {wall: {width: Math.trunc($wall.outerWidth ())}});
+        {wall: {width: Math.trunc ($wall.outerWidth ())}});
     },
 
     // METHOD deleteCol ()

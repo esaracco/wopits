@@ -771,9 +771,9 @@ class Wall extends Base
       // Get postits
       $stmt1 = $this->prepare (($withAlerts) ?
         "SELECT
-           postits.id, width, height, item_top, item_left, classcolor, title,
-           content, tags, creationdate, deadline, timezone, obsolete,
-           attachmentscount, postits_alerts.alertshift
+           postits.id, width, height, item_top, item_left, item_order,
+           classcolor, title, content, tags, creationdate, deadline, timezone,
+           obsolete, attachmentscount, postits_alerts.alertshift
          FROM postits
            LEFT JOIN postits_alerts
              ON postits_alerts.postits_id = postits.id
@@ -781,8 +781,8 @@ class Wall extends Base
          WHERE cells_id = ?"
         :
         "SELECT
-           id, width, height, item_top, item_left, classcolor, title,
-           content, tags, creationdate, deadline, timezone, obsolete,
+           id, width, height, item_top, item_left, item_order, classcolor,
+           title, content, tags, creationdate, deadline, timezone, obsolete,
            attachmentscount
          FROM postits
          WHERE cells_id = ?");
@@ -1325,7 +1325,8 @@ class Wall extends Base
               'width' => $postit->width,
               'height' => $postit->height,
               'item_top' => $postit->item_top,
-              'item_left' => $postit->item_left
+              'item_left' => $postit->item_left,
+              'item_order' => $postit->item_order
             ],
             ['id' => $postit->id]);
           }

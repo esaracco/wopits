@@ -444,6 +444,7 @@
 
       settings._plugs = [];
       postit0.dataset.id = "postit-"+settings.id;
+      postit0.dataset.order = settings.item_order;
       postit0.className = settings.classes || "postit";
       postit0.dataset.tags = settings.tags || "";
 
@@ -522,7 +523,10 @@
           drag: function(e, ui)
           {
             if (S.get("revertData").revert)
+            {
+              $(this).draggable ("cancel");
               return false;
+            }
 
 // TODO - 1 - Hide plugs instead of moving them with postits (performance
 //            issue with some touch devices)
@@ -1342,6 +1346,7 @@
             height: Math.trunc (bbox.height),
             item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
             item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
+            item_order: parseInt (this.dataset.order),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
             content: displayExternalRef ?
@@ -1775,6 +1780,8 @@
       this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):'');
 
       this.setDeadline (d);
+
+      postit0.dataset.order = d.item_order||0;
 
       if (!d.obsolete)
         postit0.classList.remove ("obsolete");
