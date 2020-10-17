@@ -125,7 +125,8 @@ class EditQueue extends Wall
     $User = new User ([], $this->ws);
 
     $item = $this->item;
-    $update = (!empty ($this->data));
+    $update = (!empty ($this->data) &&
+               (!isset ($this->data->noupdate) || !$this->data->noupdate));
     $ret = $this->_checkQueueAccess ($item);
 
     if (!isset ($ret['error_msg']))
@@ -248,6 +249,7 @@ class EditQueue extends Wall
                     'height' => $this->data->height,
                     'item_top' => $this->data->item_top,
                     'item_left' => $this->data->item_left,
+                    'item_order' => $this->data->item_order,
                     'classcolor' => $this->data->classcolor,
                     'title' => $this->data->title,
                     'content' => $content,
@@ -328,12 +330,15 @@ class EditQueue extends Wall
 
           case 'cell':
 
-            $this->updateCells ();
+            if ($update)
+            {
+              $this->updateCells ();
 
-            //FIXME
-            $ret['wall'] = $this->getWall ();
+              //FIXME
+              $ret['wall'] = $this->getWall ();
+            }
 
-           break;
+            break;
 
           case 'header':
 

@@ -90,9 +90,9 @@ class Postit extends Wall
   {
     ($stmt = $this->prepare ('
       SELECT
-        id, cells_id, width, height, item_top, item_left, classcolor,
-        title, content, tags, creationdate, deadline, timezone, obsolete,
-        attachmentscount
+        id, cells_id, width, height, item_top, item_left, item_order,
+        classcolor, title, content, tags, creationdate, deadline, timezone,
+        obsolete, attachmentscount
       FROM postits
       WHERE postits.id = ?'))
        ->execute ([$this->postitId]);

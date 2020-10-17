@@ -142,6 +142,7 @@ CREATE TABLE postits
   height SMALLINT NOT NULL,
   item_top SMALLINT NOT NULL,
   item_left SMALLINT NOT NULL,
+  item_order SMALLINT NOT NULL DEFAULT 1,
   creationdate INTEGER NOT NULL,
   attachmentscount SMALLINT NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),

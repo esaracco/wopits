@@ -215,16 +215,21 @@
     // METHOD setPostitsDisplayMode ()
     setPostitsDisplayMode (type)
     {
-      const $cell = this.element,
-            $displayMode = $cell.find (".cell-menu i");
+      const plugin = this,
+            $cell = plugin.element,
+            $displayMode = $cell.find (".cell-menu i"),
+            writeAccess =
+              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", plugin.settings.access);
 
       // If we must display list
       // list-mode
       if (type == "list-mode")
       {
-        const cellWidth = $cell[0].clientWidth,
-              cellHeight = $cell[0].clientHeight,
-              postits = Array.from($cell[0].querySelectorAll(".postit"));
+        const cell0 = $cell[0],
+              cellWidth = cell0.clientWidth,
+              cellHeight = cell0.clientHeight,
+              postits = Array.from (cell0.querySelectorAll (".postit")),
+              sortable = (writeAccess && postits.length > 1);
 
         $cell.removeClass("postit-mode").addClass ("list-mode");
 
@@ -235,7 +240,7 @@
         let html = "";
         postits
           // Sort by postit id DESC
-          .sort((a, b)=>b.dataset.id.substring(7) - a.dataset.id.substring(7))
+          .sort((a, b)=> a.dataset.order - b.dataset.order)
           .forEach ((p)=>
           {
             const color = (p.className.match (/ color\-([a-z]+)/))[1],
@@ -247,13 +252,51 @@
 
             p.style.visibility = "hidden";
 
-            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}"><span></span>${title}</li>`;
+            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}"><span>${sortable?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:''}</span> ${title}</li>`;
           });
 
         $cell.find(".cell-menu").append (
           `<span class="wpt-badge">${postits.length}</span>`);
         $cell.prepend (
           `<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`);
+
+        if (sortable)
+          $cell.find(".cell-list-mode ul").sortable ({
+            //containment: $cell,
+            handle: ">span",
+            cursor: "move",
+            sort: function ()
+            {
+              if (S.get("revertData").revert)
+              {
+                $(this).sortable ("cancel");
+                return false;
+              }
+            },
+            start: function ()
+            {
+              S.set ("revertData", {revert: false});
+              plugin.edit (()=> S.get("revertData").revert = true);
+            },
+            stop: function (e, ui)
+            {
+              const revertData = S.get ("revertData");
+
+              if (revertData.revert)
+              {
+                S.unset ("revertData");
+                plugin.unedit (true);
+              }
+              else
+              {
+                ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i)=>
+                  cell0.querySelector(".postit[data-id='"+li.dataset.pid+"']")
+                    .dataset.order = i+1);
+
+                plugin.unedit ();
+              }
+            }
+          });
       }
       // If we must display full postit
       // postit-mode
@@ -376,14 +419,14 @@
             settings = this.settings,
             $postit = $("<div/>");
 
-      args.wall = settings.wall;
-      args.wallId = settings.wallId;
-      args.cell = $cell;
-      args.cellId = settings.id;
-      args.plugsContainer = settings.plugsContainer;
-
-      // CREATE post-it
-      $postit.postit (args);
+      // CREATE postit
+      $postit.postit ($.extend (args, {
+        wall: settings.wall,
+        wallId: settings.wallId,
+        cell: $cell,
+        cellId: settings.id,
+        plugsContainer: settings.plugsContainer
+      }));
 
       // Add postit on cell
       $cell.append ($postit);
@@ -394,8 +437,8 @@
       // another user, do not add it again in DB
       if (!noinsert)
         $postit.postit ("insert");
-      else if ($cell[0].classList.contains("postit-mode"))
-        $postit.css ("visibility", "visible");
+      else if ($cell[0].classList.contains ("postit-mode"))
+        $postit[0].style.visibility = "visible";
     },
 
     // METHOD update ()
@@ -439,14 +482,15 @@
     },
 
     // METHOD unedit ()
-    unedit ()
+    unedit (noUpdate = false)
     {
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
         {
+          noupdate: noUpdate,
           cells: this.serialize (),
-          wall: {width: Math.trunc(this.settings.wall.outerWidth () - 1)}
+          wall: {width: Math.trunc (this.settings.wall.outerWidth ())}
         }
       );
     }

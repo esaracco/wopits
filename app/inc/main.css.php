@@ -872,7 +872,7 @@ input::-ms-clear {
   overflow-y:auto;
 }
 
-.cell-list-mode ul li {
+.cell-list-mode li {
   padding:3px;
   border-bottom:1px dashed #a6a6a6;
   list-style:none;
@@ -880,6 +880,11 @@ input::-ms-clear {
   overflow:hidden;
   text-overflow:ellipsis;
   cursor:pointer;
+}
+
+.cell-list-mode li span {
+  cursor:move;
+  padding:0 5px;
 }
 
 .postit-menu .submenu {
