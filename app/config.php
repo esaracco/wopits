@@ -82,37 +82,16 @@ define ('WS_SERVER_SECTIONS', [
   define ('WPT_POPUPS', [
     'login' => [
       'about',
-      'userGuide',
       'settings',
       'createAccount',
       'resetPassword',
       'info'
     ],
     'index' => [
-      'plug',
-      'about',
-      'userGuide',
       'settings',
-      'account',
-      'shareWall',
-      'group',
-      'usersSearch',
-      'groupAccess',
-      'postitsSearch',
-      'changePassword',
-      'createWall',
-      'openWall',
-      'wallProperties',
-      'wallUsersview',
-      'userView',
-      'postitAttachments',
-      'postitView',
       'postitUpdate',
-      'updateOneInput',
       'info',
-      'confirm',
-      'datePicker',
-      'themeChooser'
+      'confirm'
     ]
   ]);
 

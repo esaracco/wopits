@@ -731,8 +731,8 @@ class User extends Base
         $field = preg_replace('/^[^a-z]+$/', '', array_keys($data)[0]);
         $value = $data[$field];
 
-        if (!isset ($data['about']) && !isset ($data['visible']) &&
-            ($dbl = $this->_isDuplicate ([$field => $value])) )
+        if ((isset ($data['username']) || isset ($data['email'])) &&
+            ( ($dbl = $this->_isDuplicate ([$field => $value])) ))
           $ret['error_msg'] = sprintf (($dbl == 'username') ?
             _("The login `%s` already exists.") :
             _("The email `%s` already exists."), $value);

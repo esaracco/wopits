@@ -36,15 +36,6 @@
       // Update "invisible mode" icon in main menu.
       plugin.updateMainMenu ();
 
-      // Main menu account link.
-      $("#account").on("click", function (e)
-        {
-          H.closeMainMenu ();
-
-          H.cleanPopupDataAttr ($account);
-          H.openModal ($account);
-        });
-
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
@@ -116,58 +107,6 @@
             plugin.updateField ({about: val}, $account.find(".modal-body"));
         });
 
-      $("#updateOneInputPopup .btn-primary,"+
-        "#changePasswordPopup .btn-primary")
-        .on("click", function (e)
-        {
-          const $popup = $(this).closest (".modal"),
-                field = $popup[0].dataset.field;
-
-          e.stopImmediatePropagation ();
-
-          $popup[0].dataset.noclosure = true;
-
-          H.displayMsg ({target: $popup, reset: true});
-
-          switch (field)
-          {
-            case "username":
-            case "fullname":
-            case "email":
-
-              const $input = $popup.find ("input"),
-                    value = $input.val().trim ();
-
-              if (value == $popup[0].dataset.oldvalue)
-                return $popup.modal ("hide");
-
-              if (plugin.checkRequired ($input) && plugin.validForm ($input))
-              {
-                let data = {};
-
-                data[field] = value;
-                plugin.updateField (data);
-              }
-
-              break;
-
-            case "password":
-
-              const $inputs = $popup.find ("input");
-
-              if (plugin.checkRequired ($inputs) && plugin.validForm ($inputs))
-                plugin.updateField ({
-                  password: {
-                    current: $inputs[0].value.trim (),
-                    new: $inputs[1].value,
-                    confirm: $inputs[2].value
-                  }
-                });
-
-              break;
-          }
-        });
-
       $account
         .on("click", "button,input", function (e)
         {
@@ -203,16 +142,25 @@
 
             case "password":
 
-              $popup = $("#changePasswordPopup");
+              H.loadPopup ("changePassword", {
+                open: false,
+                init: ($p)=> $p.find(".btn-primary")
+                               .on("click", function (e)
+                               {
+                                 plugin.onSubmit ($p, e);
+                               }),
+                cb: ($p)=>
+                {
+                  H.displayMsg ({target: $p, reset: true});
 
-              H.displayMsg ({target: $popup, reset: true});
-              H.cleanPopupDataAttr ($popup);
+                  $p.find("input").val ("");
 
-              $popup.find("input").val ("");
+                  $p[0].dataset.field = "password";
+                  $p[0].dataset.noclosure = true;
 
-              $popup[0].dataset.field = "password";
-              $popup[0].dataset.noclosure = true;
-              H.openModal ($popup);
+                  H.openModal ($p);
+                }
+              });
 
               break;
 
@@ -220,54 +168,112 @@
             case "fullname":
             case "email":
 
-              $popup = $("#updateOneInputPopup");
+              H.loadPopup ("updateOneInput", {
+                open: false,
+                init: ($p)=> $p.find(".btn-primary")
+                               .on("click", function (e)
+                               {
+                                 plugin.onSubmit ($p, e);
+                               }),
+                cb: ($p)=>
+                {
+                  const $input = $p.find ("input");
 
-              const $input = $popup.find("input");
+                  H.displayMsg ({reset: true});
 
-              H.displayMsg ({reset: true});
-              H.cleanPopupDataAttr ($popup);
+                  switch (name)
+                  {
+                    case "username":
+                      title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
+                      $input
+                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
+                        .attr("placeholder", "<?=_("username")?>")
+                        .attr("autocorrect", "off")
+                        .attr ("autocapitalize", "none");
+                      break;
+                    case "fullname":
+                      title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
+                      $input
+                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
+                        .attr("placeholder", "<?=_("full name")?>");
+                      break;
+                    case "email":
+                      title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
+                      $input
+                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
+                        .attr("placeholder", "<?=_("email")?>")
+                        .attr("autocorrect", "off")
+                        .attr ("autocapitalize", "none");
+                      break;
+                  }
 
-              switch (name)
-              {
-                case "username":
-                  title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
-                  $input
-                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
-                    .attr("placeholder", "<?=_("username")?>")
-                    .attr("autocorrect", "off")
-                    .attr ("autocapitalize", "none");
-                  break;
-                case "fullname":
-                  title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
-                  $input
-                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
-                    .attr("placeholder", "<?=_("full name")?>");
-                  break;
-                case "email":
-                  title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
-                  $input
-                    .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
-                    .attr("placeholder", "<?=_("email")?>")
-                    .attr("autocorrect", "off")
-                    .attr ("autocapitalize", "none");
+                  $p.find(".modal-dialog").addClass ("modal-sm");
+                  $p.find(".modal-title").html (title);
 
-                  break;
-              }
+                  $input.attr ("name", name);
+                  $input.val (value);
 
-              $popup.find(".modal-dialog").addClass ("modal-sm");
-              $popup.find(".modal-title").html (title);
-
-              $input.attr("name", name);
-              $input.val (value);
-
-              $popup[0].dataset.field = name;
-              $popup[0].dataset.oldvalue = value;
-              $popup[0].dataset.noclosure = true;
-              H.openModal ($popup);
+                  $p[0].dataset.field = name;
+                  $p[0].dataset.oldvalue = value;
+                  $p[0].dataset.noclosure = true;
+                  H.openModal ($p);
+                }
+              });
 
               break;
           }
         })
+    },
+
+    // METHOD onSubmit ()
+    onSubmit ($popup, e)
+    {
+      const plugin = this,
+            field = $popup[0].dataset.field;
+
+      e.stopImmediatePropagation ();
+
+      $popup[0].dataset.noclosure = true;
+
+      H.displayMsg ({target: $popup, reset: true});
+
+      switch (field)
+      {
+        case "username":
+        case "fullname":
+        case "email":
+
+          const $input = $popup.find ("input"),
+                value = $input.val().trim ();
+
+          if (value == $popup[0].dataset.oldvalue)
+            return $popup.modal ("hide");
+
+          if (plugin.checkRequired ($input) && plugin.validForm ($input))
+          {
+            let data = {};
+
+            data[field] = value;
+            plugin.updateField (data);
+          }
+
+          break;
+
+        case "password":
+
+          const $inputs = $popup.find ("input");
+
+          if (plugin.checkRequired ($inputs) && plugin.validForm ($inputs))
+            plugin.updateField ({
+              password: {
+                current: $inputs[0].value.trim (),
+                new: $inputs[1].value,
+                confirm: $inputs[2].value
+              }
+            });
+
+          break;
+      }
     },
 
     // METHOD updateMainMenu ()
@@ -380,21 +386,11 @@
               });
 
             if (!noclosure)
-              $(".modal:visible").last().modal ("hide");
+              $(".modal:visible:eq(0)").modal ("hide");
           }
         });
     }
 
   });
-
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#accountPopup");
-  
-      if ($plugin.length)
-        $plugin.account ();
-    });
 
 <?php echo $Plugin->getFooter ()?>

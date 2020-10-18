@@ -17,8 +17,11 @@ else
 {
   $User = new User ();
 
-  session_set_cookie_params (0, '/', $_SERVER['HTTP_HOST']??null, true, true);
-  session_start ();
+  if (!isset ($_SESSION))
+  {
+    session_set_cookie_params (0, '/', $_SERVER['HTTP_HOST']??null, true, true);
+    session_start ();
+  }
 
   $scriptName = $_SERVER['SCRIPT_NAME'];
 

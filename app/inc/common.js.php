@@ -1129,6 +1129,44 @@ class WHelper
             "max-width": ""
           });
   }
+
+  // METHOD loadPopup ()
+  loadPopup (type, args = {open:true})
+  {
+    const id = type+"Popup",
+          popup = document.getElementById (id),
+          __exec = ($p)=>
+            {
+              H.cleanPopupDataAttr ($p);
+
+              if (args.cb)
+                args.cb ($p);
+
+              if (args.open)
+                H.openModal ($p);
+            };
+
+    if (args.open === undefined)
+      args.open = true;
+
+    if (popup)
+      __exec ($(popup));
+    else
+      $.get ("/ui/"+type+".php", function (d)
+        {
+          $("body").prepend (d);
+
+          const $p = $("#"+id);
+
+          if ($p[type] !== undefined)
+            $p[type]();
+
+          if (args.init)
+            args.init ($p);
+
+          __exec ($p);
+        });
+  }
   
   // METHOD infoPopup ()
   infoPopup (msg, notheme)
@@ -1180,12 +1218,12 @@ class WHelper
       $target = args.target;
     else
     {
-      let $modals = $(".modal-collapse:visible");
+      let $modals = $(".modal-collapse:visible:eq(0)");
 
       if (!$modals.length)
-        $modals = $(".modal:visible");
+        $modals = $(".modal:visible:eq(0)");
 
-      $target = $modals.length ? $modals.last().find(".modal-body:visible") :
+      $target = $modals.length ? $modals.find(".modal-body:visible") :
                                  $("#msg-container");
     }
 

@@ -38,8 +38,7 @@
               {
                 endPlugin.edit ({plugend: true}, ()=>
                   {
-                    const $popup = $("#plugPopup"),
-                          start0 = $start[0],
+                    const start0 = $start[0],
                           startPlugin = $start.postit ("getClass"),
                           line = {
                             startId: from.id,
@@ -93,11 +92,9 @@
                         startPlugin.cancelPlugAction ();
                       };
 
-                    H.cleanPopupDataAttr ($popup);
-
                     S.set ("link-from", from);
 
-                    H.openModal ($popup);
+                    H.loadPopup ("plug");
                   });
               }
               else
@@ -771,7 +768,10 @@
     // METHOD openDatePicker ()
     openDatePicker ()
     {
-      this.edit (null, () => $("#datePickerPopup").datePicker ("open"));
+      this.edit (null, () => H.loadPopup ("datePicker", {
+                               open: false,
+                               cb: ($p)=> $p.datePicker ("open")
+                             }));
     },
 
     // METHOD openPostit ()
@@ -836,19 +836,21 @@
       }
       else
       {
-        const $popup = $("#postitViewPopup");
-
         plugin.setCurrent ();
 
-        H.cleanPopupDataAttr ($popup);
+        H.loadPopup ("postitView", {
+          open: false,
+          cb: ($p)=>
+          {
+            $p.find(".modal-body").html ((content) ?
+              content : "<i><?=_("No content.")?></i>");
 
-        $popup.find(".modal-body").html ((content) ?
-          content : "<i><?=_("No content.")?></i>");
+            $p.find(".modal-title").html (
+              `<i class="fas fa-sticky-note"></i> ${title}`);
 
-        $popup.find(".modal-title").html (
-          `<i class="fas fa-sticky-note"></i> ${title}`);
-
-        H.openModal ($popup, _getMaxEditModalWidth (content));
+            H.openModal ($p, _getMaxEditModalWidth (content));
+          }
+        });
       }
     },
 
@@ -1651,26 +1653,39 @@
         // success cb
         (d) =>
         {
-          let body = '';
+          H.loadPopup ("postitAttachments", {
+            open: false,
+            init: ($p)=>
+            {
+              $_attachmentsPopup = $p;
+              $_attachmentEditPopup = $p.find (".edit-popup");
+            },
+            cb: ($p)=>
+            {
+              const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
-          d = d.files;
+              let body = '';
 
-          if (!d.length)
-            body = "<?=_("This sticky note has no attachment")?>";
-          else
-            d.forEach (
-              (a)=> body += this.getAttachmentTemplate (a, !writeAccess));
+              d = d.files;
 
-          if (writeAccess)
-            $_attachmentsPopup.find(".btn-primary").show ();
-          else
-            $_attachmentsPopup.find(".btn-primary").hide ();
+              if (!d.length)
+                body = "<?=_("This sticky note has no attachment")?>";
+              else
+                d.forEach (
+                  (a)=> body += this.getAttachmentTemplate (a, !writeAccess));
 
-          $_attachmentsPopup.find(".modal-body ul").html (body);
+              if (writeAccess)
+                $p.find(".btn-primary").show ();
+              else
+                $p.find(".btn-primary").hide ();
 
-          $_attachmentsPopup[0].dataset.noclosure = true; 
+              $p.find(".modal-body ul").html (body);
 
-          H.openModal ($_attachmentsPopup);
+              $p[0].dataset.noclosure = true;
+
+              H.openModal ($p);
+            }
+          });
         }
       );
     },
@@ -1963,7 +1978,10 @@
           else if (todelete)
           {
             $postit.remove ();
-            $("#postitsSearchPopup").postitsSearch ("replay");
+
+            const search = document.getElementById ("postitsSearchPopup");
+            if (search)
+              $(search).postitsSearch ("replay");
           }
           else if (data && data.updatetz)
             $postit[0].removeAttribute ("data-updatetz");
@@ -2011,9 +2029,6 @@
   if (!document.querySelector ("body.login-page"))
     $(function()
       {
-        $_attachmentsPopup = $("#postitAttachmentsPopup");
-        $_attachmentEditPopup = $_attachmentsPopup.find (".edit-popup");
-
         // EVENT focusin.
         // To fix tinymce bootstrap compatibility with popups
         $(document).on("focusin",

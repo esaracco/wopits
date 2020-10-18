@@ -833,7 +833,9 @@
       setTimeout (()=> plugin.refreshCellsToggleDisplayMode (), 0);
 
       // Replay postits search
-      setTimeout (()=> $("#postitsSearchPopup").postitsSearch("replay"), 250);
+      const search = document.getElementById ("postitsSearchPopup");
+      if (search)
+        setTimeout (()=> $(search).postitsSearch("replay"), 250);
     },
 
     // METHOD refreshCellsToggleDisplayMode ()
@@ -1334,24 +1336,42 @@
     {
       this.refreshUserWallsData (() =>
         {
-          const $popup = $("#openWallPopup");
-
-          $popup.openWall ("reset");
-          $popup.openWall ("displayWalls");
-          $popup.openWall ("controlFiltersButtons");
-
-          H.openModal ($popup);
+          H.loadPopup ("openWall", {
+            cb: ($p)=>
+            {
+              $p.openWall ("reset");
+              $p.openWall ("displayWalls");
+              $p.openWall ("controlFiltersButtons");
+            }
+          });
         });
     },
 
     // METHOD openNamePopup ()
     openNamePopup ()
     {
-      const $popup = $("#createWallPopup");
+      H.loadPopup ("createWall", {
+        init: ($p)=>
+          $p.find("#w-grid")
+            // EVENT change on wall dimension in wall creation popup
+            .on("change", function ()
+            {
+              const btn = this;
 
-      H.cleanPopupDataAttr ($popup);
-      $popup[0].dataset.noclosure = true;
-      H.openModal ($popup);
+              $p.find("span.required").remove ();
+              $p.find(".cols-rows input").val (3);
+              $p.find(".width-height input").val ("");
+              $p.find(".cols-rows,.width-height").hide ();
+
+              if (btn.checked)
+                $(this).parent().removeClass ("disabled");
+              else
+                $(this).parent().addClass ("disabled");
+
+              $p.find(btn.checked?".cols-rows":".width-height").show ("fade");
+            }),
+        cb: ($p)=> $p[0].dataset.noclosure = true
+      });
     },
 
     // METHOD displayWallUsersview()
@@ -1364,18 +1384,67 @@
         null,
         (d) =>
         {
-          const $popup = $("#wallUsersviewPopup"),
-                userId = wpt_userData.id;
-          let html = "";
-
-          d.list.forEach ((item) =>
+          H.loadPopup ("wallUsersview", {
+            open: false,
+            init: ($p)=>
             {
-              if (item.id != userId)
-                html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
-            });
+              $p
+                // EVENT click on username in wall users popup
+                .on("click",".list-group a",function (e)
+                {
+                  const a = this;
 
-          $popup.find(".list-group").html (html);
-          H.openModal ($popup);
+                  H.loadPopup ("userView", {
+                    open: false,
+                    cb: ($p)=>
+                    {
+                      const $userPicture = $p.find (".user-picture"),
+                            $about = $p.find (".about");
+
+                      if (a.dataset.picture)
+                      {
+                        $userPicture
+                          .empty ()
+                          .append (
+                            $(`<img src="${a.dataset.picture}">`)
+                              .on("error",function (e){$userPicture.hide()}));
+
+                        $userPicture.show ();
+                      }
+                      else
+                        $userPicture.hide ();
+
+                      $p.find(".modal-title span").text (a.dataset.title);
+                      $p.find(".name dd").text (a.dataset.title);
+
+                      if (a.dataset.about)
+                      {
+                        $about.find("dd").html (H.nl2br (a.dataset.about));
+                        $about.show ();
+                      }
+                      else
+                        $about.hide ();
+
+                      H.openModal ($p);
+                    }
+                  });
+                });
+            },
+            cb: ($p)=>
+            {
+              const userId = wpt_userData.id;
+
+              let html = "";
+              d.list.forEach ((item) =>
+              {
+                if (item.id != userId)
+                  html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
+              });
+              $p.find(".list-group").html (html);
+
+              H.openModal ($p);
+            }
+          });
         }
       );
     },
@@ -1387,9 +1456,19 @@
 
       if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
         this.edit (() =>
-          $("#wallPropertiesPopup").wallProperties ("open", args));
+          {
+            H.loadPopup ("wallProperties",
+              {
+                open: false,
+                cb: ($p)=> $p.wallProperties ("open", args)
+              });
+          });
       else
-        $("#wallPropertiesPopup").wallProperties ("open", args);
+        H.loadPopup ("wallProperties",
+          {
+            open: false,
+            cb: ($p)=> $p.wallProperties ("open", args)
+          });
     },
 
     // METHOD getName ()
@@ -1759,7 +1838,6 @@
     {
       return this.element[0].querySelector (".postit[data-haveexternalref]");
     },
-
   });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
@@ -1830,25 +1908,12 @@
             S.getCurrent("wall").wall ("zoom", {type: "normal"});
           });
 
-        $("#createWallPopup #w-grid")
-          // EVENT change on wall dimension in wall creation popup
-          .on("change", function ()
-          {
-            const btn = this,
-                  $popup = $(this).closest (".modal");
-
-            $popup.find("span.required").remove ();
-            $popup.find(".cols-rows input").val (3);
-            $popup.find(".width-height input").val ("");
-            $popup.find(".cols-rows,.width-height").hide ();
-
-            if (btn.checked)
-              $(this).parent().removeClass ("disabled");
-            else
-              $(this).parent().addClass ("disabled");
-
-            $popup.find(btn.checked?".cols-rows":".width-height").show ("fade");
-          });
+        // EVENT click on main menu account button
+      $("#account").on("click", function (e)
+        {
+          H.closeMainMenu ();
+          H.loadPopup ("account");
+        });
 
         $(`<input type="file" accept=".zip" class="upload import-wall">`)
           // EVENT change for wall importation upload
@@ -1902,42 +1967,6 @@
           .on("click","thead th:first-child .usersviewcounts", function (e)
           {
             S.getCurrent("wall").wall ("displayWallUsersview");
-          });
-
-        $("#wallUsersviewPopup")
-          // EVENT click on username in wall users popup
-          .on("click",".list-group a",function (e)
-          {
-            const a = this,
-                  $popup = $("#userViewPopup"),
-                  $userPicture = $popup.find (".user-picture"),
-                  $about = $popup.find (".about");
-
-            if (a.dataset.picture)
-            {
-              $userPicture
-                .empty ()
-                .append (
-                  $(`<img src="${a.dataset.picture}">`)
-                    .on("error",function (e){$userPicture.hide()}));
-
-              $userPicture.show ();
-            }
-            else
-              $userPicture.hide ();
-
-            $popup.find(".modal-title span").text (a.dataset.title);
-            $popup.find(".name dd").text (a.dataset.title);
-
-            if (a.dataset.about)
-            {
-              $about.find("dd").html (H.nl2br (a.dataset.about));
-              $about.show ();
-            }
-            else
-              $about.hide ();
-
-            H.openModal ($popup);
           });
 
         $(document)
@@ -2047,13 +2076,13 @@
 
               case "about":
 
-                H.openModal ($("#aboutPopup"));
+                H.loadPopup ("about");
 
                 break;
 
               case "user-guide":
 
-                H.openModal ($("#userGuidePopup"));
+                H.loadPopup ("userGuide");
 
                 break;
 
@@ -2077,7 +2106,7 @@
 
               case "search":
 
-                $("#postitsSearchPopup").postitsSearch ("open");
+                H.loadPopup ("postitsSearch");
 
                 break;
 
@@ -2101,7 +2130,10 @@
 
               case "share":
 
-                $("#shareWallPopup").shareWall ("open");
+                H.loadPopup ("shareWall", {
+                  open: false,
+                  cb: ($p)=> $p.shareWall ("open")
+                });
 
                 break;
 

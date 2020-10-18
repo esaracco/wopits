@@ -1,3 +1,4 @@
+<?php require (__DIR__.'/../../app/prepend.php')?>
 <div class="modal m-fullscreen" id="userGuidePopup" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">

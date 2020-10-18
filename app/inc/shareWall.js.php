@@ -8,8 +8,7 @@
 ?>
 
   let $_groupPopup,
-      $_groupAccessPopup,
-      $_usersSearchPopup;
+      $_groupAccessPopup;
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
@@ -52,9 +51,9 @@
       const plugin = this,
             $share = plugin.element;
 
+      H.loadPopup ("account", {open: false});
+
       $_groupPopup = $("#groupPopup");
-      $_groupAccessPopup = $("#groupAccessPopup");
-      $_usersSearchPopup = $("#usersSearchPopup");
 
       $share
         .on("hidden.bs.modal", function (e)
@@ -83,27 +82,33 @@
           {
             case "users-search":
 
-              const groupId = $row[0].dataset.id,
-                    delegateAdminId = $row[0].dataset.delegateadminid||0;
-
-              $_usersSearchPopup.usersSearch ("reset", {full: true});
-
-              $_usersSearchPopup[0].dataset.delegateadminid = delegateAdminId;
-              $_usersSearchPopup[0].dataset.groupid = groupId;
-              $_usersSearchPopup[0].dataset.grouptype = groupType;
-    
-              $_usersSearchPopup
-                .find(".desc").html ("<?=_("Add or remove users in the group « %s ».")?>".replace("%s", "<b>"+$row[0].dataset.name+"</b>"));
-    
-              $_usersSearchPopup.usersSearch (
-                "displayUsers",
+              H.loadPopup ("usersSearch", {
+                open: false,
+                cb: ($p)=>
                 {
-                  wallId: S.getCurrent("wall").wall ("getId"),
-                  groupId: groupId,
-                  groupType: groupType
-                });
-    
-              H.openModal ($_usersSearchPopup);
+                  const groupId = $row[0].dataset.id,
+                        delegateAdminId = $row[0].dataset.delegateadminid||0;
+
+                  $p.usersSearch ("reset", {full: true});
+
+                  $p[0].dataset.delegateadminid = delegateAdminId;
+                  $p[0].dataset.groupid = groupId;
+                  $p[0].dataset.grouptype = groupType;
+
+                  $p
+                    .find(".desc").html ("<?=_("Add or remove users in the group « %s ».")?>".replace("%s", "<b>"+$row[0].dataset.name+"</b>"));
+
+                  $p.usersSearch (
+                    "displayUsers",
+                    {
+                      wallId: S.getCurrent("wall").wall ("getId"),
+                      groupId: groupId,
+                      groupType: groupType
+                    });
+
+                  H.openModal ($p);
+                }
+              });
               break;
 
             case "delete-group":
@@ -144,8 +149,23 @@
 
             case "link-group":
 
-              H.cleanPopupDataAttr ($_groupAccessPopup);
-              H.openModal ($_groupAccessPopup);
+              H.loadPopup ("groupAccess", {
+                init: ($p)=>
+                {
+                  $p.find(".send-msg input[type='checkbox']")
+                    .on("change", function ()
+                    {
+                      const $div = $(this).closest (".send-msg");
+
+                      if (this.checked)
+                        $div.removeClass ("disabled");
+                      else
+                        $div.addClass ("disabled");
+                    });
+
+                  $_groupAccessPopup = $p;
+                }
+              });
               break;
           }
         });
@@ -179,51 +199,42 @@
               action == "add-gtype-<?=WPT_GTYPES_DED?>")
             plugin.openAddGroup (action.match(/add\-gtype\-([^\-]+)/)[1]);
         });
+    },
 
-      $_groupPopup.find(".btn-primary")
-        .on("click", function (e)
-        {
-          const type = this.dataset.type,
-                groupId = this.dataset.groupid,
-                $inputs = $_groupPopup.find ("input");
+    // METHOD onSubmitGroup ()
+    onSubmitGroup ($p, btn, e)
+    {
+      const plugin = this,
+            type = btn.dataset.type,
+            groupId = btn.dataset.groupid,
+            $inputs = $p.find ("input");
 
-          e.stopImmediatePropagation ();
+      e.stopImmediatePropagation ();
 
-          if (!groupId)
-          {
-            $_groupPopup[0].dataset.noclosure = true;
+      if (!groupId)
+      {
+        $p[0].dataset.noclosure = true;
 
-            if (plugin.checkRequired ($inputs))
-              plugin.createGroup (type, {
-                name: H.noHTML ($inputs[0].value),
-                description: H.noHTML ($inputs[1].value)
-              });
-          }
-          else if (plugin.checkRequired ($inputs))
-          {
-            plugin.updateGroup ({
-              groupId: groupId,
-              name: H.noHTML ($inputs[0].value),
-              description: H.noHTML ($inputs[1].value)
-            });
-          }
+        if (plugin.checkRequired ($inputs))
+          plugin.createGroup (type, {
+            name: H.noHTML ($inputs[0].value),
+            description: H.noHTML ($inputs[1].value)
+          });
+      }
+      else if (plugin.checkRequired ($inputs))
+      {
+        plugin.updateGroup ({
+          groupId: groupId,
+          name: H.noHTML ($inputs[0].value),
+          description: H.noHTML ($inputs[1].value)
         });
-
-      $_groupAccessPopup.find(".send-msg input[type='checkbox']")
-        .on("change", function ()
-        {
-          const $div = $(this).closest (".send-msg");
-
-          if (this.checked)
-            $div.removeClass ("disabled");
-          else
-            $div.addClass ("disabled");
-        });
+      }
     },
 
     // METHOD openAddGroup ()
     openAddGroup (type)
     {
+      const plugin = this;
       let title,
           desc;
 
@@ -238,42 +249,69 @@
         desc = "<?=_("The group will be available only for the current wall.")?>";
       }
 
-      H.cleanPopupDataAttr ($_groupPopup);
+      H.loadPopup ("group", {
+        open: false,
+        init: ($p)=>
+        {
+          $p.find(".btn-primary")
+            .on("click", function (e)
+            {
+              plugin.onSubmitGroup ($p, this, e);
+            });
 
-      $_groupPopup[0].dataset.action = "create";
+          $_groupPopup = $p;
+        },
+        cb: ($p)=>
+        {
+          $p[0].dataset.action = "create";
+          $p[0].dataset.noclosure = true;
 
-      $_groupPopup[0].dataset.noclosure = true;
+          $p.find(".modal-title span").html (title);
+          $p.find(".desc").html (desc);
 
-      $_groupPopup.find(".modal-title span").html (title);
-      $_groupPopup.find(".desc").html (desc);
+          $p.find("button.btn-primary")[0].dataset.type = type;
+          $p.find("button.btn-primary").html (`<i class="fas fa-bolt"></i> <?=_("Create")?>`);
+          $p.find("button.btn-secondary").html (`<i class="fas fa-undo-alt"></i> <?=_("Cancel")?>`);
 
-      $_groupPopup.find("button.btn-primary")[0].dataset.type = type;
-      $_groupPopup.find("button.btn-primary").html (`<i class="fas fa-bolt"></i> <?=_("Create")?>`);
-      $_groupPopup.find("button.btn-secondary").html (`<i class="fas fa-undo-alt"></i> <?=_("Cancel")?>`);
-
-      H.openModal ($_groupPopup);
+          H.openModal ($p);
+        }
+      });
     },
 
     // METHOD openUpdateGroup ()
     openUpdateGroup (args)
     {
-      H.cleanPopupDataAttr ($_groupPopup);
+      const plugin = this;
 
-      $_groupPopup[0].dataset.action = "update";
+      H.loadPopup ("group", {
+        open: false,
+        init: ($p)=>
+        {
+          $p.find(".btn-primary")
+            .on("click", function (e)
+            {
+              plugin.onSubmitGroup ($p, this, e);
+            });
 
-      $_groupPopup[0].dataset.noclosure = true;
+          $_groupPopup = $p;
+        },
+        cb: ($p)=>
+        {
+          $p[0].dataset.action = "update";
+          $p[0].dataset.noclosure = true;
 
-      $_groupPopup.find(".modal-title span").html (
-        "<?=_("Update this group")?>");
+          $p.find(".modal-title span").html ("<?=_("Update this group")?>");
 
-      $_groupPopup.find("input")[0].value = args.name;
-      $_groupPopup.find("input")[1].value = args.description||"";
+          $p.find("input")[0].value = args.name;
+          $p.find("input")[1].value = args.description||"";
 
-      $_groupPopup.find("button.btn-primary")[0].dataset.groupid = args.groupId;
-      $_groupPopup.find("button.btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
-      $_groupPopup.find("button.btn-secondary").html (`<i class="fas fa-times"></i> <?=_("Close")?>`);
+          $p.find("button.btn-primary")[0].dataset.groupid = args.groupId;
+          $p.find("button.btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
+          $p.find("button.btn-secondary").html (`<i class="fas fa-times"></i> <?=_("Close")?>`);
 
-      H.openModal ($_groupPopup);
+          H.openModal ($p);
+        }
+      });
     },
 
     // METHOD open ()
@@ -491,15 +529,5 @@
     }
 
   });
-
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#shareWallPopup");
-
-      if ($plugin.length)
-        $plugin.shareWall ();
-    });
 
 <?php echo $Plugin->getFooter ()?>

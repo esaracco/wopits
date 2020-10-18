@@ -259,7 +259,8 @@
                 'app/deploy/bin',
                 'app/inc',
                 'www/css/themes',
-                'www/js'] as $v)
+                'www/js',
+                'www/ui'] as $v)
         $this->_exec ("mkdir -p {$env['build-path']}/$v");
 
       $this->_exec ('cp -a '.__DIR__.
@@ -442,17 +443,20 @@
           rename ("$f-tmp", $f);
         }
 
-        $path = "{$env['build-path']}/app/inc/popups/";
-        foreach (scandir ($path) as $f)
+        foreach (['app/inc/popups/', 'www/ui/'] as $path)
         {
-          if (substr ($f, -4) !== '.php')
-            continue;
+          $path = $env['build-path']."/$path";
+          foreach (scandir ($path) as $f)
+          {
+            if (substr ($f, -4) !== '.php')
+              continue;
 
-          echo " $f";
+            echo " $f";
 
-          $f = "$path/$f";
-          $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
-          rename ("$f-tmp", $f);
+            $f = "$path/$f";
+            $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
+            rename ("$f-tmp", $f);
+          }
         }
         echo "\n";
       }

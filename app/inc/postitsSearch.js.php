@@ -104,14 +104,4 @@
     }
   };
 
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#postitsSearchPopup");
-
-      if ($plugin.length)
-        $plugin.postitsSearch ();
-    });
-
 <?php echo $Plugin->getFooter ()?>

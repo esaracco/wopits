@@ -123,14 +123,4 @@
 
   };
 
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#wallPropertiesPopup");
-
-      if ($plugin.length)
-        $plugin.wallProperties ();
-    });
-
 <?php echo $Plugin->getFooter ()?>

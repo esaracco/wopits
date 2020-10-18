@@ -145,14 +145,4 @@
     }
   };
 
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#datePickerPopup");
-
-      if ($plugin.length)
-        $plugin.datePicker ();
-    });
-
 <?php echo $Plugin->getFooter ()?>

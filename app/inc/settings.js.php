@@ -15,28 +15,10 @@
     init (args)
     {
       const plugin = this,
-            $tc = $("#themeChooserPopup"),
             $settings = plugin.element;
 
-      $tc
-        // EVENT theme chooser popup closing
-        .on("hide.bs.modal", function ()
-        {
-          if (!wpt_userData.settings.theme)
-            plugin.set ({theme: "theme-default"});
-        });
-
-      $tc.find(".settings")
-        // EVENT click on settings button in theme chooser popup
-        .on("click", function ()
-        {
-          $tc.modal ("hide");
-          plugin.open ();
-        });
-
-      $("a.dot-theme")
-        // EVENT click on them color button (for both settings & theme chooser
-        //       popup)
+      $settings.find("a.dot-theme")
+        // EVENT click on theme color button
         .on("click", function ()
         {
           plugin.set ({theme: this.dataset.theme});
@@ -244,7 +226,36 @@
     // METHOD openThemeChooser ()
     openThemeChooser ()
     {
-      H.openModal ($("#themeChooserPopup"));
+      const plugin = this;
+
+      H.loadPopup ("themeChooser", {
+        init: ($p)=>
+        {
+          $p.find("a.dot-theme")
+            // EVENT click on theme color button chooser
+            .on("click", function ()
+            {
+              plugin.set ({theme: this.dataset.theme});
+              plugin.applyTheme ();
+            });
+
+          $p
+            // EVENT theme chooser popup closing
+            .on("hide.bs.modal", function ()
+            {
+              if (!wpt_userData.settings.theme)
+                plugin.set ({theme: "theme-default"});
+            });
+
+          $p.find(".settings")
+            // EVENT click on settings button in theme chooser popup
+            .on("click", function ()
+            {
+              $p.modal ("hide");
+              plugin.open ();
+            });
+        }
+      });
     },
 
     // METHOD open ()

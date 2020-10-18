@@ -46,7 +46,10 @@
   <?php
     //<WPTPROD-remove>
       foreach (WPT_POPUPS['login'] as $popup)
-        include (__DIR__."/../app/inc/popups/$popup.php");
+        if ($popup == 'about')
+          include (__DIR__.'/../www/ui/about.php');
+        else
+          include (__DIR__."/../app/inc/popups/$popup.php");
     //</WPTPROD-remove>
   ?>
   

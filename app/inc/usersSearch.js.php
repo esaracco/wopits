@@ -260,14 +260,4 @@
 
   };
 
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#usersSearchPopup");
-
-      if ($plugin.length)
-        $plugin.usersSearch ();
-    });
-
 <?php echo $Plugin->getFooter ()?>

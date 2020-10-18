@@ -131,7 +131,10 @@ $(function()
       $(this).parent().find("[data-toggle='tooltip']").tooltip ("hide");
 
       if (share)
-        return $("#shareWallPopup").shareWall ("open");
+        return H.loadPopup ("shareWall", {
+                 open: false,
+                 cb: ($p)=> $p.shareWall ("open")
+               });
 
       if (rename)
         return S.getCurrent("wall")
@@ -192,8 +195,10 @@ $(function()
       if (!$wall.length) return;
 
       // Reinit search plugin for the current wall
-      $("#postitsSearchPopup").postitsSearch (
-        "restore", $wall[0].dataset.searchstring||"");
+      const search = document.getElementById ("postitsSearchPopup");
+      if (search)
+        $(search).postitsSearch (
+          "restore", $wall[0].dataset.searchstring||"");
 
       $wall.wall ("zoom", {type: "normal", "noalert": true});
 
@@ -237,7 +242,7 @@ $(function()
     });
 
   // CATCH <Enter> key on popups
-  $(document).on("keypress", ".modal, .popover",
+  $(document).on("keypress", ".modal,.popover",
     function (e)
     {
       if (e.which == 13 && e.target.tagName == "INPUT")
@@ -261,7 +266,7 @@ $(function()
     });
 
   // EVENT show.bs.modal on popups
-  $(".modal").on("show.bs.modal",
+  $(document).on("show.bs.modal", ".modal",
     function(e)
     {
       const $popup = $(this),
@@ -297,7 +302,7 @@ $(function()
     });  
 
   // EVENT hidden.bs.modal on popups
-  $(".modal").on("hidden.bs.modal",
+  $(document).on("hidden.bs.modal", ".modal",
     function(e)
     {
       const $popup = $(this),
@@ -368,11 +373,10 @@ $(function()
 
           break;
       }
-
     });
 
   // EVENT click on popup buttons
-  $(".modal .modal-footer .btn").on("click",
+  $(document).on("click", ".modal .modal-footer .btn",
     function (e)
     {
       const $popup = $(this).closest (".modal"),

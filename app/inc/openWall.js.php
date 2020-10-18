@@ -306,14 +306,4 @@
     }
   };
 
-  /////////////////////////// AT LOAD INIT //////////////////////////////
-
-  $(function ()
-    {
-      const $plugin = $("#openWallPopup");
-
-      if ($plugin.length)
-        $plugin.openWall ();
-    });
-
 <?php echo $Plugin->getFooter ()?>

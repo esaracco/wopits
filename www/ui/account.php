@@ -1,4 +1,6 @@
 <?php
+  require (__DIR__.'/../../app/prepend.php');
+
   $user = (new Wopits\User (['userId' => $_SESSION['userId']]))->getUser();
 ?>
 <div class="modal m-fullscreen" id="accountPopup" role="dialog" tabindex="-1">

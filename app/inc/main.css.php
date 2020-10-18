@@ -1458,6 +1458,7 @@ EOC;
 #usersSearchPopup .nousers-title {
   font-style:italic;
   opacity:0.6;
+  text-align:center;
 }
 
 div.userscount {
@@ -1690,6 +1691,12 @@ EOC;
 
 #accountPopup i.fa-bomb {
   color:#555;
+}
+
+#changePasswordPopup,
+#updateOneInputPopup,
+#userViewPopup {
+  z-index:5018;
 }
 
 i.fa-xs {
