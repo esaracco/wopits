@@ -749,7 +749,10 @@
               case 'WPT_POPUPS':
                 foreach (constant($m1[1])[$m1[2]] as $f)
                   $inject .= $this->_processWptCode (
-                    file_get_contents(__DIR__."/../inc/popups/$f.php"));
+                      file_get_contents (
+                        (file_exists(__DIR__."/../inc/popups/$f.php")) ?
+                          __DIR__."/../inc/popups/$f.php":
+                          __DIR__."/../../www/ui/$f.php"));
                 break;
             }
           }

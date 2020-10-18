@@ -1,4 +1,4 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
+<?php require ($_SERVER['DOCUMENT_ROOT'].'/../app/prepend.php')?>
 <div class="modal m-fullscreen" id="aboutPopup" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
