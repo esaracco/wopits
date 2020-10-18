@@ -884,7 +884,8 @@ input::-ms-clear {
 
 .cell-list-mode li span {
   cursor:move;
-  padding:0 5px;
+  padding:5px 10px;
+  opacity:0.5;
 }
 
 .postit-menu .submenu {
