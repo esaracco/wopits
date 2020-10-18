@@ -17,7 +17,7 @@
       const plugin = this,
             $settings = plugin.element;
 
-      $settings.find("a.dot-theme")
+      $("a.dot-theme")
         // EVENT click on theme color button
         .on("click", function ()
         {
