@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-15 14:13+0200\n"
+        "POT-Creation-Date: 2020-10-18 17:19+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -659,6 +659,9 @@ msgstr  ""
 msgid   "Size"
 msgstr  ""
 
+msgid   "Some walls are no longer available!"
+msgstr  ""
+
 msgid   "Someone is editing this item."
 msgstr  ""
 
@@ -951,13 +954,6 @@ msgid   "You must have admin access to perform this action."
 msgstr  ""
 
 msgid   "You must have write access to perform this action."
-msgstr  ""
-
-msgid   "You no longer have access to some of the walls you had opened!"
-msgstr  ""
-
-#, php-format
-msgid   "You no longer have access to the «%s» wall!"
 msgstr  ""
 
 msgid   "You will lose your access to the wall.<br>Reject anyway?"
