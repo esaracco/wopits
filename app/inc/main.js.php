@@ -1148,7 +1148,10 @@
                 S.set ("save-opened-walls", true);
             }
 
-            return H.displayMsg ({type: "warning", msg: "<?=_("You no longer have access to some of the walls you had opened!")?>"});
+            return H.displayMsg ({
+                     type: "warning",
+                     msg: "<?=_("Some walls are no longer available!")?>"
+                   });
           }
 
           if (d.error_msg)

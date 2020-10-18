@@ -435,11 +435,10 @@ class WSocket
             case "unlinked":
               if (!isResponse)
               {
-                const msg = data.wall.unlinked ?
-                  "<?=_("You no longer have access to the «%s» wall!")?>".replace("%s", data.wall.unlinked) :
-                 "<?=_("You no longer have access to some of the walls you had opened!")?>";
-
-                H.displayMsg ({type: "warning", msg: msg});
+                H.displayMsg ({
+                  type: "warning",
+                  msg: "<?=_("Some walls are no longer available!")?>"
+                });
                 $wall.wall ("close");
               }
               break;

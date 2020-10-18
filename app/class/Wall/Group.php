@@ -182,20 +182,25 @@ class Group extends Wall
 
       $params = [$this->groupId, $groupUserId];
 
+      // Unlink user from group
       $this
         ->prepare('
           DELETE FROM users_groups
           WHERE groups_id = ? AND users_id = ?')
         ->execute ($params);
 
-      // Performance helper:
-      // Get wall id.
-      ($stmt = $this->prepare ('
-        SELECT walls_id FROM _perf_walls_users
-        WHERE groups_id = ? AND users_id = ?'))
-         ->execute ($params);
-      $this->wallId = $stmt->fetch()['walls_id'];
-      // Unlink user to group's walls.
+      if (!$this->wallId)
+      {
+        // Performance helper:
+        // Get wall id.
+        ($stmt = $this->prepare ('
+          SELECT walls_id FROM _perf_walls_users
+          WHERE groups_id = ? AND users_id = ?'))
+           ->execute ($params);
+        $this->wallId = $stmt->fetch()['walls_id'];
+      }
+
+      // Unlink user from group's walls
       $this
         ->prepare('
           DELETE FROM _perf_walls_users
@@ -210,11 +215,8 @@ class Group extends Wall
 
       $this->commit ();
 
-      if (!$me)
-        $ret['wall'] = [
-          'id' => $this->wallId,
-          'unlinked' => $this->getWallName ()
-        ];
+      if (!$me && $this->wallId)
+        $ret['wall'] = ['id' => $this->wallId];
     }
     catch (\Exception $e) 
     {
