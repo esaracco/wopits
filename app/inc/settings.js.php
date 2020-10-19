@@ -17,6 +17,14 @@
       const plugin = this,
             $settings = plugin.element;
 
+      ["<?=implode('","', WPT_THEMES)?>"].forEach ((color) =>
+        {
+          const id = "theme-"+color;
+
+          if (!document.getElementById (id))
+            $("head").append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`);
+        });
+
       $("a.dot-theme")
         // EVENT click on theme color button
         .on("click", function ()
@@ -97,19 +105,18 @@
     // METHOD applyTheme ()
     applyTheme ()
     {
-      const theme = wpt_userData.settings.theme||"theme-default";
+      const theme = wpt_userData.settings.theme||"theme-default",
+            current = document.querySelector (
+                        "link[id^='theme-']:not([media='none'])");
 
-      $("link[id^='theme-']").remove ();
+      if (current && current.id == theme)
+        return;
 
-      if (theme != "theme-default")
-      {
-        const color = (theme.match (/theme\-(.*)$/))[1];
+      document.querySelectorAll("link[id^='theme-']").forEach ((link)=>
+        link.media = (link.id == theme) ? '' : 'none');
 
-        $("head").append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${theme}">`);
-      }
-
-      if (!H.isLoginPage ())
-        setTimeout (() => $("<div/>").postit ("applyTheme"), 250);
+      if (wpt_userData.settings.activeWall)
+        setTimeout (() => $("<div/>").postit ("applyTheme"), 500);
     },
 
     // METHOD saveOpenedWalls ()

@@ -10,7 +10,7 @@ $theme = 'theme-default';
 if ($userId)
 {
   $User->userId = $userId;
-  $theme = $User->getSettings(false)->theme;
+  $theme = $User->getSettings(false)->theme??'theme-default';
 }
 
 //<WPTPROD-remove>

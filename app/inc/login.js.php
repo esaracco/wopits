@@ -280,7 +280,7 @@
 
   $(function ()
   {
-    if (location.href.match (/login\.php/))
+    if (H.isLoginPage ())
       $("#login").login ();
   });
 
