@@ -218,14 +218,14 @@
     // METHOD logout ()
     logout (args = {})
     {
-      location.href = "/login.php";
-
       // Clean all data only if the logout order come from the main user
       // session.
       if (!args.auto)
         H.request_ajax (
           "POST",
-          "user/logout");
+          "user/logout",
+          null,
+          ()=> location.href = "/login.php");
     },
 
     // METHOD createUser ()
