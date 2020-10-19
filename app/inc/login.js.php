@@ -220,7 +220,9 @@
     {
       // Clean all data only if the logout order come from the main user
       // session.
-      if (!args.auto)
+      if (args.auto)
+        location.href = "/login.php";
+      else
         H.request_ajax (
           "POST",
           "user/logout",
