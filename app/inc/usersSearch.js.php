@@ -45,6 +45,7 @@
         .on("click", "#usersSearchPopup .list-group-item", function (e)
         {
           const $el = $(this),
+                isDed = ($ac[0].dataset.grouptype == <?=WPT_GTYPES_DED?>),
                 args = {
                   wallId: S.getCurrent("wall").wall ("getId"),
                   groupType: $ac[0].dataset.grouptype,
@@ -56,12 +57,14 @@
 
           if ($el[0].dataset.action == "add")
             plugin.addGroupUser (args);
+          else if (isDed && $ac[0].dataset.noattr)
+            plugin.removeGroupUser (args);
           else
           {
             H.openConfirmPopover ({
               item: $el.find("span"),
               title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
-              content: "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>",
+              content: isDed ? "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>" : "<?=_("This user will lose their access for all walls shared with this generic group.<br>Remove anyway?")?>",
               cb_ok: () => plugin.removeGroupUser (args)
             }); 
           }

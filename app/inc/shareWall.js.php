@@ -91,6 +91,8 @@
 
                   $p.usersSearch ("reset", {full: true});
 
+                  if ($row[0].parentNode.classList.contains("noattr"))
+                    $p[0].dataset.noattr = 1;
                   $p[0].dataset.delegateadminid = delegateAdminId;
                   $p[0].dataset.groupid = groupId;
                   $p[0].dataset.grouptype = groupType;
