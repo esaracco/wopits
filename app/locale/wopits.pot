@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-18 17:19+0200\n"
+        "POT-Creation-Date: 2020-10-19 11:10+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -835,6 +835,9 @@ msgid   "This title already exists."
 msgstr  ""
 
 msgid   "This user is no longer available!"
+msgstr  ""
+
+msgid   "This user will lose their access for all walls shared with this generic group.<br>Remove anyway?"
 msgstr  ""
 
 msgid   "This user will lose their access to the wall.<br>Remove anyway?"
