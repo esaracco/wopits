@@ -91,7 +91,7 @@
 
   $(function ()
     {
-      if (!document.querySelector ("body.login-page"))
+      if (!H.isLoginPage ())
       {
         const $walls = S.getCurrent ("walls");
 

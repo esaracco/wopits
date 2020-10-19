@@ -4,7 +4,7 @@ $(function()
 
   const $_walls = S.getCurrent ("walls");
 
-  if (!document.querySelector ("body.login-page"))
+  if (!H.isLoginPage ())
   {
     $(window)
       // EVENTS resize & orientationchange on window

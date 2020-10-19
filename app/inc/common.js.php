@@ -637,6 +637,19 @@ class WHelper
     };
   }
 
+  // METHOD isLoginPage ()
+  isLoginPage ()
+  {
+    return (document.body && document.body.classList.contains ("login-page"));
+  }
+
+  // METHOD getPlugColor ()
+  getPlugColor (type)
+  {
+    return H.getBackgroundColor (document.querySelector (
+             type == "shadow" ? ".bg-dark" : ".wall th:first-child"));
+  }
+
   // METHOD getBackgroundColor ()
   getBackgroundColor (el)
   {

@@ -1844,10 +1844,8 @@
 
   $(function ()
     {
-      if (!document.querySelector ("body.login-page"))
+      if (!H.isLoginPage ())
       {
-        $("#settingsPopup").settings ("applyTheme");
-
         WS.connect (
           "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
           {

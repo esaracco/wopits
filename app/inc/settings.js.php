@@ -99,12 +99,17 @@
     {
       const theme = wpt_userData.settings.theme||"theme-default";
 
-      $("link[id^='theme-']").each (function ()
-      {
-        this.media = (this.id == theme) ? '' : 'none';
-      });
+      $("link[id^='theme-']").remove ();
 
-      setTimeout (() => $("<div/>").postit ("applyTheme"), 250);
+      if (theme != "theme-default")
+      {
+        const color = (theme.match (/theme\-(.*)$/))[1];
+
+        $("head").append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${theme}">`);
+      }
+
+      if (!H.isLoginPage ())
+        setTimeout (() => $("<div/>").postit ("applyTheme"), 250);
     },
 
     // METHOD saveOpenedWalls ()
@@ -152,7 +157,7 @@
       wpt_userData.settings = $.extend (wpt_userData.settings, keyVal);
 
       // if registered user (not login page)
-      if (!document.querySelector ("body.login-page"))
+      if (!H.isLoginPage ())
         H.request_ws (
           "POST",
           "user/settings",
@@ -347,7 +352,7 @@
 
   $(function ()
     {
-      if (document.querySelector ("body.login-page"))
+      if (H.isLoginPage ())
       {
         const $plugin = $("#settingsPopup");
 

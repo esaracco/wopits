@@ -73,8 +73,7 @@
                         line.label = label;
                         line.obj.setOptions ({
                           size: 4,
-                          color: H.getBackgroundColor (
-                             document.querySelector (".wall th:first-child")),
+                          color: H.getPlugColor ("main"),
                           dash: null,
                           middleLabel: LeaderLine.captionLabel({
                             text: label,
@@ -941,13 +940,11 @@
                   dx: 0.2,
                   dy: 0.2,
                   blur: 1,
-                  color: H.getBackgroundColor (
-                           document.querySelector (".bg-dark"))
+                  color: H.getPlugColor ("shadow")
                 },
                 startPlug: "arrow1",
                 endPlug: "arrow1",
-                color: H.getBackgroundColor (
-                         document.querySelector (".wall th:first-child")),
+                color: H.getPlugColor ("main"),
                 middleLabel: LeaderLine.captionLabel ({
                   text: label,
                   fontSize:"13px"
@@ -960,7 +957,7 @@
     },
 
     // METHOD applyThemeToPlugs ()
-    applyThemeToPlugs ()
+    applyThemeToPlugs (shadow, color)
     {
       this.settings._plugs.forEach (
         plug => plug.obj.setOptions ({
@@ -968,19 +965,21 @@
             dx: 0.2,
             dy: 0.2,
             blur: 1,
-            color: H.getBackgroundColor (document.querySelector (".bg-dark"))
+            color: shadow
           },
-          color: H.getBackgroundColor (
-                   document.querySelector (".wall th:first-child"))
+          color: color
         }));
     },
 
     // METHOD applyTheme ()
     applyTheme ()
     {
+      const shadow = H.getPlugColor ("shadow"),
+            color = H.getPlugColor ("main");
+
       document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
         {
-          $(p).postit ("applyThemeToPlugs");
+          $(p).postit ("applyThemeToPlugs", shadow, color);
         });
     },
 
@@ -2026,7 +2025,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  if (!document.querySelector ("body.login-page"))
+  if (!H.isLoginPage ())
     $(function()
       {
         // EVENT focusin.

@@ -5,9 +5,13 @@ require_once (__DIR__.'/prepend.php');
 $version = \Wopits\Helper::getWopitsVersion ();
 $slocale = $_SESSION['slocale'];
 $userId = $_SESSION['userId'] ?? 0;
+$theme = 'theme-default';
 
 if ($userId)
+{
   $User->userId = $userId;
+  $theme = $User->getSettings(false)->theme;
+}
 
 //<WPTPROD-remove>
 if (WPT_DEV_MODE)
@@ -53,9 +57,10 @@ if (!empty($_SESSION['upgradeDone']))
   <link rel="stylesheet" href="/libs/node_modules/vanderlee-colorpicker/jquery.colorpicker.css?<?=$version?>">
   <link rel="stylesheet" href="<?=$css?>">
 
-  <?php foreach (WPT_THEMES as $theme) { ?>
-    <link rel="stylesheet" href="/css/themes/<?=$theme?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="theme-<?=$theme?>" media="none">
-  <?php } ?>
+<?php if ($theme != 'theme-default'):
+        $color = explode('-', $theme)[1]?>
+  <link rel="stylesheet" href="/css/themes/<?=$color?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="<?=$theme?>">
+<?php endif?>
 
 <!--//<WPTPROD-remove>-->
 <?php if (WPT_DEV_MODE):?>
