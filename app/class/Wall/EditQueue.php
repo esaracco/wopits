@@ -290,15 +290,16 @@ class EditQueue extends Wall
 
                     ($stmt = $this->prepare ("
                       INSERT INTO postits_alerts (
-                        postits_id, users_id, alertshift
+                        postits_id, users_id, walls_id, alertshift
                       ) VALUES (
-                        :postits_id, :users_id, :alertshift
+                        :postits_id, :users_id, :walls_id, :alertshift
                       ) {$this->getDuplicateQueryPart (
                          ['postits_id', 'users_id'])}
                       alertshift = :alertshift_1"))
                        ->execute ([
                          ':postits_id' => $this->data->id,
                          ':users_id' => $this->userId,
+                         ':walls_id' => $this->wallId,
                          ':alertshift' => $alertShift,
                          ':alertshift_1' => $alertShift
                        ]);

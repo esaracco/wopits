@@ -200,6 +200,14 @@ class Group extends Wall
         $this->wallId = $stmt->fetch()['walls_id'];
       }
 
+      // Remove user's postits alerts
+      if ($this->wallId)
+        $this
+          ->prepare('
+            DELETE FROM postits_alerts
+            WHERE walls_id = ? AND users_id = ?')
+          ->execute ([$this->wallId, $groupUserId]);
+
       // Unlink user from group's walls
       $this
         ->prepare('
@@ -445,6 +453,14 @@ class Group extends Wall
           DELETE FROM _perf_walls_users
           WHERE groups_id = ? AND walls_id = ?')
         ->execute ([$this->groupId, $this->wallId]);
+
+      // Remove user's postits alerts
+      $this
+        ->prepare("
+          DELETE FROM postits_alerts
+          WHERE walls_id = ? AND users_id IN (
+            SELECT users_id FROM users_groups WHERE groups_id = ?)")
+        ->execute ([$this->wallId, $this->groupId]);
 
       $this->commit ();
 

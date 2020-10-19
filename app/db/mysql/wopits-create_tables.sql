@@ -262,15 +262,20 @@ ENGINE=INNODB;
 DROP TABLE IF EXISTS postits_alerts;
 CREATE TABLE postits_alerts
 (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   postits_id INT UNSIGNED NOT NULL,
   users_id INT UNSIGNED NOT NULL,
+  walls_id INT UNSIGNED NOT NULL,
   alertshift INT UNSIGNED NOT NULL,
 
-  PRIMARY KEY (postits_id, users_id),
+  PRIMARY KEY (id),
   CONSTRAINT `postits_alerts-postits_id-fk` FOREIGN KEY (postits_id)
     REFERENCES postits(id) ON DELETE CASCADE,
   CONSTRAINT `postits_alerts-users_id-fk` FOREIGN KEY (users_id)
-    REFERENCES users(id) ON DELETE CASCADE
+    REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT `postits_alerts-walls_id-fk` FOREIGN KEY (walls_id)
+    REFERENCES walls(id) ON DELETE CASCADE,
+  UNIQUE KEY `postits_alerts-postits_id:users_id-uidx` (postits_id, users_id)
 )
 ENGINE=INNODB;
 

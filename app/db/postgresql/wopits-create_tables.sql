@@ -204,11 +204,13 @@ CREATE INDEX "postits_pictures-link-idx" ON postits_pictures (link);
 DROP TABLE IF EXISTS postits_alerts CASCADE;
 CREATE TABLE postits_alerts
 (
+  id SERIAL PRIMARY KEY,
   postits_id INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  alertshift INTEGER NOT NULL,
-  PRIMARY KEY (postits_id, users_id)
+  walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
+  alertshift INTEGER NOT NULL
 );
+CREATE UNIQUE INDEX "postits_alerts-postits_id:users_id-uidx" ON postits_alerts (postits_id, users_id);
 
 DROP TABLE IF EXISTS edit_queue CASCADE;
 CREATE TABLE edit_queue
