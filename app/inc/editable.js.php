@@ -57,7 +57,7 @@
       settings._intervalBlockEditing = 0;
 
       settings.container
-        .on("click", function (e)
+        .on("mousedown", function (e)
         {
           // Cancel if current relationship creation.
           if (S.get("link-from"))
@@ -190,7 +190,8 @@
       const settings = this.settings;
       let $plug;
 
-      settings.wall.draggable ("option", "disabled", type);
+      if (settings.wall[0].classList.contains ("ui-draggable"))
+        settings.wall.draggable ("option", "disabled", type);
 
       $plug = settings.container.closest (".ui-draggable");
       if ($plug.length)
@@ -218,5 +219,15 @@
     }
 
   };
+
+/////////////////////////// AT LOAD INIT //////////////////////////////
+
+  $(function ()
+  {
+    setTimeout (()=>
+    {
+      $("body").prepend (`<div id="sandbox"></div>`);
+    }, 0);
+  });
 
 <?php echo $Plugin->getFooter ()?>

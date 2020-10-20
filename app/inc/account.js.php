@@ -26,6 +26,8 @@
       const plugin = this,
             $account = plugin.element;
 
+      H.enableTooltips ($account);
+
       if ($.support.touch)
         $account.find(".modal-title i.fa-user-circle")
           .on("click", function ()

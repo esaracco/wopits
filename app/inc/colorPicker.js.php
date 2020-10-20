@@ -98,12 +98,10 @@
   $(function ()
   {
     setTimeout (()=>
-      {
-        const $plugin = $(".color-picker");
-
-        if ($plugin.length)
-          $plugin.colorPicker ();
-      }, 0);
+    {
+      $("body").prepend (`<div id="color-picker"></div>`);
+      $("#color-picker").colorPicker ();
+    }, 0);
   });
 
 <?php echo $Plugin->getFooter ()?>

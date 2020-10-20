@@ -1901,7 +1901,7 @@ button.ui-datepicker-close {
 }
 
 #tag-picker,
-.color-picker {
+#color-picker {
   z-index:5020;
   display:none;
   position:absolute;
@@ -1912,11 +1912,11 @@ button.ui-datepicker-close {
   border-radius:5px;
 }
 
-.color-picker {
+#color-picker {
   width:87px;
 }
 
-.color-picker > div {
+#color-picker > div {
   float:left;
   width:20px;
   height:20px;

@@ -285,7 +285,7 @@
 
                 // OPEN color picker
                 case "color-picker":
-                  return $(".color-picker").colorPicker ("open", e);
+                  return $("#color-picker").colorPicker ("open", e);
               }
           });
         });

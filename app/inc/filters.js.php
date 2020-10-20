@@ -21,7 +21,7 @@
       const plugin = this,
             $filters = plugin.element,
             tList = S.getCurrent("tag-picker").tagPicker ("getTagsList"),
-            cList = $(".color-picker").colorPicker ("getColorsList");
+            cList = $("#color-picker").colorPicker ("getColorsList");
 
       let tags = '';
       for (const t of tList)

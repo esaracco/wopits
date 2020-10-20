@@ -1,27 +1,11 @@
 <?php include (__DIR__.'/../app/header-common.php')?>
 <body>
 
-  <!-- LOADER -->
-  <div id="popup-loader" class="layer">
-    <div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div>
-  </div>
-
-  <!-- SANDBOX -->
-  <div id="sandbox"></div>
-
   <!-- upload LAYER -->
   <div id="upload-layer" class="layer"></div>
 
-  <div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>
-
   <!-- MSG CONTAINER -->
   <div id="msg-container"></div>
-
-  <!-- TAG PICKER -->
-  <div id="tag-picker"></div>
-
-  <!-- COLOR PICKER -->
-  <div class="color-picker"></div>
 
   <!-- MENU main -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm">

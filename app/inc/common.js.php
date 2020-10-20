@@ -1415,8 +1415,8 @@ class WHelper
   request_ajax (method, service, args, success_cb, error_cb)
   {
     const _H = this,
-///FIXME attachment reconnu comme fileUpload alors que popup liste attachements
-          fileUpload = !!service.match(/attachment|picture|import|export$/),
+          fileUpload = (service.match(/picture|import|export$/)) ||
+                       (args && service.indexOf("attachment") != -1),
           // No timeout for file upload
           timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
     let msgArgs = {type: "danger"};

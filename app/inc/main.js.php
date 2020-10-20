@@ -1846,6 +1846,9 @@
     {
       if (!H.isLoginPage ())
         setTimeout (()=>{
+
+        $("body").prepend (`<div id="popup-loader" class="layer"><div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div></div>`);
+
         WS.connect (
           "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
           {
@@ -1899,6 +1902,7 @@
         if (!$.support.touch)
           $("#main-menu").addClass ("noarrows");
 
+        $("body").prepend (`<div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>`);
         $("#normal-display-btn")
           // EVENT click on back to standard view button
           .on("click", function ()
@@ -1907,7 +1911,7 @@
           });
 
         // EVENT click on main menu account button
-      $("#account").on("click", function (e)
+        $("#account").on("click", function (e)
         {
           H.closeMainMenu ();
           H.loadPopup ("account");

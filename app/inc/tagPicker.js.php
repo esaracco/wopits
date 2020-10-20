@@ -155,12 +155,10 @@
   $(function ()
     {
       setTimeout (()=>
-        {
-          const $plugin = S.getCurrent ("tag-picker");
-
-          if ($plugin.length)
-            $plugin.tagPicker ();
-        }, 0);
+      {
+        $("body").prepend (`<div id="tag-picker"></div>`);
+        $("#tag-picker").tagPicker ();
+      }, 0);
     });
 
 <?php echo $Plugin->getFooter ()?>
