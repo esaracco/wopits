@@ -445,7 +445,15 @@ class WSocket
 
             // mainupgrade
             case "mainupgrade":
-              setTimeout (()=> H.checkForAppUpgrade (data.version), 5000);
+              // Check only when all modals are closed
+              var iid = setInterval (()=>
+                {
+                  if (!$(".modal:visible").length)
+                  {
+                    clearInterval (iid);
+                    H.checkForAppUpgrade (data.version);
+                  }
+                }, 5000);
               break;
 
             // Reload to refresh user working space.
