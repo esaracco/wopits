@@ -2028,6 +2028,7 @@
   if (!H.isLoginPage ())
     $(function()
       {
+        setTimeout (()=>{
         // EVENT focusin.
         // To fix tinymce bootstrap compatibility with popups
         $(document).on("focusin",
@@ -2567,7 +2568,7 @@
               }
               else
                 cb_close ();
-          });
+          })}, 0);
       });
 
 <?php echo $Plugin->getFooter ()?>

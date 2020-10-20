@@ -92,7 +92,7 @@
   $(function ()
     {
       if (!H.isLoginPage ())
-      {
+        setTimeout(()=>{
         const $walls = S.getCurrent ("walls");
 
         // EVENT click on arrows tool
@@ -131,8 +131,7 @@
 
             $wall.wall ("showPostitsPlugs");
 
-          });
-      }
+          })}, 0);
     });
 
 <?php echo $Plugin->getFooter ()?>

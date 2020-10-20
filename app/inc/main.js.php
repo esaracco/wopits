@@ -1845,7 +1845,7 @@
   $(function ()
     {
       if (!H.isLoginPage ())
-      {
+        setTimeout (()=>{
         WS.connect (
           "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
           {
@@ -2153,8 +2153,7 @@
 
                 break;
             }
-          });
-      }
+          })}, 0);
       else
         $('[data-action="about"]')
         // EVENT CLICK on about button in the login page

@@ -283,7 +283,7 @@
   $(function ()
   {
     if (H.isLoginPage ())
-      $("#login").login ();
+      setTimeout (()=> $("#login").login (), 0);
   });
 
 <?php echo $Plugin->getFooter ()?>

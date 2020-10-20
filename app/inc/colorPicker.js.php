@@ -97,10 +97,13 @@
 
   $(function ()
   {
-    const $plugin = $(".color-picker");
+    setTimeout (()=>
+      {
+        const $plugin = $(".color-picker");
 
-    if ($plugin.length)
-      $plugin.colorPicker ();
+        if ($plugin.length)
+          $plugin.colorPicker ();
+      }, 0);
   });
 
 <?php echo $Plugin->getFooter ()?>

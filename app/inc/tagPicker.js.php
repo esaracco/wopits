@@ -154,10 +154,13 @@
 
   $(function ()
     {
-      const $plugin = S.getCurrent ("tag-picker");
+      setTimeout (()=>
+        {
+          const $plugin = S.getCurrent ("tag-picker");
 
-      if ($plugin.length)
-        $plugin.tagPicker ();
+          if ($plugin.length)
+            $plugin.tagPicker ();
+        }, 0);
     });
 
 <?php echo $Plugin->getFooter ()?>
