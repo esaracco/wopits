@@ -15,14 +15,15 @@
     init (args)
     {
       const plugin = this,
-            $settings = plugin.element;
+            $settings = plugin.element,
+            $head = $("head");
 
       ["<?=implode('","', WPT_THEMES)?>"].forEach ((color) =>
         {
           const id = "theme-"+color;
 
           if (!document.getElementById (id))
-            $("head").append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`);
+            $head.append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`);
         });
 
       $("a.dot-theme")
@@ -109,14 +110,15 @@
             current = document.querySelector (
                         "link[id^='theme-']:not([media='none'])");
 
-      if (current && current.id == theme)
-        return;
+      if (!current || current.id != theme)
+      {
+        document.querySelectorAll("link[id^='theme-']").forEach ((link)=>
+          link.media = (link.id == theme) ? '' : 'none');
 
-      document.querySelectorAll("link[id^='theme-']").forEach ((link)=>
-        link.media = (link.id == theme) ? '' : 'none');
-
-      if (wpt_userData.settings.activeWall)
-        setTimeout (() => $("<div/>").postit ("applyTheme"), 500);
+        // Apply theme to postits
+        if (document.querySelector(".postit"))
+          setTimeout (()=> $("<div/>").postit ("applyTheme"), 250);
+      }
     },
 
     // METHOD saveOpenedWalls ()

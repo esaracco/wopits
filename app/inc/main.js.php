@@ -194,7 +194,7 @@
               // Save only when all walls has been loaded.
               const t = setInterval (()=>
                 {
-                  if (!$(".walls i.fa-cog").length)
+                  if (!document.querySelector (".walls i.fa-cog"))
                   {
                     $("#settingsPopup").settings ("saveOpenedWalls");
                     clearInterval (t);
