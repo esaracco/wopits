@@ -46,19 +46,13 @@
 
         <!--View-->
         <li class="nav-item dropdown">
-          <a id="dropdownView" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("View")?></a>
+          <a id="dropdownView" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("Display")?></a>
           <ul class="dropdown-menu border-0 shadow display-section">
             <li data-action="zoom+"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-plus"></i> <?=_("Zoom +")?></a></li>
             <li data-action="zoom-"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-minus"></i> <?=_("Zoom -")?></a></li>
             <li data-action="zoom-screen"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
             <li data-action="zoom-normal"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
             <li class="dropdown-divider volatile"></li>
-            <li data-action="list-mode"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-list-ul"></i> <?=_("List mode")?></a></li>
-            <li data-action="postit-mode"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-sticky-note"></i> <?=_("Sticky notes mode")?></a></li>
-            <li class="dropdown-divider"></li>
-            <li data-action="unblock-externalref"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Show external content")?></a></li>
-            <li data-action="block-externalref"><a class="dropdown-item" href="#"><span class="fa-stack fa-xs"><i class="fas fa-link fa-stack-1x"></i><i class="fas fa-ban fa-stack-2x" style="color:Tomato"></i></span> <?=_("Block external content")?></a></li>
-            <li class="dropdown-divider"></li>
             <li data-action="chatroom"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
             <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>
             <li data-action="arrows"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-arrows-alt"></i> <?=_("Arrows")?></a></li>

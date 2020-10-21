@@ -655,10 +655,6 @@ select.timezone {
   background-color: yellow;
 }
 
-.wall thead th:first-child .usersviewcounts {
-  cursor:pointer;
-}
-
 .wall thead th .title {
   margin:28px 20px 0 20px;
 }
@@ -1092,12 +1088,12 @@ th .submenu .dropdown-menu {
   height:50px;
 }
 
-#main-menu [data-action="block-externalref"] {
-  display:none;
+#main-menu span.fa-stack {
+  margin-left:-6px;
 }
 
-#main-menu [data-action="block-externalref"] span {
-  margin-left:-6px;
+i.fa-ban {
+  color:tomato;
 }
 
 <?php
@@ -1129,14 +1125,6 @@ EOC;
   left:5px;
   cursor:pointer;
   min-width:200px;
-}
-
-.chatroom-alert {
-  position:fixed;
-  bottom:15px;
-  left:10px;
-  cursor:pointer;
-  z-index: 5010;
 }
 
 .chatroom .textarea,
@@ -1477,13 +1465,14 @@ div.userscount {
   color:white;
   position: absolute;
   border-radius: 50%;
-  font-size:0.8em;
+  font-size:0.6rem;
   height: 1.5em;
   line-height: 1.5em;
   min-width: 0;
   padding: 0;
   width: 1.5em;
   text-align:center;
+  margin-left:-2px;
 }
 
 div.userscount .wpt-badge {
@@ -1491,22 +1480,53 @@ div.userscount .wpt-badge {
   top:-2px;
 }
 
-div.usersviewcounts {
+ul.wall-menu {
+  position:fixed;
   display:inline-block;
-  position:relative;
-  height: 1.2em;
-  line-height: 1.2em;
-  width: 1.2em;
+  visibility:hidden;
+  background:#fff;
+  top:60px;
+  left:5px;
+  box-shadow:0 0 5px #cecece;
+  padding:10px;
+  z-index:5004;
+  min-width:50px;
   color:#555;
+  list-style-type:none;
+  cursor:move;
 }
 
-th .usersviewcounts {
-  margin-left:-20px;
+.wall-menu > li {
+  float:left;
+  margin-right:5px;
+  cursor:pointer;
+  white-space:nowrap;
 }
 
-div.usersviewcounts .wpt-badge,
-.chatroom .usersviewcounts .wpt-badge {
-  font-size:0.6rem;
+.wall-menu > li.dyn {
+  margin-right:15px;
+}
+
+.usersviewcounts {
+  display:none;
+  color:#555;
+  z-index:1030;
+  cursor:pointer;
+}
+
+.wall-menu .usersviewcounts {
+  border-left:1px dashed #c7c6c6;
+  padding-left:8px;
+}
+
+.wall-menu i.set {
+  color:#151719;
+}
+
+.chatroom .usersviewcounts {
+  position:relative;
+  display:inline-block;
+  margin-left:5px;
 }
 
 .postit .attachmentscount {

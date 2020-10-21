@@ -47,6 +47,9 @@
       settings.tabLink =
         $(".nav-tabs.walls").find ('a[href="#wall-'+settings.id+'"]');
 
+      // Add wall menu
+      $("#wall-"+settings.id).find(".wall-menu").wallMenu ({wallPlugin:plugin});
+
       // Create plugs container
       settings.plugsContainer =
         $(`<div id="plugs-${wallId}" data-access="${access}"></div>`)
@@ -207,10 +210,13 @@
           {
             const __postInit = ()=>
               {
+                plugin.displayHeaders ();
                 // Refresh postits relationships
                 plugin.refreshPostitsPlugs (settings.postits_plugs);
                 // Apply display mode
                 plugin.refreshCellsToggleDisplayMode ();
+
+                $wall.parent().find(".wall-menu").css ("visibility", "visible");
               };
 
             plugin.displayExternalRef ();
@@ -231,12 +237,10 @@
                     if ($postit.length)
                       $postit.postit ("displayDeadlineAlert");
                     else
-                      H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted.")?>"});
+                      H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted")?>"});
                   }
                   else
-                  {
                     plugin.displayShareAlert ();
-                  }
 
                   H.waitForDOMUpdate (() => __postInit ());
                 });
@@ -289,6 +293,7 @@
     menu (args)
     {
       const $wall = S.getCurrent ("wall"),
+            $wallMenu = $wall.parent().find (".wall-menu"),
             $menu = $("#main-menu"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
@@ -374,29 +379,44 @@
             {
               case "unblock-externalref":
 
-                $menu.find("[data-action='block-externalref']").show ();
-                $menu.find("[data-action='unblock-externalref']").hide ();
-                break;
+                $wallMenu.find("[data-action='block-externalref']").show ();
+                $wallMenu.find("[data-action='unblock-externalref']").hide ();
 
-              case "list-mode":
-
-                $menu.find("[data-action='list-mode'] a").addClass ("disabled");
-                $menu.find("[data-action='postit-mode'] a")
-                  .removeClass ("disabled");
-                break;
-
-              case "postit-mode":
-
-                $menu.find("[data-action='postit-mode'] a")
-                  .addClass ("disabled");
-                $menu.find("[data-action='list-mode'] a")
-                  .removeClass ("disabled");
                 break;
 
               case "block-externalref":
 
-                $menu.find("[data-action='block-externalref']").hide ();
-                $menu.find("[data-action='unblock-externalref']").show ();
+                $wallMenu.find("[data-action='block-externalref']").hide ();
+                $wallMenu.find("[data-action='unblock-externalref']").show ();
+
+                break;
+
+              case "show-headers":
+
+                $wallMenu.find("[data-action='show-headers']").hide ();
+                $wallMenu.find("[data-action='hide-headers']").show ();
+
+                break;
+
+              case "hide-headers":
+
+                $wallMenu.find("[data-action='hide-headers']").hide ();
+                $wallMenu.find("[data-action='show-headers']").show ();
+
+                break;
+
+              case "list-mode":
+
+                $wallMenu.find("li[data-action='list-mode']").hide ();
+                $wallMenu.find("li[data-action='postit-mode']").show ();
+
+                break;
+
+              case "postit-mode":
+
+                $wallMenu.find("li[data-action='postit-mode']").hide ();
+                $wallMenu.find("li[data-action='list-mode']").show ();
+
                 break;
 
               // Activate normal view item
@@ -447,8 +467,12 @@
     // METHOD refreshUsersview ()
     refreshUsersview (count)
     {
-      this.element.find("thead th:eq(0)").html ((count) ?
-        `<div class="usersviewcounts"><i class="fas fa-user-friends fa-lg"></i> <span class="wpt-badge">${count}</span></div>` : "&nbsp;");
+      const $el = this.element.parent().find (".usersviewcounts:eq(0)");
+
+      if (count)
+        $el.show().find("span").text (count);
+      else
+        $el.hide ();
     },
 
     // METHOD checkPostitPlugsMenu ()
@@ -1165,7 +1189,7 @@
           if ($popup)
             $popup.modal ("hide");
 
-          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><div class="toolbox chatroom"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
+          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
 
           if (!args.restoring)
             $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
@@ -1246,7 +1270,7 @@
 
                 H.displayMsg ({
                   type: "success",
-                  msg: "<?=_("The wall has been successfully cloned.")?>"
+                  msg: "<?=_("The wall has been successfully cloned")?>"
                 });
             });
           }
@@ -1262,7 +1286,7 @@
         cb_ok: () => H.download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",
-          msg: "<?=_("An error occurred while exporting wall data.")?>"
+          msg: "<?=_("An error occurred while exporting wall data!")?>"
         })
       });
     },
@@ -1591,8 +1615,8 @@
 
       H.request_ajax (
         "POST",
-        "user/wall/"+this.settings.id+"/displayMode",
-        {display: type});
+        "user/wall/"+this.settings.id+"/displaymode",
+        {value: type});
     },
 
     // METHOD zoom ()
@@ -1674,7 +1698,7 @@
           H.displayMsg ({
             type: "info",
             title: "<?=_("Zoom disabled")?>",
-            msg: "<?=_("The wall is again editable")?>"
+            msg: "<?=_("The wall is editable again")?>"
           });
 
         zoom0.style = stylesOrigin;
@@ -1826,8 +1850,8 @@
 
         H.request_ajax (
           "POST",
-          "user/wall/"+this.settings.id+"/externalRef",
-          {display: val});
+          "user/wall/"+this.settings.id+"/displayexternalref",
+          {value: val});
       }
 
       if (this.element.is (":visible"))
@@ -1841,6 +1865,36 @@
     {
       return this.element[0].querySelector (".postit[data-haveexternalref]");
     },
+
+    // METHOD displayHeaders ()
+    displayHeaders (v)
+    {
+      const update = (v !== undefined),
+            val = update ? v : this.settings.displayheaders,
+            type = (val == 1) ? "show" : "hide";
+
+      if (val == 1)
+        this.element.find("th").show ();
+      else
+        this.element.find("th").hide ();
+
+      if (update)
+      {
+        this.settings.displayheaders = val;
+        this.repositionPostitsPlugs ();
+
+        H.request_ajax (
+          "POST",
+          "user/wall/"+this.settings.id+"/displayheaders",
+          {value: val});
+      }
+
+      if (this.element.is (":visible"))
+        this.menu ({from: "display", type: type+"-headers"});
+
+      return val;
+    },
+
   });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
@@ -1959,7 +2013,7 @@
   
                           H.displayMsg ({
                             type: "success",
-                            msg: "<?=_("The wall has been successfully imported.")?>"
+                            msg: "<?=_("The wall has been successfully imported")?>"
                           });
                         });
                     }
@@ -1968,15 +2022,9 @@
             }).appendTo ("body");
 
         $(document)
-          // EVENT click on wall users count
-          .on("click","thead th:first-child .usersviewcounts", function (e)
-          {
-            S.getCurrent("wall").wall ("displayWallUsersview");
-          });
-
-        $(document)
           // EVENT CLICK on main menu items
           .on("click", ".navbar.wopits a,"+
+                       ".wall-menu li,"+
                        "#main-menu a:not(.disabled),"+
                        ".nav-tabs.walls a[data-action='new'],"+
                        "#welcome",function(e)
@@ -2010,22 +2058,9 @@
 
                 break;
 
-              case "list-mode":
-              case "postit-mode":
+              case "show-users":
 
-                $wall.wall ("setPostitsDisplayMode", action);
-
-                break;
-
-              case "unblock-externalref":
-
-                $wall.wall ("displayExternalRef", 1, true)
-
-                break;
-
-              case "block-externalref":
-
-                $wall.wall ("displayExternalRef", 0, true)
+                $wall.wall ("displayWallUsersview");
 
                 break;
 

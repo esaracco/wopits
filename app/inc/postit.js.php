@@ -1750,7 +1750,7 @@
           H.displayMsg ({
             type: "danger",
             msg: (isNaN (d.error)) ?
-              d.error : "<?=_("Unknown error.<br>Please try again later.")?>"
+              d.error : "<?=_("Unknown error.<br>Please try again later!")?>"
           });
 
           $postit.remove ();
@@ -2086,7 +2086,7 @@
 
                             H.displayMsg ({
                               type: "warning",
-                              msg: "<?=_("The image %s was not available! It has been removed from the sticky note content.")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                              msg: "<?=_("The image %s was not available! It has been removed from the sticky note content")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
                           });
                       }
@@ -2105,7 +2105,7 @@
                   editor.setContent ($c.html ());
                   H.displayMsg ({
                     type: "warning",
-                    msg: "<?=_("Content has been cleaned up.")?>"
+                    msg: "<?=_("Content has been cleaned up")?>"
                    });
                 }
               });
@@ -2234,7 +2234,7 @@
                         H.htmlEscape(file.name)+"']").length)
                   return H.displayMsg ({
                            type: "warning",
-                           msg: "<?=_("The file is already linked to the sticky note.")?>"
+                           msg: "<?=_("The file is already linked to the sticky note!")?>"
                          });
 
                 if (H.checkUploadFileSize ({size: e.total}) &&

@@ -123,6 +123,7 @@ CREATE TABLE _perf_walls_users
   users_id INT NOT NULL,
   access TINYINT NOT NULL, -- ADMIN(1), RW(2), RO(3)
   displayexternalref TINYINT NOT NULL DEFAULT 0,
+  displayheaders TINYINT NOT NULL DEFAULT 1,
   displaymode ENUM('list-mode', 'postit-mode') NOT NULL DEFAULT 'postit-mode',
   settings VARCHAR(2000) NOT NULL DEFAULT '{}',
 

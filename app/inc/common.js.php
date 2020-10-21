@@ -226,6 +226,7 @@ class WSharer
     this.wall = [];
     this.chatroom = [];
     this.filters = [];
+    this.wallMenu = [];
     this.arrows = [];
     this.postit = [];
     this.header = [];
@@ -263,21 +264,21 @@ class WSharer
       case "wall":
 
         if (!this.wall.length)
-         this.wall = this.walls.find(".tab-pane.active .wall");
+         this.wall = this.walls.find (".tab-pane.active .wall");
 
         return this.wall;
 
       case "postit":
 
         if (!this.postit.length)
-         this.postit=this.walls.find(".tab-pane.active .wall .postit.current");
+         this.postit=this.walls.find (".tab-pane.active .wall .postit.current");
 
         return this.postit;
 
       case "header":
 
         if (!this.header.length)
-         this.header = this.walls.find(".tab-pane.active .wall th.current");
+         this.header = this.walls.find (".tab-pane.active .wall th.current");
 
         return this.header;
 
@@ -302,21 +303,28 @@ class WSharer
       case "chatroom":
 
         if (!this.chatroom.length)
-         this.chatroom = this.walls.find(".tab-pane.active .chatroom");
+         this.chatroom = this.walls.find (".tab-pane.active .chatroom");
 
         return this.chatroom;
 
       case "filters":
 
         if (!this.filters.length)
-         this.filters = this.walls.find(".tab-pane.active .filters");
+         this.filters = this.walls.find (".tab-pane.active .filters");
 
         return this.filters;
+
+      case "wallMenu":
+
+        if (!this.wallMenu.length)
+         this.wallMenu = this.walls.find (".tab-pane.active .wall-menu");
+
+        return this.wallMenu;
 
       case "arrows":
 
         if (!this.arrows.length)
-         this.arrows = this.walls.find(".tab-pane.active .arrows");
+         this.arrows = this.walls.find (".tab-pane.active .arrows");
 
         return this.arrows;
     }
@@ -1216,7 +1224,7 @@ class WHelper
   
     this.displayMsg ({
       type: (msg)?"warning" : "danger",
-      msg: (msg)?msg : "<?=_("System error. Please report it to the administrator.")?>"
+      msg: (msg)?msg : "<?=_("System error. Please report it to the administrator!")?>"
     });
   }
   
@@ -1358,9 +1366,9 @@ class WHelper
   }
   
   // METHOD enableTooltips ()
-  enableTooltips ($item)
+  enableTooltips ($item, _args = {})
   {
-    const args = {delay: {"show": 500, "hide": 0}};
+    const args = $.extend ({delay: {"show": 500, "hide": 0}}, _args);
 
 //    if (!$.support.touch)
 //    {
@@ -1493,7 +1501,7 @@ class WHelper
            case "abort":
              msgArgs = {
                type: "warning",
-               msg: "<?=_("Upload has been canceled.")?>"
+               msg: "<?=_("Upload has been canceled")?>"
              };
              break;
   

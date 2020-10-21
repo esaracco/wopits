@@ -539,53 +539,49 @@ class User extends Base
     return $this->saveWallSettings ($wallId, $settings);
   }
 
-  public function setWallDisplayMode (int $wallId):array
+  public function setWallOption (int $wallId, string $option):array
   {
     $ret = [];
-    $displayMode = $this->data->display;
 
     try
     {
-      $this->executeQuery ('UPDATE _perf_walls_users',
-        ['displaymode' => $displayMode],
-        ['users_id' => $this->userId, 'walls_id' => $wallId]);
-
-      // Update settings for all cells
-      if (!empty ( (array)($settings = $this->getWallSettings ($wallId)) ))
+      switch ($option)
       {
-        // If postit mode (standard mode), remove keys
-        $delete = ($displayMode == 'postit-mode');
-        foreach ($settings as $key => $value)
-        {
-          if (strpos ($key, 'cell') !== false)
+        case 'displaymode':
+          $displayMode = $this->data->value;
+          // Update settings for all cells
+          if (!empty ( (array)($settings = $this->getWallSettings ($wallId)) ))
           {
-            if ($delete)
-              unset ($settings->$key);
-            else
-              $settings->$key->displaymode = $displayMode;
+            // If postit mode (standard mode), remove keys
+            $delete = ($displayMode == 'postit-mode');
+            foreach ($settings as $key => $value)
+            {
+              if (strpos ($key, 'cell') !== false)
+              {
+                if ($delete)
+                  unset ($settings->$key);
+                else
+                  $settings->$key->displaymode = $displayMode;
+              }
+            }
+            $this->saveWallSettings ($wallId, $settings);
           }
-        }
-        $this->saveWallSettings ($wallId, $settings);
+
+          break;
+
+        case 'displayexternalref':
+        case 'displayheaders':
+          break;
+
+        default:
+          $unknown = true;
+          break;
       }
-    }
-    catch (\Exception $e)
-    {
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-      $ret['error'] = 1;
-    }
 
-    return $ret;
-  }
-
-  public function setWallExternalRef (int $wallId):array
-  {
-    $ret = [];
-
-    try
-    {
-      $this->executeQuery ('UPDATE _perf_walls_users',
-        ['displayexternalref' => intval ($this->data->display)],
-        ['users_id' => $this->userId, 'walls_id' => $wallId]);
+      if (!isset ($unknown))
+        $this->executeQuery ('UPDATE _perf_walls_users',
+          [$option => $this->data->value],
+          ['users_id' => $this->userId, 'walls_id' => $wallId]);
     }
     catch (\Exception $e)
     {

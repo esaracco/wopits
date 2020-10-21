@@ -57,6 +57,9 @@ $(function()
             $(".tox-selected-menu").css ("top",
               ($(".tox-menubar")[0].getBoundingClientRect().bottom -
                 document.body.getBoundingClientRect().bottom - 2)+"px");
+
+          // Reposition wall menu if it is out of bounds
+          S.getCurrent("wallMenu").wallMenu ("fixPosition");
         }
       });
   }
@@ -234,6 +237,7 @@ $(function()
       {
         $wall.wall ("refresh");
         $wall.wall ("displayExternalRef");
+        $wall.wall ("displayHeaders");
       }
 
       $wall.wall ("menu", {from: "wall", type: "have-wall"});

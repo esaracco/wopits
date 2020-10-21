@@ -99,6 +99,7 @@ CREATE TABLE _perf_walls_users
   -- ADMIN(1), RW(2), RO(3)
   access SMALLINT NOT NULL,
   displayexternalref SMALLINT NOT NULL DEFAULT 0,
+  displayheaders SMALLINT NOT NULL DEFAULT 1,
   displaymode enum_displaymode NOT NULL DEFAULT 'postit-mode',
   settings VARCHAR(2000) NOT NULL DEFAULT '{}'
 );

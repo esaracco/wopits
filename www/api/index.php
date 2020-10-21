@@ -217,28 +217,30 @@
       {
         case 'user':
 
+          $action = getParam ('action');
           $User = new User (['data' => $data]);
 
           if (getParam ('item') == 'wall')
-            switch (getParam ('action'))
+          {
+            $wallId = getParam ('wallId');
+
+            switch ($action)
             {
               case 'settings':
 
-                $ret = $User->setWallSettings (getParam ('wallId'));
+                $ret = $User->setWallSettings ($wallId);
                 break;
 
-              case 'displayMode':
+              case 'displaymode':
+              case 'displayexternalref':
+              case 'displayheaders':
 
-                $ret = $User->setWallDisplayMode (getParam ('wallId'));
-                break;
-
-              case 'externalRef':
-
-                $ret = $User->setWallExternalRef (getParam ('wallId'));
+                $ret = $User->setWallOption ($wallId, $action);
                 break;
             }
+          }
           else
-            switch (getParam ('action'))
+            switch ($action)
             {
               case 'login':
 

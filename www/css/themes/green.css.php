@@ -133,6 +133,10 @@ span.wpt-badge {
   background-color: #986d05 !important;
 }
 
+.wall-menu i.set {
+  color: #80a92f;
+}
+
 .accordion kbd,
 .btn-secondary,
 .btn-info {

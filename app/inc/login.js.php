@@ -269,7 +269,7 @@
             H.displayMsg ({
                 noclosure: true,
                 type: "info",
-                msg: "<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>"
+                msg: "<?=_("Your new password has been sent. Please, check your spam box if you don't receive it")?>"
             });
           }
         }

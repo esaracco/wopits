@@ -156,12 +156,13 @@
       }
       else
       {
-        const $alert = $("#wall-"+wallId+" .chatroom-alert");
+        const el = document.querySelector (
+                     "#wall-"+wallId+" .wall-menu .chatroom-alert");
 
-        if ($alert.length)
-          $alert.remove ();
+        if (el)
+          el.remove ();
 
-        $chatroom.css({bottom: "15px", left: "5px", display: "table"});
+        $chatroom.css ({bottom: "15px", left: "5px", display: "table"});
 
         this.setFocus (150);
 
@@ -174,10 +175,11 @@
     // METHOD removeAlert ()
     removeAlert ()
     {
-      const $el = $("#wall-"+this.settings.wallId+" .chatroom-alert");
+      const el = document.querySelector (
+                   "#wall-"+this.settings.wallId+" .wall-menu .chatroom-alert");
 
-      if ($el.length)
-        $el.remove ();
+      if (el)
+        el.remove ();
     },
 
     // METHOD closeUsersTooltip ()
@@ -252,18 +254,18 @@
 
       if (isHidden && args.method != "DELETE")
       {
-        let el =
-          $("#wall-"+this.settings.wallId+" .chatroom-alert .wpt-badge")[0];
+        let el = $("#wall-"+this.settings.wallId+
+                   " .wall-menu .chatroom-alert .wpt-badge")[0];
 
         if (el)
           el.textContent = Number (el.textContent) + 1;
         else
-        $(`<div class="chatroom-alert"><i class="fas fa-comments fa-2x"></i><span class="wpt-badge">1</span></div>`)
+        $(`<li class="chatroom-alert dyn"><i class="fas fa-comments fa-fw fa-lg"></i><span class="wpt-badge">1</span></li>`)
           .on("click", function ()
           {
             $("#main-menu").find("li[data-action='chatroom'] input").click ();
           })
-          .insertBefore ($chatroom);
+          .appendTo ($("#wall-"+this.settings.wallId+" .wall-menu"));
       }
 
       plugin.setCursorToEnd ();

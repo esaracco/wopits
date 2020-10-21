@@ -137,6 +137,7 @@ define ('WS_SERVER_SECTIONS', [
     'chatroom' => [],
     'filters' => [],
     'arrows' => [],
+    'wallMenu' => [],
     'main' => [],
     'editable' => [],
     'header' => [],
