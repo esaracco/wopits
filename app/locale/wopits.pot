@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-19 11:10+0200\n"
+        "POT-Creation-Date: 2020-10-21 16:38+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,6 +97,9 @@ msgstr  ""
 msgid   "An error occured while uploading file."
 msgstr  ""
 
+msgid   "An error occurred while exporting wall data!"
+msgstr  ""
+
 msgid   "An error occurred while exporting wall data."
 msgstr  ""
 
@@ -129,7 +132,7 @@ msgstr  ""
 msgid   "Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"
 msgstr  ""
 
-msgid   "Block external content"
+msgid   "Block external contents"
 msgstr  ""
 
 msgid   "Can not read file"
@@ -184,7 +187,7 @@ msgstr  ""
 msgid   "Content"
 msgstr  ""
 
-msgid   "Content has been cleaned up."
+msgid   "Content has been cleaned up"
 msgstr  ""
 
 msgid   "Create"
@@ -277,6 +280,9 @@ msgstr  ""
 msgid   "Description"
 msgstr  ""
 
+msgid   "Display"
+msgstr  ""
+
 msgid   "Do not display anymore"
 msgstr  ""
 
@@ -308,6 +314,12 @@ msgid   "Export"
 msgstr  ""
 
 msgid   "External content"
+msgstr  ""
+
+msgid   "External contents are no longer filtered"
+msgstr  ""
+
+msgid   "External contents are now filtered"
 msgstr  ""
 
 #, php-format
@@ -413,6 +425,9 @@ msgstr  ""
 msgid   "Help"
 msgstr  ""
 
+msgid   "Hide headers"
+msgstr  ""
+
 msgid   "If so, do not hesitate to test others:"
 msgstr  ""
 
@@ -436,9 +451,6 @@ msgid   "Let your ideas shine!"
 msgstr  ""
 
 msgid   "Linked documents"
-msgstr  ""
-
-msgid   "List mode"
 msgstr  ""
 
 msgid   "Log in"
@@ -653,7 +665,10 @@ msgstr  ""
 msgid   "Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?"
 msgstr  ""
 
-msgid   "Show external content"
+msgid   "Show external contents"
+msgstr  ""
+
+msgid   "Show headers"
 msgstr  ""
 
 msgid   "Size"
@@ -683,13 +698,16 @@ msgstr  ""
 msgid   "Sticky notes management"
 msgstr  ""
 
-msgid   "Sticky notes mode"
-msgstr  ""
-
 msgid   "Stop"
 msgstr  ""
 
-msgid   "System error. Please report it to the administrator."
+msgid   "Switch to list mode"
+msgstr  ""
+
+msgid   "Switch to sticky notes mode"
+msgstr  ""
+
+msgid   "System error. Please report it to the administrator!"
 msgstr  ""
 
 msgid   "Tags"
@@ -721,6 +739,9 @@ msgstr  ""
 msgid   "The entire column was deleted while you were editing the sticky note!"
 msgstr  ""
 
+msgid   "The file is already linked to the sticky note!"
+msgstr  ""
+
 msgid   "The file is already linked to the sticky note."
 msgstr  ""
 
@@ -743,7 +764,7 @@ msgid   "The group will be available only for the current wall."
 msgstr  ""
 
 #, php-format
-msgid   "The image %s was not available! It has been removed from the sticky note content."
+msgid   "The image %s was not available! It has been removed from the sticky note content"
 msgstr  ""
 
 #, php-format
@@ -770,16 +791,16 @@ msgstr  ""
 msgid   "The size of a wall cannot be less than %s"
 msgstr  ""
 
-msgid   "The sticky note has been deleted."
+msgid   "The sticky note has been deleted"
 msgstr  ""
 
-msgid   "The wall has been successfully cloned."
+msgid   "The wall has been successfully cloned"
 msgstr  ""
 
-msgid   "The wall has been successfully imported."
+msgid   "The wall has been successfully imported"
 msgstr  ""
 
-msgid   "The wall is again editable"
+msgid   "The wall is editable again"
 msgstr  ""
 
 msgid   "The wall is read only"
@@ -861,6 +882,9 @@ msgstr  ""
 msgid   "Undo"
 msgstr  ""
 
+msgid   "Unknown error.<br>Please try again later!"
+msgstr  ""
+
 msgid   "Unknown error.<br>Please try again later."
 msgstr  ""
 
@@ -885,13 +909,16 @@ msgstr  ""
 msgid   "Upload completed."
 msgstr  ""
 
-msgid   "Upload has been canceled."
+msgid   "Upload has been canceled"
 msgstr  ""
 
 msgid   "User guide"
 msgstr  ""
 
 msgid   "Users in this group:"
+msgstr  ""
+
+msgid   "Users viewing this wall"
 msgstr  ""
 
 msgid   "Users will lose their access to the wall.<br>Unshare anyway?"
@@ -901,6 +928,12 @@ msgid   "View"
 msgstr  ""
 
 msgid   "Wall"
+msgstr  ""
+
+msgid   "Wall headers are now hidden"
+msgstr  ""
+
+msgid   "Wall headers are now visible"
 msgstr  ""
 
 msgid   "Wall properties"
@@ -968,10 +1001,16 @@ msgstr  ""
 msgid   "Your current password:"
 msgstr  ""
 
-msgid   "Your new password has been sent. Please, check your spam box if you don't receive it."
+msgid   "Your new password has been sent. Please, check your spam box if you don't receive it"
 msgstr  ""
 
 msgid   "Your new password will be sent to the address below:"
+msgstr  ""
+
+msgid   "Your notes now appears as lists"
+msgstr  ""
+
+msgid   "Your notes now appears as sticky notes"
 msgstr  ""
 
 msgid   "Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>"

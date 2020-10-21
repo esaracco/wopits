@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-19 11:10+0200\n"
-"PO-Revision-Date: 2020-10-19 11:11+0200\n"
+"POT-Creation-Date: 2020-10-21 16:38+0200\n"
+"PO-Revision-Date: 2020-10-21 16:44+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -329,6 +329,9 @@ msgstr "Une erreur est survenue durant l'envoi du fichier!"
 msgid "An error occured while uploading file."
 msgstr "Une erreur est survenue durant le dépôt du fichier."
 
+msgid "An error occurred while exporting wall data!"
+msgstr "Une erreur est survenue durant l'export des données du mur!"
+
 msgid "An error occurred while exporting wall data."
 msgstr "Une erreur est survenue durant l'export des données du mur."
 
@@ -369,7 +372,7 @@ msgstr ""
 "D'ailleurs, vous n'êtes pas obligé de l'utiliser en ligne: Vous pouvez "
 "%srécupérer le code%s et l'installer vous-même!"
 
-msgid "Block external content"
+msgid "Block external contents"
 msgstr "Bloquer les contenus externes"
 
 msgid "Can not read file"
@@ -424,8 +427,8 @@ msgstr "Confirmation"
 msgid "Content"
 msgstr "Contenu"
 
-msgid "Content has been cleaned up."
-msgstr "Le contenu a été nettoyé."
+msgid "Content has been cleaned up"
+msgstr "Le contenu a été nettoyé"
 
 msgid "Create"
 msgstr "Créer"
@@ -524,6 +527,9 @@ msgstr "Navigateur obsolète"
 msgid "Description"
 msgstr "Description"
 
+msgid "Display"
+msgstr "Affichage"
+
 msgid "Do not display anymore"
 msgstr "Ne plus afficher"
 
@@ -560,6 +566,12 @@ msgstr "Exporter"
 
 msgid "External content"
 msgstr "Contenus externes"
+
+msgid "External contents are no longer filtered"
+msgstr "Les contenus externes ne sont désormais plus filtrés"
+
+msgid "External contents are now filtered"
+msgstr "Les contenus externes sont désormais filtrés"
 
 #, php-format
 msgid "File size is too large (%sM max)."
@@ -722,6 +734,9 @@ msgstr ""
 msgid "Help"
 msgstr "Aide"
 
+msgid "Hide headers"
+msgstr "Cacher les en-têtes"
+
 msgid "If so, do not hesitate to test others:"
 msgstr "Si c'est le cas, n'hésitez pas à en tester d'autres:"
 
@@ -750,9 +765,6 @@ msgstr "Laissez briller vos idées!"
 
 msgid "Linked documents"
 msgstr "Documents liés"
-
-msgid "List mode"
-msgstr "Mode liste"
 
 msgid "Log in"
 msgstr "Se connecter"
@@ -993,8 +1005,11 @@ msgstr ""
 "Il ne sera plus possible de partager, et vous serez retiré de tous les "
 "groupes.<br>Devenir invisible quand même?"
 
-msgid "Show external content"
+msgid "Show external contents"
 msgstr "Afficher les contenus externes"
+
+msgid "Show headers"
+msgstr "Afficher les en-têtes"
 
 msgid "Size"
 msgstr "Taille"
@@ -1027,14 +1042,17 @@ msgstr "Modification du post-it"
 msgid "Sticky notes management"
 msgstr "Gestion des post-its"
 
-msgid "Sticky notes mode"
-msgstr "Mode post-it"
-
 msgid "Stop"
 msgstr "Arrêter"
 
-msgid "System error. Please report it to the administrator."
-msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
+msgid "Switch to list mode"
+msgstr "Passer en mode liste"
+
+msgid "Switch to sticky notes mode"
+msgstr "Passer en mode post-its"
+
+msgid "System error. Please report it to the administrator!"
+msgstr "Erreur système. Veuillez signaler le problème à l'administrateur!"
 
 msgid "Tags"
 msgstr "Étiquettes"
@@ -1076,6 +1094,9 @@ msgstr "L'email `%s` existe déjà."
 msgid "The entire column was deleted while you were editing the sticky note!"
 msgstr "La colonne a été supprimée pendant l'édition du post-it!"
 
+msgid "The file is already linked to the sticky note!"
+msgstr "Le fichier est déjà associé au post-it!"
+
 msgid "The file is already linked to the sticky note."
 msgstr "Le fichier est déjà associé au post-it."
 
@@ -1106,9 +1127,9 @@ msgstr "Ce groupe ne sera disponible que pour le mur courant."
 #, php-format
 msgid ""
 "The image %s was not available! It has been removed from the sticky note "
-"content."
+"content"
 msgstr ""
-"L'image %s n'était pas disponible! Elle a été retirée du contenu du post-it."
+"L'image %s n'était pas disponible! Elle a été retirée du contenu du post-it"
 
 #, php-format
 msgid "The login `%s` already exists."
@@ -1134,16 +1155,16 @@ msgstr "La taille d'un mur ne peut pas être supérieure à %s"
 msgid "The size of a wall cannot be less than %s"
 msgstr "La taille d'un mur ne peut pas être inférieure à %s"
 
-msgid "The sticky note has been deleted."
-msgstr "Le post-it a été supprimé."
+msgid "The sticky note has been deleted"
+msgstr "Le post-it a été supprimé"
 
-msgid "The wall has been successfully cloned."
-msgstr "Le mur a été cloné avec succès."
+msgid "The wall has been successfully cloned"
+msgstr "Le mur a été cloné avec succès"
 
-msgid "The wall has been successfully imported."
-msgstr "Le mur a été importé avec succès."
+msgid "The wall has been successfully imported"
+msgstr "Le mur a été importé avec succès"
 
-msgid "The wall is again editable"
+msgid "The wall is editable again"
 msgstr "Le mur est de nouveau modifiable"
 
 msgid "The wall is read only"
@@ -1238,6 +1259,9 @@ msgstr "Impossible de récupérer les informations de votre compte"
 msgid "Undo"
 msgstr "Annuler"
 
+msgid "Unknown error.<br>Please try again later!"
+msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard!"
+
 msgid "Unknown error.<br>Please try again later."
 msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard."
 
@@ -1266,14 +1290,17 @@ msgstr "La mise à jour est terminée."
 msgid "Upload completed."
 msgstr "Dépôt terminé."
 
-msgid "Upload has been canceled."
-msgstr "Le dépôt a été abandonné."
+msgid "Upload has been canceled"
+msgstr "Le dépôt a été abandonné"
 
 msgid "User guide"
 msgstr "Guide utilisateur"
 
 msgid "Users in this group:"
 msgstr "Utilisateurs dans ce groupe:"
+
+msgid "Users viewing this wall"
+msgstr "Utilisateurs consultant ce mur"
 
 msgid "Users will lose their access to the wall.<br>Unshare anyway?"
 msgstr ""
@@ -1285,6 +1312,12 @@ msgstr "Affichage"
 
 msgid "Wall"
 msgstr "Mur"
+
+msgid "Wall headers are now hidden"
+msgstr "Les en-têtes du mur sont désormais cachés"
+
+msgid "Wall headers are now visible"
+msgstr "Les en-têtes du mur sont désormais visibles"
 
 msgid "Wall properties"
 msgstr "Propriétés du mur"
@@ -1361,13 +1394,19 @@ msgstr "Votre mot de passe actuel:"
 
 msgid ""
 "Your new password has been sent. Please, check your spam box if you don't "
-"receive it."
+"receive it"
 msgstr ""
 "Votre nouveau mot de passe a été envoyé. Veuillez vérifier votre boîte de "
-"spams si jamais vous ne le recevez pas."
+"spams si jamais vous ne le recevez pas"
 
 msgid "Your new password will be sent to the address below:"
 msgstr "Votre nouveau mot de passe sera envoyé à l'adresse ci-dessous:"
+
+msgid "Your notes now appears as lists"
+msgstr "Vos notes apparaissent désormais comme des listes"
+
+msgid "Your notes now appears as sticky notes"
+msgstr "Vos notes apparaissent désormais comme des post-its"
 
 msgid ""
 "Your password must contain at least:<ul><li><b>6</b> characters</li><li>One "
@@ -1469,6 +1508,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "List mode"
+#~ msgstr "Mode liste"
 
 #~ msgid "You no longer have access to some of the walls you had opened!"
 #~ msgstr "Vous n'avez plus accès à certains des murs que vous aviez ouverts!"
