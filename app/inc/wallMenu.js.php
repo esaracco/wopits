@@ -28,7 +28,8 @@
       $menu.draggable ({
         //FIXME "distance" is deprecated -> is there any alternative?
         distance: 10,
-        cursor: "move"
+        cursor: "move",
+        stop: ()=> S.set ("still-dragging", true, 500)
       });
 
       if (!$.support.touch)
@@ -37,6 +38,9 @@
       $menu.find("li").on("click", function ()
       {
         const action = this.dataset.action;
+
+        if (S.get ("still-dragging"))
+          return;
 
         switch (action)
         {
