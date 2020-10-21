@@ -748,6 +748,8 @@
             // If new cell, add it
             if (!$cell.length)
             {
+              const cellId = cell.id;
+
               isNewCell = true;
 
               $cell = $(_getCellTemplate (cell));
@@ -756,8 +758,9 @@
 
               // Init cell
               $cell.cell ({
-                id: cell.id,
+                id: cellId,
                 access: access,
+                usersettings: plugin.settings.usersettings["cell-"+cellId]||{},
                 wall: $wall,
                 wallId: wallId,
                 plugsContainer: plugsContainer
