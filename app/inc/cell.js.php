@@ -113,27 +113,46 @@
                 });
               else
               {
-                $wall.wall("fixSize", ui.originalSize.width, ui.size.width + 3);
+                const absH = Math.abs (ui.size.height - ui.originalSize.height),
+                      absW = Math.abs (ui.size.width - ui.originalSize.width);
 
-                plugin.update ({
-                  width: ui.size.width + 3,
-                  height: ui.size.height
-                });
+                // Height
+                if (absH < 2 || absH > 2)
+                {
+                  if ($wall[0].dataset.cols == 1 && $wall[0].dataset.rows == 1)
+                    plugin.update ({
+                      width: ui.size.width + 3,
+                      height: ui.size.height
+                    });
+                  else
+                    $cell.closest("tr").find("th:first-child")
+                      .css("height", ui.size.height);
 
-                // Set height/width for all cells of the current row
-                $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
-                  .each (function ()
-                  {
-                    const $c = $(this);
+                  // Set height/width for all cells of the current row
+                  $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
+                    .each (function ()
+                    {
+                      this.style.height = ui.size.height+"px";
 
-                    this.style.height = (ui.size.height + 2)+"px";
-                    this.style.width = this.clientWidth+"px";
+                      this.querySelector("div.ui-resizable-e")
+                        .style.height = (ui.size.height+2)+"px";
+                    });
+                }
 
-                    $c.find(">div.ui-resizable-e")[0]
-                      .style.height = (ui.size.height + 2)+"px";
-                    $c.find(">div.ui-resizable-s")[0]
-                      .style.width = this.clientWidth+"px";
-                  });
+                // Width
+                if (absW < 2 || absW > 2)
+                {
+                  $wall.find("tbody tr").find("td:eq("+($cell.index()-1)+")")
+                    .each (function ()
+                    {
+                      this.style.width = ui.size.width+"px";
+
+                      this.querySelector("div.ui-resizable-s")
+                        .style.width = (ui.size.width+2)+"px";
+                    });
+
+                  $wall.wall("fixSize", ui.originalSize.width, ui.size.width);
+                }
 
                 $wall.find("tbody td").cell ("reorganize");
 
