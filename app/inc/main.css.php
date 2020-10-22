@@ -1450,11 +1450,11 @@ EOC;
   text-align:center;
 }
 
-div.userscount {
+.userscount {
   display:block;
   position:absolute;
   border-radius:0 5px 5px 0;
-  top:10px;
+  top:8px;
   left:0;
   padding: 5px 0 5px 5px;
   cursor:pointer;
@@ -1475,9 +1475,14 @@ div.userscount {
   margin-left:-2px;
 }
 
-div.userscount .wpt-badge {
-  left: 15px;
-  top:-2px;
+.userscount .wpt-badge {
+  left: 20px;
+  top:5px;
+}
+
+.chatroom .usersviewcounts .wpt-badge {
+  font-size:0.5rem;
+  margin-left:0;
 }
 
 ul.wall-menu {
@@ -1514,7 +1519,7 @@ ul.wall-menu {
   cursor:pointer;
 }
 
-.wall-menu .usersviewcounts {
+.wall-menu .usersviewcounts.dyn {
   border-left:1px dashed #c7c6c6;
   padding-left:8px;
 }
@@ -1526,7 +1531,6 @@ ul.wall-menu {
 .chatroom .usersviewcounts {
   position:relative;
   display:inline-block;
-  margin-left:5px;
 }
 
 .postit .attachmentscount {
