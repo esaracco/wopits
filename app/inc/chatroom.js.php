@@ -22,11 +22,11 @@
       $chatroom
         //FIXME "distance" is deprecated -> is there any alternative?
         .draggable({
-          distance:10,
-          start: function ()
-            {
-              plugin.closeUsersTooltip ();
-            },
+          distance: 10,
+          cursor: "move",
+          drag: (e, ui)=> plugin.fixDragPosition (ui),
+          stop: ()=> S.set ("still-dragging", true, 500),
+          start: ()=> plugin.closeUsersTooltip (),
         })
         .resizable({
           handles: "all",
@@ -42,23 +42,7 @@
               $chatroom.find(".textarea").css("height", ui.size.height - 100);
             }
         })
-        .append (`
-          <button type="button" class="close" data-dismiss="modal">
-            <span>&times;</span>
-          </button>
-          <h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2>
-          <div>
-            <div class="textarea form-control">
-              <span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span>
-              <ul>
-
-              </ul>
-            </div>
-          </div>
-          <div class="console">
-            <input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button>
-          </div>
-          `)
+        .append (`<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
         .on("mouseleave focusout", function ()
         {
           plugin.closeUsersTooltip ();
@@ -89,7 +73,8 @@
       $chatroom.find(".btn-clear").on("click",
         function ()
         {
-          $(this).parent().find("li").remove ();
+          if (!S.get ("still-dragging"))
+            $(this).parent().find("li").remove ();
         });
 
       $chatroom.find("button.btn-primary").on("click",
@@ -246,9 +231,7 @@
         }
       }
       else
-      {
         html = (`<li class="${args.msgId?"current":""}"><span>${args.msgId?'<i class="fas fa-user fa-sm"></i>':args.username}</span> ${args.msg}</li>`);
-      }
 
       $area.find("ul").append (html);
 
@@ -260,7 +243,7 @@
         if (el)
           el.textContent = Number (el.textContent) + 1;
         else
-        $(`<li class="chatroom-alert dyn"><i class="fas fa-comments fa-fw fa-lg"></i><span class="wpt-badge">1</span></li>`)
+        $(`<li class="chatroom-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)
           .on("click", function ()
           {
             $("#main-menu").find("li[data-action='chatroom'] input").click ();

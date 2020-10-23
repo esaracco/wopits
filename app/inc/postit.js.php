@@ -1272,12 +1272,15 @@
         {
           plug.obj.position ();
 
-          const p = div.querySelector (
-                      "#_"+plug.startId+"-"+plug.endId+" text")
-                        .getBoundingClientRect ();
+          if (plug.labelObj)
+          {
+            const p = div.querySelector (
+                        "#_"+plug.startId+"-"+plug.endId+" text")
+                          .getBoundingClientRect ();
 
             plug.labelObj[0].style.top = p.top+"px";
             plug.labelObj[0].style.left = p.left+"px";
+          }
         });
     },
 

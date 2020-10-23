@@ -1088,14 +1088,6 @@ th .submenu .dropdown-menu {
   height:50px;
 }
 
-#main-menu span.fa-stack {
-  margin-left:-6px;
-}
-
-i.fa-ban {
-  color:tomato;
-}
-
 <?php
   foreach (WPT_MODULES['tagPicker']['items'] as $item => $color)
   {
@@ -1115,7 +1107,7 @@ EOC;
 }
 
 .chatroom {
-  z-index:5004;
+  z-index:5003;
   display:none;
   position:fixed;
   border-radius:3px;
@@ -1123,7 +1115,6 @@ EOC;
   width:250px;
   bottom:15px;
   left:5px;
-  cursor:pointer;
   min-width:200px;
 }
 
@@ -1194,7 +1185,7 @@ EOC;
 }
 
 .filters {
-  z-index:5004;
+  z-index:5003;
   display:none;
   position:fixed;
   border-radius:3px;
@@ -1202,7 +1193,6 @@ EOC;
   width:90px;
   top:60px;
   left:5px;
-  cursor:pointer;
 }
 
 .filters h2 {
@@ -1223,6 +1213,7 @@ EOC;
   margin:2px;
   padding:5px;
   border:1px solid #e6e6e6;
+  cursor:pointer;
 }
 
 .filters-items div > div {
@@ -1450,6 +1441,10 @@ EOC;
   text-align:center;
 }
 
+.hidden {
+  display:none;
+}
+
 .userscount {
   display:block;
   position:absolute;
@@ -1494,22 +1489,17 @@ ul.wall-menu {
   left:5px;
   box-shadow:0 0 5px #cecece;
   padding:10px;
-  z-index:5004;
-  min-width:50px;
+  z-index:5003;
+  width:50px;
   color:#555;
   list-style-type:none;
   cursor:move;
+  text-align:center;
 }
 
-.wall-menu > li {
-  float:left;
-  margin-right:5px;
+.wall-menu li {
   cursor:pointer;
   white-space:nowrap;
-}
-
-.wall-menu > li.dyn {
-  margin-right:15px;
 }
 
 .usersviewcounts {
@@ -1519,13 +1509,22 @@ ul.wall-menu {
   cursor:pointer;
 }
 
-.wall-menu .usersviewcounts.dyn {
-  border-left:1px dashed #c7c6c6;
-  padding-left:8px;
+.wall-menu li.divider {
+  border-top:1px dashed #c7c6c6;
+  margin:5px 0;
 }
 
 .wall-menu i.set {
   color:#151719;
+}
+
+.wall-menu .wpt-badge {
+  margin-left:-30px;
+  margin-top:11px;
+}
+
+.wall-menu li:not(:last-child) i.fa-lg {
+  margin-bottom:10px;
 }
 
 .chatroom .usersviewcounts {

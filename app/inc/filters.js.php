@@ -33,8 +33,13 @@
         colors += `<div class="${c}">&nbsp;</div>`;
 
       $filters
-        //FIXME "distance" is deprecated -> is there any alternative?
-        .draggable({distance:10})
+        .draggable({
+          //FIXME "distance" is deprecated -> is there any alternative?
+          distance: 10,
+          cursor: "move",
+          drag: (e, ui)=> plugin.fixDragPosition (ui),
+          stop: ()=> S.set ("still-dragging", true, 500)
+        })
         .resizable({
           handles: "all",
           autoHide: !$.support.touch
@@ -50,6 +55,9 @@
       $filters.find(".tags i").on("click",
         function (e)
         {
+          if (S.get ("still-dragging"))
+            return;
+
           $(this).parent().toggleClass ("selected");
 
           plugin.apply ();
@@ -58,6 +66,9 @@
       $filters.find(".colors > div").on("click",
         function (e)
         {
+          if (S.get ("still-dragging"))
+            return;
+
           $(this).toggleClass ("selected");
 
           plugin.apply ();

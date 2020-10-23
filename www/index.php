@@ -25,25 +25,10 @@
             <li data-action="clone"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-clone"></i> <?=_("Clone")?></a></li>
             <li data-action="export"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-file-export"></i> <?=_("Export")?></a></li>
             <li class="dropdown-divider"></li>
-            <li data-action="share"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-share"></i> <?=_("Share...")?></a></li>
-            <li class="dropdown-divider"></li>
             <li data-action="close-walls"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-times"></i> <?=_("Close the walls")?></a></li>
             <li data-action="delete"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li>
           </ul>
         </li>
-
-        <!--Edit-->
-        <li class="nav-item dropdown">
-          <a id="dropdownEdit" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw far fa-list-alt"></i> <?=_("Edit")?></a>
-          <ul class="dropdown-menu border-0 shadow">
-            <li data-action="add-col"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-grip-lines-vertical"></i> <?=_("Add column")?></a></li>
-            <li data-action="add-row"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-grip-lines"></i> <?=_("Add row")?></a></li>
-            <li class="dropdown-divider"></li>
-            <li data-action="search"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-search"></i> <?=_("Search...")?></a></li>
-            <li data-action="view-properties"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-list"></i> <?=_("Properties...")?></a></li>
-          </ul>
-        </li>
-
         <!--View-->
         <li class="nav-item dropdown">
           <a id="dropdownView" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("Display")?></a>

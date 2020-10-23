@@ -167,14 +167,58 @@ class Wpt_toolbox
   fixPosition ()
   {
     const el = this.element[0],
-          pos = el.getBoundingClientRect (),
-          wW = window.innerWidth - 20,
-          wH = window.innerHeight - 15;
+          //document.getElementsByClassName("fixed-top")[0].clientHeight
+          mH = 56,
+          pos = el.getBoundingClientRect ();
 
-    if (pos.top + pos.height > wH)
-      el.style.top = (wH - pos.height)+"px";
-    if (pos.left + pos.width > wW)
-      el.style.left = (wW - pos.width)+"px";
+    if (pos.top <= 56 + 4)
+      el.style.top = (56 + 4)+"px";
+    else
+    {
+      const wH = window.innerHeight - 15;
+
+      if (pos.top + el.clientHeight > wH)
+        el.style.top = (wH - el.clientHeight - 1)+"px";
+    }
+
+    if (pos.left <= 0)
+      el.style.left = 5+"px";
+    else
+    {
+      const wW = window.innerWidth - 20;
+
+      if (pos.left + el.clientWidth > wW)
+        el.style.left = (wW - el.clientWidth - 1)+"px";
+    }
+  }
+
+  // METHOD fixDragPosition ()
+  fixDragPosition (ui)
+  {
+    const el = this.element[0],
+          //document.getElementsByClassName("fixed-top")[0].clientHeight
+          mH = 56,
+          pos = ui.position;
+
+    if (pos.top <= 56 + 4)
+      pos.top = 56 + 4;
+    else
+    {
+      const wH = window.innerHeight - 15;
+
+      if (pos.top + el.clientHeight > wH)
+        pos.top = wH - el.clientHeight - 1;
+    }
+
+    if (pos.left <= 0)
+      pos.left = 5;
+    else
+    {
+      const wW = window.innerWidth - 20;
+
+      if (pos.left + el.clientWidth > wW)
+        pos.left = wW - el.clientWidth - 1;
+    }
   }
 }
 

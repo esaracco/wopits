@@ -48,7 +48,10 @@
         $(".nav-tabs.walls").find ('a[href="#wall-'+settings.id+'"]');
 
       // Add wall menu
-      $("#wall-"+settings.id).find(".wall-menu").wallMenu ({wallPlugin:plugin});
+      $("#wall-"+settings.id).find(".wall-menu").wallMenu ({
+        wallPlugin:plugin,
+        access: access
+      });
 
       // Create plugs container
       settings.plugsContainer =
@@ -306,11 +309,8 @@
     
             if (!adminAccess)
             {
-              $menu.find(
-                '[data-action="delete"] a,'+
-                '[data-action="share"] a,'+
-                '[data-action="add-col"] a,'+
-                '[data-action="add-row"] a').addClass ("disabled");
+              $menu.find('[data-action="delete"] a').addClass ("disabled");
+              $wallMenu.find('[data-action="share"]').hide ();
             }
     
             switch (args.type)
@@ -319,25 +319,21 @@
     
                 $menu.find(
                   '[data-action="delete"] a,'+
-                  '[data-action="share"] a,'+
-                  '[data-action="add-col"] a,'+
-                  '[data-action="add-row"] a,'+
                   '[data-action="close-walls"] a,'+
-                  '[data-action="view-properties"] a,'+
                   '[data-action="clone"] a,'+
-                  '[data-action="export"] a,'+
-                  '[data-action="search"] a').addClass ("disabled");
+                  '[data-action="export"] a').addClass ("disabled");
+
+                  $wallMenu.find('[data-action="share"]').hide ();
     
                 break;
     
               case "have-wall":
 
                 if ($wall.length)
-                {
-                  const view = $wall[0].dataset.displaymode;
-
-                  this.menu ({from: "display", type: view});
-                }
+                  this.menu ({
+                    from: "display",
+                    type: $wall[0].dataset.displaymode
+                  });
 
                 if ($wall.length && $wall[0].dataset.shared)
                   $menu.find('[data-action="chatroom"] a')
@@ -354,18 +350,17 @@
                 }
 
                 $menu.find(
-                  '[data-action="view-properties"] a,'+
                   '[data-action="clone"] a,'+
                   '[data-action="export"] a,'+
-                  '[data-action="search"] a,'+
                   '[data-action="close-walls"] a').removeClass ("disabled");
 
                 if (adminAccess)
+                {
                   $menu.find(
-                    '[data-action="delete"] a,'+
-                    '[data-action="share"] a,'+
-                    '[data-action="add-col"] a,'+
-                    '[data-action="add-row"] a').removeClass ("disabled");
+                    '[data-action="delete"] a').removeClass ("disabled");
+
+                  $wallMenu.find('[data-action="share"]').show ();
+                }
                 
                 break;
             }
@@ -427,9 +422,7 @@
                 if (adminAccess)
                   $menu.find('[data-action="chatroom"] a,'+
                              '[data-action="filters"] a,'+
-                             '[data-action="arrows"] a,'+
-                             '[data-action="add-col"] a,'+
-                             '[data-action="add-row"] a')
+                             '[data-action="arrows"] a')
                     .addClass("disabled");
                 break;
     
@@ -441,9 +434,7 @@
                 if (adminAccess)
                   $menu.find('[data-action="chatroom"] a,'+
                              '[data-action="filters"] a,'+
-                             '[data-action="arrows"] a,'+
-                             '[data-action="add-col"] a,'+
-                             '[data-action="add-row"] a')
+                             '[data-action="arrows"] a')
                     .removeClass("disabled");
 
                 break;
@@ -451,8 +442,11 @@
         } 
 
         if (!H.checkUserVisible ())
-          $menu.find('[data-action="share"] a,'+
-                     '[data-action="chatroom"] a').addClass ("disabled");
+        {
+          $menu.find('[data-action="chatroom"] a').addClass ("disabled");
+
+          $wallMenu.find('[data-action="share"]').hide ();
+        }
     },
 
     // METHOD closeAllMenus ()
@@ -467,12 +461,19 @@
     // METHOD refreshUsersview ()
     refreshUsersview (count)
     {
-      const $el = this.element.parent().find (".usersviewcounts:eq(0)");
+      const $el = this.element.parent().find (".usersviewcounts:eq(0)"),
+            $divider = $el.prev ();
 
       if (count)
+      {
+        $divider.show ();
         $el.show().find("span").text (count);
+      }
       else
+      {
+        $divider.hide ();
         $el.hide ();
+      }
     },
 
     // METHOD checkPostitPlugsMenu ()
@@ -1189,7 +1190,7 @@
           if ($popup)
             $popup.modal ("hide");
 
-          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
+          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chatroom"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
 
           if (!args.restoring)
             $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
@@ -2144,12 +2145,6 @@
 
                 break;
 
-              case "search":
-
-                H.loadPopup ("postitsSearch");
-
-                break;
-
               case "clone":
 
                 $wall.wall ("clone");
@@ -2168,30 +2163,11 @@
 
                 break;
 
-              case "share":
-
-                H.loadPopup ("shareWall", {
-                  open: false,
-                  cb: ($p)=> $p.shareWall ("open")
-                });
-
-                break;
-
-              case "add-col":
-
-                $wall.wall ("createColRow", "col");
-
-                break;
-
-              case "add-row":
-
-                $wall.wall ("createColRow", "row");
-
-                break;
-
+/*
               case "view-properties":
 
                 $wall.wall ("openPropertiesPopup");
+*/
 
                 break;
             }
