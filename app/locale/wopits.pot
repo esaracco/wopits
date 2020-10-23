@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-21 16:38+0200\n"
+        "POT-Creation-Date: 2020-10-23 17:23+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -513,6 +513,12 @@ msgstr  ""
 msgid   "No walls available"
 msgstr  ""
 
+msgid   "Notes now appears as lists"
+msgstr  ""
+
+msgid   "Notes now appears as sticky notes"
+msgstr  ""
+
 msgid   "Notify me by email"
 msgstr  ""
 
@@ -567,9 +573,6 @@ msgstr  ""
 
 #, php-format
 msgid   "Project source files are hosted on %s and distributed under the %s license."
-msgstr  ""
-
-msgid   "Properties..."
 msgstr  ""
 
 msgid   "Read only"
@@ -1005,12 +1008,6 @@ msgid   "Your new password has been sent. Please, check your spam box if you don
 msgstr  ""
 
 msgid   "Your new password will be sent to the address below:"
-msgstr  ""
-
-msgid   "Your notes now appears as lists"
-msgstr  ""
-
-msgid   "Your notes now appears as sticky notes"
 msgstr  ""
 
 msgid   "Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>"

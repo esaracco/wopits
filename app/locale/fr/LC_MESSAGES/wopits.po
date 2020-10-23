@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-21 16:38+0200\n"
-"PO-Revision-Date: 2020-10-21 16:44+0200\n"
+"POT-Creation-Date: 2020-10-23 17:23+0200\n"
+"PO-Revision-Date: 2020-10-23 17:24+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -834,6 +834,12 @@ msgstr "Aucun résultat"
 msgid "No walls available"
 msgstr "Aucun mur disponible"
 
+msgid "Notes now appears as lists"
+msgstr "Les notes apparaissent désormais comme des listes"
+
+msgid "Notes now appears as sticky notes"
+msgstr "Les notes apparaissent désormais comme des post-its"
+
 msgid "Notify me by email"
 msgstr "Me prévenir par mail"
 
@@ -904,9 +910,6 @@ msgid ""
 msgstr ""
 "Les fichiers sources du projet sont hébergés sur %s et distribués sous "
 "licence %s."
-
-msgid "Properties..."
-msgstr "Propriétés..."
 
 msgid "Read only"
 msgstr "Consultation uniquement"
@@ -1402,12 +1405,6 @@ msgstr ""
 msgid "Your new password will be sent to the address below:"
 msgstr "Votre nouveau mot de passe sera envoyé à l'adresse ci-dessous:"
 
-msgid "Your notes now appears as lists"
-msgstr "Vos notes apparaissent désormais comme des listes"
-
-msgid "Your notes now appears as sticky notes"
-msgstr "Vos notes apparaissent désormais comme des post-its"
-
 msgid ""
 "Your password must contain at least:<ul><li><b>6</b> characters</li><li>One "
 "<b>lower case</b> letter and one <b>upper case</b> letter</li><li>One "
@@ -1508,6 +1505,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "Properties..."
+#~ msgstr "Propriétés..."
 
 #~ msgid "List mode"
 #~ msgstr "Mode liste"
