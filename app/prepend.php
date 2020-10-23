@@ -5,12 +5,11 @@ require_once (__DIR__.'/config.php');
 use Wopits\{Helper, User};
 
 $isCLI = (php_sapi_name () == 'cli');
-$scriptName = '';
 
 // On CLI mode (deployment or cron), get locale from command line
 if ($isCLI)
 {
-  $slocale = (isset ($argv[1])) ? $argv[1] : 'en';
+  $slocale = (isset ($argv[1])) ? $argv[1] : WPT_DEFAULT_LOCALE;
 }
 // Only in web mode
 else
@@ -50,7 +49,7 @@ else
 
 // Locale "en" by default if no valid locale
 if  (!isset (WPT_LOCALES[$slocale]))
-  $slocale = 'en';
+  $slocale = WPT_DEFAULT_LOCALE;
 
 // Apply new locale
 $locale = Helper::changeLocale ($slocale);

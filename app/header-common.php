@@ -3,13 +3,11 @@
 require_once (__DIR__.'/prepend.php');
 
 $version = \Wopits\Helper::getWopitsVersion ();
-$slocale = $_SESSION['slocale'];
-$userId = $_SESSION['userId'] ?? 0;
 $theme = 'theme-default';
 
-if ($userId)
+if (!empty ($_SESSION['userId']))
 {
-  $User->userId = $userId;
+  $User->userId = $_SESSION['userId'];
   $theme = $User->getSettings(false)->theme??'theme-default';
 }
 
@@ -38,7 +36,7 @@ if (!empty($_SESSION['upgradeDone']))
 
 ?>
 <!doctype html>
-<html lang="<?=$slocale?>" data-fulllocale="<?=$_SESSION['locale']?>" data-version="<?=$version?>" <?=(isset ($upgradeDone))?'data-upgradedone="1"':''?>>
+<html lang="<?=$slocale?>" data-fulllocale="<?=$locale?>" data-version="<?=$version?>" <?=(isset ($upgradeDone))?'data-upgradedone="1"':''?>>
 <head>
   <meta charset="utf-8">
   <title>wopits - <?=_("Let your ideas shine!")?></title>
