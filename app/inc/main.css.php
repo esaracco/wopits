@@ -1969,21 +1969,11 @@ button.ui-datepicker-close {
   margin-top:-1px;
 }
 
-#main-menu.nofullview .display-section [data-action^=zoom],
-#main-menu.nofullview .display-section .dropdown-divider.volatile {
-  display:none;
-}
-
 #main-menu.noarrows .display-section [data-action=arrows] {
   display:none;
 }
 
 @media (max-width:576px) {
-  /*FIXME zoom does not work with some mobile browsers*/
-  #main-menu .display-section [data-action^=zoom],
-  #main-menu .display-section .dropdown-divider.volatile {
-    display:none;
-  }
   .navbar-nav .dropdown-menu {
     float: left !important;
   }

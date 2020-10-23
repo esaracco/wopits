@@ -37,7 +37,7 @@
             <li data-action="zoom-"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-minus"></i> <?=_("Zoom -")?></a></li>
             <li data-action="zoom-screen"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
             <li data-action="zoom-normal"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
-            <li class="dropdown-divider volatile"></li>
+            <li class="dropdown-divider"></li>
             <li data-action="chatroom"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
             <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>
             <li data-action="arrows"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-arrows-alt"></i> <?=_("Arrows")?></a></li>

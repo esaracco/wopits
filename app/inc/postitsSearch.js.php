@@ -26,6 +26,11 @@
             return plugin.reset ();
 
           plugin.search ({str: val})
+        })
+        .on("keypress", function (e)
+        {
+          if (e.which == 13)
+            plugin.element.modal ("hide");
         });
     },
 

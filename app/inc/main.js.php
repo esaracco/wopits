@@ -430,6 +430,9 @@
               case "zoom-normal-off":
 
                 $menuNormal.addClass("disabled");
+
+                $('.dropdown-menu li[data-action="zoom-screen"] a')
+                  .removeClass ("disabled");
     
                 if (adminAccess)
                   $menu.find('[data-action="chatroom"] a,'+
@@ -1621,13 +1624,11 @@
     },
 
     // METHOD zoom ()
-    //FIXME KO with some browsers and touch devices
     zoom (args)
     {
       const $zoom = $(".tab-content.walls"),
             zoom0 = $zoom[0],
             wall0 = this.element[0],
-            $plugsLabels = this.settings.plugsContainer.find (".plug-label"),
             from = args.from,
             type = args.type,
             noalert = !!args.noalert,
@@ -1644,12 +1645,8 @@
       if (type == "screen")
         return this.screen ();
 
-      $('.dropdown-menu li[data-action="zoom-screen"] a')
-        .removeClass ("disabled");
-
-      let level = $zoom.css ("transform") || $zoom.css ("-moz-transform");
-
-      level = Number ((level == "none") ? 1 : level.match(/\(([^,]+),/)[1]);
+      let level = zoom0.style.transform;
+      level = (!level||level=="none")?1:Number(level.match(/[0-9\.]+/)[0]);
 
       if (!zoom0.dataset.zoomlevelorigin)
       {
@@ -1665,10 +1662,12 @@
         zoom0.dataset.zoomlevelorigin = level;
         $zoom.css ({
           "pointer-events": "none",
-          "opacity": (writeAccess) ? .6 : 1,
+          "opacity": (writeAccess) ? .8 : 1,
           "width": 30000
         });
-        $plugsLabels.css ("pointer-events", "none");
+
+        this.settings.plugsContainer.find (".plug-label")
+          .css ("pointer-events", "none");
       }
 
       if (from)
@@ -1688,7 +1687,7 @@
 
       if (from != "screen" && level == zoom0.dataset.zoomlevelorigin)
       {
-        setTimeout(() => $("#normal-display-btn").hide().popover ("hide"),150);
+        setTimeout (() => $("#normal-display-btn").hide().popover("hide"), 150);
 
         zoom0.removeAttribute ("data-zoomtype");
         zoom0.removeAttribute ("data-zoomlevelorigin");
@@ -1703,7 +1702,8 @@
           });
 
         zoom0.style = stylesOrigin;
-        $plugsLabels.css ("pointer-events", "auto");
+        this.settings.plugsContainer.find(".plug-label")
+          .css ("pointer-events", "auto");
 
         //FIXME
         //wall0.scrollIntoView ({inline: "start"});
@@ -1713,6 +1713,9 @@
       }
       else
       {
+        if (from != "screen")
+          $("#normal-display-btn").show().popover ("show");
+
         $zoom.css ({
           "transform": "scale("+level+")",
           "transform-origin": "top left",
@@ -1722,9 +1725,8 @@
           "-webkit-transform-origin": "top left"
         });
 
-        wall0.scrollIntoView ({inline: "center"});
-
-        $("#normal-display-btn").show().popover ("show");
+        S.set ("zoom-level", level);
+        $("#walls").scrollLeft (((30000*level)/2-window.innerWidth/2)+20);
       }
     },
 
@@ -1758,7 +1760,13 @@
                  position.right < walls.clientWidth - 5));
       }
 
+      $("#normal-display-btn").show().popover ("show");
       $('.dropdown-menu li[data-action="zoom-screen"] a').addClass ("disabled");
+
+      $("#walls").scrollLeft (
+        ((30000*S.get("zoom-level"))/2-window.innerWidth/2)+20);
+
+      S.unset ("zoom-level");
     },
 
     // METHOD edit ()
@@ -1952,21 +1960,19 @@
         H.fixMenuHeight ();
         H.fixMainHeight ();
 
-        //FIXME KO with some browsers and touch devices
-        if ($.support.touch || H.navigatorIsEdge ())
-          $("#main-menu").addClass ("nofullview");
-
         // Arrows plugin is useless on desktop
         if (!$.support.touch)
           $("#main-menu").addClass ("noarrows");
 
-        $("body").prepend (`<div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>`);
-        $("#normal-display-btn")
+        $("body").prepend ($(`<div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>`)
           // EVENT click on back to standard view button
-          .on("click", function ()
+          .on("click", ()=>S.getCurrent("wall").wall("zoom",{type:"normal"}))
+          .on("shown.bs.popover", function (e)
           {
-            S.getCurrent("wall").wall ("zoom", {type: "normal"});
-          });
+            // Reduce the popover z-index
+            document.getElementById(this.getAttribute ("aria-describedby"))
+              .style.zIndex = 1031;
+          }));
 
         // EVENT click on main menu account button
         $("#account").on("click", function (e)
