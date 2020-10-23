@@ -73,7 +73,7 @@
 
             H.displayMsg ({
               type: "info",
-              msg: "<?=_("Your notes now appears as sticky notes")?>"
+              msg: "<?=_("Notes now appears as sticky notes")?>"
             });
             break;
 
@@ -82,7 +82,7 @@
 
             H.displayMsg ({
               type: "info",
-              msg: "<?=_("Your notes now appears as lists")?>"
+              msg: "<?=_("Notes now appears as lists")?>"
             });
             break;
 
