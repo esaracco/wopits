@@ -1705,8 +1705,6 @@
         this.settings.plugsContainer.find(".plug-label")
           .css ("pointer-events", "auto");
 
-        //FIXME
-        //wall0.scrollIntoView ({inline: "start"});
         $("#walls")
           .scrollLeft(0)
           .scrollTop (0);
@@ -1716,6 +1714,7 @@
         if (from != "screen")
           $("#normal-display-btn").show().popover ("show");
 
+        //FIXME "transform" & "transform-origin" should be enough
         $zoom.css ({
           "transform": "scale("+level+")",
           "transform-origin": "top left",
