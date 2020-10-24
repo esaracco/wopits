@@ -317,13 +317,6 @@ class User extends Base
       DELETE FROM users_tokens
       WHERE token IN (
         SELECT token
-        FROM users_tokens
-        WHERE expiredate IS NOT NULL
-          AND expiredate <= $current
-
-        UNION
-
-        SELECT token
         FROM users_tokens AS ut
           INNER JOIN users ON users.id = ut.users_id
         WHERE ut.expiredate IS NULL
