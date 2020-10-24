@@ -1414,23 +1414,41 @@ class WHelper
   {
     const args = $.extend ({delay: {"show": 500, "hide": 0}}, _args);
 
-//    if (!$.support.touch)
-//    {
-      $item
-        // Enable tooltips on the element.
-        .tooltip(args)
-        // Enable tooltips on children.
-        .find("[data-toggle='tooltip']").tooltip (args);
-//    }
+    $item
+      // Enable tooltips on the element.
+      .tooltip(args)
+      // Enable tooltips on children.
+      .find("[data-toggle='tooltip']").tooltip (args);
+  }
+
+  // METHOD manageUnknownError ()
+  manageUnknownError (d = {}, error_cb)
+  {
+    let msg;
+
+    if (d.error && isNaN (d.error))
+      msg = d.error;
+    else if (error_cb)
+      msg = "<?=_("Unknown error.<br>Please try again later.")?>";
+    else
+    {
+      msg ="<?=_("Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>";
+      setTimeout (()=> $("<div/>").login ("logout", {auto: true}), 3000);
+    }
+
+    this.displayMsg ({
+      type: d.msgtype||"danger",
+      msg: msg
+    });
+
+    if (error_cb)
+      error_cb (d);
   }
   
   // METHOD request_ws ()
   request_ws (method, service, args, success_cb, error_cb)
   {
-    const msgArgs = {type: "danger"},
-          _H = this;
-  
-    _H.loader ("show");
+    this.loader ("show");
   
     //console.log ("WS: "+method+" "+service);
   
@@ -1439,25 +1457,18 @@ class WHelper
       route: service,
       data: args ? encodeURI (JSON.stringify (args)) : null  
     },
-    (d) =>
+    (d)=>
       {
-        _H.loader ("hide");
+        this.loader ("hide");
   
         if (d.error)
-        {
-          msgArgs["msg"] = (isNaN (d.error)) ?
-            d.error : "<?=_("Unknown error.<br>Please try again later.")?>";
-          _H.displayMsg (msgArgs);
-  
-          if (error_cb)
-            error_cb (d);
-        }
+          this.manageUnknownError (d, error_cb);
         else if (success_cb)
           success_cb (d);
       },
-    () =>
+    ()=>
       {
-        _H.loader ("hide");
+        this.loader ("hide");
   
         error_cb && error_cb ();
       });
@@ -1466,19 +1477,17 @@ class WHelper
   // METHOD request_ajax ()
   request_ajax (method, service, args, success_cb, error_cb)
   {
-    const _H = this,
-          fileUpload = (service.match(/picture|import|export$/)) ||
-                       (args && service.indexOf("attachment") != -1),
+    const fileUpload = service.match(/picture|import|export$/) ||
+                         (args && service.indexOf("attachment") != -1),
           // No timeout for file upload
           timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
-    let msgArgs = {type: "danger"};
   
     //console.log ("AJAX: "+method+" "+service);
   
     const xhr = $.ajax (
       {
         // Progressbar for file upload
-        xhr: function ()
+        xhr: ()=>
         {
           const xhr = new window.XMLHttpRequest ();
 
@@ -1520,51 +1529,40 @@ class WHelper
         dataType: "json",
         contentType: "application/json;charset=utf-8"
       })
-      .done (function (d)
+      .done ((d)=>
        {
          if (d.error)
          {
            if (error_cb)
              error_cb (d);
            else
-           {
-             msgArgs["msg"] = (isNaN (d.error)) ?
-               d.error :
-               "<?=_("Unknown error.<br>Please try again later.")?>";
-  
-             _H.displayMsg (msgArgs);
-           }
+             this.manageUnknownError (d);
          }
          else if (success_cb)
            success_cb (d);
        })
-      .fail (function (jqXHR, textStatus, errorThrown)
+      .fail ((jqXHR, textStatus, errorThrown)=>
        {
          switch (textStatus)
          {
            case "abort":
-             msgArgs = {
-               type: "warning",
-               msg: "<?=_("Upload has been canceled")?>"
-             };
+             this.manageUnknownError ({
+               msgtype: "warning",
+               error: "<?=_("Upload has been canceled")?>"});
              break;
   
            case "timeout":
-             msgArgs["msg"] = "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>";
+             this.manageUnknownError ({
+               error: "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>"}, error_cb);
              break;
   
            default:
-            msgArgs["msg"] ="<?=_("Unknown error.<br>Please try again later.")?>";
+            this.manageUnknownError ();
          }
-  
-         if (msgArgs)
-           _H.displayMsg (msgArgs);
-  
-         error_cb && error_cb ();
        })
-      .always (function (){_H.loader ("hide", true)});
+      .always (()=> this.loader ("hide", true));
   
-      _H.loader ("show", true, fileUpload && xhr);
+      this.loader ("show", true, fileUpload && xhr);
   }
   
   // METHOD checkUploadFileSize ()
