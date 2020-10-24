@@ -41,9 +41,9 @@ CREATE TABLE users_tokens
   token CHAR(80) NOT NULL PRIMARY KEY,
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   creationdate INTEGER NOT NULL,
-  expiredate INTEGER
+  permanent SMALLINT NOT NULL DEFAULT 0
 );
-CREATE INDEX "users_tokens-expiredate-idx" ON users_tokens (expiredate);
+CREATE INDEX "users_tokens-permanent-idx" ON users_tokens (permanent);
 
 DROP TABLE IF EXISTS walls CASCADE;
 CREATE TABLE walls

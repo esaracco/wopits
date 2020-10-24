@@ -39,12 +39,12 @@ CREATE TABLE users_tokens
   token CHAR(80) NOT NULL,
   users_id INT UNSIGNED NOT NULL,
   creationdate INT UNSIGNED NOT NULL,
-  expiredate INT UNSIGNED,
+  permanent SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 
   PRIMARY KEY (token),
   CONSTRAINT `users_tokens-users_id-fk` FOREIGN KEY (users_id)
     REFERENCES users(id) ON DELETE CASCADE,
-  INDEX `users_tokens-expiredate-idx` (expiredate)
+  INDEX `users_tokens-permanent-idx` (permanent)
 )
 ENGINE=INNODB;
 
