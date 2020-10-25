@@ -245,7 +245,7 @@ class User extends Base
           users.settings
         FROM users_tokens
           INNER JOIN users ON users_tokens.users_id = users.id
-        WHERE permanent = 1 AND token = ?'))
+        WHERE persistent = 1 AND token = ?'))
          ->execute ([hash ('sha1', $_SERVER['REMOTE_ADDR']).$token]);
 
       if ($r = $stmt->fetch ())
@@ -318,7 +318,7 @@ class User extends Base
         SELECT token
         FROM users_tokens
           INNER JOIN users ON users.id = users_tokens.users_id
-        WHERE users_tokens.permanent = 0
+        WHERE users_tokens.persistent = 0
           AND $current - users.updatedate > $diff)");
   }
 
@@ -814,7 +814,7 @@ class User extends Base
       'creationdate' => time(),
       'users_id' => $this->userId,
       'token' => hash ('sha1', $_SERVER['REMOTE_ADDR']).$token,
-      'permanent' => intval ($remember)
+      'persistent' => intval ($remember)
     ]);
 
     if ($remember)

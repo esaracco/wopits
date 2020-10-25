@@ -41,9 +41,9 @@ CREATE TABLE users_tokens
   token CHAR(80) NOT NULL PRIMARY KEY,
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   creationdate INTEGER NOT NULL,
-  permanent SMALLINT NOT NULL DEFAULT 0
+  persistent  SMALLINT NOT NULL DEFAULT 0
 );
-CREATE INDEX "users_tokens-permanent-idx" ON users_tokens (permanent);
+CREATE INDEX "users_tokens-persistent-idx" ON users_tokens (persistent);
 
 DROP TABLE IF EXISTS walls CASCADE;
 CREATE TABLE walls
