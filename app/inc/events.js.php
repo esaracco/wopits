@@ -8,8 +8,11 @@ $(function()
   {
     $(window)
       // EVENTS resize & orientationchange on window
-      .on("resize orientationchange", function()
+      .on("resize orientationchange", function(e)
       {
+        if (e.target.tagName)
+          return;
+
         const $wall = S.getCurrent ("wall");
   
         H.fixMenuHeight ();
