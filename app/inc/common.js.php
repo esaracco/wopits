@@ -1568,7 +1568,7 @@ class WHelper
   // METHOD checkUploadFileSize ()
   checkUploadFileSize (args)
   {
-    const msg = "<?=_("File size is too large (%sM max).")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+    const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
           maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
     let ret = true;
   
