@@ -206,7 +206,8 @@ $(function()
         $(search).postitsSearch (
           "restore", $wall[0].dataset.searchstring||"");
 
-      $wall.wall ("zoom", {type: "normal", "noalert": true});
+      if (S.get ("zoom-level"))
+        $wall.wall ("zoom", {type: "normal", "noalert": true});
 
       $("#walls")
           .scrollLeft(0)

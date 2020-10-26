@@ -1665,9 +1665,6 @@
           "opacity": (writeAccess) ? .8 : 1,
           "width": 30000
         });
-
-        this.settings.plugsContainer.find (".plug-label")
-          .css ("pointer-events", "none");
       }
 
       if (from)
@@ -1706,8 +1703,6 @@
           });
 
         zoom0.style = stylesOrigin;
-        this.settings.plugsContainer.find(".plug-label")
-          .css ("pointer-events", "auto");
 
         $("#walls")
           .scrollLeft(0)
@@ -1723,14 +1718,9 @@
           $("#normal-display-btn").show().popover ("show");
         }
 
-        //FIXME "transform" & "transform-origin" should be enough
         $zoom.css ({
           "transform": "scale("+level+")",
           "transform-origin": "top left",
-          "-moz-transform": "scale("+level+")",
-          "-moz-transform-origin": "top left",
-          "-webkit-transform": "scale("+level+")",
-          "-webkit-transform-origin": "top left"
         });
 
         $("#walls").scrollLeft (((30000*level)/2-window.innerWidth/2)+20);

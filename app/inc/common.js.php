@@ -1055,7 +1055,7 @@ class WHelper
   
     this.openPopupLayer (() =>
       {
-        const $popover = $(".popover");
+        const $popover = $(".popover").last ();
 
         args.cb_close && args.cb_close ($popover[0].dataset.btnclicked);
 
@@ -1074,7 +1074,7 @@ class WHelper
     }).popover ("show");
     
     //FIXME If not, "title" element property is used by default
-    $(".popover-header").html (args.title);
+    $(".popover-header").last().html (args.title);
   
     let buttons;
 
@@ -1095,7 +1095,7 @@ class WHelper
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
-    const $body = $(".popover-body");
+    const $body = $(".popover-body").last ();
   
     $body.html (`<p>${args.content}</p>${buttons}`);
   
