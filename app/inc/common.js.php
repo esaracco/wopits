@@ -996,7 +996,8 @@ class WHelper
     const $layer = $(`<div id="popup-layer" class="layer"></div>`);
   
     $(document)
-      .on("keydown", function (e)
+      .off("keydown.popuplayer")
+      .on("keydown.popuplayer", function (e)
       {
         if (e.which == 27)
           $layer.click ();
@@ -1006,7 +1007,7 @@ class WHelper
         .on("click",
         function (e)
         {
-          $(document).off ("keydown");
+          $(document).off ("keydown.popuplayer");
   
           // Remove the layer
           this.remove ();

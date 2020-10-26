@@ -620,9 +620,9 @@
             // we need this to cancel edit if no img is selected by user
             // (desktop version)
             if ($header.header ("useFocusTrick"))
-              $(window).on("focus", function ()
+              $(window).on("focus.header", function ()
                 {
-                  $(window).off ("focus");
+                  $(window).off ("focus.header");
 
                   if (!_realEdit)
                     $header.header ("unedit");

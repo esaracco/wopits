@@ -329,10 +329,10 @@
                     });
 
                   $(document)
-                    .on("mousedown", _plugRabbit.mousedownEvent)
-                    .on ("keydown", _plugRabbit.escapeEvent);
+                    .on("mousedown.rabbit", _plugRabbit.mousedownEvent)
+                    .on ("keydown.rabbit", _plugRabbit.escapeEvent);
 
-                  $("body").on ("mousemove", _plugRabbit.mousemoveEvent);
+                  $("body").on ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
                 });
 
               break;
@@ -897,10 +897,10 @@
       if (_plugRabbit.line)
       {
         $(document)
-          .off("mousedown", _plugRabbit.mousedownEvent)
-          .off ("keydown", _plugRabbit.escapeEvent);
+          .off("mousedown.rabbit", _plugRabbit.mousedownEvent)
+          .off ("keydown.rabbit", _plugRabbit.escapeEvent);
 
-        $("body").off ("mousemove", _plugRabbit.mousemoveEvent);
+        $("body").off ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
 
         _plugRabbit.line.remove ();
         _plugRabbit.line = null;
