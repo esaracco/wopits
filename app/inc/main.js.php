@@ -1685,8 +1685,12 @@
         case "normal": level = Number (zoom0.dataset.zoomlevelorigin); break;
       }
 
+      S.set ("zoom-level", level);
+
       if (from != "screen" && level == zoom0.dataset.zoomlevelorigin)
       {
+        S.unset ("zoom-level");
+
         setTimeout (() => $("#normal-display-btn").hide().popover("hide"), 150);
 
         zoom0.removeAttribute ("data-zoomtype");
@@ -1708,11 +1712,16 @@
         $("#walls")
           .scrollLeft(0)
           .scrollTop (0);
+
+        $("<div/>").postit ("applyZoom");
       }
       else
       {
         if (from != "screen")
+        {
+          $("<div/>").postit ("applyZoom");
           $("#normal-display-btn").show().popover ("show");
+        }
 
         //FIXME "transform" & "transform-origin" should be enough
         $zoom.css ({
@@ -1724,7 +1733,6 @@
           "-webkit-transform-origin": "top left"
         });
 
-        S.set ("zoom-level", level);
         $("#walls").scrollLeft (((30000*level)/2-window.innerWidth/2)+20);
       }
     },
@@ -1765,7 +1773,7 @@
       $("#walls").scrollLeft (
         ((30000*S.get("zoom-level"))/2-window.innerWidth/2)+20);
 
-      S.unset ("zoom-level");
+      $("<div/>").postit ("applyZoom");
     },
 
     // METHOD edit ()

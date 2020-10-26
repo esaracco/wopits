@@ -956,6 +956,28 @@
       return line;
     },
 
+    // METHOD applyZoomToPlugs ()
+    applyZoomToPlugs (zoomLevel)
+    {
+      let size = Math.trunc (4 * zoomLevel);
+
+      this.settings._plugs.forEach (
+        plug => plug.obj.setOptions ({
+          size: size
+        }));
+    },
+
+    // METHOD applyZoom ()
+    applyZoom ()
+    {
+      const zoomLevel = S.get("zoom-level")||1;
+
+      document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
+        {
+          $(p).postit ("applyZoomToPlugs", zoomLevel);
+        });
+    },
+
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs (shadow, color)
     {
