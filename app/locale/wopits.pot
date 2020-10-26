@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-23 17:23+0200\n"
+        "POT-Creation-Date: 2020-10-26 06:05+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -304,7 +304,7 @@ msgstr  ""
 msgid   "Emails must match"
 msgstr  ""
 
-msgid   "Empty file or bad file format"
+msgid   "Empty file or bad file format!"
 msgstr  ""
 
 msgid   "Expiration"
@@ -323,7 +323,7 @@ msgid   "External contents are now filtered"
 msgstr  ""
 
 #, php-format
-msgid   "File size is too large (%sM max)."
+msgid   "File size is too large (%sM max)!"
 msgstr  ""
 
 msgid   "Filters"
@@ -883,6 +883,9 @@ msgid   "Unable to retrieve your account information"
 msgstr  ""
 
 msgid   "Undo"
+msgstr  ""
+
+msgid   "Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience."
 msgstr  ""
 
 msgid   "Unknown error.<br>Please try again later!"
