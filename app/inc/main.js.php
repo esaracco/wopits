@@ -293,6 +293,7 @@
       return this.settings.id;
     },
 
+    // METHOD menu ()
     menu (args)
     {
       const $wall = S.getCurrent ("wall"),
@@ -477,6 +478,24 @@
         $divider.hide ();
         $el.hide ();
       }
+    },
+
+    // METHOD UIPluginCtrl()
+    UIPluginCtrl (selector, plugin, option, value, forceHandle = false)
+    {
+      const isDisabled = (option == "disabled");
+
+      this.element.find(selector).each (function ()
+        {
+          if (this.classList.contains ("ui-"+plugin))
+          {
+            if (forceHandle && isDisabled)
+              $(this).find(".ui-"+plugin+"-handle")
+                .css ("visibility", value?"hidden":"visible");
+
+            $(this)[plugin] ("option", option, value);
+          }
+        });
     },
 
     // METHOD checkPostitPlugsMenu ()
@@ -861,7 +880,20 @@
         plugin.repositionPostitsPlugs ();
 
       // Apply display mode
-      setTimeout (()=> plugin.refreshCellsToggleDisplayMode (), 0);
+      setTimeout (()=>
+        {
+          plugin.refreshCellsToggleDisplayMode ();
+
+          if (S.get ("zoom-level"))
+          {
+            const zoom = document.querySelector (".tab-content.walls");
+
+            if (zoom &&
+                zoom.dataset.zoomlevelorigin &&
+                zoom.dataset.zoomtype == "screen")
+              plugin.zoom ({type: "screen"});
+          }
+        }, 0);
 
       // Replay postits search
       const search = document.getElementById ("postitsSearchPopup");
@@ -876,6 +908,10 @@
         {
           $(this).cell ("toggleDisplayMode", true);
         });
+
+      if (S.get ("zoom-level"))
+        this.UIPluginCtrl (".cell-list-mode ul",
+                           "sortable", "disabled", true, true);
     },
 
     // METHOD openCloseAllWallsPopup ()
@@ -1628,7 +1664,8 @@
     {
       const $zoom = $(".tab-content.walls"),
             zoom0 = $zoom[0],
-            wall0 = this.element[0],
+            $wall = this.element,
+            wall0 = $wall[0],
             from = args.from,
             type = args.type,
             noalert = !!args.noalert,
@@ -1656,15 +1693,30 @@
           H.displayMsg ({
             type: "warning",
             title: "<?=_("Zoom enabled")?>",
-            msg: "<?=_("The wall is read only")?>"
+            msg: "<?=_("Some features are not available in this mode")?>"
           });
 
         zoom0.dataset.zoomlevelorigin = level;
-        $zoom.css ({
-          "pointer-events": "none",
-          "opacity": (writeAccess) ? .8 : 1,
-          "width": 30000
-        });
+
+        zoom0.style.width = "30000px";
+
+        zoom0.querySelectorAll("th").forEach ((header)=>
+          {
+            header.style.pointerEvents = "none";
+            if (writeAccess)
+              header.style.opacity = .6;
+          });
+
+        // Deactivate some features
+        if (wall0.classList.contains ("ui-draggable"))
+          $wall.draggable ("disable");
+        $wall.find(".cell-menu").hide ();
+        this.UIPluginCtrl (".cell-list-mode ul",
+                           "sortable", "disabled", true, true);
+        this.UIPluginCtrl ("td,.postit",
+                           "resizable", "disabled", true);
+        this.UIPluginCtrl (".wall,.postit",
+                           "draggable", "disabled", true);
       }
 
       if (from)
@@ -1699,10 +1751,28 @@
           H.displayMsg ({
             type: "info",
             title: "<?=_("Zoom disabled")?>",
-            msg: "<?=_("The wall is editable again")?>"
+            msg: "<?=_("All features are available again")?>"
           });
 
         zoom0.style = stylesOrigin;
+
+        zoom0.querySelectorAll("th").forEach ((header)=>
+          {
+            header.style.pointerEvents = "auto";
+            if (writeAccess)
+              header.style.opacity = 1;
+          });
+
+        // Reavtivate some previously deactivated features
+        if (wall0.classList.contains ("ui-draggable"))
+          $wall.draggable ("enable");
+        $wall.find(".cell-menu").show ();
+        this.UIPluginCtrl (".cell-list-mode ul",
+                           "sortable", "disabled", false, true);
+        this.UIPluginCtrl ("td,.postit",
+                           "resizable", "disabled", false);
+        this.UIPluginCtrl (".wall,.postit",
+                           "draggable", "disabled", false);
 
         $("#walls")
           .scrollLeft(0)

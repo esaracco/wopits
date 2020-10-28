@@ -187,6 +187,9 @@
     // METHOD disablePlugins ()
     disablePlugins (type)
     {
+      if (S.get ("zoom-level"))
+        return;
+
       const settings = this.settings;
       let $plug;
 

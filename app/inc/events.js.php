@@ -178,6 +178,10 @@ $(function()
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {
+      // Cancel zoom mode
+      if (S.get ("zoom-level"))
+        S.getCurrent("wall").wall ("zoom", {type: "normal", "noalert": true});
+
       document.querySelectorAll(".walls table.wall").forEach (
         (w)=> $(w).wall ("hidePostitsPlugs"));
     });
@@ -205,9 +209,6 @@ $(function()
       if (search)
         $(search).postitsSearch (
           "restore", $wall[0].dataset.searchstring||"");
-
-      if (S.get ("zoom-level"))
-        $wall.wall ("zoom", {type: "normal", "noalert": true});
 
       $("#walls")
           .scrollLeft(0)

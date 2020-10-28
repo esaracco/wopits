@@ -125,18 +125,24 @@
                       height: ui.size.height
                     });
                   else
+                  {
                     $cell.closest("tr").find("th:first-child")
                       .css("height", ui.size.height);
 
-                  // Set height/width for all cells of the current row
-                  $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
-                    .each (function ()
-                    {
-                      this.style.height = ui.size.height+"px";
-
-                      this.querySelector("div.ui-resizable-e")
-                        .style.height = (ui.size.height+2)+"px";
+                    plugin.update ({
+                      width: ui.size.width + 2,
                     });
+
+                    // Set height for all cells of the current row
+                    $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
+                      .each (function ()
+                      {
+                        this.style.height = ui.size.height+"px";
+
+                        this.querySelector("div.ui-resizable-e")
+                          .style.height = (ui.size.height+2)+"px";
+                      });
+                  }
                 }
 
                 // Width
@@ -165,8 +171,9 @@
        {
          const __dblclick = (e)=>
          {
-           if (e.target.tagName != 'TD' &&
-               !e.target.classList.contains("cell-list-mode"))
+           if (S.get ("zoom-level") ||
+               (e.target.tagName != 'TD' &&
+                 !e.target.classList.contains("cell-list-mode")))
                 return e.stopImmediatePropagation ();
 
            const cellOffset = $cell.offset (),
@@ -335,7 +342,8 @@
 
         $displayMode[0].classList.replace ("fa-sticky-note", "fa-list-ul");
 
-        $cell.resizable ("enable");
+        if (!S.get ("zoom-level"))
+          $cell.resizable ("enable");
       }
     },
 

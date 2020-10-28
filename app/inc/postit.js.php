@@ -72,7 +72,7 @@
 
                         line.label = label;
                         line.obj.setOptions ({
-                          size: 4,
+                          size: 4 * (S.get("zoom-level")||1),
                           color: H.getPlugColor ("main"),
                           dash: null,
                           middleLabel: LeaderLine.captionLabel({
@@ -1341,7 +1341,8 @@
     {
       const postits = [],
             displayExternalRef =
-              (this.settings.wall.wall ("displayExternalRef") == 1);
+              (this.settings.wall.wall ("displayExternalRef") == 1),
+            zoomLevel = S.get("zoom-level")||1;
 
       this.element.each (function ()
       {
@@ -1368,8 +1369,8 @@
 
           data = {
             id: postitId,
-            width: Math.trunc (bbox.width),
-            height: Math.trunc (bbox.height),
+            width: Math.trunc (bbox.width/zoomLevel),
+            height: Math.trunc (bbox.height/zoomLevel),
             item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
             item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
             item_order: parseInt (this.dataset.order),
