@@ -43,6 +43,7 @@ class Postit extends Wall
       'height' => $this->data->height,
       'item_top' => $this->data->item_top,
       'item_left' => $this->data->item_left,
+      'item_order' => 0,
       'classcolor' => $this->data->classcolor,
       'title' => $this->data->title,
       'content' => $this->data->content,
