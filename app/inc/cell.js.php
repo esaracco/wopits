@@ -264,7 +264,17 @@
         let html = "";
         postits
           // Sort by postit id DESC
-          .sort((a, b)=> a.dataset.order - b.dataset.order)
+          .sort((a, b)=>
+          {
+            const aOrder = parseInt (a.dataset.order),
+                  bOrder = parseInt (b.dataset.order);
+
+            if (!aOrder && !bOrder)
+              return parseInt(b.dataset.id.split(/\-/)[1]) -
+                       parseInt(a.dataset.id.split(/\-/)[1]);
+            else
+              return aOrder - bOrder;
+          })
           .forEach ((p)=>
           {
             const color = (p.className.match (/ color\-([a-z]+)/))[1],
