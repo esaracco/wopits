@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-26 06:05+0100\n"
+        "POT-Creation-Date: 2020-10-28 14:02+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,6 +83,9 @@ msgid   "All"
 msgstr  ""
 
 msgid   "All available walls are opened."
+msgstr  ""
+
+msgid   "All features are available again"
 msgstr  ""
 
 msgid   "An error occured while cloning the wall."
@@ -677,6 +680,9 @@ msgstr  ""
 msgid   "Size"
 msgstr  ""
 
+msgid   "Some features are not available in this mode"
+msgstr  ""
+
 msgid   "Some walls are no longer available!"
 msgstr  ""
 
@@ -801,12 +807,6 @@ msgid   "The wall has been successfully cloned"
 msgstr  ""
 
 msgid   "The wall has been successfully imported"
-msgstr  ""
-
-msgid   "The wall is editable again"
-msgstr  ""
-
-msgid   "The wall is read only"
 msgstr  ""
 
 msgid   "The wall is shared with the following groups:"

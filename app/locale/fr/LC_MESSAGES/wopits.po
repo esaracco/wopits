@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-26 06:05+0100\n"
-"PO-Revision-Date: 2020-10-26 06:06+0100\n"
+"POT-Creation-Date: 2020-10-28 14:02+0100\n"
+"PO-Revision-Date: 2020-10-28 14:04+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -316,6 +316,9 @@ msgstr "Tous"
 
 msgid "All available walls are opened."
 msgstr "Tous les murs disponibles sont ouverts."
+
+msgid "All features are available again"
+msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
 
 msgid "An error occured while cloning the wall."
 msgstr "Une erreur est survenue durant le clonage du fichier."
@@ -1017,6 +1020,9 @@ msgstr "Afficher les en-têtes"
 msgid "Size"
 msgstr "Taille"
 
+msgid "Some features are not available in this mode"
+msgstr "Certaines fonctionnalités ne sont pas disponibles dans ce mode"
+
 msgid "Some walls are no longer available!"
 msgstr "Certains murs ne sont plus disponibles!"
 
@@ -1166,12 +1172,6 @@ msgstr "Le mur a été cloné avec succès"
 
 msgid "The wall has been successfully imported"
 msgstr "Le mur a été importé avec succès"
-
-msgid "The wall is editable again"
-msgstr "Le mur est de nouveau modifiable"
-
-msgid "The wall is read only"
-msgstr "Le mur est en lecture seule"
 
 msgid "The wall is shared with the following groups:"
 msgstr "Ce mur est partagé avec les groupes suivants:"
@@ -1512,6 +1512,12 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "The wall is editable again"
+#~ msgstr "Le mur est de nouveau modifiable"
+
+#~ msgid "The wall is read only"
+#~ msgstr "Le mur est en lecture seule"
 
 #~ msgid "Properties..."
 #~ msgstr "Propriétés..."
