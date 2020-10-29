@@ -985,8 +985,8 @@ th .submenu .dropdown-menu {
   z-index:92;
 }
 
-.postit.search-match .postit-header,
-.postit.search-match {
+.postit.selected,
+.postit.selected .postit-header {
   border-color:#343a40;
   box-shadow: 0 0 25px 5px #b1b1b1;
 }

@@ -207,8 +207,7 @@ $(function()
       // Reinit search plugin for the current wall
       const search = document.getElementById ("postitsSearchPopup");
       if (search)
-        $(search).postitsSearch (
-          "restore", $wall[0].dataset.searchstring||"");
+        $(search).postitsSearch ("restore", $wall[0].dataset.searchstring||"");
 
       $("#walls")
           .scrollLeft(0)

@@ -49,8 +49,8 @@ div.postit-mark {
   color:#28a745;
 }
 
-.postit.search-match .postit-header,
-.postit.search-match {
+.postit.selected,
+.postit.selected .postit-header {
   border-color:#28a745;
   box-shadow: 0px 0px 25px 5px #7cd891;
 }

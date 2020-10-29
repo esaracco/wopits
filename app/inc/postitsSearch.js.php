@@ -20,12 +20,12 @@
       $search.find('input')
         .on("keyup", function (e)
         {
-          const val = $(this).val().trim ();
+          const val = this.value.trim ();
 
           if (val.length < 3)
             return plugin.reset ();
 
-          plugin.search ({str: val})
+          plugin.search (val)
         })
         .on("keypress", function (e)
         {
@@ -34,6 +34,7 @@
         });
     },
 
+    // METHOD open ()
     open ()
     {
       H.openModal (this.element); 
@@ -49,7 +50,7 @@
     // METHOD replay ()
     replay ()
     {
-      const $input = this.element.find("input");
+      const $input = this.element.find ("input");
 
       if ($input.val())
         $input.trigger ("keyup");
@@ -63,7 +64,7 @@
       $wall
         .find(".postit-edit,"+
               ".postit-header .title").not(":empty").closest(".postit")
-          .removeClass ("search-match");
+          .removeClass ("selected");
 
       $wall[0].removeAttribute ("data-searchstring");
 
@@ -71,7 +72,7 @@
     },
 
     // METHOD search ()
-    search (args)
+    search (str)
     {
       const plugin = this,
             $search = plugin.element,
@@ -80,7 +81,7 @@
 
       plugin.reset ();
 
-      $wall[0].dataset.searchstring = args.str;
+      $wall[0].dataset.searchstring = str;
 
       $wall.find(".postit-edit,"+
                  ".postit-header .title").not(":empty").each (
@@ -88,14 +89,12 @@
         {
           const $edit = $(this);
 
-
           if ($edit.text().match (
-            new RegExp (H.quoteRegex(args.str), 'ig')))
+            new RegExp (H.quoteRegex(str), 'ig')))
           {
-            const postitId = $edit.closest(".postit").postit("getId");
+            occur[$edit.closest(".postit").postit("getId")] = 1;
 
-            occur[postitId] = 1;
-            $edit.closest(".postit").addClass("search-match");
+            $edit.closest(".postit").addClass ("selected");
           }
         });
 
