@@ -306,18 +306,6 @@
       if (plugin.element.is (":visible"))
         return;
 
-      // EVENT keydown on document
-      $(document).on ("keydown.smenu", (e)=>
-        {
-          if (e.ctrlKey)
-          {
-            const $layer = $("#popup-layer:visible");
-
-            if ($layer.length)
-              $layer.trigger ("click");
-          }
-        });
-
       this.checkAllowedActions ();
       this.element.show ();
 
@@ -373,8 +361,6 @@
     close ()
     {
       const $ps = $("#postitsSearchPopup");
-
-      $(document).off ("keydown.smenu");
 
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
