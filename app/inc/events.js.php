@@ -20,29 +20,28 @@ $(function()
   
         if ($wall.length)
         {
-          const $zoom = $(".tab-content.walls"),
-                $modal = $(".modal.m-fullscreen[data-customwidth]"),
-                $chatroom = S.getCurrent ("chatroom"),
-                $filters = S.getCurrent ("filters"),
-                $arrows = S.getCurrent ("arrows");
-
           // Reposition relationships
           $wall.wall ("repositionPostitsPlugs");
 
+          const $modal = $(".modal.m-fullscreen[data-customwidth]");
           if ($modal.length)
             H.resizeModal ($modal);
    
           // Reposition chatroom popup if it is out of bounds
-          if ($chatroom && $chatroom.is (":visible"))
-            $chatroom.chatroom ("fixPosition");
+          const $cr = S.getCurrent ("chatroom");
+          if ($cr.is (":visible"))
+            $cr.chatroom ("fixPosition");
    
           // Reposition filters popup if it is out of bounds
-          if ($filters.is (":visible"))
-            $filters.filters ("fixPosition");
+          const $f = S.getCurrent ("filters");
+          if ($f.is (":visible"))
+            $f.filters ("fixPosition");
 
-          if ($arrows.is (":visible"))
-            $arrows.arrows ("reset");
+          const $a = S.getCurrent ("arrows");
+          if ($a.is (":visible"))
+            $a.arrows ("reset");
    
+          const $zoom = $(".tab-content.walls");
           if ($zoom[0].dataset.zoomlevelorigin)
           {
             if ($zoom[0].dataset.zoomtype == "screen")
@@ -56,7 +55,7 @@ $(function()
           }
      
           // Fix TinyMCE menu placement with virtual keyboard on touch devices
-          if ($.support.touch && $("#postitUpdatePopup").is(":visible"))
+          if (!H.haveMouse () && $("#postitUpdatePopup").is(":visible"))
             $(".tox-selected-menu").css ("top",
               ($(".tox-menubar")[0].getBoundingClientRect().bottom -
                 document.body.getBoundingClientRect().bottom - 2)+"px");
@@ -204,11 +203,6 @@ $(function()
       // Need wall to continue
       if (!$wall.length) return;
 
-      // Reinit search plugin for the current wall
-      const search = document.getElementById ("postitsSearchPopup");
-      if (search)
-        $(search).postitsSearch ("restore", $wall[0].dataset.searchstring||"");
-
       $("#walls")
           .scrollLeft(0)
           .scrollTop (0);
@@ -217,6 +211,9 @@ $(function()
             $chatroom = S.getCurrent ("chatroom"),
             chatRoomVisible = $chatroom.is (":visible"),
             $arrows = S.getCurrent ("arrows");
+
+      // Show/hide super menu actions menu depending on user wall access rights
+      S.getCurrent("smenu").smenu ("checkAllowedActions");
 
       // Manage chatroom checkbox menu
       $menu
@@ -249,7 +246,7 @@ $(function()
       $(window).trigger ("resize");
     });
 
-  // CATCH <Enter> key on popups
+  // EVENT keypress on popups and popovers to catch <enter> key
   $(document).on("keypress", ".modal,.popover",
     function (e)
     {

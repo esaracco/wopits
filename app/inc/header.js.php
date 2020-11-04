@@ -227,7 +227,7 @@
     useFocusTrick ()
     {
       return (this.settings.wall[0].dataset.shared &&
-              !$.support.touch && !H.navigatorIsEdge ());
+              H.haveMouse() && !H.navigatorIsEdge());
     },
 
     // METHOD saveCurrentWidth ()

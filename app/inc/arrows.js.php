@@ -22,6 +22,9 @@
     // METHOD reset ()
     reset ()
     {
+      if (this.element.is (":hidden"))
+        return;
+
       const $walls = this.settings.walls;
 
       if ($walls)

@@ -89,7 +89,7 @@
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
 
-      if (!$.support.touch)
+      if (H.haveMouse ())
         $wall.draggable({
           //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
@@ -102,16 +102,15 @@
             },
           stop: function ()
             {
-              const $arrows = S.getCurrent ("arrows"),
-                    $filters = S.getCurrent ("filters");
-
               S.set ("still-dragging", true, 500);
 
               // Fix arrows tool appearence
-              if ($arrows.is (":visible"))
-                $arrows.arrows ("update");
+              const $a = S.getCurrent ("arrows");
+              if ($a.is (":visible"))
+                $a.arrows ("update");
 
-              if (!$filters || !$filters.hasClass ("plugs-hidden"))
+              const $f = S.getCurrent ("filters");
+              if (!$f.length || !$f.hasClass ("plugs-hidden"))
                 plugin.showPostitsPlugs ();
 
               S.unset ("wall-dragging");
@@ -149,7 +148,7 @@
             for (let j = 0, jLen = row.length; j < jLen; j++)
             {
               const cell = row[j],
-                    $cell = $wall.find("td[data-id='cell-"+cell.id+"']");
+                    $cell = $wall.find("[data-id='cell-"+cell.id+"']");
 
               for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
               {
@@ -235,7 +234,8 @@
                 {
                   if (postitId)
                   {
-                    const $postit = $wall.find("[data-id=postit-"+postitId+"]");
+                    const $postit =
+                            $wall.find(".postit[data-id=postit-"+postitId+"]");
 
                     if ($postit.length)
                       $postit.postit ("displayDeadlineAlert");
@@ -527,8 +527,10 @@
     //FIXME //TODO Optimize
     refreshPostitsPlugs (plugs, partial = false)
     {
-      const wall = this.element[0],
-            hidePlugs = S.getCurrent("filters").hasClass ("plugs-hidden");
+      if (S.getCurrent("filters").hasClass ("plugs-hidden"))
+        return;
+
+      const wall = this.element[0];
       let idsNew = {};
 
       (plugs||[]).forEach ((plug) =>
@@ -556,8 +558,7 @@
 
             startPlugin.addPlug (newPlug);
 
-            if (hidePlugs ||
-                end.parentNode.classList.contains("list-mode") ||
+            if (end.parentNode.classList.contains("list-mode") ||
                 start0.parentNode.classList.contains("list-mode"))
               startPlugin.hidePlugs ();
           }
@@ -616,8 +617,6 @@
       const plugin = this,
             $wall = plugin.element,
             wall0 = $wall[0],
-            $filters = S.getCurrent ("filters"),
-            $arrows = S.getCurrent ("arrows"),
             __refreshWallBasicProperties = (d)=>
             {
               plugin.setShared (d.shared);
@@ -632,7 +631,8 @@
         {
           // Postits
           case "postit":
-            const $postit = $wall.find("[data-id='postit-"+d.postit.id+"']");
+            const $postit =
+                    $wall.find(".postit[data-id='postit-"+d.postit.id+"']");
 
             // Rare case, when user have multiple sessions opened
             if (d.action != "insert" && !$postit.length)
@@ -858,13 +858,11 @@
         plugin.fixSize ();
       }
 
-      // If filters tool is visible
-      if ($filters.is (":visible"))
-        $filters.filters ("apply");
+      // Reset arrows tool
+      S.getCurrent("arrows").arrows ("reset");
 
-      // If arrows tool is visible
-      if ($arrows.is (":visible"))
-        $arrows.arrows ("reset");
+      // Refresh super menu tool
+      S.getCurrent("smenu").smenu ("refresh");
 
       if (d.postits_plugs)
         setTimeout (() =>
@@ -894,11 +892,6 @@
               plugin.zoom ({type: "screen"});
           }
         }, 0);
-
-      // Replay postits search
-      const search = document.getElementById ("postitsSearchPopup");
-      if (search)
-        setTimeout (()=> $(search).postitsSearch("replay"), 250);
     },
 
     // METHOD refreshCellsToggleDisplayMode ()
@@ -1091,8 +1084,8 @@
       const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
 
-      $tr[0].querySelectorAll("td").forEach (
-        (td)=> $(td).cell ("removePostitsPlugs"));
+      $tr[0].querySelectorAll("td").forEach ((cell)=>
+          $(cell).cell ("removePostitsPlugs"));
 
       H.headerRemoveContentKeepingWallSize ({
         oldW: $tr.find("th").outerWidth (),
@@ -1650,8 +1643,9 @@
         });
 
       // Re-apply filters
-      if (S.getCurrent("filters").is (":visible"))
-        S.getCurrent("filters").filters ("apply");
+      const $f = S.getCurrent("filters");
+      if ($f.is (":visible"))
+        $f.filters ("apply", {norefresh: true});
 
       H.request_ajax (
         "POST",
@@ -2028,7 +2022,7 @@
         H.fixMainHeight ();
 
         // Arrows plugin is useless on desktop
-        if (!$.support.touch)
+        if (H.haveMouse ())
           $("#main-menu").addClass ("noarrows");
 
         $("body").prepend ($(`<div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>`)

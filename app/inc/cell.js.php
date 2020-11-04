@@ -27,7 +27,7 @@
 
       $cell.addClass (usersettings.displaymode||$wall[0].dataset.displaymode);
 
-      $cell.prepend ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-list-ul fa-fw"></i></span></div>`)
+      $cell.prepend ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`)
         // EVENT click on cell menu
         .on("click", function ()
         {
@@ -173,7 +173,7 @@
          {
            if (S.get ("zoom-level") ||
                (e.target.tagName != 'TD' &&
-                 !e.target.classList.contains("cell-list-mode")))
+                 !e.target.classList.contains ("cell-list-mode")))
                 return e.stopImmediatePropagation ();
 
            const cellOffset = $cell.offset (),
@@ -188,8 +188,9 @@
 
            $wall.wall ("closeAllMenus");
 
-           if (S.getCurrent("filters").is (":visible"))
-             S.getCurrent("filters").filters ("reset");
+           const $f = S.getCurrent ("filters");
+           if ($f.is (":visible"))
+             $f.filters ("reset");
 
            plugin.addPostit ({
              access: settings.access,
@@ -259,7 +260,7 @@
 
         $cell.resizable ("disable");
 
-        $displayMode[0].classList.replace ("fa-list-ul", "fa-sticky-note");
+        $displayMode[0].classList.replace ("fa-sticky-note", "fa-list-ul");
 
         let html = "";
         postits
@@ -286,7 +287,7 @@
 
             p.style.visibility = "hidden";
 
-            html += `<li class="color-${color} postit-min" data-pid="${p.dataset.id}" data-tags="${p.dataset.tags}"><span>${sortable?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:''}</span> ${title}</li>`;
+            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}"><span>${sortable?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:''}</span> ${title}</li>`;
           });
 
         $cell.find(".cell-menu").append (
@@ -326,7 +327,7 @@
               else
               {
                 ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i)=>
-                  cell0.querySelector(".postit[data-id='"+li.dataset.pid+"']")
+                  cell0.querySelector(".postit[data-id='"+li.dataset.id+"']")
                     .dataset.order = i+1);
 
                 plugin.unedit ();
@@ -350,7 +351,7 @@
             $(p).postit ("showPlugs");
           });
 
-        $displayMode[0].classList.replace ("fa-sticky-note", "fa-list-ul");
+        $displayMode[0].classList.replace ("fa-list-ul", "fa-sticky-note");
 
         if (!S.get ("zoom-level"))
           $cell.resizable ("enable");
@@ -380,8 +381,9 @@
       this.setPostitsDisplayMode (type);
 
       // Re-apply filters
-      if (S.getCurrent("filters").is (":visible"))
-        S.getCurrent("filters").filters ("apply");
+      const $f = S.getCurrent ("filters");
+      if ($f.is (":visible"))
+        $f.filters ("apply", {norefresh: true});
 
       if (!refresh)
       {
@@ -476,6 +478,8 @@
         $postit.postit ("insert");
       else if ($cell[0].classList.contains ("postit-mode"))
         $postit[0].style.visibility = "visible";
+
+      return $postit;
     },
 
     // METHOD update ()
@@ -540,17 +544,47 @@
 
   $(function()
     {
-      // EVENT click on postit min li
-      $(document).on("click", ".cell-list-mode li", function (e)
+      // EVENT click on cells
+      $(document)
+        .on("click", "td", function (e)
         {
-          const $cell = $(this).closest ("td");
+          const $cell = $(this),
+                $sm = S.getCurrent ("smenu");
 
-          if (e.cancelable)
+          // Click on notes in list mode
+          if (e.target.classList.contains ("postit-min"))
+          {
+            const li = e.target,
+                  $p = $cell.find(".postit[data-id='"+li.dataset.id+"']");
+
+            if (e.ctrlKey)
+            {
+              if (li.classList.contains ("selected"))
+                $sm.smenu ("remove", $p.postit ("getId"));
+              else
+                $sm.smenu ("add", $p.postit ("getClass"));
+
+              e.stopImmediatePropagation ();
               e.preventDefault ();
+            }
+            else
+            {
+              if (e.cancelable)
+                e.preventDefault ();
 
-          if (!S.get ("still-dragging"))
-            $cell.find(".postit[data-id='"+this.dataset.pid+"']")
-              .postit ("openPostit", $(this).find("span"));
+              if (!S.get ("still-dragging"))
+                $p.postit ("openPostit", $(li).find("span"));
+            }
+          }
+          // ctrl+click on a cell to paste/cut on it
+          else
+          {
+            if (e.ctrlKey && !$sm.smenu ("isEmpty"))
+              $sm.smenu ("apply", {
+                event: e,
+                cellPlugin: $cell.cell ("getClass")
+              });
+          }
         });
     });
 

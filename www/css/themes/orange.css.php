@@ -76,8 +76,12 @@ div.postit-mark {
 
 .postit.selected,
 .postit.selected .postit-header {
-  border-color:#ffbf00;
+  /*border-color:#ffbf00;*/
   box-shadow: 0px 0px 25px 5px #ffda6c;
+}
+
+.postit-min.selected {
+  /*border-color:#ffbf00;*/
 }
 
 textarea:focus,
@@ -159,11 +163,12 @@ span.wpt-badge {
   background-color: #569ae4 !important;
 }
 
-.wall-menu i.set {
+.popover-body i,
+i.set {
   color: #daa51f;
 }
 
-.accordion kbd,
+kbd,
 .btn-secondary,
 .btn-info {
   background-color: #daa51f !important;

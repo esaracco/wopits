@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
        
-        <div class="mb-3"><?=_("Search for sticky notes in the current wall.")?></div>
+        <div class="mb-3"><?=_("Find notes in the current wall.")?></div>
 
         <div class="input-group">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span></div>

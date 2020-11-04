@@ -9,14 +9,15 @@
 
   const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['colorPicker']['items'])).'"'?>];
   let _width = 0,
-      _height = 0;
+      _height = 0,
+      _cb_close;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
   {
     // METHOD init ()
-    init (args)
+    init ()
     {
       const $picker = this.element;
       let html = "";
@@ -24,21 +25,7 @@
       _COLOR_PICKER_COLORS.forEach (
         (cls, i) => html += `<div class="${cls}">&nbsp;</div>`);
 
-      $picker.append(html).find("> div")
-        .on("click", function(e)
-        {
-          e.stopImmediatePropagation ();
-
-          // Update popup background color
-          S.getCurrent("postit")
-            .removeClass(_COLOR_PICKER_COLORS.join(" "))
-            .addClass($(this).attr ("class"));
-
-          // Remove color picker
-          $("#popup-layer").click ();
-
-          S.getCurrent("filters").filters ("apply");
-        });
+      $picker.append (html);
 
       H.waitForDOMUpdate (() =>
         {
@@ -59,8 +46,8 @@
       const $picker = this.element,
             wW = $(window).outerWidth (),
             wH = $(window).outerHeight ();
-      let x = args.pageX + 5,
-          y = args.pageY - 20;
+      let x = args.event.pageX + 5,
+          y = args.event.pageY - 20;
      
       if (x + _width > wW)
         x = wW - _width - 20;
@@ -68,10 +55,30 @@
       if (y + _height > wH)
         y = wH - _height - 20;
 
+      _cb_close = args.cb_close;
+
+      $picker.find("> div")
+        .off().on("click", function(e)
+        {
+          e.stopImmediatePropagation ();
+
+          // Update background color
+          args.cb_click (this);
+
+          // Remove color picker
+          $("#popup-layer").click ();
+
+          const $f = S.getCurrent ("filters");
+          if ($f.is (":visible"))
+            $f.filters ("apply", {norefresh: true});
+        });
+
       H.openPopupLayer (() =>
         {
           this.close ();
-          S.getCurrent("postit").postit ("unedit");
+
+          if (S.getCurrent ("postit").length)
+            S.getCurrent ("postit").postit ("unedit");
         });
 
       $picker
@@ -87,7 +94,9 @@
       if ($picker.length)
       {
         $picker.hide ();
-        S.getCurrent("postit").trigger ("mouseleave");
+
+        if (_cb_close)
+          _cb_close ();
       }
     }
 

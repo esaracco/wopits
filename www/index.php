@@ -1,10 +1,8 @@
 <?php include (__DIR__.'/../app/header-common.php')?>
 <body>
 
-  <!-- upload LAYER -->
   <div id="upload-layer" class="layer"></div>
 
-  <!-- MSG CONTAINER -->
   <div id="msg-container"></div>
 
   <!-- MENU main -->

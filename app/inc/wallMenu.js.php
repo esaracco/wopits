@@ -37,7 +37,7 @@
         stop: ()=> S.set ("still-dragging", true, 500)
       });
 
-      if (!$.support.touch)
+      if (H.haveMouse ())
         H.enableTooltips ($menu, {boundary:"viewport"});
 
       $menu.find("li").on("click", function ()
@@ -65,7 +65,10 @@
             break;
 
           case "search":
-            H.loadPopup ("postitsSearch");
+            H.loadPopup ("postitsSearch", {
+              open: false,
+              cb: ($p)=> $p.postitsSearch ("open")
+            });
             break
 
           case "postit-mode":
@@ -78,6 +81,7 @@
             break;
 
           case "list-mode":
+            S.getCurrent("smenu").smenu ("close");
             wallPlugin.setPostitsDisplayMode (action);
 
             H.displayMsg ({

@@ -231,6 +231,20 @@ class WStorage
     localStorage.removeItem (name);
   }
 
+  // METHOD setNoDisplay ()
+  noDisplay (name, value)
+  {
+    const noDisplay = this.get ("no-display")||{};
+
+    if (value)
+    {
+      noDisplay[name] = value;
+      this.set ("no-display", noDisplay);
+    }
+    else
+      return (noDisplay[name] === true)||false;
+  }
+
   // METHOD set ()
   set (name, value)
   {
@@ -371,6 +385,13 @@ class WSharer
          this.arrows = this.walls.find (".tab-pane.active .arrows");
 
         return this.arrows;
+
+      case "smenu":
+
+        if (!this.smenu)
+          this.smenu = $("#smenu");
+
+        return this.smenu;
     }
   }
 }
@@ -424,7 +445,7 @@ class WSocket
         if (e.data == "ping") return;
         const data = JSON.parse (e.data||"{}"),
               $wall = (data.wall && data.wall.id) ?
-                $(".wall[data-id='wall-"+data.wall.id+"']") : [],
+                $("[data-id='wall-"+data.wall.id+"']") : [],
               isResponse = (this._send_cb[data.msgId] !== undefined);
 
         //console.log ("RECEIVED "+data.msgId+"\n");
@@ -722,7 +743,7 @@ class WHelper
   setAutofocus ($el)
   {
     // Set focus on first autofocus field if not touch device
-    if (!$.support.touch)
+    if (H.haveMouse ())
       setTimeout (() => $el.find("[autofocus]:eq(0)").focus (), 150);
   }
 
@@ -756,6 +777,12 @@ class WHelper
   
         img.src = url;
       });
+  }
+
+  // METHOD haveMouse ()
+  haveMouse ()
+  {
+    return (window.matchMedia("(hover: hover)").matches);
   }
 
   // METHOD isMainMenuCollapsed ()
@@ -1050,7 +1077,7 @@ class WHelper
   {
     let btn;
 
-    if ($.support.touch)
+    if (!H.haveMouse ())
       this.fixVKBScrollStart ();
   
     this.openPopupLayer (() =>
@@ -1061,7 +1088,7 @@ class WHelper
 
         $popover.popover ("dispose");
   
-        if ($.support.touch)
+        if (!H.haveMouse ())
           this.fixVKBScrollStop ();
   
       }, false);
@@ -1080,14 +1107,14 @@ class WHelper
 
     switch (args.type)
     {
+      case "info":
+        btn = {primary:"save"};
+        buttons = "";
+        break;
+
       case "update":
         btn = {primary:"save", secondary: "close"};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
-        break;
-
-      case "info":
-        btn = {secondary: "close"};
-        buttons = `<button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
         break;
 
       default:
@@ -1096,10 +1123,12 @@ class WHelper
     }
   
     const $body = $(".popover-body").last ();
+
+    $body.addClass ("justify");
   
     $body.html (`<p>${args.content}</p>${buttons}`);
   
-    if (!$.support.touch)
+    if (H.haveMouse ())
       $body.find("input:eq(0)").focus ();
   
     $body.find("button").on("click", function (e)
@@ -1532,7 +1561,7 @@ class WHelper
       })
       .done ((d)=>
        {
-         if (d.error)
+         if (!d||d.error)
          {
            if (error_cb)
              error_cb (d);

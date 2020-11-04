@@ -21,16 +21,16 @@
             $welcome = $("#desc-container");
       let $popup;
 
-      if ($welcome.length && !ST.get ("no-welcome"))
+      if ($welcome.length && !ST.noDisplay ("welcome-msg"))
       {
         $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><a href="#" class="close" data-dismiss="alert">&times;</a><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p>
-<div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("Do not display anymore")?></button></div>
+<div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div>
 
 </div>`);
 
         $welcome.find("button.nowelcome").on("click", function ()
           {
-            ST.set ("no-welcome", true);
+            ST.noDisplay ("welcome-msg", true);
 
             $(this).closest(".alert").remove ();
           });

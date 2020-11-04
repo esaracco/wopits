@@ -285,7 +285,16 @@
 
                 // OPEN color picker
                 case "color-picker":
-                  return $("#color-picker").colorPicker ("open", e);
+                  var cp = $("#color-picker").colorPicker ("getClass");
+
+                  return cp.open ({
+                    event: e,
+                    cb_close: ()=> postitPlugin.element.trigger ("mouseleave"),
+                    cb_click: (div) =>
+                      postitPlugin.element
+                        .removeClass(cp.getColorsList().join(" "))
+                        .addClass($(div).attr ("class"))
+                  });
               }
           });
         });
@@ -476,13 +485,28 @@
           {
             const $currentPostit = S.getCurrent ("postit");
 
-            if (!$.support.touch &&
+            if (H.haveMouse() &&
                 (!$currentPostit || !$currentPostit.length) &&
                 S.get ("postit-oldzindex") &&
                 !$("#popup-layer").length &&
                 !$(".modal:visible").length)
             {
               _resetZIndexData ();
+            }
+          })
+        .on("click", function (e)
+          {
+            const sm = S.getCurrent("smenu").smenu ("getClass");
+
+            if (e.ctrlKey)
+            {
+              e.stopImmediatePropagation ();
+              e.preventDefault ();
+
+              if (postit0.classList.contains ("selected"))
+                sm.remove (settings.id);
+              else
+                sm.add (plugin);
             }
           })
         // Append header, dates, attachment count and tags
@@ -572,7 +596,10 @@
               else
               {
                 // If the postit has been dropped into another cell
-                plugin.settings.cellId = $postit.parent().cell ("getId");
+                plugin.settings.cell = $postit.parent ();
+                plugin.settings.cellId = plugin.settings.cell.cell ("getId");
+
+                S.getCurrent("smenu").smenu ("update", settings.id, plugin);
 
                 plugin.unedit ();
               }
@@ -645,7 +672,7 @@
 
         $postit.find(".postit-edit")
           // EVENT doubletap on content
-          .doubletap (() => plugin.openPostit ());
+          .doubletap ((e)=> !e.ctrlKey && plugin.openPostit ());
   
         // Append menu button
         $postit.prepend($(`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
@@ -748,9 +775,9 @@
       else
         $postit.find(".postit-edit,.postit-header,.postit-tags,.dates")
           // EVENT click on postit
-          .click (function ()
+          .click (function (e)
           {
-            if (!S.get ("still-dragging"))
+            if (!e.ctrlKey && !S.get ("still-dragging"))
               plugin.openPostit ();
           });
 
@@ -828,7 +855,7 @@
 
         tinymce.activeEditor.setContent (content);
 
-        if ($.support.touch)
+        if (!H.haveMouse ())
           H.fixVKBScrollStart ();
 
         H.openModal ($popup, _getMaxEditModalWidth (content));
@@ -1795,10 +1822,13 @@
       if (cell && cell.id != this.settings.cellId)
       {
         this.settings.cell =
-          cell.obj||this.settings.wall.find("[data-id='cell-"+cell.id+"']");
+          cell.obj||this.settings.wall.find("td[data-id='cell-"+cell.id+"']");
         this.settings.cellId = cell.id;
 
         $postit.appendTo (this.settings.cell);
+
+        if (this.settings.cell[0].classList.contains ("postit-mode"))
+          postit0.style.visibility = "visible";
       }
 
       if (!d.ignoreResize)
@@ -1975,7 +2005,7 @@
           data = this.serialize()[0];
           todelete = !!data.todelete;
 
-          // Update postit only if it has changed
+          // Delete/update postit only if it has changed
           if (todelete || H.updatedObject (_originalObject,
                                              data, {hadpictures: 1}))
             data["cellId"] = this.settings.cellId;
@@ -2002,6 +2032,9 @@
             });
           else if (todelete)
           {
+            if ($postit[0].classList.contains ("selected"))
+              S.getCurrent("smenu").smenu ("remove", this.settings.id);
+
             $postit.remove ();
 
             const search = document.getElementById ("postitsSearchPopup");
@@ -2107,7 +2140,7 @@
                             c = c.replace(new RegExp (H.quoteRegex(img)), "");
 
                             // Return to the top of the modal if mobile device
-                            if ($.support.touch)
+                            if (!H.haveMouse ())
                               $("#postitUpdatePopup").scrollTop (0);
 
                             H.displayMsg ({
@@ -2562,7 +2595,7 @@
 
                         tinymce.activeEditor.resetContent ();
 
-                        if ($.support.touch)
+                        if (!H.haveMouse ())
                           H.fixVKBScrollStop ();
                       };
 

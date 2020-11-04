@@ -82,24 +82,33 @@
         $("#main-menu").find("li[data-action='filters'] a").click ();
     },
 
+    // METHOD hidePlugs ()
     hidePlugs ()
     {
       this.element.addClass ("plugs-hidden");
       S.getCurrent("wall").wall ("hidePostitsPlugs"); 
     },
 
+    // METHOD showPlugs ()
     showPlugs ()
     {
+      const wall = S.getCurrent("wall").wall ("getClass");;
+
       this.element.removeClass ("plugs-hidden");
 
-      setTimeout (()=> S.getCurrent("wall").wall ("showPostitsPlugs"), 0);
+      setTimeout (()=>
+        {
+          wall.showPostitsPlugs ();
+
+          if (wall.element[0].dataset.shared)
+            wall.refresh ();
+        }, 0);
     },
 
     // METHOD toggle ()
     toggle ()
     {
-      const $filters = this.element,
-            $wall = S.getCurrent ("wall");
+      const $filters = this.element;
 
       if ($filters.is (":visible"))
       {
@@ -107,14 +116,13 @@
           .hide()
           .find(".tags div.selected,"+
                 ".colors div.selected").removeClass ("selected");
-
-        this.showPlugs ();
+        this.apply ();
       }
       else
-        $filters
-          .css({top: "60px", left: "5px", display: "table"});
-
-      this.apply ();
+      {
+        $filters.css({top: "60px", left: "5px", display: "table"});
+        this.apply ({norefresh: true});
+      }
     },
 
     // METHOD reset ()
@@ -126,7 +134,7 @@
     },
 
     // METHOD apply ()
-    apply ()
+    apply (args = {})
     {
       const plugin = this,
             $filters = plugin.element,
@@ -137,6 +145,7 @@
       if ($tags.length || $colors.length)
       {
         plugin.hidePlugs ();
+        S.getCurrent("smenu").smenu ("reset");
 
         $wall[0].querySelectorAll("td").forEach ((cell)=>
         {
@@ -148,31 +157,24 @@
             .removeClass("filter-display")
             .css ("visibility", "visible");
 
-          if ($tags.length)
-            $tags.each (function ()
-              {
-                const tag =
-                  $(this).find("i").attr("class").match (/fa\-([^ ]+) /)[1];
+          $tags.each (function ()
+            {
+              const tag =
+                $(this).find("i").attr("class").match (/fa\-([^ ]+) /)[1];
 
-                $cell.find(pclass+"[data-tags*=',"+tag+",']")
-                  .addClass("filter-display");
-              });
+              $cell.find(pclass+"[data-tags*=',"+tag+",']")
+                .addClass("filter-display");
+            });
 
-          if ($colors.length)
-            $colors.each (function ()
-              {
-                $cell.find(pclass+"."+this.className.split(" ")[0])
-                  .addClass("filter-display");
-              });
+          $colors.each (function ()
+            {
+              $cell.find(pclass+"."+this.className.split(" ")[0])
+                .addClass("filter-display");
+            });
 
           $cell.find(pclass+":not(.filter-display)")
             .css ("visibility", "hidden");
         });
- 
-/*FIXME Useful?
-        if ($wall.find(".postit.current:not(.filter-display)").length)
-          $("#popup-layer").click ();
-*/
       }
       else
       {
@@ -186,7 +188,8 @@
             .css ("visibility", "visible");
         });
 
-        plugin.showPlugs ();
+        if (!args.norefresh)
+          plugin.showPlugs ();
       }
     }
   });

@@ -19,7 +19,7 @@ class Postit extends Wall
     $this->postitId = $args['postitId']??null;
   }
 
-  public function create ():array
+  public function create (array $data = null):array
   {
     $ret = [];
     $dir = $this->getWallDir ();
@@ -37,7 +37,7 @@ class Postit extends Wall
     if (!$stmt->fetch ())
       return ['error_msg' => _("The row/column has been deleted!")];
 
-    $data = [
+    $_data = $data??[
       'cells_id' => $this->cellId,
       'width' => $this->data->width,
       'height' => $this->data->height,
@@ -52,21 +52,225 @@ class Postit extends Wall
 
     try
     {
-      $this->executeQuery ('INSERT INTO postits', $data);
+      $this->executeQuery ('INSERT INTO postits', $_data);
       $this->postitId = $this->lastInsertId ();
 
       mkdir ("$dir/postit/".$this->postitId);
 
-      $data['id'] = $this->postitId;
-      $ret = ['wall' => [
-        'id' => $this->wallId,
-        'partial' => 'postit',
-        'action' => 'insert',
-        'postit' => $data
-      ]];
+      if (!$data)
+      {
+        $_data['id'] = $this->postitId;
+        $ret = ['wall' => [
+          'id' => $this->wallId,
+          'partial' => 'postit',
+          'action' => 'insert',
+          'postit' => $_data
+        ]];
+      }
     }
     catch (\Exception $e)
     {
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
+  public function updatePostitsColor ():array
+  {
+    $ret = ['walls' => []];
+    $wallsIds = [];
+    $color = $this->data->color;
+
+    try
+    {
+      $this->beginTransaction ();
+
+      // Update color if it is a known color class
+      if (in_array (substr ($color, 6),
+          array_keys (WPT_MODULES['colorPicker']['items'])))
+      {
+        foreach ($this->data->postits as $_postitId)
+        {
+          // Update postit if user can write it
+          if ( ($wallId =
+                  $this->checkPostitAccess (WPT_WRIGHTS_RW, $_postitId) ))
+          {
+            $wallsIds[] = $wallId;
+            $this->executeQuery ('UPDATE postits',
+              ['classcolor' => $color],
+              ['id' => $_postitId]);
+          }
+        }
+      }
+
+      $this->commit ();
+
+      $ret['walls'] = $this->getWallsById ($wallsIds);
+    }
+    catch (\Exception $e)
+    {
+      $this->rollback ();
+
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
+  public function deletePostits ():array
+  {
+    $ret = ['walls' => []];
+    $wallsIds = [];
+
+    try
+    {
+      $this->beginTransaction ();
+
+      $stmtD = $this->prepare ('DELETE FROM postits WHERE id = ?');
+
+      foreach ($this->data->postits as $_postitId)
+      {
+        // Delete postit if user can write to the wall
+        if ( ($wallId = $this->checkPostitAccess (WPT_WRIGHTS_RW, $_postitId) ))
+        {
+          $wallsIds[] = $wallId;
+          $stmtD->execute ([$_postitId]);
+        }
+      }
+
+      $this->commit ();
+
+      $ret['walls'] = $this->getWallsById ($wallsIds);
+    }
+    catch (\Exception $e)
+    {
+      $this->rollback ();
+
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
+  public function copyPostits ($move = false):array
+  {
+    $ret = ['walls' => []];
+    $wallId = $this->wallId;
+    $cellId = $this->cellId;
+    $wallsIds = [$wallId];
+
+    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
+    if (!$r['ok'])
+      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+
+    try
+    {
+      $this->beginTransaction ();
+
+      $i = 5;
+      foreach ($this->query ('
+        SELECT postits.*, cells.walls_id
+        FROM postits
+          INNER JOIN cells ON cells.id = postits.cells_id
+        WHERE postits.id IN ('.
+          implode(',', array_map ([$this, 'quote'], $this->data->postits)).')')
+            as $p)
+      {
+        $srcPostitId = $p['id'];
+        $srcCellId = $p['cells_id'];
+        $srcWallId = $p['walls_id'];
+        unset ($p['id']);
+        unset ($p['walls_id']);
+
+        // Copy postit
+        $p['item_top'] = $i + 20;
+        $p['item_left'] = $i + 5;
+        $p['cells_id'] = $this->cellId;
+        $this->create ($p);
+        $postitId = $this->postitId;
+
+        // Copy associated items (attachments & pictures)
+        // -> plugs are not copied
+        $havePictures = false;
+        foreach (['attachments', 'pictures'] as $item)
+        {
+          $stmt = $this->prepare ("
+            SELECT * FROM postits_$item WHERE postits_id = ?");
+
+          $stmt->execute ([$srcPostitId]);
+          foreach ($stmt->fetchAll () as $a)
+          {
+            $srcItemId = $a['id'];
+            $srcDir = $a['link'];
+            $a['walls_id'] = $wallId;
+            $a['postits_id'] = $postitId;
+            $a['link'] = str_replace (
+              ["/{$srcWallId}/", "/{$srcPostitId}/"],
+              ["/{$wallId}/", "/{$postitId}/"], $a['link']);
+
+            // Move item
+            if ($move)
+            {
+              rename (WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              $this->executeQuery ("UPDATE postits_$item",
+                $a, ['id' => $srcItemId]);
+              $itemId = $srcItemId;
+            }
+            // Copy item
+            else
+            {
+              copy (WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              unset ($a['id']);
+              $this->executeQuery ("INSERT INTO postits_$item", $a);
+              $itemId = $this->lastInsertId ();
+            }
+
+            // Change postit body internal img links if needed
+            if ($item == 'pictures')
+            {
+              $havePictures = true;
+
+              $p['content'] = preg_replace (
+                "#wall/{$srcWallId}/cell/{$srcCellId}/postit/{$srcPostitId}/".
+                  "picture/{$srcItemId}#",
+                "wall/{$wallId}/cell/{$cellId}/postit/{$postitId}/".
+                  "picture/{$itemId}",
+                $p['content']);
+            }
+          }
+        }
+
+        // Delete src postit if needed
+        if ($move)
+        {
+          $wallsIds[] = $srcWallId;
+
+          $this->wallId = $srcWallId;
+          $this->deletePostit ($srcPostitId);
+          $this->wallId = $wallId;
+        }
+
+        // Update postit body internal img links if needed
+        if ($havePictures)
+          $this->executeQuery ('UPDATE postits',
+            ['content' => $p['content']],
+            ['id' => $postitId]);
+
+        $i += 10;
+      }
+
+      $this->commit ();
+
+      $ret['walls'] = $this->getWallsById ($wallsIds);
+    }
+    catch (\Exception $e)
+    {
+      $this->rollback ();
+
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
     }
@@ -400,7 +604,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function getAttachment (array $args):array
+  public function getAttachment (array $args = []):array
   {
     $attachmentId = $args['attachmentId']??null;
     $ret = [];
@@ -593,11 +797,14 @@ class Postit extends Wall
         WHERE id IN ('.implode(',', $toDelete).')');
   }
 
-  public function deletePostit ():array
+  public function deletePostit (int $postitId = null):array
   {
     $ret = [];
     $dir = $this->getWallDir ();
     $newTransaction = (!\PDO::inTransaction ());
+
+    if (!$postitId)
+      $postitId = $this->postitId;
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
@@ -607,10 +814,10 @@ class Postit extends Wall
     {
       $this
         ->prepare('DELETE FROM postits WHERE id = ?')
-        ->execute ([$this->postitId]);
+        ->execute ([$postitId]);
 
       // Delete postit files
-      Helper::rm ("$dir/postit/{$this->postitId}");
+      Helper::rm ("$dir/postit/{$postitId}");
     }
     catch (\Exception $e)
     {
@@ -623,5 +830,21 @@ class Postit extends Wall
     }
 
     return $ret;
+  }
+
+  public function checkPostitAccess (int $requiredRole, int $postitId):?int
+  {
+    ($stmt = $this->prepare ("
+      SELECT _perf_walls_users.walls_id
+      FROM _perf_walls_users
+        INNER JOIN cells ON cells.walls_id = _perf_walls_users.walls_id
+        INNER JOIN postits ON postits.cells_id = cells.id
+      WHERE users_id = ?
+        AND postits.id = ?
+        AND access IN(".$this->buildAccessRightsSQL($requiredRole).")
+      LIMIT 1"))
+       ->execute ([$this->userId, $postitId]);
+
+    return $stmt->fetch(\PDO::FETCH_COLUMN)??0;
   }
 }

@@ -7,6 +7,8 @@
 
 ?>
 
+  let _smPlugin;
+
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -17,7 +19,9 @@
       const plugin = this,
             $search = plugin.element;
 
-      $search.find('input')
+      _smPlugin = S.getCurrent("smenu").smenu ("getClass");
+
+      $search.find("input")
         .on("keyup", function (e)
         {
           const val = this.value.trim ();
@@ -30,14 +34,31 @@
         .on("keypress", function (e)
         {
           if (e.which == 13)
-            plugin.element.modal ("hide");
+            plugin.close ();
+        });
+
+      // EVENT hidden.bs.modal on popups
+      $search
+        .on("hidden.bs.modal", function (e)
+        {
+          if (_smPlugin.element.is (":visible"))
+            setTimeout(()=>  _smPlugin.showHelp (), 0);
         });
     },
 
     // METHOD open ()
     open ()
     {
+      S.getCurrent("filters").filters ("reset");
+
       H.openModal (this.element); 
+      this.replay ();
+    },
+
+    // METHOD close ()
+    close ()
+    {
+      this.element.modal ("hide");
     },
 
     // METHOD restore ()
@@ -52,23 +73,26 @@
     {
       const $input = this.element.find ("input");
 
+      $input.val (S.getCurrent("wall")[0].dataset.searchstring||'');
+
       if ($input.val())
         $input.trigger ("keyup");
+      else
+        this.reset ();
     },
 
     // METHOD reset ()
-    reset (args)
+    reset (full)
     {
-      const $wall = S.getCurrent ("wall");
+      const $search = this.element;
 
-      $wall
-        .find(".postit-edit,"+
-              ".postit-header .title").not(":empty").closest(".postit")
-          .removeClass ("selected");
+      if (full)
+        $search.find("input").val ("");
 
-      $wall[0].removeAttribute ("data-searchstring");
+      _smPlugin.reset ();
+      S.getCurrent("wall")[0].removeAttribute ("data-searchstring");
 
-      this.element.find(".result").empty ();
+      $search.find(".result").empty ();
     },
 
     // METHOD search ()
@@ -76,8 +100,7 @@
     {
       const plugin = this,
             $search = plugin.element,
-            $wall = S.getCurrent ("wall"),
-            occur = {};
+            $wall = S.getCurrent ("wall");
 
       plugin.reset ();
 
@@ -89,22 +112,21 @@
         {
           const $edit = $(this);
 
-          if ($edit.text().match (
-            new RegExp (H.quoteRegex(str), 'ig')))
-          {
-            occur[$edit.closest(".postit").postit("getId")] = 1;
-
-            $edit.closest(".postit").addClass ("selected");
-          }
+          if ($edit.text().match (new RegExp (H.quoteRegex(str), 'ig')))
+            _smPlugin.add ($edit.closest(".postit").postit ("getClass"));
         });
 
-      const count = Object.keys(occur).length;
+      const count = $wall[0].querySelectorAll(".postit.selected").length;
+      let html;
 
-      $search.find(".result").html ((count) ?
-        ((count == 1) ?
-          "<?=_("1 sticky note match your search.")?>" :
-          "<?=_("%s sticky notes match your search.")?>".replace("%s", count)) :
-        "<?=_("No result")?>");
+      if (count)
+        html = (count == 1) ?
+          "<?=_("1 note match your search.")?>" :
+          "<?=_("%s notes match your search.")?>".replace ("%s", count);
+      else
+        html = "<?=_("No result")?>";
+
+      $search.find(".result").html (html);
     }
   };
 

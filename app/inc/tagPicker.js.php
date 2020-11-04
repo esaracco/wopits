@@ -53,7 +53,9 @@
 
             plugin.refreshPostitDataTag ();
 
-            S.getCurrent("filters").filters ("apply");
+            const $f = S.getCurrent ("filters");
+            if ($f.is (":visible"))
+              $f.filters ("apply", {norefresh: true});
           }
         });
 

@@ -119,7 +119,7 @@
     // METHOD setFocus ()
     setFocus (delay = 0)
     {
-      if (!$.support.touch)
+      if (H.haveMouse ())
         setTimeout (() => this.element.find("[autofocus]").focus (), delay);
     },
 
@@ -202,7 +202,7 @@
        $tooltip.attr ("title", title);
        $tooltip.tooltip ({
          html: true,
-         trigger: ($.support.touch) ? "click" : "hover focus"
+         trigger: (!H.haveMouse ()) ? "click" : "hover focus"
        });
     },
 

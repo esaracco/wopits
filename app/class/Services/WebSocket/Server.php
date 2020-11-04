@@ -412,19 +412,45 @@ class Server
           $ret = (new Wall (['wallId' => $wallId], $client))->getUsersview (
             array_keys ((array)$db->jGet ('activeWallsUnique', $wallId)));
       }
-      // ROUTE Postit creation
-      elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/postit$#', $msg->route, $m))
+      // ROUTE Postits color update, postits deletetion
+      // -> Can be multi-cells and multi-walls
+      elseif (preg_match ('#^postits/?(color)?$#', $msg->route, $m))
       {
-        list (,$wallId, $cellId) = $m;
-  
+        @list (,$type) = $m;
+
         $push = true;
         $action = 'refreshwall';
-  
-        $ret = (new Postit ([
+
+        $Postit = new Postit (['data' => $data], $client);
+
+        // POST
+        if ($type == 'color' && $msg->method == 'POST')
+          $ret = $Postit->updatePostitsColor ();
+        // DELETE
+        elseif ($msg->method == 'DELETE')
+          $ret = $Postit->deletePostits ();
+      }
+      // ROUTE Postit creation, postits copy/paste
+      elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/(postit|postits)/'.
+                          '?(copy|move)?$#', $msg->route, $m))
+      {
+        @list (,$wallId, $cellId, $item, $type) = $m;
+
+        $push = true;
+        $action = 'refreshwall';
+
+        $Postit = new Postit ([
           'wallId' => $wallId,
           'data' => $data,
           'cellId' => $cellId
-        ], $client))->create ();
+        ], $client);
+
+        // Create a postit
+        if ($item == 'postit')
+          $ret = $Postit->create ();
+        // Copy/cut postits
+        elseif ($item == 'postits')
+          $ret = $Postit->copyPostits (($type == 'move'));
       }
       // ROUTE Col/row creation/deletion
       elseif (preg_match ('#^wall/(\d+)/(col|row)/?(\d+)?$#', $msg->route, $m))
@@ -509,39 +535,58 @@ class Server
                 'wall' => ['id' => $_wallId]
               ]));
       }
-      else
+      elseif ($wallId || isset ($ret['walls']))
       {
         $ret['action'] = $action;
 
         // Boadcast results if needed
         if ($push)
         {
+          // If SuperAction result from SuperMenu (action on multiple items)
+          $isSActionResult = isset ($ret['walls']);
           $cacheName = ($action == 'chat' || $action == 'unlinked') ?
             'openedWalls' : 'activeWalls';
 
-          $w = $db->jGet ($cacheName, $wallId);
-          if (!$db->isEmpty ($w))
+          if ($isSActionResult)
           {
-            $userId = $client->id;
-            $json = json_encode ($ret);
+            $walls = $ret['walls'];
+            unset ($ret['walls']);
+            $wallsIds = array_keys ($walls);
+          }
+          else
+            $wallsIds = [$wallId];
 
-            foreach ($w as $_fd => $_userId)
+          foreach ($wallsIds as $_wallId)
+          {
+            $w = $db->jGet ($cacheName, $_wallId);
+            if (!$db->isEmpty ($w))
             {
-              // Message sender material will be broadcasted later.
-              if ($_fd != $fd && $server->isEstablished ($_fd))
+              $userId = $client->id;
+
+              if ($isSActionResult)
+                $ret['wall'] = $walls[$_wallId];
+              $json = json_encode ($ret);
+
+              foreach ($w as $_fd => $_userId)
               {
-                // If we are broadcasting on other sender user's sessions.
-                if ($_userId == $userId)
+                // Message sender material will be broadcasted later.
+                if ($_fd != $fd)
                 {
-                  // Keep broadcasting only for walls updates.
-                  if ($action == 'refreshwall')
-                    $server->push ($_fd,
-                      ($postitId) ?
-                        // If postit update, send user's specific data too.
-                        json_encode ($this->_injectUserSpecificData (
-                                       $ret, $postitId, $client)) : $json);
+                  // If we are broadcasting on other sender user's sessions.
+                  if ($_userId == $userId)
+                  {
+                    // Keep broadcasting only for walls updates.
+                    if ($action == 'refreshwall')
+                      $server->push ($_fd,
+                        ($postitId) ?
+                          // If postit update, send user's specific data too.
+                          json_encode ($this->_injectUserSpecificData (
+                                         $ret, $postitId, $client)) : $json);
+                  }
+                  else
+                    $server->push ($_fd, $json);
                 }
-                else
+                elseif ($isSActionResult)
                   $server->push ($_fd, $json);
               }
             }

@@ -204,10 +204,14 @@ class Base extends \PDO
       Helper::getSecureSystemName ("/users/{$this->userId}");
   }
 
-  protected function getWallDir (string $type = null):string
+  //protected function getWallDir (string $type = null):string
+  protected function getWallDir (string $type = null, int $wallId = null):string
   {
+    if (!$wallId)
+      $wallId = $this->wallId;
+
     return ($type == 'web') ?
-      WPT_DATA_WPATH."/walls/{$this->wallId}" :
-      Helper::getSecureSystemName ("/walls/{$this->wallId}");
+      WPT_DATA_WPATH."/walls/{$wallId}" :
+      Helper::getSecureSystemName ("/walls/{$wallId}");
   }
 }

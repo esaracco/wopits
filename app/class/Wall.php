@@ -6,7 +6,7 @@ require_once (__DIR__.'/../config.php');
 
 class Wall extends Base
 {
-  public function checkWallAccess (int $requiredRole):array
+  protected function buildAccessRightsSQL (int $requiredRole)
   {
     // Wall admin has full access
     $in = WPT_WRIGHTS_ADMIN;
@@ -18,11 +18,16 @@ class Wall extends Base
     elseif ($requiredRole == WPT_WRIGHTS_RO)
       $in .= ','.WPT_WRIGHTS_RO.','.WPT_WRIGHTS_RW;
 
+    return $in;
+  }
+
+  public function checkWallAccess (int $requiredRole):array
+  {
     ($stmt = $this->prepare ("
       SELECT 1 FROM _perf_walls_users
-      WHERE users_id = ? AND walls_id = ? AND access IN($in)
-      LIMIT 1"))
-       ->execute ([$this->userId, $this->wallId]);
+      WHERE users_id = ? AND walls_id = ?
+        AND access IN(".$this->buildAccessRightsSQL($requiredRole).")
+      LIMIT 1"))->execute ([$this->userId, $this->wallId]);
 
     return ['ok' => !empty ($stmt->fetch())];
   }
@@ -621,6 +626,21 @@ class Wall extends Base
         'path' => $zipPath,
         'unlink' => true
       ]);
+  }
+
+  protected function getWallsById (array $wallsIds):array
+  {
+    $walls = [];
+
+    $oldId = $this->wallId;
+    foreach ($wallsIds as $_wallId)
+    {
+      $this->wallId = $_wallId;
+      $walls[$_wallId] = $this->getWall ();
+    }
+    $this->wallId = $oldId;
+
+    return $walls;
   }
 
   public function getWall (bool $withAlerts = false, bool $basic = false,
