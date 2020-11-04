@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-04 16:11+0100\n"
+"POT-Creation-Date: 2020-11-04 17:32+0100\n"
 "PO-Revision-Date: 2020-11-04 16:24+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -1320,8 +1320,8 @@ msgstr ""
 msgid "To <b>delete</b>, click on %s4"
 msgstr "Pour <b>supprimer</b>, cliquer sur %s4"
 
-msgid "To select/unselect, <kbd>ctrl</kbd>+click on the note."
-msgstr "Pour sélectionner/désélectionner, <kbd>ctrl</kbd>+clic sur la note."
+msgid "To select / unselect, <kbd>ctrl</kbd>+click on the note."
+msgstr "Pour sélectionner / désélectionner, <kbd>ctrl</kbd>+clic sur la note."
 
 msgid "Unable to retrieve your account information"
 msgstr "Impossible de récupérer les informations de votre compte"
@@ -1585,27 +1585,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid "Do not display anymore"
-#~ msgstr "Ne plus afficher"
-
-#~ msgid "The wall is editable again"
-#~ msgstr "Le mur est de nouveau modifiable"
-
-#~ msgid "The wall is read only"
-#~ msgstr "Le mur est en lecture seule"
-
-#~ msgid "Properties..."
-#~ msgstr "Propriétés..."
-
-#~ msgid "List mode"
-#~ msgstr "Mode liste"
-
-#~ msgid "You no longer have access to some of the walls you had opened!"
-#~ msgstr "Vous n'avez plus accès à certains des murs que vous aviez ouverts!"
-
-#~ msgid "You no longer have access to the «%s» wall!"
-#~ msgstr "Vous n'avez plus accès au mur «%s»!"
-
-#~ msgid "Manage tags"
-#~ msgstr "Gérer les étiquettes"
