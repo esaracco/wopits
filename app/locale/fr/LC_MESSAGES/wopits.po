@@ -509,10 +509,10 @@ msgid "Delete relationships"
 msgstr "Supprimer les relations"
 
 msgid "Delete selected notes"
-msgstr "Supprimer la note sélectionnée"
+msgstr "Supprimer les notes sélectionnées"
 
 msgid "Delete selected notes?"
-msgstr "Supprimer les notes sélectionnées"
+msgstr "Supprimer les notes sélectionnées?"
 
 msgid "Delete this column?"
 msgstr "Supprimer cette colonne?"
