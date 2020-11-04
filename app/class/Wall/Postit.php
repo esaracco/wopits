@@ -88,8 +88,7 @@ class Postit extends Wall
       $this->beginTransaction ();
 
       // Update color if it is a known color class
-      if (in_array (substr ($color, 6),
-          array_keys (WPT_MODULES['colorPicker']['items'])))
+      if (in_array (substr ($color, 6), array_keys (WPT_POSTIT_COLORS)))
       {
         foreach ($this->data->postits as $_postitId)
         {

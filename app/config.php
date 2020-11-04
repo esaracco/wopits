@@ -51,6 +51,16 @@ define ('WPT_WRIGHTS_RO', 3);
 // Themes
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 
+// Postit colors
+define ('WPT_POSTIT_COLORS', [
+  'yellow' => '#ffffc6',
+  'orange' => '#ffdd9f',
+  'green' => '#b3ffc4',
+  'red' => '#ff9fa8',
+  'blue' => '#9ef2ff',
+  'gray' => '#c8d0d7'
+]);
+
 // Size of the Swoole volatile session tables.
 define ('WPT_SWOOLE_TABLE_SIZE', 1024);
 
@@ -124,14 +134,7 @@ define ('WS_SERVER_SECTIONS', [
     ],
     // Postit colors picker
     'colorPicker' => [
-      'items' => [
-        'yellow' => '#ffffc6',
-        'orange' => '#ffdd9f',
-        'green' => '#b3ffc4',
-        'red' => '#ff9fa8',
-        'blue' => '#9ef2ff',
-        'gray' => '#c8d0d7'
-      ]
+      'items' => WPT_POSTIT_COLORS
     ],
     'datePicker' => [],
     'chatroom' => [],
