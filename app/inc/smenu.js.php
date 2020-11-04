@@ -355,7 +355,7 @@
           type: "info",
           title: "<?=_("Batch actions")?>",
           placement: "right",
-          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select/unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`)+_noDisplayBtn,
+          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`)+_noDisplayBtn,
             cb_ok: cbOK
           })
         :
@@ -364,7 +364,7 @@
           type: "info",
           title: "<?=_("Batch actions")?>",
           placement: "right",
-          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select/unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?></li></ul>"+_noDisplayBtn,
+          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?></li></ul>"+_noDisplayBtn,
           cb_ok: cbOK
           });
     },
