@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 14:02+0100\n"
-"PO-Revision-Date: 2020-10-28 14:04+0100\n"
+"POT-Creation-Date: 2020-11-04 16:11+0100\n"
+"PO-Revision-Date: 2020-11-04 16:24+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -19,19 +19,31 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #, php-format
+msgid "%s notes match your search."
+msgstr "%s notes correspondent à votre recherche."
+
+#, php-format
 msgid "%s shared this wall with you!"
 msgstr "%s a partagé ce mur avec vous!"
 
-#, php-format
-msgid "%s sticky notes match your search."
-msgstr "%s post-its correspondent à votre recherche."
-
-msgid "1 sticky note match your search."
-msgstr "1 post-it correspond à votre recherche."
+msgid "1 note match your search."
+msgstr "1 note correspond à votre recherche."
 
 msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
 msgstr ""
 "<b>Mode invisible</b>: aucun partage possible, et personne ne peut vous voir"
+
+msgid ""
+"<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes."
+msgstr ""
+"<kbd>ctrl</kbd>+clic sur la cellule de destination pour y copier les notes "
+"sélectionnées."
+
+msgid ""
+"<kbd>ctrl</kbd>+click on the destination cell to move the selected notes."
+msgstr ""
+"<kbd>ctrl</kbd>+clic sur la cellule de destination pour y déplacer les notes "
+"sélectionnées."
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -367,6 +379,9 @@ msgstr "Couleur de fond"
 msgid "Bad email address"
 msgstr "Mauvaise adresse email"
 
+msgid "Batch actions"
+msgstr "Actions par lots"
+
 #, php-format
 msgid ""
 "Besides, you don't have to use it online: you can %sget the code%s and "
@@ -389,6 +404,9 @@ msgstr "Abandonner"
 
 msgid "Cancel sharing for this group"
 msgstr "Annuler le partage pour ce groupe"
+
+msgid "Change selected notes color"
+msgstr "Changer la couleurs des notes sélectionnées"
 
 msgid "Chat room"
 msgstr "Salon"
@@ -432,6 +450,15 @@ msgstr "Contenu"
 
 msgid "Content has been cleaned up"
 msgstr "Le contenu a été nettoyé"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copy selected notes"
+msgstr "Copier les notes sélectionnées"
+
+msgid "Copy/Move"
+msgstr "Copier/Déplacer"
 
 msgid "Create"
 msgstr "Créer"
@@ -480,6 +507,12 @@ msgstr "Supprimer mon compte"
 
 msgid "Delete relationships"
 msgstr "Supprimer les relations"
+
+msgid "Delete selected notes"
+msgstr "Supprimer la note sélectionnée"
+
+msgid "Delete selected notes?"
+msgstr "Supprimer les notes sélectionnées"
 
 msgid "Delete this column?"
 msgstr "Supprimer cette colonne?"
@@ -533,14 +566,17 @@ msgstr "Description"
 msgid "Display"
 msgstr "Affichage"
 
-msgid "Do not display anymore"
-msgstr "Ne plus afficher"
-
 msgid "Do you really want to logout from wopits?"
 msgstr "Voulez-vous vraiment vous déconnecter de wopits?"
 
+msgid "Do you want to copy the selected notes in this cell?"
+msgstr "Voulez-vous copier les notes sélectionnées dans cette cellule?"
+
 msgid "Do you want to load all external content for this wall?"
 msgstr "Voulez-vous charger tous les contenus externes pour ce mur?"
+
+msgid "Do you want to move the selected notes in this cell?"
+msgstr "Voulez-vous déplacer les notes sélectionnées dans cette cellule?"
 
 msgid "Edit"
 msgstr "Édition"
@@ -582,6 +618,9 @@ msgstr "Fichier trop volumineux (%sM max)!"
 
 msgid "Filters"
 msgstr "Filtres"
+
+msgid "Find notes in the current wall."
+msgstr "Rechercher des notes dans le mur courant."
 
 msgid "For all your walls."
 msgstr "Pour tous vos murs."
@@ -740,6 +779,9 @@ msgstr "Aide"
 msgid "Hide headers"
 msgstr "Cacher les en-têtes"
 
+msgid "I get it !"
+msgstr "J'ai compris !"
+
 msgid "If so, do not hesitate to test others:"
 msgstr "Si c'est le cas, n'hésitez pas à en tester d'autres:"
 
@@ -786,6 +828,12 @@ msgstr "Gérer les utilisateurs"
 
 msgid "Message sent automatically."
 msgstr "Message envoyé automatiquement."
+
+msgid "Move"
+msgstr "Déplacer"
+
+msgid "Move selected notes"
+msgstr "Déplacer les notes sélectionnées"
 
 msgid "Name"
 msgstr "Nom"
@@ -901,6 +949,9 @@ msgstr "Veuillez confirmer votre email:"
 msgid "Please, confirm your password:"
 msgstr "Veuillez confirmer votre mot de passe:"
 
+msgid "Please, select the type of action first."
+msgstr "Veuillez d'abord sélectionner le type d'action."
+
 msgid "Previous"
 msgstr "Précédent"
 
@@ -967,9 +1018,6 @@ msgstr "Enregistrer les changements?"
 
 msgid "Search"
 msgstr "Rechercher"
-
-msgid "Search for sticky notes in the current wall."
-msgstr "Rechercher des post-its dans le mur courant."
 
 msgid "Search..."
 msgstr "Rechercher..."
@@ -1256,6 +1304,25 @@ msgstr "Fuseau horaire"
 msgid "Title"
 msgstr "Titre"
 
+#, php-format
+msgid "To <b>change color</b>, click on %s3"
+msgstr "Pour <b>changer la couleur</b>, cliquer sur %s3"
+
+#, php-format
+msgid ""
+"To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and "
+"<kbd>ctrl</kbd>+click on the destination cell."
+msgstr ""
+"Pour <b>copier</b> %s1 ou <b>déplacer</b> %s2, choisissez l'icône appropriée "
+"et <kbd>ctrl</kbd>+clic sur la cellule de destination."
+
+#, php-format
+msgid "To <b>delete</b>, click on %s4"
+msgstr "Pour <b>supprimer</b>, cliquer sur %s4"
+
+msgid "To select/unselect, <kbd>ctrl</kbd>+click on the note."
+msgstr "Pour sélectionner/désélectionner, <kbd>ctrl</kbd>+clic sur la note."
+
 msgid "Unable to retrieve your account information"
 msgstr "Impossible de récupérer les informations de votre compte"
 
@@ -1302,6 +1369,9 @@ msgstr "Dépôt terminé."
 
 msgid "Upload has been canceled"
 msgstr "Le dépôt a été abandonné"
+
+msgid "Use this menu to execute actions on multiple notes"
+msgstr "Utilisez ce menu pour effectuer des actions sur plusieurs notes"
 
 msgid "User guide"
 msgstr "Guide utilisateur"
@@ -1392,6 +1462,9 @@ msgstr "Vous devez avoir un accès administrateur pour effectuer cette action."
 
 msgid "You must have write access to perform this action."
 msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
+
+msgid "You need write access to perform this action!"
+msgstr "Vous devez avoir un accès en écriture pour effectuer cette action!"
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
 msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
@@ -1512,6 +1585,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "Do not display anymore"
+#~ msgstr "Ne plus afficher"
 
 #~ msgid "The wall is editable again"
 #~ msgstr "Le mur est de nouveau modifiable"

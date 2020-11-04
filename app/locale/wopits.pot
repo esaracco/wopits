@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-10-28 14:02+0100\n"
+        "POT-Creation-Date: 2020-11-04 16:11+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,17 +16,23 @@ msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Content-Transfer-Encoding: 8bit\n"
 
 #, php-format
-msgid   "%s shared this wall with you!"
+msgid   "%s notes match your search."
 msgstr  ""
 
 #, php-format
-msgid   "%s sticky notes match your search."
+msgid   "%s shared this wall with you!"
 msgstr  ""
 
-msgid   "1 sticky note match your search."
+msgid   "1 note match your search."
 msgstr  ""
 
 msgid   "<b>Invisible mode</b>: sharing is not possible and no one can see you"
+msgstr  ""
+
+msgid   "<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes."
+msgstr  ""
+
+msgid   "<kbd>ctrl</kbd>+click on the destination cell to move the selected notes."
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, click on <kbd>Wall</kbd>&rarr;<kbd>Share...</kbd>.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify sticky notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create sticky notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of the groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p>"
@@ -131,6 +137,9 @@ msgstr  ""
 msgid   "Bad email address"
 msgstr  ""
 
+msgid   "Batch actions"
+msgstr  ""
+
 #, php-format
 msgid   "Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"
 msgstr  ""
@@ -148,6 +157,9 @@ msgid   "Cancel"
 msgstr  ""
 
 msgid   "Cancel sharing for this group"
+msgstr  ""
+
+msgid   "Change selected notes color"
 msgstr  ""
 
 msgid   "Chat room"
@@ -191,6 +203,15 @@ msgid   "Content"
 msgstr  ""
 
 msgid   "Content has been cleaned up"
+msgstr  ""
+
+msgid   "Copy"
+msgstr  ""
+
+msgid   "Copy selected notes"
+msgstr  ""
+
+msgid   "Copy/Move"
 msgstr  ""
 
 msgid   "Create"
@@ -241,6 +262,12 @@ msgstr  ""
 msgid   "Delete relationships"
 msgstr  ""
 
+msgid   "Delete selected notes"
+msgstr  ""
+
+msgid   "Delete selected notes?"
+msgstr  ""
+
 msgid   "Delete this column?"
 msgstr  ""
 
@@ -286,13 +313,16 @@ msgstr  ""
 msgid   "Display"
 msgstr  ""
 
-msgid   "Do not display anymore"
-msgstr  ""
-
 msgid   "Do you really want to logout from wopits?"
 msgstr  ""
 
+msgid   "Do you want to copy the selected notes in this cell?"
+msgstr  ""
+
 msgid   "Do you want to load all external content for this wall?"
+msgstr  ""
+
+msgid   "Do you want to move the selected notes in this cell?"
 msgstr  ""
 
 msgid   "Edit"
@@ -330,6 +360,9 @@ msgid   "File size is too large (%sM max)!"
 msgstr  ""
 
 msgid   "Filters"
+msgstr  ""
+
+msgid   "Find notes in the current wall."
 msgstr  ""
 
 msgid   "For all your walls."
@@ -431,6 +464,9 @@ msgstr  ""
 msgid   "Hide headers"
 msgstr  ""
 
+msgid   "I get it !"
+msgstr  ""
+
 msgid   "If so, do not hesitate to test others:"
 msgstr  ""
 
@@ -472,6 +508,12 @@ msgid   "Manage users"
 msgstr  ""
 
 msgid   "Message sent automatically."
+msgstr  ""
+
+msgid   "Move"
+msgstr  ""
+
+msgid   "Move selected notes"
 msgstr  ""
 
 msgid   "Name"
@@ -568,6 +610,9 @@ msgstr  ""
 msgid   "Please, confirm your password:"
 msgstr  ""
 
+msgid   "Please, select the type of action first."
+msgstr  ""
+
 msgid   "Previous"
 msgstr  ""
 
@@ -630,9 +675,6 @@ msgid   "Save changes?"
 msgstr  ""
 
 msgid   "Search"
-msgstr  ""
-
-msgid   "Search for sticky notes in the current wall."
 msgstr  ""
 
 msgid   "Search..."
@@ -879,6 +921,21 @@ msgstr  ""
 msgid   "Title"
 msgstr  ""
 
+#, php-format
+msgid   "To <b>change color</b>, click on %s3"
+msgstr  ""
+
+#, php-format
+msgid   "To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell."
+msgstr  ""
+
+#, php-format
+msgid   "To <b>delete</b>, click on %s4"
+msgstr  ""
+
+msgid   "To select/unselect, <kbd>ctrl</kbd>+click on the note."
+msgstr  ""
+
 msgid   "Unable to retrieve your account information"
 msgstr  ""
 
@@ -916,6 +973,9 @@ msgid   "Upload completed."
 msgstr  ""
 
 msgid   "Upload has been canceled"
+msgstr  ""
+
+msgid   "Use this menu to execute actions on multiple notes"
 msgstr  ""
 
 msgid   "User guide"
@@ -996,6 +1056,9 @@ msgid   "You must have admin access to perform this action."
 msgstr  ""
 
 msgid   "You must have write access to perform this action."
+msgstr  ""
+
+msgid   "You need write access to perform this action!"
 msgstr  ""
 
 msgid   "You will lose your access to the wall.<br>Reject anyway?"

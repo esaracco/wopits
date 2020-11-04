@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-28 14:02+0100\n"
+"POT-Creation-Date: 2020-11-04 16:11+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -16,17 +16,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #, php-format
-msgid "%s shared this wall with you!"
+msgid "%s notes match your search."
 msgstr ""
 
 #, php-format
-msgid "%s sticky notes match your search."
+msgid "%s shared this wall with you!"
 msgstr ""
 
-msgid "1 sticky note match your search."
+msgid "1 note match your search."
 msgstr ""
 
 msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
+msgstr ""
+
+msgid ""
+"<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes."
+msgstr ""
+
+msgid ""
+"<kbd>ctrl</kbd>+click on the destination cell to move the selected notes."
 msgstr ""
 
 msgid ""
@@ -241,6 +249,9 @@ msgstr ""
 msgid "Bad email address"
 msgstr ""
 
+msgid "Batch actions"
+msgstr ""
+
 #, php-format
 msgid ""
 "Besides, you don't have to use it online: you can %sget the code%s and "
@@ -260,6 +271,9 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Cancel sharing for this group"
+msgstr ""
+
+msgid "Change selected notes color"
 msgstr ""
 
 msgid "Chat room"
@@ -303,6 +317,15 @@ msgid "Content"
 msgstr ""
 
 msgid "Content has been cleaned up"
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "Copy selected notes"
+msgstr ""
+
+msgid "Copy/Move"
 msgstr ""
 
 msgid "Create"
@@ -353,6 +376,12 @@ msgstr ""
 msgid "Delete relationships"
 msgstr ""
 
+msgid "Delete selected notes"
+msgstr ""
+
+msgid "Delete selected notes?"
+msgstr ""
+
 msgid "Delete this column?"
 msgstr ""
 
@@ -401,13 +430,16 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-msgid "Do not display anymore"
-msgstr ""
-
 msgid "Do you really want to logout from wopits?"
 msgstr ""
 
+msgid "Do you want to copy the selected notes in this cell?"
+msgstr ""
+
 msgid "Do you want to load all external content for this wall?"
+msgstr ""
+
+msgid "Do you want to move the selected notes in this cell?"
 msgstr ""
 
 msgid "Edit"
@@ -447,6 +479,9 @@ msgid "File size is too large (%sM max)!"
 msgstr ""
 
 msgid "Filters"
+msgstr ""
+
+msgid "Find notes in the current wall."
 msgstr ""
 
 msgid "For all your walls."
@@ -558,6 +593,9 @@ msgstr ""
 msgid "Hide headers"
 msgstr ""
 
+msgid "I get it !"
+msgstr ""
+
 msgid "If so, do not hesitate to test others:"
 msgstr ""
 
@@ -601,6 +639,12 @@ msgid "Manage users"
 msgstr ""
 
 msgid "Message sent automatically."
+msgstr ""
+
+msgid "Move"
+msgstr ""
+
+msgid "Move selected notes"
 msgstr ""
 
 msgid "Name"
@@ -706,6 +750,9 @@ msgstr ""
 msgid "Please, confirm your password:"
 msgstr ""
 
+msgid "Please, select the type of action first."
+msgstr ""
+
 msgid "Previous"
 msgstr ""
 
@@ -769,9 +816,6 @@ msgid "Save changes?"
 msgstr ""
 
 msgid "Search"
-msgstr ""
-
-msgid "Search for sticky notes in the current wall."
 msgstr ""
 
 msgid "Search..."
@@ -1037,6 +1081,23 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+#, php-format
+msgid "To <b>change color</b>, click on %s3"
+msgstr ""
+
+#, php-format
+msgid ""
+"To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and "
+"<kbd>ctrl</kbd>+click on the destination cell."
+msgstr ""
+
+#, php-format
+msgid "To <b>delete</b>, click on %s4"
+msgstr ""
+
+msgid "To select/unselect, <kbd>ctrl</kbd>+click on the note."
+msgstr ""
+
 msgid "Unable to retrieve your account information"
 msgstr ""
 
@@ -1078,6 +1139,9 @@ msgid "Upload completed."
 msgstr ""
 
 msgid "Upload has been canceled"
+msgstr ""
+
+msgid "Use this menu to execute actions on multiple notes"
 msgstr ""
 
 msgid "User guide"
@@ -1162,6 +1226,9 @@ msgid "You must have admin access to perform this action."
 msgstr ""
 
 msgid "You must have write access to perform this action."
+msgstr ""
+
+msgid "You need write access to perform this action!"
 msgstr ""
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
