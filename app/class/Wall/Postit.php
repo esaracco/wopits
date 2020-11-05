@@ -210,6 +210,7 @@ class Postit extends Wall
             $a['link'] = str_replace (
               ["/{$srcWallId}/", "/{$srcPostitId}/"],
               ["/{$wallId}/", "/{$postitId}/"], $a['link']);
+            unset ($a['id']);
 
             // Move item
             if ($move)
@@ -223,7 +224,6 @@ class Postit extends Wall
             else
             {
               copy (WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
-              unset ($a['id']);
               $this->executeQuery ("INSERT INTO postits_$item", $a);
               $itemId = $this->lastInsertId ();
             }
