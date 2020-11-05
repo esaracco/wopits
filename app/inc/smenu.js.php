@@ -48,6 +48,9 @@
 
           $sm.find("i").removeClass ("set");
 
+          if ($sm[0].querySelector("[data-action='move'] i.selected"));
+            plugin.setPostitsOpacity (1);
+
           if (set)
             return (_data.action = null);
 
@@ -76,6 +79,7 @@
                 content = "<?=_("<kbd>ctrl</kbd>+click on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
                 cbOK = ()=> ST.noDisplay ("smenu-move-help", true);
               }
+              plugin.setPostitsOpacity (.6);
               break
           }
 
@@ -238,6 +242,13 @@
         if (!document.querySelector (
               ".postit.selected[data-id='postit-"+id+"']"))
           this.remove (id);
+    },
+
+    // METHOD setPostitsOpacity ()
+    setPostitsOpacity (v)
+    {
+      document.querySelectorAll([".postit.selected", ".postit-min.selected"])
+        .forEach ((_p)=> _p.style.opacity = v);
     },
 
     // METHOD add ()
