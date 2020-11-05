@@ -51,7 +51,7 @@
     {
       S.getCurrent("filters").filters ("reset");
 
-      H.openModal (this.element); 
+      H.openModal (this.element);
       this.replay ();
     },
 

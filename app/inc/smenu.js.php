@@ -150,7 +150,7 @@
           type: type,
           title: title,
           content: content,
-          cb_close: ()=> 
+          cb_close: ()=>
           {
             args.event.target.classList.remove ("set");
 
