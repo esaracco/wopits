@@ -1313,7 +1313,7 @@ msgid ""
 "To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and "
 "<kbd>ctrl</kbd>+click on the destination cell."
 msgstr ""
-"Pour <b>copier</b> %s1 ou <b>déplacer</b> %s2, choisissez l'icône appropriée "
+"Pour <b>copier</b> %s1 ou <b>déplacer</b> %s2, choisir l'icône appropriée "
 "et <kbd>ctrl</kbd>+clic sur la cellule de destination."
 
 #, php-format
