@@ -95,7 +95,7 @@
     apply (args = {})
     {
       let item = args.cellPlugin ? args.cellPlugin.element : null,
-          title, content, cbClose;
+          type, title, content, cbClose;
 
       if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         return H.displayMsg ({
@@ -128,6 +128,7 @@
           return this.send (args);
 
         default:
+          type = "info";
           item = this.element.find ("li:eq(0)");
           title = "<?=_("Copy/Move")?>";
           content = "<?=_("Please, select the type of action first.")?>";
@@ -140,6 +141,7 @@
 
         H.openConfirmPopover ({
           item: item,
+          type: type,
           title: title,
           content: content,
           cb_close: ()=> 
