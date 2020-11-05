@@ -7,6 +7,9 @@
 
 ?>
 
+let _lastStr = "",
+    _noResultStr;
+
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -230,8 +233,14 @@
 
       args.str = args.str.replace (/&/, "");
 
-      if (!args.str)
+      if (!args.str ||
+          args.str == _lastStr ||
+          (_noResultStr &&
+           args.str != _noResultStr &&
+           args.str.indexOf (_noResultStr) != -1))
         return;
+
+      _lastStr = args.str;
 
       if (args.groupType == <?=WPT_GTYPES_DED?>)
         data = {wallId: wallId};
@@ -243,9 +252,13 @@
         // success cb
         (d) =>
         {
+          const users = d.users||[];
           let html = "";
 
-          (d.users||[]).forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
+          if (!users.length)
+            _noResultStr = args.str;
+
+          users.forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
 
           if (html)
           {
