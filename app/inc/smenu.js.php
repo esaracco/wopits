@@ -8,7 +8,7 @@
 ?>
 
   const _noDisplayBtn = `<div class="mt-2"><button type="button" class="btn btn-xs btn-primary nodisplay"><?=_("I get it !")?></button></div>`;
-  let _data = {postits: {}, action: null};
+  let _data = {postits: {}, dest: null};
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -48,16 +48,12 @@
 
           $sm.find("i").removeClass ("set");
 
-          if ($sm[0].querySelector("[data-action='move'] i.selected"));
-            plugin.setPostitsOpacity (1);
-
           if (set)
-            return (_data.action = null);
+            return;
 
           icon.classList.add ("set");
-          _data.action = this.dataset.action;
 
-          switch (_data.action)
+          switch (this.dataset.action)
           {
             case "delete":
             case "cpick":
@@ -79,7 +75,6 @@
                 content = "<?=_("<kbd>ctrl</kbd>+click on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
                 cbOK = ()=> ST.noDisplay ("smenu-move-help", true);
               }
-              plugin.setPostitsOpacity (.6);
               break
           }
 
@@ -93,6 +88,14 @@
               cb_ok: cbOK
             });
         });
+    },
+
+    // METHOD getAction ()
+    getAction ()
+    {
+      const el = this.element[0].querySelector (".set");
+
+      return el ? el.parentNode.dataset.action : null;
     },
 
     // METHOD apply ()
@@ -109,7 +112,7 @@
 
       _data.dest = args.cellPlugin;
 
-      switch (_data.action)
+      switch (this.getAction ())
       {
         case "copy":
           title =  `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
@@ -125,7 +128,6 @@
           item = this.element.find ("[data-action='delete']");
           title = `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`;
           content = "<?=_("Delete selected notes?")?>";
-          cbClose = ()=> _data.action = null;
           break;
 
         case "cpick":
@@ -168,17 +170,15 @@
     // METHOD send ()
     send (args = {})
     {
+      const action = this.getAction ();
+
       // Color picker
-      switch (_data.action)
+      switch (action)
       {
         case "cpick":
           $("#cpick").cpick ("open", {
             event: args.event,
-            cb_close: ()=>
-            {
-              _data.action = null;
-              args.event.target.classList.remove ("set");
-            },
+            cb_close: ()=> args.event.target.classList.remove ("set"),
             cb_click: (c)=>
             {
               H.request_ws (
@@ -212,10 +212,10 @@
           H.request_ws (
             "PUT",
             "wall/"+cellSettings.wallId+
-              "/cell/"+cellSettings.id+"/postits/"+_data.action,
+              "/cell/"+cellSettings.id+"/postits/"+action,
             {postits: Object.keys (_data.postits)},
             // success cb
-            ()=> _data.action == "move" && this.close ());
+            ()=> (action == "move") && this.close ());
           break;
       }
     },
@@ -232,7 +232,7 @@
       this.removeAll ();
       this.element.find(".set").removeClass ("set");
 
-      _data = {postits: {}, action: null};
+      _data = {postits: {}, dest: null};
     },
 
     // METHOD refresh ()
@@ -242,13 +242,6 @@
         if (!document.querySelector (
               ".postit.selected[data-id='postit-"+id+"']"))
           this.remove (id);
-    },
-
-    // METHOD setPostitsOpacity ()
-    setPostitsOpacity (v)
-    {
-      document.querySelectorAll([".postit.selected", ".postit-min.selected"])
-        .forEach ((_p)=> _p.style.opacity = v);
     },
 
     // METHOD add ()
@@ -264,6 +257,7 @@
       _data.postits[p.settings.id] = p;
 
       this.refreshItemsCount ();
+      this.checkAllowedActions ();
     },
 
     // METHOD update ()
@@ -287,6 +281,8 @@
 
       if (this.isEmpty ())
         this.close ();
+      else
+        this.checkAllowedActions ();
     },
 
     // METHOD removeAll ()
@@ -319,7 +315,6 @@
       if (plugin.element.is (":visible"))
         return;
 
-      this.checkAllowedActions ();
       this.element.show ();
 
       if (!$(".modal:visible").length)
@@ -329,14 +324,24 @@
     // METHOD checkAllowedActions ()
     checkAllowedActions ()
     {
-      if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-        this.element.find("li").show ();
-      else
+      this.element[0].style.opacity = 1;
+      this.element.find("li").show ();
+
+      for (const id in _data.postits)
+        if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>",
+               _data.postits[id].settings.wall[0].dataset.access))
+        {
+          //FIXME //TODO trigger on btn copy menu item
+          this.element.find("[data-action='copy'] i").addClass ("set");
+          this.element.find("li:not([data-action='copy'])").hide ();
+
+          return;
+        }
+
+      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
       {
-        //FIXME //TODO trigger on btn copy menu item
-        _data.action = "copy";
-        this.element.find("[data-action='copy'] i").addClass ("set");
-        this.element.find("li:not([data-action='copy'])").hide ();
+        this.element.find("[data-action='copy'] i.set").removeClass ("set");
+        this.element[0].style.opacity = 0.3;
       }
     },
 
