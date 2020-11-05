@@ -954,7 +954,7 @@
       document.getElementById(activeTabId).remove ();
 
       // No more wall to display
-      if (!document.querySelector(".wall"))
+      if (!document.querySelector (".wall"))
       {
         document.querySelector(".nav.walls").style.display = "none";
 
@@ -1011,9 +1011,12 @@
       //FIXME 2x
       this.unedit (() =>
         {
+          const sPlugin = $("#settingsPopup").settings ("getClass");
+
           this.close ();
-          $("#settingsPopup").settings (
-            "removeWallBackground", this.settings.id);
+
+          sPlugin.removeWallBackground (this.settings.id);
+          sPlugin.removeRecentWall (this.settings.id);
         });
     },
 

@@ -512,7 +512,9 @@ class WSocket
                   type: "warning",
                   msg: "<?=_("Some walls are no longer available!")?>"
                 });
+
                 $wall.wall ("close");
+                $("#settingsPopup").settings ("removeRecentWall", data.wall.id);
               }
               break;
 

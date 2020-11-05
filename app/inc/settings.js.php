@@ -160,6 +160,19 @@
       this.set (args);
     },
 
+    // METHOD removeRecentWall ()
+    removeRecentWall (wallId)
+    {
+      const recentWalls = wpt_userData.settings.recentWalls||[],
+            idx = recentWalls.indexOf (String(wallId));
+
+      if (idx > -1)
+      {
+        recentWalls.splice (idx, 1);
+        this.set ({recentWalls: recentWalls});
+      }
+    },
+
     // METHOD set ()
     set (keyVal, cb)
     {
