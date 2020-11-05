@@ -348,31 +348,26 @@
     // METHOD showHelp ()
     showHelp ()
     {
-      const access = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
+      const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
-      if (ST.noDisplay ("smenu-help-"+access))
+      if (ST.noDisplay ("smenu-help-"+writeAccess))
         return;
 
-      const cbOK = ()=> ST.noDisplay ("smenu-help-"+access, true);
+      let content;
 
-      H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ?
-        H.openConfirmPopover ({
-          item: this.element,
-          type: "info",
-          title: "<?=_("Batch actions")?>",
-          placement: "right",
-          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`)+_noDisplayBtn,
-            cb_ok: cbOK
-          })
-        :
-        H.openConfirmPopover ({
-          item: this.element,
-          type: "info",
-          title: "<?=_("Batch actions")?>",
-          placement: "right",
-          content: "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?></li></ul>"+_noDisplayBtn,
-          cb_ok: cbOK
-          });
+      if (writeAccess)
+        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
+      else
+        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?></li></ul>";
+
+      H.openConfirmPopover ({
+        item: this.element,
+        type: "info",
+        title: "<i class='fas fa-cogs fa-fw'></i> <?=_("Batch actions")?>",
+        placement: "right",
+        content: content+_noDisplayBtn,
+        cb_ok: ()=> ST.noDisplay ("smenu-help-"+access, true)
+      });
     },
 
     // METHOD close ()
