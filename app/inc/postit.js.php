@@ -672,7 +672,8 @@
 
         $postit.find(".postit-edit")
           // EVENT doubletap on content
-          .doubletap ((e)=> !e.ctrlKey && plugin.openPostit ());
+          .doubletap ((e)=> !e.ctrlKey && !S.get("still-dragging") &&
+                            plugin.openPostit());
   
         // Append menu button
         $postit.prepend($(`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
