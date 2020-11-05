@@ -361,7 +361,7 @@
                     // Close all current opened walls and reload session.
                     if ($wall.length)
                     {
-                      S.getCurrent ("chatroom").chatroom ("hide");
+                      S.getCurrent("chat").chat ("hide");
                       $wall.wall ("closeAllWalls", false);
                       $wall.wall ("restorePreviousSession");
                     }

@@ -106,7 +106,7 @@ span.wpt-badge {
   background-color: #28a745;
 }
 
-.chatroom li i.fas,
+.chat li i.fas,
 .list-group-item i.fa {
   color: #28a745 !important;
 }

@@ -110,7 +110,7 @@ define ('WS_SERVER_SECTIONS', [
     'common' => [],
     'settings' => [],
     // Postit tags picker
-    'tagPicker' => [
+    'tpick' => [
       'items' => [
         'thumbs-up' => '#555',
         'thumbs-down' => '#555',
@@ -133,15 +133,13 @@ define ('WS_SERVER_SECTIONS', [
       ]
     ],
     // Postit colors picker
-    'colorPicker' => [
-      'items' => WPT_POSTIT_COLORS
-    ],
-    'datePicker' => [],
-    'chatroom' => [],
+    'cpick' => ['items' => WPT_POSTIT_COLORS],
+    'dpick' => [],
+    'chat' => [],
     'filters' => [],
     'arrows' => [],
     'smenu' => [],
-    'wallMenu' => [],
+    'wmenu' => [],
     'main' => [],
     'editable' => [],
     'header' => [],
@@ -150,11 +148,11 @@ define ('WS_SERVER_SECTIONS', [
     'events' => [],
     'login' => [],
     'account' => [],
-    'shareWall' => [],
-    'usersSearch' => [],
-    'postitsSearch' => [],
-    'openWall' => [],
-    'wallProperties' => []
+    'swall' => [],
+    'usearch' => [],
+    'psearch' => [],
+    'owall' => [],
+    'wprop' => []
   ]);
 
   // JS node modules

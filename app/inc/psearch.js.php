@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('postitsSearch');
+  $Plugin = new Wopits\jQueryPlugin ('psearch');
   echo $Plugin->getHeader ();
 
 ?>

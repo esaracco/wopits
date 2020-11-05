@@ -27,10 +27,10 @@ $(function()
           if ($modal.length)
             H.resizeModal ($modal);
    
-          // Reposition chatroom popup if it is out of bounds
-          const $cr = S.getCurrent ("chatroom");
-          if ($cr.is (":visible"))
-            $cr.chatroom ("fixPosition");
+          // Reposition chat popup if it is out of bounds
+          const $c = S.getCurrent ("chat");
+          if ($c.is (":visible"))
+            $c.chat ("fixPosition");
    
           // Reposition filters popup if it is out of bounds
           const $f = S.getCurrent ("filters");
@@ -61,7 +61,7 @@ $(function()
                 document.body.getBoundingClientRect().bottom - 2)+"px");
 
           // Reposition wall menu if it is out of bounds
-          S.getCurrent("wallMenu").wallMenu ("fixPosition");
+          S.getCurrent("wmenu").wmenu ("fixPosition");
         }
       });
   }
@@ -136,9 +136,9 @@ $(function()
       $(this).parent().find("[data-toggle='tooltip']").tooltip ("hide");
 
       if (share)
-        return H.loadPopup ("shareWall", {
+        return H.loadPopup ("swall", {
                  open: false,
-                 cb: ($p)=> $p.shareWall ("open")
+                 cb: ($p)=> $p.swall ("open")
                });
 
       if (rename)
@@ -147,10 +147,9 @@ $(function()
 
       if (!close)
       {
-        const $chatroom = S.getCurrent ("chatroom");
-
-        if ($chatroom)
-          $chatroom.chatroom ("closeUsersTooltip");
+        const $c = S.getCurrent ("chat");
+        if ($c.is(":visible"))
+          $c.chat ("closeUsersTooltip");
 
         $("#settingsPopup").settings (
           "saveOpenedWalls", $(this).attr("href").split("-")[1]);
@@ -208,20 +207,20 @@ $(function()
           .scrollTop (0);
 
       const $menu = $("#main-menu"),
-            $chatroom = S.getCurrent ("chatroom"),
-            chatRoomVisible = $chatroom.is (":visible"),
+            $chat = S.getCurrent ("chat"),
+            chatVisible = $chat.is (":visible"),
             $arrows = S.getCurrent ("arrows");
 
       // Show/hide super menu actions menu depending on user wall access rights
       S.getCurrent("smenu").smenu ("checkAllowedActions");
 
-      // Manage chatroom checkbox menu
+      // Manage chat checkbox menu
       $menu
-        .find("li[data-action='chatroom'] input")[0].checked = chatRoomVisible;
-      if (chatRoomVisible)
+        .find("li[data-action='chat'] input")[0].checked = chatVisible;
+      if (chatVisible)
       {
-        $chatroom.chatroom ("removeAlert");
-        $chatroom.chatroom ("setCursorToEnd");
+        $chat.chat ("removeAlert");
+        $chat.chat ("setCursorToEnd");
       }
 
       // Manage filters checkbox menu
@@ -346,7 +345,7 @@ $(function()
             from.cancelCallback ();
           break;
 
-        case "wallPropertiesPopup":
+        case "wpropPopup":
 
           if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
               !$popup[0].dataset.uneditdone)
@@ -359,7 +358,7 @@ $(function()
           break;
 
         case "postitAttachmentsPopup":
-        case "datePickerPopup":
+        case "dpickPopup":
 
           $postit.postit ("unedit");
           break;
@@ -369,7 +368,7 @@ $(function()
           S.get("confirmPopup").cb_close ();
           break;
 
-        case "usersSearchPopup":
+        case "usearchPopup":
         case "groupAccessPopup":
         case "groupPopup":
 
@@ -395,9 +394,9 @@ $(function()
       {
         switch ($popup.attr ("id"))
         {
-          case "datePickerPopup":
+          case "dpickPopup":
 
-            $popup.datePicker ("save");
+            $popup.dpick ("save");
             break;
 
           case "plugPopup":
@@ -424,7 +423,7 @@ $(function()
 
           case "groupAccessPopup":
 
-            $("#shareWallPopup").shareWall ("linkGroup");
+            $("#swallPopup").swall ("linkGroup");
             break;
 
           case "groupPopup":
@@ -471,7 +470,7 @@ $(function()
 
           // UPDATE wall name and description
           //TODO Should be a wall() method
-          case "wallPropertiesPopup":
+          case "wpropPopup":
 
             var Form = new Wpt_accountForms (),
                 $inputs = $popup.find("input:visible"),

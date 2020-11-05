@@ -2,12 +2,12 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('colorPicker');
+  $Plugin = new Wopits\jQueryPlugin ('cpick');
   echo $Plugin->getHeader ();
 
 ?>
 
-  const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['colorPicker']['items'])).'"'?>];
+  const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['cpick']['items'])).'"'?>];
   let _width = 0,
       _height = 0,
       _cb_close;
@@ -108,8 +108,8 @@
   {
     setTimeout (()=>
     {
-      $("body").prepend (`<div id="color-picker"></div>`);
-      $("#color-picker").colorPicker ();
+      $("body").prepend (`<div id="cpick"></div>`);
+      $("#cpick").cpick ();
     }, 0);
   });
 

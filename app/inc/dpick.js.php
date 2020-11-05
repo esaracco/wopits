@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('datePicker');
+  $Plugin = new Wopits\jQueryPlugin ('dpick');
   echo $Plugin->getHeader ();
 
 ?>
@@ -15,8 +15,8 @@
     init ()
     {
       const $popup = this.element,
-            $picker = $popup.find (".date-picker"),
-            $alert = $popup.find (".date-picker-notify");
+            $picker = $popup.find (".dpick"),
+            $alert = $popup.find (".dpick-notify");
 
       this.settings.$picker = $picker;
       this.settings.$alert = $alert;

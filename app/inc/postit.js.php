@@ -10,7 +10,7 @@
 ?>
 
   const _defaultClassColor =
-          "color-<?=array_keys(WPT_MODULES['colorPicker']['items'])[0]?>";
+          "color-<?=array_keys(WPT_MODULES['cpick']['items'])[0]?>";
   let $_attachmentsPopup,
       $_attachmentEditPopup,
       _originalObject,
@@ -260,7 +260,7 @@
             // OPEN post-it edit popup
             case "edit": return postitPlugin.openPostit ();
             // OPEN deadline date picker popup
-            case "date-picker": return postitPlugin.openDatePicker ();
+            case "dpick": return postitPlugin.openDatePicker ();
             // OPEN deadline date picker popup
             case "attachments": return postitPlugin.openAttachments ();
           }
@@ -280,12 +280,12 @@
                   });
 
                 // OPEN tags picker
-                case "tag-picker":
-                  return S.getCurrent("tag-picker").tagPicker ("open", e);
+                case "tpick":
+                  return S.getCurrent("tpick").tpick ("open", e);
 
                 // OPEN color picker
-                case "color-picker":
-                  var cp = $("#color-picker").colorPicker ("getClass");
+                case "cpick":
+                  var cp = $("#cpick").cpick ("getClass");
 
                   return cp.open ({
                     event: e,
@@ -510,7 +510,7 @@
             }
           })
         // Append header, dates, attachment count and tags
-        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tag-picker").tagPicker("getHTMLFromString", settings.tags):""}</div>`)
+        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`)
         .find(".attachmentscount")
         // EVENT click on attachment count
         .on("click", function ()
@@ -727,7 +727,7 @@
             e.stopImmediatePropagation ();
 
             plugin.edit (null, () =>
-              S.getCurrent("tag-picker").tagPicker ("open", e));
+              S.getCurrent("tpick").tpick ("open", e));
           });
 
         $postit.find(".dates .end")
@@ -794,9 +794,9 @@
     // METHOD openDatePicker ()
     openDatePicker ()
     {
-      this.edit (null, () => H.loadPopup ("datePicker", {
+      this.edit (null, () => H.loadPopup ("dpick", {
                                open: false,
-                               cb: ($p)=> $p.datePicker ("open")
+                               cb: ($p)=> $p.dpick ("open")
                              }));
     },
 
@@ -1815,7 +1815,7 @@
     {
       const $postit = this.element,
             postit0 = $postit[0],
-            $tagPicker = S.getCurrent ("tag-picker"),
+            $tpick = S.getCurrent ("tpick"),
             tz = wpt_userData.settings.timezone;
 
       // Change postit cell
@@ -1861,9 +1861,9 @@
       postit0.dataset.tags = d.tags;
 
       postit0.querySelector(".postit-tags").innerHTML =
-        $tagPicker.tagPicker ("getHTMLFromString", d.tags);
+        $tpick.tpick ("getHTMLFromString", d.tags);
 
-      $tagPicker.tagPicker ("refreshPostitDataTag", $postit);
+      $tpick.tpick ("refreshPostitDataTag", $postit);
 
       this.repositionPlugs ();
     },
@@ -2037,9 +2037,9 @@
 
             $postit.remove ();
 
-            const search = document.getElementById ("postitsSearchPopup");
+            const search = document.getElementById ("psearchPopup");
             if (search)
-              $(search).postitsSearch ("replay");
+              $(search).psearch ("replay");
           }
           else if (data && data.updatetz)
             $postit[0].removeAttribute ("data-updatetz");

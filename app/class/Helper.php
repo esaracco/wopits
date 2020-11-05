@@ -268,9 +268,9 @@ class Helper
     $items = [
       ['delete', _('Remove'), 'trash'],
       ['edit', _('Edit'), 'edit'],
-      ['tag-picker', _('Tags'), 'tags'],
-      ['color-picker', _('Background color'), 'palette'],
-      ['date-picker', _('Deadline'), 'hourglass-end'],
+      ['tpick', _('Tags'), 'tags'],
+      ['cpick', _('Background color'), 'palette'],
+      ['dpick', _('Deadline'), 'hourglass-end'],
       ['attachments', _('Attachments'), 'paperclip'],
       ['submenu' => ['plug', _('Relationships'), 'bezier-curve'],
        'items' => [

@@ -282,9 +282,9 @@ class WSharer
   _fullReset ()
   {
     this.wall = [];
-    this.chatroom = [];
+    this.chat = [];
     this.filters = [];
-    this.wallMenu = [];
+    this.wmenu = [];
     this.arrows = [];
     this.postit = [];
     this.header = [];
@@ -340,12 +340,12 @@ class WSharer
 
         return this.header;
 
-      case "tag-picker":
+      case "tpick":
 
-        if (!this.tagPicker)
-          this.tagPicker = $("#tag-picker");
+        if (!this.tpick)
+          this.tpick = $("#tpick");
 
-        return this.tagPicker;
+        return this.tpick;
 
       case "walls":
 
@@ -358,12 +358,12 @@ class WSharer
 
         return this.sandbox;
 
-      case "chatroom":
+      case "chat":
 
-        if (!this.chatroom.length)
-         this.chatroom = this.walls.find (".tab-pane.active .chatroom");
+        if (!this.chat.length)
+         this.chat = this.walls.find (".tab-pane.active .chat");
 
-        return this.chatroom;
+        return this.chat;
 
       case "filters":
 
@@ -372,12 +372,12 @@ class WSharer
 
         return this.filters;
 
-      case "wallMenu":
+      case "wmenu":
 
-        if (!this.wallMenu.length)
-         this.wallMenu = this.walls.find (".tab-pane.active .wall-menu");
+        if (!this.wmenu.length)
+         this.wmenu = this.walls.find (".tab-pane.active .wall-menu");
 
-        return this.wallMenu;
+        return this.wmenu;
 
       case "arrows":
 
@@ -492,14 +492,14 @@ class WSocket
             // chat
             case "chat":
               if ($wall.length)
-                $("#wall-"+data.wall.id+" .chatroom").chatroom ("addMsg", data);
+                $("#wall-"+data.wall.id+" .chat").chat ("addMsg", data);
               break;
 
             // chatcount
             case "chatcount":
               if ($wall.length)
-                $("#wall-"+data.wall.id+" .chatroom")
-                  .chatroom ("refreshUserscount", data.count);
+                $("#wall-"+data.wall.id+" .chat")
+                  .chat ("refreshUserscount", data.count);
               break;
 
             // unlinked

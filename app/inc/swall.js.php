@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('shareWall');
+  $Plugin = new Wopits\jQueryPlugin ('swall');
   echo $Plugin->getHeader ();
 
 ?>
@@ -62,8 +62,8 @@
         });
 
       $(document)
-        .on("click", "#shareWallPopup .list-group-item button,"+
-                     "#shareWallPopup .list-group-item div.userscount",
+        .on("click", "#swallPopup .list-group-item button,"+
+                     "#swallPopup .list-group-item div.userscount",
         function (e)
         {
           const $btn = $(this),
@@ -82,14 +82,14 @@
           {
             case "users-search":
 
-              H.loadPopup ("usersSearch", {
+              H.loadPopup ("usearch", {
                 open: false,
                 cb: ($p)=>
                 {
                   const groupId = $row[0].dataset.id,
                         delegateAdminId = $row[0].dataset.delegateadminid||0;
 
-                  $p.usersSearch ("reset", {full: true});
+                  $p.usearch ("reset", {full: true});
 
                   if ($row[0].parentNode.classList.contains("noattr"))
                     $p[0].dataset.noattr = 1;
@@ -100,7 +100,7 @@
                   $p
                     .find(".desc").html ("<?=_("Add or remove users in the group « %s ».")?>".replace("%s", "<b>"+$row[0].dataset.name+"</b>"));
 
-                  $p.usersSearch (
+                  $p.usearch (
                     "displayUsers",
                     {
                       wallId: S.getCurrent("wall").wall ("getId"),
@@ -173,7 +173,7 @@
         });
 
       $(document)
-        .on("click", "#shareWallPopup .list-group-item",
+        .on("click", "#swallPopup .list-group-item",
         function (e)
         {
           if ($(this).hasClass ("is-wall-creator"))

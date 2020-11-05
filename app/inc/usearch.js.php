@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('usersSearch');
+  $Plugin = new Wopits\jQueryPlugin ('usearch');
   echo $Plugin->getHeader ();
 
 ?>
@@ -42,7 +42,7 @@
         });
    
       $(document)
-        .on("click", "#usersSearchPopup .list-group-item", function (e)
+        .on("click", "#usearchPopup .list-group-item", function (e)
         {
           const $el = $(this),
                 isDed = ($ac[0].dataset.grouptype == <?=WPT_GTYPES_DED?>),
@@ -137,7 +137,7 @@
 
           this.search (args);
 
-          $("#shareWallPopup").shareWall ("displayGroups");
+          $("#swallPopup").swall ("displayGroups");
         });
     },
 
@@ -168,7 +168,7 @@
 
           this.search (args);
 
-          $("#shareWallPopup").shareWall ("displayGroups");
+          $("#swallPopup").swall ("displayGroups");
         });
     },
 

@@ -1,5 +1,5 @@
 <?php require (__DIR__.'/../../app/prepend.php')?>
-<div class="modal m-fullscreen" id="wallPropertiesPopup" role="dialog" tabindex="-1">
+<div class="modal m-fullscreen" id="wpropPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

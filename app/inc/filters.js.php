@@ -20,8 +20,8 @@
     {
       const plugin = this,
             $filters = plugin.element,
-            tList = S.getCurrent("tag-picker").tagPicker ("getTagsList"),
-            cList = $("#color-picker").colorPicker ("getColorsList");
+            tList = S.getCurrent("tpick").tpick ("getTagsList"),
+            cList = $("#cpick").cpick ("getColorsList");
 
       let tags = '';
       for (const t of tList)

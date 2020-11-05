@@ -57,7 +57,7 @@
           switch (_data.action)
           {
             case "delete":
-            case "color-picker":
+            case "cpick":
               return plugin.apply ({event: e});
 
             case "copy":
@@ -124,7 +124,7 @@
           cbClose = ()=> _data.action = null;
           break;
 
-        case "color-picker":
+        case "cpick":
           return this.send (args);
 
         default:
@@ -165,8 +165,8 @@
       // Color picker
       switch (_data.action)
       {
-        case "color-picker":
-          $("#color-picker").colorPicker ("open", {
+        case "cpick":
+          $("#cpick").cpick ("open", {
             event: args.event,
             cb_close: ()=>
             {
@@ -360,13 +360,13 @@
     // METHOD close ()
     close ()
     {
-      const $ps = $("#postitsSearchPopup");
+      const $ps = $("#psearchPopup");
 
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
 
       if ($ps.is (":hidden"))
-        $ps.postitsSearch ("reset", true);
+        $ps.psearch ("reset", true);
 
       this.reset ();
       this.element.hide ();
@@ -379,7 +379,7 @@
     {
       if (!H.isLoginPage ())
       {
-        $("body").prepend (`<ul class="toolbox" id="smenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li data-toggle="tooltip" title="<?=_("Copy selected notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Move selected notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li data-toggle="tooltip" title="<?=_("Change selected notes color")?>" data-action="color-picker"><i class="fas fa-palette fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Delete selected notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
+        $("body").prepend (`<ul class="toolbox" id="smenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li data-toggle="tooltip" title="<?=_("Copy selected notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Move selected notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li data-toggle="tooltip" title="<?=_("Change selected notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Delete selected notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
 
         S.getCurrent("smenu").smenu ();
       }

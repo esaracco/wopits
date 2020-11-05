@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('chatroom');
+  $Plugin = new Wopits\jQueryPlugin ('chat');
   echo $Plugin->getHeader ();
 
 ?>
@@ -17,9 +17,9 @@
     init ()
     {
       const plugin = this,
-            $chatroom = plugin.element;
+            $chat = plugin.element;
 
-      $chatroom
+      $chat
         //FIXME "distance" is deprecated -> is there any alternative?
         .draggable({
           distance: 10,
@@ -39,7 +39,7 @@
             },
           resize: function (e, ui)
             {
-              $chatroom.find(".textarea").css("height", ui.size.height - 100);
+              $chat.find(".textarea").css ("height", ui.size.height - 100);
             }
         })
         .append (`<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
@@ -58,46 +58,46 @@
         });
 
       // Needed for touch devices
-      $chatroom.find("input").on("click",
+      $chat.find("input").on("click",
         function ()
         {
           $(this).focus ();
         });
 
-      $chatroom.find(".close").on("click",
+      $chat.find(".close").on("click",
         function ()
         {
           plugin.hide ();
         });
 
-      $chatroom.find(".btn-clear").on("click",
+      $chat.find(".btn-clear").on("click",
         function ()
         {
           if (!S.get ("still-dragging"))
             $(this).parent().find("li").remove ();
         });
 
-      $chatroom.find("button.btn-primary").on("click",
+      $chat.find("button.btn-primary").on("click",
         function ()
         {
-          const msg = H.noHTML ($chatroom.find("input").val());
+          const msg = H.noHTML ($chat.find("input").val());
 
           if (!msg)
             return;
 
-          plugin.sendMsg (H.noHTML ($chatroom.find("input").val()));
-          $chatroom.find("input").val("");
-          $chatroom.chatroom ("setFocus");
+          plugin.sendMsg (H.noHTML($chat.find("input").val()));
+          plugin.setFocus ();
+          $chat.find("input").val ("");
         });
 
-      H.enableTooltips ($chatroom);
+      H.enableTooltips ($chat);
     },
 
     // METHOD hide ()
     hide ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='chatroom'] a").click ();
+        $("#main-menu").find("li[data-action='chat'] a").click ();
     },
 
     // METHOD join ()
@@ -126,10 +126,10 @@
     // METHOD toggle ()
     toggle ()
     {
-      const $chatroom = this.element,
+      const $chat = this.element,
             wallId = this.settings.wallId;
 
-      if ($chatroom.is (":visible"))
+      if ($chat.is (":visible"))
       {
         this.closeUsersTooltip (true);
 
@@ -137,17 +137,17 @@
           "DELETE",
           "wall/"+wallId+"/chat");
 
-        $chatroom.hide ();
+        $chat.hide ();
       }
       else
       {
         const el = document.querySelector (
-                     "#wall-"+wallId+" .wall-menu .chatroom-alert");
+                     "#wall-"+wallId+" .wall-menu .chat-alert");
 
         if (el)
           el.remove ();
 
-        $chatroom.css ({bottom: "15px", left: "5px", display: "table"});
+        $chat.css ({bottom: "15px", left: "5px", display: "table"});
 
         this.setFocus (150);
 
@@ -161,7 +161,7 @@
     removeAlert ()
     {
       const el = document.querySelector (
-                   "#wall-"+this.settings.wallId+" .wall-menu .chatroom-alert");
+                   "#wall-"+this.settings.wallId+" .wall-menu .chat-alert");
 
       if (el)
         el.remove ();
@@ -185,8 +185,8 @@
     // METHOD refreshUserscount ()
     refreshUserscount (args)
     {
-      const $chatroom = this.element,
-            $tooltip = $chatroom.find (".usersviewcounts"),
+      const $chat = this.element,
+            $tooltip = $chat.find (".usersviewcounts"),
             userId = wpt_userData.id;
 
       if (!args)
@@ -194,7 +194,7 @@
 
       this.closeUsersTooltip (true);
 
-      $chatroom.find("h2 .wpt-badge").html (args.userscount);
+      $chat.find("h2 .wpt-badge").html (args.userscount);
   
        let title = "";
        args.userslist.forEach (
@@ -210,9 +210,9 @@
     addMsg (args)
     {
       const plugin = this,
-            $chatroom = plugin.element,
-            $area = $chatroom.find (".textarea"),
-            isHidden = $chatroom.is (":hidden");
+            $chat = plugin.element,
+            $area = $chat.find (".textarea"),
+            isHidden = $chat.is (":hidden");
       let html;
 
       if (args.internal !== undefined)
@@ -238,15 +238,15 @@
       if (isHidden && args.method != "DELETE")
       {
         let el = $("#wall-"+this.settings.wallId+
-                   " .wall-menu .chatroom-alert .wpt-badge")[0];
+                   " .wall-menu .chat-alert .wpt-badge")[0];
 
         if (el)
           el.textContent = Number (el.textContent) + 1;
         else
-        $(`<li class="chatroom-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)
+        $(`<li class="chat-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)
           .on("click", function ()
           {
-            $("#main-menu").find("li[data-action='chatroom'] input").click ();
+            $("#main-menu").find("li[data-action='chat'] input").click ();
           })
           .appendTo ($("#wall-"+this.settings.wallId+" .wall-menu"));
       }
@@ -274,10 +274,10 @@
     // METHOD reset ()
     reset ()
     {
-      const $chatroom = this.element;
+      const $chat = this.element;
 
-      $chatroom.find(".textarea").html ("");
-      $chatroom.find("input").val ("");
+      $chat.find(".textarea").html ("");
+      $chat.find("input").val ("");
     }
 
   });

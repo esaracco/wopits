@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('tagPicker');
+  $Plugin = new Wopits\jQueryPlugin ('tpick');
   echo $Plugin->getHeader ();
 
 ?>
@@ -69,7 +69,7 @@
     // METHOD getTagsList ()
     getTagsList ()
     {
-      return [<?='"'.join ('","', array_keys (WPT_MODULES['tagPicker']['items'])).'"'?>];
+      return [<?='"'.join ('","', array_keys (WPT_MODULES['tpick']['items'])).'"'?>];
     },
 
     // METHOD open ()
@@ -158,8 +158,8 @@
     {
       setTimeout (()=>
       {
-        $("body").prepend (`<div id="tag-picker"></div>`);
-        $("#tag-picker").tagPicker ();
+        $("body").prepend (`<div id="tpick"></div>`);
+        $("#tpick").tpick ();
       }, 0);
     });
 

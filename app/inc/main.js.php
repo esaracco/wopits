@@ -48,7 +48,7 @@
         $(".nav-tabs.walls").find ('a[href="#wall-'+settings.id+'"]');
 
       // Add wall menu
-      $("#wall-"+settings.id).find(".wall-menu").wallMenu ({
+      $("#wall-"+settings.id).find(".wall-menu").wmenu ({
         wallPlugin:plugin,
         access: access
       });
@@ -297,7 +297,7 @@
     menu (args)
     {
       const $wall = S.getCurrent ("wall"),
-            $wallMenu = $wall.parent().find (".wall-menu"),
+            $wmenu = $wall.parent().find (".wall-menu"),
             $menu = $("#main-menu"),
             $menuNormal =
               $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
@@ -311,7 +311,7 @@
             if (!adminAccess)
             {
               $menu.find('[data-action="delete"] a').addClass ("disabled");
-              $wallMenu.find('[data-action="share"]').hide ();
+              $wmenu.find('[data-action="share"]').hide ();
             }
     
             switch (args.type)
@@ -324,7 +324,7 @@
                   '[data-action="clone"] a,'+
                   '[data-action="export"] a').addClass ("disabled");
 
-                  $wallMenu.find('[data-action="share"]').hide ();
+                  $wmenu.find('[data-action="share"]').hide ();
     
                 break;
     
@@ -337,16 +337,16 @@
                   });
 
                 if ($wall.length && $wall[0].dataset.shared)
-                  $menu.find('[data-action="chatroom"] a')
+                  $menu.find('[data-action="chat"] a')
                     .removeClass ("disabled");
                 else
                 {
-                  const $chatroom = S.getCurrent ("chatroom");
+                  const $chat = S.getCurrent ("chat");
 
-                  if ($chatroom.length)
-                    $chatroom.chatroom ("hide");
+                  if ($chat.length)
+                    $chat.chat ("hide");
 
-                  $menu.find('[data-action="chatroom"] a')
+                  $menu.find('[data-action="chat"] a')
                     .addClass ("disabled");
                 }
 
@@ -360,7 +360,7 @@
                   $menu.find(
                     '[data-action="delete"] a').removeClass ("disabled");
 
-                  $wallMenu.find('[data-action="share"]').show ();
+                  $wmenu.find('[data-action="share"]').show ();
                 }
                 
                 break;
@@ -375,43 +375,43 @@
             {
               case "unblock-externalref":
 
-                $wallMenu.find("[data-action='block-externalref']").show ();
-                $wallMenu.find("[data-action='unblock-externalref']").hide ();
+                $wmenu.find("[data-action='block-externalref']").show ();
+                $wmenu.find("[data-action='unblock-externalref']").hide ();
 
                 break;
 
               case "block-externalref":
 
-                $wallMenu.find("[data-action='block-externalref']").hide ();
-                $wallMenu.find("[data-action='unblock-externalref']").show ();
+                $wmenu.find("[data-action='block-externalref']").hide ();
+                $wmenu.find("[data-action='unblock-externalref']").show ();
 
                 break;
 
               case "show-headers":
 
-                $wallMenu.find("[data-action='show-headers']").hide ();
-                $wallMenu.find("[data-action='hide-headers']").show ();
+                $wmenu.find("[data-action='show-headers']").hide ();
+                $wmenu.find("[data-action='hide-headers']").show ();
 
                 break;
 
               case "hide-headers":
 
-                $wallMenu.find("[data-action='hide-headers']").hide ();
-                $wallMenu.find("[data-action='show-headers']").show ();
+                $wmenu.find("[data-action='hide-headers']").hide ();
+                $wmenu.find("[data-action='show-headers']").show ();
 
                 break;
 
               case "list-mode":
 
-                $wallMenu.find("li[data-action='list-mode']").hide ();
-                $wallMenu.find("li[data-action='postit-mode']").show ();
+                $wmenu.find("li[data-action='list-mode']").hide ();
+                $wmenu.find("li[data-action='postit-mode']").show ();
 
                 break;
 
               case "postit-mode":
 
-                $wallMenu.find("li[data-action='postit-mode']").hide ();
-                $wallMenu.find("li[data-action='list-mode']").show ();
+                $wmenu.find("li[data-action='postit-mode']").hide ();
+                $wmenu.find("li[data-action='list-mode']").show ();
 
                 break;
 
@@ -421,7 +421,7 @@
                 $menuNormal.removeClass ("disabled");
 
                 if (adminAccess)
-                  $menu.find('[data-action="chatroom"] a,'+
+                  $menu.find('[data-action="chat"] a,'+
                              '[data-action="filters"] a,'+
                              '[data-action="arrows"] a')
                     .addClass("disabled");
@@ -436,7 +436,7 @@
                   .removeClass ("disabled");
     
                 if (adminAccess)
-                  $menu.find('[data-action="chatroom"] a,'+
+                  $menu.find('[data-action="chat"] a,'+
                              '[data-action="filters"] a,'+
                              '[data-action="arrows"] a')
                     .removeClass("disabled");
@@ -447,9 +447,8 @@
 
         if (!H.checkUserVisible ())
         {
-          $menu.find('[data-action="chatroom"] a').addClass ("disabled");
-
-          $wallMenu.find('[data-action="share"]').hide ();
+          $menu.find('[data-action="chat"] a').addClass ("disabled");
+          $wmenu.find('[data-action="share"]').hide ();
         }
     },
 
@@ -940,10 +939,10 @@
                 activeTab.previousElementSibling.getAttribute ("href") :
                   (activeTab.nextElementSibling) ?
                     activeTab.nextElementSibling.getAttribute ("href") : null,
-            $chatroom = S.getCurrent ("chatroom");
+            $chat = S.getCurrent ("chat");
 
-      if ($chatroom.is (":visible"))
-        $chatroom.chatroom ("leave");
+      if ($chat.is (":visible"))
+        $chat.chat ("leave");
 
       // If account popup is opened, do not close it: we are dealing with the
       // "invisible mode" option.
@@ -1222,7 +1221,7 @@
           if ($popup)
             $popup.modal ("hide");
 
-          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chatroom"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
+          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
 
           if (!args.restoring)
             $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
@@ -1248,7 +1247,7 @@
           const $wallDiv = $("#wall-"+d.id);
 
           $wallDiv.find(".wall").wall (d);
-          $wallDiv.find(".chatroom").chatroom ({wallId: d.id});
+          $wallDiv.find(".chat").chat ({wallId: d.id});
           $wallDiv.find(".filters").filters ();
           $wallDiv.find(".arrows").arrows ();
 
@@ -1396,12 +1395,12 @@
     {
       this.refreshUserWallsData (() =>
         {
-          H.loadPopup ("openWall", {
+          H.loadPopup ("owall", {
             cb: ($p)=>
             {
-              $p.openWall ("reset");
-              $p.openWall ("displayWalls");
-              $p.openWall ("controlFiltersButtons");
+              $p.owall ("reset");
+              $p.owall ("displayWalls");
+              $p.owall ("controlFiltersButtons");
             }
           });
         });
@@ -1517,17 +1516,17 @@
       if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
         this.edit (() =>
           {
-            H.loadPopup ("wallProperties",
+            H.loadPopup ("wprop",
               {
                 open: false,
-                cb: ($p)=> $p.wallProperties ("open", args)
+                cb: ($p)=> $p.wprop ("open", args)
               });
           });
       else
-        H.loadPopup ("wallProperties",
+        H.loadPopup ("wprop",
           {
             open: false,
-            cb: ($p)=> $p.wallProperties ("open", args)
+            cb: ($p)=> $p.wprop ("open", args)
           });
     },
 
@@ -2132,7 +2131,7 @@
 
                 break;
 
-              case "chatroom":
+              case "chat":
 
                 var input = $(this).find("input")[0];
 
@@ -2140,7 +2139,7 @@
                 if (e.target.tagName != "INPUT")
                   input.checked = !input.checked;
 
-                S.getCurrent("chatroom").chatroom ("toggle");
+                S.getCurrent("chat").chat ("toggle");
 
                 break;
 

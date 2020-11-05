@@ -386,7 +386,7 @@ form span.required {
 }
 
 #accountPopup textarea,
-#wallPropertiesPopup textarea {
+#wpropPopup textarea {
   height:100px;
 }
 
@@ -399,7 +399,7 @@ form span.required {
   text-align:center;
 }
 
-#wallPropertiesPopup .reject-sharing {
+#wpropPopup .reject-sharing {
   text-align: center;
 }
 
@@ -493,7 +493,7 @@ select.timezone {
 
 /*FIXME*/
 #postitAttachmentsPopup,
-#shareWallPopup {
+#swallPopup {
   z-index:5015;
 }
 
@@ -583,20 +583,20 @@ select.timezone {
   border-bottom-right-radius: .25rem;
 }
 
-#openWallPopup .list-group-item .item-infos {
+#owallPopup .list-group-item .item-infos {
   left:50px;
 }
 
-#openWallPopup .list-group-item {
+#owallPopup .list-group-item {
   height:55px;
 }
 
-#openWallPopup .list-group-item .custom-checkbox {
+#owallPopup .list-group-item .custom-checkbox {
   display:inline-block;
   top:-1px;
 }
 
-#openWallPopup .btn-clear {
+#owallPopup .btn-clear {
   position:absolute;
   left:50%;
   right:50%;
@@ -1113,11 +1113,11 @@ th .submenu .dropdown-menu {
 }
 
 <?php
-  foreach (WPT_MODULES['tagPicker']['items'] as $item => $color)
+  foreach (WPT_MODULES['tpick']['items'] as $item => $color)
   {
 echo <<<EOC
 .postit .postit-tags i.fa-$item,
-#tag-picker i.fa-$item {
+#tpick i.fa-$item {
   color:$color !important;
 }
 EOC;
@@ -1136,18 +1136,18 @@ EOC;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.chatroom {
+.chat {
   width:250px;
   bottom:15px;
   min-width:200px;
 }
 
-.chatroom .textarea,
-.chatroom input {
+.chat .textarea,
+.chat input {
   width:100%;
 }
 
-.chatroom .textarea {
+.chat .textarea {
   height:100px;
   margin-bottom:5px;
   font-size:0.8rem;
@@ -1155,42 +1155,42 @@ EOC;
   overflow-y:auto;
 }
 
-.chatroom ul {
+.chat ul {
   list-style-type:none;
   margin:5px 0 5px 0;
   padding:0;
 }
 
-.chatroom .textarea ul li span {
+.chat .textarea ul li span {
   font-weight:bold;
   opacity:0.5;
 }
 
-.chatroom .textarea .internal {
+.chat .textarea .internal {
   font-size:0.7rem;
   font-weight:bold;
   font-style:italic;
   color:#000;
 }
 
-.chatroom li i.fas {
+.chat li i.fas {
   color:#555;
 }
 
-.chatroom .textarea .internal.join i {
+.chat .textarea .internal.join i {
   color:green !important;
 }
 
-.chatroom .textarea ul li.internal.leave i {
+.chat .textarea ul li.internal.leave i {
   color:red !important;
 }
 
-.chatroom .btn-primary {
+.chat .btn-primary {
   margin-top:5px;
   float:right;
 }
 
-.chatroom h2 {
+.chat h2 {
   font-size:15px;
   font-weight:bold;
   text-align:center;
@@ -1199,7 +1199,7 @@ EOC;
   margin: 0 20px 0 10px;
 }
 
-.chatroom .btn-clear {
+.chat .btn-clear {
   position:absolute;
   z-index:2;
   width:30px;
@@ -1455,33 +1455,33 @@ ul#smenu {
   cursor:pointer;
 }
 
-#shareWallPopup .scroll {
+#swallPopup .scroll {
   max-height:300px;
   overflow-y:auto;
   border-radius:5px;
 }
 
-#shareWallPopup .scroll.one {
+#swallPopup .scroll.one {
   overflow-y:unset;
 }
 
-#shareWallPopup .creator-only {
+#swallPopup .creator-only {
   border:1px solid #eceaea;
   border-radius: 5px;
   padding:5px;
 }
 
-#shareWallPopup .list-group .btn-xs i {
+#swallPopup .list-group .btn-xs i {
   color:#fff;
 }
 
-#shareWallPopup li .btn-share {
+#swallPopup li .btn-share {
   float:right;
   margin-right:10px;
 }
 
-#shareWallPopup .nogroup,
-#usersSearchPopup .nousers-title {
+#swallPopup .nogroup,
+#usearchPopup .nousers-title {
   font-style:italic;
   opacity:0.6;
   text-align:center;
@@ -1521,7 +1521,7 @@ ul#smenu {
   top:5px;
 }
 
-.chatroom .usersviewcounts .wpt-badge {
+.chat .usersviewcounts .wpt-badge {
   font-size:0.5rem;
   margin-left:0;
 }
@@ -1574,7 +1574,7 @@ i.set {
   margin-bottom:10px;
 }
 
-.chatroom .usersviewcounts {
+.chat .usersviewcounts {
   position:relative;
   display:inline-block;
 }
@@ -1713,16 +1713,16 @@ i.set {
 }
 
 #groupAccessPopup .custom-switch .custom-control-label::before,
-#datePickerPopup .custom-switch .custom-control-label::before {
+#dpickPopup .custom-switch .custom-control-label::before {
   top:.15rem;
 }
 
 #groupAccessPopup .custom-switch .custom-control-label::after,
-#datePickerPopup .custom-switch .custom-control-label::after {
+#dpickPopup .custom-switch .custom-control-label::after {
   top:.25rem;
 }
 
-#shareWallPopup .delegate-admin-only {
+#swallPopup .delegate-admin-only {
   font-size:0.9rem;
   opacity:0.6;
   margin-top:-10px;
@@ -1742,7 +1742,7 @@ input {
 }
 
 <?php
-  foreach (WPT_MODULES['colorPicker']['items'] as $name => $color)
+  foreach (WPT_MODULES['cpick']['items'] as $name => $color)
   {
 echo <<<EOC
 .color-$name,
@@ -1911,21 +1911,21 @@ i.fa-xs {
   text-shadow: 1px 2px 3px rgba(0,0,0, 0.5);
 }
 
-#datePickerPopup .date-picker a {
+#dpickPopup .dpick a {
   color:#555!important;
 }
 
-#datePickerPopup .date-picker a.ui-state-active {
+#dpickPopup .dpick a.ui-state-active {
   color:#fff!important;
   font-weight:bold;
 }
 
-#datePickerPopup .date-picker-notify {
+#dpickPopup .dpick-notify {
   font-size:0.9rem;
   text-align:left;
 }
 
-#datePickerPopup .date-picker-notify input[type="number"] {
+#dpickPopup .dpick-notify input[type="number"] {
   width:3rem;
 }
 
@@ -1937,26 +1937,26 @@ button.ui-datepicker-close {
   font-size:0.8rem;
 }
 
-#tag-picker {
+#tpick {
   width:100px;
   text-align:center;
 }
 
-#tag-picker > .selected,
+#tpick > .selected,
 .filters-items .tags > .selected {
   background-color:#dadada;
   border: 1px solid silver;
   border-radius: 5px;
 }
 
-#tag-picker > div,
+#tpick > div,
 .filters-items .tags > div {
   float:left;
   border: 1px solid transparent;
   margin:2px;
 }
 
-#tag-picker > div i,
+#tpick > div i,
 .filters-items .tags > div i {
   margin:2px;
   color:#555;
@@ -1971,8 +1971,8 @@ button.ui-datepicker-close {
   width:20px;
 }
 
-#tag-picker,
-#color-picker {
+#tpick,
+#cpick {
   z-index:5020;
   display:none;
   position:absolute;
@@ -1983,11 +1983,11 @@ button.ui-datepicker-close {
   border-radius:5px;
 }
 
-#color-picker {
+#cpick {
   width:87px;
 }
 
-#color-picker > div {
+#cpick > div {
   float:left;
   width:20px;
   height:20px;
