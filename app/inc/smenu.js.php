@@ -64,7 +64,7 @@
               if (!ST.noDisplay ("smenu-copy-help"))
               {
                 title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-                content = "<?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?>"+_noDisplayBtn;
+                content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?>"+_noDisplayBtn;
                 cbOK = ()=> ST.noDisplay ("smenu-copy-help", true);
               }
               break;
@@ -73,7 +73,7 @@
               if (!ST.noDisplay ("smenu-move-help"))
               {
                 title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-                content = "<?=_("<kbd>ctrl</kbd>+click on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
+                content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
                 cbOK = ()=> ST.noDisplay ("smenu-move-help", true);
               }
               break
@@ -357,9 +357,9 @@
       let content;
 
       if (writeAccess)
-        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl</kbd>+click on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
+        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl+click</kbd> on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
       else
-        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl</kbd>+click on the note.")?></li><li><?=_("<kbd>ctrl</kbd>+click on the destination cell to copy the selected notes.")?></li></ul>";
+        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?></li></ul>";
 
       H.openConfirmPopover ({
         item: this.element,
