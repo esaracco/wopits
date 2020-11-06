@@ -23,10 +23,7 @@
 
       if ($welcome.length && !ST.noDisplay ("welcome-msg"))
       {
-        $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><a href="#" class="close" data-dismiss="alert">&times;</a><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p>
-<div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div>
-
-</div>`);
+        $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><a href="#" class="close" data-dismiss="alert">&times;</a><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p><div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div></div>`);
 
         $welcome.find("button.nowelcome").on("click", function ()
           {
@@ -152,21 +149,7 @@
               .addClass("readonly")
               .find("input").attr("readonly", "readonly");
 
-            $popup.find("form").prepend (`
-              <div class="confirm">
-                <div><?=_("Please, confirm your password:")?></div>
-                <div class="input-group mb-1">
-                  <div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span></div>
-                  <input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value="">
-                </div>
-
-                <div><?=_("Please, confirm your email:")?></div>
-                <div class="input-group mb-4">
-                  <div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span></div>
-                  <input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>">
-
-              </div>
-            `);
+            $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span></div><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span></div><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
 
             $('<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>')
             .on("click", function ()
