@@ -14,6 +14,17 @@
 
         <div class="card">
           <div class="card-header">
+            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1a" aria-expanded="false"><i class="fas fa-bullhorn fa-lg fa-fw"></i> <?=_("What's new in this release?")?></button></h2>
+          </div>
+          <div id="collapse1a" class="collapse show" data-parent="#ug-accordion">
+            <div class="card-body">
+              <?php include ('./_newfeatures.php')?>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
             <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="false"><i class="fas fa-border-all fa-lg fa-fw"></i> <?=_("Walls")?></button></h2>
           </div>
           <div id="collapse1" class="collapse" data-parent="#ug-accordion">

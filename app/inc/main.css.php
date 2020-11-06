@@ -1497,6 +1497,22 @@ button.clear-input:focus {
   border-color:transparent !important;
 }
 
+.newfeatures p {
+  border:5px solid #f7f7f7;
+  border-radius:5px;
+  padding:10px;
+  color:#212529;
+  font-size:0.9rem;
+}
+
+.newfeatures b i.fas {
+  color:#555;
+}
+
+.newfeatures b:after {
+  content: " \002014"
+}
+
 .hidden {
   display:none;
 }
@@ -1608,6 +1624,7 @@ i.set {
 }
 
 /*.modal-dialog:not(.modal-sm) .modal-body  {*/
+.newfeatures.justify,
 .popover-body.justify,
 .modal-body.justify {
   text-align: justify;

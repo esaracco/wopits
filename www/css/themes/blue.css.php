@@ -138,6 +138,7 @@ span.wpt-badge {
   background-color: #198832 !important;
 }
 
+.newfeatures b i.fas,
 .popover-body i,
 i.set {
   color: #5c9bdf;
