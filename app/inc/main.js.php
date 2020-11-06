@@ -879,6 +879,9 @@
       // Apply display mode
       setTimeout (()=>
         {
+          if (d.reorganize)
+            $wall.find("tbody td").cell ("reorganize");
+
           plugin.refreshCellsToggleDisplayMode ();
 
           if (S.get ("zoom-level"))

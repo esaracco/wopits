@@ -564,7 +564,10 @@ class Server
               $userId = $client->id;
 
               if ($isSActionResult)
+              {
                 $ret['wall'] = $walls[$_wallId];
+                $ret['wall']['reorganize'] = true;
+              }
               $json = json_encode ($ret);
 
               foreach ($w as $_fd => $_userId)
