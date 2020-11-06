@@ -367,7 +367,7 @@
         title: "<i class='fas fa-cogs fa-fw'></i> <?=_("Batch actions")?>",
         placement: "right",
         content: content+_noDisplayBtn,
-        cb_ok: ()=> ST.noDisplay ("smenu-help-"+access, true)
+        cb_ok: ()=> ST.noDisplay ("smenu-help-"+writeAccess, true)
       });
     },
 
