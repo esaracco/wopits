@@ -17,12 +17,15 @@
       const plugin = this,
             $owall = plugin.element;
 
-      $owall.find('input:eq(0)').on("keyup", function (e)
+      $owall.find('input:eq(0)')
+        // EVENT keyup on input
+        .on("keyup", function (e)
         {
           plugin.search (this.value.trim ())
         });
 
       $owall
+        // EVENT kepress on input
         .on("keypress", function (e)
         {
           if (e.which == 13 &&
@@ -30,8 +33,16 @@
             $owall.find(".list-group-item-action:visible").click ();
         });
 
-      // EVENT CLICK on Clear history button
+      $owall.find(".clear-input")
+        // EVENT click on input clear button
+        .on("click", function ()
+        {
+          $owall.find("input[type='text']").val ("");
+          $owall.find(".ow-filters input:checked").trigger ("click", false);
+        });
+
       $owall.find(".btn-clear")
+        // EVENT CLICK on Clear history button
         .on("click", function ()
         {
           $owall.find(".btn-clear").tooltip ("hide");
@@ -40,16 +51,16 @@
           plugin.controlFiltersButtons ();
         });
 
-      // EVENT CLICK on Open button.
       $owall.find(".btn-primary")
+        // EVENT CLICK on Open button.
         .on("click", function ()
         {
           plugin.getChecked().forEach (
             (id) => $("<div/>").wall ("open", {wallId: id}));
         });
 
-      // EVENT CLICK on filters
       $owall.find(".ow-filters input")
+        // EVENT CLICK on filters
         .on("click", function (e, auto)
         {
           let content = false;
@@ -112,6 +123,8 @@
               "<span class='text-center'><?=_("No result")?></span>");
 
           plugin.controlOpenButton ();
+
+          $owall.find("input[type='text']").focus ();
         });
 
       // EVENT CLICK on open wall popup

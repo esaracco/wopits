@@ -11,7 +11,7 @@
       <div class="modal-body">
         <div class="input-group mb-2">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-sm fa-fw"></i></span></div>
-          <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus>
+          <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus><button class="btn clear-input" type="button"><i class="fa fa-broom"></i></button>
         </div>
 
       <div class="text-center ow-filters">

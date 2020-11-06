@@ -14,7 +14,7 @@
 
         <div class="input-group">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span></div>
-          <input type="input" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus>
+          <input type="input" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus><button class="btn clear-input" type="button"><i class="fa fa-broom"></i></button>
         </div>
 
         <div class="mt-3 result text-center"></div>

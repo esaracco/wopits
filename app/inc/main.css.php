@@ -1487,6 +1487,16 @@ ul#smenu {
   text-align:center;
 }
 
+button.clear-input {
+  margin-left:-40px;
+  color:#555;
+  z-index:3;
+}
+
+button.clear-input:focus {
+  border-color:transparent !important;
+}
+
 .hidden {
   display:none;
 }

@@ -22,6 +22,7 @@
       _smPlugin = S.getCurrent("smenu").smenu ("getClass");
 
       $search.find("input")
+        // EVENT keyup on input
         .on("keyup", function (e)
         {
           const val = this.value.trim ();
@@ -31,14 +32,23 @@
 
           plugin.search (val)
         })
+        // EVENT keypress on input
         .on("keypress", function (e)
         {
           if (e.which == 13)
             plugin.close ();
+        })
+
+      $search.find(".clear-input")
+        // EVENT click on input clear button
+        .on("click", function ()
+        {
+          plugin.reset (true)
+          $search.find("input").focus ();
         });
 
-      // EVENT hidden.bs.modal on popups
       $search
+        // EVENT hidden.bs.modal on popups
         .on("hidden.bs.modal", function (e)
         {
           if (_smPlugin.element.is (":visible"))
