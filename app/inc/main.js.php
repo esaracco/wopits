@@ -2195,7 +2195,14 @@
 
               case "user-guide":
 
-                H.loadPopup ("userGuide");
+                H.loadPopup ("userGuide", {
+                  cb: ($p)=>
+                  {
+                    if (!$p[0].querySelector (".latest-dt") &&
+                        $p[0].querySelector (".latest"))
+                      $(`<div class="latest-dt"><?=_("Last update")?>: ${moment().format("Y-MM-DD")}</div>`).insertBefore ($p.find(".latest"));
+                  }
+                });
 
                 break;
 

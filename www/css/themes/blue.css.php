@@ -17,6 +17,7 @@
   background:rgba(0, 90, 255, 0.14);
 }
 
+.newfeatures.latest p,
 .wall th,
 .wall tbody th div.row-menu,
 .postit-edit [external-src],
@@ -97,11 +98,6 @@ button:focus {
   border-color: #0c68ce !important;
 }
 
-.form-control:disabled,
-.form-control[readonly] {
-  background-color: #eef7ff !important;
-}
-
 span.wpt-badge {
   background-color: #007bff;
 }
@@ -115,6 +111,8 @@ span.wpt-badge {
   border-color: #d1e6fb !important;
 }
 
+.form-control:disabled,
+.form-control[readonly],
 .list-group-item:not(.collapse):hover,
 .list-group-item.title {
   background-color:#eef7ff !important;

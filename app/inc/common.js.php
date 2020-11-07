@@ -1718,10 +1718,10 @@ class WHelper
         $popup.find(".modal-title").html (
           '<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>');
 
-        $.get ("/ui/_newfeatures.php", (d)=>
+        $.get ("/whats_new/latest.php", (d)=>
         {
           if (d)
-            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in this release?")?></h5>`+d;
+            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new?")?></h5>`+d;
           else
             d = "<?=_("Upgrade done. Thank you for using wopits!")?>";
 

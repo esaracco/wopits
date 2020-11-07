@@ -1,4 +1,8 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
+<?php
+  require (__DIR__.'/../../app/prepend.php');
+
+  $news = Wopits\Helper::getIncludeContent (__DIR__.'/../whats_new/latest.php');
+?>
 <div class="modal m-fullscreen" id="userGuidePopup" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -14,11 +18,14 @@
 
         <div class="card">
           <div class="card-header">
-            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1a" aria-expanded="false"><i class="fas fa-bullhorn fa-lg fa-fw"></i> <?=_("What's new in this release?")?></button></h2>
+            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1a" aria-expanded="false"><i class="fas fa-bullhorn fa-lg fa-fw"></i> <?=_("Latest news")?></button></h2>
           </div>
           <div id="collapse1a" class="collapse show" data-parent="#ug-accordion">
             <div class="card-body">
-              <?php include ('./_newfeatures.php')?>
+            <?php
+              if (trim ($news)) echo $news;
+              include (__DIR__.'/../whats_new/mostRecents.php');
+            ?>
             </div>
           </div>
         </div>

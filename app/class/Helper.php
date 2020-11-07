@@ -261,6 +261,13 @@ class Helper
     return [$filename, $mime, $dim['width'], $dim['height']];
   }
 
+  public static function getIncludeContent (string $file):string
+  {
+    ob_start ();
+    require ($file);
+    return ob_get_clean ();
+  }
+
   //<WPTPROD-remove>
   public static function buildPostitMenu ()
   {

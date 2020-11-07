@@ -778,6 +778,19 @@ input::-ms-clear {
   fill-opacity:0 !important;
 }
 
+#userGuidePopup .latest-dt {
+  font-style:italic;
+  margin-top:-30px;
+  font-size:0.7rem;
+  float:right;
+  background:#fff;
+  padding:2px;
+  border:1px solid #cecece;
+  border-radius:5px;
+  color:#555;
+}
+
+.newfeatures.latest p,
 .dropdown-item:active,
 .dropdown-item:hover {
   background-color:#f1f1f1;
@@ -1503,10 +1516,12 @@ button.clear-input:focus {
   padding:10px;
   color:#212529;
   font-size:0.9rem;
+  margin-bottom: 0.3rem;
 }
 
 .newfeatures b i.fas {
   color:#555;
+  margin-right:5px;
 }
 
 .newfeatures b:after {
