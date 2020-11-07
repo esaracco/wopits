@@ -18,14 +18,14 @@
 
         <div class="card">
           <div class="card-header">
-            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1a" aria-expanded="false"><i class="fas fa-bullhorn fa-lg fa-fw"></i> <?=_("Latest news")?></button></h2>
+            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1a" aria-expanded="false"><i class="fas fa-bullhorn fa-lg fa-fw"></i> <?=_("News")?></button></h2>
           </div>
           <div id="collapse1a" class="collapse show" data-parent="#ug-accordion">
             <div class="card-body">
             <?php
               if (trim ($news))
                 echo '<div class="latest-dt">'.
-                       _("Last update").': '.WPT_LAST_UPDATE.'</div>'.$news;
+                       _("Update").': '.WPT_LAST_UPDATE.'</div>'.$news;
               include (__DIR__.'/../whats_new/mostRecents.php');
             ?>
             </div>
