@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-07 13:01+0100\n"
-"PO-Revision-Date: 2020-11-07 13:03+0100\n"
+"POT-Creation-Date: 2020-11-07 17:00+0100\n"
+"PO-Revision-Date: 2020-11-07 16:51+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -44,6 +44,13 @@ msgid ""
 msgstr ""
 "<kbd>ctrl+clic</kbd> sur la cellule de destination pour y déplacer les notes "
 "sélectionnées."
+
+msgid ""
+"<p><b><i class='fas fa-bug fa-fw'></i>Full view</b> Fixed an issue in «&nbsp;"
+"Full view&nbsp;» mode with Safari.</p>"
+msgstr ""
+"<p><b><i class='fas fa-bug fa-fw'></i>Vue complète</b> Correction d'un "
+"problème en mode «&nbsp;Vue complète&nbsp;» avec Safari.</p>"
 
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now act "
@@ -857,12 +864,6 @@ msgstr "Mode invisible"
 msgid "Language"
 msgstr "Langue"
 
-msgid "Last update"
-msgstr "Dernière mise à jour"
-
-msgid "Latest news"
-msgstr "Dernières nouvelles"
-
 msgid "Let your ideas shine!"
 msgstr "Laissez briller vos idées!"
 
@@ -917,6 +918,9 @@ msgstr "Nouveau mur"
 
 msgid "New..."
 msgstr "Nouveau..."
+
+msgid "News"
+msgstr "Nouveautées"
 
 msgid "Next"
 msgstr "Suivant"
@@ -1407,6 +1411,9 @@ msgstr "Mot de passe non sécurisé"
 msgid "Unshare"
 msgstr "Retirer"
 
+msgid "Update"
+msgstr "Modification"
+
 msgid "Update this group"
 msgstr "Modifier ce groupe"
 
@@ -1640,6 +1647,12 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "Last update"
+#~ msgstr "Dernière mise à jour"
+
+#~ msgid "Latest news"
+#~ msgstr "Dernières nouvelles"
 
 #~ msgid "What's new in this release?"
 #~ msgstr "Quoi de neuf dans cette version?"

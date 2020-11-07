@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-07 13:01+0100\n"
+"POT-Creation-Date: 2020-11-07 17:00+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -35,6 +35,11 @@ msgstr ""
 
 msgid ""
 "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
+msgstr ""
+
+msgid ""
+"<p><b><i class='fas fa-bug fa-fw'></i>Full view</b> Fixed an issue in «&nbsp;"
+"Full view&nbsp;» mode with Safari.</p>"
 msgstr ""
 
 msgid ""
@@ -648,12 +653,6 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-msgid "Last update"
-msgstr ""
-
-msgid "Latest news"
-msgstr ""
-
 msgid "Let your ideas shine!"
 msgstr ""
 
@@ -705,6 +704,9 @@ msgid "New wall"
 msgstr ""
 
 msgid "New..."
+msgstr ""
+
+msgid "News"
 msgstr ""
 
 msgid "Next"
@@ -1155,6 +1157,9 @@ msgid "Unsecured password"
 msgstr ""
 
 msgid "Unshare"
+msgstr ""
+
+msgid "Update"
 msgstr ""
 
 msgid "Update this group"
