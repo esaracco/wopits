@@ -23,7 +23,9 @@
           <div id="collapse1a" class="collapse show" data-parent="#ug-accordion">
             <div class="card-body">
             <?php
-              if (trim ($news)) echo $news;
+              if (trim ($news))
+                echo '<div class="latest-dt">'.
+                       _("Last update").': '.WPT_LAST_UPDATE.'</div>'.$news;
               include (__DIR__.'/../whats_new/mostRecents.php');
             ?>
             </div>
