@@ -209,6 +209,7 @@ $(function()
       const $menu = $("#main-menu"),
             $chat = S.getCurrent ("chat"),
             chatVisible = $chat.is (":visible"),
+            $filters = S.getCurrent ("filters"),
             $arrows = S.getCurrent ("arrows");
 
       // Show/hide super menu actions menu depending on user wall access rights
@@ -225,7 +226,7 @@ $(function()
 
       // Manage filters checkbox menu
       $menu.find("li[data-action='filters'] input")[0].checked =
-        S.getCurrent("filters").is (":visible");
+        $filters.is (":visible");
 
       // Manage arrows checkbox menu
       $menu.find("li[data-action='arrows'] input")[0].checked =
@@ -238,6 +239,9 @@ $(function()
         $wall.wall ("refresh");
         $wall.wall ("displayExternalRef");
         $wall.wall ("displayHeaders");
+
+        if (!($filters.is (":visible") && $filters.hasClass ("plugs-hidden")))
+          $wall.wall ("showPostitsPlugs");
       }
 
       $wall.wall ("menu", {from: "wall", type: "have-wall"});
