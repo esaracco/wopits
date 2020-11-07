@@ -1670,7 +1670,6 @@
             noalert = !!args.noalert,
             zoomStep = (!!args.step) ? args.step : 0.2,
             writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
-      let stylesOrigin;
 
       if (!args.step)
       {
@@ -1686,7 +1685,11 @@
 
       if (!zoom0.dataset.zoomlevelorigin)
       {
-        stylesOrigin = zoom0.style;
+        if (!S.get ("old-width"))
+          S.set ("old-styles", {
+            width: zoom0.style.width,
+            transform: zoom0.style.transform
+          });
 
         if (writeAccess && !noalert)
           H.displayMsg ({
@@ -1753,7 +1756,9 @@
             msg: "<?=_("All features are available again")?>"
           });
 
-        zoom0.style = stylesOrigin;
+        zoom0.style.width = S.get ("old-styles").width;
+        zoom0.style.transform = S.get ("old-styles").transform;
+        S.unset ("old-styles");
 
         zoom0.querySelectorAll("th").forEach ((header)=>
           {
