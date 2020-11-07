@@ -858,7 +858,7 @@ msgid "Language"
 msgstr "Langue"
 
 msgid "Last update"
-msgstr "Dernières mise à jour"
+msgstr "Dernière mise à jour"
 
 msgid "Latest news"
 msgstr "Dernières nouvelles"
