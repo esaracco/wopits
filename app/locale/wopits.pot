@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-07 17:00+0100\n"
+        "POT-Creation-Date: 2020-11-07 18:09+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,6 +36,9 @@ msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected note
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Full view</b> Fixed an issue in «&nbsp;Full view&nbsp;» mode with Safari.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relationships</b> Fixed a regression with relationships. Please, contact me if you are still experiencing problems!</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now act on several notes at the same time by selecting them with <kbd>ctrl+click</kbd>. A floating meta menu will appear. It is possible to select as many notes as you want among all your opened walls.</p><p><b><i class='fas fa-smile-beam fa-fw'></i>Search inputs</b> Search inputs can now be cleared using the <i class='fas fa-broom fa-sm'></i> icon.</p><p><b><i class='fas fa-bug fa-fw'></i>Debug & cleaning</b> As usual, a lot of debug & cleaning. Yep! wopits is still in alpha stage ;-)</p>"
