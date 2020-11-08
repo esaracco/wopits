@@ -1,8 +1,8 @@
 <?php
 
 // Version
-define ('WPT_LAST_UPDATE', '2020-11-07');
-define ('WPT_VERSION', '0.45alpha4');
+define ('WPT_LAST_UPDATE', '2020-11-08');
+define ('WPT_VERSION', '0.46alpha1');
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
 // Important!
