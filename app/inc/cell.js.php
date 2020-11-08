@@ -579,7 +579,7 @@
           // ctrl+click on a cell to paste/cut on it
           else
           {
-            if (e.ctrlKey && !$sm.smenu ("isEmpty"))
+            if ((e.ctrlKey || S.get ("action-smenu")) && !$sm.smenu ("isEmpty"))
               $sm.smenu ("apply", {
                 event: e,
                 cellPlugin: $cell.cell ("getClass")

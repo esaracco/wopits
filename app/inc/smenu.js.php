@@ -321,6 +321,10 @@
       this.element.show ();
 
       $(document)
+        // EVENT mousemove
+        .on("mousemove.smenu", (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
+
+      $(document)
         // EVENT keydown
         .on("keydown.smenu", function (e)
         {
@@ -346,6 +350,29 @@
                 $("#popup-layer").click ();
                 return $sm.find("li[data-action='copy']").click ();
               }
+            // CTRL+V
+            case 86:
+              const mpos = S.get ("mousepos");
+              let $el = $(document.elementFromPoint (mpos.x, mpos.y));
+
+              if ($el[0].tagName != "TD")
+                $el = $el.closest ("td");
+
+              // Simulate click on cell
+              if ($el.length)
+              {
+                S.set ("action-smenu", true, 500);
+
+                $el[0].dispatchEvent (
+                  new MouseEvent ("click", {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                    clientX: mpos.x,
+                    clientY: mpos.y
+                  }));
+              }
+              break;
             // CTRL+X
             case 88:
               if (e.ctrlKey)
@@ -415,6 +442,8 @@
       const $ps = $("#psearchPopup");
 
       $(document).off ("keydown.smenu");
+      $(document).off ("mousemove.smenu");
+      S.unset ("mousepos");
 
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
