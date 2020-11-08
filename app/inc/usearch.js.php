@@ -108,6 +108,8 @@ let _lastStr = "",
 
         args["field"] = true;
         args["users"] = true;
+
+        _lastStr = "";
       }
 
       if (!!args.field)
