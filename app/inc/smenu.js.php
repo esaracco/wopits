@@ -318,6 +318,10 @@
 
       this.element.show ();
 
+      $(document)
+        .on("keydown.smenu",
+          (e)=> H.checkEscapeEvent ({event: e, cb: ()=> plugin.close ()}));
+
       if (!$(".modal:visible").length)
         this.showHelp ();
     },
@@ -375,6 +379,8 @@
     close ()
     {
       const $ps = $("#psearchPopup");
+
+      $(document).off ("keydown.smenu");
 
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));

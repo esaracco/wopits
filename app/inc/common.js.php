@@ -1019,6 +1019,17 @@ class WHelper
     }
   }
   
+  // METHOD checkEscapeEvent ()
+  checkEscapeEvent (args)
+  {
+    if (args.event.which == 27 &&
+        // Do not close if a modal was opened
+        !S.get("still-closing") &&
+        // Do not close if a popover is opened or a editable field is active
+        !document.querySelector ([".popover.show", ".editable.editing"]))
+      args.cb ();
+  }
+
   // METHOD openPopupLayer ()
   openPopupLayer (cb, closeMenus = true)
   {
@@ -1101,7 +1112,7 @@ class WHelper
       placement: args.placement || "auto",
       boundary: "window"
     }).popover ("show");
-    
+
     //FIXME If not, "title" element property is used by default
     $(".popover-header").last().html (args.title);
   

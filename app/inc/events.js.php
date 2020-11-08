@@ -318,6 +318,8 @@ $(function()
             type = $popup[0].dataset.popuptype,
             $postit = S.getCurrent ("postit");
 
+      S.set ("still-closing", true, 500);
+
       // Prevent child popups from removing scroll to their parent
       if ($(".modal:visible").length)
         $("body").addClass ("modal-open");
