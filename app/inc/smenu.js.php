@@ -153,7 +153,8 @@
           content: content,
           cb_close: ()=>
           {
-            args.event.target.classList.remove ("set");
+            (args.event.target.querySelector("i")||args.event.target)
+              .classList.remove ("set");
 
             cbClose && cbClose ();
 
@@ -311,7 +312,8 @@
       if (!H.haveMouse ())
         return;
 
-      const plugin = this;
+      const plugin = this,
+            $sm = plugin.element;
 
       if (plugin.element.is (":visible"))
         return;
@@ -319,8 +321,40 @@
       this.element.show ();
 
       $(document)
-        .on("keydown.smenu",
-          (e)=> H.checkEscapeEvent ({event: e, cb: ()=> plugin.close ()}));
+        // EVENT keydown
+        .on("keydown.smenu", function (e)
+        {
+              // Nothing if modal was opened
+          if (S.get("still-closing") ||
+              // Nothing if modal/popup is opened or editable field is active
+              document.querySelector ([
+                ".modal.show", ".popover.show", ".editable.editing"]))
+            return;
+
+          switch (e.which)
+          {
+            // ESC
+            case 27:
+              return plugin.close ();
+            // DEL
+            case 46:
+              return $sm.find("li[data-action='delete']").click ();
+            // CTRL+C
+            case 67:
+              if (e.ctrlKey)
+              {
+                $("#popup-layer").click ();
+                return $sm.find("li[data-action='copy']").click ();
+              }
+            // CTRL+X
+            case 88:
+              if (e.ctrlKey)
+              {
+                $("#popup-layer").click ();
+                return $sm.find("li[data-action='move']").click ();
+              }
+          }
+        });
 
       if (!$(".modal:visible").length)
         this.showHelp ();

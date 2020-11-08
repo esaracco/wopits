@@ -1019,17 +1019,6 @@ class WHelper
     }
   }
   
-  // METHOD checkEscapeEvent ()
-  checkEscapeEvent (args)
-  {
-    if (args.event.which == 27 &&
-        // Do not close if a modal was opened
-        !S.get("still-closing") &&
-        // Do not close if a popover is opened or a editable field is active
-        !document.querySelector ([".popover.show", ".editable.editing"]))
-      args.cb ();
-  }
-
   // METHOD openPopupLayer ()
   openPopupLayer (cb, closeMenus = true)
   {
