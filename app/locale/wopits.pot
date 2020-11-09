@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-09 10:24+0100\n"
+        "POT-Creation-Date: 2020-11-09 14:04+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,6 +104,9 @@ msgid   "All available walls are opened."
 msgstr  ""
 
 msgid   "All features are available again"
+msgstr  ""
+
+msgid   "All latest news..."
 msgstr  ""
 
 msgid   "An error occured while cloning the wall."
@@ -1029,7 +1032,8 @@ msgstr  ""
 msgid   "Welcome to wopits!"
 msgstr  ""
 
-msgid   "What's new?"
+#, php-format
+msgid   "What's new in v%s?"
 msgstr  ""
 
 msgid   "When you delete your account, your walls and all your personnal data are permanently erased."

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 10:24+0100\n"
-"PO-Revision-Date: 2020-11-09 10:25+0100\n"
+"POT-Creation-Date: 2020-11-09 14:04+0100\n"
+"PO-Revision-Date: 2020-11-09 14:05+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -411,6 +411,9 @@ msgstr "Tous les murs disponibles sont ouverts."
 
 msgid "All features are available again"
 msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
+
+msgid "All latest news..."
+msgstr "Toutes les dernières nouvelles..."
 
 msgid "An error occured while cloning the wall."
 msgstr "Une erreur est survenue durant le clonage du fichier."
@@ -1496,8 +1499,9 @@ msgstr ""
 msgid "Welcome to wopits!"
 msgstr "Bienvenue sur wopits!"
 
-msgid "What's new?"
-msgstr "Quoi de neuf?"
+#, php-format
+msgid "What's new in v%s?"
+msgstr "Quoi de neuf dans la v%s?"
 
 msgid ""
 "When you delete your account, your walls and all your personnal data are "
@@ -1691,9 +1695,6 @@ msgstr ""
 #~ msgstr ""
 #~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Section Quoi de neuf</b> "
 #~ "Amélioration du système de notification des nouveautés.</p>"
-
-#~ msgid "Latest news"
-#~ msgstr "Dernières nouvelles"
 
 #~ msgid "What's new in this release?"
 #~ msgstr "Quoi de neuf dans cette version?"
