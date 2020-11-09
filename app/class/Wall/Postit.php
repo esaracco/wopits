@@ -547,7 +547,7 @@ class Postit extends Wall
 
       if ($stmt->fetch ())
         $ret['error_msg'] =
-          _("The file is already linked to the sticky note.");
+          _("The file is already linked to the note.");
       else
       {
         file_put_contents (

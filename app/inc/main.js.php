@@ -240,7 +240,7 @@
                     if ($postit.length)
                       $postit.postit ("displayDeadlineAlert");
                     else
-                      H.displayMsg ({type: "warning", msg: "<?=_("The sticky note has been deleted")?>"});
+                      H.displayMsg ({type: "warning", msg: "<?=_("The note has been deleted")?>"});
                   }
                   else
                     plugin.displayShareAlert ();

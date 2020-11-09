@@ -69,8 +69,8 @@ class Mailer
   {
     $this->_send ([
       'email' => $args['email'],
-      'subject' => _("Sticky note deadline notification"),
-      'msg' => sprintf (_("Hello %s,\n\nThe following sticky note has expired:\n\n%s%s"), $args['fullname'], ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
+      'subject' => _("Deadline notification"),
+      'msg' => sprintf (_("Hello %s,\n\nThe following note has expired:\n\n%s%s"), $args['fullname'], ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
     ]);
   }
 
@@ -81,9 +81,9 @@ class Mailer
 
     $this->_send ([
       'email' => $args['email'],
-      'subject' => _("Sticky note deadline notification"),
+      'subject' => _("Deadline notification"),
       'msg' => ($days == 1 || ($days == 0 && $hours > 0)) ?
-        sprintf (_("Hello %s,\n\nThe following sticky note will expire soon:\n\n%s"), $args['fullname'], WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}") : sprintf (_("Hello %s,\n\nThe following sticky note will expire in %s days:\n\n%s%s"), $args['fullname'], $days, ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
+        sprintf (_("Hello %s,\n\nThe following note will expire soon:\n\n%s"), $args['fullname'], WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}") : sprintf (_("Hello %s,\n\nThe following note will expire in %s days:\n\n%s%s"), $args['fullname'], $days, ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
     ]);
   }
 
@@ -97,7 +97,7 @@ class Mailer
         $msg = _("Hello %s,\n\n%s gave you full access to the following wall:\n\n%s\n%s");
         break;
       case WPT_WRIGHTS_RW:
-        $msg = _("Hello %s,\n\n%s gave you limited access with creation of sticky notes to the following wall:\n\n%s\n%s");
+        $msg = _("Hello %s,\n\n%s gave you limited access with creation of notes to the following wall:\n\n%s\n%s");
         break;
       case WPT_WRIGHTS_RO:
         $msg = _("Hello %s,\n\n%s gave you read-only access to the following wall:\n\n%s\n%s");

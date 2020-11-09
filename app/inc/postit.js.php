@@ -274,7 +274,7 @@
                     item: $postit.find(".btn-menu"),
                     placement: "right",
                     title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                    content: "<?=_("Delete this sticky note?")?>",
+                    content: "<?=_("Delete this note?")?>",
                     cb_close: () => postitPlugin.unedit (),
                     cb_ok: () => postitPlugin.delete ()
                   });
@@ -354,7 +354,7 @@
                     item: $postit.find(".btn-menu"),
                     placement: "left",
                     title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                    content: "<?=_("Delete all relationships from this sticky note?")?>",
+                    content: "<?=_("Delete all relationships from this note?")?>",
                     cb_close: () => postitPlugin.unedit (),
                     cb_ok: () =>
                       {
@@ -893,9 +893,9 @@
       H.waitForDOMUpdate (()=>
       {
         if (!data.deadlineepoch)
-          content = "<?=_("The deadline for this sticky note has been removed!")?>";
+          content = "<?=_("The deadline for this note has been removed!")?>";
         else if (this.element.hasClass ("obsolete"))
-          content = "<?=_("This sticky note has expired.")?>";
+          content = "<?=_("This note has expired.")?>";
         else
         {
           const a = moment.unix (data.deadlineepoch),
@@ -906,8 +906,8 @@
             days = Math.trunc(days) + 1;
 
           content = (days > 1) ?
-            "<?=_("This sticky note will expire in about %s day(s).")?>".replace("%s", days) :
-            "<?=_("This sticky note will expire soon.")?>";
+            "<?=_("This note will expire in about %s day(s).")?>".replace("%s", days) :
+            "<?=_("This note will expire soon.")?>";
         }
 
         H.openConfirmPopover ({
@@ -1531,7 +1531,7 @@
         H.openConfirmPopover ({
           item: args.item||this.element,
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
-          content: "<?=_("This sticky note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>",
+          content: "<?=_("This note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>",
           cb_close: args.cb_close,
           cb_ok: () =>
           {
@@ -1722,7 +1722,7 @@
               d = d.files;
 
               if (!d.length)
-                body = "<?=_("This sticky note has no attachment")?>";
+                body = "<?=_("This note has no attachment")?>";
               else
                 d.forEach (
                   (a)=> body += this.getAttachmentTemplate (a, !writeAccess));
@@ -1906,7 +1906,7 @@
 
             if (!$_attachmentsPopup[0].querySelector ("li"))
               $_attachmentsPopup.find("ul.list-group").html (
-                "<?=_("This sticky note has no attachment")?>");
+                "<?=_("This note has no attachment")?>");
           }
         }
       );
@@ -2062,7 +2062,7 @@
         this.element[0].removeAttribute ("data-hadpictures");
 
         if (!this.settings.wall)
-          H.raiseError (null, "<?=_("The entire column was deleted while you were editing the sticky note!")?>");
+          H.raiseError (null, "<?=_("The entire column was deleted while you were editing the note!")?>");
       }
     },
 
@@ -2146,7 +2146,7 @@
 
                             H.displayMsg ({
                               type: "warning",
-                              msg: "<?=_("The image %s was not available! It has been removed from the sticky note content")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                              msg: "<?=_("The image %s was not available! It has been removed from the note content")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
                           });
                       }
@@ -2294,7 +2294,7 @@
                         H.htmlEscape(file.name)+"']").length)
                   return H.displayMsg ({
                            type: "warning",
-                           msg: "<?=_("The file is already linked to the sticky note!")?>"
+                           msg: "<?=_("The file is already linked to the note!")?>"
                          });
 
                 if (H.checkUploadFileSize ({size: e.total}) &&
@@ -2401,7 +2401,7 @@
                           setTimeout(()=>
                           {
                             if (!$f.find("input:eq(0)").val ())
-                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading sticky notes images...")?>");
+                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>");
                           }, 0);
                         },
                         __error_cb

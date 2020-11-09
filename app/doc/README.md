@@ -10,7 +10,7 @@ wopits - _A world of post-its_
   </tr>
 </table>
 
-You can edit several walls of sticky notes at the same time, add attachments, insert images, create relationships etc.
+You can edit several walls of notes at the same time, add attachments, insert images, create relationships etc.
 Groups management makes it possible to finely control the sharing of data, and a chat is available for each wall.
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
