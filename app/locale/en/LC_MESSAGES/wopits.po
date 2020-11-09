@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 07:38+0100\n"
+"POT-Creation-Date: 2020-11-09 09:33+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -292,9 +292,6 @@ msgid "Background color"
 msgstr ""
 
 msgid "Bad email address"
-msgstr ""
-
-msgid "Batch actions"
 msgstr ""
 
 #, php-format
@@ -686,6 +683,9 @@ msgid "Manage users"
 msgstr ""
 
 msgid "Message sent automatically."
+msgstr ""
+
+msgid "Meta menu"
 msgstr ""
 
 msgid "Move"
