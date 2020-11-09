@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Walls opener
+
+  Scope: Global
+  Elements: #owallPopup
+  Description: Walls opening popup
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

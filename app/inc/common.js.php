@@ -1,3 +1,16 @@
+/**
+  Global javascript classes:
+
+  Wpt_forms -> parent for forms plugins (swall...)
+  Wpt_accountForms -> parent for account forms plugins
+  Wpt_toolbox -> parent for toolbox utilities (filters, arrows, mmenu,  chat...)
+
+  WHelper -> alias H (helper methods)
+  WSharer -> alias S (tool for sharing values between javascript elements)
+  WStorage -> alias ST (localStorage facilities)
+  WSocket -> alias WS (WebSocket management)
+*/
+
 // CLASS Wpt_forms
 class Wpt_forms
 {

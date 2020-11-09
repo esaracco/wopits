@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Arrows
+
+  Scope: Wall
+  Element: .arrows
+  Description: Manage repositionning arrows panel
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

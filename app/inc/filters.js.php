@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Display filters
+
+  Scope: Wall
+  Element: .filters
+  Description: Manage filtering of notes display
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Users search
+
+  Scope: Wall
+  Elements: #usearchPopup
+  Description: Manage users search for sharing wall (swall) plugin
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

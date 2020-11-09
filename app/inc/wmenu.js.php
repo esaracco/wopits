@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Wall menu
+
+  Scope: Wall
+  Elements: .wall-menu
+  Description: Manage wall's floating menu
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

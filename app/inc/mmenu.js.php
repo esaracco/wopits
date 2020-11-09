@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Meta menu
+
+  Scope: Global
+  Elements: #mmenu
+  Description: Manage notes Meta menu
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

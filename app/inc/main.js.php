@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Main menu & walls
+
+  Scope: Global
+  Elements: .wall
+  Description: Manage main menu & walls
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

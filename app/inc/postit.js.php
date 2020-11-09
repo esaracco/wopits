@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Note
+
+  Scope: Wall
+  Elements: .postit
+  Description: Note management
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

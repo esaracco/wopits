@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Smart input field
+
+  Scope: Wall & Note
+  Element: .editable
+  Description: Manage inputs editing
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

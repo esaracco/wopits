@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Wall properties
+
+  Scope: Wall
+  Elements: #wpropPopup
+  Description: Manage wall's properties
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

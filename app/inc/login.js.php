@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - User login & account creation
+
+  Scope: Login page
+  Elements: #login & #createAccountPopup
+  Description: Login & User account creation
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

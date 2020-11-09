@@ -1,3 +1,7 @@
+/**
+  CSS file for login page
+*/
+
 body,
 html {
   margin: 0;

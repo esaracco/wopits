@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Sharing walls
+
+  Scope: Wall
+  Elements: #swallPopup
+  Description: Manage wall sharing
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

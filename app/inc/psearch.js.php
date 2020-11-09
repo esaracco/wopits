@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Notes search
+
+  Scope: Wall
+  Elements: #psearchPopup
+  Description: Search in wall's notes
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

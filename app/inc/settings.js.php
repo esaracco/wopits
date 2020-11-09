@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Settings
+
+  Scope: Global
+  Elements: #settings
+  Description: Manage user's settings
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Notes deadline picker
+
+  Scope: Note
+  Element: .dpick
+  Description: Manage notes deadline
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

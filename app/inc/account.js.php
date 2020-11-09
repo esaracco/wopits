@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Account
+
+  Scope: Global
+  Element: #accountPopup
+  Description: User account management
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

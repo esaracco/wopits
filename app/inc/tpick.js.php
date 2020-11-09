@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Note tags
+
+  Scope: Note
+  Elements: .tpick
+  Description: Manage notes tags
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Cell
+
+  Scope: Wall
+  Element: td
+  Description: Wall's cell
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

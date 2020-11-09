@@ -1,3 +1,7 @@
+/**
+  Global javascript events
+*/
+
 $(function()
 {
   "use strict";

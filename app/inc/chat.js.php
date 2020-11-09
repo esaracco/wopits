@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Chat
+
+  Scope: Wall
+  Element: .chat
+  Description: Manage chat
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

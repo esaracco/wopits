@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Wall's header
+
+  Scope: Wall
+  Element: th
+  Description: Wall's headers
+*/
 
   require_once (__DIR__.'/../prepend.php');
 

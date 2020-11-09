@@ -1,4 +1,11 @@
 <?php
+/**
+  Javascript plugin - Notes color picker
+
+  Scope: Note
+  Element: .cpick
+  Description: Manage notes color
+*/
 
   require_once (__DIR__.'/../prepend.php');
 
