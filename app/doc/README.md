@@ -166,7 +166,7 @@ If you are using the Git repository as your Apache DocumentRoot without deployme
 # chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
 ```
- 2. Install external PHP modulesi using `composer`:
+ 2. Install external PHP modules using `composer`:
 ```bash
 $ cd app/libs/
 $ composer update
