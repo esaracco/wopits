@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 07:23+0100\n"
+"POT-Creation-Date: 2020-11-09 07:38+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -403,6 +403,9 @@ msgstr ""
 msgid "Deadline"
 msgstr ""
 
+msgid "Deadline notification"
+msgstr ""
+
 msgid "Dedicated"
 msgstr ""
 
@@ -412,7 +415,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "Delete all relationships from this sticky note?"
+msgid "Delete all relationships from this note?"
 msgstr ""
 
 msgid "Delete my account"
@@ -439,6 +442,9 @@ msgstr ""
 msgid "Delete this group?"
 msgstr ""
 
+msgid "Delete this note?"
+msgstr ""
+
 msgid "Delete this picture?"
 msgstr ""
 
@@ -446,9 +452,6 @@ msgid "Delete this relationship?"
 msgstr ""
 
 msgid "Delete this row?"
-msgstr ""
-
-msgid "Delete this sticky note?"
 msgstr ""
 
 msgid "Delete this wall?"
@@ -568,8 +571,7 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"%s gave you limited access with creation of sticky notes to the following "
-"wall:\n"
+"%s gave you limited access with creation of notes to the following wall:\n"
 "\n"
 "%s\n"
 "%s"
@@ -589,7 +591,7 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"The following sticky note has expired:\n"
+"The following note has expired:\n"
 "\n"
 "%s%s"
 msgstr ""
@@ -598,7 +600,7 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"The following sticky note will expire in %s days:\n"
+"The following note will expire in %s days:\n"
 "\n"
 "%s%s"
 msgstr ""
@@ -607,7 +609,7 @@ msgstr ""
 msgid ""
 "Hello %s,\n"
 "\n"
-"The following sticky note will expire soon:\n"
+"The following note will expire soon:\n"
 "\n"
 "%s"
 msgstr ""
@@ -739,6 +741,9 @@ msgid "No result"
 msgstr ""
 
 msgid "No walls available"
+msgstr ""
+
+msgid "Note update"
 msgstr ""
 
 msgid "Notes"
@@ -924,19 +929,13 @@ msgstr ""
 
 msgid ""
 "Sorry, there is a compatibility issue with your browser when it comes to "
-"uploading sticky notes images..."
+"uploading notes images..."
 msgstr ""
 
 msgid "Standard view"
 msgstr ""
 
 msgid "Sticky note creation"
-msgstr ""
-
-msgid "Sticky note deadline notification"
-msgstr ""
-
-msgid "Sticky note update"
 msgstr ""
 
 msgid "Stop"
@@ -966,7 +965,7 @@ msgstr ""
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr ""
 
-msgid "The deadline for this sticky note has been removed!"
+msgid "The deadline for this note has been removed!"
 msgstr ""
 
 msgid ""
@@ -979,13 +978,10 @@ msgstr ""
 msgid "The email `%s` already exists."
 msgstr ""
 
-msgid "The entire column was deleted while you were editing the sticky note!"
+msgid "The entire column was deleted while you were editing the note!"
 msgstr ""
 
-msgid "The file is already linked to the sticky note!"
-msgstr ""
-
-msgid "The file is already linked to the sticky note."
+msgid "The file is already linked to the note!"
 msgstr ""
 
 msgid "The file type was not recognized."
@@ -1010,8 +1006,7 @@ msgstr ""
 
 #, php-format
 msgid ""
-"The image %s was not available! It has been removed from the sticky note "
-"content"
+"The image %s was not available! It has been removed from the note content"
 msgstr ""
 
 #, php-format
@@ -1019,6 +1014,9 @@ msgid "The login `%s` already exists."
 msgstr ""
 
 msgid "The new password:"
+msgstr ""
+
+msgid "The note has been deleted"
 msgstr ""
 
 msgid "The requested file is no longer available for download!"
@@ -1036,9 +1034,6 @@ msgstr ""
 
 #, php-format
 msgid "The size of a wall cannot be less than %s"
-msgstr ""
-
-msgid "The sticky note has been deleted"
 msgstr ""
 
 msgid "The wall has been successfully cloned"
@@ -1078,23 +1073,23 @@ msgstr ""
 msgid "This item has been deleted!"
 msgstr ""
 
-msgid "This relationship already exists"
+msgid "This note contains external images or videos."
 msgstr ""
 
-msgid "This sticky note contains external images or videos."
+msgid "This note has expired."
 msgstr ""
 
-msgid "This sticky note has expired."
-msgstr ""
-
-msgid "This sticky note has no attachment"
+msgid "This note has no attachment"
 msgstr ""
 
 #, php-format
-msgid "This sticky note will expire in about %s day(s)."
+msgid "This note will expire in about %s day(s)."
 msgstr ""
 
-msgid "This sticky note will expire soon."
+msgid "This note will expire soon."
+msgstr ""
+
+msgid "This relationship already exists"
 msgstr ""
 
 msgid "This title already exists."
