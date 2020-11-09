@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-09 09:33+0100\n"
+        "POT-Creation-Date: 2020-11-09 10:24+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,10 +35,10 @@ msgstr  ""
 msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls sharing</b> Fixed a issue with users search.</p>"
+msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Wording, cleaning & translation.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now act on several notes at the same time by selecting them with <kbd>ctrl+click</kbd>. A floating meta menu will appear. It is possible to select as many notes as you want among all your opened walls.</p><p><b><i class='fas fa-smile-beam fa-fw'></i>Search inputs</b> Search inputs can now be cleared using the <i class='fas fa-broom fa-sm'></i> icon.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now act on several notes at the same time by selecting them with <kbd>ctrl+click</kbd>. A floating Meta menu will appear. It is possible to select as many notes as you want among all your opened walls.</p><p><b><i class='fas fa-smile-beam fa-fw'></i>Search inputs</b> Search inputs can now be cleared using the <i class='fas fa-broom fa-sm'></i> icon.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
