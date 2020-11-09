@@ -27,6 +27,14 @@
           <?=sprintf(_("If you need professional hosting or special features, don't hesitate to contact %s."), '<a href="https://www.easter-eggs.com" target="_blank">Easter-eggs</a>')?>
         </p>
 
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="YJE4Z8T66QLQ4">
+          <p class="desc mt-3 mb-1 text-center">
+            <button class="btn btn-secondary btn-xs" type="button" target="_blank" onclick="window.open('https://github.com/esaracco/wopits/issues', '_blank');return false"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></button>
+            <button class="btn btn-secondary btn-xs" type="button" target="_blank" onclick="window.open('https://twitter.com/esaracco', '_blank');return false"><i class="fab fa-twitter fa-fw"></i> <?=_("@author")?></button>
+            <button class="btn btn-secondary btn-xs"><i class="fas fa-donate fa-fw"></i> <?=_("Support")?></button>
+          </p>
+        </form>
+
         <?php if (defined ('WPT_ABOUT_WARNING') && WPT_ABOUT_WARNING):?>
           <div class="mt-4 warning">
             <h2 class="bg-warning"><?=_("Warning")?></h2>
