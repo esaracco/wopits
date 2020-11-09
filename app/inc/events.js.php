@@ -213,7 +213,7 @@ $(function()
             $arrows = S.getCurrent ("arrows");
 
       // Show/hide super menu actions menu depending on user wall access rights
-      S.getCurrent("smenu").smenu ("checkAllowedActions");
+      S.getCurrent("mmenu").mmenu ("checkAllowedActions");
 
       // Manage chat checkbox menu
       $menu

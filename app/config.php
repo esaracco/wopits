@@ -139,7 +139,7 @@ define ('WS_SERVER_SECTIONS', [
     'chat' => [],
     'filters' => [],
     'arrows' => [],
-    'smenu' => [],
+    'mmenu' => [],
     'wmenu' => [],
     'main' => [],
     'editable' => [],

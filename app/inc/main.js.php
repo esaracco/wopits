@@ -861,7 +861,7 @@
       S.getCurrent("arrows").arrows ("reset");
 
       // Refresh super menu tool
-      S.getCurrent("smenu").smenu ("refresh");
+      S.getCurrent("mmenu").mmenu ("refresh");
 
       if (d.postits_plugs)
         setTimeout (() =>

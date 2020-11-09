@@ -549,7 +549,7 @@
         .on("click", "td", function (e)
         {
           const $cell = $(this),
-                $sm = S.getCurrent ("smenu");
+                $mm = S.getCurrent ("mmenu");
 
           // Click on notes in list mode
           if (e.target.classList.contains ("postit-min"))
@@ -560,9 +560,9 @@
             if (e.ctrlKey)
             {
               if (li.classList.contains ("selected"))
-                $sm.smenu ("remove", $p.postit ("getId"));
+                $mm.mmenu ("remove", $p.postit ("getId"));
               else
-                $sm.smenu ("add", $p.postit ("getClass"));
+                $mm.mmenu ("add", $p.postit ("getClass"));
 
               e.stopImmediatePropagation ();
               e.preventDefault ();
@@ -579,8 +579,9 @@
           // ctrl+click on a cell to paste/cut on it
           else
           {
-            if ((e.ctrlKey || S.get ("action-smenu")) && !$sm.smenu ("isEmpty"))
-              $sm.smenu ("apply", {
+            if ((e.ctrlKey || S.get ("action-mmenu")) &&
+                !$mm.mmenu ("isEmpty"))
+              $mm.mmenu ("apply", {
                 event: e,
                 cellPlugin: $cell.cell ("getClass")
               });

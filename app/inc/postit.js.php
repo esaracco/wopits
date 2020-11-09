@@ -191,16 +191,15 @@
     // METHOD checkPlugsMenu ()
     checkPlugsMenu (resetUndo)
     {
-      const smenu = this.$menu[0].querySelector (
-                     "[data-action='delete-plugs'] .dropdown-item");
-
       if (S.getCurrent("filters").find(".selected").length)
         return this.$menu.find("[data-action='plug']").hide ();
 
+      const menu = this.$menu[0].querySelector (
+                     "[data-action='delete-plugs'] .dropdown-item");
       if (this.postitPlugin.havePlugs ())
-        smenu.classList.remove ("disabled");
+        menu.classList.remove ("disabled");
       else
-        smenu.classList.add ("disabled");
+        menu.classList.add ("disabled");
 
       if (resetUndo)
         this.postitPlugin.resetPlugsUndo ();
@@ -496,17 +495,16 @@
           })
         .on("click", function (e)
           {
-            const sm = S.getCurrent("smenu").smenu ("getClass");
-
             if (e.ctrlKey)
             {
               e.stopImmediatePropagation ();
               e.preventDefault ();
 
+              const menu = S.getCurrent("mmenu").mmenu ("getClass");
               if (postit0.classList.contains ("selected"))
-                sm.remove (settings.id);
+                menu.remove (settings.id);
               else
-                sm.add (plugin);
+                menu.add (plugin);
             }
           })
         // Append header, dates, attachment count and tags
@@ -599,7 +597,7 @@
                 plugin.settings.cell = $postit.parent ();
                 plugin.settings.cellId = plugin.settings.cell.cell ("getId");
 
-                S.getCurrent("smenu").smenu ("update", settings.id, plugin);
+                S.getCurrent("mmenu").mmenu ("update", settings.id, plugin);
 
                 plugin.unedit ();
               }
@@ -2034,7 +2032,7 @@
           else if (todelete)
           {
             if ($postit[0].classList.contains ("selected"))
-              S.getCurrent("smenu").smenu ("remove", this.settings.id);
+              S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
 
             $postit.remove ();
 

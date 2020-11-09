@@ -19,7 +19,7 @@
       const plugin = this,
             $search = plugin.element;
 
-      _smPlugin = S.getCurrent("smenu").smenu ("getClass");
+      _smPlugin = S.getCurrent("mmenu").mmenu ("getClass");
 
       $search.find("input")
         // EVENT keyup on input

@@ -386,12 +386,12 @@ class WSharer
 
         return this.arrows;
 
-      case "smenu":
+      case "mmenu":
 
-        if (!this.smenu)
-          this.smenu = $("#smenu");
+        if (!this.mmenu)
+          this.mmenu = $("#mmenu");
 
-        return this.smenu;
+        return this.mmenu;
     }
   }
 }

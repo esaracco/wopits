@@ -1289,7 +1289,7 @@ EOC;
   bottom:0;
 }
 
-ul#smenu {
+ul#mmenu {
   list-style-type:none;
   text-align:center;
   cursor:move;
@@ -1303,16 +1303,16 @@ ul#smenu {
   margin-right:auto;
 }
 
-#smenu .wpt-badge {
+#mmenu .wpt-badge {
   top:2px;
   left:4px;
 }
 
-#smenu i {
+#mmenu i {
   cursor:pointer;
 }
 
-#smenu button.close {
+#mmenu button.close {
   margin-top:-12px;
   margin-right:-8px;
 }
@@ -1610,7 +1610,7 @@ i.set {
   margin-top:11px;
 }
 
-#smenu li:not(:last-child) i.fa-lg,
+#mmenu li:not(:last-child) i.fa-lg,
 .wall-menu li:not(:last-child) i.fa-lg {
   margin-bottom:10px;
 }

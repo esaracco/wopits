@@ -145,7 +145,7 @@
       if ($tags.length || $colors.length)
       {
         plugin.hidePlugs ();
-        S.getCurrent("smenu").smenu ("reset");
+        S.getCurrent("mmenu").mmenu ("reset");
 
         $wall[0].querySelectorAll("td").forEach ((cell)=>
         {

@@ -81,7 +81,7 @@
             break;
 
           case "list-mode":
-            S.getCurrent("smenu").smenu ("close");
+            S.getCurrent("mmenu").mmenu ("close");
             wallPlugin.setPostitsDisplayMode (action);
 
             H.displayMsg ({

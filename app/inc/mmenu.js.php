@@ -2,7 +2,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('smenu');
+  $Plugin = new Wopits\jQueryPlugin ('mmenu');
   echo $Plugin->getHeader ();
 
 ?>
@@ -61,20 +61,20 @@
               return plugin.apply ({event: e});
 
             case "copy":
-              if (!ST.noDisplay ("smenu-copy-help"))
+              if (!ST.noDisplay ("mmenu-copy-help"))
               {
                 title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
                 content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?>"+_noDisplayBtn;
-                cbOK = ()=> ST.noDisplay ("smenu-copy-help", true);
+                cbOK = ()=> ST.noDisplay ("mmenu-copy-help", true);
               }
               break;
 
             case "move":
-              if (!ST.noDisplay ("smenu-move-help"))
+              if (!ST.noDisplay ("mmenu-move-help"))
               {
                 title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
                 content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
-                cbOK = ()=> ST.noDisplay ("smenu-move-help", true);
+                cbOK = ()=> ST.noDisplay ("mmenu-move-help", true);
               }
               break
           }
@@ -322,11 +322,11 @@
 
       $(document)
         // EVENT mousemove
-        .on("mousemove.smenu", (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
+        .on("mousemove.mmenu", (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
 
       $(document)
         // EVENT keydown
-        .on("keydown.smenu", function (e)
+        .on("keydown.mmenu", function (e)
         {
               // Nothing if modal was opened
           if (S.get("still-closing") ||
@@ -361,7 +361,7 @@
               // Simulate click on cell
               if ($el.length)
               {
-                S.set ("action-smenu", true, 500);
+                S.set ("action-mmenu", true, 500);
 
                 $el[0].dispatchEvent (
                   new MouseEvent ("click", {
@@ -416,7 +416,7 @@
     {
       const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
-      if (ST.noDisplay ("smenu-help-"+writeAccess))
+      if (ST.noDisplay ("mmenu-help-"+writeAccess))
         return;
 
       let content;
@@ -432,7 +432,7 @@
         title: "<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>",
         placement: "right",
         content: content+_noDisplayBtn,
-        cb_ok: ()=> ST.noDisplay ("smenu-help-"+writeAccess, true)
+        cb_ok: ()=> ST.noDisplay ("mmenu-help-"+writeAccess, true)
       });
     },
 
@@ -441,8 +441,8 @@
     {
       const $ps = $("#psearchPopup");
 
-      $(document).off ("keydown.smenu");
-      $(document).off ("mousemove.smenu");
+      $(document).off ("keydown.mmenu");
+      $(document).off ("mousemove.mmenu");
       S.unset ("mousepos");
 
       document.querySelectorAll(".postit.selected").forEach (
@@ -462,9 +462,9 @@
     {
       if (!H.isLoginPage ())
       {
-        $("body").prepend (`<ul class="toolbox" id="smenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li data-toggle="tooltip" title="<?=_("Copy selected notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Move selected notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li data-toggle="tooltip" title="<?=_("Change selected notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Delete selected notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
+        $("body").prepend (`<ul class="toolbox" id="mmenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li data-toggle="tooltip" title="<?=_("Copy selected notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Move selected notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li data-toggle="tooltip" title="<?=_("Change selected notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Delete selected notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
 
-        S.getCurrent("smenu").smenu ();
+        S.getCurrent("mmenu").mmenu ();
       }
     });
 
