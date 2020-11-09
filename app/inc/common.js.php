@@ -1688,7 +1688,7 @@ class WHelper
     {
       const $userSettings = $("#settingsPopup"),
             userVersion = $userSettings.settings ("get", "version");
-  
+
       if (userVersion != officialVersion)
       {
         $userSettings.settings ("set", {version: officialVersion});
@@ -1721,11 +1721,20 @@ class WHelper
         $.get ("/whats_new/latest.php", (d)=>
         {
           if (d)
-            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new?")?></h5>`+d;
+            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>`.replace("%s", "<?=WPT_VERSION?>")+d;
           else
             d = "<?=_("Upgrade done. Thank you for using wopits!")?>";
 
+          d += `<button type="button" class="mt-2 btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("All latest news...")?></button>`;
+
           $popup.find(".modal-body").html (d);
+
+          $popup.find(".modal-body").find("button")
+            .on("click", function ()
+            {
+              $popup.modal ("hide");
+              H.loadPopup ("userGuide");
+            });
 
           this.openModal ($popup);
         });
