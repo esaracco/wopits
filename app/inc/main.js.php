@@ -2023,7 +2023,7 @@
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)
               setTimeout(()=>
-                $("#settingsPopup").settings ("openThemeChooser"), 1000);
+                $settings.settings ("openThemeChooser"), 1000);
 
             H.enableTooltips ($("body"));
           });
@@ -2200,7 +2200,7 @@
 
               case "user-guide":
 
-                H.loadPopup ("userGuide",);
+                H.loadPopup ("userGuide");
 
                 break;
 
