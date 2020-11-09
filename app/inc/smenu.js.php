@@ -429,7 +429,7 @@
       H.openConfirmPopover ({
         item: this.element,
         type: "info",
-        title: "<i class='fas fa-cogs fa-fw'></i> <?=_("Batch actions")?>",
+        title: "<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>",
         placement: "right",
         content: content+_noDisplayBtn,
         cb_ok: ()=> ST.noDisplay ("smenu-help-"+writeAccess, true)

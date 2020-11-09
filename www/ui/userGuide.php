@@ -67,7 +67,7 @@
 
         <div class="card">
           <div class="card-header">
-            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false"><i class="fas fa-cogs fa-lg fa-fw"></i> <?=_("Batch actions")?></button></h2>
+            <h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false"><i class="fas fa-bolt fa-lg fa-fw"></i> <?=_("Meta menu")?></button></h2>
           </div>
           <div id="collapse4" class="collapse" data-parent="#ug-accordion">
             <div class="card-body">
