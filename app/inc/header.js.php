@@ -129,7 +129,7 @@
           switch (action)
           {
             case "add-picture":
-              if (settings.wall[0].dataset.shared)
+              if (settings.wall.wall ("isShared"))
               {
                 //FIXME
                 // we need this to cancel edit if no img is selected by user
@@ -223,7 +223,7 @@
     // METHOD useFocusTrick ()
     useFocusTrick ()
     {
-      return (this.settings.wall[0].dataset.shared &&
+      return (this.settings.wall.wall("isShared") &&
               H.haveMouse() && !H.navigatorIsEdge());
     },
 
@@ -261,7 +261,7 @@
             $header = plugin.element,
             settings = plugin.settings;
 
-      if (!settings.wall[0].dataset.shared || H.navigatorIsEdge ())
+      if (!settings.wall.wall("isShared") || H.navigatorIsEdge ())
         $(".upload.header-picture").click ();
       else
       {
@@ -310,7 +310,7 @@
           {
             e.stopImmediatePropagation ();
 
-            if (plugin.settings.wall[0].dataset.shared)
+            if (plugin.settings.wall.wall ("isShared"))
             {
               //FIXME
               // we need this to cancel edit if no img is selected by user
@@ -474,7 +474,7 @@
 
       _originalObject = _serializeOne (this.element[0]);
 
-      if (!this.settings.wall[0].dataset.shared)
+      if (!this.settings.wall.wall ("isShared"))
         return success_cb && success_cb ();
 
       H.request_ws (
@@ -584,7 +584,7 @@
 
         $wall.find("tbody td").cell ("reorganize");
       }
-      else if (!this.settings.wall[0].dataset.shared)
+      else if (!this.settings.wall.wall ("isShared"))
         return this.cancelEdit (args.bubble_cb);
 
       H.request_ws (

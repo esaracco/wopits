@@ -1952,7 +1952,7 @@
         _originalObject = this.serialize()[0];
       }
 
-      if (!this.settings.wall[0].dataset.shared)
+      if (!this.settings.wall.wall ("isShared"))
         return success_cb && success_cb ();
 
       H.request_ws (
@@ -2015,7 +2015,7 @@
           if (todelete || H.updatedObject (_originalObject,
                                              data, {hadpictures: 1}))
             data["cellId"] = this.settings.cellId;
-          else if (!this.settings.wall[0].dataset.shared)
+          else if (!this.settings.wall.wall ("isShared"))
             return this.cancelEdit ();
           else
             data = null;

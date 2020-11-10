@@ -107,7 +107,7 @@
         {
           wall.showPostitsPlugs ();
 
-          if (wall.element[0].dataset.shared)
+          if (wall.isShared ())
             wall.refresh ();
         }, 0);
     },

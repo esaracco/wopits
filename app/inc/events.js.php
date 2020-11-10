@@ -452,7 +452,7 @@ $(function()
           case "createWallPopup":
 
             var Form = new Wpt_accountForms (),
-                $inputs = $popup.find("input");
+                $inputs = $popup.find ("input");
 
             $popup[0].dataset.noclosure = true;
 
@@ -478,74 +478,9 @@ $(function()
             }
             break;
 
-          // UPDATE wall name and description
-          //TODO Should be a wall() method
+          // Save wall properties
           case "wpropPopup":
-
-            var Form = new Wpt_accountForms (),
-                $inputs = $popup.find("input:visible"),
-                name = H.noHTML ($popup.find(".name input").val ()),
-                description =
-                  H.noHTML ($popup.find(".description textarea").val ());
-
-            $popup[0].dataset.noclosure = true;
-
-            if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
-            {
-              const wallPlugin = $wall.wall ("getClass"),
-                    oldName = wallPlugin.getName (),
-                    $cell = $wall.find ("td"),
-                    oldW = $cell.outerWidth ();
-
-              wallPlugin.setName (name);
-              wallPlugin.setDescription (description);
-
-              wallPlugin.unedit (
-                () =>
-                {
-                  $popup[0].dataset.uneditdone = 1;
-                  $popup.modal ("hide");
-                },
-                () =>
-                {
-                  wallPlugin.setName (oldName);
-                  //FIXME
-                  wallPlugin.edit ();
-                });
-
-              if ($inputs[1] && $inputs[1].value != oldW ||
-                  $inputs[2] && $inputs[2].value != $cell.outerHeight ())
-              {
-                const w = Number ($inputs[1].value) + 1,
-                      h = Number ($inputs[2].value),
-                      cellPlugin = $cell.cell ("getClass"),
-                      __resize = (args)=>
-                      {
-                        $wall.find("thead th:eq(1),td")
-                          .css ("width", args.newW);
-                        $wall.find(".ui-resizable-s")
-                          .css ("width", args.newW + 2);
-
-                        if (args.newH)
-                        {
-                          $wall.find("tbody th,td")
-                            .css ("height", args.newH);
-                          $wall.find(".ui-resizable-e")
-                            .css ("height", args.newH+2);
-                        }
-
-                        wallPlugin.fixSize (args.oldW, args.newW);
-                      };
-
-                __resize ({newW: w, oldW: oldW, newH: h});
-                if ($wall.find("td").outerWidth () != w)
-                  __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
-
-                cellPlugin.edit ();
-                cellPlugin.reorganize ();
-                cellPlugin.unedit ();
-              }
-            }
+            $wall.wall ("saveProperties");
             return;
         }
       }

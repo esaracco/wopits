@@ -1542,6 +1542,77 @@
           });
     },
 
+    // METHOD saveProperties ()
+    saveProperties ()
+    {
+      const plugin = this,
+            $wall = plugin.element,
+            $popup = $("#wpropPopup"),
+            Form = new Wpt_accountForms (),
+            $inputs = $popup.find("input:visible"),
+            name = H.noHTML ($popup.find(".name input").val ()),
+            description =
+              H.noHTML ($popup.find(".description textarea").val ());
+
+      $popup[0].dataset.noclosure = true;
+
+      if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
+      {
+        const oldName = plugin.getName (),
+              $cell = $wall.find ("td"),
+              oldW = $cell.outerWidth ();
+
+        plugin.setName (name);
+        plugin.setDescription (description);
+
+        plugin.unedit (
+          () =>
+          {
+            $popup[0].dataset.uneditdone = 1;
+            $popup.modal ("hide");
+          },
+          () =>
+          {
+            plugin.setName (oldName);
+            //FIXME
+            plugin.edit ();
+          });
+
+        if ($inputs[1] && $inputs[1].value != oldW ||
+            $inputs[2] && $inputs[2].value != $cell.outerHeight ())
+        {
+          const w = Number ($inputs[1].value) + 1,
+                h = Number ($inputs[2].value),
+                cellPlugin = $cell.cell ("getClass"),
+                __resize = (args)=>
+                {
+                  $wall.find("thead th:eq(1),td")
+                    .css ("width", args.newW);
+                  $wall.find(".ui-resizable-s")
+                    .css ("width", args.newW + 2);
+
+                  if (args.newH)
+                  {
+                    $wall.find("tbody th,td")
+                      .css ("height", args.newH);
+                    $wall.find(".ui-resizable-e")
+                      .css ("height", args.newH+2);
+                  }
+
+                  plugin.fixSize (args.oldW, args.newW);
+                };
+
+          __resize ({newW: w, oldW: oldW, newH: h});
+          if ($wall.find("td").outerWidth () != w)
+            __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
+
+          cellPlugin.edit ();
+          cellPlugin.reorganize ();
+          cellPlugin.unedit ();
+        }
+      }
+    },
+
     // METHOD getName ()
     getName ()
     {
@@ -1573,6 +1644,12 @@
       }
     },
 
+    // METHOD isShared ()
+    isShared ()
+    {
+      return this.element[0].dataset.shared;
+    },
+
     // METHOD setShared ()
     setShared (isShared)
     {
@@ -1592,7 +1669,7 @@
       const $div = this.settings.tabLink,
             $span = $div.find ('span.icon');
 
-      if (this.element[0].dataset.shared)
+      if (this.isShared ())
       {
         if (!$span.find(".wallname-icon").length)
         {
@@ -1851,7 +1928,7 @@
     {
       _originalObject = this.serialize ();
 
-      if (!this.settings.shared)
+      if (!this.isShared ())
         return success_cb && success_cb ();
 
       H.request_ws (
@@ -1892,7 +1969,7 @@
 
         if (!H.updatedObject (_originalObject, data))
         {
-          if (!this.settings.shared)
+          if (!this.isShared ())
             return success_cb && success_cb ();
           else
             data = null;

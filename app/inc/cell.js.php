@@ -516,7 +516,7 @@
     // METHOD edit ()
     edit (error_cb)
     {
-      if (!this.settings.wall[0].dataset.shared)
+      if (!this.settings.wall.wall ("isShared"))
         return;
 
       H.request_ws (
