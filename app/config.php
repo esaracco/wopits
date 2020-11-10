@@ -1,8 +1,9 @@
 <?php
 
-// Version
-define ('WPT_LAST_UPDATE', '2020-11-09');
 define ('WPT_VERSION', '0.46alpha3');
+define ('WPT_LAST_UPDATE', '2020-11-10');
+// Use integer here, not boolean!
+define ('WPT_DISPLAY_LATEST_NEWS', 0);
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
 // Important!

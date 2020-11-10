@@ -1733,21 +1733,20 @@ class WHelper
 
         $.get ("/whats_new/latest.php", (d)=>
         {
-          if (d)
-            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>`.replace("%s", "<?=WPT_VERSION?>")+d;
+          if (<?=WPT_DISPLAY_LATEST_NEWS?> && d)
+            d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>${d}<button type="button" class="mt-2 btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button>`.replace("%s", "<?=WPT_VERSION?>");
           else
             d = "<?=_("Upgrade done. Thank you for using wopits!")?>";
 
-          d += `<button type="button" class="mt-2 btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("All latest news...")?></button>`;
-
           $popup.find(".modal-body").html (d);
 
-          $popup.find(".modal-body").find("button")
-            .on("click", function ()
-            {
-              $popup.modal ("hide");
-              H.loadPopup ("userGuide");
-            });
+          if (<?=WPT_DISPLAY_LATEST_NEWS?>)
+            $popup.find(".modal-body").find("button")
+              .on("click", function ()
+              {
+                $popup.modal ("hide");
+                H.loadPopup ("userGuide");
+              });
 
           this.openModal ($popup);
         });
