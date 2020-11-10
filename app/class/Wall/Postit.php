@@ -123,12 +123,11 @@ class Postit extends Wall
   {
     $ret = ['walls' => []];
     $wallsIds = [];
+    $oldWallId = $this->wallId;
 
     try
     {
       $this->beginTransaction ();
-
-      $stmtD = $this->prepare ('DELETE FROM postits WHERE id = ?');
 
       foreach ($this->data->postits as $_postitId)
       {
@@ -136,7 +135,11 @@ class Postit extends Wall
         if ( ($wallId = $this->checkPostitAccess (WPT_WRIGHTS_RW, $_postitId) ))
         {
           $wallsIds[] = $wallId;
-          $stmtD->execute ([$_postitId]);
+
+          $this->wallId = $wallId;
+          $r = $this->deletePostit ($_postitId);
+          if (isset ($r['error']))
+            throw new \Exception ("Postit `$_postitId` can not be deleted!");
         }
       }
 
@@ -151,6 +154,8 @@ class Postit extends Wall
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
     }
+
+    $this->wallId = $oldWallId;
 
     return $ret;
   }
