@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-09 20:43+0100\n"
-"PO-Revision-Date: 2020-11-09 20:40+0100\n"
+"POT-Creation-Date: 2020-11-10 04:44+0100\n"
+"PO-Revision-Date: 2020-11-10 04:44+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -421,9 +421,6 @@ msgstr "Tous les murs disponibles sont ouverts."
 
 msgid "All features are available again"
 msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
-
-msgid "All latest news..."
-msgstr "Toutes les dernières nouvelles..."
 
 msgid "An error occured while cloning the wall."
 msgstr "Une erreur est survenue durant le clonage du fichier."
@@ -1129,6 +1126,9 @@ msgstr "Rechercher"
 msgid "Search..."
 msgstr "Rechercher..."
 
+msgid "See more..."
+msgstr "Voir plus..."
+
 msgid "Send"
 msgstr "Envoyer"
 
@@ -1683,6 +1683,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "All latest news..."
+#~ msgstr "Toutes les dernières nouvelles..."
 
 #~ msgid "Batch actions"
 #~ msgstr "Actions par lots"
