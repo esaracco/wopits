@@ -1115,7 +1115,7 @@ class WHelper
       boundary: "window"
     }).popover ("show");
 
-    //FIXME If not, "title" element property is used by default
+    //FIXME To prevent "title" element property to be used by default
     $(".popover-header").last().html (args.title);
   
     let buttons;

@@ -530,7 +530,6 @@
     },
 
     // METHOD refreshPostitsPlugs ()
-    //FIXME //TODO Optimize
     refreshPostitsPlugs (plugs, partial = false)
     {
       if (S.getCurrent("filters").hasClass ("plugs-hidden"))

@@ -498,7 +498,6 @@ select.timezone {
   border-bottom-left-radius:.2rem;
 }
 
-/*FIXME*/
 #postitAttachmentsPopup,
 #swallPopup {
   z-index:5015;

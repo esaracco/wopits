@@ -41,7 +41,7 @@ class Helper
 
   public static function unaccent (string $str):string
   {
-    //FIXME iconv does not work with user search.
+    //FIXME iconv does not work here with user search.
     //return strtolower (iconv ('utf-8', 'ascii//TRANSLIT', $str));
 
     return

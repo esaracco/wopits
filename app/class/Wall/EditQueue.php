@@ -214,7 +214,6 @@ class EditQueue extends Wall
                          ->execute ([$_postit->id]);
                   }
 
-                  //FIXME
                   $ret = ['wall' => [
                     'id' => $this->wallId,
                     'partial' => 'plugs',
@@ -334,7 +333,6 @@ class EditQueue extends Wall
             {
               $this->updateCells ();
 
-              //FIXME
               $ret['wall'] = $this->getWall ();
             }
 
@@ -347,7 +345,6 @@ class EditQueue extends Wall
               $this->updateHeaders ();
               $this->updateCells ();
 
-              //FIXME
               $ret['wall'] = $this->getWall ();
             }
 

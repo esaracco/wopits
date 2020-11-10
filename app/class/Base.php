@@ -204,7 +204,6 @@ class Base extends \PDO
       Helper::getSecureSystemName ("/users/{$this->userId}");
   }
 
-  //protected function getWallDir (string $type = null):string
   protected function getWallDir (string $type = null, int $wallId = null):string
   {
     if (!$wallId)
