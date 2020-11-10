@@ -62,6 +62,10 @@ img {
   font-weight:bold;
 }
 
+#aboutPopup .btn {
+  color:#fff !important;
+}
+
 .project-title {
   line-height:1.2rem;
   font-style:italic;
@@ -1776,7 +1780,8 @@ i.set {
 
 textarea:focus,
 input:focus,
-button:focus {
+button:focus,
+a.btn:focus {
   box-shadow: none !important;
   outline: 0 !important;
 }

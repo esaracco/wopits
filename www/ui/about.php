@@ -29,8 +29,8 @@
 
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="YJE4Z8T66QLQ4">
           <p class="desc mt-3 mb-1 text-center">
-            <button class="btn btn-secondary btn-xs" type="button" target="_blank" onclick="window.open('https://github.com/esaracco/wopits/issues', '_blank');return false"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></button>
-            <button class="btn btn-secondary btn-xs" type="button" target="_blank" onclick="window.open('https://twitter.com/esaracco', '_blank');return false"><i class="fab fa-twitter fa-fw"></i> <?=_("@author")?></button>
+            <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://github.com/esaracco/wopits/issues"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></a>
+            <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://twitter.com/esaracco"><i class="fab fa-twitter fa-fw"></i> <?=_("@author")?></a>
             <button class="btn btn-secondary btn-xs"><i class="fas fa-donate fa-fw"></i> <?=_("Support")?></button>
           </p>
         </form>
