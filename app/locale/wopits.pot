@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-11 21:26+0100\n"
+        "POT-Creation-Date: 2020-11-11 21:30+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,6 +42,9 @@ msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Meta menu</b> Fixed a issue with 
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed a issue with users search.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed issues with read-only sharing.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now act on several notes at the same time by selecting them with <kbd>ctrl+click</kbd>. A floating Meta menu will appear. It is possible to select as many notes as you want among all your opened walls.</p><p><b><i class='fas fa-smile-beam fa-fw'></i>Search inputs</b> Search inputs can now be cleared using the <i class='fas fa-broom fa-sm'></i> icon.</p>"
