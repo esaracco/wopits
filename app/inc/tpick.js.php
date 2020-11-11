@@ -126,21 +126,21 @@
     // METHOD refreshPostitDataTag ()
     refreshPostitDataTag ($postit)
     {
-      const postit0 = $postit ? $postit[0] : S.getCurrent("postit")[0];
+      const postit = $postit ? $postit[0] : S.getCurrent("postit")[0];
       let dataTag = "";
 
-      postit0.querySelectorAll(".postit-tags i").forEach (
+      postit.querySelectorAll(".postit-tags i").forEach (
         (tag) => dataTag += ','+tag.dataset.tag);
 
       if (dataTag)
         dataTag += ",";
 
-      postit0.dataset.tags = dataTag;
+      postit.dataset.tags = dataTag;
 
       if (dataTag)
-        postit0.querySelector(".postit-tags").style.display = "block";
+        postit.querySelector(".postit-tags").style.display = "block";
       else
-        postit0.querySelector(".postit-tags").style.display = "none";
+        postit.querySelector(".postit-tags").style.display = "none";
     },
 
     // METHOD getHTMLFromString ()

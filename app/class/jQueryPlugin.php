@@ -4,17 +4,19 @@ namespace Wopits;
 
 class jQueryPlugin
 {
-  private $name, $defaultSettings;
+  private $name, $defaultSettings, $type;
 
-  public function __construct (string $name, string $defaultSettings = '')
+  public function __construct (string $name, string $defaultSettings = '',
+                               string $type = '')
   {
     $this->name = $name;
     $this->defaultSettings = $defaultSettings;
+    $this->type = $type;
   }
 
   public function getHeader ():string
   {
-    return <<<EOC
+    $js = <<<EOC
 ;(function ($, window, document, undefined)
 {
 "use strict";
@@ -28,8 +30,27 @@ const Plugin = function (element)
 
   // METHOD getSettings ()
   this.getSettings = ()=> this.settings;
-}
 EOC;
+
+    if ($this->type == 'wallElement')
+    {
+      $rw = WPT_WRIGHTS_RW;
+      $adm = WPT_WRIGHTS_ADMIN;
+
+      $js .= <<<EOC
+  // METHOD getId ()
+  this.getId  = ()=> this.settings.id;
+
+  // METHOD canWrite ()
+  this.canWrite = ()=>
+  {
+    const a = this.settings.access||S.getCurrent("wall")[0].dataset.access;
+    return a == $rw || a == $adm;
+  };
+EOC;
+    }
+
+    return "$js}";
   }
 
   public function getFooter ():string

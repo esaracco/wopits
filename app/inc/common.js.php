@@ -1414,7 +1414,7 @@ class WHelper
             this.displayMsg ({
               type: "warning",
               msg: args.msg ||
-                     "<?=_("An error occured while uploading file!")?>"
+                     "<?=_("An error occured while downloading file!")?>"
             });
         }
       };
@@ -1432,7 +1432,7 @@ class WHelper
       {
         this.displayMsg ({
           type: "warning",
-          msg: "<?=_("The requested file is no longer available for download!")?>"
+          msg: "<?=_("The file is no longer available for download!")?>"
         });
       }
       else

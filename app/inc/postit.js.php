@@ -11,7 +11,7 @@
 
   use Wopits\DbCache;
 
-  $Plugin = new Wopits\jQueryPlugin ('postit');
+  $Plugin = new Wopits\jQueryPlugin ('postit', '', 'wallElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -240,11 +240,10 @@
       const $menu = this.$menu,
             postitPlugin = this.postitPlugin,
             $postit = postitPlugin.element,
-            postit0 = $postit[0],
+            postit = $postit[0],
             postitSettings = postitPlugin.settings,
             $wall = postitSettings.wall,
-            writeAccess = H.checkAccess (
-              "<?=WPT_WRIGHTS_RW?>", postitSettings.access);
+            writeAccess = postitPlugin.canWrite ();
 
       // Menu events
       $menu.find(">span")
@@ -335,7 +334,7 @@
                   S.set ("link-from", {id: postitSettings.id, obj: $postit});
 
                   _plugRabbit.line = new LeaderLine (
-                    postit0,
+                    postit,
                     $(`<div id="plug-rabbit" style="left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
                     {
                       size: 3,
@@ -366,7 +365,7 @@
                       {
                         postitPlugin.unedit ();
 
-                        postit0.dataset.undo =
+                        postit.dataset.undo =
                           "delete|"+postitPlugin.removePlugs();
                         $menu.find("[data-action='undo-plug'] a")
                           .removeClass ("disabled")
@@ -379,7 +378,7 @@
 
             case "undo-plug":
 
-              const [action, ids] = postit0.dataset.undo.split ("|");
+              const [action, ids] = postit.dataset.undo.split ("|");
 
               postitPlugin.resetPlugsUndo ();
 
@@ -416,7 +415,7 @@
                           endId: endId,
                           label: label,
                           obj: postitPlugin.getPlugTemplate (
-                                 postit0, $end[0], label)
+                                 postit, $end[0], label)
                         });
                       }
                       else
@@ -447,20 +446,19 @@
     {
       const plugin = this,
             $postit = plugin.element,
-            postit0 = $postit[0],
+            postit = $postit[0],
             settings = plugin.settings,
             $wall = settings.wall,
-            writeAccess = H.checkAccess (
-              "<?=WPT_WRIGHTS_RW?>", settings.access);
+            writeAccess = plugin.canWrite ();
 
       settings._plugs = [];
-      postit0.dataset.id = "postit-"+settings.id;
-      postit0.dataset.order = settings.item_order;
-      postit0.className = settings.classes || "postit";
-      postit0.dataset.tags = settings.tags || "";
+      postit.dataset.id = "postit-"+settings.id;
+      postit.dataset.order = settings.item_order;
+      postit.className = settings.classes || "postit";
+      postit.dataset.tags = settings.tags || "";
 
       if (settings.obsolete)
-        postit0.classList.add ("obsolete");
+        postit.classList.add ("obsolete");
 
       $postit
         .css({
@@ -580,8 +578,8 @@
   
               S.set ("revertData", {
                 revert: false,
-                width: postit0.clientWidth,
-                height: postit0.clientHeight
+                width: postit.clientWidth,
+                height: postit.clientHeight
               });
 
               plugin.edit (
@@ -665,7 +663,7 @@
     openPostit (item)
     {
       // Open modal with read rights only
-      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access))
+      if (!this.canWrite ())
       {
         if (!this.openAskForExternalRefPopup ({item: item}))
           this.open ();
@@ -688,7 +686,7 @@
             title = this.element.find(".postit-header .title").text (),
             content = postit.querySelector(".postit-edit").innerHTML||"";
 
-      if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access))
+      if (plugin.canWrite ())
       {
         const $popup = $("#postitUpdatePopup");
 
@@ -957,8 +955,7 @@
 
       if (pos)
       {
-        const writeAccess = H.checkAccess (
-                "<?=WPT_WRIGHTS_RW?>", this.settings.access),
+        const writeAccess = this.canWrite (),
               menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
 
         plug.labelObj = $(`<div class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
@@ -1188,12 +1185,6 @@
         });
     },
 
-    // METHOD getId ()
-    getId ()
-    {
-      return this.settings.id;
-    },
-
     // METHOD getCellId ()
     getCellId ()
     {
@@ -1285,7 +1276,8 @@
     {
       const postit = this.element[0],
             date = postit.querySelector (".dates .end"),
-            {deadline, alertshift, timezone} = args;
+            {deadline, alertshift, timezone} = args,
+            reset = date.querySelector("i.fa-times-circle");
       let human;
 
       if (!deadline || isNaN (deadline))
@@ -1294,6 +1286,8 @@
         human = (deadline) ? H.getUserDate(deadline, timezone) : "...";
 
       date.querySelector("span").innerText = human;
+
+      reset.style.display = "none";
 
       if (human == "...")
       {
@@ -1306,7 +1300,6 @@
 
         date.classList.remove ("with-alert");
         date.classList.remove ("obsolete");
-        date.querySelector("i.fa-times-circle").style.display = "none";
       }
       else
       {
@@ -1327,9 +1320,8 @@
           }
         }
 
-        if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-          date.querySelector("i.fa-times-circle")
-            .style.display = "inline-block";
+        if (this.canWrite ())
+          reset.style.display = "inline-block";
       }
     },
 
@@ -1550,8 +1542,6 @@
     // METHOD displayAttachments ()
     displayAttachments ()
     {
-      const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
-
       H.request_ajax (
         "GET",
         "wall/"+this.settings.wallId+
@@ -1570,8 +1560,7 @@
             },
             cb: ($p)=>
             {
-              const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
-
+              const writeAccess = this.canWrite ();
               let body = '';
 
               d = d.files;
@@ -1670,7 +1659,7 @@
     update (d, cell)
     {
       const $postit = this.element,
-            postit0 = $postit[0],
+            postit = $postit[0],
             $tpick = S.getCurrent ("tpick"),
             tz = wpt_userData.settings.timezone;
 
@@ -1684,7 +1673,7 @@
         $postit.appendTo (this.settings.cell);
 
         if (this.settings.cell[0].classList.contains ("postit-mode"))
-          postit0.style.visibility = "visible";
+          postit.style.visibility = "visible";
       }
 
       if (!d.ignoreResize)
@@ -1707,16 +1696,16 @@
 
       this.setDeadline (d);
 
-      postit0.dataset.order = d.item_order||0;
+      postit.dataset.order = d.item_order||0;
 
       if (!d.obsolete)
-        postit0.classList.remove ("obsolete");
+        postit.classList.remove ("obsolete");
 
       if (!d.tags)
         d.tags = "";
-      postit0.dataset.tags = d.tags;
+      postit.dataset.tags = d.tags;
 
-      postit0.querySelector(".postit-tags").innerHTML =
+      postit.querySelector(".postit-tags").innerHTML =
         $tpick.tpick ("getHTMLFromString", d.tags);
 
       $tpick.tpick ("refreshPostitDataTag", $postit);
@@ -1840,7 +1829,7 @@
       let data = null,
           todelete;
 
-      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+      if (!this.canWrite ())
         return this.cancelEdit (args);
 
       if (!args.plugend)

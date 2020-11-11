@@ -139,7 +139,7 @@ class Wall extends Base
           $file, base64_decode(str_replace(' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file."));
+          throw new \Exception (_("An error occured while uploading file!"));
 
         ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
           ->execute ([$headerId]);

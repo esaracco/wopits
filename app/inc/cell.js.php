@@ -9,7 +9,8 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('cell', 'width: 300, height: 200');
+  $Plugin = new Wopits\jQueryPlugin ('cell', 'width: 300, height: 200',
+                                     'wallElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -27,8 +28,7 @@
             cellId = settings.id,
             usersettings = settings.usersettings,
             $wall = settings.wall,
-            writeAccess =
-              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", settings.access);
+            writeAccess = plugin.canWrite ();
       // Coords of touchstart on touch devices
       let _coords = null;
 
@@ -245,17 +245,16 @@
       const plugin = this,
             $cell = plugin.element,
             $displayMode = $cell.find (".cell-menu i"),
-            writeAccess =
-              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", plugin.settings.access);
+            writeAccess = plugin.canWrite ();
 
       // If we must display list
       // list-mode
       if (type == "list-mode")
       {
-        const cell0 = $cell[0],
-              cellWidth = cell0.clientWidth,
-              cellHeight = cell0.clientHeight,
-              postits = Array.from (cell0.querySelectorAll (".postit")),
+        const cell = $cell[0],
+              cellWidth = cell.clientWidth,
+              cellHeight = cell.clientHeight,
+              postits = Array.from (cell.querySelectorAll (".postit")),
               sortable = (writeAccess && postits.length > 1);
 
         $cell.removeClass("postit-mode").addClass ("list-mode");
@@ -329,7 +328,7 @@
               else
               {
                 ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i)=>
-                  cell0.querySelector(".postit[data-id='"+li.dataset.id+"']")
+                  cell.querySelector(".postit[data-id='"+li.dataset.id+"']")
                     .dataset.order = i+1);
 
                 plugin.unedit ();
@@ -355,7 +354,7 @@
 
         $displayMode[0].classList.replace ("fa-list-ul", "fa-sticky-note");
 
-        if (!S.get ("zoom-level"))
+        if (writeAccess && !S.get ("zoom-level"))
           $cell.resizable ("enable");
       }
     },
@@ -406,12 +405,6 @@
     {
       this.element[0].querySelectorAll(".postit.with-plugs").forEach (
         (p)=> $(p).postit ("removePlugs", true));
-    },
-
-    // METHOD getId ()
-    getId ()
-    {
-      return this.settings.id;
     },
 
     // METHOD reorganize ()
@@ -488,14 +481,14 @@
     update (d)
     {
       const $cell = this.element,
-            cell0 = $cell[0],
-            chgH = (cell0.clientHeight + 1 != d.height),
-            chgW = (cell0.clientWidth + 1 != d.width);
+            cell = $cell[0],
+            chgH = (cell.clientHeight + 1 != d.height),
+            chgW = (cell.clientWidth + 1 != d.width);
 
       if (chgH || chgW)
       {
-        cell0.style.width = d.width+"px";
-        cell0.style.height = d.height+"px";
+        cell.style.width = d.width+"px";
+        cell.style.height = d.height+"px";
  
         if (chgW)
           $cell.find(">div.ui-resizable-s").css ("width", d.width + 2);

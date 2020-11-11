@@ -11,7 +11,7 @@
 
   use Wopits\DbCache;
 
-  $Plugin = new Wopits\jQueryPlugin ('header');
+  $Plugin = new Wopits\jQueryPlugin ('header', '', 'wallElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -596,13 +596,7 @@
         // error cb
         () => this.cancelEdit (args.bubble_cb)
       );
-    },
-
-    // METHOD getId ()
-    getId ()
-    {
-      return this.settings.id;
-    },
+    }
   };
 
   $(function()

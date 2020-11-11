@@ -697,7 +697,7 @@ class Postit extends Wall
           $file, base64_decode (str_replace (' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file."));
+          throw new \Exception (_("An error occured while uploading file!"));
 
         list ($file, $this->data->item_type, $width, $height) =
           Helper::resizePicture ($file, 800, 0, false);

@@ -9,7 +9,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('wall');
+  $Plugin = new Wopits\jQueryPlugin ('wall', '', 'wallElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -44,11 +44,11 @@
     {
       const plugin = this,
             $wall = plugin.element,
-            wall0 = $wall[0],
+            wall = $wall[0],
             settings = plugin.settings,
             wallId = settings.id,
             access = settings.access,
-            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>", access),
+            writeAccess = this.canWrite (),
             rows = [];
 
       settings.tabLink =
@@ -66,9 +66,9 @@
           .appendTo ("body");
 
       if (settings.restoring)
-        wall0.dataset.restoring = 1;
+        wall.dataset.restoring = 1;
 
-      wall0.dataset.displaymode = settings.displaymode;
+      wall.dataset.displaymode = settings.displaymode;
 
       plugin.setName (settings.name, true);
 
@@ -169,8 +169,8 @@
 
           $wall.show ("fade");
 
-          wall0.dataset.cols = hcols.length;
-          wall0.dataset.rows = hrows.length;
+          wall.dataset.cols = hcols.length;
+          wall.dataset.rows = hrows.length;
 
           plugin.setName (settings.name);
           plugin.setDescription (settings.description);
@@ -180,7 +180,7 @@
           if (settings.restoring)
           {
             delete settings.restoring;
-            wall0.removeAttribute ("data-restoring");
+            wall.removeAttribute ("data-restoring");
           }
 
           // Set wall users view count if needed
@@ -292,12 +292,6 @@
       $("#wall-"+this.settings.id).addClass ("active");
 
       this.menu ({from: "wall", type: "have-wall"});
-    },
-
-    // METHOD getId ()
-    getId ()
-    {
-      return this.settings.id;
     },
 
     // METHOD menu ()
@@ -621,7 +615,7 @@
     {
       const plugin = this,
             $wall = plugin.element,
-            wall0 = $wall[0],
+            wall = $wall[0],
             __refreshWallBasicProperties = (d)=>
             {
               plugin.setShared (d.shared);
@@ -692,9 +686,9 @@
 
         _refreshing = true;
 
-        wall0.dataset.cols = colsCount;
-        wall0.dataset.rows = rowsCount;
-        wall0.dataset.oldwidth = d.width;
+        wall.dataset.cols = colsCount;
+        wall.dataset.rows = rowsCount;
+        wall.dataset.oldwidth = d.width;
 
         __refreshWallBasicProperties (d);
 
@@ -726,7 +720,7 @@
         for (let i = 0; i < rowsCount; i++)
           rowsHeadersIds[d.headers.rows[i].id] = true;
 
-        wall0.querySelectorAll("tbody th").forEach ((th)=>
+        wall.querySelectorAll("tbody th").forEach ((th)=>
           {
             const $header = $(th);
 
@@ -744,7 +738,7 @@
         for (let i = 0; i < colsCount; i++)
           colsHeadersIds[d.headers.cols[i].id] = true;
 
-        wall0.querySelectorAll("thead th").forEach ((th)=>
+        wall.querySelectorAll("thead th").forEach ((th)=>
           {
             const $header = $(th),
                   idx = $header.index ();
@@ -754,7 +748,7 @@
               if (!colsHeadersIds[$header.header ("getId")])
               {
                 $wall.find("thead th:eq("+idx+")").remove ();
-                wall0.querySelectorAll("tbody tr").forEach ((tr)=>
+                wall.querySelectorAll("tbody tr").forEach ((tr)=>
                   {
                     const $cell = $(tr).find("td:eq("+(idx-1)+")");
 
@@ -1747,17 +1741,17 @@
       const $zoom = $(".tab-content.walls"),
             zoom0 = $zoom[0],
             $wall = this.element,
-            wall0 = $wall[0],
+            wall = $wall[0],
             from = args.from,
             type = args.type,
             noalert = !!args.noalert,
             zoomStep = (!!args.step) ? args.step : 0.2,
-            writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
+            writeAccess = this.canWrite ();
 
       if (!args.step)
       {
-        wall0.style.top = 0;
-        wall0.style.left = "15px";
+        wall.style.top = 0;
+        wall.style.left = "15px";
       }
 
       if (type == "screen")
@@ -1793,7 +1787,7 @@
           });
 
         // Deactivate some features
-        if (wall0.classList.contains ("ui-draggable"))
+        if (wall.classList.contains ("ui-draggable"))
           $wall.draggable ("disable");
         $wall.find(".cell-menu").hide ();
         this.UIPluginCtrl (".cell-list-mode ul",
@@ -1851,7 +1845,7 @@
           });
 
         // Reavtivate some previously deactivated features
-        if (wall0.classList.contains ("ui-draggable"))
+        if (wall.classList.contains ("ui-draggable"))
           $wall.draggable ("enable");
         $wall.find(".cell-menu").show ();
         this.UIPluginCtrl (".cell-list-mode ul",

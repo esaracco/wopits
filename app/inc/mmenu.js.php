@@ -280,9 +280,10 @@
     {
       const p = _data.postits[id];
 
-      p.settings.cell[0].querySelectorAll(
-        ".selected[data-id='"+p.element[0].dataset.id+"']")
-           .forEach ((_p)=> _p.classList.remove ("selected"));
+      if (p)
+        p.settings.cell[0].querySelectorAll(
+          ".selected[data-id='"+p.element[0].dataset.id+"']")
+             .forEach ((_p)=> _p.classList.remove ("selected"));
 
       delete _data.postits[id];
 
