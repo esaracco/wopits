@@ -104,14 +104,15 @@ let _lastStr = "",
     // METHOD reset ()
     reset (args)
     {
-      const $ac = this.element;
+      const ac = this.element[0],
+            input = ac.querySelector ("input");
 
       if (!args)
         args = {};
 
       if (!!args.full)
       {
-        $ac[0].removeAttribute ("data-delegateadminid");
+        ac.removeAttribute ("data-delegateadminid");
 
         args["field"] = true;
         args["users"] = true;
@@ -120,12 +121,15 @@ let _lastStr = "",
       }
 
       if (!!args.field)
-        $ac.find("input").val ("");
+        input.value = "";
 
-      $ac.find(".result .content").empty ();
-      $ac.find(".result button.closemenu").hide ();
-      $ac.find(".search").removeClass ("shadow");
-      $ac.find("input").removeClass ("autocomplete");
+      if (!input.value)
+        _lastStr = "";
+
+      input.classList.remove ("autocomplete");
+      ac.querySelector(".result .content").innerHTML = "";
+      ac.querySelector(".result button.closemenu").style.display = "hidden";
+      ac.querySelector(".search").classList.remove ("shadow");
     },
 
     // METHOD removeGroupUser ()
@@ -178,7 +182,7 @@ let _lastStr = "",
 
           args["str"] = this.element.find("input").val ();
 
-          this.search (args);
+          this.search (args, true);
 
           $("#swallPopup").swall ("displayGroups");
         });
@@ -232,21 +236,27 @@ let _lastStr = "",
     },
 
     // METHOD search ()
-    search (args)
+    search (args, force)
     {
-      const $ac = this.element,
+      const ac = this.element[0],
             wallId = S.getCurrent("wall").wall ("getId"),
-            groupId = $ac[0].dataset.groupid;
-      let service = "group/"+groupId+"/searchUsers/"+args.str,
-          data = null;
+            service = "group/"+ac.dataset.groupid+"/searchUsers/"+args.str;
+      let data = null;
 
       args.str = args.str.replace (/&/, "");
 
-      if (!args.str ||
-          args.str == _lastStr ||
-          (_noResultStr &&
-           args.str != _noResultStr &&
-           args.str.indexOf (_noResultStr) != -1))
+      if (!force &&
+          (
+            !args.str ||
+            args.str == _lastStr ||
+            (
+              args.str.length > _lastStr.length &&
+              _noResultStr &&
+               args.str != _noResultStr &&
+               args.str.indexOf (_noResultStr) != -1
+            )
+          )
+        )
         return;
 
       _lastStr = args.str;
@@ -271,14 +281,14 @@ let _lastStr = "",
 
           if (html)
           {
-            $ac.find(".result button.closemenu").show ();
-            $ac.find(".search").addClass ("shadow");
-            $ac.find("input").addClass ("autocomplete");
+            ac.querySelector(".result button.closemenu").style.display= "block";
+            ac.querySelector(".search").classList.add ("shadow");
+            ac.querySelector("input").classList.add ("autocomplete");
           }
           else
             this.reset ();
           
-          $ac.find(".result .content").html (html);
+          ac.querySelector(".result .content").innerHTML = html;
         }
       );
     },
