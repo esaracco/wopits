@@ -664,12 +664,8 @@
     // METHOD openPostit ()
     openPostit (item)
     {
-      const writeAccess = H.checkAccess (
-              "<?=WPT_WRIGHTS_RW?>", this.settings.access),
-            $wall = this.settings.wall;
-
       // Open modal with read rights only
-      if (!writeAccess)
+      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access))
       {
         if (!this.openAskForExternalRefPopup ({item: item}))
           this.open ();
@@ -690,11 +686,9 @@
       const plugin = this,
             postit = plugin.element[0],
             title = this.element.find(".postit-header .title").text (),
-            content = postit.querySelector(".postit-edit").innerHTML||"",
-            writeAccess =
-              H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access);
+            content = postit.querySelector(".postit-edit").innerHTML||"";
 
-      if (writeAccess)
+      if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>", this.settings.access))
       {
         const $popup = $("#postitUpdatePopup");
 
@@ -719,7 +713,7 @@
         if (!H.haveMouse ())
           H.fixVKBScrollStart ();
 
-        H.openModal ($popup, _getMaxEditModalWidth (content));
+        H.openModal ($("#postitUpdatePopup"), _getMaxEditModalWidth (content));
       }
       else
       {
