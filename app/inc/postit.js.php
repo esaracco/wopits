@@ -468,66 +468,8 @@
           top: settings.item_top,
           left: settings.item_left
         })
-        // EVENTS mouseenter focusin click on postit
-        .on("mouseenter focusin click", function(e)
-          {
-            const $oldPostit = S.get ("postit-oldzindex");
-
-            if ($oldPostit && $oldPostit.obj.postit ("getId") != settings.id)
-              _resetZIndexData ();
-
-            if (!S.get ("postit-oldzindex"))
-            {
-              S.set ("postit-oldzindex", {
-                zIndex: $postit.css ("z-index"),
-                obj: $postit
-              });
-
-              $postit.css ("z-index", 5000);
-            }
-          })
-        // EVENTS mouseleave focusout on postit
-        .on("mouseleave focusout",function(e)
-          {
-            const $currentPostit = S.getCurrent ("postit");
-
-            if (H.haveMouse() &&
-                (!$currentPostit || !$currentPostit.length) &&
-                S.get ("postit-oldzindex") &&
-                !$("#popup-layer").length &&
-                !$(".modal:visible").length)
-            {
-              _resetZIndexData ();
-            }
-          })
-        .on("click", function (e)
-          {
-            if (e.ctrlKey)
-            {
-              e.stopImmediatePropagation ();
-              e.preventDefault ();
-
-              const menu = S.getCurrent("mmenu").mmenu ("getClass");
-              if (postit0.classList.contains ("selected"))
-                menu.remove (settings.id);
-              else
-                menu.add (plugin);
-            }
-          })
-        // Append header, dates, attachment count and tags
-        .append (`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><i class="far fa-clock fa-xs"></i> <span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle"></i><i class="fas fa-hourglass-end fa-xs"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`)
-        .find(".attachmentscount")
-        // EVENT click on attachment count
-        .on("click", function ()
-          {
-            if (writeAccess)
-              plugin.openAttachments ();
-            else
-            {
-              plugin.setCurrent ();
-              plugin.displayAttachments ();
-            }
-          });
+        // Append menu, header, dates, attachment count and tags
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -618,7 +560,7 @@
         })
         // RESIZABLE post-it
         .resizable ({
-          handles: "all",
+          handles: (H.haveMouse()) ? "all":"n, e, w, ne, se, sw, nw",
           autoHide: false,
           resize: function(e, ui)
           {
@@ -677,88 +619,9 @@
 
         $postit.find(".postit-edit")
           // EVENT doubletap on content
-          .doubletap ((e)=> !e.ctrlKey && !S.get("still-dragging") &&
-                            plugin.openPostit());
+          .doubletap ((e)=>
+            !e.ctrlKey && !S.get("still-dragging") && plugin.openPostit());
   
-        // Append menu button
-        $postit.prepend($(`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`)
-          // EVENT click on menu button
-          .on("click", function(e)
-            {
-              const btn = this.querySelector ("i"),
-                    id = settings.id,
-                    $header = $postit.find (".postit-header");
-
-              // Create postit menu and show it
-              if (!settings.Menu)
-              {
-                const coord = $header[0].getBoundingClientRect ();
-
-                $wall.wall ("closeAllMenus");
-
-                settings.Menu = new _Menu (plugin);
-
-                if ((coord.x||coord.left)+settings.Menu.getWidth()+20 >
-                      $(window).width())
-                {
-                  btn.classList
-                    .replace ("fa-caret-square-up", "fa-caret-square-left");
-                  settings.Menu.setPosition ("left");
-                }
-                else
-                  settings.Menu.setPosition ("right");
-
-                $header.addClass ("menu");
-                btn.classList.replace ("far", "fas");
-
-                settings.Menu.show ();
-              }
-              // Destroy postit menu
-              else
-              {
-                $header.removeClass ("menu");
-                btn.classList.replace("fas", "far");
-                btn.classList
-                  .replace ("fa-caret-square-left", "fa-caret-square-up");
-
-                settings.Menu.destroy ();
-                delete settings.Menu;
-              }
-            }));
-
-        $postit.find(".postit-tags")
-          // EVENT mousedown on tags
-          .on("mousedown", function (e)
-          {
-            e.stopImmediatePropagation ();
-
-            plugin.edit (null, () =>
-              S.getCurrent("tpick").tpick ("open", e));
-          });
-
-        $postit.find(".dates .end")
-          // EVENT click on dates
-          .on("click", function(e)
-            {
-              const $item = $(e.target);
-  
-              if ($item.hasClass("fa-times-circle"))
-              {
-                plugin.edit (null, () =>
-                {
-                  H.openConfirmPopover ({
-                    item: $item,
-                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
-                    content: "<?=_("Reset deadline?")?>",
-                    cb_close: () => plugin.unedit (),
-                    cb_ok: () => plugin.resetDeadline ()
-                  });
-                });
-              }
-              else
-                plugin.openDatePicker ()
-            });
-
         // Make postit title editable
         $postit.find(".title").editable ({
           wall: $wall,
@@ -778,14 +641,6 @@
           }
         });
       }
-      else
-        $postit.find(".postit-edit,.postit-header,.postit-tags,.dates")
-          // EVENT click on postit
-          .click (function (e)
-          {
-            if (!e.ctrlKey && !S.get ("still-dragging"))
-              plugin.openPostit ();
-          });
 
       if (settings.creationdate)
         plugin.update (settings);
@@ -1479,7 +1334,8 @@
         }
 
         if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-          date.querySelector("i.fa-times-circle").style.display = "block";
+          date.querySelector("i.fa-times-circle")
+            .style.display = "inline-block";
       }
     },
 
@@ -2205,8 +2061,172 @@
           statusbar: false
         });
 
+      // EVENTS mouseenter focusin click on postit
+      $(document).on("mouseenter focusin click", ".postit", function (e)
+        {
+          const id = this.dataset.id.substring (7);
+
+          if (e.type == "click" && e.ctrlKey)
+          {
+            const menu = S.getCurrent("mmenu").mmenu ("getClass");
+
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
+
+            if (this.classList.contains ("selected"))
+              menu.remove (id);
+            else
+              menu.add ($(this).postit ("getClass"));
+          }
+          else
+          {
+            const $oldPostit = S.get ("postit-oldzindex");
+
+            if ($oldPostit && $oldPostit.obj.postit("getId") != id)
+              _resetZIndexData ();
+
+            if (!S.get ("postit-oldzindex"))
+            {
+              S.set ("postit-oldzindex", {
+                zIndex: this.style.zIndex,
+                obj: $(this)
+              });
+
+              this.style.zIndex = 5000;
+            }
+          }
+        });
+
+        // EVENTS mouseleave focusout on postit
+        $(document).on("mouseleave focusout", ".postit", function ()
+          {
+            const $currentPostit = S.getCurrent ("postit");
+
+            if (H.haveMouse() &&
+                (!$currentPostit || !$currentPostit.length) &&
+                S.get ("postit-oldzindex") &&
+                !$("#popup-layer").length &&
+                !$(".modal:visible").length)
+            {
+              _resetZIndexData ();
+            }
+          });
+
+        // EVENT mousedown on tags
+        $(document).on("mousedown", ".postit-tags", function (e)
+          {
+            e.stopImmediatePropagation ();
+
+            if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+              return;
+
+            $(this.parentNode).postit ("edit", null,
+              () => S.getCurrent("tpick").tpick ("open", e));
+          });
+
+        // EVENT click on dates
+        $(document).on("click", ".postit .dates .end", function (e)
+          {
+            if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+              return;
+
+            const $item = $(e.target),
+                  plugin = $(this.parentNode.parentNode).postit ("getClass");
+
+            if ($item.hasClass("fa-times-circle"))
+            {
+              plugin.edit (null, () =>
+              {
+                H.openConfirmPopover ({
+                  item: $item,
+                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
+                  content: "<?=_("Reset deadline?")?>",
+                  cb_close: () => plugin.unedit (),
+                  cb_ok: () => plugin.resetDeadline ()
+                });
+              });
+            }
+            else
+              plugin.openDatePicker ();
+          });
+
+        // EVENT click on attachment count
+        $(document).on("click", ".attachmentscount", function (e)
+          {
+            const plugin = $(this.parentNode).postit ("getClass");
+
+            if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+              plugin.openAttachments ();
+            else
+            {
+              plugin.setCurrent ();
+              plugin.displayAttachments ();
+            }
+          });
+
+          // EVENT click on menu button
+        $(document).on("click", ".postit .btn-menu", function (e)
+          {
+            if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+              return;
+
+            const btn = this.querySelector ("i"),
+                  $postit = $(this.parentNode),
+                  id = $postit.postit ("getId"),
+                  settings = $postit.postit ("getSettings"),
+                  $wall = settings.wall,
+                  $header = $postit.find (".postit-header");
+
+            // Create postit menu and show it
+            if (!settings.Menu)
+            {
+              const coord = $header[0].getBoundingClientRect ();
+
+              $wall.wall ("closeAllMenus");
+
+              settings.Menu = new _Menu ($postit.postit ("getClass"));
+
+              if ((coord.x||coord.left)+settings.Menu.getWidth()+20 >
+                    $(window).width())
+              {
+                btn.classList
+                  .replace ("fa-caret-square-up", "fa-caret-square-left");
+                settings.Menu.setPosition ("left");
+              }
+              else
+                settings.Menu.setPosition ("right");
+
+              $header.addClass ("menu");
+              btn.classList.replace ("far", "fas");
+
+              settings.Menu.show ();
+            }
+            // Destroy postit menu
+            else
+            {
+              $header.removeClass ("menu");
+              btn.classList.replace("fas", "far");
+              btn.classList
+                .replace ("fa-caret-square-left", "fa-caret-square-up");
+
+              settings.Menu.destroy ();
+              delete settings.Menu;
+            }
+          });
+
+        // EVENT click on postit
+        // -> readonly mode
+        $(document).on(
+          "click",
+          ".postit-edit,.postit-header,.postit-tags,.dates", function (e)
+          {
+            if (!e.ctrlKey && !S.get ("still-dragging") &&
+                !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+              $(this.parentNode).postit ("openPostit");
+          });
+
         // EVENT click on plug label
-        $(document).on("click", ".plug-label li", function ()
+        $(document).on("click", ".plug-label li", function (e)
           {
             const $item = $(this),
                   $label = $item.closest("div"),

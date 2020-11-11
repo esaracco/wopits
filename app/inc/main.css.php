@@ -1908,31 +1908,14 @@ i.fa-xs {
   z-index:92;
 }
 
-.postit .dates i:before {
- position:absolute;
- top:3px;
+.postit .end i {
+  position:absolute;
+  padding:3px;
+  text-shadow: 1px 1px 3px rgba(0,0,0, 0.5);
 }
 
-.postit .creation i:before {
-  left:4px;
-}
-
-.postit .end i:first-child:before {
-  top:2px;
-  left:-20px;
-}
-
-.postit .end i:before {
-  left:-5px;
-}
-
-.postit .end i.fa-times-circle {
-  display:none;
-}
-
-.postit.obsolete .dates,
-.postit.obsolete .dates * {
-  color:#fff;
+.postit.obsolete .dates {
+  color:#fff !important;
   font-weight:bold;
   background-color:red !important;
 }
@@ -1941,14 +1924,21 @@ i.fa-xs {
   display:inline-block;
 }
 
-.postit .creation {
-  margin-left:10px;
+.postit .creation span {
+  margin-left:5px;
+  opacity:.6;
 }
 
 .postit .end {
   position:absolute;
-  right:15px;
   cursor:pointer;
+  right:15px;
+  top:-5px;
+  padding:5px 10px 0 0;
+}
+
+.postit .end span {
+  margin-left:22px;
 }
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit {

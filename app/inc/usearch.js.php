@@ -128,7 +128,7 @@ let _lastStr = "",
 
       input.classList.remove ("autocomplete");
       ac.querySelector(".result .content").innerHTML = "";
-      ac.querySelector(".result button.closemenu").style.display = "hidden";
+      ac.querySelector(".result button.closemenu").style.display = "none";
       ac.querySelector(".search").classList.remove ("shadow");
     },
 
@@ -151,7 +151,7 @@ let _lastStr = "",
 
           args["str"] = this.element.find("input").val ();
 
-          this.search (args);
+          this.search (args, true);
 
           $("#swallPopup").swall ("displayGroups");
         });

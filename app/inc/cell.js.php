@@ -34,13 +34,8 @@
 
       $cell.addClass (usersettings.displaymode||$wall[0].dataset.displaymode);
 
-      $cell.prepend ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`)
-        // EVENT click on cell menu
-        .on("click", function ()
-        {
-          if (!S.get ("still-dragging"))
-            $(this).parent().cell ("toggleDisplayMode");
-        }));
+      // Add cell menu
+      $cell.prepend (`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`);
 
       if (writeAccess)
         $cell
@@ -551,6 +546,13 @@
 
   $(function()
     {
+      // EVENT click on cell menu
+      $(document).on("click", ".cell-menu", function ()
+        {
+          if (!S.get ("still-dragging"))
+            $(this).parent().cell ("toggleDisplayMode");
+        });
+
       // EVENT click on cells
       $(document)
         .on("click", "td", function (e)
