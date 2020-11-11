@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 06:46+0100\n"
+"POT-Creation-Date: 2020-11-11 21:26+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -265,13 +265,13 @@ msgstr ""
 msgid "An error occured while cloning the wall."
 msgstr ""
 
+msgid "An error occured while downloading file!"
+msgstr ""
+
 msgid "An error occured while processing import."
 msgstr ""
 
 msgid "An error occured while uploading file!"
-msgstr ""
-
-msgid "An error occured while uploading file."
 msgstr ""
 
 msgid "An error occurred while exporting wall data!"
@@ -1006,6 +1006,9 @@ msgstr ""
 msgid "The file is already linked to the note!"
 msgstr ""
 
+msgid "The file is no longer available for download!"
+msgstr ""
+
 msgid "The file type was not recognized."
 msgstr ""
 
@@ -1039,9 +1042,6 @@ msgid "The new password:"
 msgstr ""
 
 msgid "The note has been deleted"
-msgstr ""
-
-msgid "The requested file is no longer available for download!"
 msgstr ""
 
 msgid "The row/column has been deleted!"

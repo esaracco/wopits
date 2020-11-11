@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-11 06:46+0100\n"
-"PO-Revision-Date: 2020-11-11 06:48+0100\n"
+"POT-Creation-Date: 2020-11-11 21:26+0100\n"
+"PO-Revision-Date: 2020-11-11 21:27+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -432,14 +432,14 @@ msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
 msgid "An error occured while cloning the wall."
 msgstr "Une erreur est survenue durant le clonage du fichier."
 
+msgid "An error occured while downloading file!"
+msgstr "Une erreur est survenue durant le téléchargement du fichier!"
+
 msgid "An error occured while processing import."
 msgstr "Une erreur est survenue durant l'importation."
 
 msgid "An error occured while uploading file!"
 msgstr "Une erreur est survenue durant l'envoi du fichier!"
-
-msgid "An error occured while uploading file."
-msgstr "Une erreur est survenue durant le dépôt du fichier."
 
 msgid "An error occurred while exporting wall data!"
 msgstr "Une erreur est survenue durant l'export des données du mur!"
@@ -1256,6 +1256,9 @@ msgstr "La colonne a été supprimée pendant que vous éditiez la note!"
 msgid "The file is already linked to the note!"
 msgstr "Le fichier est déjà associé à la note!"
 
+msgid "The file is no longer available for download!"
+msgstr "Le fichier n'est plus disponible au téléchargement!"
+
 msgid "The file type was not recognized."
 msgstr "Le type du fichier n'a pas été reconnu."
 
@@ -1295,9 +1298,6 @@ msgstr "Le nouveau mot de passe:"
 
 msgid "The note has been deleted"
 msgstr "La note a été supprimée"
-
-msgid "The requested file is no longer available for download!"
-msgstr "Le fichier demandé n'est plus disponible au téléchargement!"
 
 msgid "The row/column has been deleted!"
 msgstr "La ligne/colonne a été supprimée!"
@@ -1690,6 +1690,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "An error occured while uploading file."
+#~ msgstr "Une erreur est survenue durant le dépôt du fichier."
 
 #~ msgid ""
 #~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>About</b> Added report / "
