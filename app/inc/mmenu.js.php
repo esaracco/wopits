@@ -454,6 +454,8 @@
       $(document).off ("mousemove.mmenu");
       S.unset ("mousepos");
 
+      this.element.find("[data-toggle='tooltip']").tooltip ("hide");
+
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
 

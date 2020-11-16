@@ -192,6 +192,7 @@
     // METHOD destroy ()
     destroy ()
     {
+      this.$menu.find("[data-toggle='tooltip']").tooltip ("hide");
       this.$menu.remove ();
     }
 
