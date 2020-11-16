@@ -472,7 +472,11 @@
       if (!noinsert)
         $postit.postit ("insert");
       else if ($cell[0].classList.contains ("postit-mode"))
+      {
+        $postit.hide ();
         $postit[0].style.visibility = "visible";
+        $postit.show ("fade");
+      }
 
       return $postit;
     },
