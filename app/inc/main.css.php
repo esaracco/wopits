@@ -915,6 +915,11 @@ input::-ms-clear {
   opacity:0.5;
 }
 
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .cell-list-mode li span,
+.cell-list-mode li:only-of-type span {
+  cursor:pointer;
+}
+
 .postit-menu .submenu {
   margin-left:3px;
   margin-top:-6px;
