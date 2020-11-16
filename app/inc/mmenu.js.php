@@ -340,7 +340,8 @@
           if (S.get("still-closing") ||
               // Nothing if modal/popup is opened or editable field is active
               document.querySelector ([
-                ".modal.show", ".popover.show", ".editable.editing"]))
+                ".postit-header.menu", ".modal.show", ".popover.show",
+                ".editable.editing"]))
             return;
 
           switch (e.which)

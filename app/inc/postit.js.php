@@ -2153,7 +2153,8 @@
             if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
               return;
 
-            const btn = this.querySelector ("i"),
+            const $btn = $(this),
+                  btn = this.querySelector ("i"),
                   $postit = $(this.parentNode),
                   id = $postit.postit ("getId"),
                   settings = $postit.postit ("getSettings"),
@@ -2183,10 +2184,20 @@
               btn.classList.replace ("far", "fas");
 
               settings.Menu.show ();
+
+              $(document)
+                // EVENT keydown
+                .on("keydown.pmenu", function (e)
+                {
+                  if (e.which == 27)
+                    $btn.click ();
+                });
             }
             // Destroy postit menu
             else
             {
+              $(document).off ("keydown.pmenu");
+
               $header.removeClass ("menu");
               btn.classList.replace("fas", "far");
               btn.classList
