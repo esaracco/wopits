@@ -160,6 +160,7 @@
               for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
               {
                 cell.postits[k]["access"] = access;
+                cell.postits[k]["init"] = true;
                 $cell.cell ("addPostit", cell.postits[k], true);
               }
             }
@@ -510,15 +511,15 @@
     // METHOD repositionPostitsPlugs ()
     repositionPostitsPlugs ()
     {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
-        (p) => $(p).postit ("repositionPlugs"));
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
+        $(p).postit ("repositionPlugs"));
     },
 
     // METHOD removePostitsPlugs ()
     removePostitsPlugs ()
     {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
-        (p) => $(p).postit ("removePlugs", true));
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
+        $(p).postit ("removePlugs", true));
 
       this.settings.plugsContainer.remove ();
     },
@@ -526,13 +527,13 @@
     // METHOD refreshPostitsPlugs ()
     refreshPostitsPlugs (plugs, partial = false)
     {
-      if (S.getCurrent("filters").hasClass ("plugs-hidden"))
+      if (S.getCurrent("filters")[0].classList.contains ("plugs-hidden"))
         return;
 
       const wall = this.element[0];
       let idsNew = {};
 
-      (plugs||[]).forEach ((plug) =>
+      (plugs||[]).forEach (plug =>
         {
           const startId = plug.item_start,
                 endId = plug.item_end,
@@ -567,23 +568,23 @@
 
       // Remove obsolete plugs
       if (!partial)
-        wall.querySelectorAll(".postit.with-plugs").forEach ((postit)=>
-        {
-          $(postit).postit("getSettings")._plugs.forEach ((plug)=>
-            {
-              if (!idsNew[plug.startId+""+plug.endId])
-                $(wall.querySelector(
-                    ".postit[data-id='postit-"+plug.endId+"']"))
-                  .postit ("removePlug", plug, true);
-            });
-        });
+        wall.querySelectorAll(".postit.with-plugs").forEach (postit =>
+          {
+            $(postit).postit("getSettings")._plugs.forEach (plug =>
+              {
+                if (!idsNew[plug.startId+""+plug.endId])
+                  $(wall.querySelector(
+                      ".postit[data-id='postit-"+plug.endId+"']"))
+                    .postit ("removePlug", plug, true);
+              });
+          });
     },
 
     // METHOD hidePostitsPlugs ()
     hidePostitsPlugs ()
     {
-      this.element[0].querySelectorAll(".postit").forEach (
-        (p) => $(p).postit ("hidePlugs", true));
+      this.element[0].querySelectorAll(".postit").forEach (p =>
+        $(p).postit ("hidePlugs", true));
     },
 
     // METHOD showPostitsPlugs ()
@@ -592,8 +593,8 @@
       this.repositionPostitsPlugs ();
 
       H.waitForDOMUpdate (()=>
-        this.element[0].querySelectorAll(".postit").forEach (
-          (p) => $(p).postit ("showPlugs", true)));
+        this.element[0].querySelectorAll(".postit").forEach (p =>
+          $(p).postit ("showPlugs", true)));
     },
 
     // METHOD refresh ()
@@ -720,7 +721,7 @@
         for (let i = 0; i < rowsCount; i++)
           rowsHeadersIds[d.headers.rows[i].id] = true;
 
-        wall.querySelectorAll("tbody th").forEach ((th)=>
+        wall.querySelectorAll("tbody th").forEach (th =>
           {
             const $header = $(th);
 
@@ -738,24 +739,21 @@
         for (let i = 0; i < colsCount; i++)
           colsHeadersIds[d.headers.cols[i].id] = true;
 
-        wall.querySelectorAll("thead th").forEach ((th)=>
+        wall.querySelectorAll("thead th").forEach (th =>
           {
             const $header = $(th),
                   idx = $header.index ();
 
-            if (idx > 0)
+            if (idx > 0 && !colsHeadersIds[$header.header ("getId")])
             {
-              if (!colsHeadersIds[$header.header ("getId")])
-              {
-                $wall.find("thead th:eq("+idx+")").remove ();
-                wall.querySelectorAll("tbody tr").forEach ((tr)=>
-                  {
-                    const $cell = $(tr).find("td:eq("+(idx-1)+")");
+              $wall.find("thead th:eq("+idx+")").remove ();
+              wall.querySelectorAll("tbody tr").forEach (tr =>
+                {
+                  const $cell = $(tr).find ("td:eq("+(idx-1)+")");
 
-                    $cell.cell ("removePostitsPlugs");
-                    $cell.remove();
-                  });
-              }
+                  $cell.cell ("removePostitsPlugs");
+                  $cell.remove();
+                });
             }
           });
 
@@ -817,11 +815,11 @@
               $cell.cell ("update", cell);
 
               // Remove deleted post-its
-              $cell[0].querySelectorAll(".postit").forEach ((p)=>
+              $cell[0].querySelectorAll(".postit").forEach (p =>
                 {
                   const $postit = $(p);
 
-                  if (!postitsIds[$postit.postit ("getId")])
+                  if (!postitsIds[$postit.postit("getId")])
                   {
                     $postit.postit ("removePlugs", true);
                     p.remove ();
@@ -924,7 +922,7 @@
     {
       // Tell the other methods that we are massively closing the walls
       S.set ("closing-all", true);
-      document.querySelectorAll("table.wall").forEach ((wall) =>
+      document.querySelectorAll("table.wall").forEach (wall =>
         $(wall).wall ("close"));
       S.unset ("closing-all");
 
@@ -1089,7 +1087,7 @@
       const $wall = this.element,
             $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
 
-      $tr[0].querySelectorAll("td").forEach ((cell)=>
+      $tr[0].querySelectorAll("td").forEach (cell =>
           $(cell).cell ("removePostitsPlugs"));
 
       H.headerRemoveContentKeepingWallSize ({
@@ -1117,7 +1115,7 @@
 
      $header.remove ();
 
-     $wall[0].querySelectorAll("tbody tr").forEach ((tr)=>
+     $wall[0].querySelectorAll("tbody tr").forEach (tr =>
         {
           const $cell = $(tr).find("td:eq("+(idx - 1)+")");
 
@@ -1500,7 +1498,7 @@
               const userId = wpt_userData.id;
 
               let html = "";
-              d.list.forEach ((item) =>
+              d.list.forEach (item =>
               {
                 if (item.id != userId)
                   html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
@@ -1779,11 +1777,12 @@
 
         zoom0.style.width = "30000px";
 
-        zoom0.querySelectorAll("th").forEach ((header)=>
+        zoom0.querySelectorAll("th").forEach (th =>
           {
-            header.style.pointerEvents = "none";
+            th.style.pointerEvents = "none";
+
             if (writeAccess)
-              header.style.opacity = .6;
+              th.style.opacity = .6;
           });
 
         // Deactivate some features
@@ -1837,11 +1836,12 @@
         zoom0.style.transform = S.get ("old-styles").transform;
         S.unset ("old-styles");
 
-        zoom0.querySelectorAll("th").forEach ((header)=>
+        zoom0.querySelectorAll("th").forEach (th =>
           {
-            header.style.pointerEvents = "auto";
+            th.style.pointerEvents = "auto";
+
             if (writeAccess)
-              header.style.opacity = 1;
+              th.style.opacity = 1;
           });
 
         // Reavtivate some previously deactivated features
@@ -2002,8 +2002,8 @@
       {
         this.settings.displayexternalref = val;
 
-        this.element[0].querySelectorAll(".postit").forEach (
-          (p) => $(p).postit (type+"ExternalRef"));
+        this.element[0].querySelectorAll(".postit").forEach (p =>
+          $(p).postit (type+"ExternalRef"));
 
         H.request_ajax (
           "POST",

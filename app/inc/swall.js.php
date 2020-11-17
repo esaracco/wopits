@@ -183,7 +183,7 @@
         .on("click", "#swallPopup .list-group-item",
         function (e)
         {
-          if ($(this).hasClass ("is-wall-creator"))
+          if (this.classList.contains ("is-wall-creator"))
           {
             const $row = $(this);
 

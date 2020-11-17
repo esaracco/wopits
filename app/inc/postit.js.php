@@ -34,7 +34,7 @@
             e.preventDefault ();
 
             if (!$end.length)
-              return $start.postit ("cancelPlugAction");
+              return _cancelPlugAction ();
 
             const end0 = $end[0],
                   endPlugin = $end.postit ("getClass"),
@@ -61,12 +61,12 @@
                     });
 
                     startPlugin.addPlug (line);
-                    startPlugin.cancelPlugAction (false);
+                    _cancelPlugAction (false);
 
                     from.cancelCallback = () =>
                       {
                         startPlugin.removePlug (line);
-                        startPlugin.cancelPlugAction ();
+                        _cancelPlugAction ();
                       };
 
                     from.confirmCallback = (label) =>
@@ -95,7 +95,7 @@
                         $undo.removeClass ("disabled");
                         $undo.find("span").text ("« <?=_("Add")?> »");
 
-                        startPlugin.cancelPlugAction ();
+                        _cancelPlugAction ();
                       };
 
                     S.set ("link-from", from);
@@ -111,7 +111,7 @@
                     msg: "<?=_("This relationship already exists")?>"
                   });
                 else
-                  endPlugin.cancelPlugAction ();
+                  _cancelPlugAction ();
               }
           },
         // EVENT mousemouve to track mouse pointer during relationship creation
@@ -127,7 +127,7 @@
         escapeEvent: (e) =>
           {
             if (e.which == 27)
-              S.get("link-from").obj.postit ("cancelPlugAction");
+              _cancelPlugAction ();
           }
       };
 
@@ -139,7 +139,7 @@
     let maxW = 0,
         tmp;
 
-    (content.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
+    (content.match(/<img\s[^>]+>/g)||[]).forEach (img =>
       {
         if ( (tmp = img.match (/width="(\d+)"/)) )
         {
@@ -160,6 +160,32 @@
       "z-index", S.get ("postit-oldzindex").zIndex);
 
     S.unset ("postit-oldzindex");
+  }
+
+  // METHOD _cancelPlugAction ()
+  function _cancelPlugAction (full = true, unedit = true)
+  {
+    if (_plugRabbit.line)
+    {
+      $(document)
+        .off("mousedown.rabbit", _plugRabbit.mousedownEvent)
+        .off ("keydown.rabbit", _plugRabbit.escapeEvent);
+
+      $("body").off ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
+
+      _plugRabbit.line.remove ();
+      _plugRabbit.line = null;
+
+      document.getElementById("plug-rabbit").remove ();
+    }
+
+    if (full)
+    {
+      if (unedit)
+        S.get("link-from").obj.postit ("unedit");
+
+      S.unset ("link-from");
+    }
   }
 
   class _Menu
@@ -185,7 +211,6 @@
     show ()
     {
       H.enableTooltips (this.$menu);
-
       this.$menu.show ("fade");
     }
 
@@ -399,32 +424,32 @@
                   {
                     const toSave = {};
 
-                    ids.split(",").forEach ((item) =>
-                    {
-                      const startId = postitSettings.id,
-                            [endId, label] = item.split (";"),
-                            $end = $wall.find (
-                                     ".postit[data-id='postit-"+endId+"']");
-
-                      if ($end.length)
+                    ids.split(",").forEach (item =>
                       {
-                        toSave[startId] = $postit;
-                        toSave[endId] = $end;
+                        const startId = postitSettings.id,
+                              [endId, label] = item.split (";"),
+                              $end = $wall.find (
+                                       ".postit[data-id='postit-"+endId+"']");
 
-                        postitPlugin.addPlug ({
-                          startId: startId,
-                          endId: endId,
-                          label: label,
-                          obj: postitPlugin.getPlugTemplate (
-                                 postit, $end[0], label)
-                        });
-                      }
-                      else
-                        H.displayMsg ({
-                          type: "warning",
-                          msg: "<?=_("This item has been deleted")?>"
-                        });
-                    });
+                        if ($end.length)
+                        {
+                          toSave[startId] = $postit;
+                          toSave[endId] = $end;
+
+                          postitPlugin.addPlug ({
+                            startId: startId,
+                            endId: endId,
+                            label: label,
+                            obj: postitPlugin.getPlugTemplate (
+                                   postit, $end[0], label)
+                          });
+                        }
+                        else
+                          H.displayMsg ({
+                            type: "warning",
+                            msg: "<?=_("This item has been deleted")?>"
+                          });
+                      });
 
                     S.set ("plugs-to-save", toSave);
 
@@ -461,12 +486,11 @@
       if (settings.obsolete)
         postit.classList.add ("obsolete");
 
+      postit.style.visibility = "hidden";
+      postit.style.top = settings.item_top+"px";
+      postit.style.left = settings.item_left+"px";
+
       $postit
-        .css({
-          visibility: "hidden",
-          top: settings.item_top,
-          left: settings.item_left
-        })
         // Append menu, header, dates, attachment count and tags
         .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
@@ -772,32 +796,6 @@
       });
     },
 
-    // METHOD cancelPlugAction ()
-    cancelPlugAction (full = true, unedit = true)
-    {
-      if (_plugRabbit.line)
-      {
-        $(document)
-          .off("mousedown.rabbit", _plugRabbit.mousedownEvent)
-          .off ("keydown.rabbit", _plugRabbit.escapeEvent);
-
-        $("body").off ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
-
-        _plugRabbit.line.remove ();
-        _plugRabbit.line = null;
-
-        document.getElementById("plug-rabbit").remove ();
-      }
-
-      if (full)
-      {
-        if (unedit)
-          S.get("link-from").obj.postit ("unedit");
-
-        S.unset ("link-from");
-      }
-    },
-
     // METHOD havePlugs ()
     havePlugs ()
     {
@@ -840,12 +838,10 @@
     // METHOD applyZoomToPlugs ()
     applyZoomToPlugs (zoomLevel)
     {
-      let size = Math.trunc (4 * zoomLevel);
+      const size = Math.trunc (4 * zoomLevel);
 
-      this.settings._plugs.forEach (
-        plug => plug.obj.setOptions ({
-          size: size
-        }));
+      this.settings._plugs.forEach (plug =>
+        plug.obj.setOptions ({size: size}));
     },
 
     // METHOD applyZoom ()
@@ -853,17 +849,15 @@
     {
       const zoomLevel = S.get("zoom-level")||1;
 
-      document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
-        {
-          $(p).postit ("applyZoomToPlugs", zoomLevel);
-        });
+      document.querySelectorAll(".postit.with-plugs").forEach (p =>
+        $(p).postit ("applyZoomToPlugs", zoomLevel));
     },
 
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs (shadow, color)
     {
-      this.settings._plugs.forEach (
-        plug => plug.obj.setOptions ({
+      this.settings._plugs.forEach (plug =>
+        plug.obj.setOptions ({
           dropShadow: {
             dx: 0.2,
             dy: 0.2,
@@ -880,10 +874,8 @@
       const shadow = H.getPlugColor ("shadow"),
             color = H.getPlugColor ("main");
 
-      document.querySelectorAll(".postit.with-plugs").forEach ((p)=>
-        {
-          $(p).postit ("applyThemeToPlugs", shadow, color);
-        });
+      document.querySelectorAll(".postit.with-plugs").forEach (p =>
+        $(p).postit ("applyThemeToPlugs", shadow, color));
     },
 
     // METHOD resetPlugsUndo ()
@@ -1075,7 +1067,7 @@
 
       this.resetPlugsUndo ();
 
-      (settings._plugs||[]).forEach ((plug)=>
+      (settings._plugs||[]).forEach (plug =>
         {
           // Remove label
           if (plug.labelObj)
@@ -1121,7 +1113,7 @@
 
       this.element.find(".postit-menu [data-action='plug']").hide ();
 
-      this.settings._plugs.forEach ((plug) =>
+      this.settings._plugs.forEach (plug =>
         {
           if (!ignoreDisplayMode)
           {
@@ -1145,7 +1137,7 @@
 
       this.element.find(".postit-menu [data-action='plug']").show ();
 
-      this.settings._plugs.forEach ((plug) =>
+      this.settings._plugs.forEach (plug =>
         {
           if (!ignoreDisplayMode)
           {
@@ -1170,7 +1162,7 @@
     {
       const div = this.settings.plugsContainer[0];
 
-      this.settings._plugs.forEach ((plug) =>
+      this.settings._plugs.forEach (plug =>
         {
           plug.obj.position ();
 
@@ -1198,14 +1190,14 @@
       const settings = this.settings;
       let ret = {};
 
-      settings._plugs !== undefined &&
-        settings._plugs.forEach ((plug) =>
-        {
-          // Take in account only plugs from this postit
-          if (plug.startId == settings.id)
-            ret[plug.endId] = (plug.label == "...") ?
-              "" : plug.labelObj[0].querySelector("a span").innerText;
-        });
+      if (settings._plugs !== undefined)
+        settings._plugs.forEach (plug =>
+          {
+            // Take in account only plugs from this postit
+            if (plug.startId == settings.id)
+              ret[plug.endId] = (plug.label == "...") ?
+                "" : plug.labelObj[0].querySelector("a span").innerText;
+          });
 
       return ret;
     },
@@ -1238,8 +1230,8 @@
                 bbox = this.getBoundingClientRect ();
           let tags = [];
 
-          this.querySelectorAll(".postit-tags i").forEach (
-            (item) => tags.push (item.dataset.tag));
+          this.querySelectorAll(".postit-tags i").forEach (item =>
+            tags.push (item.dataset.tag));
 
           data = {
             id: postitId,
@@ -1410,7 +1402,7 @@
 
       if (externalRef)
       {
-        externalRef.forEach ((src) =>
+        externalRef.forEach (src =>
           c = c.replace (new RegExp ("[^\-]"+H.escapeRegex(src), "g"),
                 " external-"+src+" "));
 
@@ -1427,7 +1419,7 @@
       if (content !== undefined)
         return content.replace (/external\-src/, "src");
       else
-        this.element[0].querySelectorAll("[external-src]").forEach ((el)=>
+        this.element[0].querySelectorAll("[external-src]").forEach (el =>
           {
             el.setAttribute ("src", el.getAttribute ("external-src"));
             el.removeAttribute ("external-src");
@@ -1569,8 +1561,8 @@
               if (!d.length)
                 body = "<?=_("This note has no attachment")?>";
               else
-                d.forEach (
-                  (a)=> body += this.getAttachmentTemplate (a, !writeAccess));
+                d.forEach (a =>
+                  body += this.getAttachmentTemplate (a, !writeAccess));
 
               if (writeAccess)
                 $p.find(".btn-primary").show ();
@@ -1661,8 +1653,7 @@
     {
       const $postit = this.element,
             postit = $postit[0],
-            $tpick = S.getCurrent ("tpick"),
-            tz = wpt_userData.settings.timezone;
+            $tpick = S.getCurrent ("tpick");
 
       // Change postit cell
       if (cell && cell.id != this.settings.cellId)
@@ -1678,12 +1669,14 @@
       }
 
       if (!d.ignoreResize)
-        $postit.css ({
-          top: d.item_top,
-          left: d.item_left,
-          width: d.width,
-          height: d.height
-        });
+      {
+        postit.style.top = d.item_top+"px";
+        postit.style.left = d.item_left+"px";
+        postit.style.width = d.width+"px";
+        postit.style.height = d.height+"px";
+
+        H.waitForDOMUpdate (()=> this.repositionPlugs ());
+      }
 
       this.setClassColor (d.classcolor);
 
@@ -1693,7 +1686,7 @@
 
       this.setAttachmentsCount (d.attachmentscount);
 
-      this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):'');
+      this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):"");
 
       this.setDeadline (d);
 
@@ -1704,14 +1697,13 @@
 
       if (!d.tags)
         d.tags = "";
+
       postit.dataset.tags = d.tags;
 
       postit.querySelector(".postit-tags").innerHTML =
         $tpick.tpick ("getHTMLFromString", d.tags);
 
       $tpick.tpick ("refreshPostitDataTag", $postit);
-
-      this.repositionPlugs ();
     },
 
     // METHOD delete ()
@@ -1967,7 +1959,7 @@
                 {
                   let tmp;
 
-                  (c.match(/<img\s[^>]+>/g)||[]).forEach ((img) =>
+                  (c.match(/<img\s[^>]+>/g)||[]).forEach (img =>
                     {
                       if ( (tmp = img.match (/src="([^"]+)"/)) )
                       {
@@ -2543,10 +2535,10 @@
             if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
             {
               popup.querySelector(".btn-primary").style.display = "block";
-              popup.querySelectorAll(".ro").forEach (
-                (el) => el.style.display = "none");
-              popup.querySelectorAll(".adm").forEach (
-                (el) => el.style.display = "block");
+              popup.querySelectorAll(".ro").forEach (el =>
+                el.style.display = "none");
+              popup.querySelectorAll(".adm").forEach (el =>
+                el.style.display = "block");
 
               popup.querySelector(".title input").value = titleVal;
               popup.querySelector(".description textarea").value = descVal;
@@ -2556,10 +2548,10 @@
             else
             {
               popup.querySelector(".btn-primary").style.display = "none";
-              popup.querySelectorAll(".ro").forEach (
-                (el) => el.style.display = "block");
-              popup.querySelectorAll(".adm").forEach (
-                (el) => el.style.display = "none");
+              popup.querySelectorAll(".ro").forEach (el =>
+                el.style.display = "block");
+              popup.querySelectorAll(".adm").forEach (el =>
+                el.style.display = "none");
 
               if (!isImg && !titleVal && !descVal)
                 popup.querySelector(".no-details").style.display = "block";

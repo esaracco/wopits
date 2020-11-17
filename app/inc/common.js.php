@@ -1151,7 +1151,7 @@ class WHelper
         const $btn = $(this),
               $popover = $btn.closest(".popover");
   
-        if ($btn.hasClass ("btn-primary"))
+        if ($btn[0].classList.contains ("btn-primary"))
         {
           $popover[0].dataset.btnclicked = btn.primary;
           args.cb_ok ($popover);

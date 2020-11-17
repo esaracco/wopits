@@ -27,9 +27,10 @@ $(function()
           // Reposition relationships
           $wall.wall ("repositionPostitsPlugs");
 
-          const $modal = $(".modal.m-fullscreen[data-customwidth]");
-          if ($modal.length)
-            H.resizeModal ($modal);
+          const modal = document.querySelector (
+                           ".modal.show.m-fullscreen[data-customwidth]");
+          if (modal)
+            H.resizeModal ($(modal));
    
           // Reposition chat popup if it is out of bounds
           const $c = S.getCurrent ("chat");
@@ -79,13 +80,11 @@ $(function()
 
       if ($wall.length)
       {
-        const $arrows = S.getCurrent ("arrows");
-
         if (!S.get ("wall-dragging"))
         {
           const scroll = {
-            top: $(this).scrollTop (),
-            left: $(this).scrollLeft ()
+            top: this.scrollTop,
+            left: this.scrollLeft
           };
 
           if (_scrollDiff === null)
@@ -103,7 +102,7 @@ $(function()
           }
 
           // Reposition relationships
-          if (!S.getCurrent("filters").hasClass ("plugs-hidden"))
+          if (!S.getCurrent("filters")[0].classList.contains ("plugs-hidden"))
           {
             clearTimeout (_timeoutScroll);
             _timeoutScroll = setTimeout (() =>
@@ -118,8 +117,9 @@ $(function()
         }
 
         // Update arrows
-        if ($arrows.is (":visible"))
-          $arrows.arrows ("update");
+        const $a = S.getCurrent ("arrows");
+        if ($a.is (":visible"))
+          $a.arrows ("update");
       }
     });
 
@@ -184,8 +184,8 @@ $(function()
       if (S.get ("zoom-level"))
         S.getCurrent("wall").wall ("zoom", {type: "normal", "noalert": true});
 
-      document.querySelectorAll(".walls table.wall").forEach (
-        (w)=> $(w).wall ("hidePostitsPlugs"));
+      document.querySelectorAll(".walls table.wall").forEach (w =>
+        $(w).wall ("hidePostitsPlugs"));
     });
 
   // EVENT shown.bs.tab on walls tabs
@@ -244,7 +244,8 @@ $(function()
         $wall.wall ("displayExternalRef");
         $wall.wall ("displayHeaders");
 
-        if (!($filters.is (":visible") && $filters.hasClass ("plugs-hidden")))
+        if (!($filters.is (":visible") &&
+              $filters[0].classList.contains ("plugs-hidden")))
           $wall.wall ("showPostitsPlugs");
       }
 
@@ -303,12 +304,12 @@ $(function()
       // Get postit color and set modal header color the same
       if (!modalsCount && $postit.length)
         $postit.postit ("setPopupColor", $(this));
+/*FIXME Useful?
       else
-        $popup.find(".modal-header,.modal-title,.modal-footer").each (
-          function ()
-          {
+        $popup[0].querySelectorAll([
+          ".modal-header", ".modal-title", ".modal-footer"]).forEach (el =>
             this.className = this.className.replace (/color\-[a-z]+/, "");
-          });
+*/
 
       H.setAutofocus ($popup);
     });  
@@ -317,11 +318,6 @@ $(function()
   $(document).on("hidden.bs.modal", ".modal",
     function(e)
     {
-      const $popup = $(this),
-            $wall = S.getCurrent ("wall"),
-            type = $popup[0].dataset.popuptype,
-            $postit = S.getCurrent ("postit");
-
       S.set ("still-closing", true, 500);
 
       // Prevent child popups from removing scroll to their parent
@@ -332,16 +328,16 @@ $(function()
       {
         case "infoPopup":
 
-          switch (type)
+          switch (this.dataset.popuptype)
           {
             // Reload app
             case "app-upgrade":
             case "app-reload":
 
               return location.href = '/r.php?u';
-              break;
 
             case "app-logout":
+
               $("<div/>").login ("logout", {auto: true});
               break;
           }
@@ -358,19 +354,19 @@ $(function()
         case "wpropPopup":
 
           if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
-              !$popup[0].dataset.uneditdone)
-            $wall.wall ("unedit");
+              !this.dataset.uneditdone)
+            S.getCurrent("wall").wall ("unedit");
           break;
 
         case "postitViewPopup":
 
-          $postit.postit ("unsetCurrent");
+          S.getCurrent("postit").postit ("unsetCurrent");
           break;
 
         case "postitAttachmentsPopup":
         case "dpickPopup":
 
-          $postit.postit ("unedit");
+          S.getCurrent("postit").postit ("unedit");
           break;
 
         case "confirmPopup":
@@ -382,8 +378,8 @@ $(function()
         case "groupAccessPopup":
         case "groupPopup":
 
-          $(".modal").find("li.list-group-item.active")
-            .removeClass ("active todelete");
+          document.querySelector(".modal li.list-group-item.active")
+            .classList.remove ("active", "todelete");
 
           break;
       }
@@ -394,13 +390,12 @@ $(function()
     function (e)
     {
       const $popup = $(this).closest (".modal"),
-            $wall = S.getCurrent ("wall"),
             closePopup = !!!$popup[0].dataset.noclosure,
             $postit = S.getCurrent ("postit");
 
       $popup[0].removeAttribute ("data-noclosure");
 
-      if ($(this).hasClass ("btn-primary"))
+      if (this.classList.contains ("btn-primary"))
       {
         switch ($popup.attr ("id"))
         {
@@ -480,7 +475,7 @@ $(function()
 
           // Save wall properties
           case "wpropPopup":
-            $wall.wall ("saveProperties");
+            S.getCurrent("wall").wall ("saveProperties");
             return;
         }
       }

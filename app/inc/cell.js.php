@@ -221,7 +221,7 @@
 
         let w, h;
 
-        if ($cell.hasClass("size-init"))
+        if ($cell[0].classList.contains ("size-init"))
         {
           w = $cell.outerWidth();
           h = $cell.outerHeight ();
@@ -277,7 +277,7 @@
             else
               return aOrder - bOrder;
           })
-          .forEach ((p)=>
+          .forEach (p =>
           {
             const color = (p.className.match (/ color\-([a-z]+)/))[1],
                   postitPlugin = $(p).postit ("getClass"),
@@ -327,7 +327,7 @@
               }
               else
               {
-                ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i)=>
+                ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i) =>
                   cell.querySelector(".postit[data-id='"+li.dataset.id+"']")
                     .dataset.order = i+1);
 
@@ -345,7 +345,7 @@
         $cell.find(".cell-list-mode").remove ();
         $cell.find(".cell-menu .wpt-badge").remove ();
 
-        $cell[0].querySelectorAll(".postit").forEach ((p)=>
+        $cell[0].querySelectorAll(".postit").forEach (p =>
           {
             p.style.visibility = "visible";
 
@@ -366,7 +366,7 @@
             settings = this.settings;
       let type;
 
-      if ($cell.hasClass ("postit-mode") || refresh)
+      if ($cell[0].classList.contains ("postit-mode") || refresh)
       {
         type = "list-mode";
 
@@ -403,8 +403,8 @@
     // METHOD removePostitsPlugs ()
     removePostitsPlugs ()
     {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (
-        (p)=> $(p).postit ("removePlugs", true));
+      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
+        $(p).postit ("removePlugs", true));
     },
 
     // METHOD reorganize ()
@@ -415,11 +415,9 @@
         const cell = this,
               bbox = cell.getBoundingClientRect ();
 
-        this.querySelectorAll(".postit").forEach (
-          (postit) => $(postit).postit ("fixPosition",
-                                        bbox,
-                                        cell.clientHeight,
-                                        cell.clientWidth));
+        this.querySelectorAll(".postit").forEach (postit =>
+          $(postit).postit ("fixPosition", bbox, cell.clientHeight,
+                                           cell.clientWidth));
       });
     },
 
@@ -428,20 +426,20 @@
     {
       const cells = [];
 
-      S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach ((cell)=>
-      {
-        const $postits = $(cell).find (".postit"),
-              bbox = cell.getBoundingClientRect ();
+      S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach (cell =>
+        {
+          const postit = cell.querySelector (".postit"),
+                bbox = cell.getBoundingClientRect ();
 
-        cells.push ({
-          id: cell.dataset.id.substring (5),
-          width: Math.trunc (bbox.width),
-          height: Math.trunc (bbox.height),
-          item_row: cell.parentNode.rowIndex - 1,
-          item_col: cell.cellIndex - 1,
-          postits: $postits.length ? $postits.postit ("serialize") : null
+          cells.push ({
+            id: cell.dataset.id.substring (5),
+            width: Math.trunc (bbox.width),
+            height: Math.trunc (bbox.height),
+            item_row: cell.parentNode.rowIndex - 1,
+            item_col: cell.cellIndex - 1,
+            postits: postit ? $(postit).postit ("serialize") : null
+          });
         });
-      });
 
       return cells;
     },
@@ -473,9 +471,14 @@
         $postit.postit ("insert");
       else if ($cell[0].classList.contains ("postit-mode"))
       {
-        $postit.hide ();
-        $postit[0].style.visibility = "visible";
-        $postit.show ("fade");
+        if (args.init)
+          $postit[0].style.visibility = "visible";
+        else
+        {
+          $postit.hide ();
+          $postit[0].style.visibility = "visible";
+          $postit.show ("fade");
+        }
       }
 
       return $postit;
