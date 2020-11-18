@@ -428,7 +428,7 @@
 
       S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach (cell =>
         {
-          const postit = cell.querySelector (".postit"),
+          const $postits = $(cell).find (".postit"),
                 bbox = cell.getBoundingClientRect ();
 
           cells.push ({
@@ -437,7 +437,7 @@
             height: Math.trunc (bbox.height),
             item_row: cell.parentNode.rowIndex - 1,
             item_col: cell.cellIndex - 1,
-            postits: postit ? $(postit).postit ("serialize") : null
+            postits: $postits.length ? $postits.postit ("serialize") : null
           });
         });
 
