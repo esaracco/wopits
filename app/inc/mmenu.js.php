@@ -185,6 +185,7 @@
       switch (action)
       {
         case "cpick":
+
           $("#cpick").cpick ("open", {
             event: args.event,
             cb_close: ()=> args.event.target.classList.remove ("set"),
@@ -204,18 +205,24 @@
 
         // Delete
         case "delete":
-          H.request_ws (
-            "DELETE",
-            "postits",
-            {postits: Object.keys (_data.postits)},
-            // success cb
-            ()=> this.close ());
+
+          for (const id in _data.postits)
+          {
+            const p = _data.postits[id];
+
+            p.edit (null, ()=>
+              {
+                p.delete ();
+                p.unedit ();
+              });
+          }
           break;
 
         // Copy
         case "copy":
         // Move
         case "move":
+
           const cellSettings = _data.dest.settings;
 
           H.request_ws (

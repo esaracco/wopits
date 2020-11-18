@@ -412,23 +412,16 @@ class Server
           $ret = (new Wall (['wallId' => $wallId], $client))->getUsersview (
             array_keys ((array)$db->jGet ('activeWallsUnique', $wallId)));
       }
-      // ROUTE Postits color update, postits deletetion
-      // -> Can be multi-cells and multi-walls
-      elseif (preg_match ('#^postits/?(color)?$#', $msg->route, $m))
+      // ROUTE Postits color update
+      elseif (preg_match ('#^postits/color$#', $msg->route, $m))
       {
-        @list (,$type) = $m;
-
         $push = true;
         $action = 'refreshwall';
 
-        $Postit = new Postit (['data' => $data], $client);
-
         // POST
-        if ($type == 'color' && $msg->method == 'POST')
-          $ret = $Postit->updatePostitsColor ();
-        // DELETE
-        elseif ($msg->method == 'DELETE')
-          $ret = $Postit->deletePostits ();
+        if ($msg->method == 'POST')
+          $ret = (new Postit (['data' => $data], $client))
+                   ->updatePostitsColor ();
       }
       // ROUTE Postit creation, postits copy/paste
       elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/(postit|postits)/'.

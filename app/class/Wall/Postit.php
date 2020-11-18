@@ -119,47 +119,6 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function deletePostits ():array
-  {
-    $ret = ['walls' => []];
-    $wallsIds = [];
-    $oldWallId = $this->wallId;
-
-    try
-    {
-      $this->beginTransaction ();
-
-      foreach ($this->data->postits as $_postitId)
-      {
-        // Delete postit if user can write to the wall
-        if ( ($wallId = $this->checkPostitAccess (WPT_WRIGHTS_RW, $_postitId) ))
-        {
-          $wallsIds[] = $wallId;
-
-          $this->wallId = $wallId;
-          $r = $this->deletePostit ($_postitId);
-          if (isset ($r['error']))
-            throw new \Exception ("Postit `$_postitId` can not be deleted!");
-        }
-      }
-
-      $this->commit ();
-
-      $ret['walls'] = $this->getWallsById ($wallsIds);
-    }
-    catch (\Exception $e)
-    {
-      $this->rollback ();
-
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-      $ret['error'] = 1;
-    }
-
-    $this->wallId = $oldWallId;
-
-    return $ret;
-  }
-
   public function copyPostits ($move = false):array
   {
     $ret = ['walls' => []];
