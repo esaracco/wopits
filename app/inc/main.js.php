@@ -632,8 +632,10 @@
         {
           // Postits
           case "postit":
-            const $postit =
-                    $wall.find(".postit[data-id='postit-"+d.postit.id+"']");
+            const $postit = $wall.find (
+                    ".postit[data-id='postit-"+d.postit.id+"']"),
+                  cell = wall.querySelector (
+                    "td[data-id='cell-"+d.postit.cells_id+"']");
 
             // Rare case, when user have multiple sessions opened
             if (d.action != "insert" && !$postit.length)
@@ -643,20 +645,38 @@
             {
               // Insert postit
               case "insert":
-                $("td[data-id='cell-"+d.postit.cells_id+"']")
-                  .cell ("addPostit", d.postit, true);
+
+                $(cell).cell ("addPostit", d.postit, true);
                 plugin.checkPostitPlugsMenu ();
                 break;
 
               // Update postit
               case "update":
-                $postit.postit ("update", d.postit, {id: d.postit.cells_id});
+
+                if (d.isResponse || cell.classList.contains ("list-mode"))
+                  $postit.postit ("update", d.postit, {id: d.postit.cells_id});
+                else
+                  $postit.hide ("fade", 250, ()=>
+                  {
+                    $postit.postit ("update", d.postit, {id:d.postit.cells_id});
+                    $postit.show ("fade", 250,
+                      ()=> $postit.postit ("repositionPlugs"));
+                  });
                 break;
 
               // Remove postit
               case "delete":
+
+                const __remove = ()=>
+                  $wall.find("[data-id='postit-"+d.postit.id+"']").remove ();
+
                 $postit.postit ("removePlugs", true);
-                $postit.remove ();
+
+                if (H.haveMouse ())
+                  $postit.hide ("explode", __remove);
+                else
+                  // The explode effect works poorly on mobile devices
+                  __remove ();
                 break;
             }
 

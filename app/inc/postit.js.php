@@ -1658,6 +1658,10 @@
       // Change postit cell
       if (cell && cell.id != this.settings.cellId)
       {
+        if (this.settings.cell[0].classList.contains ("list-mode"))
+          this.settings.cell.find(
+            ".postit-min[data-id='postit-"+this.settings.id+"']").remove ();
+
         this.settings.cell =
           cell.obj||this.settings.wall.find("td[data-id='cell-"+cell.id+"']");
         this.settings.cellId = cell.id;
