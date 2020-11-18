@@ -343,12 +343,14 @@
         // EVENT keydown
         .on("keydown.mmenu", function (e)
         {
-              // Nothing if modal was opened
+              // Nothing if modal was opened and is closing
           if (S.get("still-closing") ||
-              // Nothing if modal/popup is opened or editable field is active
+              // Nothing if <esc> & menu or modal/popup is opened or editable
+              // field is active
+              e.which  == 27 &&
               document.querySelector ([
-                ".postit-header.menu", ".modal.show", ".popover.show",
-                ".editable.editing"]))
+                 ".postit-header.menu", ".modal.show", ".popover.show",
+                 ".editable.editing"]))
             return;
 
           switch (e.which)
