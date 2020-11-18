@@ -528,7 +528,7 @@
     refreshPostitsPlugs (plugs, partial = false)
     {
       const $f = S.getCurrent ("filters");
-      if ($f && $f[0].classList.contains ("plugs-hidden"))
+      if ($f.length && $f[0].classList.contains ("plugs-hidden"))
         return;
 
       const wall = this.element[0];
