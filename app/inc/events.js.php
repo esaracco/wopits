@@ -378,8 +378,9 @@ $(function()
         case "groupAccessPopup":
         case "groupPopup":
 
-          document.querySelector(".modal li.list-group-item.active")
-            .classList.remove ("active", "todelete");
+          const a = document.querySelector(".modal li.list-group-item.active");
+          if (a)
+            a.classList.remove ("active", "todelete");
 
           break;
       }
