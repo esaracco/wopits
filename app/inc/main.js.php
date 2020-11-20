@@ -600,6 +600,13 @@
           $(p).postit ("showPlugs", true)));
     },
 
+    // METHOD showUserWriting ()
+    showUserWriting (user)
+    {
+      setTimeout (()=>$(".walls a[href='#wall-"+this.settings.id+"']")
+        .prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`), 150);
+    },
+
     // METHOD refresh ()
     refresh (d)
     {

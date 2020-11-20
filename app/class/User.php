@@ -270,7 +270,8 @@ class User extends Base
     ($stmt = $this->prepare ('
       SELECT
         users_id,
-        users.username
+        users.username,
+        users.fullname
       FROM users_tokens
         INNER JOIN users ON users_tokens.users_id = users.id
       WHERE token = ? LIMIT 1'))

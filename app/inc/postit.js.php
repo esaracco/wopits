@@ -1264,6 +1264,46 @@
       return postits;
     },
 
+    // METHOD showUserWriting ()
+    showUserWriting (user, ids = [])
+    {
+      const id = this.settings.id,
+            $cell = this.settings.cell,
+            isRelated = !!ids.length;
+
+      if (this.element[0].querySelector (".user-writing"))
+        return;
+
+      this.closeMenu ();
+
+      if ($cell[0].classList.contains ("list-mode"))
+        $cell.find (".postit-min[data-id='postit-"+this.settings.id+"']")
+          .prepend (`<span class="user-writing-min${!isRelated?" main":""}" data-userid="${user.id}"><i class="fas fa-sm fa-${isRelated?"user-lock":"user-edit blink"}"></i></span>`);
+
+      if (this.canWrite ())
+        this.element.prepend (`<div class="user-writing${!isRelated?" main":""}" data-userid="${user.id}"><i class="fas fa-${isRelated?"user-lock":"user-edit blink"}"></i> ${user.name}</div>`);
+      else if (!isRelated)
+        this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
+
+      ids.push (id);
+
+      // Show a lock bubble on related items
+      (this.settings._plugs||[]).forEach ((plug) =>
+        {
+          if (ids.indexOf(plug.startId) == -1)
+          {
+            ids.push (plug.startId);
+            $(plug.obj.start).postit ("showUserWriting", user, ids);
+          }
+
+          if (ids.indexOf(plug.endId) == -1)
+          {
+            ids.push (plug.endId);
+            $(plug.obj.end).postit ("showUserWriting", user, ids);
+          }
+        });
+    },
+
     // METHOD setDeadline ()
     setDeadline (args)
     {

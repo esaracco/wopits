@@ -468,6 +468,19 @@ class WSocket
         {
           switch (data.action)
           {
+            // userwriting
+            case "userwriting":
+              var $el = $((data.item == "postit"?".postit":"")+
+                          "[data-id='"+data.item+"-"+data.itemId+"']");
+              if ($el.length)
+                $el[data.item]("showUserWriting", data.user);
+              break;
+
+            // userstoppedwriting
+            case "userstoppedwriting":
+                H.hideUserWriting (data.userstoppedwriting.user);
+              break;
+
             // exitsession
             case "exitsession":
               var $popup = $("#infoPopup");
@@ -491,6 +504,9 @@ class WSocket
               {
                 data.wall.isResponse = isResponse;
                 $wall.wall ("refresh", data.wall);
+
+                if (data.userstoppedwriting)
+                  H.hideUserWriting (data.userstoppedwriting.user);
               }
               break;
 
@@ -731,6 +747,12 @@ class WHelper
       '"': "&quot;",
       "'": "&#39;"
     };
+  }
+
+  // METHOD hideUserWriting ()
+  hideUserWriting (user)
+  {
+    $("[class^='user-writing'][data-userid='"+user.id+"']").remove ();
   }
 
   // METHOD isLoginPage ()

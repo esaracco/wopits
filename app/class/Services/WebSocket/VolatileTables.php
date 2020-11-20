@@ -25,6 +25,8 @@ class VolatileTables
       'ip' => [SwooleTable::TYPE_STRING, 45],
       'username' => [SwooleTable::TYPE_STRING,
                      DbCache::getFieldLength('users', 'username')],
+      'fullname' => [SwooleTable::TYPE_STRING,
+                     DbCache::getFieldLength('users', 'fullname')],
       'slocale' => [SwooleTable::TYPE_STRING, 2],
       'settings' => [SwooleTable::TYPE_STRING,
                      DbCache::getFieldLength('users', 'settings')],

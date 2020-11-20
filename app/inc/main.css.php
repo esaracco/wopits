@@ -700,6 +700,98 @@ select.timezone {
   overflow:hidden;
 }
 
+@keyframes blinker {
+  from {opacity: .5}
+  to {opacity: .1}
+}
+.blink {
+  animation: blinker .5s infinite alternate;
+}
+
+.user-writing {
+  position:absolute;
+  z-index:4999;
+  border-radius:10px;
+  box-shadow: 0px 0px 6px #B2B2B2;
+  background:#fff;
+  color:#555;
+  padding:10px 10px 0 10px;
+  font-size:0.8rem;
+  top:-70px;
+  left:-22px;
+  opacity:0.3;
+}
+
+span.user-writing-min {
+  padding:0!important;
+}
+
+.user-writing.main,
+.user-writing-min.main {
+  opacity:1;
+  font-weight:bold;
+}
+
+a.active .user-writing {
+  margin-top:30px;
+  top:auto;
+  left:auto;
+}
+
+th .user-writing {
+  top:auto;
+  left:auto;
+  border-top-left-radius:0;
+  font-weight:normal;
+}
+
+thead th .user-writing {
+  margin-top:5px;
+  margin-left:5px;
+}
+
+tbody th .user-writing {
+  margin-left:14px;
+  margin-top:15px;
+}
+
+td > .user-writing {
+  bottom:10px;
+  right:10px;
+  top:auto;
+  left:auto;
+  border-bottom-right-radius:0;
+}
+
+.user-writing:after {
+  background-color: #fff;
+  box-shadow:-2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+  content:"";
+  display:block;
+  height:10px;
+  left:10px;
+  position:relative;
+  top:5px;
+  transform:rotate(315deg);
+  width:10px;
+}
+
+a.active .user-writing:after {
+  top:-34px;
+  transform:rotate(135deg);
+}
+
+th .user-writing:after {
+  left:-15px;
+  top:-14px;
+  transform:rotate(45deg);
+}
+
+td > .user-writing:after,
+th .user-writing:after {
+  visibility:hidden;
+}
+
 .editable.editing input {
   z-index:5001;
   border-top:none;
@@ -1019,6 +1111,10 @@ th .submenu .dropdown-menu {
   border:2px solid #cecece;
   box-shadow: 0 0 5px #cecece;
   z-index:92;
+}
+
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-header {
+  padding-left:5px;
 }
 
 :not([class^='color']).selected {

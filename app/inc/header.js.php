@@ -220,6 +220,12 @@
         $header.append (plugin.getImgTemplate (settings.picture));
     },
 
+    // METHOD showUserWriting ()
+    showUserWriting (user)
+    {
+      setTimeout (()=>this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`), 150);
+    },
+
     // METHOD useFocusTrick ()
     useFocusTrick ()
     {

@@ -239,6 +239,23 @@
         plugin.update ({width: w, height: h});
     },
 
+    // METHOD showUserWriting ()
+    showUserWriting (user)
+    {
+      this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
+    },
+
+    // METHOD setPostitsUserWritingListMode ()
+    setPostitsUserWritingListMode ()
+    {
+      this.element[0].querySelectorAll(".user-writing").forEach ((el) =>
+        {
+          const p = el.parentNode;
+
+          $(p.parentNode.querySelector (".postit-min[data-id='"+p.dataset.id+"']")).prepend (`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`);
+        });
+    },
+
     // METHOD setPostitsDisplayMode ()
     setPostitsDisplayMode (type)
     {
@@ -314,7 +331,7 @@
             start: function ()
             {
               S.set ("revertData", {revert: false});
-              plugin.edit (()=> S.get("revertData").revert = true);
+              plugin.edit (()=> S.get("revertData").revert = true, true);
             },
             stop: function (e, ui)
             {
@@ -335,6 +352,8 @@
               }
             }
           });
+
+        plugin.setPostitsUserWritingListMode ();
       }
       // If we must display full postit
       // postit-mode
@@ -509,9 +528,9 @@
     },
 
     // METHOD edit ()
-    edit (error_cb)
+    edit (error_cb, nopush)
     {
-      if (!this.settings.wall.wall ("isShared"))
+      if (nopush || !this.settings.wall.wall ("isShared"))
         return;
 
       H.request_ws (

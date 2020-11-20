@@ -269,6 +269,8 @@ class Server
       {
         list (,$wallId, $item, $itemId) = $m;
 
+        $push = true;
+
         $EditQueue = new EditQueue ([
           'wallId' => $wallId,
           'data' => $data,
@@ -276,29 +278,53 @@ class Server
           'itemId' => $itemId
         ], $client);
 
+        $userData = [
+          'id' => $client->id,
+          'name' => $client->fullname
+        ];
+
         switch ($msg->method)
         {
           // PUT
           case 'PUT':
             $ret = $EditQueue->addTo ();
+
+            if (empty ($ret))
+            {
+              $action = 'userwriting';
+              $ret = [
+                'item' => $item,
+                'itemId' => $itemId,
+                'user' => $userData
+              ];
+            }
             break;
 
           // DELETE
           case 'DELETE':
             $ret = $EditQueue->removeFrom ();
-            if ($data && !isset ($ret['error_msg']) && !isset ($ret['error']))
+            if (!isset ($ret['error_msg']) && !isset ($ret['error']))
             {
-              $push = true;
+              $ret['userstoppedwriting'] = [
+                'item' => $item,
+                'itemId' => $itemId,
+                'user' => $userData
+              ];
 
-              if (empty ($ret['wall']['unlinked']))
+              if ($data)
               {
-                $action = 'refreshwall';
+                if (empty ($ret['wall']['unlinked']))
+                {
+                  $action = 'refreshwall';
 
-                if ($item == 'postit')
-                  $postitId = $itemId;
+                  if ($item == 'postit')
+                    $postitId = $itemId;
+                }
+                else
+                  $action = 'unlinked';
               }
               else
-                $action = 'unlinked';
+                $action = 'userstoppedwriting';
             }
             break;
         }
@@ -537,7 +563,9 @@ class Server
         {
           // If SuperAction result from SuperMenu (action on multiple items)
           $isSActionResult = isset ($ret['walls']);
-          $cacheName = ($action == 'chat' || $action == 'unlinked') ?
+          $cacheName = ($action == 'chat' || $action == 'unlinked' ||
+                        $action == 'userwriting' ||
+                        $action == 'userstoppedwriting') ?
             'openedWalls' : 'activeWalls';
 
           if ($isSActionResult)
@@ -589,6 +617,9 @@ class Server
           }
         }
       }
+
+      if ($action == 'userwriting' || $action == 'userstoppedwriting')
+        $ret = [];
 
       // Respond to the sender.
       $ret['msgId'] = $msg->msgId??null;
@@ -732,7 +763,7 @@ class Server
         if ($activeWallId)
         {
           // Purge user's actions from edit queue.
-          (new EditQueue([], $client))->removeUser ();
+          $this->_cleanUserQueue ($client, $activeWallId, $fd);
 
           // Purge from opened walls queue.
           if (!empty ( ($ow = $settings->openedWalls) ))
@@ -810,6 +841,7 @@ class Server
         'sessionId' => $req->fd,
         'id' => $r['users_id'],
         'username' => $r['username'],
+        'fullname' => $r['fullname'],
         'slocale' => Helper::getsLocale ($User),
         'settings' => $User->getSettings(),
         'openedChats' => '',
@@ -1028,6 +1060,24 @@ class Server
       unset ($ow->$fd);
       $db->jSet ('openedWalls', $wallId, $ow);
     }
+  }
+
+  private function _cleanUserQueue (object $client, int $activeWallId,
+                                    int $fd = null):void
+  {
+    $server = $this->_server;
+    $db = $server->db;
+
+    (new EditQueue([], $client))->removeUser ();
+
+    $_json = json_encode ([
+      'action' => 'userstoppedwriting',
+      'userstoppedwriting' => ['user' => ['id' => $client->id]]
+    ]);
+
+    foreach ($db->jGet ('activeWalls', $activeWallId) as $_fd => $_userId)
+      if ($_fd != $fd && $server->isEstablished ($_fd))
+        $server->push ($_fd, $_json);
   }
 
   private function _pushWallsUsersCount (array $diff, int $fd = null):void
