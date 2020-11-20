@@ -559,9 +559,11 @@
 
             startPlugin.addPlug (newPlug);
 
+/*FIXME Useful?
             if (end.parentNode.classList.contains("list-mode") ||
                 start0.parentNode.classList.contains("list-mode"))
               startPlugin.hidePlugs ();
+*/
           }
           else
             startPlugin.updatePlugLabel ({endId: endId, label: label});
@@ -653,7 +655,9 @@
               // Update postit
               case "update":
 
-                if (d.isResponse || cell.classList.contains ("list-mode"))
+                if (d.isResponse ||
+                    cell.classList.contains ("list-mode") ||
+                    S.getCurrent("filters").is (":visible"))
                   $postit.postit ("update", d.postit, {id: d.postit.cells_id});
                 else
                   $postit.hide ("fade", 250, ()=>
@@ -902,6 +906,14 @@
             $wall.find("tbody td").cell ("reorganize");
 
           plugin.refreshCellsToggleDisplayMode ();
+
+          // Re-apply filters
+          setTimeout (()=>
+            {
+              const $f = S.getCurrent("filters");
+              if ($f.is (":visible"))
+                $f.filters ("apply", {norefresh: true});
+            }, 0)
 
           if (S.get ("zoom-level"))
           {

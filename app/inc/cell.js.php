@@ -471,7 +471,7 @@
         $postit.postit ("insert");
       else if ($cell[0].classList.contains ("postit-mode"))
       {
-        if (args.init)
+        if (args.init || S.getCurrent("filters").is (":visible"))
           $postit[0].style.visibility = "visible";
         else
         {
