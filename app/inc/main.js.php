@@ -677,7 +677,12 @@
                 $postit.postit ("removePlugs", true);
 
                 if (H.haveMouse ())
+                {
+                  // Empty postit content to prevent effect to reload
+                  // deleted embedded images
+                  $postit[0].querySelector(".postit-edit").innerHTML = "";
                   $postit.hide ("explode", __remove);
+                }
                 else
                   // The explode effect works poorly on mobile devices
                   __remove ();
