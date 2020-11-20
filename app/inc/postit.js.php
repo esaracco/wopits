@@ -1872,17 +1872,8 @@
               type: "warning",
               msg: d.error_msg
             });
-          else if (todelete)
-          {
-            if ($postit[0].classList.contains ("selected"))
-              S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
-
-            $postit.remove ();
-
-            const search = document.getElementById ("psearchPopup");
-            if (search)
-              $(search).psearch ("replay");
-          }
+          else if (todelete && $postit[0].classList.contains ("selected"))
+            S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
           else if (data && data.updatetz)
             $postit[0].removeAttribute ("data-updatetz");
         },
