@@ -762,23 +762,27 @@ class Server
         // If user have at least one wall opened.
         if ($activeWallId)
         {
+          // Test if user have a active chat
+          $activeChat = isset (($db->jGet ('chatUsers', $activeWallId))->$fd);
+
           // Purge user's actions from edit queue.
           $this->_cleanUserQueue ($client, $activeWallId, $fd);
 
           // Purge from opened walls queue.
           if (!empty ( ($ow = $settings->openedWalls) ))
             foreach ($ow as $_wallId)
+            {
+              $this->_unsetItem ('chatUsers', $_wallId, $fd);
               $this->_unsetOpenedWalls ($_wallId, $fd);
+            }
 
           // Purge from active walls queue.
           $this->_unsetItem ('activeWalls', $activeWallId, $fd);
           $this->_unsetActiveWallsUnique ($activeWallId, $userId);
 
           // Leave wall's chat.
-          if (isset (($db->jGet ('chatUsers', $activeWallId))->$fd))
+          if ($activeChat)
           {
-            $this->_unsetItem ('chatUsers', $activeWallId, $fd);
-
             $_ret = [
               'method' => 'DELETE',
               'wall' => ['id' => $activeWallId],
