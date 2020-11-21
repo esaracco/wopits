@@ -752,7 +752,12 @@ class WHelper
   // METHOD hideUserWriting ()
   hideUserWriting (user)
   {
-    $("[class^='user-writing'][data-userid='"+user.id+"']").remove ();
+    document.querySelectorAll(
+      "[class^='user-writing'][data-userid='"+user.id+"']").forEach (el =>
+      {
+        el.parentNode.classList.remove ("locked", "main");
+        el.remove ();
+      });
   }
 
   // METHOD isLoginPage ()

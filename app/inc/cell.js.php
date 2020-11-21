@@ -246,13 +246,18 @@
     },
 
     // METHOD setPostitsUserWritingListMode ()
+    // See postit::showUserWriting()
     setPostitsUserWritingListMode ()
     {
       this.element[0].querySelectorAll(".user-writing").forEach ((el) =>
         {
-          const p = el.parentNode;
+          const p = el.parentNode,
+                min = p.parentNode.querySelector (
+                  ".postit-min[data-id='"+p.dataset.id+"']");
 
-          $(p.parentNode.querySelector (".postit-min[data-id='"+p.dataset.id+"']")).prepend (`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`);
+          min.classList.add ("locked");
+
+          $(min).prepend (`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`);
         });
     },
 
@@ -305,7 +310,7 @@
 
             p.style.visibility = "hidden";
 
-            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}"><span>${sortable?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:''}</span> ${title}</li>`;
+            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${sortable?`<span><i class="fas fa-arrows-alt-v fa-xs"></i></span>`:""} ${title}</li>`;
           });
 
         $cell.find(".cell-menu").append (

@@ -22,7 +22,6 @@ class EditQueue extends Wall
   public function addTo ():array
   {
     $item = $this->item;
-    $editIds = [$this->itemId];
     $ret = [];
 
     $r = $this->_checkQueueAccess ($item);
@@ -32,8 +31,6 @@ class EditQueue extends Wall
 
     try
     {
-      $stmt = null;
-
       if (!empty ($this->data->todelete))
       {
         $item = 'wall-delete';
@@ -48,35 +45,16 @@ class EditQueue extends Wall
            ]);
       }
       else
-      {
-        // If postit, set editing mode for all of other postits
-        // plugged with it.
-        if ($item == 'postit')
-        {
-          ($stmt = $this->prepare ('
-            SELECT item_start, item_end
-            FROM postits_plugs
-            WHERE item_start = ? OR item_end = ?'))
-             ->execute ([$this->itemId, $this->itemId]);
-          while ($plug = $stmt->fetch ())
-            $editIds[] = ($plug['item_start'] == $this->itemId) ?
-                           $plug['item_end'] : $plug['item_start'];
-        }
-
         ($stmt = $this->prepare ('
           SELECT session_id FROM edit_queue
-          WHERE item = ?
-            AND item_id IN ('.
-              implode(',', array_map ([$this, 'quote'], $editIds)).
-            ') LIMIT 1'))
-           ->execute ([$item]);
-      }
+          WHERE item = ? AND item_id = ?'))
+            ->execute ([$item, $this->itemId]);
 
       if ($r = $stmt->fetch ())
       {
         // If item is already edited by other user, error
         if ($r['session_id'] != $this->sessionId)
-          $ret['error_msg'] = _("Someone is editing this item.");
+          $ret['error_msg'] = _("This item is locked by another user!");
       }
       // If item is free for editing
       elseif (
@@ -89,6 +67,23 @@ class EditQueue extends Wall
       }
       else
       {
+        $editIds = [$this->itemId];
+
+        // If postit, set editing mode for all of other postits
+        // plugged with it at first level
+        if ($item == 'postit')
+        {
+          ($stmt = $this->prepare ('
+            SELECT item_start, item_end
+            FROM postits_plugs
+            WHERE item_start = ? OR item_end = ?'))
+             ->execute ([$this->itemId, $this->itemId]);
+
+          while ($plug = $stmt->fetch ())
+            $editIds[] = ($plug['item_start'] == $this->itemId) ?
+                           $plug['item_end'] : $plug['item_start'];
+        }
+
         foreach ($editIds as $id)
           $this->executeQuery ('INSERT INTO edit_queue', [
             'walls_id' => $this->wallId,

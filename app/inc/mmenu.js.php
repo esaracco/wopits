@@ -231,7 +231,7 @@
               "/cell/"+cellSettings.id+"/postits/"+action,
             {postits: Object.keys (_data.postits)},
             // success cb
-            ()=> (action == "move") && this.close ());
+            ()=> this.close ());
           break;
       }
     },

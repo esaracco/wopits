@@ -511,9 +511,10 @@ select.timezone {
   z-index:5018 !important;
 }
 
-.readonly {
-  pointer-events:none;
-  opacity:.6;
+.readonly,
+.locked {
+  pointer-events:none !important;
+  opacity:.4 !important;
 }
 
 .invisible {
@@ -709,6 +710,7 @@ select.timezone {
 }
 
 .user-writing {
+  pointer-events:none;
   position:absolute;
   z-index:4999;
   border-radius:10px;
@@ -719,7 +721,6 @@ select.timezone {
   font-size:0.8rem;
   top:-70px;
   left:-22px;
-  opacity:0.3;
 }
 
 span.user-writing-min {
@@ -728,8 +729,39 @@ span.user-writing-min {
 
 .user-writing.main,
 .user-writing-min.main {
-  opacity:1;
   font-weight:bold;
+}
+
+.user-writing:not(.main) {
+  top:auto;
+  left:auto;
+  width:100%;
+  height:100%;
+  text-align:center;
+  font-size:2rem;
+  border-radius:0;
+  background:none;
+  box-shadow:none;
+}
+
+.user-writing:not(.main) i {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform:translate(-50%,-50%);
+  text-shadow: 0px 0px 6px #B2B2B2;
+  padding:10px;
+  width:60px;
+  height:60px;
+  opacity:.4;
+  border-radius:60px;
+  background:white;
+  border:1px solid gray;
+}
+
+.postit.locked.main,
+.postit-min.locked.main {
+  opacity:.8!important;
 }
 
 a.active .user-writing {
@@ -774,6 +806,11 @@ td > .user-writing {
   top:5px;
   transform:rotate(315deg);
   width:10px;
+}
+
+.user-writing:not(.main):after {
+  background:none;
+  box-shadow:none;
 }
 
 a.active .user-writing:after {
