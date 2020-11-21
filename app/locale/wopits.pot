@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-21 14:26+0100\n"
+        "POT-Creation-Date: 2020-11-21 18:09+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr  ""
 msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & debugging & enhancements.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Chat</b> Fixed an issue when multiple chats are open.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
