@@ -168,10 +168,10 @@
     if (_plugRabbit.line)
     {
       $(document)
-        .off("mousedown.rabbit", _plugRabbit.mousedownEvent)
-        .off ("keydown.rabbit", _plugRabbit.escapeEvent);
+        .off("mousedown.rabbit")
+        .off ("keydown.rabbit");
 
-      $("body").off ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
+      $("body").off ("mousemove.rabbit");
 
       _plugRabbit.line.remove ();
       _plugRabbit.line = null;
