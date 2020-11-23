@@ -108,7 +108,7 @@
                 if (from.id != endId)
                   H.displayMsg ({
                     type: "warning",
-                    msg: "<?=_("This relationship already exists")?>"
+                    msg: "<?=_("This relationship already exists!")?>"
                   });
                 else
                   _cancelPlugAction ();
@@ -224,34 +224,38 @@
     // METHOD checkPlugsMenu ()
     checkPlugsMenu (resetUndo)
     {
-      if (S.getCurrent("filters").find(".selected").length)
-        return this.$menu.find("[data-action='plug']").hide ();
+      const menu = this.$menu[0];
+      let item;
 
-      const menu = this.$menu[0].querySelector (
-                     "[data-action='delete-plugs'] .dropdown-item");
+      if (S.getCurrent("filters").find(".selected").length)
+        return menu.querySelector("[data-action='plug']").style.display="none";
+
+      item = menu.querySelector ("[data-action='delete-plugs'] .dropdown-item");
       if (this.postitPlugin.havePlugs ())
-        menu.classList.remove ("disabled");
+        item.classList.remove ("disabled");
       else
-        menu.classList.add ("disabled");
+        item.classList.add ("disabled");
 
       if (resetUndo)
         this.postitPlugin.resetPlugsUndo ();
 
-    if (this.postitPlugin.settings.wall.find(".postit").length == 1)
-        this.$menu.find("[data-action='add-plug'] .dropdown-item")
-          .addClass ("disabled");
+      item = menu.querySelector ("[data-action='add-plug'] .dropdown-item");
+      if (this.postitPlugin.settings.wall[0]
+            .querySelectorAll(".postit").length == 1)
+        item.classList.add ("disabled");
       else
-        this.$menu.find("[data-action='add-plug'] .dropdown-item")
-          .removeClass ("disabled");
+        item.classList.remove ("disabled");
     }
 
     // METHOD setPosition ()
     setPosition (pos)
     {
+      const m = this.$menu[0];
+
       if (pos == "left")
-        this.$menu.removeClass("right").addClass ("left");
+        m.classList.replace ("right", "left");
       else
-        this.$menu.removeClass("left").addClass ("right");
+        m.classList.replace ("left", "right");
     }
 
     // METHOD getWidth ()
@@ -1395,7 +1399,7 @@
         {
           postit.dataset.haveexternalref = 1;
 
-          if (this.settings.wall.wall ("displayExternalRef") != 1)
+          if (this.settings.wall.wall("displayExternalRef") != 1)
             newContent = this.blockExternalRef (newContent, externalRef);
         }
         else
@@ -1408,8 +1412,8 @@
     // METHOD openAskForExternalRefPopup ()
     openAskForExternalRefPopup (args = {})
     {
-      let ask = (this.getExternalRef () &&
-                 this.settings.wall.wall ("displayExternalRef") != 1);
+      let ask = (this.getExternalRef() &&
+                 this.settings.wall.wall("displayExternalRef") != 1);
 
       if (ask)
         H.openConfirmPopover ({
