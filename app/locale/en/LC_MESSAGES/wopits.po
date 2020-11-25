@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 18:09+0100\n"
+"POT-Creation-Date: 2020-11-25 07:27+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -38,11 +38,6 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Chat</b> Fixed an issue when multiple "
-"chats are open.</p>"
-msgstr ""
-
-msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now "
 "cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. "
 "Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, "
@@ -57,6 +52,11 @@ msgstr ""
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added some "
 "effects on update & delete in sharing mode.</p>"
+msgstr ""
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability to "
+"move rows and columns using their menu.</p>"
 msgstr ""
 
 msgid ""
@@ -695,7 +695,19 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
+msgid "Move down"
+msgstr ""
+
+msgid "Move left"
+msgstr ""
+
+msgid "Move right"
+msgstr ""
+
 msgid "Move selected notes"
+msgstr ""
+
+msgid "Move up"
 msgstr ""
 
 msgid "Name"
@@ -1102,7 +1114,7 @@ msgstr ""
 msgid "This note will expire soon."
 msgstr ""
 
-msgid "This relationship already exists"
+msgid "This relationship already exists!"
 msgstr ""
 
 msgid "This title already exists."
