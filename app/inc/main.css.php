@@ -1109,7 +1109,6 @@ th .submenu .dropdown-menu {
 .postit {
   z-index:1010;
   position:absolute !important;
-  background:#ffffc6;
   min-height:50px;
   min-width:160px;
   height:120px;
@@ -1140,7 +1139,6 @@ th .submenu .dropdown-menu {
   position:absolute;
   font-size:14px;
   border-radius:5px 5px 5px 0;
-  background:#ffffc6;
   top:-21px;
   margin-left:-2px;
   padding:0 5px 0 30px;
@@ -2041,8 +2039,7 @@ i.fa-xs {
   width:100%;
   font-size:0.6rem;
   box-shadow: 0 -5px 5px -5px #cecece;
-  background:#ffffc6;
-  border-radius:3px;
+  border-radius:0 0 1px 1px;
   z-index:92;
 }
 
