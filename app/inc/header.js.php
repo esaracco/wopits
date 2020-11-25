@@ -310,7 +310,7 @@
 
           var idx = $th.index() - 1;
 
-          $th.insertAfter ($tr.find("th:eq("+idx+")"));
+          $th.insertAfter ($tr.find("th:eq("+(idx-1)+")"));
           $wall.find("tr").each (function ()
             {
               $(this).find("td:eq("+idx+")")
