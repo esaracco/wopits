@@ -700,7 +700,19 @@
 
           // Wall
           case "wall":
-            __refreshWallBasicProperties (d.wall);
+
+            switch (d.action)
+            {
+              // Col/row has been moved
+              case "movecolrow":
+                if (!d.isResponse)
+                  $wall.find ("th[data-id='header-"+d.header.id+"']")
+                    .header ("moveColRow", d.move, true);
+                break;
+
+              default:
+                __refreshWallBasicProperties (d.wall);
+            }
 
             break;
 

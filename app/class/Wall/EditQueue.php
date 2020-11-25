@@ -326,9 +326,11 @@ class EditQueue extends Wall
 
             if ($update)
             {
-              $this->updateCells ();
-
-              $ret['wall'] = $this->getWall ();
+              // If we are moving col/row
+              if (!empty ($this->data->move))
+                $ret = $this->moveRow ($this->data->move);
+              else
+                $ret['wall'] = $this->updateCells ();
             }
 
             break;
@@ -338,9 +340,7 @@ class EditQueue extends Wall
             if ($update)
             {
               $this->updateHeaders ();
-              $this->updateCells ();
-
-              $ret['wall'] = $this->getWall ();
+              $ret['wall'] = $this->updateCells ();
             }
 
             break;

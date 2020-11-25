@@ -93,21 +93,68 @@
 
       if (adminAccess)
       {
-        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></a><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li><li class="dropdown-divider"></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`)
+        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></a><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`)
           .on("show.bs.dropdown", function ()
             {
               const $menu = $(this),
-                    $deleteItem = $menu.find("li[data-action='delete'] a");
-   
+                    menu = $menu[0],
+                    wall = $wall[0],
+                    tr = $header.closest("tr")[0],
+                    deleteItem =
+                      menu.querySelector("[data-action='delete'] a"),
+                    moveUpItem =
+                      menu.querySelector("[data-action='move-up'] a"),
+                    moveDownItem =
+                      menu.querySelector("[data-action='move-down'] a"),
+                    moveLeftItem =
+                      menu.querySelector("[data-action='move-left'] a"),
+                    moveRightItem =
+                      menu.querySelector("[data-action='move-right'] a");
+
+              $menu.find("a.disabled").removeClass ("disabled");
+              $menu.find("a").show ();
               $menu.find("a.dropdown-toggle i.far")
                 .removeClass("far")
                 .addClass ("fas");
-   
-              if (isCol && $wall.find("thead th").length > 2 ||
-                  !isCol && $wall.find("tbody th").length > 1)
-                $deleteItem.removeClass ("disabled");
+
+              if (isCol)
+              {
+                const thIdx = $header.index ();
+
+                if (wall.querySelectorAll("thead th").length <= 2)
+                  deleteItem.style.display = "none";
+
+                if (thIdx == 1)
+                  moveLeftItem.style.display = "none";
+
+                if (thIdx == tr.querySelectorAll("th").length-1)
+                  moveRightItem.style.display = "none";
+              }
               else
-                $deleteItem.addClass ("disabled");
+              {
+                const trIdx = $(tr).index ();
+
+                if (wall.querySelectorAll("tbody th").length == 1)
+                  deleteItem.style.display = "none";
+
+                if (trIdx == 0)
+                  moveUpItem.style.display = "none";
+
+                if (trIdx == wall.querySelectorAll("tr").length - 2)
+                  moveDownItem.style.display = "none";
+              }
+
+              if (isCol && wall.dataset.cols == "1")
+              {
+                moveLeftItem.style.display = "none";
+                moveRightItem.style.display = "none";
+              }
+
+              if (!isCol && wall.dataset.rows == "1")
+              {
+                moveUpItem.style.display = "none";
+                moveDownItem.style.display = "none";
+              }
             })
           .on("hide.bs.dropdown", function ()
             {
@@ -194,6 +241,14 @@
                     });
                 });
               break;
+
+            case "move-up":
+            case "move-down":
+            case "move-left":
+            case "move-right":
+
+              plugin.moveColRow (action);
+              break;
           }
         });
 
@@ -218,6 +273,57 @@
 
       if (settings.picture)
         $header.append (plugin.getImgTemplate (settings.picture));
+    },
+
+    // METHOD moveRow ()
+    moveColRow (move, nosynchro)
+    {
+      const $th = this.element,
+            $tr = $th.closest ("tr"),
+            $wall = this.settings.wall,
+            $cell = $wall.find ("td:eq(0)");
+
+      switch (move)
+      {
+        case "move-up":
+
+          $tr.insertBefore ($tr.prev ());
+          break;
+
+        case "move-down":
+          $tr.insertAfter ($tr.next ());
+          break;
+
+        case "move-left":
+
+          var idx = $th.index() - 1;
+
+          $th.insertBefore ($tr.find("th:eq("+idx+")"));
+          $wall.find("tr").each (function ()
+            {
+              $(this).find("td:eq("+idx+")")
+                .insertBefore ($(this).find("td:eq("+(idx-1)+")"));
+            });
+          break;
+
+        case "move-right":
+
+          var idx = $th.index() - 1;
+
+          $th.insertAfter ($tr.find("th:eq("+idx+")"));
+          $wall.find("tr").each (function ()
+            {
+              $(this).find("td:eq("+idx+")")
+                .insertAfter ($(this).find("td:eq("+(idx+1)+")"));
+            });
+          break;
+      }
+
+      if (!nosynchro)
+        $cell.cell ("unedit", false, {
+          headerId: this.settings.id,
+          move: move
+        });
     },
 
     // METHOD showUserWriting ()

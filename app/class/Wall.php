@@ -1317,8 +1317,66 @@ class Wall extends Base
     return $ret;
   }
 
-  public function updateCells ():void
+  public function moveRow (object $moveData):array
   {
+    $data = $this->data;
+    $newTransaction = (!\PDO::inTransaction ());
+    $ret = [];
+
+    try
+    {
+      if ($newTransaction)
+        $this->beginTransaction ();
+
+      foreach (['cols', 'rows'] as $item)
+      {
+        $items = $moveData->headers->$item;
+        for ($j = 0, $jLen = count($items); $j < $jLen; $j++)
+        {
+          $header = $items[$j];
+
+          $this->executeQuery ('UPDATE headers',
+            ['item_order' => $j],
+            ['id' => $header->id]);
+        }
+      }
+
+      for ($i = 0, $iLen = count($data->cells); $i < $iLen; $i++)
+      {
+        $cell = $data->cells[$i];
+
+        $this->executeQuery ('UPDATE cells', [
+          'item_col' => $cell->item_col,
+          'item_row' => $cell->item_row
+         ],
+         ['id' => $cell->id]);
+      }
+
+      $ret = ['wall' => [
+        'id' => $this->wallId,
+        'partial' => 'wall',
+        'action' => 'movecolrow',
+        'move' => $moveData->move,
+        'header' => ['id' => $moveData->headerId]
+      ]];
+
+      if ($newTransaction)
+        $this->commit ();
+    }
+    catch (\Exception $e)
+    {
+      if ($newTransaction)
+        $this->rollback ();
+
+      throw $e;
+    }
+
+    return $ret;
+  }
+
+  public function updateCells ():array
+  {
+    $data = $this->data;
     $newTransaction = (!\PDO::inTransaction ());
 
     try
@@ -1326,9 +1384,9 @@ class Wall extends Base
       if ($newTransaction)
         $this->beginTransaction ();
 
-      for ($i = 0, $iLen = count($this->data->cells); $i < $iLen; $i++)
+      for ($i = 0, $iLen = count($data->cells); $i < $iLen; $i++)
       {
-        $cell = $this->data->cells[$i];
+        $cell = $data->cells[$i];
 
         $this->executeQuery ('UPDATE cells', [
           'width' => $cell->width,
@@ -1355,7 +1413,7 @@ class Wall extends Base
       }
 
       $this->executeQuery ('UPDATE walls',
-        ['width' => $this->data->wall->width],
+        ['width' => $data->wall->width],
         ['id' => $this->wallId]);
 
       if ($newTransaction)
@@ -1368,6 +1426,8 @@ class Wall extends Base
 
       throw $e;
     }
+
+    return $this->getWall ();
   }
 
   public function updateHeaders ():void

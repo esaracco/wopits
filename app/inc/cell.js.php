@@ -549,7 +549,7 @@
     },
 
     // METHOD unedit ()
-    unedit (noupdate = false)
+    unedit (noupdate = false, move)
     {
       const data = noupdate ?
               null :
@@ -557,6 +557,14 @@
                 cells: this.serialize (),
                 wall: {width: Math.trunc (this.settings.wall.outerWidth ())}
               };
+
+      // If we are moving col/row
+      if (data && move)
+      {
+        move.headers =
+          this.element.closest("tr").find("th").header ("serialize");
+        data.move = move;
+      }
 
       H.request_ws (
         "DELETE",
