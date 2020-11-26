@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-25 07:27+0100\n"
+        "POT-Creation-Date: 2020-11-26 06:57+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr  ""
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sharing</b> Users can now see in real time who is making changes and on what items.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added some effects on update & delete in sharing mode.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added a progress bar to follow the progress of a task.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability to move rows and columns using their menu.</p>"
@@ -659,6 +659,9 @@ msgid   "Previous"
 msgstr  ""
 
 msgid   "Privacy policy"
+msgstr  ""
+
+msgid   "Progress:"
 msgstr  ""
 
 #, php-format

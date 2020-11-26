@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-25 07:27+0100\n"
+"POT-Creation-Date: 2020-11-26 06:57+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -50,8 +50,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added some "
-"effects on update & delete in sharing mode.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added a "
+"progress bar to follow the progress of a task.</p>"
 msgstr ""
 
 msgid ""
@@ -829,6 +829,9 @@ msgid "Previous"
 msgstr ""
 
 msgid "Privacy policy"
+msgstr ""
+
+msgid "Progress:"
 msgstr ""
 
 #, php-format

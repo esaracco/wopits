@@ -10,7 +10,7 @@
       <div class="modal-body">
         <form>
            <div class="slider">
-            <label><?=_("Progress")?>: <span></span></label>
+            <label><?=_("Progress:")?> <span></span></label>
             <div class="slider"><input type="range" min="0" max="100" value="0"></div>
           </div>
            <div class="form-group">
