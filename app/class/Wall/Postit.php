@@ -260,7 +260,7 @@ class Postit extends Wall
       SELECT
         id, cells_id, width, height, item_top, item_left, item_order,
         classcolor, title, content, tags, creationdate, deadline, timezone,
-        obsolete, attachmentscount
+        obsolete, attachmentscount, progress
       FROM postits
       WHERE postits.id = ?'))
        ->execute ([$this->postitId]);

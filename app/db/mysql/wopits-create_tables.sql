@@ -193,6 +193,7 @@ CREATE TABLE postits
   deadline INT UNSIGNED,
   timezone VARCHAR (30),
   obsolete TINYINT(1) NOT NULL DEFAULT 0,
+  progress TINYINT UNSIGNED NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id),
   CONSTRAINT `postits-cells_id-fk` FOREIGN KEY (cells_id)

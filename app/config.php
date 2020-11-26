@@ -145,6 +145,7 @@ define ('WS_SERVER_SECTIONS', [
     'editable' => [],
     'header' => [],
     'postit' => [],
+    'slider' => [],
     'cell' => [],
     'events' => [],
     'login' => [],

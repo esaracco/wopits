@@ -496,7 +496,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><?=_("Progress:")?> <span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -712,6 +712,7 @@
     {
       const plugin = this,
             postit = plugin.element[0],
+            progress = Number.parseInt (postit.dataset.progress||0),
             title = this.element.find(".postit-header .title").text (),
             content = postit.querySelector(".postit-edit").innerHTML||"";
 
@@ -720,8 +721,11 @@
         const $popup = $("#postitUpdatePopup");
 
         S.set ("postit-data", {
-          title: (title != "...")?title.replace(/&amp;/g, "&"):""
+          title: (title != "...")?title.replace(/&amp;/g, "&"):"",
+          progress: progress
         });
+
+        $popup.find(".slider").slider ("value", progress, true);
 
         $("#postitUpdatePopupTitle").val (S.get("postit-data").title);
 
@@ -1258,7 +1262,8 @@
               this.querySelector(".attachmentscount span").innerText,
             plugs: plugin.serializePlugs (),
             hadpictures: !!this.dataset.hadpictures,
-            hasuploadedpictures: !!this.dataset.hasuploadedpictures
+            hasuploadedpictures: !!this.dataset.hasuploadedpictures,
+            progress: Number.parseInt(this.dataset.progress||0)
           };
         }
 
@@ -1373,16 +1378,47 @@
     },
 
     // METHOD setCreationDate ()
-    setCreationDate (date)
+    setCreationDate (v)
     {
-      this.element.find(".dates .creation span").text (date.trim ());
+      this.element.find(".dates .creation span").text (v.trim ());
+    },
+
+    // METHOD setProgress ()
+    setProgress (v)
+    {
+      const ppc = this.element[0].querySelector (".postit-progress-container");
+
+      if (!v)
+        ppc.style.display = "none";
+      else
+      {
+        const p = ppc.querySelector (".postit-progress");
+
+        this.element[0].dataset.progress = v||0;
+        ppc.querySelector("span").innerText = v+"%";
+        ppc.style.display = "block";
+
+        p.style.height = v+"%";
+        if (v < 30)
+          p.style.backgroundColor = "#f60104";
+        else if (v < 50)
+          p.style.backgroundColor = "#f57f00";
+        else if (v < 75)
+          p.style.backgroundColor = "#f5c900";
+        else if (v < 85)
+          p.style.backgroundColor = "#f0f700";
+        else if (v < 95)
+          p.style.backgroundColor = "#84f600";
+        else
+          p.style.backgroundColor = "#26f700";
+      }
     },
 
     // METHOD setTitle ()
-    setTitle (title)
+    setTitle (v)
     {
       this.element.find(".postit-header span.title")
-        .text (H.noHTML(title) || "...");
+        .text (H.noHTML(v) || "...");
     },
 
     // METHOD setContent ()
@@ -1731,6 +1767,8 @@
       }
 
       this.setClassColor (d.classcolor);
+
+      this.setProgress (d.progress);
 
       this.setTitle (d.title);
 
@@ -2631,36 +2669,38 @@
             if (data && data.closing) return;
 
             const $popup = $(this),
-                  plugin = S.getCurrent("postit").postit ("getClass");
+                  plugin = S.getCurrent("postit").postit ("getClass"),
+                  progress = $popup.find(".slider").slider ("value"),
+                  title = $("#postitUpdatePopupTitle").val (),
+                  content = tinymce.activeEditor.getContent (),
+                  cb_close = () =>
+                    {
+                      S.set ("postit-data", {closing: true});
 
-              const title = $("#postitUpdatePopupTitle").val (),
-                    content = tinymce.activeEditor.getContent (),
-                    cb_close = () =>
-                      {
-                        S.set ("postit-data", {closing: true});
+                      //FIXME
+                      $(".tox-toolbar__overflow").hide ();
+                      $(".tox-menu").hide ();
 
-                        //FIXME
-                        $(".tox-toolbar__overflow").hide ();
-                        $(".tox-menu").hide ();
+                      $popup.find("input").val ("");
+                      plugin.unedit ();
 
-                        $popup.find("input").val ("");
-                        plugin.unedit ();
+                      $popup.modal ("hide");
+                      S.unset ("postit-data");
 
-                        $popup.modal ("hide");
-                        S.unset ("postit-data");
+                      tinymce.activeEditor.resetContent ();
 
-                        tinymce.activeEditor.resetContent ();
-
-                        if (!H.haveMouse ())
-                          H.fixVKBScrollStop ();
-                      };
+                      if (!H.haveMouse ())
+                        H.fixVKBScrollStop ();
+                    };
 
               // If there is pending changes, ask confirmation to user
               if (data && (
                 // Content change detection
                 tinymce.activeEditor.isDirty () ||
                 // Title change detection
-                H.htmlEscape(data.title) != H.htmlEscape(title)))
+                H.htmlEscape(data.title) != H.htmlEscape(title) ||
+                // Progress change detection
+                data.progress != progress))
               {
                 e.preventDefault ();
 
@@ -2670,6 +2710,7 @@
                   content: `<?=_("Save changes?")?>`,
                   cb_ok: () =>
                     {
+                      plugin.setProgress (progress);
                       plugin.setTitle (title);
                       plugin.setContent (content);
 

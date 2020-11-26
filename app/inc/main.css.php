@@ -2002,6 +2002,14 @@ i.fa-xs {
   min-height:375px;
 }
 
+.slider label span {
+  color:#555;
+}
+
+.slider input {
+  width:100%;
+}
+
 .download {
   display:none;
 }
@@ -2021,6 +2029,39 @@ i.fa-xs {
   border-radius:0 1px 1px 1px;
   padding:5px 5px 20px 5px;
   z-index:92;
+}
+
+.postit .postit-progress-container {
+  position:absolute;
+  bottom:-2px;
+  height:100%;
+  width:8px;
+  left:-8px;
+  z-index:92;
+}
+
+.postit .postit-progress {
+  position:absolute;
+  bottom:2px;
+  width:100%;
+  z-index:92;
+  border-radius:5px;
+  box-shadow:inset 0px -2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.postit .postit-progress-container span {
+  font-weight:bold;
+}
+
+.postit .postit-progress-container div:first-child {
+  position:absolute;
+  left:-49px;
+  transform: translateY(-50%);
+  -webkit-transform: rotate(270deg);
+  font-size:10px;
+  line-height:10px;
+  bottom:50%;
+  width:85px;
 }
 
 .postit-edit p,

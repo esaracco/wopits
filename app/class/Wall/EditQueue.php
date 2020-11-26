@@ -249,7 +249,8 @@ class EditQueue extends Wall
                     'tags' => $this->data->tags,
                     'obsolete' => (empty ($this->data->obsolete)) ?
                                     0 : $this->data->obsolete,
-                    'deadline' => ($deadline == 0) ? null : $deadline
+                    'deadline' => ($deadline == 0) ? null : $deadline,
+                    'progress' => $this->data->progress
                   ];
 
                   // Set deadline timezone with user timezone only if

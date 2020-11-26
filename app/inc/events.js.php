@@ -413,6 +413,8 @@ $(function()
 
           case "postitUpdatePopup":
 
+            $postit.postit ("setProgress",
+              $popup.find(".slider").slider ("value"));
             $postit.postit ("setTitle", $("#postitUpdatePopupTitle").val ());
             $postit.postit ("setContent", tinymce.activeEditor.getContent());
 

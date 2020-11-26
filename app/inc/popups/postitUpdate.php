@@ -9,6 +9,10 @@
       </div>
       <div class="modal-body">
         <form>
+           <div class="slider">
+            <label><?=_("Progress")?>: <span></span></label>
+            <div class="slider"><input type="range" min="0" max="100" value="0"></div>
+          </div>
            <div class="form-group">
             <label for="postitUpdatePopupTitle"><?=_("Title")?></label>
             <input type="text" class="form-control" id="postitUpdatePopupTitle" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('postits', 'title')?>">

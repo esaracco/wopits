@@ -794,7 +794,7 @@ class Wall extends Base
         "SELECT
            postits.id, width, height, item_top, item_left, item_order,
            classcolor, title, content, tags, creationdate, deadline, timezone,
-           obsolete, attachmentscount, postits_alerts.alertshift
+           obsolete, attachmentscount, progress, postits_alerts.alertshift
          FROM postits
            LEFT JOIN postits_alerts
              ON postits_alerts.postits_id = postits.id
@@ -804,7 +804,7 @@ class Wall extends Base
         "SELECT
            id, width, height, item_top, item_left, item_order, classcolor,
            title, content, tags, creationdate, deadline, timezone, obsolete,
-           attachmentscount
+           attachmentscount, progress
          FROM postits
          WHERE cells_id = ?");
       $data['cells'] = [];

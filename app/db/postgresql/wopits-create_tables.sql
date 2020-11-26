@@ -152,7 +152,8 @@ CREATE TABLE postits
   tags VARCHAR(255),
   deadline INTEGER,
   timezone VARCHAR (30),
-  obsolete SMALLINT NOT NULL DEFAULT 0
+  obsolete SMALLINT NOT NULL DEFAULT 0,
+  progress SMALLINT NOT NULL DEFAULT 0
 );
 
 DROP TABLE IF EXISTS postits_plugs CASCADE;
