@@ -1424,6 +1424,27 @@ class WHelper
         document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
   }
   
+  // METHOD getProgressbarColor ()
+  getProgressbarColor (v)
+  {
+    let r;
+
+    if (v < 30)
+      r = "#f60104";
+    else if (v < 50)
+      r = "#f57f00";
+    else if (v < 75)
+      r = "#f5c900";
+    else if (v < 85)
+      r = "#f0f700";
+    else if (v < 95)
+      r = "#84f600";
+    else
+      r = "#26f700";
+
+    return r;
+  }
+
   // METHOD download ()
   download (args)
   {

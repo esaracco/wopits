@@ -496,7 +496,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><?=_("Progress:")?> <span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -1280,7 +1280,7 @@
             $cell = this.settings.cell,
             canWrite = this.canWrite ();
       const __lock = el =>
-              el.classList.add("locked", isRelated?undefined:"main"),
+              el.classList.add("locked", isRelated?"related":"main"),
             __addMain = ()=>
               this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
 
@@ -1399,18 +1399,7 @@
         ppc.style.display = "block";
 
         p.style.height = v+"%";
-        if (v < 30)
-          p.style.backgroundColor = "#f60104";
-        else if (v < 50)
-          p.style.backgroundColor = "#f57f00";
-        else if (v < 75)
-          p.style.backgroundColor = "#f5c900";
-        else if (v < 85)
-          p.style.backgroundColor = "#f0f700";
-        else if (v < 95)
-          p.style.backgroundColor = "#84f600";
-        else
-          p.style.backgroundColor = "#26f700";
+        p.style.backgroundColor = H.getProgressbarColor (v);
       }
     },
 

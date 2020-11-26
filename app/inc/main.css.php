@@ -723,7 +723,28 @@ select.timezone {
   left:-22px;
 }
 
+.user-writing-min {
+  pointer-events:none;
+  position:absolute;
+  z-index:4999;
+  border-radius:25px;
+  height:25px;
+  width:25px;
+  box-shadow:0px 0px 6px #B2B2B2;
+  background:#fff;
+  color:#555;
+  line-height:25px;
+  padding:10px 10px 0 10px;
+  font-size:0.8rem;
+  text-align:center;
+}
+
+.cell-list-mode li span.user-writing-min {
+  opacity:1!important;
+}
+
 span.user-writing-min {
+  position:absolute;
   padding:0!important;
 }
 
@@ -2032,21 +2053,48 @@ i.fa-xs {
 }
 
 .postit .postit-progress-container {
-  position:absolute;
-  bottom:-2px;
   height:100%;
-  width:8px;
-  left:-8px;
-  z-index:92;
+  width:12px;
+  box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.5);
+  border-radius:0 0 5px 5px;
+  padding:1px;
+  margin-left:-14px;
+}
+
+.postit-min .postit-progress-container {
+  padding:1px;
+  background:#fff;
+  border-radius:3px;
+  box-shadow:inset 0 0 3px rgba(0, 0, 0, 0.5);
+  margin-bottom:-2px;
+  margin-top:-3px;
 }
 
 .postit .postit-progress {
   position:absolute;
-  bottom:2px;
-  width:100%;
+  bottom:1px;
+  max-height:98%;
+  width:10px;
   z-index:92;
+  border-radius:0 0 5px 5px;
+  box-shadow:inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+  opacity:.8;
+}
+
+.postit-min .postit-progress {
+  width:100%;
+  height:3px;
   border-radius:5px;
-  box-shadow:inset 0px -2px 5px rgba(0, 0, 0, 0.5);
+  line-height:3px;
+}
+
+.postit-min .postit-progress span {
+  position:absolute;
+  font-size:.6rem;
+  font-weight:bold;
+  color:#000;
+  margin-top:-5px;
+  left:50%;
 }
 
 .postit .postit-progress-container span {
@@ -2055,13 +2103,13 @@ i.fa-xs {
 
 .postit .postit-progress-container div:first-child {
   position:absolute;
-  left:-49px;
+  left:-21px;
+  width:26px;
   transform: translateY(-50%);
   -webkit-transform: rotate(270deg);
   font-size:10px;
-  line-height:10px;
   bottom:50%;
-  width:85px;
+  z-index:93;
 }
 
 .postit-edit p,

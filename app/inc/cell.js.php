@@ -276,8 +276,7 @@
         const cell = $cell[0],
               cellWidth = cell.clientWidth,
               cellHeight = cell.clientHeight,
-              postits = Array.from (cell.querySelectorAll (".postit")),
-              sortable = (writeAccess && postits.length > 1);
+              postits = Array.from (cell.querySelectorAll (".postit"));
 
         $cell.removeClass("postit-mode").addClass ("list-mode");
 
@@ -303,14 +302,15 @@
           {
             const color = (p.className.match (/ color\-([a-z]+)/))[1],
                   postitPlugin = $(p).postit ("getClass"),
-                  title = postitPlugin.element.find(".title").text ();
+                  title = postitPlugin.element.find(".title").text (),
+                  progress = Number.parseInt (p.dataset.progress||0);
 
             postitPlugin.closeMenu ();
             postitPlugin.hidePlugs ();
 
             p.style.visibility = "hidden";
 
-            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${sortable?`<span><i class="fas fa-arrows-alt-v fa-xs"></i></span>`:""} ${title}</li>`;
+            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${progress?`<div class="postit-progress-container"><div class="postit-progress" style="width:${progress}%;background:${H.getProgressbarColor(progress)}"><span>${progress}%</span></div></div>`:""}${writeAccess?`<span>${(postits.length > 1)?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:""}</span>`:""} ${title}</li>`;
           });
 
         $cell.find(".cell-menu").append (
@@ -318,7 +318,7 @@
         $cell.prepend (
           `<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`);
 
-        if (sortable)
+        if (writeAccess)
           $cell.find(".cell-list-mode ul").sortable ({
             //containment: $cell,
             handle: ">span",
