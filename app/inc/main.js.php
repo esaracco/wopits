@@ -473,11 +473,15 @@
       {
         $divider.show ();
         $el.show().find("span").text (count);
+
+        document.title = `⚡${count} - wopits`;
       }
       else
       {
         $divider.hide ();
         $el.hide ();
+
+        document.title = "wopits";
       }
     },
 
