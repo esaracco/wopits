@@ -324,52 +324,56 @@
     // METHOD open ()
     open ()
     {
-      if (!H.haveMouse ())
-        return;
-
       const plugin = this,
             $sm = plugin.element;
 
-      if (plugin.element.is (":visible"))
+      if (!H.haveMouse () || plugin.element.is (":visible"))
         return;
 
       this.element.show ();
 
       $(document)
         // EVENT mousemove
-        .on("mousemove.mmenu", (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
+        .on("mousemove.mmenu",
+          (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
 
       $(document)
         // EVENT keydown
         .on("keydown.mmenu", function (e)
         {
-              // Nothing if modal was opened and is closing
-          if (S.get("still-closing") ||
-              // Nothing if <esc> & menu or modal/popup is opened or editable
-              // field is active
-              e.which  == 27 &&
-              document.querySelector ([
-                 ".postit-header.menu", ".modal.show", ".popover.show",
-                 ".editable.editing"]))
+          // Nothing if modal was opened and is closing
+          if (S.get("still-closing"))
             return;
 
           switch (e.which)
           {
             // ESC
             case 27:
-              return plugin.close ();
+
+              // Nothing if <esc> & menu or modal/popup is opened or editable
+              // field is active
+              if (!document.querySelector ([
+                    ".postit-header.menu", ".modal.show", ".popover.show",
+                    ".editable.editing"]))
+                plugin.close ();
+              return;
+
             // DEL
             case 46:
               return $sm.find("li[data-action='delete']").click ();
             // CTRL+C
             case 67:
+
               if (e.ctrlKey)
               {
                 $("#popup-layer").click ();
                 return $sm.find("li[data-action='copy']").click ();
               }
+              break;
+
             // CTRL+V
             case 86:
+
               const mpos = S.get ("mousepos");
               let $el = $(document.elementFromPoint (mpos.x, mpos.y));
 
@@ -391,8 +395,10 @@
                   }));
               }
               break;
+
             // CTRL+X
             case 88:
+
               if (e.ctrlKey)
               {
                 $("#popup-layer").click ();

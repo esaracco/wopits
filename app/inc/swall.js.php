@@ -462,12 +462,13 @@
     displayGroups ()
     {
       const $share = this.element,
-            $wall = S.getCurrent ("wall"),
+            wallPlugin = S.getCurrent("wall").wall ("getClass"),
+            isOwner = (wallPlugin.settings.ownerid == wpt_userData.id),
             $body = $share.find (".modal-body");
 
       H.request_ajax (
         "GET",
-        "wall/"+$wall.wall("getId")+"/group",
+        "wall/"+wallPlugin.settings.id+"/group",
         null,
         // success cb
         (d) =>
@@ -484,7 +485,8 @@
             const active =
                     document.querySelector (".modal li.list-group-item.active");
 
-            $wall.wall ("setShared", true);
+            if (isOwner)
+              wallPlugin.setShared (true);
 
             pClass.add ("scroll");
             $share.find(".grp-lb").text ("<?=_("Other available groups:")?>");
@@ -507,10 +509,11 @@
           }
           else
           {
-            $wall.wall ("setShared", false);
+            if (isOwner)
+              wallPlugin.setShared (false);
 
             $share.find(".grp-lb").text ("<?=_("Available groups:")?>");
-            $wall.find("thead th:eq(0)").html ("&nbsp;");
+            wallPlugin.element.find("thead th:eq(0)").html ("&nbsp;");
 
             html = (d.delegateAdminId) ?
               "<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>" :
