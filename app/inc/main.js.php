@@ -1879,7 +1879,7 @@
       {
         S.unset ("zoom-level");
 
-        setTimeout (() => $("#normal-display-btn").hide().popover("hide"), 150);
+        setTimeout (() => $("#normal-display-btn").hide(), 150);
 
         zoom0.removeAttribute ("data-zoomtype");
         zoom0.removeAttribute ("data-zoomlevelorigin");
@@ -1927,7 +1927,7 @@
         if (from != "screen")
         {
           $("<div/>").postit ("applyZoom");
-          $("#normal-display-btn").show().popover ("show");
+          $("#normal-display-btn").show ();
         }
 
         $zoom.css ({
@@ -1969,7 +1969,7 @@
                  position.right < walls.clientWidth - 5));
       }
 
-      $("#normal-display-btn").show().popover ("show");
+      $("#normal-display-btn").show ();
       $('.dropdown-menu li[data-action="zoom-screen"] a').addClass ("disabled");
 
       $("#walls").scrollLeft (
@@ -2173,7 +2173,7 @@
         if (H.haveMouse ())
           $("#main-menu").addClass ("noarrows");
 
-        $("body").prepend ($(`<div id="normal-display-btn" data-content="<?=_("Back to standard view")?>"><i class="fas fa-crosshairs fa-2x"></i></div>`)
+        $("body").prepend ($(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)
           // EVENT click on back to standard view button
           .on("click", ()=>S.getCurrent("wall").wall("zoom",{type:"normal"}))
           .on("shown.bs.popover", function (e)
