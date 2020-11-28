@@ -1873,6 +1873,13 @@
         case "normal": level = Number (zoom0.dataset.zoomlevelorigin); break;
       }
 
+      if (level <= 0)
+        return H.displayMsg ({
+          type: "warning",
+          title: "<?=_("Zoom")?>",
+          msg: "<?=_("The minimum zoom has been reached!")?>"
+        });
+
       S.set ("zoom-level", level);
 
       if (from != "screen" && level == zoom0.dataset.zoomlevelorigin)
