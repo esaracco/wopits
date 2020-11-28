@@ -846,7 +846,7 @@
     // METHOD applyZoomToPlugs ()
     applyZoomToPlugs (zoomLevel)
     {
-      const size = Math.trunc (4 * zoomLevel);
+      const size = Math.trunc(4 * zoomLevel)||1;
 
       this.settings._plugs.forEach (plug =>
         plug.obj.setOptions ({size: size}));
