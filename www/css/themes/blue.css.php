@@ -17,6 +17,7 @@
   background:rgba(0, 90, 255, 0.14);
 }
 
+#normal-display-btn,
 .newfeatures.latest p,
 .wall th,
 .wall tbody th div.row-menu,

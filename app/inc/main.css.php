@@ -160,21 +160,17 @@ kbd {
   display:none;
   z-index:1031;
   position:absolute;
-  top:62px;
+  top:59px;
   left:13px;
   cursor:pointer;
   border:1px dashed #dee2e6;
-  padding:5px;
+  padding:8px;
   border-radius:5px;
+  background:#f6f6f6;
 }
 
 #normal-display-btn i {
   vertical-align:middle;
-}
-
-#normal-display-btn span {
-  color:#555;
-  font-style:italic;
 }
 
 #msg-container {
