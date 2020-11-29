@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-11-28 07:33+0100\n"
+        "POT-Creation-Date: 2020-11-29 07:31+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,10 +35,10 @@ msgstr  ""
 msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & some fixes.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> Simplification of relationships creation.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sharing</b> Users can now see in real time who is making changes and on what items.</p>"
@@ -48,6 +48,9 @@ msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added a p
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability to move rows and columns using their menu.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>WebSocket server</b> Swoole v4.4.22 <i class='fas fa-arrow-right fa-xs'></i> v4.5.9.</p>"
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, use the <i class='fas fa-share'></i> icon of the wall's menu.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of dedicated groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p><p>Sharing will not be available if you checked the invisible mode option in your account page.</p>"
@@ -861,6 +864,9 @@ msgstr  ""
 msgid   "The login `%s` already exists."
 msgstr  ""
 
+msgid   "The minimum zoom has been reached!"
+msgstr  ""
+
 msgid   "The new password:"
 msgstr  ""
 
@@ -1129,6 +1135,9 @@ msgid   "Your password reset"
 msgstr  ""
 
 msgid   "Your profile has been updated"
+msgstr  ""
+
+msgid   "Zoom"
 msgstr  ""
 
 msgid   "Zoom +"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-28 07:33+0100\n"
+"POT-Creation-Date: 2020-11-29 07:31+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -38,14 +38,15 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & some fixes.</p>"
-msgstr ""
-
-msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now "
 "cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. "
 "Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, "
 "and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
+msgstr ""
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> "
+"Simplification of relationships creation.</p>"
 msgstr ""
 
 msgid ""
@@ -61,6 +62,11 @@ msgstr ""
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability to "
 "move rows and columns using their menu.</p>"
+msgstr ""
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>WebSocket server</b> Swoole "
+"v4.4.22 <i class='fas fa-arrow-right fa-xs'></i> v4.5.9.</p>"
 msgstr ""
 
 msgid ""
@@ -1046,6 +1052,9 @@ msgstr ""
 msgid "The login `%s` already exists."
 msgstr ""
 
+msgid "The minimum zoom has been reached!"
+msgstr ""
+
 msgid "The new password:"
 msgstr ""
 
@@ -1335,6 +1344,9 @@ msgid "Your password reset"
 msgstr ""
 
 msgid "Your profile has been updated"
+msgstr ""
+
+msgid "Zoom"
 msgstr ""
 
 msgid "Zoom +"
