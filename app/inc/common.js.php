@@ -904,11 +904,6 @@ class WHelper
   
     switch ($popup.attr ("id"))
     {
-      case "plugPopup":
-  
-        $popup.find("input").val ("");
-        break;
-   
       case "createWallPopup":
   
         $popup.find("input").val ("");

@@ -47,72 +47,44 @@
                   {
                     const start0 = $start[0],
                           startPlugin = $start.postit ("getClass"),
+                          $undo = $start.find (
+                            ".postit-menu [data-action='undo-plug'] a"),
                           line = {
+                            label: "...",
                             startId: from.id,
                             endId: endId,
                             obj: endPlugin.getPlugTemplate (start0, end0)
                           };
 
+                    startPlugin.addPlug (line);
+
                     line.obj.setOptions ({
-                      dropShadow: null,
-                      size: 3,
-                      color: "#bbb",
-                      dash: {animation: true}
+                      size: 4 * (S.get("zoom-level")||1),
+                      color: H.getPlugColor ("main"),
+                      dash: null,
+                      middleLabel: LeaderLine.captionLabel({
+                        text: "...",
+                        fontSize:"13px"
+                      })
                     });
 
-                    startPlugin.addPlug (line);
-                    _cancelPlugAction (false);
+                    startPlugin.applyTheme ();
+                    startPlugin.addPlugLabel (line);
 
-                    from.cancelCallback = () =>
-                      {
-                        startPlugin.removePlug (line);
-                        _cancelPlugAction ();
-                      };
+                    start0.dataset.undo = "add";
+                    $undo.removeClass ("disabled");
+                    $undo.find("span").text ("« <?=_("Add")?> »");
 
-                    from.confirmCallback = (label) =>
-                      {
-                        const $undo = $start.find (
-                                ".postit-menu [data-action='undo-plug'] a");
-
-                        if (!label)
-                          label = "...";
-
-                        line.label = label;
-                        line.obj.setOptions ({
-                          size: 4 * (S.get("zoom-level")||1),
-                          color: H.getPlugColor ("main"),
-                          dash: null,
-                          middleLabel: LeaderLine.captionLabel({
-                            text: label,
-                            fontSize:"13px"
-                          })
-                        });
-
-                        startPlugin.applyTheme ();
-                        startPlugin.addPlugLabel (line);
-
-                        start0.dataset.undo = "add";
-                        $undo.removeClass ("disabled");
-                        $undo.find("span").text ("« <?=_("Add")?> »");
-
-                        _cancelPlugAction ();
-                      };
-
-                    S.set ("link-from", from);
-
-                    H.loadPopup ("plug");
+                    _cancelPlugAction ();
                   });
               }
+              else if (from.id != endId)
+                H.displayMsg ({
+                  type: "warning",
+                  msg: "<?=_("This relationship already exists!")?>"
+                });
               else
-              {
-                if (from.id != endId)
-                  H.displayMsg ({
-                    type: "warning",
-                    msg: "<?=_("This relationship already exists!")?>"
-                  });
-                else
-                  _cancelPlugAction ();
-              }
+                _cancelPlugAction ();
           },
         // EVENT mousemouve to track mouse pointer during relationship creation
         mousemoveEvent: (e) =>
@@ -2287,7 +2259,6 @@
           {
             const $item = $(this),
                   $label = $item.closest("div"),
-                  $popup = $("#plugPopup"),
                   $wall = S.getCurrent ("wall"),
                   [,startId, endId] =
                     $label[0].previousSibling.id.match (/^_(\d+)\-(\d+)$/),

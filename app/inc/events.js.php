@@ -343,14 +343,6 @@ $(function()
           }
           break;
 
-        case "plugPopup":
-
-          const from = S.get ("link-from");
-
-          if (from)
-            from.cancelCallback ();
-          break;
-
         case "wpropPopup":
 
           if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
@@ -403,12 +395,6 @@ $(function()
           case "dpickPopup":
 
             $popup.dpick ("save");
-            break;
-
-          case "plugPopup":
-
-            S.get ("link-from")
-              .confirmCallback ($popup.find("input").val());
             break;
 
           case "postitUpdatePopup":

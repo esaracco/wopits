@@ -1088,10 +1088,6 @@ input::-ms-clear {
   content: none;
 }
 
-.submenu i[data-action="plug"] {
-  color:#43474a;
-}
-
 .submenu .dropdown-menu {
   top:-25px !important;
   left:20px !important;
