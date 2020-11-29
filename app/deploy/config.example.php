@@ -76,9 +76,9 @@
       ],
       // System commands
       'cmd' => [
-        // System command(s) to reload apache
+        // System command(s) to restart apache
         'apache-restart' =>
-          'systemctl reload apache2;'.
+          'systemctl restart apache2;'.
           'systemctl reload php-fpm.service',
         // System commands to restart wopits daemons
         'wopits-ws-restart' => 'systemctl restart wopits1-ws',

@@ -41,7 +41,7 @@ See https://classic.yarnpkg.com/en/docs/install for help installing yarn.
 
 The following actions have to be done on the machine that will host the wopits website. Which is not necessarily the source machine where you installed the Git repository.
 
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.5.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
