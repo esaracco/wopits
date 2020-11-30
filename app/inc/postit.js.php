@@ -1360,13 +1360,16 @@
     {
       const ppc = this.element[0].querySelector (".postit-progress-container");
 
-      if (!v)
+      if (v == undefined || v == 0)
+      {
+        this.element[0].removeAttribute ("data-progress");
         ppc.style.display = "none";
+      }
       else
       {
         const p = ppc.querySelector (".postit-progress");
 
-        this.element[0].dataset.progress = v||0;
+        this.element[0].dataset.progress = v;
         ppc.querySelector("span").innerText = v+"%";
         ppc.style.display = "block";
 
