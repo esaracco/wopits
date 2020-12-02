@@ -62,7 +62,7 @@
                         start: start0,
                         end: end0
                       })
-                    });
+                    }, !!S.get("zoom-level"));
 
                     start0.dataset.undo = "add";
                     $undo.removeClass ("disabled");
@@ -72,10 +72,13 @@
                   });
               }
               else if (from.id != endId)
+              {
+                _cancelPlugAction ();
                 H.displayMsg ({
                   type: "warning",
                   msg: "<?=_("This relationship already exists!")?>"
                 });
+              }
               else
                 _cancelPlugAction ();
           },
@@ -116,6 +119,27 @@
       });
 
     return maxW;
+  }
+
+  // METHOD _removePlug ()
+  function _removePlug (plug, toDefrag)
+  {
+    // Remove label
+    plug.labelObj.remove ();
+    plug.labelObj = null;
+
+    toDefrag[plug.startId] = $(plug.obj.start);
+    toDefrag[plug.endId] = $(plug.obj.end);
+
+    // Remove template line
+    document.body.appendChild (plug.obj.dom);
+    plug.obj.remove ();
+    plug.obj = null;
+
+    // Remove related lines
+    plug.related.forEach (r => r.remove ());
+    plug.related = [];
+    plug.customPos = false;
   }
 
   // METHOD _resetZIndexData ()
@@ -351,7 +375,7 @@
               postitPlugin.edit ({}, () =>
                 {
                   postit.dataset.undo =
-                    "delete|"+postitPlugin.removePlugs();
+                    "delete|"+postitPlugin.removePlugs ();
                   $menu.find("[data-action='undo-plug'] a")
                     .removeClass ("disabled")
                     .find("span").text ("« <?=_("Delete")?> »");
@@ -404,7 +428,7 @@
                                  end: $end[0],
                                  label: d.name
                                })
-                        });
+                        }, !!S.get("zoom-level"));
                       }
                       else
                         H.displayMsg ({
@@ -753,6 +777,27 @@
           content: content
         });
       });
+    },
+
+    // METHOD remove ()
+    remove ()
+    {
+      const plugin = this;
+
+      plugin.removePlugs (true);
+
+      if (H.haveMouse ())
+      {
+        // Empty postit content to prevent effect to reload
+        // deleted embedded images
+        plugin.element[0].querySelector(".postit-edit").innerHTML = "";
+        plugin.element.hide ("explode", ()=> plugin.element.remove ());
+       }
+       else
+         // The explode effect works poorly on mobile devices
+         plugin.element.remove ();
+
+      S.getCurrent("mmenu").mmenu ("remove", plugin.settings.id);
     },
 
     // METHOD havePlugs ()
@@ -1202,23 +1247,7 @@
       if (typeof plug !== "object")
         plug = this.getPlugById (plug);
 
-      // Remove label
-      plug.labelObj.remove ();
-      plug.labelObj = null;
-
-      // Remove line
-      toDefrag[plug.startId] = $(plug.obj.start);
-      toDefrag[plug.endId] = $(plug.obj.end);
-
-      // Remove template line
-      document.body.appendChild (plug.obj.dom);
-      plug.obj.remove ();
-      plug.obj = null;
-
-      // Remove related lines
-      plug.related.forEach (r => r.remove ());
-      plug.related = [];
-      plug.customPos = false;
+      _removePlug (plug, toDefrag);
 
       for (const id in toDefrag)
         toDefrag[id].postit ("defragPlugsArray");
@@ -1242,29 +1271,15 @@
 
       (settings._plugs||[]).forEach (plug =>
         {
-          tmp.push ({
-            endId: (plug.endId != settings.id) ? plug.endId : plug.startId,
-            name: plug.label.name,
-            top: plug.labelObj[0].dataset.origtop,
-            left: plug.labelObj[0].dataset.origleft
-          });
+          if (!noedit)
+            tmp.push ({
+              endId: (plug.endId != settings.id) ? plug.endId : plug.startId,
+              name: plug.label.name,
+              top: plug.labelObj[0].dataset.origtop,
+              left: plug.labelObj[0].dataset.origleft
+            });
 
-          // Remove label
-          plug.labelObj.remove ();
-          plug.labelObj = null;
-
-          toDefrag[plug.startId] = $(plug.obj.start);
-          toDefrag[plug.endId] = $(plug.obj.end);
-
-          // Remove template line
-          document.body.appendChild (plug.obj.dom);
-          plug.obj.remove ();
-          plug.obj = null;
-
-          // Remove related lines
-          plug.related.forEach (r => r.remove ());
-          plug.related = [];
-          plug.customPos = false;
+          _removePlug (plug, toDefrag);
         });
 
       for (const id in toDefrag)
@@ -1277,7 +1292,8 @@
       settings._plugs = [];
       $postit.removeClass ("with-plugs");
 
-      return JSON.stringify (tmp);
+      if (!noedit)
+        return JSON.stringify (tmp);
     },
 
     // METHOD hidePlugs ()
