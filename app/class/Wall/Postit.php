@@ -385,7 +385,7 @@ class Postit extends Wall
       ) VALUES (
         :walls_id, :item_start, :item_end, :item_top, :item_left, :label
       ) {$this->getDuplicateQueryPart (['walls_id', 'item_start', 'item_end'])}
-       label = :label_1, item_top = :item_top, item_left = :item_left");
+       label = :label_1, item_top = :item_top_1, item_left = :item_left_1");
 
     foreach ($plugs as $_id => $_p)
     {
@@ -398,7 +398,10 @@ class Postit extends Wall
         ':item_top' => $_p->top??null,
         ':item_left' => $_p->left??null,
         ':label' => $_p->label,
-        ':label_1' => $_p->label
+
+        ':label_1' => $_p->label,
+        ':item_top_1' => $_p->top??null,
+        ':item_left_1' => $_p->left??null
       ]);
     }
   }
