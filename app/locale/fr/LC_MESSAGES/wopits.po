@@ -49,7 +49,7 @@ msgid ""
 "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed important issues with "
 "columns/rows deletion.</p>"
 msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Correction de deux problèmes "
+"<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Correction de problèmes "
 "importants avec la suppression des colonnes/lignes.</p>"
 
 msgid ""
