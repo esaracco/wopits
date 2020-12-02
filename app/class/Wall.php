@@ -921,6 +921,7 @@ class Wall extends Base
     $item = $args['item'];
     $itemPos = $args['itemPos'];
     $dir = $this->getWallDir ();
+    $toDelete = [];
     $ret = [];
 
     if ($item != 'col' && $item != 'row')
@@ -934,6 +935,8 @@ class Wall extends Base
     {
       $this->beginTransaction ();
 
+      ///////////////////////// headers
+
       // Delete headers documents
       ($stmt = $this->prepare("
         SELECT id FROM headers
@@ -945,81 +948,100 @@ class Wall extends Base
            ':item_order' => $itemPos
          ]);
 
-      Helper::rm ("$dir/header/".($stmt->fetch ())['id']);
+      $toDelete[] = "$dir/header/".($stmt->fetch ())['id'];
 
       // Delete header
       $this
         ->prepare("
           DELETE FROM headers
-          WHERE walls_id = :walls_id
-            AND item_type = :item_type
-            AND item_order = :item_order")
-        ->execute ([
-          ':walls_id' => $this->wallId,
-          ':item_type' => $item,
-          ':item_order' => $itemPos
-        ]);
+          WHERE walls_id = ?
+            AND item_type = ?
+            AND item_order = ?")
+        ->execute ([$this->wallId, $item, $itemPos]);
 
       // Reordonate headers
       $this
         ->prepare("
           UPDATE headers SET
             item_order = item_order - 1
-          WHERE walls_id = :walls_id
-            AND item_type = :item_type
-            AND item_order > :item_order")
-        ->execute ([
-            ':walls_id' => $this->wallId,
-            ':item_type' => $item,
-            ':item_order' => $itemPos
-          ]);
+          WHERE walls_id = ?
+            AND item_type = ?
+            AND item_order > ?")
+        ->execute ([$this->wallId, $item, $itemPos]);
+
+      ///////////////////////// postits
 
       // Delete files for all postits
       ($stmt = $this->prepare ("
         SELECT postits.id
         FROM cells
           INNER JOIN postits ON postits.cells_id = cells.id
-        WHERE cells.walls_id = :walls_id
-          AND cells.item_$item = :item"))
-         ->execute ([
-           ':walls_id' => $this->wallId,
-           ':item' => $itemPos
-         ]);
-      while ($row = $stmt->fetch ())
-        Helper::rm ("$dir/postit/{$row['id']}");
+        WHERE cells.walls_id = ?
+          AND cells.item_$item = ?"))
+         ->execute ([$this->wallId, $itemPos]);
+
+      $ids = $stmt->fetchAll (\PDO::FETCH_COLUMN);
+
+      if (!empty ($ids))
+      {
+        if ($this->query ("
+          SELECT 1 FROM edit_queue
+          WHERE item = 'postit' AND item_id IN (".
+            implode(',',
+              array_map ([$this, 'quote'], $ids)).') LIMIT 1') ->fetch())
+        {
+          $this->rollback ();
+          return ['error_msg' => _("Someone is editing a note in the col/row you want to delete!")];
+        }
+
+        foreach ($ids as $id)
+          $toDelete[] = "$dir/postit/$id";
+      }
+
+      ///////////////////////// cells
+
+      ($stmt = $this->prepare ("SELECT id FROM cells
+          WHERE walls_id = ? AND item_$item = ?"))
+         ->execute ([$this->wallId, $itemPos]);
+
+      $ids = $stmt->fetchAll (\PDO::FETCH_COLUMN);
+      $idsStr = implode (',', array_map ([$this, 'quote'], $ids));
+
+      if ($this->query ("
+        SELECT 1 FROM edit_queue
+        WHERE item = 'cell' AND item_id IN ($idsStr) LIMIT 1")->fetch())
+      {
+        $this->rollback ();
+        return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete!")];
+      }
 
       // Delete
-      $this
-        ->prepare("
-          DELETE FROM cells
-          WHERE walls_id = ? AND item_$item = ?")
-        ->execute ([$this->wallId, $itemPos]);
+      $this->exec ("DELETE FROM cells WHERE id IN ($idsStr)");
 
       // Reordonate
       $this
         ->prepare("
           UPDATE cells SET
             item_$item = item_$item - 1
-          WHERE walls_id = ?
-            AND item_$item > ?")
+          WHERE walls_id = ? AND item_$item > ?")
         ->execute ([$this->wallId, $itemPos]);
 
       if ($item == 'col')
-      {
         $this->executeQuery ('UPDATE walls',
           ['width' => $this->data->wall->width - $this->data->width],
           ['id' => $this->wallId]);
-      }
       else
-      {
         $this->executeQuery ('UPDATE walls',
           ['width' => $this->data->wall->width],
           ['id' => $this->wallId]);
-      }
+
+      // Apply deletions
+      foreach ($toDelete as $f)
+        Helper::rm ($f);
 
       $this->commit ();
 
-      $ret = $this->getWall ();
+      $ret['wall'] = $this->getWall ();
     }
     catch (\Exception $e)
     {

@@ -1145,51 +1145,24 @@
     // METHOD deleteRow ()
     deleteRow (rowIdx)
     {
-      const $wall = this.element,
-            $tr = $wall.find("tr:eq("+(rowIdx+1)+")");
-
-      $tr[0].querySelectorAll("td").forEach (cell =>
-          $(cell).cell ("removePostitsPlugs"));
-
-      H.headerRemoveContentKeepingWallSize ({
-        oldW: $tr.find("th").outerWidth (),
-        cb: () => $tr.remove ()
-      });
-
       H.request_ws (
         "DELETE",
         "wall/"+this.settings.id+"/row/"+rowIdx,
-        {wall: {width: Math.trunc ($wall.outerWidth ())}});
+        {wall: {width: Math.trunc (this.element.outerWidth ())}});
     },
 
     // METHOD deleteCol ()
     deleteCol (idx)
     {
-      const $wall = this.element,
-            $header = $wall.find("thead tr th:eq("+idx+")"),
-            oldW = Math.trunc ($wall.outerWidth () - 1),
-            newW = Math.trunc (oldW - $header.outerWidth ()),
-            data = {
-              wall: {width: oldW},
-              width: Math.trunc ($header.outerWidth ())
-            };
-
-     $header.remove ();
-
-     $wall[0].querySelectorAll("tbody tr").forEach (tr =>
-        {
-          const $cell = $(tr).find("td:eq("+(idx - 1)+")");
-
-          $cell.cell ("removePostitsPlugs");
-          $cell.remove ();
-        });
-
-      this.fixSize (oldW, newW);
+      const $wall = this.element;
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.id+"/col/"+(idx - 1),
-        data);
+        "wall/"+this.settings.id+"/col/"+(idx-1),
+        {
+          wall: {width: Math.trunc ($wall.outerWidth()-1)},
+          width: Math.trunc ($wall.find("thead tr th:eq("+idx+")").outerWidth())
+        });
     },
 
     // METHOD addNew ()

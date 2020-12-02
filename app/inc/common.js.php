@@ -1553,6 +1553,8 @@ class WHelper
           this.manageUnknownError (d, error_cb);
         else if (success_cb)
           success_cb (d);
+        else if (d.error_msg)
+          H.displayMsg ({type: "warning", msg: d.error_msg});
       },
     ()=>
       {
