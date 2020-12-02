@@ -1247,7 +1247,6 @@ class WHelper
     })
 /*
     .draggable({
-      //FIXME "distance" is deprecated -> is there any alternative?
       distance: 10,
       handle: ".modal-header",
       cursor: "pointer"

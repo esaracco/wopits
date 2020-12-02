@@ -940,6 +940,7 @@ input::-ms-clear {
 
 .leader-line text {
   fill-opacity:0 !important;
+  stroke-opacity:0 !important;
 }
 
 #userGuidePopup .latest-dt {
@@ -973,13 +974,11 @@ input::-ms-clear {
   z-index:1000;
   position:absolute;
   cursor:pointer;
-  border:1px solid #e8e8e8;
+  border:1px solid #f3f3f3;
   background:#fff;
   border-radius:5px;
   white-space:nowrap;
-  font-size:0.8rem;
-  margin-top:-1px;
-  margin-left:-4px;
+  font-size:.8rem;
 }
 
 [data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label,
@@ -988,13 +987,28 @@ input::-ms-clear {
 }
 
 .plug-label > a {
-  color:#bfbfbf;
+  color:#8c8c8c;
   text-decoration:none;
   padding:5px;
 }
 
 .plug-label:hover {
   color:#a2a2a2;
+}
+
+.plug-label i.fa-thumbtack {
+  display:none;
+  position:absolute;
+  top:-5px;
+  left:-2px;
+  color:#bfbfbf;
+  transform: rotate(-45deg);
+}
+
+li[data-action="position-auto"] {
+  border-top:1px solid #e9ecef;
+  margin-top:3px;
+  padding-top:3px;
 }
 
 .wall thead th .submenu {
@@ -1693,6 +1707,10 @@ button.clear-input:focus {
 
 .newfeatures b:after {
   content: " \002014"
+}
+
+.newfeatures p.warning {
+  border:2px dashed #555 !important;
 }
 
 .hidden {

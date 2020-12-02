@@ -27,7 +27,6 @@
             $chat = plugin.element;
 
       $chat
-        //FIXME "distance" is deprecated -> is there any alternative?
         .draggable({
           distance: 10,
           cursor: "move",

@@ -462,8 +462,7 @@ class Wall extends Base
                 $this->executeQuery ('INSERT INTO postits_plugs',
                   $this->_getImportItemData ($item, [
                     'item_start' => $postitId,
-                    'item_end' => $idsMap['postits'][$item->item_end],
-                    'label' => $item->label
+                    'item_end' => $idsMap['postits'][$item->item_end]
                   ]));
               }
             }
@@ -474,7 +473,7 @@ class Wall extends Base
           $this->executeQuery ('INSERT INTO _perf_walls_users', [
             'walls_id' => $this->wallId,
             'users_id' => $this->userId,
-           'access' => WPT_WRIGHTS_ADMIN
+            'access' => WPT_WRIGHTS_ADMIN
           ]);
 
           $this->commit ();
@@ -821,7 +820,7 @@ class Wall extends Base
 
       // Get postits plugs
       ($stmt = $this->prepare ("
-        SELECT item_start, item_end, label
+        SELECT item_start, item_end, item_top, item_left, label
         FROM postits_plugs
         WHERE walls_id = ?"))
          ->execute ([$this->wallId]);

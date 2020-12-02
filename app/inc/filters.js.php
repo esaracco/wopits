@@ -41,7 +41,6 @@
 
       $filters
         .draggable({
-          //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),

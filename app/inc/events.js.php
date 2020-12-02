@@ -176,7 +176,11 @@ $(function()
     });
 */
 
-  // EVENT hidden.bs.tab on walls tabs
+  // EVENT hide.bs.tab on relationships label menu
+   $(document).on("show.bs.dropdown", ".plug-label",
+     ()=> !S.get("still-dragging"));
+
+  // EVENT hide.bs.tab on walls tabs
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
     function (e)
     {

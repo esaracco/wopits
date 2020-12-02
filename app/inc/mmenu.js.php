@@ -33,7 +33,6 @@
 
       $sm
         .draggable({
-          //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),
@@ -210,7 +209,7 @@
           {
             const p = _data.postits[id];
 
-            p.edit (null, ()=>
+            p.edit ({}, ()=>
               {
                 p.delete ();
                 p.unedit ();

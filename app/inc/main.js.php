@@ -40,7 +40,7 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init ()
-    init ()
+    init (args)
     {
       const plugin = this,
             $wall = plugin.element,
@@ -65,7 +65,7 @@
         $(`<div id="plugs-${wallId}" data-access="${access}"></div>`)
           .appendTo ("body");
 
-      if (settings.restoring)
+      if (args.restoring)
         wall.dataset.restoring = 1;
 
       wall.dataset.displaymode = settings.displaymode;
@@ -98,7 +98,6 @@
 
       if (H.haveMouse ())
         $wall.draggable({
-          //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           cursor: "grab",
 //          cancel: (writeAccess) ? null : "span,.title,.postit-edit",
@@ -178,7 +177,7 @@
 
           $(window).trigger ("resize");
 
-          if (settings.restoring)
+          if (args.restoring)
           {
             delete settings.restoring;
             wall.removeAttribute ("data-restoring");
@@ -191,9 +190,10 @@
             plugin.refreshUsersview (viewcount); 
 
           // If last wall to load.
-          if (S.get ("last-wall"))
+          if (args.lastWall)
           {
-            S.unset ("last-wall");
+            $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
+              .wall ("refresh");
 
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
@@ -222,7 +222,8 @@
               {
                 plugin.displayHeaders ();
                 // Refresh postits relationships
-                plugin.refreshPostitsPlugs (settings.postits_plugs);
+                if (!args.restoring)
+                  plugin.refreshPostitsPlugs (settings.postits_plugs);
                 // Apply display mode
                 plugin.refreshCellsToggleDisplayMode ();
 
@@ -259,7 +260,6 @@
             else
               __postInit ();
           });
-
         });
     },
 
@@ -529,7 +529,7 @@
     },
 
     // METHOD refreshPostitsPlugs ()
-    refreshPostitsPlugs (plugs, partial = false)
+    refreshPostitsPlugs (plugs, partial, applyZoom)
     {
       const $f = S.getCurrent ("filters");
       if ($f.length && $f[0].classList.contains ("plugs-hidden"))
@@ -546,7 +546,7 @@
                            ".postit[data-id='postit-"+startId+"']"),
                 $start = $(start0),
                 startPlugin = $start.postit ("getClass"),
-                label = plug.label || "...";
+                labelName = plug.label || "...";
 
           idsNew[startId+""+endId] = 1;
 
@@ -557,20 +557,28 @@
                   newPlug = {
                     startId: startId,
                     endId: endId,
-                    label: label,
-                    obj: startPlugin.getPlugTemplate (start0, end, label)
+                    label: {
+                      name: labelName,
+                      top: plug.item_top,
+                      left: plug.item_left,
+                    },
+                    obj: startPlugin.getPlugTemplate ({
+                           hide: true,
+                           start: start0,
+                           end: end,
+                           label: labelName
+                         })
                   };
 
-            startPlugin.addPlug (newPlug);
-
-/*FIXME Useful?
-            if (end.parentNode.classList.contains("list-mode") ||
-                start0.parentNode.classList.contains("list-mode"))
-              startPlugin.hidePlugs ();
-*/
+            startPlugin.addPlug (newPlug, applyZoom);
           }
           else
-            startPlugin.updatePlugLabel ({endId: endId, label: label});
+            startPlugin.updatePlugLabel ({
+              endId: endId,
+              label: labelName,
+              top: plug.item_top,
+              left: plug.item_left
+            });
         });
 
       // Remove obsolete plugs
@@ -919,7 +927,8 @@
           {
             // Refresh postits relationships
             plugin.refreshPostitsPlugs (
-              d.postits_plugs, d.partial && d.partial != "plugs");
+              d.postits_plugs, d.partial && d.partial != "plugs",
+              !!S.get("zoom-level"));
 
             plugin.checkPostitPlugsMenu (!d.isResponse);
 
@@ -943,7 +952,8 @@
                 $f.filters ("apply", {norefresh: true});
             }, 0)
 
-          if (S.get ("zoom-level"))
+          if (!d.isResponse && !d.partial &&
+              S.get ("zoom-level"))
           {
             const zoom = document.querySelector (".tab-content.walls");
 
@@ -1238,11 +1248,8 @@
             // Save opened walls when all walls will be loaded.
             if (d.restoring)
             {
-              if (S.get ("last-wall") && S.get ("last-wall") == 1)
-              {
-                S.unset ("last-wall");
+              if (args.lastWall && args.lastWall == 1)
                 $("#settingsPopup").settings ("saveOpenedWalls");
-              }
               else
                 S.set ("save-opened-walls", true);
             }
@@ -1283,6 +1290,9 @@
             $("#settingsPopup").settings ("get", "wall-background", d.id);
 
           const $wallDiv = $("#wall-"+d.id);
+
+          if (args.lastWall)
+            d.lastWall = args.lastWall;
 
           $wallDiv.find(".wall").wall (d);
           $wallDiv.find(".chat").chat ({wallId: d.id});
@@ -1381,10 +1391,8 @@
         {
           const fromDirectURL = type && walls[i] == wallId;
 
-          if (i == 0)
-            S.set ("last-wall", wallsLen);
-
           this.open ({
+            lastWall: (i == 0) ? wallsLen : null,
             wallId: walls[i],
             restoring: true,
             fromDirectURL: fromDirectURL,
@@ -1859,6 +1867,8 @@
       {
         S.unset ("zoom-level");
 
+        this.hidePostitsPlugs ();
+
         setTimeout (() => $("#normal-display-btn").hide(), 150);
 
         zoom0.removeAttribute ("data-zoomtype");
@@ -1906,14 +1916,14 @@
       {
         if (from != "screen")
         {
+          this.hidePostitsPlugs ();
+
           $("<div/>").postit ("applyZoom");
           $("#normal-display-btn").show ();
         }
 
-        $zoom.css ({
-          "transform": "scale("+level+")",
-          "transform-origin": "top left",
-        });
+        zoom0.style.transformOrigin = "top left";
+        zoom0.style.transform = "scale("+level+")";
 
         $("#walls").scrollLeft (((30000*level)/2-window.innerWidth/2)+20);
       }
@@ -1926,6 +1936,8 @@
             wall = this.element[0],
             walls = S.getCurrent("walls")[0];
       let position = wall.getBoundingClientRect ();
+
+      this.hidePostitsPlugs ();
 
       if (position.bottom - position.top < walls.clientHeight &&
           position.right < walls.clientWidth)

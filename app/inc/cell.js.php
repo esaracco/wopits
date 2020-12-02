@@ -303,7 +303,7 @@
             const color = (p.className.match (/ color\-([a-z]+)/))[1],
                   postitPlugin = $(p).postit ("getClass"),
                   title = postitPlugin.element.find(".title").text (),
-                  progress = Number.parseInt (p.dataset.progress||0);
+                  progress = parseInt (p.dataset.progress||0);
 
             postitPlugin.closeMenu ();
             postitPlugin.hidePlugs ();

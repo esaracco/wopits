@@ -162,6 +162,8 @@ CREATE TABLE postits_plugs
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
   item_start INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
   item_end INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
+  item_top SMALLINT,
+  item_left SMALLINT,
   label VARCHAR(50),
   PRIMARY KEY (walls_id, item_start, item_end)
 );

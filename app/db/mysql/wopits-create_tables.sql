@@ -207,6 +207,8 @@ CREATE TABLE postits_plugs
   walls_id INT UNSIGNED NOT NULL,
   item_start INT UNSIGNED NOT NULL,
   item_end INT UNSIGNED NOT NULL,
+  item_top SMALLINT UNSIGNED,
+  item_left SMALLINT UNSIGNED,
   label VARCHAR(50),
 
   PRIMARY KEY (walls_id, item_start, item_end),

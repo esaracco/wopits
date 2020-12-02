@@ -245,7 +245,7 @@ class Postit extends Wall
   {
     // Get postits plugs
     ($stmt = $this->prepare ('
-      SELECT item_start, item_end, label
+      SELECT item_start, item_end, item_top, item_left, label
       FROM postits_plugs
       WHERE '.(($all)?'walls_id':'item_start').' = ?'))
        ->execute ([($all)?$this->wallId:$this->postitId]);
@@ -381,21 +381,24 @@ class Postit extends Wall
 
     $stmt = $this->prepare ("
       INSERT INTO postits_plugs (
-        walls_id, item_start, item_end, label
+        walls_id, item_start, item_end, item_top, item_left, label
       ) VALUES (
-        :walls_id, :item_start, :item_end, :label
+        :walls_id, :item_start, :item_end, :item_top, :item_left, :label
       ) {$this->getDuplicateQueryPart (['walls_id', 'item_start', 'item_end'])}
-       label = :label_1");
+       label = :label_1, item_top = :item_top, item_left = :item_left");
 
-    foreach ($plugs as $_id => $_label)
+    foreach ($plugs as $_id => $_p)
     {
       $this->checkDBValue ('postits_plugs', 'label', $_label);
+
       $stmt->execute ([
         ':walls_id' => $this->wallId,
         ':item_start' => $postitId,
         ':item_end' => $_id,
-        ':label' => $_label,
-        ':label_1' => $_label
+        ':item_top' => $_p->top??null,
+        ':item_left' => $_p->left??null,
+        ':label' => $_p->label,
+        ':label_1' => $_p->label
       ]);
     }
   }

@@ -5,6 +5,9 @@
   Scope: Wall
   Elements: .postit
   Description: Note management
+
+  TODO: relationship plugin
+  TODO: attachment plugin
 */
 
   require_once (__DIR__.'/../prepend.php');
@@ -46,30 +49,20 @@
                 endPlugin.edit ({plugend: true}, ()=>
                   {
                     const start0 = $start[0],
-                          startPlugin = $start.postit ("getClass"),
                           $undo = $start.find (
-                            ".postit-menu [data-action='undo-plug'] a"),
-                          line = {
-                            label: "...",
-                            startId: from.id,
-                            endId: endId,
-                            obj: endPlugin.getPlugTemplate (start0, end0)
-                          };
+                            ".postit-menu [data-action='undo-plug'] a");
 
-                    startPlugin.addPlug (line);
-
-                    line.obj.setOptions ({
-                      size: 4 * (S.get("zoom-level")||1),
-                      color: H.getPlugColor ("main"),
-                      dash: null,
-                      middleLabel: LeaderLine.captionLabel({
-                        text: "...",
-                        fontSize:"13px"
+                    $start.postit ("addPlug", {
+                      label: {name: "..."},
+                      startId: from.id,
+                      endId: endId,
+                      obj: endPlugin.getPlugTemplate ({
+                        hide: true,
+                        label: "...",
+                        start: start0,
+                        end: end0
                       })
                     });
-
-                    startPlugin.applyTheme ();
-                    startPlugin.addPlugLabel (line);
 
                     start0.dataset.undo = "add";
                     $undo.removeClass ("disabled");
@@ -272,7 +265,7 @@
             case "attachments": return postitPlugin.openAttachments ();
           }
 
-          postitPlugin.edit (null, () =>
+          postitPlugin.edit ({}, ()=>
             {
               switch (action)
               {
@@ -331,7 +324,7 @@
           {
             case "add-plug":
 
-              postitPlugin.edit (null, () =>
+              postitPlugin.edit ({}, () =>
                 {
                   S.set ("link-from", {id: postitSettings.id, obj: $postit});
 
@@ -355,38 +348,28 @@
 
             case "delete-plugs":
 
-              postitPlugin.edit (null, () =>
+              postitPlugin.edit ({}, () =>
                 {
-                  H.openConfirmPopover ({
-                    item: $postit.find(".btn-menu"),
-                    placement: "left",
-                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                    content: "<?=_("Delete all relationships from this note?")?>",
-                    cb_close: () => postitPlugin.unedit (),
-                    cb_ok: () =>
-                      {
-                        postitPlugin.unedit ();
+                  postit.dataset.undo =
+                    "delete|"+postitPlugin.removePlugs();
+                  $menu.find("[data-action='undo-plug'] a")
+                    .removeClass ("disabled")
+                    .find("span").text ("« <?=_("Delete")?> »");
 
-                        postit.dataset.undo =
-                          "delete|"+postitPlugin.removePlugs();
-                        $menu.find("[data-action='undo-plug'] a")
-                          .removeClass ("disabled")
-                          .find("span").text ("« <?=_("Delete")?> »");
-                      }
-                    });
-                  });
+                  postitPlugin.unedit ();
+                });
 
               break;
 
             case "undo-plug":
 
-              const [action, ids] = postit.dataset.undo.split ("|");
+              const [action, pData] = postit.dataset.undo.split ("|");
 
               postitPlugin.resetPlugsUndo ();
 
               if (action == "add")
               {
-                postitPlugin.edit (null, () =>
+                postitPlugin.edit ({}, () =>
                 {
                   const plugs = postitSettings._plugs;
 
@@ -396,39 +379,41 @@
               }
               else if (action == "delete")
               {
-                postitPlugin.edit (null, () =>
+                postitPlugin.edit ({}, () =>
                   {
-                    const toSave = {};
+                    const toSave = {},
+                          startId = postitSettings.id;
 
-                    ids.split(",").forEach (item =>
+                    JSON.parse(pData).forEach (d =>
+                    {
+                      const $end = $wall.find (
+                              ".postit[data-id='postit-"+d.endId+"']");
+
+                      if ($end.length)
                       {
-                        const startId = postitSettings.id,
-                              [endId, label] = item.split (";"),
-                              $end = $wall.find (
-                                       ".postit[data-id='postit-"+endId+"']");
+                        toSave[startId] = $postit;
+                        toSave[d.endId] = $end;
 
-                        if ($end.length)
-                        {
-                          toSave[startId] = $postit;
-                          toSave[endId] = $end;
-
-                          postitPlugin.addPlug ({
-                            startId: startId,
-                            endId: endId,
-                            label: label,
-                            obj: postitPlugin.getPlugTemplate (
-                                   postit, $end[0], label)
-                          });
-                        }
-                        else
-                          H.displayMsg ({
-                            type: "warning",
-                            msg: "<?=_("This item has been deleted")?>"
-                          });
-                      });
+                        postitPlugin.addPlug ({
+                          startId: startId,
+                          endId: d.endId,
+                          label: d,
+                          obj: postitPlugin.getPlugTemplate ({
+                                 hide: true,
+                                 start: postit,
+                                 end: $end[0],
+                                 label: d.name
+                               })
+                        });
+                      }
+                      else
+                        H.displayMsg ({
+                          type: "warning",
+                          msg: "<?=_("This item has been deleted")?>"
+                        });
+                    });
 
                     S.set ("plugs-to-save", toSave);
-
                     postitPlugin.unedit ();
                   });
               }
@@ -475,7 +460,6 @@
         $postit  
         // DRAGGABLE postit
         .draggable ({
-          //FIXME "distance" is deprecated -> is there any alternative?
           distance: 10,
           appendTo: "parent",
           revert: "invalid",
@@ -512,11 +496,8 @@
                 left: p.left
               });
   
-              plugin.edit (
-                {ignoreResize: true},
-                null,
-                ()=> S.get("revertData").revert = true
-              );
+              plugin.edit ({ignoreResize: true}, null,
+                ()=> S.get("revertData").revert = true);
             },
           stop: function(e, ui)
             {
@@ -583,9 +564,7 @@
                 height: postit.clientHeight
               });
 
-              plugin.edit (
-                {ignoreResize: true},
-                null,
+              plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
             },
           stop: function(e, ui)
@@ -630,7 +609,7 @@
           fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
-            edit: (cb) => !S.get ("still-dragging") && plugin.edit (null, cb),
+            edit: (cb) => !S.get ("still-dragging") && plugin.edit ({}, cb),
             unedit: () => plugin.unedit (),
             update: (v) =>
               {
@@ -648,13 +627,13 @@
     // METHOD openAttachments ()
     openAttachments ()
     {
-      this.edit (null, () => this.displayAttachments ());
+      this.edit ({}, ()=> this.displayAttachments ());
     },
 
     // METHOD openDatePicker ()
     openDatePicker ()
     {
-      this.edit (null, () => H.loadPopup ("dpick", {
+      this.edit ({}, ()=> H.loadPopup ("dpick", {
                                open: false,
                                cb: ($p)=> $p.dpick ("open")
                              }));
@@ -670,7 +649,7 @@
           this.open ();
        }
        else
-         this.edit (null, () =>
+         this.edit ({}, () =>
            {
              if (!this.openAskForExternalRefPopup ({
                     item: item,
@@ -684,7 +663,7 @@
     {
       const plugin = this,
             postit = plugin.element[0],
-            progress = Number.parseInt (postit.dataset.progress||0),
+            progress = parseInt (postit.dataset.progress||0),
             title = this.element.find(".postit-header .title").text (),
             content = postit.querySelector(".postit-edit").innerHTML||"";
 
@@ -789,23 +768,25 @@
     },
 
     // METHOD getPlugTemplate ()
-    getPlugTemplate (start, end, label)
+    getPlugTemplate (args)
     {
       const line = new LeaderLine (
-              start,
-              end,
+              args.start,
+              args.end,
               {
+                hide: !!args.hide,
                 dropShadow: {
                   dx: 0.2,
                   dy: 0.2,
                   blur: 1,
                   color: H.getPlugColor ("shadow")
                 },
-                startPlug: "arrow1",
-                endPlug: "arrow1",
+                size: 4 * (S.get("zoom-level")||1),
+                startPlug: args.startPlug||"arrow1",
+                endPlug: args.endPlug||"arrow1",
                 color: H.getPlugColor ("main"),
                 middleLabel: LeaderLine.captionLabel ({
-                  text: label,
+                  text: args.label,
                   fontSize:"13px"
                 })
               });
@@ -816,36 +797,60 @@
     },
 
     // METHOD applyZoomToPlugs ()
-    applyZoomToPlugs (zoomLevel)
+    applyZoomToPlugs (z)
     {
-      const size = Math.trunc(4 * zoomLevel)||1;
+      const size = Math.trunc(4 * z)||1,
+            reset = (z == 1),
+            //FIXME
+            gr = Math.trunc ((100*(size*100/4))/100);
 
       this.settings._plugs.forEach (plug =>
-        plug.obj.setOptions ({size: size}));
+        {
+          plug.labelObj[0].style.transformOrigin = (reset) ? null : "top left";
+          plug.labelObj[0].style.transform = (reset) ? null : "scale("+z+")";
+
+          plug.obj.setOptions ({size: size});
+          if (plug.customPos)
+            plug.related.forEach (p =>
+            {
+              p.setOptions ({
+                startSocketGravity: (reset) ? "auto" : gr,
+                endSocketGravity: (reset) ? "auto" : gr,
+                size: size
+              });
+            });
+        });
     },
 
     // METHOD applyZoom ()
     applyZoom ()
     {
-      const zoomLevel = S.get("zoom-level")||1;
+      const z = S.get("zoom-level")||1;
 
       document.querySelectorAll(".postit.with-plugs").forEach (p =>
-        $(p).postit ("applyZoomToPlugs", zoomLevel));
+        $(p).postit ("applyZoomToPlugs", z));
     },
 
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs (shadow, color)
     {
-      this.settings._plugs.forEach (plug =>
-        plug.obj.setOptions ({
-          dropShadow: {
-            dx: 0.2,
-            dy: 0.2,
-            blur: 1,
-            color: shadow
-          },
-          color: color
-        }));
+      const __apply = p => p.setOptions ({
+              dropShadow: {
+                dx: 0.2,
+                dy: 0.2,
+                blur: 1,
+                color: shadow
+              },
+              color: color
+            });
+
+      this.settings._plugs.forEach (p =>
+        {
+          __apply (p.obj);
+
+          if (p.customPos)
+            p.related.forEach (_p => __apply (_p));
+        });
     },
 
     // METHOD applyTheme ()
@@ -879,18 +884,44 @@
       this.settings.Menu.checkPlugsMenu (resetUndo);
     },
 
+    // METHOD repositionPlugLabel ()
+    repositionPlugLabel (label, top, left, wPos)
+    {
+      const z = S.get("zoom-level")||1;
+
+      label.style.top = ((parseInt(top)*z)+wPos.top)+"px";
+      label.style.left = ((parseInt(left)*z)+wPos.left)+"px";
+    },
+
+    // METHOD resetPlugLabelPosition ()
+    resetPlugLabelPosition (label)
+    {
+      label.removeAttribute ("data-pos");
+      label.removeAttribute ("data-origtop");
+      label.removeAttribute ("data-origleft");
+
+      if (this.canWrite ())
+      {
+        label.querySelector("i.fa-thumbtack").style.display = "none";
+        label.querySelector("li[data-action='position-auto']")
+         .style.display = "none";
+      }
+    },
+
     // METHOD updatePlugLabel ()
     updatePlugLabel (args)
     {
-      const label = H.noHTML (args.label);
+      const label = H.noHTML (args.label),
+            wPos = this.settings.wall[0].getBoundingClientRect (),
+            canWrite = this.canWrite ();
 
       for (const plug of this.settings._plugs)
       {
-        if (plug.endId == args.endId && label != plug.label)
+        if (plug.endId == args.endId)
           {
-            plug.label = label;
+            plug.label.name = label;
 
-            plug.obj.setOptions({
+            plug.obj.setOptions ({
               middleLabel: LeaderLine.captionLabel ({
                 text: label,
                 fontSize: "13px"
@@ -901,18 +932,77 @@
               (label == ""  || label == "...") ?
                 '<i class="fas fa-ellipsis-h"></i>' : label);
 
-            // Update postits relationships arrows
-            this.repositionPlugs ();
+            if (args.top !== undefined)
+            {
+              const pl = plug.labelObj[0];
+
+              if (args.top)
+              {
+                pl.dataset.pos = 1;
+                pl.dataset.origtop = args.top;
+                pl.dataset.origleft = args.left;
+
+                if (canWrite)
+                {
+                  pl.querySelector("i.fa-thumbtack").style.display = "block";
+                  pl.querySelector("li[data-action='position-auto']")
+                    .style.display = "block";
+                }
+
+                if (!plug.customPos)
+                {
+                  this.repositionPlugLabel (pl, args.top, args.left, wPos);
+                  plug.related = this.createRelatedPlugs (plug);
+                  plug.obj.hide ();
+                }
+              }
+              else
+              {
+                this.resetPlugLabelPosition (pl);
+                plug.related.forEach (r => r.remove ());
+                plug.related = [];
+                plug.customPos = false;
+                plug.obj.show ();
+              }
+            }
 
             break;
           }
       }
+
+      this.repositionPlugs ();
+    },
+
+    // METHOD createRelatedPlugs ()
+    createRelatedPlugs (plug)
+    {
+      const related = [
+        this.getPlugTemplate ({
+          hide: true,
+          start: plug.labelObj[0],
+          end: plug.obj.end,
+          startPlug: "behind"}),
+        this.getPlugTemplate ({
+          hide: true,
+          start: plug.labelObj[0],
+          end: plug.obj.start,
+          startPlug: "behind"})
+      ];
+
+      plug.customPos = true;
+
+      related.forEach (p => p.show ());
+
+      return related;
     },
 
     // METHOD addPlugLabel ()
-    addPlugLabel (plug, $svg)
+    addPlugLabel (plug, $svg, applyZoom)
     {
-      const $div = this.settings.plugsContainer;
+      const plugin = this,
+            $div = plugin.settings.plugsContainer,
+            wPos = this.settings.wall[0].getBoundingClientRect (),
+            canWrite = this.canWrite ();
       let svg;
 
       if ($svg)
@@ -924,19 +1014,123 @@
         svg = $div[0].querySelector ("#_"+plug.startId+"-"+plug.endId);
 
       const text = svg.querySelector ("text"),
-            pos = text ? text.getBoundingClientRect () : null;
+            pos = plug.label.top ?
+              {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
+              text.getBoundingClientRect (),
+            $start = $(plug.obj.start),
+            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("automatic placement")?></a></li></ul>`,
+            $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<a href="#" ${canWrite?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${canWrite?menu:""}</div>`);
 
-      if (pos)
-      {
-        const writeAccess = this.canWrite (),
-              menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></ul>`;
+        plug.labelObj = $label.appendTo ($div);
 
-        plug.labelObj = $(`<div class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px"><a href="#" ${writeAccess?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label != "..." ? H.noHTML (plug.label) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${writeAccess?menu:""}</div>`).appendTo ($div)
-      }
+        const pl = plug.labelObj[0];
+
+        if (plug.label.top)
+        {
+          pl.dataset.origtop = plug.label.top;
+          pl.dataset.origleft = plug.label.left;
+
+          if (canWrite)
+            pl.querySelector("i.fa-thumbtack").style.display = "block";
+
+          plug.related = plugin.createRelatedPlugs (plug);
+        }
+        else
+        {
+          if (canWrite)
+            pl.querySelector("li[data-action='position-auto']")
+              .style.display = "none";
+
+          plug.related = [];
+          plug.customPos = false;
+          plug.obj.show ("none");
+        }
+
+        if (applyZoom)
+        {
+          pl.style.transformOrigin = "top left";
+          pl.style.transform = "scale("+(S.get("zoom-level")||1)+")";
+        }
+
+        if (canWrite)
+          $label.draggable ({
+            distance: 10,
+//            containment: S.getCurrent("wall").find("tbody"),
+            start: function (e, ui)
+            {
+              const p = plug.labelObj.position ();
+
+              S.set ("revertData", {
+                revert: false,
+                top: p.top,
+                left: p.left
+              });
+
+              $start.postit ("edit", {},
+                // success cb
+                ()=>
+                {
+                  if (!plug.customPos)
+                  {
+                    plug.related = plugin.createRelatedPlugs (plug);
+                    plug.obj.hide ();
+                  }
+                },
+                // error cb
+                ()=> S.get("revertData").revert = true);
+            },
+            drag: function ()
+            {
+              if (S.get("revertData").revert)
+              {
+                $(this).draggable ("cancel");
+                return false;
+              }
+
+              plug.related.forEach (p => p.position ());
+            },
+            stop: function (e, ui)
+            {
+              S.set ("still-dragging", true, 500);
+
+              if (S.get("revertData").revert)
+              {
+                const revertData = S.get ("revertData");
+
+                plug.labelObj.css ({
+                  top: revertData.top,
+                  left: revertData.left
+                });
+
+                $start.postit ("cancelEdit");
+              }
+              else
+              {
+                const wPos = S.getCurrent("wall")[0].getBoundingClientRect (),
+                      lbPos = $label[0].getBoundingClientRect (),
+                      z = S.get("zoom-level")||1,
+                      toSave = {};
+
+                $label[0].dataset.pos = 1;
+                pl.querySelector("i.fa-thumbtack").style.display = "block";
+                pl.querySelector("li[data-action='position-auto']")
+                  .style.display = "none";
+
+                pl.dataset.origtop = Math.trunc ((lbPos.top-wPos.top)/z);
+                pl.dataset.origleft = Math.trunc ((lbPos.left-wPos.left)/z);
+
+                toSave[plug.startId] = $(plug.obj.start);
+                toSave[plug.endId] = $(plug.obj.end);
+
+                S.set ("plugs-to-save", toSave);
+                $start.postit ("unedit");
+              }
+            }
+          });
     },
 
     // METHOD addPlug ()
-    addPlug (plug)
+    addPlug (plug, applyZoom)
     {
       const $start = this.element,
             $end = $(plug.obj.end),
@@ -954,7 +1148,7 @@
       // Associate SVG line to plug and set its label
       const $svg = $(".leader-line:last-child");
       $svg[0].id = "_"+plug.startId+"-"+plug.endId;
-      this.addPlugLabel (plug, $svg);
+      this.addPlugLabel (plug, $svg, applyZoom);
 
       // Register plug on start point postit (current plugin)
       this.settings._plugs.push (plug);
@@ -1009,28 +1203,28 @@
         plug = this.getPlugById (plug);
 
       // Remove label
-      if (plug.labelObj)
-      {
-        plug.labelObj.remove ();
-        plug.labelObj = null;
-      }
+      plug.labelObj.remove ();
+      plug.labelObj = null;
 
       // Remove line
-      if (plug.obj)
-      {
-        toDefrag[plug.startId] = $(plug.obj.start);
-        toDefrag[plug.endId] = $(plug.obj.end);
+      toDefrag[plug.startId] = $(plug.obj.start);
+      toDefrag[plug.endId] = $(plug.obj.end);
 
-        document.body.appendChild (plug.obj.dom);
-        plug.obj.remove ();
-        plug.obj = null;
+      // Remove template line
+      document.body.appendChild (plug.obj.dom);
+      plug.obj.remove ();
+      plug.obj = null;
 
-        for (const id in toDefrag)
-          toDefrag[id].postit ("defragPlugsArray");
+      // Remove related lines
+      plug.related.forEach (r => r.remove ());
+      plug.related = [];
+      plug.customPos = false;
 
-        if (!noedit)
-          S.set ("plugs-to-save", toDefrag);
-      }
+      for (const id in toDefrag)
+        toDefrag[id].postit ("defragPlugsArray");
+
+      if (!noedit)
+        S.set ("plugs-to-save", toDefrag);
 
       return ","+plug.startId+";"+plug.endId;
     },
@@ -1041,31 +1235,36 @@
       const $postit = this.element,
             settings = this.settings,
             postitId = settings.id,
-            tmp = {},
+            tmp = [],
             toDefrag = {};
-      let ret = "";
 
       this.resetPlugsUndo ();
 
       (settings._plugs||[]).forEach (plug =>
         {
+          tmp.push ({
+            endId: (plug.endId != settings.id) ? plug.endId : plug.startId,
+            name: plug.label.name,
+            top: plug.labelObj[0].dataset.origtop,
+            left: plug.labelObj[0].dataset.origleft
+          });
+
           // Remove label
-          if (plug.labelObj)
-          {
-            plug.labelObj.remove ();
-            plug.labelObj = null;
-          }
+          plug.labelObj.remove ();
+          plug.labelObj = null;
 
           toDefrag[plug.startId] = $(plug.obj.start);
           toDefrag[plug.endId] = $(plug.obj.end);
 
-          // Remove line
+          // Remove template line
           document.body.appendChild (plug.obj.dom);
           plug.obj.remove ();
           plug.obj = null;
 
-          tmp[(plug.endId != settings.id) ? plug.endId : plug.startId] =
-            plug.label;
+          // Remove related lines
+          plug.related.forEach (r => r.remove ());
+          plug.related = [];
+          plug.customPos = false;
         });
 
       for (const id in toDefrag)
@@ -1078,10 +1277,7 @@
       settings._plugs = [];
       $postit.removeClass ("with-plugs");
 
-      for (const id in tmp)
-        ret += ","+id+";"+tmp[id];
-
-      return ret.substring (1);
+      return JSON.stringify (tmp);
     },
 
     // METHOD hidePlugs ()
@@ -1104,7 +1300,10 @@
           }
 
           plug.labelObj.hide ();
-          plug.obj.hide ("none");
+          if (!plug.customPos)
+            plug.obj.hide ("none");
+          else
+            plug.related.forEach (p => p.hide ("none"));
         });
     },
 
@@ -1113,7 +1312,8 @@
     {
       if (!this.settings.wall) return;
 
-      const postitId = this.settings.id;
+      const postitId = this.settings.id,
+            wPos = this.settings.wall[0].getBoundingClientRect ();
 
       this.element.find(".postit-menu [data-action='plug']").show ();
 
@@ -1129,10 +1329,18 @@
 
           if (!plug.startHidden && !plug.endHidden)
           {
-            plug.obj.show ();
+            plug.labelObj.show ();
+            if (!plug.customPos)
+              plug.obj.show ("none");
+            else
+            {
+              const pl = plug.labelObj[0];
 
-            if (plug.labelObj)
-              plug.labelObj.show ();
+              this.repositionPlugLabel (
+                pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
+
+              plug.related.forEach (p => p.show().position());
+            }
           }
         });
     },
@@ -1140,20 +1348,30 @@
     // METHOD repositionPlugs ()
     repositionPlugs ()
     {
-      const div = this.settings.plugsContainer[0];
+      const div = this.settings.plugsContainer[0],
+            wPos = this.settings.wall[0].getBoundingClientRect ();
 
       this.settings._plugs.forEach (plug =>
         {
-          plug.obj.position ();
+           const pl = plug.labelObj[0];
 
-          if (plug.labelObj)
+          if (pl.dataset.pos)
+          {
+            this.repositionPlugLabel (
+              pl, pl.dataset.origtop, pl.dataset.origleft,  wPos);
+
+            plug.related.forEach (p => p.position ());
+          }
+          else
           {
             const p = div.querySelector (
                         "#_"+plug.startId+"-"+plug.endId+" text")
                           .getBoundingClientRect ();
 
-            plug.labelObj[0].style.top = p.top+"px";
-            plug.labelObj[0].style.left = p.left+"px";
+            pl.style.top = p.top+"px";
+            pl.style.left = p.left+"px";
+
+            plug.obj.position ();
           }
         });
     },
@@ -1167,7 +1385,8 @@
     // METHOD serializePlugs ()
     serializePlugs ()
     {
-      const settings = this.settings;
+      const settings = this.settings,
+            wallPos = this.settings.wall[0].getBoundingClientRect ();
       let ret = {};
 
       if (settings._plugs !== undefined)
@@ -1175,8 +1394,20 @@
           {
             // Take in account only plugs from this postit
             if (plug.startId == settings.id)
-              ret[plug.endId] = (plug.label == "...") ?
-                "" : plug.labelObj[0].querySelector("a span").innerText;
+            {
+              const l = plug.labelObj[0];
+
+              ret[plug.endId] = {
+                label: (plug.label == "...") ?
+                         "" : l.querySelector("a span").innerText
+              };
+
+              if (l.dataset.pos)
+              {
+                ret[plug.endId].top = parseInt (l.dataset.origtop);
+                ret[plug.endId].left = parseInt (l.dataset.origleft);
+              }
+            }
           });
 
       return ret;
@@ -1188,7 +1419,7 @@
       const postits = [],
             displayExternalRef =
               (this.settings.wall.wall ("displayExternalRef") == 1),
-            zoomLevel = S.get("zoom-level")||1;
+            z = S.get("zoom-level")||1;
 
       this.element.each (function ()
       {
@@ -1215,8 +1446,8 @@
 
           data = {
             id: postitId,
-            width: Math.trunc (bbox.width/zoomLevel),
-            height: Math.trunc (bbox.height/zoomLevel),
+            width: Math.trunc (bbox.width/z),
+            height: Math.trunc (bbox.height/z),
             item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
             item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
             item_order: parseInt (this.dataset.order),
@@ -1235,7 +1466,7 @@
             plugs: plugin.serializePlugs (),
             hadpictures: !!this.dataset.hadpictures,
             hasuploadedpictures: !!this.dataset.hasuploadedpictures,
-            progress: Number.parseInt(this.dataset.progress||0)
+            progress: parseInt (this.dataset.progress||0)
           };
         }
 
@@ -1562,7 +1793,6 @@
         .find("span").text (count);
     },
 
-    //TODO Attachments plugin?
     // METHOD getAttachmentTemplate ()
     getAttachmentTemplate (item, noWriteAccess)
     {
@@ -1824,12 +2054,9 @@
     },
 
     // METHOD edit ()
-    edit (args, success_cb, error_cb)
+    edit (args = {}, success_cb, error_cb)
     {
       const data = {cellId: this.settings.cellId};
-
-      if (!args)
-        args = {};
 
       if (!args.plugend)
       {
@@ -2141,7 +2368,7 @@
             if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
               return;
 
-            $(this.parentNode).postit ("edit", null,
+            $(this.parentNode).postit ("edit", {},
               () => S.getCurrent("tpick").tpick ("open", e));
           });
 
@@ -2156,7 +2383,7 @@
 
             if ($item.hasClass("fa-times-circle"))
             {
-              plugin.edit (null, () =>
+              plugin.edit ({}, () =>
               {
                 H.openConfirmPopover ({
                   item: $item,
@@ -2271,7 +2498,7 @@
                   defaultLabel = H.htmlEscape ($label.find("span").text ()),
                   __unedit = ()=>
                   {
-                    let toSave = {};
+                    const toSave = {};
 
                     toSave[startId] = startPlugin.element;
                     toSave[endId] =
@@ -2285,7 +2512,7 @@
             {
               case "rename":
 
-                startPlugin.edit (null, ()=>
+                startPlugin.edit ({}, ()=>
                   {
                     H.openConfirmPopover ({
                       type: "update",
@@ -2310,7 +2537,7 @@
 
               case "delete":
 
-                startPlugin.edit (null, ()=>
+                startPlugin.edit ({}, ()=>
                   {
                     H.openConfirmPopover ({
                       item: $label,
@@ -2326,6 +2553,27 @@
                     });
                   });
 
+                break;
+
+              case "position-auto":
+
+                startPlugin.edit ({}, ()=>
+                  {
+                    startPlugin.settings._plugs.forEach (p =>
+                      {
+                        if (p.startId == startId && p.endId == endId)
+                        {
+                          p.related.forEach (_p => _p.remove ());
+                          p.related = [];
+                          p.customPos = false;
+                          p.obj.show ();
+                        }
+                      });
+
+                    startPlugin.resetPlugLabelPosition ($label[0]);
+                    startPlugin.repositionPlugs ();
+                    __unedit ();
+                  });
                 break;
             }
           });
