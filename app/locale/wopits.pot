@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-02 11:47+0100\n"
+        "POT-Creation-Date: 2020-12-02 14:59+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,13 +35,13 @@ msgstr  ""
 msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed important issues with columns/rows deletion.</p>"
+msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now cancel the selections and close the menu by pressing the <kbd>esc</kbd> key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Full view</b> More fluidity and consistency.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> Simplification of relationships creation.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now possible to have finer control over the position of each relationship.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sharing</b> Users can now see in real time who is making changes and on what items.</p>"
@@ -147,6 +147,9 @@ msgid   "Associate a picture"
 msgstr  ""
 
 msgid   "Attachments"
+msgstr  ""
+
+msgid   "Automatic positioning"
 msgstr  ""
 
 msgid   "Available groups:"
@@ -275,9 +278,6 @@ msgid   "Default walls color:"
 msgstr  ""
 
 msgid   "Delete"
-msgstr  ""
-
-msgid   "Delete all relationships from this note?"
 msgstr  ""
 
 msgid   "Delete my account"
