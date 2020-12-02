@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-30 20:20+0100\n"
+"POT-Creation-Date: 2020-12-02 11:47+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -38,8 +38,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Sticky notes</b> Fixed a issue with "
-"progress bar.</p>"
+"<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed important issues with "
+"columns/rows deletion.</p>"
 msgstr ""
 
 msgid ""
@@ -958,6 +958,12 @@ msgid "Some features are not available in this mode"
 msgstr ""
 
 msgid "Some walls are no longer available!"
+msgstr ""
+
+msgid "Someone is editing a cell in the col/row you want to delete!"
+msgstr ""
+
+msgid "Someone is editing a note in the col/row you want to delete!"
 msgstr ""
 
 msgid ""
