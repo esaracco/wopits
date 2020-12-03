@@ -47,7 +47,7 @@
           if (H.disabledEvent (
                 !H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
                 $sm.find("li:visible").length == 1))
-            return;
+            return false;
 
           const icon = this.querySelector ("i"),
                 set = icon.classList.contains ("set");

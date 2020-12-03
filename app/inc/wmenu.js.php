@@ -48,7 +48,7 @@
       $menu.find("li").on("click", function ()
       {
         if (H.disabledEvent ())
-          return;
+          return false;
 
         const action = this.dataset.action;
 

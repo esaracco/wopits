@@ -263,7 +263,7 @@
             edit: (cb) =>
             {
               if (H.disabledEvent ())
-                return;
+                return false;
 
               plugin.edit (cb);
             },

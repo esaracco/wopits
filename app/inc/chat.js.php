@@ -80,7 +80,7 @@
         function ()
         {
           if (H.disabledEvent ())
-            return;
+            return false;
 
           $(this).parent().find("li").remove ();
         });

@@ -62,7 +62,7 @@
         function (e)
         {
           if (H.disabledEvent ())
-            return;
+            return false;
 
           $(this).parent().toggleClass ("selected");
 
@@ -73,7 +73,7 @@
         function (e)
         {
           if (H.disabledEvent ())
-            return;
+            return false;
 
           $(this).toggleClass ("selected");
 

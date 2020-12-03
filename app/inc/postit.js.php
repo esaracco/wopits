@@ -277,7 +277,7 @@
 
           // To prevent race condition with draggable & resizable plugins
           if (H.disabledEvent ())
-            return;
+            return false;
 
           switch (action)
           {
@@ -624,7 +624,7 @@
           .doubletap ((e)=>
           {
             if (H.disabledEvent (e.ctrlKey))
-              return;
+              return false;
 
             plugin.openPostit ();
           });
@@ -641,7 +641,7 @@
             edit: (cb) =>
             {
               if (H.disabledEvent ())
-                return;
+                return false;
 
               plugin.edit ({}, cb);
             },
@@ -2391,7 +2391,7 @@
         $(document).on("mousedown", ".postit-tags", function (e)
           {
             if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-              return;
+              return false;
 
             $(this.parentNode).postit ("edit", {},
               () => S.getCurrent("tpick").tpick ("open", e));
@@ -2401,7 +2401,7 @@
         $(document).on("click", ".postit .dates .end", function (e)
           {
             if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-              return;
+              return false;
 
             const $item = $(e.target),
                   plugin = $(this.parentNode.parentNode).postit ("getClass");
@@ -2505,7 +2505,7 @@
           ".postit-edit,.postit-header,.dates", function (e)
           {
             if (H.disabledEvent ())
-              return;
+              return false;
 
             if (!e.ctrlKey && !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
               $(this.parentNode).postit ("openPostit");

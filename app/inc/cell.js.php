@@ -582,7 +582,7 @@
       $(document).on("click", ".cell-menu", function ()
         {
           if (H.disabledEvent ())
-            return;
+            return false;
 
           $(this).parent().cell ("toggleDisplayMode");
         });
@@ -616,7 +616,7 @@
                 e.preventDefault ();
 
               if (H.disabledEvent ())
-                return;
+                return false;
 
               $p.postit ("openPostit", $(li).find ("span"));
             }

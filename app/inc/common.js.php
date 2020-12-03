@@ -769,7 +769,7 @@ class WHelper
   // METHOD disabledEvent ()
   disabledEvent (cond)
   {
-    return (cond === true) || S.get ("link-from") || S.get ("dragging");
+    return !!((cond === true) || S.get ("link-from") || S.get ("dragging"));
   }
 
   // METHOD getPlugColor ()
