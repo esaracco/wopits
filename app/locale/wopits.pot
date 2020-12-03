@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-02 20:17+0100\n"
+        "POT-Creation-Date: 2020-12-03 06:20+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,10 +38,10 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Sticky notes</b> Fixed a issue with deletion.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relationships</b> Fixed a issue with relationships creation.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Full view</b> More fluidity and consistency.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed a issue with elements editing.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now possible to have finer control over the position of each relationship.</p>"
@@ -488,9 +488,6 @@ msgstr  ""
 msgid   "Help"
 msgstr  ""
 
-msgid   "Hide headers"
-msgstr  ""
-
 msgid   "I get it !"
 msgstr  ""
 
@@ -771,9 +768,6 @@ msgid   "Sharing will be impossible, and you will be removed from all groups.<br
 msgstr  ""
 
 msgid   "Show external contents"
-msgstr  ""
-
-msgid   "Show headers"
 msgstr  ""
 
 msgid   "Size"

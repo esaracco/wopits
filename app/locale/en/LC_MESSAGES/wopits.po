@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 20:17+0100\n"
+"POT-Creation-Date: 2020-12-03 06:20+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -46,13 +46,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Sticky notes</b> Fixed a issue with "
-"deletion.</p>"
+"<p><b><i class='fas fa-bug fa-fw'></i>Relationships</b> Fixed a issue with "
+"relationships creation.</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Full view</b> More fluidity and "
-"consistency.</p>"
+"<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed a issue with elements "
+"editing.</p>"
 msgstr ""
 
 msgid ""
@@ -655,9 +655,6 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-msgid "Hide headers"
-msgstr ""
-
 msgid "I get it !"
 msgstr ""
 
@@ -952,9 +949,6 @@ msgid ""
 msgstr ""
 
 msgid "Show external contents"
-msgstr ""
-
-msgid "Show headers"
 msgstr ""
 
 msgid "Size"
