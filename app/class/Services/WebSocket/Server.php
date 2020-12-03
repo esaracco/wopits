@@ -565,7 +565,7 @@ class Server
           $isSActionResult = isset ($ret['walls']);
           $cacheName = ($action == 'chat' || $action == 'unlinked' ||
                         $action == 'userwriting' ||
-                        $action == 'userstoppedwriting') ?
+                        isset ($ret['userstoppedwriting'])) ?
             'openedWalls' : 'activeWalls';
 
           if ($isSActionResult)
