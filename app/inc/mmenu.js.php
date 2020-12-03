@@ -36,7 +36,7 @@
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),
-          stop: ()=> S.set ("still-dragging", true, 500)
+          stop: ()=> S.set ("dragging", true, 500)
         });
 
       $sm.find("button.close").on("click", ()=> plugin.close ());
@@ -45,7 +45,7 @@
       $sm.find("li").on("click", function (e)
         {
           if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
-              S.get ("still-dragging") ||
+              S.get ("dragging") ||
               $sm.find("li:visible").length == 1)
             return;
 

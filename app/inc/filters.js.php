@@ -44,7 +44,7 @@
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),
-          stop: ()=> S.set ("still-dragging", true, 500)
+          stop: ()=> S.set ("dragging", true, 500)
         })
         .resizable({
           handles: "all",
@@ -61,7 +61,7 @@
       $filters.find(".tags i").on("click",
         function (e)
         {
-          if (S.get ("still-dragging"))
+          if (S.get ("dragging"))
             return;
 
           $(this).parent().toggleClass ("selected");
@@ -72,7 +72,7 @@
       $filters.find(".colors > div").on("click",
         function (e)
         {
-          if (S.get ("still-dragging"))
+          if (S.get ("dragging"))
             return;
 
           $(this).toggleClass ("selected");

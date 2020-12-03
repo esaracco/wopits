@@ -31,7 +31,7 @@
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),
-          stop: ()=> S.set ("still-dragging", true, 500),
+          stop: ()=> S.set ("dragging", true, 500),
           start: ()=> plugin.closeUsersTooltip (),
         })
         .resizable({
@@ -79,7 +79,7 @@
       $chat.find(".btn-clear").on("click",
         function ()
         {
-          if (!S.get ("still-dragging"))
+          if (!S.get ("dragging"))
             $(this).parent().find("li").remove ();
         });
 

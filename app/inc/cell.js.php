@@ -581,7 +581,7 @@
       // EVENT click on cell menu
       $(document).on("click", ".cell-menu", function ()
         {
-          if (!S.get ("still-dragging"))
+          if (!S.get ("dragging"))
             $(this).parent().cell ("toggleDisplayMode");
         });
 
@@ -613,7 +613,7 @@
               if (e.cancelable)
                 e.preventDefault ();
 
-              if (!S.get ("still-dragging"))
+              if (!S.get ("dragging"))
                 $p.postit ("openPostit", $(li).find("span"));
             }
           }

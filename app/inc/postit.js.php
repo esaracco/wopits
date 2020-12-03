@@ -276,7 +276,7 @@
           postitPlugin.closePlugMenu ();
 
           // To prevent race condition with draggable & resizable plugins
-          if (S.get ("still-dragging"))
+          if (S.get ("dragging"))
             return;
 
           switch (action)
@@ -531,7 +531,7 @@
               if ($editable.length)
                 $editable.editable ("cancel");
 
-              S.set ("still-dragging", true, 500);
+              S.set ("dragging", true, 500);
 
               if (S.get("revertData").revert)
               {
@@ -595,7 +595,7 @@
             {
               const revertData = S.get ("revertData");
 
-              S.set ("still-dragging", true, 500);
+              S.set ("dragging", true, 500);
 
               if (revertData.revert)
               {
@@ -622,7 +622,7 @@
         $postit.find(".postit-edit")
           // EVENT doubletap on content
           .doubletap ((e)=>
-            !e.ctrlKey && !S.get("still-dragging") && plugin.openPostit());
+            !e.ctrlKey && !S.get("dragging") && plugin.openPostit());
   
         // Make postit title editable
         $postit.find(".title").editable ({
@@ -633,7 +633,7 @@
           fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
-            edit: (cb) => !S.get ("still-dragging") && plugin.edit ({}, cb),
+            edit: (cb) => !S.get ("dragging") && plugin.edit ({}, cb),
             unedit: () => plugin.unedit (),
             update: (v) =>
               {
@@ -1136,7 +1136,7 @@
             },
             stop: function (e, ui)
             {
-              S.set ("still-dragging", true, 500);
+              S.set ("dragging", true, 500);
 
               if (S.get("revertData").revert)
               {
@@ -2495,7 +2495,7 @@
           "click",
           ".postit-edit,.postit-header,.postit-tags,.dates", function (e)
           {
-            if (S.get ("link-from") || S.get ("still-dragging"))
+            if (S.get ("link-from") || S.get ("dragging"))
               return false;
 
             if (!e.ctrlKey && !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))

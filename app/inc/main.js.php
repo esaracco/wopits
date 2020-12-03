@@ -108,7 +108,7 @@
             },
           stop: function ()
             {
-              S.set ("still-dragging", true, 500);
+              S.set ("dragging", true, 500);
 
               // Fix arrows tool appearence
               const $a = S.getCurrent ("arrows");
