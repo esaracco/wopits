@@ -2352,7 +2352,7 @@
           e.preventDefault ();
 
           if (this.classList.contains ("selected"))
-            menu.remove ();
+            menu.remove (id);
           else
             menu.add ($(this).postit ("getClass"));
         });
