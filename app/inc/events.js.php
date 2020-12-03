@@ -177,7 +177,7 @@ $(function()
 */
 
   // EVENT hide.bs.tab on relationships label menu
-   $(document).on("show.bs.dropdown", ".plug-label", ()=> !S.get ("dragging"));
+   $(document).on("show.bs.dropdown", ".plug-label", ()=> !H.disabledEvent ());
 
   // EVENT hide.bs.tab on walls tabs
   $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",

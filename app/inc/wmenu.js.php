@@ -47,10 +47,10 @@
 
       $menu.find("li").on("click", function ()
       {
-        const action = this.dataset.action;
-
-        if (S.get ("dragging"))
+        if (H.disabledEvent ())
           return;
+
+        const action = this.dataset.action;
 
         switch (action)
         {

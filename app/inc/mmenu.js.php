@@ -44,9 +44,9 @@
       // EVENT click on menu
       $sm.find("li").on("click", function (e)
         {
-          if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
-              S.get ("dragging") ||
-              $sm.find("li:visible").length == 1)
+          if (H.disabledEvent (
+                !H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
+                $sm.find("li:visible").length == 1))
             return;
 
           const icon = this.querySelector ("i"),

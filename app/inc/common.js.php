@@ -766,6 +766,12 @@ class WHelper
     return (document.body && document.body.classList.contains ("login-page"));
   }
 
+  // METHOD disabledEvent ()
+  disabledEvent (cond)
+  {
+    return (cond === true) || S.get ("link-from") || S.get ("dragging");
+  }
+
   // METHOD getPlugColor ()
   getPlugColor (type)
   {

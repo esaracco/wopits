@@ -79,8 +79,10 @@
       $chat.find(".btn-clear").on("click",
         function ()
         {
-          if (!S.get ("dragging"))
-            $(this).parent().find("li").remove ();
+          if (H.disabledEvent ())
+            return;
+
+          $(this).parent().find("li").remove ();
         });
 
       $chat.find("button.btn-primary").on("click",

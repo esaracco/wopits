@@ -61,7 +61,7 @@
       $filters.find(".tags i").on("click",
         function (e)
         {
-          if (S.get ("dragging"))
+          if (H.disabledEvent ())
             return;
 
           $(this).parent().toggleClass ("selected");
@@ -72,7 +72,7 @@
       $filters.find(".colors > div").on("click",
         function (e)
         {
-          if (S.get ("dragging"))
+          if (H.disabledEvent ())
             return;
 
           $(this).toggleClass ("selected");

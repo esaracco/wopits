@@ -581,8 +581,10 @@
       // EVENT click on cell menu
       $(document).on("click", ".cell-menu", function ()
         {
-          if (!S.get ("dragging"))
-            $(this).parent().cell ("toggleDisplayMode");
+          if (H.disabledEvent ())
+            return;
+
+          $(this).parent().cell ("toggleDisplayMode");
         });
 
       // EVENT click on cells
@@ -613,8 +615,10 @@
               if (e.cancelable)
                 e.preventDefault ();
 
-              if (!S.get ("dragging"))
-                $p.postit ("openPostit", $(li).find("span"));
+              if (H.disabledEvent ())
+                return;
+
+              $p.postit ("openPostit", $(li).find ("span"));
             }
           }
           // ctrl+click on a cell to paste/cut on it

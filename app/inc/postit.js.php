@@ -276,7 +276,7 @@
           postitPlugin.closePlugMenu ();
 
           // To prevent race condition with draggable & resizable plugins
-          if (S.get ("dragging"))
+          if (H.disabledEvent ())
             return;
 
           switch (action)
@@ -622,7 +622,12 @@
         $postit.find(".postit-edit")
           // EVENT doubletap on content
           .doubletap ((e)=>
-            !e.ctrlKey && !S.get("dragging") && plugin.openPostit());
+          {
+            if (H.disabledEvent (e.ctrlKey))
+              return;
+
+            plugin.openPostit ();
+          });
   
         // Make postit title editable
         $postit.find(".title").editable ({
@@ -633,7 +638,13 @@
           fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
-            edit: (cb) => !S.get ("dragging") && plugin.edit ({}, cb),
+            edit: (cb) =>
+            {
+              if (H.disabledEvent ())
+                return;
+
+              plugin.edit ({}, cb);
+            },
             unedit: () => plugin.unedit (),
             update: (v) =>
               {
@@ -2379,9 +2390,7 @@
         // EVENT mousedown on tags
         $(document).on("mousedown", ".postit-tags", function (e)
           {
-            e.stopImmediatePropagation ();
-
-            if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+            if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
               return;
 
             $(this.parentNode).postit ("edit", {},
@@ -2391,7 +2400,7 @@
         // EVENT click on dates
         $(document).on("click", ".postit .dates .end", function (e)
           {
-            if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+            if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
               return;
 
             const $item = $(e.target),
@@ -2493,10 +2502,10 @@
         // -> readonly mode
         $(document).on(
           "click",
-          ".postit-edit,.postit-header,.postit-tags,.dates", function (e)
+          ".postit-edit,.postit-header,.dates", function (e)
           {
-            if (S.get ("link-from") || S.get ("dragging"))
-              return false;
+            if (H.disabledEvent ())
+              return;
 
             if (!e.ctrlKey && !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
               $(this.parentNode).postit ("openPostit");
