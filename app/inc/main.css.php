@@ -981,6 +981,10 @@ input::-ms-clear {
   font-size:.8rem;
 }
 
+.plug-label:hover {
+  z-index:1021;
+}
+
 [data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label,
 [data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label a {
   cursor:auto !important;
@@ -1161,6 +1165,10 @@ th .submenu .dropdown-menu {
   -moz-user-select: none;
   -ms-user-select: none;
   /*  user-select: none;*/
+}
+
+.postit.hover {
+  z-index:5000!important;
 }
 
 .postit .btn-menu {

@@ -142,15 +142,6 @@
     plug.customPos = false;
   }
 
-  // METHOD _resetZIndexData ()
-  function _resetZIndexData ()
-  {
-    S.get("postit-oldzindex").obj.css (
-      "z-index", S.get ("postit-oldzindex").zIndex);
-
-    S.unset ("postit-oldzindex");
-  }
-
   // METHOD _cancelPlugAction ()
   function _cancelPlugAction (full = true, unedit = true)
   {
@@ -2336,56 +2327,35 @@
           statusbar: false
         });
 
-      // EVENTS mouseenter focusin click on postit
-      $(document).on("mouseenter focusin click", ".postit", function (e)
+      // EVENTS mouseenter touchstart on postit
+      // Sort of ":hover" simulation with z-index persistence
+      $(document).on("mouseenter touchstart", ".postit", function ()
         {
-          const id = this.dataset.id.substring (7);
+          const el = S.getCurrent("wall")[0].querySelector (".postit.hover");
 
-          if (e.type == "click" && e.ctrlKey)
-          {
-            const menu = S.getCurrent("mmenu").mmenu ("getClass");
+          if (el)
+            el.classList.remove ("hover");
 
-            e.stopImmediatePropagation ();
-            e.preventDefault ();
-
-            if (this.classList.contains ("selected"))
-              menu.remove (id);
-            else
-              menu.add ($(this).postit ("getClass"));
-          }
-          else
-          {
-            const $oldPostit = S.get ("postit-oldzindex");
-
-            if ($oldPostit && $oldPostit.obj.postit("getId") != id)
-              _resetZIndexData ();
-
-            if (!S.get ("postit-oldzindex"))
-            {
-              S.set ("postit-oldzindex", {
-                zIndex: this.style.zIndex,
-                obj: $(this)
-              });
-
-              this.style.zIndex = 5000;
-            }
-          }
+          this.classList.add ("hover");
         });
 
-        // EVENTS mouseleave focusout on postit
-        $(document).on("mouseleave focusout", ".postit", function ()
-          {
-            const $currentPostit = S.getCurrent ("postit");
+      // EVENTS click on postit
+      $(document).on("click", ".postit", function (e)
+        {
+          if (!e.ctrlKey)
+            return;
 
-            if (H.haveMouse() &&
-                (!$currentPostit || !$currentPostit.length) &&
-                S.get ("postit-oldzindex") &&
-                !$("#popup-layer").length &&
-                !$(".modal:visible").length)
-            {
-              _resetZIndexData ();
-            }
-          });
+          const id = this.dataset.id.substring (7),
+                menu = S.getCurrent("mmenu").mmenu ("getClass");
+
+          e.stopImmediatePropagation ();
+          e.preventDefault ();
+
+          if (this.classList.contains ("selected"))
+            menu.remove ();
+          else
+            menu.add ($(this).postit ("getClass"));
+        });
 
         // EVENT mousedown on tags
         $(document).on("mousedown", ".postit-tags", function (e)
