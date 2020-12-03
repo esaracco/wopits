@@ -173,7 +173,7 @@
       if (unedit)
         S.get("link-from").obj.postit ("unedit");
 
-      S.unset ("link-from");
+      S.set ("link-from", true, 500);
     }
   }
 
@@ -2495,8 +2495,10 @@
           "click",
           ".postit-edit,.postit-header,.postit-tags,.dates", function (e)
           {
-            if (!e.ctrlKey && !S.get ("still-dragging") &&
-                !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+            if (S.get ("link-from") || S.get ("still-dragging"))
+              return false;
+
+            if (!e.ctrlKey && !H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
               $(this.parentNode).postit ("openPostit");
           });
 
