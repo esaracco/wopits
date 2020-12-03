@@ -292,7 +292,6 @@
       switch (move)
       {
         case "move-up":
-
           $tr.insertBefore ($tr.prev ());
           break;
 
@@ -304,11 +303,15 @@
 
           var idx = $th.index() - 1;
 
-          $th.insertBefore ($tr.find("th:eq("+idx+")"));
+          $th.insertBefore ($th.prev ());
+
           $wall.find("tr").each (function ()
             {
-              $(this).find("td:eq("+idx+")")
-                .insertBefore ($(this).find("td:eq("+(idx-1)+")"));
+              const $td = $(this).find("td:eq("+idx+")"),
+                    $tdprev = $td.prev ();
+
+              if ($tdprev.length)
+                $td.insertBefore ($tdprev);
             });
           break;
 
@@ -316,11 +319,15 @@
 
           var idx = $th.index() - 1;
 
-          $th.insertAfter ($tr.find("th:eq("+(idx-1)+")"));
+          $th.insertAfter ($th.next ());
+
           $wall.find("tr").each (function ()
             {
-              $(this).find("td:eq("+idx+")")
-                .insertAfter ($(this).find("td:eq("+(idx+1)+")"));
+              const $td = $(this).find("td:eq("+idx+")"),
+                    $tdnext = $td.next ();
+
+              if ($tdnext.length)
+                $td.insertAfter ($tdnext);
             });
           break;
       }
