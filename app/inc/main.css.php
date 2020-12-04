@@ -1112,6 +1112,17 @@ li[data-action="position-auto"] {
   padding:3px 0;
 }
 
+.submenu-link {
+  position:absolute;
+  z-index:5019;
+}
+
+.submenu-link .dropdown-menu {
+  left:5px !important;
+  min-width:auto;
+}
+
+
 .submenu .dropdown-menu * {
   font-size:0.8rem !important;
 }

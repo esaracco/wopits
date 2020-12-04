@@ -1065,7 +1065,7 @@
               {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
               text.getBoundingClientRect (),
             $start = $(plug.obj.start),
-            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
+            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
             $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<a href="#" ${canWrite?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${canWrite?menu:""}</div>`);
 
         plug.labelObj = $label.appendTo ($div);
@@ -2356,6 +2356,34 @@
           else
             menu.add ($(this).postit ("getClass"));
         });
+
+        // EVENT click on postit content links
+        $(document).on("click", ".postit-edit a[href]", function (e)
+          {
+            const canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
+                  $link = $(this),
+                  $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
+
+           if (e.ctrlKey || H.disabledEvent ())
+            return;
+
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
+
+            $menu.find("li").on("click", function ()
+              {
+                $("#popup-layer").click ();
+
+                if (this.dataset.action == "open-link")
+                  window.open ($link.attr ("href"), "_blank");
+                else
+                  $link.closest(".postit").postit ("openPostit");
+              });
+
+            H.openPopupLayer (()=> $menu.remove ());
+            $menu.prependTo ("body");
+            $menu.css ({top: e.clientY, left: e.clientX});
+          });
 
         // EVENT mousedown on tags
         $(document).on("mousedown", ".postit-tags", function (e)

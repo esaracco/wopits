@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-03 18:36+0100\n"
+        "POT-Creation-Date: 2020-12-04 18:36+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,9 +38,6 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed issue with moving rows/columns.</p>"
-msgstr  ""
-
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now possible to have finer control over the position of each relationship.</p>"
 msgstr  ""
 
@@ -48,6 +45,9 @@ msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sharing</b> Users can now 
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Added a progress bar to follow the progress of a task.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sticky notes</b> Improved management of links in notes content.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability to move rows and columns using their menu.</p>"
@@ -352,6 +352,9 @@ msgstr  ""
 msgid   "Edit"
 msgstr  ""
 
+msgid   "Edit note"
+msgstr  ""
+
 msgid   "Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later."
 msgstr  ""
 
@@ -628,6 +631,12 @@ msgid   "Open"
 msgstr  ""
 
 msgid   "Open a wall"
+msgstr  ""
+
+msgid   "Open link"
+msgstr  ""
+
+msgid   "Open note"
 msgstr  ""
 
 msgid   "Open..."
