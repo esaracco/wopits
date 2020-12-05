@@ -1016,6 +1016,27 @@ class WHelper
     return (wpt_userData.settings && wpt_userData.settings.visible == 1);
   }
   
+  // Clean up content
+  removeHTMLTable (c)
+  {
+    const $c = $(`<div>${c}</div>`),
+          $badEl = $c.find ("table,tr,th,td,tbody,thead"),
+          found = $badEl.length;
+
+    if (found)
+    {
+      $badEl.each (function () {this.remove ()});
+
+      setTimeout(()=>
+        this.displayMsg ({
+          type: "warning",
+          msg: "<?=_("Content has been cleaned up")?>"
+        }), 150);
+    }
+
+    return found ? $c.html () : null;
+  }
+
   // METHOD loader ()
   loader (action, force = false, xhr = null)
   {

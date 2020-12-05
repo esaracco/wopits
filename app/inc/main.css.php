@@ -1325,6 +1325,11 @@ th .submenu .dropdown-menu {
   height:50px;
 }
 
+.postit-edit i.externalref {
+  margin-left:-35px;
+  opacity:.2;
+}
+
 <?php
   foreach (WPT_MODULES['tpick']['items'] as $item => $color)
   {

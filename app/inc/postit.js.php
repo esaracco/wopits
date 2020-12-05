@@ -1435,8 +1435,7 @@
     serialize ()
     {
       const postits = [],
-            displayExternalRef =
-              (this.settings.wall.wall ("displayExternalRef") == 1),
+            displayExternalRef = this.settings.wall.wall ("displayExternalRef"),
             z = S.get("zoom-level")||1;
 
       this.element.each (function ()
@@ -1634,11 +1633,31 @@
         .text (H.noHTML(v) || "...");
     },
 
+    // METHOD addExternalRefIcon ()
+    addExternalRefIcon (c)
+    {
+      c.querySelectorAll("[external-src]").forEach (img =>
+        {
+          const next = img.nextSibling;
+
+          if (!next || !next.classList.contains ("externalref"))
+            $(`<i class="fas fa-umbrella fa-lg externalref"></i>`)
+              .insertAfter ($(img));
+        });
+    },
+
+    // METHOD removeExternalRefIcon ()
+    removeExternalRefIcon (c)
+    {
+      c.querySelectorAll("i.externalref").forEach (el => el.remove ());
+    },
+
     // METHOD setContent ()
     setContent (newContent)
     {
       const postit = this.element[0],
             edit = postit.querySelector (".postit-edit");
+      let setIcon = false;
 
       if (newContent !== edit.innerHTML)
       {
@@ -1648,13 +1667,21 @@
         {
           postit.dataset.haveexternalref = 1;
 
-          if (this.settings.wall.wall("displayExternalRef") != 1)
+          if (!this.settings.wall.wall("displayExternalRef"))
+          {
+            setIcon = true;
             newContent = this.blockExternalRef (newContent, externalRef);
+          }
         }
         else
           postit.removeAttribute ("data-haveexternalref");
 
         edit.innerHTML = newContent;
+
+        if (setIcon)
+          this.addExternalRefIcon (edit);
+        else
+          this.removeExternalRefIcon (edit);
       }
     },
 
@@ -1704,7 +1731,10 @@
                 " external-"+src+" "));
 
         if (content === undefined)
+        {
           el.innerHTML = c;
+          this.addExternalRefIcon (el);
+        }
         else
           return c;
       }
@@ -1716,11 +1746,15 @@
       if (content !== undefined)
         return content.replace (/external\-src/, "src");
       else
+      {
         this.element[0].querySelectorAll("[external-src]").forEach (el =>
           {
             el.setAttribute ("src", el.getAttribute ("external-src"));
             el.removeAttribute ("external-src");
           });
+
+        this.removeExternalRefIcon (this.element[0]);
+      }
     },
 
     // METHOD setPosition ()
@@ -2243,8 +2277,13 @@
             editor.on("change", function (e)
               {
                 let c = editor.getContent ();
+                const noTab = H.removeHTMLTable (c);
 
-                // Check content only if the TinyMCE dialog is open
+                // Clean up HTML tables
+                if (noTab !== null)
+                  editor.setContent (noTab);
+
+                // Check for img only if the TinyMCE dialog is open
                 if ($(".tox-dialog").is(":visible"))
                 {
                   let tmp;
@@ -2265,7 +2304,8 @@
                           {
                             H.loader("hide");
 
-                            c = c.replace(new RegExp (H.quoteRegex(img)), "");
+                            editor.setContent (
+                              c.replace(new RegExp (H.quoteRegex(img)), ""));
 
                             // Return to the top of the modal if mobile device
                             if (!H.haveMouse ())
@@ -2278,22 +2318,6 @@
                           });
                       }
                     });
-                }
-
-                // Clean up content
-                const $c = $(`<div>${c}</div>`),
-                      $badEl = $c.find("table,th,td,tbody,thead");
-                $badEl.each (function ()
-                {
-                  $(this).remove ()
-                });
-                if ($badEl.length)
-                {
-                  editor.setContent ($c.html ());
-                  H.displayMsg ({
-                    type: "warning",
-                    msg: "<?=_("Content has been cleaned up")?>"
-                   });
                 }
               });
           },
