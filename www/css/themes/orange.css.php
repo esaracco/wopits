@@ -28,12 +28,6 @@
   border-color: #f7e5b1;
 }
 
-div.postit,
-div.postit .postit-header {
-  border-color:#f7e5b1;
-  box-shadow:0 0 5px #f7e5b1;
-}
-
 .wall td {
   border-right-color: #fdeec0;
 }

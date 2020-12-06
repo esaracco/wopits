@@ -1161,15 +1161,15 @@ th .submenu .dropdown-menu {
 }
 
 .postit {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 6px 6px 7px -6px rgba(0,0,0,0.8);
   z-index:1010;
   position:absolute !important;
   min-height:50px;
   min-width:160px;
   height:120px;
   width:180px;
-  border-radius:0 3px 3px 3px;
-  border:2px solid #cecece;
-  box-shadow: 0 0 5px #cecece;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -1196,13 +1196,12 @@ th .submenu .dropdown-menu {
 .postit .postit-header {
   position:absolute;
   font-size:14px;
-  border-radius:5px 5px 5px 0;
+  border:1px solid #ccc;
   top:-21px;
-  margin-left:-2px;
+  border-radius:3px 3px 3px 0;
+  margin-left:-1px;
   padding:0 5px 0 30px;
   white-space: nowrap;
-  border:2px solid #cecece;
-  box-shadow: 0 0 5px #cecece;
   z-index:92;
 }
 
