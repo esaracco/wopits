@@ -192,8 +192,10 @@
           // If last wall to load.
           if (args.lastWall)
           {
-            $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
-              .wall ("refresh");
+            if (!S.get ("fromDirectURL"))
+              setTimeout(()=>
+              $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
+                .wall ("refresh"), 0);
 
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
@@ -221,9 +223,6 @@
             const __postInit = ()=>
               {
                 plugin.displayHeaders ();
-                // Refresh postits relationships
-                if (!args.restoring)
-                  plugin.refreshPostitsPlugs (settings.postits_plugs);
                 // Apply display mode
                 plugin.refreshCellsToggleDisplayMode ();
 
@@ -238,6 +237,8 @@
               const postitId = settings.postitId;
 
               plugin.setActive ();
+              //FIXME
+              plugin.refresh ();
 
               H.waitForDOMUpdate (() =>
                 {
@@ -1376,6 +1377,8 @@
         const {type, wallId, postitId} = args||{},
               wallsLen = walls.length;
 
+        S.set ("fromDirectURL", !!args);
+
         for (let i = wallsLen - 1; i >= 0; i--)
         {
           const fromDirectURL = type && walls[i] == wallId;
@@ -1398,6 +1401,7 @@
 
       if ((wpt_userData.settings.openedWalls||[]).indexOf (wallId) == -1)
         this.open ({
+          lastWall: 1,
           wallId: wallId,
           restoring: false,
           fromDirectURL: true,

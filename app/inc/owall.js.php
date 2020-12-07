@@ -62,8 +62,13 @@
         // EVENT CLICK on Open button.
         .on("click", function ()
         {
-          plugin.getChecked().forEach (
-            (id) => $("<div/>").wall ("open", {wallId: id}));
+          const checked = plugin.getChecked ();
+
+          for (let i = 0, iLen = checked.length; i < iLen; i++)
+            $("<div/>").wall ("open", {
+              lastWall: (i == iLen - 1) ? iLen : null,
+              wallId: checked[i]
+            });
         });
 
       $owall.find(".ow-filters input")
@@ -148,7 +153,10 @@
         }
         else if (tag != "LABEL")
         {
-          $("<div/>").wall ("open", {wallId: this.dataset.id});
+          $("<div/>").wall ("open", {
+            lastWall: 1,
+            wallId: this.dataset.id
+          });
           $owall.modal ("hide");
         }
       });
