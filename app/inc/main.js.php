@@ -1021,7 +1021,7 @@
         document.querySelector(".nav.walls").style.display = "none";
 
         this.zoom ({type: "normal", "noalert": true});
-        $("#dropdownView,#dropdownEdit").addClass ("disabled");
+        document.getElementById("dropdownView").classList.add ("disabled");
   
         this.menu ({from: "wall", type: "no-wall"});
 
@@ -1297,8 +1297,7 @@
           }
 
           document.querySelector(".nav.walls").style.display = "block";
-
-          $("#dropdownView,#dropdownEdit").removeClass ("disabled");
+          document.getElementById("dropdownView").classList.remove ("disabled");
 
           plugin.menu ({from: "wall", type: "have-wall"});
 
