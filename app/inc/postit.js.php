@@ -1744,7 +1744,7 @@
     unblockExternalRef (content)
     {
       if (content !== undefined)
-        return content.replace (/external\-src/, "src");
+        return content.replace (/external\-src/g, "src");
       else
       {
         this.element[0].querySelectorAll("[external-src]").forEach (el =>
