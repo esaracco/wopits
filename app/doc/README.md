@@ -15,7 +15,7 @@ Groups management makes it possible to finely control the sharing of data, and a
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
-*wopits is **Node.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
+*wopits is **Node.js & React.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
 
 INSTALLATION
 ------------
