@@ -1335,7 +1335,10 @@
                            msg: d.error_msg
                          });
 
-                $("<div/>").wall ("open", {wallId: d.wallId});
+                $("<div/>").wall ("open", {
+                  lastWall: 1,
+                  wallId: d.wallId
+                });
 
                 H.displayMsg ({
                   type: "success",
