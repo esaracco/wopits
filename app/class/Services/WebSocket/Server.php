@@ -86,14 +86,24 @@ class Server
   
         $db->lAdd ('usersUnique', $userId, $fd);
 
-        // Ping WS client to maintain connection and check if it is still alive
+        // TICK
+        // WebSocket heartbeat (every 30s)
         $server->tick (30000, function ($id) use ($server, $fd)
         {
-          if (!$server->isEstablished ($fd) || !$server->push ($fd, 'ping'))
-          {
-            $server->clearTimer ($id);
-            $this->onClose ($server, $fd);
-          }
+          if (!$server->isEstablished ($fd))
+            $this->_quit ($server, $id, $fd);
+        });
+
+        // TICK
+        // Internal heartbeat (every 15mn (60000*15))
+        $server->tick (900000, function ($id) use ($server, $client, $fd)
+        {
+          // If client vanished, cleanup
+          if (!$server->isEstablished ($fd))
+            $this->_quit ($server, $id, $fd);
+          // Update user update date
+          else
+            (new User (null, $client))->refreshUpdateDate ();
         });
 
         $this->_log ($fd, 'info', 'OPEN', $client->ip);
@@ -830,6 +840,12 @@ class Server
         $this->_log ($fd, 'info', 'CLOSE', $client->ip);
       }
     }
+  }
+
+  private function _quit (SwooleServer $server, int $id, int $fd):void
+  {
+    $server->clearTimer ($id);
+    $this->onClose ($server, $fd);
   }
 
   private function _createClient (Request $req):array

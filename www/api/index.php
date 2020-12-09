@@ -134,20 +134,9 @@
 
         case 'user':
 
-          $User = new User ();
-
-          switch (getParam ('action'))
-          {
-            case 'ping':
-
-              $ret = $User->refreshUpdateDate ();
-              break;
-            
-            case 'getFile':
-
-              $ret = $User->getPicture (['userId' => getParam ('userId')]);
-              break;
-          }
+          if (getParam ('action') == 'getFile')
+              $ret =
+                (new User())->getPicture (['userId' => getParam ('userId')]);
           break;
 
         case 'wall':
