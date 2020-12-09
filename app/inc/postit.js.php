@@ -784,22 +784,24 @@
     // METHOD remove ()
     remove ()
     {
-      const plugin = this;
-
-      plugin.removePlugs (true);
+      const __remove = ()=>
+              {
+                this.removePlugs (true);
+                this.element.remove ();
+              };
 
       if (H.haveMouse ())
       {
-        // Empty postit content to prevent effect to reload
-        // deleted embedded images
-        plugin.element[0].querySelector(".postit-edit").innerHTML = "";
-        plugin.element.hide ("explode", ()=> plugin.element.remove ());
+        // Empty postit content to prevent effect to reload deleted embedded
+        // images
+        this.element[0].querySelector(".postit-edit").innerHTML = "";
+        this.element.hide ("explode", ()=> __remove ());
        }
+       // The explode effect works poorly on mobile devices
        else
-         // The explode effect works poorly on mobile devices
-         plugin.element.remove ();
+         __remove ();
 
-      S.getCurrent("mmenu").mmenu ("remove", plugin.settings.id);
+      S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
     },
 
     // METHOD havePlugs ()
