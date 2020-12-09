@@ -124,12 +124,8 @@
   // METHOD _removePlug ()
   function _removePlug (plug, toDefrag)
   {
-    // Remove label
-    plug.labelObj.remove ();
-    plug.labelObj = null;
-
-    toDefrag[plug.startId] = $(plug.obj.start);
-    toDefrag[plug.endId] = $(plug.obj.end);
+    toDefrag[plug.startId] = plug.obj.start;
+    toDefrag[plug.endId] = plug.obj.end;
 
     // Remove template line
     document.body.appendChild (plug.obj.dom);
@@ -140,6 +136,10 @@
     plug.related.forEach (r => r.remove ());
     plug.related = [];
     plug.customPos = false;
+
+    // Remove label
+    plug.labelObj.remove ();
+    plug.labelObj = null;
   }
 
   // METHOD _cancelPlugAction ()
@@ -1003,7 +1003,7 @@
                   plug.obj.hide ();
                 }
               }
-              else
+              else if (plug.customPos)
               {
                 this.resetPlugLabelPosition (pl);
                 plug.related.forEach (r => r.remove ());
@@ -1252,7 +1252,7 @@
       _removePlug (plug, toDefrag);
 
       for (const id in toDefrag)
-        toDefrag[id].postit ("defragPlugsArray");
+        $(toDefrag[id]).postit ("defragPlugsArray");
 
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);
@@ -1285,7 +1285,7 @@
         });
 
       for (const id in toDefrag)
-        toDefrag[id].postit ("defragPlugsArray");
+        $(toDefrag[id]).postit ("defragPlugsArray");
 
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);
