@@ -162,33 +162,37 @@ class Base extends \PDO
   protected function executeQuery (string $sql, array $data,
                                    array $where = null)
   {
-    preg_match ('/(INSERT\s+INTO|UPDATE)\s+([a-z_]+)$/', $sql, $m);
-    $table = $m[2];
+    preg_match ('/(INSERT INTO|UPDATE) ([a-z_]+)$/', $sql, $m);
+    list (, $action, $table) = $m;
 
     // Check values. Bad values are silently converted when possible.
     foreach ($data as $_field => $_value)
       $this->checkDBValue ($table, $_field, $data[$_field]);
 
-    // INSERT
-    if (strpos ($sql, 'INSERT') !== false)
+    switch ($action)
     {
-      $fields = implode (',', array_keys($data));
-      $sql .= " ($fields) VALUES (".
-              preg_replace ("/([a-z_]+)/", ':$1', $fields).')';
-    }
-    // UPDATE
-    elseif (strpos ($sql, 'UPDATE') !== false)
-    {
-      $fields = '';
-      foreach ($data as $k => $v)
-        $fields .= "$k = :$k,";
-      $sql .= ' SET '.substr($fields, 0, -1).' WHERE ';
+      // INSERT
+      case 'INSERT INTO':
 
-      foreach ($where as $k => $v)
-        $sql .= "$k = :$k AND ";
-      $sql = substr ($sql, 0, -4);
+        $fields = implode (',', array_keys($data));
+        $sql .= " ($fields) VALUES (".
+                preg_replace ('/([a-z_]+)/', ':$1', $fields).')';
+        break;
 
-      $data = array_merge ($data, $where);
+      // UPDATE
+      case 'UPDATE':
+
+        $fields = '';
+        foreach ($data as $k => $v)
+          $fields .= "$k = :$k,";
+        $sql .= ' SET '.substr($fields, 0, -1).' WHERE ';
+
+        foreach ($where as $k => $v)
+          $sql .= "$k = :$k AND ";
+        $sql = substr ($sql, 0, -4);
+
+        $data = array_merge ($data, $where);
+        break;
     }
 
     $stmt = $this->prepare ($sql);
