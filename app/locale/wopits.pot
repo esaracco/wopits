@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-09 18:19+0100\n"
+        "POT-Creation-Date: 2020-12-10 09:26+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,9 @@ msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-broom fa-fw'></i>WebSocket</b> Some WebSocket heartbeat rework. <i>Contact us ASAP if you encounter timeouts problem!</i></p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with cutting/pasting notes.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed issue with cloning walls.</p>"
