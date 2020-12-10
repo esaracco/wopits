@@ -863,7 +863,6 @@
             {
               $cell.cell ("update", cell);
 
-/*FIXME useful?
               // Remove deleted post-its
               $cell[0].querySelectorAll(".postit").forEach (p =>
                 {
@@ -875,7 +874,6 @@
                     p.remove ();
                   }
                 });
-*/
             }
 
             for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
