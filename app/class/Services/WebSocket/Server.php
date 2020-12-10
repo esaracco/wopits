@@ -91,19 +91,10 @@ class Server
         $server->tick (30000, function ($id) use ($server, $fd)
         {
           if (!$server->isEstablished ($fd))
-            $this->_quit ($server, $id, $fd);
-        });
-
-        // TICK
-        // Internal heartbeat (every 15mn (60000*15))
-        $server->tick (900000, function ($id) use ($server, $client, $fd)
-        {
-          // If client vanished, cleanup
-          if (!$server->isEstablished ($fd))
-            $this->_quit ($server, $id, $fd);
-          // Update user update date
-          else
-            (new User (null, $client))->refreshUpdateDate ();
+          {
+            $server->clearTimer ($id);
+            $this->onClose ($server, $fd);
+          }
         });
 
         $this->_log ($fd, 'info', 'OPEN', $client->ip);
@@ -130,6 +121,15 @@ class Server
     // Common wopits client
     if (!$db->internals->exist ($fd))
     {
+      $client = $db->tGet ('clients', $fd);
+
+      // Something goes wrong. Close.
+      if (empty ($client->id))
+      {
+        $server->push ($fd, json_encode (['action' => 'exitsession']));
+        return;
+      }
+
       $data = ($msg->data) ? json_decode (urldecode ($msg->data)) : null;
       $wallId = null;
       $wallsIds = null;
@@ -137,8 +137,6 @@ class Server
       $push = false;
       $action = '';
       $ret = [];
-
-      $client = $db->tGet ('clients', $fd);
 
       //////////////////////////// ROUTING PATHS /////////////////////////////
 
@@ -840,12 +838,6 @@ class Server
         $this->_log ($fd, 'info', 'CLOSE', $client->ip);
       }
     }
-  }
-
-  private function _quit (SwooleServer $server, int $id, int $fd):void
-  {
-    $server->clearTimer ($id);
-    $this->onClose ($server, $fd);
   }
 
   private function _createClient (Request $req):array
