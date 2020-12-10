@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-10 09:26+0100\n"
+        "POT-Creation-Date: 2020-12-10 14:49+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,13 +38,10 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-broom fa-fw'></i>WebSocket</b> Some WebSocket heartbeat rework. <i>Contact us ASAP if you encounter timeouts problem!</i></p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Accounts</b> Fixed an issue with accounts creation.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with cutting/pasting notes.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed issue with cloning walls.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with session timeout.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Added a progress bar to follow the progress of a task.</p>"
