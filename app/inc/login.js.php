@@ -57,13 +57,13 @@
               {
                 const dl = $login.find("input[name='_directURL']").val ();
 
-                plugin.login ({
+                plugin.login (H.trimObject ({
                   _directURL: (dl && dl.match (/^\/(a|s)\/\d+(\/\d+)?$/)) ?
                                 "/?"+dl : null,
                   remember: $login.find("#remember")[0].checked,
-                  username: $login.find("input[type='text']").val().trim (), 
-                  password: $login.find("input[type='password']").val().trim ()
-                });
+                  username: $login.find("input[type='text']").val (),
+                  password: $login.find("input[type='password']").val ()
+                }, ['password']));
               }
 
               break;
@@ -137,14 +137,14 @@
             if (plugin.checkRequired ($popup.find("input").slice(0, 2)) &&
                 plugin.validForm ($popup.find("input")))
             {
-              plugin.createUser ({
-                _check: $(".main-login form")
-                          .find("input[name='_check']").val (),
+              plugin.createUser (H.trimObject ({
+                _check:
+                  $(".main-login form").find("input[name='_check']").val (),
                 username: $form.find("input[name='username']").val (),
                 fullname: $form.find("input[name='fullname']").val (),
                 password: $form.find("input[name='password']").val (),
                 email: $form.find("input[name='email']").val ()
-              });
+              }, ['password']));
             }
           }
           else if (plugin.checkRequired ($popup.find("input")) &&

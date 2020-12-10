@@ -874,6 +874,20 @@ class WHelper
       $("button.navbar-toggler").click ();
   }
   
+  // METHOD trimObject ()
+  trimObject (obj, exclude = [])
+  {
+    for (const key in obj)
+    {
+      const v = obj[key];
+
+      if (typeof v === 'string' && exclude.indexOf(key) == -1)
+        obj[key] = v.trim ();
+    }
+
+    return obj;
+  }
+
   // METHOD updatedObject ()
   updatedObject (obj1, obj2, ignore = {})
   {

@@ -275,7 +275,7 @@
           if (plugin.checkRequired ($inputs) && plugin.validForm ($inputs))
             plugin.updateField ({
               password: {
-                current: $inputs[0].value.trim (),
+                current: $inputs[0].value,
                 new: $inputs[1].value,
                 confirm: $inputs[2].value
               }
