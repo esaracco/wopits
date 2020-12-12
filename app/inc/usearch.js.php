@@ -72,7 +72,7 @@ let _lastStr = "",
           else
           {
             H.openConfirmPopover ({
-              item: $el.find("span"),
+              item: $el.find("span:eq(0)"),
               title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
               content: isDed ? "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>" : "<?=_("This user will lose their access for all walls shared with this generic group.<br>Remove anyway?")?>",
               cb_ok: () => plugin.removeGroupUser (args)
@@ -215,7 +215,7 @@ let _lastStr = "",
             $ac.find(".users-title").show ();
             $ac.find(".nousers-title").hide ();
 
-            d.forEach ((item) => html += `<li class="list-group-item list-group-item-action${(delegateAdminId == item.id)?' readonly':''}" data-action="remove" data-id="${item.id}"><span>${item.fullname}</span><button type="button" class="close"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button></li>`);
+            d.forEach ((item) => html += `<li class="list-group-item list-group-item-action${(delegateAdminId == item.id)?' readonly':''}" data-action="remove" data-id="${item.id}"><span>${item.fullname}</span><button type="button" class="close"><i class="fas fa-minus-circle fa-fw fa-xs"></i></button><div class="item-infos"><span>${item.username}</span></div></li>`);
 
             if (d.length > 1)
               $div.parent().addClass ("scroll");
@@ -276,7 +276,7 @@ let _lastStr = "",
           if (!users.length)
             _noResultStr = args.str;
 
-          users.forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button></li>`);
+          users.forEach ((item) => html += `<li class="list-group-item list-group-item-action" data-action="add" data-id="${item.id}">${item.fullname}<button type="button" class="close"><i class="fas fa-plus-circle fa-fw fa-xs"></i></button><div class="item-infos"><span>${item.username}</span></div></li></li>`);
 
           if (html)
           {

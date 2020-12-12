@@ -27,9 +27,9 @@ class Group extends Wall
 
     if ( ($search = Helper::unaccent ($args['search'])) )
     {
-      //FIXME SQL optimization.
+      //FIXME SQL optimization
       ($stmt = $this->prepare ('
-        SELECT id, fullname
+        SELECT id, username, fullname
         FROM users
         WHERE id <> :users_id
           AND visible = 1
@@ -83,7 +83,7 @@ class Group extends Wall
       return ['error' => _("Access forbidden")];
 
     ($stmt = $this->prepare ('
-      SELECT id, email, fullname
+      SELECT id, username, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?

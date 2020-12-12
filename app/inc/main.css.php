@@ -602,7 +602,12 @@ select.timezone {
   left:50px;
 }
 
-#owallPopup .list-group-item {
+#usearchPopup .list-group-item .item-infos {
+  left:19px;
+}
+
+#owallPopup .list-group-item,
+#usearchPopup .list-group-item {
   height:55px;
 }
 

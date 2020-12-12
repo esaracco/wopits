@@ -1612,6 +1612,8 @@ class WHelper
   {
     this.loader ("show");
 
+    //console.log (`FETCH: ${method} ${service}`);
+
     const r = await fetch ("/api/"+service, {
                 method: method,
                 cache: "no-cache",
@@ -1621,6 +1623,8 @@ class WHelper
           d = await r.json ();
 
     this.loader ("hide");
+
+    //console.log (d);
 
     if (r.ok)
     {
