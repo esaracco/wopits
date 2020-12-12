@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-10 15:02+0100\n"
+"POT-Creation-Date: 2020-12-12 13:41+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -46,13 +46,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Accounts</b> Fixed an issue with "
-"accounts creation.</p>"
+"<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with MS Edge "
+"and images uploading.</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with session "
-"timeout.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Network</b> Use <i>fetch()</i> "
+"wherever possible.</p>"
 msgstr ""
 
 msgid ""
@@ -73,6 +73,11 @@ msgstr ""
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now "
 "possible to have finer control over the position of each relationship.</p>"
+msgstr ""
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Users search</b> Show username "
+"along with full name.</p>"
 msgstr ""
 
 msgid ""
@@ -1076,9 +1081,6 @@ msgid "The note has been deleted"
 msgstr ""
 
 msgid "The row/column has been deleted!"
-msgstr ""
-
-msgid "The server is taking too long to respond.<br>Please, try again later."
 msgstr ""
 
 #, php-format
