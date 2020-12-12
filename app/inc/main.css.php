@@ -725,7 +725,7 @@ select.timezone {
 .user-writing {
   pointer-events:none;
   position:absolute;
-  z-index:4999;
+  z-index:5001;
   border-radius:10px;
   box-shadow: 0px 0px 6px #B2B2B2;
   background:#fff;
@@ -739,7 +739,7 @@ select.timezone {
 .user-writing-min {
   pointer-events:none;
   position:absolute;
-  z-index:4999;
+  z-index:5001;
   border-radius:25px;
   height:25px;
   width:25px;
