@@ -57,10 +57,10 @@ class Base extends \PDO
         !is_object ($data) ||
         !$data->size ||
         !preg_match ('#\.([a-z0-9]+)$#i', $data->name, $m1) ||
-        !preg_match ('#data:([^;]+);base64,(.*)#', $data->content, $m2)
+        !preg_match ('#data:[^;]*;base64,(.*)#', $data->content, $m2)
       ) ?
       [null, null, _("Empty file or bad file format!")] :
-      [$m1[1], $m2[2], null];
+      [$m1[1], $m2[1], null];
   }
 
   protected function sendWsClient (array $msg):void
