@@ -414,7 +414,7 @@
       {
         settings.usersettings.displaymode = type;
 
-        H.request_ajax (
+        H.fetch (
           "POST",
           "user/wall/"+settings.wallId+"/settings",
           {

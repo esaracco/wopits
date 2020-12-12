@@ -71,8 +71,7 @@
                   if (H.checkUploadFileSize ({size: e.total}) &&
                       e.target.result)
                   {
-                    H.request_ajax (
-                      "PUT",
+                    H.fetchUpload (
                       "user/picture",
                       {
                         name: file.name,
@@ -321,7 +320,7 @@
     // METHOD delete ()
     delete ()
     {
-      H.request_ajax (
+      H.fetch (
         "DELETE",
         "user",
         null,

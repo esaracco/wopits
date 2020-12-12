@@ -466,7 +466,7 @@
             isOwner = (wallPlugin.settings.ownerid == wpt_userData.id),
             $body = $share.find (".modal-body");
 
-      H.request_ajax (
+      H.fetch (
         "GET",
         "wall/"+wallPlugin.settings.id+"/group",
         null,

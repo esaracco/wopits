@@ -764,10 +764,8 @@
                   {
                     const oldW = $header.outerWidth ();
   
-                    H.request_ajax (
-                      "PUT",
-                      "wall/"+settings.wallId+
-                      "/header/"+settings.id+"/picture",
+                    H.fetchUpload (
+                      "wall/"+settings.wallId+"/header/"+settings.id+"/picture",
                       {
                         name: file.name,
                         size: file.size,

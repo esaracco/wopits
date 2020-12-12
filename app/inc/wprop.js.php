@@ -53,7 +53,7 @@
     {
       const $wall = args.wall;
 
-      H.request_ajax (
+      H.fetch (
         "GET",
         "wall/"+$wall.wall("getId")+"/infos",
         null,

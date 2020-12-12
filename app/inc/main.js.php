@@ -626,7 +626,7 @@
       if (d)
         this._refresh (d);
       else if (this.settings.id)
-        H.request_ajax (
+        H.fetch (
           "GET",
           "wall/"+this.settings.id,
           null,
@@ -1207,7 +1207,7 @@
       if (args.restoring)
         $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
-      H.request_ajax (
+      H.fetch (
         method,
         service,
         data,
@@ -1320,7 +1320,7 @@
         content: `<?=_("Depending on its content, cloning a wall can take time.<br>Clone anyway?")?>`,
         cb_ok: () =>
           {
-            H.request_ajax (
+            H.fetch (
             "PUT",
             "wall/"+this.settings.id+"/clone",
             null,
@@ -1415,7 +1415,7 @@
     // METHOD refreshUserWallsData ()
     refreshUserWallsData (success_cb)
     {
-      H.request_ajax (
+      H.fetch (
         "GET",
         "wall",
         null,
@@ -1762,7 +1762,7 @@
       if ($f.is (":visible"))
         $f.filters ("apply", {norefresh: true});
 
-      H.request_ajax (
+      H.fetch (
         "POST",
         "user/wall/"+this.settings.id+"/displaymode",
         {value: type});
@@ -2051,7 +2051,7 @@
         this.element[0].querySelectorAll(".postit").forEach (p =>
           $(p).postit (type+"ExternalRef"));
 
-        H.request_ajax (
+        H.fetch (
           "POST",
           "user/wall/"+this.settings.id+"/displayexternalref",
           {value: val});
@@ -2086,7 +2086,7 @@
         this.settings.displayheaders = val;
         this.repositionPostitsPlugs ();
 
-        H.request_ajax (
+        H.fetch (
           "POST",
           "user/wall/"+this.settings.id+"/displayheaders",
           {value: val});
@@ -2192,8 +2192,7 @@
                         }) &&
                         e.target.result)
                     {
-                      H.request_ajax (
-                        "PUT",
+                      H.fetchUpload (
                         "wall/import",
                         {
                           name: file.name,

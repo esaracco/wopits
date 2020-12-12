@@ -1309,7 +1309,7 @@ class WHelper
   }
 
   // METHOD loadPopup ()
-  loadPopup (type, args = {open:true})
+  async loadPopup (type, args = {open:true})
   {
     const id = type+"Popup",
           popup = document.getElementById (id),
@@ -1330,20 +1330,25 @@ class WHelper
     if (popup)
       __exec ($(popup));
     else
-      $.get ("/ui/"+type+".php", function (d)
-        {
-          $("body").prepend (d);
+    {
+      const r = await fetch ("/ui/"+type+".php");
+      if (r.ok)
+      {
+        $("body").prepend (await r.text ());
 
-          const $p = $("#"+id);
+        const $p = $("#"+id);
 
-          if ($p[type] !== undefined)
-            $p[type]();
+        if ($p[type] !== undefined)
+          $p[type]();
 
-          if (args.init)
-            args.init ($p);
+        if (args.init)
+          args.init ($p);
 
-          __exec ($p);
-        });
+        __exec ($p);
+      }
+      else
+        this.manageUnknownError ();
+    }
   }
   
   // METHOD infoPopup ()
@@ -1602,54 +1607,77 @@ class WHelper
       });
   }
   
-  // METHOD request_ajax ()
-  request_ajax (method, service, args, success_cb, error_cb)
+  // METHOD fetch ()
+  async fetch (method, service, args, success_cb, error_cb)
   {
-    const fileUpload = service.match(/picture|import|export$/) ||
-                         (args && service.indexOf("attachment") != -1),
-          // No timeout for file upload
-          timeout = (fileUpload) ? 0 : <?=WPT_TIMEOUTS['ajax'] * 1000?>;
-  
-    //console.log ("AJAX: "+method+" "+service);
+    this.loader ("show");
+
+    const r = await fetch ("/api/"+service, {
+                method: method,
+                cache: "no-cache",
+                headers: {"Content-Type": "application/json;charset=utf-8"},
+                body: args ? encodeURI (JSON.stringify (args)) : null
+              }),
+          d = await r.json ();
+
+    this.loader ("hide");
+
+    if (r.ok)
+    {
+      if (!d || d.error)
+        error_cb ? error_cb (d) : this.manageUnknownError (d);
+      else if (success_cb)
+        success_cb (d);
+    }
+    else
+      this.manageUnknownError ();
+  }
+
+  // METHOD fetchUpload ()
+  // Only used for file upload
+  //TODO FIXME Use fetch() when upload progress will be available!
+  fetchUpload (service, args, success_cb, error_cb)
+  {
+    //console.log ("AJAX: PUT "+service);
+
+    this.loader ("show", true, true);
   
     const xhr = $.ajax (
       {
         // Progressbar for file upload
         xhr: ()=>
         {
-          const xhr = new window.XMLHttpRequest ();
-
-          if (fileUpload)
-          {
-            const __progress = (e)=>
-            {
-              if (e.lengthComputable)
+          const xhr = new window.XMLHttpRequest (),
+                __progress = (e)=>
                 {
-                  const $progress = $("#loader .progress"),
-                        percentComplete = e.loaded / e.total,
-                        display = Math.trunc(percentComplete*100)+"%";
+                  if (e.lengthComputable)
+                    {
+                      const $progress = $("#loader .progress"),
+                            percentComplete = e.loaded / e.total,
+                            display = Math.trunc(percentComplete*100)+"%";
 
-                  $progress.text(display).css ("width", display);
+                      $progress.text(display).css ("width", display);
 
-                  if (percentComplete < 0.5)
-                    $progress.css ("background", "#ea6966");
-                  else if (percentComplete < 0.9)
-                    $progress.css ("background", "#f5b240");
-                  else if (percentComplete < 1)
-                    $progress.css ("background", "#6ece4b");
-                  else
-                    $progress.text ("<?=_("Upload completed.")?>");
-                }
-            };
+                      //FIXME
+                      if (percentComplete < 0.5)
+                        $progress.css ("background", "#ea6966");
+                      else if (percentComplete < 0.9)
+                        $progress.css ("background", "#f5b240");
+                      else if (percentComplete < 1)
+                        $progress.css ("background", "#6ece4b");
+                      else
+                        $progress.text ("<?=_("Upload completed.")?>");
+                    }
+                };
 
             xhr.upload.addEventListener ("progress", __progress, false);
             xhr.addEventListener ("progress", __progress, false);
-          }
 
           return xhr;
         },
-        type: method,
-        timeout: timeout,
+        type: "PUT",
+        // No timeout for file uploading
+        timeout: 0,
         async: true,
         cache: false,
         url: "/api/"+service,
@@ -1679,18 +1707,11 @@ class WHelper
                error: "<?=_("Upload has been canceled")?>"});
              break;
   
-           case "timeout":
-             this.manageUnknownError ({
-               error: "<?=_("The server is taking too long to respond.<br>Please, try again later.")?>"}, error_cb);
-             break;
-  
            default:
             this.manageUnknownError ();
          }
        })
       .always (()=> this.loader ("hide", true));
-  
-      this.loader ("show", true, fileUpload && xhr);
   }
   
   // METHOD checkUploadFileSize ()
@@ -1774,7 +1795,7 @@ class WHelper
   }
   
   // METHOD checkForAppUpgrade ()
-  checkForAppUpgrade (version)
+  async checkForAppUpgrade (version)
   {
     const html = $("html")[0],
           $popup = $("#infoPopup"),
@@ -1814,8 +1835,11 @@ class WHelper
         $popup.find(".modal-title").html (
           '<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>');
 
-        $.get ("/whats_new/latest.php", (d)=>
+        const r = await fetch ("/whats_new/latest.php");
+        if (r.ok)
         {
+          let d = await r.text ();
+
           <?php if (WPT_DISPLAY_LATEST_NEWS):?>
           if (d)
             d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>`.replace("%s", "<?=WPT_VERSION?>")+d;
@@ -1834,7 +1858,7 @@ class WHelper
             });
 
           this.openModal ($popup);
-        });
+        }
       }
     }
   }

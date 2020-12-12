@@ -181,12 +181,8 @@
 
         case 'group':
 
-          $wallId = getParam ('wallId');
-          if (!$wallId && $data && $data->wallId)
-            $wallId = $data->wallId;
-
           $Group = new Group ([
-            'wallId' => $wallId,
+            'wallId' => getParam ('wallId'),
             'groupId' => getParam ('groupId')
           ]);
 

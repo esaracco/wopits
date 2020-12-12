@@ -198,7 +198,7 @@ let _lastStr = "",
       if (args.groupType == <?=WPT_GTYPES_DED?>)
         service = "wall/"+args.wallId+"/"+service;
 
-      H.request_ajax (
+      H.fetch (
         "GET",
         service,
         null,
@@ -240,8 +240,10 @@ let _lastStr = "",
     {
       const ac = this.element[0],
             wallId = S.getCurrent("wall").wall ("getId"),
-            service = "group/"+ac.dataset.groupid+"/searchUsers/"+args.str;
-      let data = null;
+            service = (args.groupType == <?=WPT_GTYPES_DED?>) ?
+              "group/"+ac.dataset.groupid+"/wall/"+wallId+
+                "/searchUsers/"+args.str :
+              "group/"+ac.dataset.groupid+"/searchUsers/"+args.str;
 
       args.str = args.str.replace (/&/, "");
 
@@ -261,13 +263,10 @@ let _lastStr = "",
 
       _lastStr = args.str;
 
-      if (args.groupType == <?=WPT_GTYPES_DED?>)
-        data = {wallId: wallId};
-
-      H.request_ajax (
+      H.fetch (
         "GET",
         service,
-        data,
+        null,
         // success cb
         (d) =>
         {

@@ -1867,7 +1867,7 @@
     // METHOD displayAttachments ()
     displayAttachments ()
     {
-      H.request_ajax (
+      H.fetch (
         "GET",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+
@@ -2090,7 +2090,7 @@
     // METHOD updateAttachment ()
     updateAttachment (args)
     {
-      H.request_ajax (
+      H.fetch (
         "POST",
         "wall/"+this.settings.wallId+
           "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
@@ -2655,11 +2655,9 @@
                 if (H.checkUploadFileSize ({size: e.total}) &&
                     e.target.result)
                 {
-                  H.request_ajax (
-                    "PUT",
-                    "wall/"+settings.wallId+
-                      "/cell/"+settings.cellId+"/postit/"+
-                        settings.id+"/attachment",
+                  H.fetchUpload (
+                    "wall/"+settings.wallId+"/cell/"+settings.cellId+"/postit/"+
+                       settings.id+"/attachment",
                     {
                       name: file.name,
                       size: file.size,
@@ -2726,7 +2724,7 @@
                           postitId = $postit.postit ("getId"),
                           cellId = $postit.postit ("getCellId");
 
-                    H.request_ajax (
+                    H.fetch (
                       "PUT",
                       "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
                         "/picture",

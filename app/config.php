@@ -83,9 +83,7 @@ define ('WS_SERVER_SECTIONS', [
 
   // Timeouts (seconds).
   define ('WPT_TIMEOUTS', [
-    // AJAX requests.
-    'ajax' => 10,
-    // Edition without activity.
+    // Edition ("editable" plugin) without activity
     'edit' => 15
   ]);
 

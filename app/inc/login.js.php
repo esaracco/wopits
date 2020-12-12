@@ -190,7 +190,7 @@
     // METHOD login ()
     login (args)
     {
-      H.request_ajax (
+      H.fetch (
         "POST",
         "user/login",
         args,
@@ -213,7 +213,7 @@
       if (args.auto)
         location.href = "/login.php";
       else
-        H.request_ajax (
+        H.fetch (
           "POST",
           "user/logout",
           null,
@@ -223,7 +223,7 @@
     // METHOD createUser ()
     createUser (args)
     {
-      H.request_ajax (
+      H.fetch (
         "PUT",
         "user",
         args,
@@ -244,7 +244,7 @@
     // METHOD resetPassword ()
     resetPassword (args)
     {
-      H.request_ajax (
+      H.fetch (
         "POST",
         "user/resetPassword",
         args,

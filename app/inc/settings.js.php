@@ -326,7 +326,7 @@
       else
       {
         // Load timezones
-        H.request_ajax (
+        H.fetch (
           "GET",
           "common/timezones",
           null,
