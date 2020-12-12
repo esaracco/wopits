@@ -77,13 +77,13 @@ class Group extends Wall
     return $ret;
   }
 
-  public function getUsers ():array
+  public function getUsers (bool $withEmail = false):array
   {
     if (!$this->_checkGroupAccess ())
       return ['error' => _("Access forbidden")];
 
     ($stmt = $this->prepare ('
-      SELECT id, username, fullname
+      SELECT id, '.($withEmail?'email,':'').'username, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?
@@ -556,7 +556,7 @@ class Group extends Wall
         $access = $this->data->access;
 
         $_args = [
-          'users' => $this->getUsers()['users'],
+          'users' => $this->getUsers(true)['users'],
           'wallId' => $this->wallId,
           'sharerName' => $sharerName,
           'wallTitle' => $wallTitle,
