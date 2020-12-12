@@ -766,6 +766,7 @@ span.user-writing-min {
   left:auto;
   width:100%;
   height:100%;
+  margin-top:3px;
   text-align:center;
   font-size:2rem;
   border-radius:0;
