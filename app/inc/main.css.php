@@ -1833,13 +1833,17 @@ i.set {
   border-radius:0 5px 5px 0;
   background:pink;
   height:0;
-  top:-30px;
+  top:-32px;
   left:30px;
   padding-left: 5px;
   cursor:pointer;
   line-height: 20px;
   font-size:12px;
   z-index:92;
+}
+
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .attachmentscount {
+  left:6px;
 }
 
 .postit .attachmentscount .wpt-badge {
