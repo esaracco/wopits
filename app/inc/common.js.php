@@ -1643,8 +1643,6 @@ class WHelper
   fetchUpload (service, args, success_cb, error_cb)
   {
     //console.log ("AJAX: PUT "+service);
-
-    this.loader ("show", true, true);
   
     const xhr = $.ajax (
       {
@@ -1716,6 +1714,8 @@ class WHelper
          }
        })
       .always (()=> this.loader ("hide", true));
+
+    this.loader ("show", true, xhr);
   }
   
   // METHOD checkUploadFileSize ()
