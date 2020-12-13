@@ -174,17 +174,20 @@ class User extends Base
 
       // No SQL CASCADE here. We delete attachments manually and decrement
       // postit attachments count.
-      ($stmt = $this->prepare ('
+      ($stmt1 = $this->prepare ('
         SELECT id, postits_id
         FROM postits_attachments WHERE users_id = ?'))
          ->execute ([$this->userId]);
-      while ($r = $stmt->fetch ())
+
+      $stmt2 = $this->prepare('DELETE FROM postits_attachments WHERE id = ?');
+      $stmt3 = $this->prepare('
+                 UPDATE postits SET attachmentscount = attachmentscount - 1
+                 WHERE id = ?');
+
+      while ($r = $stmt1->fetch ())
       {
-        $this->exec ("
-          DELETE FROM postits_attachments WHERE id = {$r['id']}");
-        $this->exec ("
-          UPDATE postits SET attachmentscount = attachmentscount - 1
-          WHERE id = {$r['postits_id']}");
+        $stmt2->execute ([$r['id']]);
+        $stmt3->execute ([$r['postits_id']]);
       }
 
       // Decrement userscount from user's groups.

@@ -37,17 +37,12 @@ class EditQueue extends Wall
 
         ($stmt = $this->prepare ('
           SELECT session_id FROM edit_queue
-          WHERE walls_id = :walls_id
-            AND session_id <> :session_id LIMIT 1'))
-           ->execute ([
-             ':walls_id' => $this->wallId,
-             ':session_id' => $this->sessionId
-           ]);
+          WHERE walls_id = ? AND session_id <> ? LIMIT 1'))
+           ->execute ([$this->wallId, $this->sessionId]);
       }
       else
         ($stmt = $this->prepare ('
-          SELECT session_id FROM edit_queue
-          WHERE item = ? AND item_id = ?'))
+          SELECT session_id FROM edit_queue WHERE item = ? AND item_id = ?'))
             ->execute ([$item, $this->itemId]);
 
       if ($r = $stmt->fetch ())
@@ -75,8 +70,7 @@ class EditQueue extends Wall
         {
           ($stmt = $this->prepare ('
             SELECT item_start, item_end
-            FROM postits_plugs
-            WHERE item_start = ? OR item_end = ?'))
+            FROM postits_plugs WHERE item_start = ? OR item_end = ?'))
              ->execute ([$this->itemId, $this->itemId]);
 
           while ($plug = $stmt->fetch ())

@@ -317,8 +317,9 @@ class Postit extends Wall
 
       if ($dlEpoch <= $now->format ('U'))
       {
-        $this->exec ("
-          UPDATE postits SET obsolete = 1 WHERE id = {$item['postit_id']}");
+        $this->executeQuery ('UPDATE postits',
+          ['obsolete' => 1],
+          ['id' => $item['postit_id']]);
 
         if (!is_null ($item['alert_user_id']))
         {
@@ -360,10 +361,10 @@ class Postit extends Wall
       }
 
       if ($deleteAlert)
-        $this->exec ("
-          DELETE FROM postits_alerts
-          WHERE postits_id = {$item['postit_id']}
-            AND users_id = {$item['alert_user_id']}");
+        $this
+          ->prepare ('
+            DELETE FROM postits_alerts WHERE postits_id =  ? AND users_id = ?')
+          ->execute ([$item['postit_id'], $item['alert_user_id']]);
     }
   }
 
@@ -389,19 +390,28 @@ class Postit extends Wall
 
     foreach ($plugs as $_id => $_p)
     {
-      $this->checkDBValue ('postits_plugs', 'label', $_label);
+      $top = $_p->top??null;
+      $left = $_p->left??null;
+
+      //TODO Optimization
+      $this->checkDBValue ('postits_plugs', 'walls_id', $this->wallId);
+      $this->checkDBValue ('postits_plugs', 'item_start', $postitId);
+      $this->checkDBValue ('postits_plugs', 'item_end', $_id);
+      $this->checkDBValue ('postits_plugs', 'item_top', $top);
+      $this->checkDBValue ('postits_plugs', 'item_left', $left);
+      $this->checkDBValue ('postits_plugs', 'label', $_p->label);
 
       $stmt->execute ([
         ':walls_id' => $this->wallId,
         ':item_start' => $postitId,
         ':item_end' => $_id,
-        ':item_top' => $_p->top??null,
-        ':item_left' => $_p->left??null,
+        ':item_top' => $top,
+        ':item_left' => $left,
         ':label' => $_p->label,
 
         ':label_1' => $_p->label,
-        ':item_top_1' => $_p->top??null,
-        ':item_left_1' => $_p->left??null
+        ':item_top_1' => $top,
+        ':item_left_1' => $left
       ]);
     }
   }
@@ -745,9 +755,7 @@ class Postit extends Wall
       "#/postit/\d+/picture/(\d+)#", $data->content, $m)) ? $m[1] : [];
 
     ($stmt = $this->prepare ('
-      SELECT id, link
-      FROM postits_pictures
-      WHERE postits_id = ?'))
+      SELECT id, link FROM postits_pictures WHERE postits_id = ?'))
        ->execute ([$data->id]);
 
     $toDelete = [];
@@ -763,7 +771,8 @@ class Postit extends Wall
     if (!empty ($toDelete))
       $this->exec ('
         DELETE FROM postits_pictures
-        WHERE id IN ('.implode(',', $toDelete).')');
+        WHERE id IN ('.
+          implode(',',array_map([$this, 'quote'], array_keys($toDelete))).')');
   }
 
   public function deletePostit (int $postitId = null):array

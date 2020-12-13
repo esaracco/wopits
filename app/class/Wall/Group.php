@@ -66,9 +66,7 @@ class Group extends Wall
       return ['error' => _("Access forbidden")];
 
     ($stmt = $this->prepare ('
-      SELECT walls_id
-      FROM walls_groups
-      WHERE walls_groups.groups_id = ?'))
+      SELECT walls_id FROM walls_groups WHERE walls_groups.groups_id = ?'))
        ->execute ([$groupId??$this->groupId]);
 
     while ($item = $stmt->fetch ())
@@ -130,9 +128,7 @@ class Group extends Wall
       }
 
       $this
-        ->prepare('
-          UPDATE groups SET userscount = userscount + 1
-          WHERE id = ?')
+        ->prepare('UPDATE groups SET userscount = userscount + 1 WHERE id = ?')
         ->execute ([$this->groupId]);
 
       $this->commit ();
@@ -216,9 +212,7 @@ class Group extends Wall
         ->execute ($params);
 
       $this
-        ->prepare('
-          UPDATE groups SET userscount = userscount - 1
-          WHERE id = ?')
+        ->prepare('UPDATE groups SET userscount = userscount - 1 WHERE id = ?')
         ->execute ([$this->groupId]);
 
       $this->commit ();
@@ -340,13 +334,10 @@ class Group extends Wall
         FROM walls_groups
           INNER JOIN groups
             ON groups.id = walls_groups.groups_id
-        WHERE groups.users_id = :users_id
-          AND walls_groups.walls_id = :walls_id
+        WHERE groups.users_id = ?
+          AND walls_groups.walls_id = ?
         ORDER BY name, access'))
-         ->execute ([
-           ':users_id' => $this->userId,
-           ':walls_id' => $this->wallId
-         ]);
+         ->execute ([$this->userId, $this->wallId]);
 
       $ret['in'] = $stmt->fetchAll ();
 
@@ -456,10 +447,10 @@ class Group extends Wall
 
       // Remove user's postits alerts
       $this
-        ->prepare("
+        ->prepare('
           DELETE FROM postits_alerts
           WHERE walls_id = ? AND users_id IN (
-            SELECT users_id FROM users_groups WHERE groups_id = ?)")
+            SELECT users_id FROM users_groups WHERE groups_id = ?)')
         ->execute ([$this->wallId, $this->groupId]);
 
       $this->commit ();
@@ -533,6 +524,9 @@ class Group extends Wall
 
       // Performance helper:
       // Link group's users to wall with specific access.
+      $this->checkDBValue ('_perf_walls_users', 'groups_id', $this->groupId);
+      $this->checkDBValue ('_perf_walls_users', 'walls_id', $this->wallId);
+      $this->checkDBValue ('_perf_walls_users', 'access', $this->data->access);
       $this
         ->prepare("
           INSERT INTO _perf_walls_users (
