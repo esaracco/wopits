@@ -2168,7 +2168,7 @@
           data = {updateplugs: true, plugs: []};
 
           for (const id in plugsToSave)
-            data.plugs.push (plugsToSave[id].postit ("serialize")[0]);
+            data.plugs.push ($(plugsToSave[id]).postit ("serialize")[0]);
 
           S.unset ("plugs-to-save");
         }
