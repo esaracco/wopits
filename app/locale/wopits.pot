@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-13 08:26+0100\n"
+        "POT-Creation-Date: 2020-12-15 17:46+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,16 +38,10 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with MS Edge and images uploading.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relationships</b> Fixed issue with relationships update.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed an issue with the count of users in groups.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Network</b> Use <i>fetch()</i> wherever possible.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Added a progress bar to follow the progress of a task.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved management of links in notes content.</p>"
