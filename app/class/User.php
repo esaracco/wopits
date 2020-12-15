@@ -190,13 +190,15 @@ class User extends Base
         $stmt3->execute ([$r['postits_id']]);
       }
 
-      // Decrement userscount from user's groups.
+      // Decrement user's groups userscount
       $this
         ->prepare('
           UPDATE groups SET userscount = userscount - 1
           WHERE id IN (
-            SELECT groups_id FROM _perf_walls_users WHERE users_id = ?)')
-        ->execute ([$this->userId]);
+            SELECT groups_id FROM _perf_walls_users WHERE users_id = ?
+            UNION
+            SELECT groups_id FROM users_groups WHERE users_id = ?)')
+        ->execute ([$this->userId, $this->userId]);
 
       // Remove user's walls directories.
       ($stmt = $this->prepare ('
