@@ -640,6 +640,7 @@
       const plugin = this,
             $wall = plugin.element,
             wall = $wall[0],
+            wallIsVisible = $wall.is (":visible"),
             __refreshWallBasicProperties = (d)=>
             {
               plugin.setShared (d.shared);
@@ -910,7 +911,7 @@
       // Refresh super menu tool
       S.getCurrent("mmenu").mmenu ("refresh");
 
-      if (d.postits_plugs)
+      if (wallIsVisible && d.postits_plugs)
         setTimeout (() =>
           {
             // Refresh postits relationships
