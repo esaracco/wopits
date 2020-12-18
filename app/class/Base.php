@@ -92,7 +92,7 @@ class Base extends \PDO
       case 'smallint':
 
         // Here we convert non integer values.
-        if (!preg_match ('/^\d+$/', $value))
+        if (!preg_match ('/^\-?\d+$/', $value))
         {
           $fix = intval ($value);
 
