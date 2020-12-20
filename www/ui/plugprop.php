@@ -1,4 +1,5 @@
-<div class="modal m-fullscreen" id="plugpropPopup" role="dialog" tabindex="-1">
+<?php require ($_SERVER['DOCUMENT_ROOT'].'/../app/prepend.php')?>
+<div class="modal no-theme m-fullscreen" id="plugpropPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -42,7 +43,7 @@
               <input type="radio" class="custom-control-input" name="path" value="fluid" id="_ra4"> <label class="custom-control-label" for="_ra4"><?=_("Fluid")?></label>
             </div>
             <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" name="path" value="straight" id="_ra5"> <label class="custom-control-label" for="_ra5"><?=_("straight")?></label>
+              <input type="radio" class="custom-control-input" name="path" value="straight" id="_ra5"> <label class="custom-control-label" for="_ra5"><?=_("Straight")?></label>
             </div>
             <div class="custom-control custom-radio">
               <input type="radio" class="custom-control-input" name="path" value="arc" id="_ra6"> <label class="custom-control-label" for="_ra6"><?=_("Arc")?></label>
