@@ -100,7 +100,7 @@
         $wall.draggable({
           distance: 10,
           cursor: "grab",
-//          cancel: (writeAccess) ? null : "span,.title,.postit-edit",
+//          cancel: (writeAccess) ? "span,.title,.postit-edit" : null,
           start: function ()
             {
               S.set ("wall-dragging", true);
@@ -504,15 +504,6 @@
         });
     },
 
-    // METHOD checkPostitPlugsMenu ()
-    checkPostitPlugsMenu (resetUndo)
-    {
-      const menu = this.element[0].querySelector (".postit-menu");
-
-      if (menu)
-        $(menu.parentNode).postit ("checkPlugsMenu", resetUndo);
-    },
-
     // METHOD repositionPostitsPlugs ()
     repositionPostitsPlugs ()
     {
@@ -567,19 +558,33 @@
                            hide: true,
                            start: start0,
                            end: end,
-                           label: labelName
+                           label: labelName,
+                           line_size: plug.line_size,
+                           line_path: plug.line_path,
+                           line_color: plug.line_color,
+                           line_type: plug.line_type
                          })
                   };
 
             startPlugin.addPlug (newPlug, applyZoom);
           }
           else
+          {
             startPlugin.updatePlugLabel ({
               endId: endId,
               label: labelName,
               top: plug.item_top,
               left: plug.item_left
             });
+
+            startPlugin.updatePlugProperties ({
+              endId: endId,
+              size: plug.line_size,
+              path: plug.line_path,
+              color: plug.line_color,
+              line_type: plug.line_type
+            });
+          }
         });
 
       // Remove obsolete plugs
@@ -670,7 +675,6 @@
               case "insert":
 
                 $(cell).cell ("addPostit", d.postit, true);
-                plugin.checkPostitPlugsMenu ();
                 break;
 
               // Update postit
@@ -918,9 +922,6 @@
             plugin.refreshPostitsPlugs (
               d.postits_plugs, d.partial && d.partial != "plugs",
               !!S.get("zoom-level"));
-
-            plugin.checkPostitPlugsMenu (!d.isResponse);
-
           }, 0);
       else
         plugin.repositionPostitsPlugs ();

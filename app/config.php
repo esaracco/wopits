@@ -69,6 +69,14 @@ define ('WPT_SWOOLE_TABLE_SIZE', 1024);
 define ('WS_SERVER_SECTIONS', [
   'clients', 'openedWalls', 'activeWalls', 'chatUsers']);
 
+// Relationships lines defaults
+define ('WS_PLUG_DEFAULTS', [
+  'lineType' => 'solid',
+  'lineSize' => 5,
+  'linePath' => 'fluid'
+  // The default color will depends on the theme
+]);
+
 //////////////// This section will be removed after deployment //////////////
 
 //<WPTPROD-remove>
@@ -152,7 +160,8 @@ define ('WS_SERVER_SECTIONS', [
     'usearch' => [],
     'psearch' => [],
     'owall' => [],
-    'wprop' => []
+    'wprop' => [],
+    'plugprop' => []
   ]);
 
   // JS node modules

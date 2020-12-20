@@ -245,8 +245,7 @@ class Postit extends Wall
   {
     // Get postits plugs
     ($stmt = $this->prepare ('
-      SELECT item_start, item_end, item_top, item_left, label
-      FROM postits_plugs
+      SELECT * FROM postits_plugs
       WHERE '.(($all)?'walls_id':'item_start').' = ?'))
        ->execute ([($all)?$this->wallId:$this->postitId]);
 
@@ -382,11 +381,15 @@ class Postit extends Wall
 
     $stmt = $this->prepare ("
       INSERT INTO postits_plugs (
-        walls_id, item_start, item_end, item_top, item_left, label
+        walls_id, item_start, item_end, item_top, item_left, label,
+        line_size, line_type, line_color, line_path
       ) VALUES (
-        :walls_id, :item_start, :item_end, :item_top, :item_left, :label
+        :walls_id, :item_start, :item_end, :item_top, :item_left, :label,
+        :line_size, :line_type, :line_color, :line_path
       ) {$this->getDuplicateQueryPart (['walls_id', 'item_start', 'item_end'])}
-       label = :label_1, item_top = :item_top_1, item_left = :item_left_1");
+       label = :label_1, item_top = :item_top_1, item_left = :item_left_1,
+       line_size = :line_size_1, line_type = :line_type_1,
+       line_color = :line_color_1, line_path = :line_path_1");
 
     foreach ($plugs as $_id => $_p)
     {
@@ -400,6 +403,10 @@ class Postit extends Wall
       $this->checkDBValue ('postits_plugs', 'item_top', $top);
       $this->checkDBValue ('postits_plugs', 'item_left', $left);
       $this->checkDBValue ('postits_plugs', 'label', $_p->label);
+      $this->checkDBValue ('postits_plugs', 'line_size', $_p->line_size);
+      $this->checkDBValue ('postits_plugs', 'line_type', $_p->line_type);
+      $this->checkDBValue ('postits_plugs', 'line_color', $_p->line_color);
+      $this->checkDBValue ('postits_plugs', 'line_path', $_p->line_path);
 
       $stmt->execute ([
         ':walls_id' => $this->wallId,
@@ -408,10 +415,18 @@ class Postit extends Wall
         ':item_top' => $top,
         ':item_left' => $left,
         ':label' => $_p->label,
+        ':line_size' => $_p->line_size,
+        ':line_type' => $_p->line_type,
+        ':line_color' => $_p->line_color,
+        ':line_path' => $_p->line_path,
 
         ':label_1' => $_p->label,
         ':item_top_1' => $top,
-        ':item_left_1' => $left
+        ':item_left_1' => $left,
+        ':line_size_1' => $_p->line_size,
+        ':line_type_1' => $_p->line_type,
+        ':line_color_1' => $_p->line_color,
+        ':line_path_1' => $_p->line_path
       ]);
     }
   }

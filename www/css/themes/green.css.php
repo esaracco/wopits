@@ -45,8 +45,7 @@ div.postit-mark {
   color:#28a745;
 }
 
-.postit.selected,
-.postit.selected .postit-header {
+.postit.selected {
   border-color:#28a745;
   box-shadow:0px 0px 25px 5px #7cd891;
 }

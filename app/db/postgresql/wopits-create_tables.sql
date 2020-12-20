@@ -11,6 +11,12 @@ CREATE TYPE enum_item AS ENUM ('wall', 'wall-delete', 'cell', 'header', 'postit'
 DROP TYPE IF EXISTS enum_displaymode CASCADE;
 CREATE TYPE enum_displaymode AS ENUM ('list-mode', 'postit-mode');
 
+DROP TYPE IF EXISTS enum_plugtype CASCADE;
+CREATE TYPE enum_plugtype AS ENUM ('solid', 'dashed', 'a-dashed');
+
+DROP TYPE IF EXISTS enum_plugtype CASCADE;
+CREATE TYPE enum_plugtype AS ENUM 'straight', 'arc', 'fluid', 'magnet', 'grid';
+
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
 (
@@ -165,6 +171,10 @@ CREATE TABLE postits_plugs
   item_top SMALLINT,
   item_left SMALLINT,
   label VARCHAR(50),
+  line_size SMALLINT,
+  line_type enum_plugtype,
+  line_color VARCHAR(9),
+  line_path enum_plugpath,
   PRIMARY KEY (walls_id, item_start, item_end)
 );
 

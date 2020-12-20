@@ -210,6 +210,10 @@ CREATE TABLE postits_plugs
   item_top SMALLINT UNSIGNED,
   item_left SMALLINT UNSIGNED,
   label VARCHAR(50),
+  line_size SMALLINT,
+  line_type ENUM('solid', 'dashed', 'a-dashed'),
+  line_color VARCHAR(9),
+  line_path ENUM('straight', 'arc', 'fluid', 'magnet', 'grid'),
 
   PRIMARY KEY (walls_id, item_start, item_end),
   CONSTRAINT `postits_plugs-walls_id-fk` FOREIGN KEY (walls_id)

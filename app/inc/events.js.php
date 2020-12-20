@@ -307,15 +307,9 @@ $(function()
       // Get postit color and set modal header color the same
       if (!modalsCount && $postit.length)
         $postit.postit ("setPopupColor", $(this));
-/*FIXME Useful?
-      else
-        $popup[0].querySelectorAll([
-          ".modal-header", ".modal-title", ".modal-footer"]).forEach (el =>
-            this.className = this.className.replace (/color\-[a-z]+/, "");
-*/
 
       H.setAutofocus ($popup);
-    });  
+    });
 
   // EVENT hidden.bs.modal on popups
   $(document).on("hidden.bs.modal", ".modal",

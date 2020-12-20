@@ -94,11 +94,9 @@ class Base extends \PDO
         // Here we convert non integer values.
         if (!preg_match ('/^\-?\d+$/', $value))
         {
-          $fix = intval ($value);
+          error_log ("Bad DB field integer value `$value` for $table::$field");
 
-          error_log ("Bad DB field integer value `$fix` for $table::$field");
-
-          $value = $fix;
+          $value = intval ($value);
         }
         break;
 

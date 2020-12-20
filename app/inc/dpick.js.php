@@ -109,7 +109,7 @@
       H.openModal ($popup);
     },
 
-    // METHOD close ()
+    // METHOD save ()
     save ()
     {
       const $popup = this.element,

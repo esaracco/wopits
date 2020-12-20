@@ -288,7 +288,7 @@ class WSharer
     if (!type)
       this._fullReset ();
     else
-      this[type] = [];
+      this[type] = typeof this[type] === "string" ? "" : [];
   }
 
   // METHOD _fullReset ()
@@ -301,6 +301,7 @@ class WSharer
     this.arrows = [];
     this.postit = [];
     this.header = [];
+    this.plugColor = "";
   }
 
   // METHOD set ()
@@ -345,6 +346,21 @@ class WSharer
          this.postit=this.walls.find (".tab-pane.active .wall .postit.current");
 
         return this.postit;
+
+      case "plugColor":
+
+        if (!this.plugColor)
+        {
+          //const el = document.querySelector (".wall th:first-child");
+          const el = document.querySelector (".cell-menu .btn-secondary");
+
+          this.plugColor = H.rgb2hex (window.getComputedStyle ?
+            window.getComputedStyle(el, null)
+              .getPropertyValue ("background-color") :
+            el.style.backgroundColor);
+        }
+
+        return this.plugColor;
 
       case "header":
 
@@ -770,19 +786,54 @@ class WHelper
     return !!((cond === true) || S.get ("link-from") || S.get ("dragging"));
   }
 
-  // METHOD getPlugColor ()
-  getPlugColor (type)
+  // METHOD lightenDarkenColor ()
+  lightenDarkenColor (col, amt)
   {
-    return H.getBackgroundColor (document.querySelector (
-             type == "shadow" ? ".bg-dark" : ".wall th:first-child"));
+    let usePound = false;
+
+    if (col[0] == "#")
+    {
+      col = col.slice(1);
+      usePound = true;
+    }
+
+    let num = parseInt (col, 16),
+        r = (num >> 16) + amt;
+
+    if (r > 255)
+      r = 255;
+    else if  (r < 0)
+      r = 0;
+
+    let b = ((num >> 8) & 0x00FF) + amt;
+
+    if (b > 255)
+      b = 255;
+    else if (b < 0)
+      b = 0;
+
+    let g = (num & 0x0000FF) + amt;
+
+    if (g > 255)
+      g = 255;
+    else if (g < 0)
+      g = 0;
+
+    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
   }
 
-  // METHOD getBackgroundColor ()
-  getBackgroundColor (el)
+  // METHOD rgb2hex ()
+  rgb2hex (rgb)
   {
-    return window.getComputedStyle ?
-      window.getComputedStyle(el, null).getPropertyValue ("background-color") :
-      el.style.backgroundColor;
+    // If already in hex
+    if (rgb.charAt(0) == "#")
+      return rgb;
+
+    const hex = (x) => ("0" + parseInt(x).toString(16)).slice (-2);
+
+    rgb = rgb.match (/^rgba?\((\d+),?\s*(\d+),?\s*(\d+)/);
+
+    return "#"+hex(rgb[1])+hex(rgb[2])+hex(rgb[3]);
   }
 
   // METHOD setAutofocus ()

@@ -63,8 +63,9 @@
       settings._timeoutEditing = 0;
       settings._intervalBlockEditing = 0;
 
+      // EVENT click on editable element
       settings.container
-        .on("mousedown", function (e)
+        .on("click", function (e)
         {
           // Cancel if current relationship creation.
           if (S.get("link-from"))
@@ -89,6 +90,9 @@
 
                   settings._valueOrig = editable.innerText;
 
+                  settings._overflowOrig = $(this).css ("overflow");
+                  this.style.overflow = "visible";
+
                   editable.classList.add ("editing");
                   editable.style.height = editable.clientHeight+"px";
 
@@ -102,11 +106,15 @@
 
                   $(settings._input)
                     .focus()
+                    // EVENT blur on editable element
                     .on("blur", function (e)
                     {
                       const title = this.value;
 
                       e.stopImmediatePropagation ();
+
+                      this.parentNode.parentNode.style.overflow =
+                        settings._overflowOrig;
 
                       editable.classList.remove ("editing");
                       editable.removeAttribute ("style");
@@ -126,6 +134,7 @@
                       _editing = false;
                       plugin.disablePlugins (false);
                     })
+                    // EVENT keyup on editable element
                     .on("keyup", function (e)
                     {
                       const k = e.which;
@@ -157,6 +166,7 @@
                         plugin.resize ();
                       }
                     })
+                    // EVENT paste on editable element
                     .on("paste", function (e)
                     {
                       plugin.resize (

@@ -197,7 +197,7 @@
                         .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
                         .attr("placeholder", "<?=_("username")?>")
                         .attr("autocorrect", "off")
-                        .attr ("autocapitalize", "none");
+                        .attr ("autocapitalize", "off");
                       break;
                     case "fullname":
                       title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
@@ -211,7 +211,7 @@
                         .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
                         .attr("placeholder", "<?=_("email")?>")
                         .attr("autocorrect", "off")
-                        .attr ("autocapitalize", "none");
+                        .attr ("autocapitalize", "off");
                       break;
                   }
 

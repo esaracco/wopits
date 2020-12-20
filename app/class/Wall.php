@@ -819,10 +819,8 @@ class Wall extends Base
       }
 
       // Get postits plugs
-      ($stmt = $this->prepare ("
-        SELECT item_start, item_end, item_top, item_left, label
-        FROM postits_plugs
-        WHERE walls_id = ?"))
+      ($stmt = $this->prepare ('
+       SELECT * FROM postits_plugs WHERE walls_id = ?'))
          ->execute ([$this->wallId]);
       $data['postits_plugs'] = $stmt->fetchAll ();
     }

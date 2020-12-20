@@ -279,19 +279,13 @@ class Helper
       ['cpick', _('Background color'), 'palette'],
       ['dpick', _('Deadline'), 'hourglass-end'],
       ['attachments', _('Attachments'), 'paperclip'],
-      ['submenu' => ['plug', _('Relationships'), 'bezier-curve'],
-       'items' => [
-          ['add-plug', _('Add relationship'), 'plus'],
-          ['delete-plugs', _('Delete relationships'), 'trash'],
-          ['divider' => true],
-          ['undo-plug', _('Undo').' <span></span>', 'undo-alt', 'disabled'],
-        ]
-      ]
+      ['add-plug', _('Add relation'), 'bezier-curve']
     ];
 
     $menu = '<div class="postit-menu right">';
     foreach ($items as $d)
     {
+/*
       if (isset ($d['submenu']))
       {
         $menu .= '<div data-action="'.$d['submenu'][0].'" class="navbar-nav mr-auto submenu"><div class="nav-item dropdown"><a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="'.$d['submenu'][0].'" class="btn btn-sm btn-secondary btn-circle" data-toggle="tooltip" title="'.$d['submenu'][1].'"><i class="fa-'.$d['submenu'][2].' fas"></i></span></a><ul class="dropdown-menu border-0 shadow">';
@@ -302,6 +296,7 @@ class Helper
         $menu .= '</ul></div></div>';
       }
       else
+*/
         $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" data-toggle=\"tooltip\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
     }
     $menu .= '</div>';

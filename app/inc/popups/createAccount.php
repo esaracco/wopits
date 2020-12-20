@@ -14,11 +14,11 @@
         <div class="main">
         <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user fa-fw"></i></span></div>
-          <input type="text" class="form-control" name="username" value="" required placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="none" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('users', 'username')?>">
+          <input type="text" class="form-control" name="username" value="" required placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="off" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('users', 'username')?>">
         </div>
         <div class="input-group mb-1">
           <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key fa-fw"></i></span></div>
-          <input class="form-control" type="password" name="password" value="" required placeholder="<?=_("password")?>" maxlength="<?=Wopits\DbCache::getFieldLength('users', 'password')?>">
+          <input class="form-control" type="password" name="password" value="" required placeholder="<?=_("password")?>" maxlength="<?=Wopits\DbCache::getFieldLength('users', 'password')?>" autocorrect="off" autocapitalize="off">
         </div>
 
         <div class="input-group mb-1">

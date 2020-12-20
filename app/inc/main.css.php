@@ -732,8 +732,8 @@ select.timezone {
   color:#555;
   padding:10px 10px 0 10px;
   font-size:0.8rem;
-  top:-70px;
-  left:-22px;
+  top:-50px;
+  left:-25px;
 }
 
 .user-writing-min {
@@ -974,6 +974,7 @@ input::-ms-clear {
 
 #plug-rabbit {
   position:absolute;
+  z-index:5002;
 }
 
 .plug-label {
@@ -993,7 +994,7 @@ input::-ms-clear {
 
 [data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label,
 [data-access="<?=WPT_WRIGHTS_RO?>"] .plug-label a {
-  cursor:auto !important;
+  cursor:auto;
 }
 
 .plug-label > a {
@@ -1015,7 +1016,39 @@ input::-ms-clear {
   transform: rotate(-45deg);
 }
 
-li[data-action="position-auto"] {
+#plugprop-sample {
+  position:relative;
+  height:100px;
+  padding:10px;
+  border:1px solid #f5f5f5;
+  border-radius:10px;
+  box-shadow: inset 0 0 10px #ececec;
+}
+
+#plugprop-sample div:first-child {
+  float:left;
+}
+
+#plugprop-sample div:nth-child(2) {
+  position:absolute;
+  bottom:10px;
+  right:10px;
+}
+
+#plugpropPopup input[type="number"] {
+  width:4rem;
+}
+
+#plugpropPopup .items-left > div {
+  float:left;
+  margin-left:20px;
+}
+
+#plugpropPopup .items-left > div:first-child {
+  margin-left:auto;
+}
+
+li[data-action="properties"] {
   border-top:1px solid #e9ecef;
   margin-top:3px;
   padding-top:3px;
@@ -1039,7 +1072,6 @@ li[data-action="position-auto"] {
   top:-4px;
   color:#555;
   cursor:pointer;
-  z-index:1011;
   padding:5px;
 }
 
@@ -1168,7 +1200,6 @@ th .submenu .dropdown-menu {
 
 .postit {
   border: 1px solid #ccc;
-  border-radius: 3px;
   box-shadow: 6px 6px 7px -6px rgba(0,0,0,0.8);
   z-index:1010;
   position:absolute !important;
@@ -1184,6 +1215,10 @@ th .submenu .dropdown-menu {
   /*  user-select: none;*/
 }
 
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit {
+  cursor:pointer;
+}
+
 .postit.hover {
   z-index:5000!important;
 }
@@ -1191,8 +1226,8 @@ th .submenu .dropdown-menu {
 .postit .btn-menu {
   position:absolute;
   padding:5px;
-  z-index:93;
-  top:-25px;
+  z-index:94;
+  top:-5px;
 }
 
 .postit .btn-menu i {
@@ -1201,14 +1236,15 @@ th .submenu .dropdown-menu {
 
 .postit .postit-header {
   position:absolute;
+  width:100%;
   font-size:14px;
-  border:1px solid #ccc;
-  top:-21px;
-  border-radius:3px 3px 3px 0;
-  margin-left:-1px;
   padding:0 5px 0 30px;
   white-space: nowrap;
-  z-index:92;
+  z-index:93;
+/*  box-shadow: 0 5px 5px -5px #b3b3b3;*/
+  text-overflow: ellipsis;
+  overflow:hidden;
+  height:22px;
 }
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-header {
@@ -1219,8 +1255,7 @@ th .submenu .dropdown-menu {
   background-color:#cecece;
 }
 
-.postit.selected,
-.postit.selected .postit-header {
+.postit.selected {
   border-color:#343a40;
   border-style:dashed;
   box-shadow:0 0 25px 5px #b1b1b1;
@@ -1233,10 +1268,6 @@ th .submenu .dropdown-menu {
   text-shadow: 1px 1px #b1b1b1;
 }
 
-.postit .attachmentscount i {
-  background:transparent !important;
-}
-
 .postit .postit-header i {
   cursor:pointer;
   margin-right:10px;
@@ -1244,12 +1275,6 @@ th .submenu .dropdown-menu {
 
 .postit .postit-header .title {
   font-weight:bold;
-  display:inline-block;
-}
-
-.postit-menu .btn-circle:last-child {
-  margin-top:-2px;
-  margin-left:-3px;
 }
 
 .postit-menu.right .btn-circle:last-child i {
@@ -1260,7 +1285,7 @@ th .submenu .dropdown-menu {
   display:none;
   position:absolute;
   min-width:250px;
-  top:-53px;
+  top:-34px;
   cursor:pointer;
   z-index:5000;
   left:-5px;
@@ -1282,7 +1307,7 @@ th .submenu .dropdown-menu {
   position:absolute;
   max-width:70px;
   min-height:150px;
-  top:-20px;
+  top:-5px;
   left:-72px;
   cursor:pointer;
   z-index:5000;
@@ -1295,10 +1320,6 @@ th .submenu .dropdown-menu {
   margin-left:3px;
 }
 
-.postit-menu.left .btn-circle:last-child {
-  margin-left:0;
-}
-
 .postit-menu.left .btn-circle:last-child i {
   margin-left:-2px;
 }
@@ -1308,12 +1329,15 @@ th .submenu .dropdown-menu {
   position:absolute;
   border-radius:0 5px 5px 0;
   width:15px;
-  top:3px;
-  right:-7px;
-  padding: 0;
+  top:-9px;
+  right:-12px;
   cursor:pointer;
-  line-height: 20px;
-  z-index:92;
+  line-height:20px;
+  z-index:93;
+}
+
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-tags {
+  cursor:auto;
 }
 
 .postit .postit-tags i {
@@ -1836,24 +1860,16 @@ i.set {
 
 .postit .attachmentscount {
   position:absolute;
-  border-radius:0 5px 5px 0;
-  background:pink;
-  height:0;
-  top:-32px;
-  left:30px;
-  padding-left: 5px;
+  top:-20px;
+  left:24px;
+  width:30px;
+  padding:5px;
   cursor:pointer;
-  line-height: 20px;
   font-size:12px;
-  z-index:92;
 }
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .attachmentscount {
-  left:6px;
-}
-
-.postit .attachmentscount .wpt-badge {
-  left:12px;
+  left:0;
 }
 
 /*.modal-dialog:not(.modal-sm) .modal-body  {*/
@@ -2099,21 +2115,23 @@ i.fa-xs {
   font-size:12px;
   height:100%;
   width:100%;
-  right:0;
-  top:0;
   overflow:auto;
   border-radius:0 1px 1px 1px;
-  padding:5px 5px 20px 5px;
-  z-index:92;
+  padding:25px 5px 20px 5px;
 }
 
 .postit .postit-progress-container {
+  position:absolute;
   height:100%;
   width:12px;
   box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.5);
   border-radius:0 0 5px 5px;
   padding:1px;
   margin-left:-14px;
+}
+
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-progress-container {
+  cursor:auto!important;
 }
 
 .postit-min .postit-progress-container {
@@ -2158,7 +2176,7 @@ i.fa-xs {
 
 .postit .postit-progress-container div:first-child {
   position:absolute;
-  left:-21px;
+  left:-8px;
   width:26px;
   transform: translateY(-50%);
   -webkit-transform: rotate(270deg);
@@ -2182,7 +2200,7 @@ i.fa-xs {
   left:0;
   width:100%;
   font-size:0.6rem;
-  box-shadow: 0 -5px 5px -5px #cecece;
+  box-shadow: 0 -5px 5px -5px #b3b3b3;
   border-radius:0 0 1px 1px;
   z-index:92;
 }
@@ -2216,12 +2234,12 @@ i.fa-xs {
   padding:5px 10px 0 0;
 }
 
-.postit .end span {
-  margin-left:22px;
+.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .end {
+  cursor:auto;
 }
 
-.wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit {
-  cursor:pointer;
+.postit .end span {
+  margin-left:22px;
 }
 
 .postit .end.with-alert {

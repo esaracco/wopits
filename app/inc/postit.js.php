@@ -48,9 +48,7 @@
               {
                 endPlugin.edit ({plugend: true}, ()=>
                   {
-                    const start0 = $start[0],
-                          $undo = $start.find (
-                            ".postit-menu [data-action='undo-plug'] a");
+                    const start0 = $start[0];
 
                     $start.postit ("addPlug", {
                       label: {name: "..."},
@@ -63,10 +61,6 @@
                         end: end0
                       })
                     }, !!S.get("zoom-level"));
-
-                    start0.dataset.undo = "add";
-                    $undo.removeClass ("disabled");
-                    $undo.find("span").text ("« <?=_("Add")?> »");
 
                     _cancelPlugAction ();
                   });
@@ -87,8 +81,8 @@
           {
             const rabbit = document.getElementById ("plug-rabbit");
 
-            rabbit.style.left = e.clientX+"px";
-            rabbit.style.top = e.clientY+"px";
+            rabbit.style.left = (e.clientX+5)+"px";
+            rabbit.style.top = (e.clientY-10)+"px";
 
             _plugRabbit.line.position ();
           },
@@ -143,8 +137,10 @@
   }
 
   // METHOD _cancelPlugAction ()
-  function _cancelPlugAction (full = true, unedit = true)
+  function _cancelPlugAction ()
   {
+    const $postit = S.get("link-from").obj;
+
     if (_plugRabbit.line)
     {
       $(document)
@@ -159,13 +155,9 @@
       document.getElementById("plug-rabbit").remove ();
     }
 
-    if (full)
-    {
-      if (unedit)
-        S.get("link-from").obj.postit ("unedit");
+    $postit.postit ("unedit");
 
-      S.set ("link-from", true, 500);
-    }
+    S.set ("link-from", true, 500);
   }
 
   class _Menu
@@ -183,8 +175,6 @@
 
       this.attachMenuEvents ();
       this.postitPlugin.element.prepend (this.$menu);
-
-      this.checkPlugsMenu ();
     }
 
     // METHOD show ()
@@ -199,32 +189,6 @@
     {
       this.$menu.find("[data-toggle='tooltip']").tooltip ("hide");
       this.$menu.remove ();
-    }
-
-    // METHOD checkPlugsMenu ()
-    checkPlugsMenu (resetUndo)
-    {
-      const menu = this.$menu[0];
-      let item;
-
-      if (S.getCurrent("filters").find(".selected").length)
-        return menu.querySelector("[data-action='plug']").style.display="none";
-
-      item = menu.querySelector ("[data-action='delete-plugs'] .dropdown-item");
-      if (this.postitPlugin.havePlugs ())
-        item.classList.remove ("disabled");
-      else
-        item.classList.add ("disabled");
-
-      if (resetUndo)
-        this.postitPlugin.resetPlugsUndo ();
-
-      item = menu.querySelector ("[data-action='add-plug'] .dropdown-item");
-      if (this.postitPlugin.settings.wall[0]
-            .querySelectorAll(".postit").length == 1)
-        item.classList.add ("disabled");
-      else
-        item.classList.remove ("disabled");
     }
 
     // METHOD setPosition ()
@@ -278,6 +242,33 @@
             case "dpick": return postitPlugin.openDatePicker ();
             // OPEN deadline date picker popup
             case "attachments": return postitPlugin.openAttachments ();
+            case "add-plug":
+
+              postitPlugin.edit ({}, () =>
+                {
+                  postitPlugin.closeMenu ();
+
+                  S.set ("link-from", {id: postitSettings.id, obj: $postit});
+
+                  _plugRabbit.line = new LeaderLine (
+                    postit,
+                    $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo("body")[0],
+                    {
+                      size: 3,
+                      color: "#9b9c9c",
+                      dash: true,
+                      endPlug: "behind"
+                    });
+
+                  $(document)
+                    .on("mousedown.rabbit", _plugRabbit.mousedownEvent)
+                    .on ("keydown.rabbit", _plugRabbit.escapeEvent);
+
+                  $("body").on ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
+                });
+
+              break;
+
           }
 
           postitPlugin.edit ({}, ()=>
@@ -312,129 +303,6 @@
                   });
               }
           });
-        });
-
-      // Menu submenus events
-      $menu
-        .find("ul.dropdown-menu")
-        .off().on("mousedown", function (e)
-        {
-          e.stopImmediatePropagation ();
-        })
-        .find("li")
-        .off().on("click", function(e, d)
-        {
-          const $item = $(this);
-
-          e.stopImmediatePropagation ();
-
-          // Nothing if item menu is disabled (can change dynamically)
-          if ($item.find("a").hasClass ("disabled")) return;
-
-          postitPlugin.closePlugMenu ();
-
-          e = d||e;
-
-          switch (this.dataset.action)
-          {
-            case "add-plug":
-
-              postitPlugin.edit ({}, () =>
-                {
-                  S.set ("link-from", {id: postitSettings.id, obj: $postit});
-
-                  _plugRabbit.line = new LeaderLine (
-                    postit,
-                    $(`<div id="plug-rabbit" style="left:${e.clientX}px;top:${e.clientY}px"></div>`).prependTo("body")[0],
-                    {
-                      size: 3,
-                      color: "#9b9c9c",
-                      dash: true
-                    });
-
-                  $(document)
-                    .on("mousedown.rabbit", _plugRabbit.mousedownEvent)
-                    .on ("keydown.rabbit", _plugRabbit.escapeEvent);
-
-                  $("body").on ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
-                });
-
-              break;
-
-            case "delete-plugs":
-
-              postitPlugin.edit ({}, () =>
-                {
-                  postit.dataset.undo =
-                    "delete|"+postitPlugin.removePlugs ();
-                  $menu.find("[data-action='undo-plug'] a")
-                    .removeClass ("disabled")
-                    .find("span").text ("« <?=_("Delete")?> »");
-
-                  postitPlugin.unedit ();
-                });
-
-              break;
-
-            case "undo-plug":
-
-              const [action, pData] = postit.dataset.undo.split ("|");
-
-              postitPlugin.resetPlugsUndo ();
-
-              if (action == "add")
-              {
-                postitPlugin.edit ({}, () =>
-                {
-                  const plugs = postitSettings._plugs;
-
-                  postitPlugin.removePlug (plugs[plugs.length - 1]);
-                  postitPlugin.unedit ();
-                });
-              }
-              else if (action == "delete")
-              {
-                postitPlugin.edit ({}, () =>
-                  {
-                    const toSave = {},
-                          startId = postitSettings.id;
-
-                    JSON.parse(pData).forEach (d =>
-                    {
-                      const $end = $wall.find (
-                              ".postit[data-id='postit-"+d.endId+"']");
-
-                      if ($end.length)
-                      {
-                        toSave[startId] = $postit;
-                        toSave[d.endId] = $end;
-
-                        postitPlugin.addPlug ({
-                          startId: startId,
-                          endId: d.endId,
-                          label: d,
-                          obj: postitPlugin.getPlugTemplate ({
-                                 hide: true,
-                                 start: postit,
-                                 end: $end[0],
-                                 label: d.name
-                               })
-                        }, !!S.get("zoom-level"));
-                      }
-                      else
-                        H.displayMsg ({
-                          type: "warning",
-                          msg: "<?=_("This item has been deleted")?>"
-                        });
-                    });
-
-                    S.set ("plugs-to-save", toSave);
-                    postitPlugin.unedit ();
-                  });
-              }
-
-              break;
-          }
         });
     }
   }
@@ -479,7 +347,7 @@
           appendTo: "parent",
           revert: "invalid",
           cursor: "pointer",
-          //cancel: "span,.title",
+          //cancel: ".postit-header",
           containment: $wall.find ("tbody"),
           scrollSensitivity: 50,
           opacity: 0.35,
@@ -614,7 +482,7 @@
           // EVENT doubletap on content
           .doubletap ((e)=>
           {
-            if (H.disabledEvent (e.ctrlKey))
+            if (e.target.tagName == "A" || H.disabledEvent (e.ctrlKey))
               return false;
 
             plugin.openPostit ();
@@ -625,7 +493,7 @@
           wall: $wall,
           container: $postit.find (".postit-header"),
           maxLength: <?=DbCache::getFieldLength('postits', 'title')?>,
-          triggerTags: ["span"],
+          triggerTags: ["span", "div"],
           fontSize: "14px",
           callbacks: {
             before: (ed, v) => v == "..." && ed.setValue (""),
@@ -656,13 +524,22 @@
       this.edit ({}, ()=> this.displayAttachments ());
     },
 
+    // METHOD openPlugProperties ()
+    openPlugProperties (plug)
+    {
+      this.edit ({}, ()=> H.loadPopup ("plugprop", {
+                            open: false,
+                            cb: ($p)=> $p.plugprop ("open", this, plug)
+                          }));
+    },
+
     // METHOD openDatePicker ()
     openDatePicker ()
     {
       this.edit ({}, ()=> H.loadPopup ("dpick", {
-                               open: false,
-                               cb: ($p)=> $p.dpick ("open")
-                             }));
+                            open: false,
+                            cb: ($p)=> $p.dpick ("open")
+                          }));
     },
 
     // METHOD openPostit ()
@@ -816,49 +693,82 @@
       return this.element[0].dataset.plugs.split (",");
     },
 
-    // METHOD getPlugTemplate ()
-    getPlugTemplate (args)
+    // METHOD applyPlugLineType ()
+    applyPlugLineType (ll)
     {
-      const line = new LeaderLine (
-              args.start,
-              args.end,
-              {
-                hide: !!args.hide,
-                dropShadow: {
-                  dx: 0.2,
-                  dy: 0.2,
-                  blur: 1,
-                  color: H.getPlugColor ("shadow")
-                },
-                size: 4 * (S.get("zoom-level")||1),
-                startPlug: args.startPlug||"arrow1",
-                endPlug: args.endPlug||"arrow1",
-                color: H.getPlugColor ("main"),
-                middleLabel: LeaderLine.captionLabel ({
-                  text: args.label,
-                  fontSize:"13px"
-                })
-              });
+      switch (ll.line_type)
+      {
+        case "solid":
+          ll.dash = false;
+          break;
+        case "dashed":
+          ll.dash = true;
+          break;
+        case "a-dashed":
+          ll.dash = {animation: true};
+          break;
+      }
+    },
 
-      line.dom = document.querySelector (".leader-line:last-child");
+    // METHOD getPlugDropShadowTemplate ()
+    getPlugDropShadowTemplate (color)
+    {
+      return {
+        dy: 10,
+/*
+        dx: 0.2,
+        blur: 1,
+*/
+        color: H.lightenDarkenColor (color, -20)
+      };
+    },
 
-      return line;
+    // METHOD getPlugTemplate ()
+    getPlugTemplate (args, ignoreZoom)
+    {
+      const color = args.line_color||S.getCurrent ("plugColor"),
+            size = args.line_size||<?=WS_PLUG_DEFAULTS['lineSize']?>,
+            ll = new LeaderLine (
+             args.start,
+             args.end,
+             {
+               hide: !!args.hide,
+               dropShadow: this.getPlugDropShadowTemplate (color),
+               size: ignoreZoom ? size : size * (S.get("zoom-level")||1),
+               path: args.line_path||"<?=WS_PLUG_DEFAULTS['linePath']?>",
+               color: color,
+//               startPlug: args.startPlug||"arrow1",
+               endPlug: args.endPlug||"arrow1",
+               middleLabel: LeaderLine.captionLabel ({
+                 text: args.label,
+                 fontSize:"13px"
+               })
+             });
+
+      ll.dom = document.querySelector (".leader-line:last-child");
+      ll.line_size = size;
+      ll.line_type = args.line_type||"<?=WS_PLUG_DEFAULTS['lineType']?>";
+      ll.customCol = args.line_color;
+
+      this.applyPlugLineType (ll);
+
+      return ll;
     },
 
     // METHOD applyZoomToPlugs ()
     applyZoomToPlugs (z)
     {
-      const size = Math.trunc(4 * z)||1,
-            reset = (z == 1),
-            //FIXME
-            gr = Math.trunc ((100*(size*100/4))/100);
+      const reset = (z == 1);
 
       this.settings._plugs.forEach (plug =>
         {
+          const size = Math.trunc(plug.obj.line_size * z)||1,
+                gr = Math.trunc ((100*(size*100/plug.obj.line_size))/100);
+
           plug.labelObj[0].style.transformOrigin = (reset) ? null : "top left";
           plug.labelObj[0].style.transform = (reset) ? null : "scale("+z+")";
 
-          plug.obj.setOptions ({size: size});
+          plug.obj.size = size;
           if (plug.customPos)
             plug.related.forEach (p =>
             {
@@ -881,56 +791,33 @@
     },
 
     // METHOD applyThemeToPlugs ()
-    applyThemeToPlugs (shadow, color)
+    applyThemeToPlugs (color)
     {
-      const __apply = p => p.setOptions ({
-              dropShadow: {
-                dx: 0.2,
-                dy: 0.2,
-                blur: 1,
-                color: shadow
-              },
+      const __apply = (p) => p.setOptions ({
+              dropShadow: this.getPlugDropShadowTemplate (color),
               color: color
             });
 
       this.settings._plugs.forEach (p =>
         {
-          __apply (p.obj);
+          if (!p.obj.customCol)
+          {
+            __apply (p.obj);
 
-          if (p.customPos)
-            p.related.forEach (_p => __apply (_p));
+            if (p.customPos)
+              p.related.forEach (_p => __apply (_p));
+          }
         });
     },
 
     // METHOD applyTheme ()
     applyTheme ()
     {
-      const shadow = H.getPlugColor ("shadow"),
-            color = H.getPlugColor ("main");
+      S.reset ("plugColor");
+      const color = S.getCurrent ("plugColor");
 
       document.querySelectorAll(".postit.with-plugs").forEach (p =>
-        $(p).postit ("applyThemeToPlugs", shadow, color));
-    },
-
-    // METHOD resetPlugsUndo ()
-    resetPlugsUndo ()
-    {
-      const postit = this.element[0],
-            link = postit.querySelector (
-                     ".postit-menu [data-action='undo-plug'] a");
-
-      if (!link) return;
-
-      postit.dataset.undo = "";
-
-      link.classList.add ("disabled");
-      link.querySelector("span").innerText = "";
-    },
-
-    // METHOD checkPlugsMenu ()
-    checkPlugsMenu (resetUndo)
-    {
-      this.settings.Menu.checkPlugsMenu (resetUndo);
+        $(p).postit ("applyThemeToPlugs", color));
     },
 
     // METHOD repositionPlugLabel ()
@@ -957,6 +844,58 @@
       }
     },
 
+    // METHOD updatePlugProperties ()
+    updatePlugProperties (ll)
+    {
+      const id = ll.endId || this.settings.id,
+            defaultLineColor = S.getCurrent ("plugColor");
+
+      for (const plug of this.settings._plugs)
+      {
+        //FIXME
+        if ((ll.endId && plug.endId == ll.endId) ||
+            (!ll.endId && plug.startId == this.settings.id))
+        {
+          const customCol = (ll.color && ll.color != defaultLineColor),
+                lineColor = customCol ? ll.color : defaultLineColor,
+                lineType =
+                  (ll.line_type &&
+                   ll.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
+                     ll.line_type : "<?=WS_PLUG_DEFAULTS['lineType']?>",
+                lineSize =
+                  (ll.size &&
+                   ll.size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
+                     ll.size : <?=WS_PLUG_DEFAULTS['lineSize']?>,
+                props = {
+                  size: lineSize * (S.get("zoom-level")||1),
+                  path:
+                    (ll.path &&
+                     ll.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
+                       ll.path : "<?=WS_PLUG_DEFAULTS['linePath']?>",
+                  color: lineColor,
+                  dropShadow: this.getPlugDropShadowTemplate (lineColor)
+                };
+
+          plug.obj.setOptions (props);
+          plug.obj.line_type = lineType;
+          plug.obj.line_size = lineSize;
+          plug.obj.customCol = customCol;
+
+          this.applyPlugLineType (plug.obj);
+
+          if (plug.customPos)
+            plug.related.forEach (p =>
+              {
+                p.setOptions (props);
+                p.line_type = lineType;
+                this.applyPlugLineType (p);
+              });
+
+          break;
+        }
+      }
+    },
+
     // METHOD updatePlugLabel ()
     updatePlugLabel (args)
     {
@@ -967,56 +906,56 @@
       for (const plug of this.settings._plugs)
       {
         if (plug.endId == args.endId)
+        {
+          plug.label.name = label;
+
+          plug.obj.setOptions ({
+            middleLabel: LeaderLine.captionLabel ({
+              text: label,
+              fontSize: "13px"
+            })
+          });
+
+          plug.labelObj.find("a span").html (
+            (label == ""  || label == "...") ?
+              '<i class="fas fa-ellipsis-h"></i>' : label);
+
+          if (args.top !== undefined)
           {
-            plug.label.name = label;
+            const pl = plug.labelObj[0];
 
-            plug.obj.setOptions ({
-              middleLabel: LeaderLine.captionLabel ({
-                text: label,
-                fontSize: "13px"
-              })
-            });
-
-            plug.labelObj.find("a span").html (
-              (label == ""  || label == "...") ?
-                '<i class="fas fa-ellipsis-h"></i>' : label);
-
-            if (args.top !== undefined)
+            if (args.top)
             {
-              const pl = plug.labelObj[0];
+              pl.dataset.pos = 1;
+              pl.dataset.origtop = args.top;
+              pl.dataset.origleft = args.left;
 
-              if (args.top)
+              if (canWrite)
               {
-                pl.dataset.pos = 1;
-                pl.dataset.origtop = args.top;
-                pl.dataset.origleft = args.left;
-
-                if (canWrite)
-                {
-                  pl.querySelector("i.fa-thumbtack").style.display = "block";
-                  pl.querySelector("li[data-action='position-auto']")
-                    .style.display = "block";
-                }
-
-                if (!plug.customPos)
-                {
-                  this.repositionPlugLabel (pl, args.top, args.left, wPos);
-                  plug.related = this.createRelatedPlugs (plug);
-                  plug.obj.hide ();
-                }
+                pl.querySelector("i.fa-thumbtack").style.display = "block";
+                pl.querySelector("li[data-action='position-auto']")
+                  .style.display = "block";
               }
-              else if (plug.customPos)
+
+              if (!plug.customPos)
               {
-                this.resetPlugLabelPosition (pl);
-                plug.related.forEach (r => r.remove ());
-                plug.related = [];
-                plug.customPos = false;
-                plug.obj.show ();
+                this.repositionPlugLabel (pl, args.top, args.left, wPos);
+                plug.related = this.createRelatedPlugs (plug);
+                plug.obj.hide ();
               }
             }
-
-            break;
+            else if (plug.customPos)
+            {
+              this.resetPlugLabelPosition (pl);
+              plug.related.forEach (r => r.remove ());
+              plug.related = [];
+              plug.customPos = false;
+              plug.obj.show ();
+            }
           }
+
+          break;
+        }
       }
 
       this.repositionPlugs ();
@@ -1025,40 +964,46 @@
     // METHOD createRelatedPlugs ()
     createRelatedPlugs (plug)
     {
-      const related = [
-        this.getPlugTemplate ({
-          hide: true,
-          start: plug.labelObj[0],
-          end: plug.obj.end,
-          startPlug: "behind"}),
-        this.getPlugTemplate ({
-          hide: true,
-          start: plug.labelObj[0],
-          end: plug.obj.start,
-          startPlug: "behind"})
-      ];
+      const ll = plug.obj,
+            //FIXME Factorization
+            related = [
+              this.getPlugTemplate ({
+                hide: true,
+                line_size: ll.line_size,
+                line_path: ll.path,
+                line_color: ll.color,
+                line_type: ll.line_type,
+                start: ll.start,
+                end: plug.labelObj[0],
+                endPlug: "behind"
+              }),
+              this.getPlugTemplate ({
+                hide: true,
+                line_size: ll.line_size,
+                line_path: ll.path,
+                line_color: ll.color,
+                line_type: ll.line_type,
+                start: plug.labelObj[0],
+                end: ll.end
+              })
+            ];
 
       plug.customPos = true;
-
       related.forEach (p => p.show ());
 
       return related;
     },
 
     // METHOD addPlugLabel ()
-    addPlugLabel (plug, $svg, applyZoom)
+    addPlugLabel (plug, svg, applyZoom)
     {
       const plugin = this,
             $div = plugin.settings.plugsContainer,
             wPos = this.settings.wall[0].getBoundingClientRect (),
             canWrite = this.canWrite ();
-      let svg;
 
-      if ($svg)
-      {
-        $svg.appendTo ($div);
-        svg = $svg[0];
-      }
+      if (svg)
+        $div[0].appendChild (svg);
       else
         svg = $div[0].querySelector ("#_"+plug.startId+"-"+plug.endId);
 
@@ -1067,7 +1012,7 @@
               {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
               text.getBoundingClientRect (),
             $start = $(plug.obj.start),
-            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
+            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
             $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<a href="#" ${canWrite?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${canWrite?menu:""}</div>`);
 
         plug.labelObj = $label.appendTo ($div);
@@ -1186,8 +1131,6 @@
             dataPlugsStart = $start[0].dataset.plugs||"",
             dataPlugsEnd = $end[0].dataset.plugs||"";
 
-      this.resetPlugsUndo ();
-
       $start[0].dataset.plugs =
         (dataPlugsStart) ? dataPlugsStart+","+plug.endId : plug.endId;
 
@@ -1195,9 +1138,9 @@
         (dataPlugsEnd) ? dataPlugsEnd+","+plug.startId : plug.startId;
 
       // Associate SVG line to plug and set its label
-      const $svg = $(".leader-line:last-child");
-      $svg[0].id = "_"+plug.startId+"-"+plug.endId;
-      this.addPlugLabel (plug, $svg, applyZoom);
+      const svg = document.querySelector (".leader-line:last-child");
+      svg.id = "_"+plug.startId+"-"+plug.endId;
+      this.addPlugLabel (plug, svg, applyZoom);
 
       // Register plug on start point postit (current plugin)
       this.settings._plugs.push (plug);
@@ -1246,8 +1189,6 @@
     {
       const toDefrag = {};
 
-      this.resetPlugsUndo ();
-
       if (typeof plug !== "object")
         plug = this.getPlugById (plug);
 
@@ -1270,8 +1211,6 @@
             postitId = settings.id,
             tmp = [],
             toDefrag = {};
-
-      this.resetPlugsUndo ();
 
       (settings._plugs||[]).forEach (plug =>
         {
@@ -1406,7 +1345,7 @@
     serializePlugs ()
     {
       const settings = this.settings,
-            wallPos = this.settings.wall[0].getBoundingClientRect ();
+            defaultLineColor = S.getCurrent ("plugColor");
       let ret = {};
 
       if (settings._plugs !== undefined)
@@ -1419,7 +1358,19 @@
 
               ret[plug.endId] = {
                 label: (plug.label == "...") ?
-                         "" : l.querySelector("a span").innerText
+                         "" : l.querySelector("a span").innerText,
+                line_type:
+                  (plug.obj.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
+                     plug.obj.line_type : undefined,
+                line_size:
+                  (plug.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
+                     parseInt (plug.obj.line_size) : undefined,
+                line_path:
+                  (plug.obj.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
+                     plug.obj.path : undefined,
+                line_color:
+                  (plug.obj.color != defaultLineColor) ?
+                     plug.obj.color : undefined
               };
 
               if (l.dataset.pos)
@@ -1442,17 +1393,16 @@
 
       this.element.each (function ()
       {
-        const $postit = $(this),
-              postitId = this.dataset.id.substring (7);
+        const plugin = $(this).postit ("getClass");
         let data = {};
 
         if (this.dataset.todelete)
-          data = {id: postitId, todelete: true};
+          data = {id: plugin.settings.id, todelete: true};
         else
         {
-          const plugin = $postit.postit ("getClass"),
-                title = $postit.find(".postit-header span.title").text (),
-                content = this.querySelector(".postit-edit").innerHTML||"",
+          const title = this.querySelector(".postit-header span.title")
+                          .innerText,
+                content = this.querySelector(".postit-edit").innerHTML,
                 classcolor = this.className.match (/(color\-[a-z]+)/),
                 deadline = (this.dataset.deadlineepoch) ?
                   this.dataset.deadlineepoch :
@@ -1464,7 +1414,7 @@
             tags.push (item.dataset.tag));
 
           data = {
-            id: postitId,
+            id: plugin.settings.id,
             width: Math.trunc (bbox.width/z),
             height: Math.trunc (bbox.height/z),
             item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
@@ -2596,11 +2546,7 @@
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                       content: "<?=_("Delete this relationship?")?>",
                       cb_close: __unedit,
-                      cb_ok: () =>
-                        {
-                          startPlugin.removePlug (startId+"-"+endId);
-                          startPlugin.resetPlugsUndo ();
-                        }
+                      cb_ok: () => startPlugin.removePlug (startId+"-"+endId)
                     });
                   });
 
@@ -2625,6 +2571,18 @@
                     startPlugin.repositionPlugs ();
                     __unedit ();
                   });
+                break;
+
+              case "properties":
+
+                for (const plug of startPlugin.settings._plugs)
+                {
+                  if (plug.startId == startId && plug.endId == endId)
+                  {
+                    startPlugin.openPlugProperties (plug);
+                    break;
+                  }
+                }
                 break;
             }
           });
