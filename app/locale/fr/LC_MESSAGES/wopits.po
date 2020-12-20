@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-15 17:46+0100\n"
-"PO-Revision-Date: 2020-12-15 17:47+0100\n"
+"POT-Creation-Date: 2020-12-20 11:38+0100\n"
+"PO-Revision-Date: 2020-12-20 11:38+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -60,13 +60,6 @@ msgstr ""
 "GitHub</a>.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed an issue with the "
-"count of users in groups.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Partage</b> Correction d'un problème "
-"avec le décompte des utilisateurs dans les groupes.</p>"
-
-msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Network</b> Use <i>fetch()</i> "
 "wherever possible.</p>"
 msgstr ""
@@ -74,32 +67,32 @@ msgstr ""
 "<i>fetch()</i> dans la mesure du possible.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved management "
-"of links in notes content.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Some cosmetic changes."
+"</p>"
 msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Amélioration de la "
-"gestion des liens contenus dans les notes.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved rendering.</"
-"p>"
-msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Amélioration du rendu."
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Un peu de cosmétique."
 "</p>"
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now "
-"possible to have finer control over the position of each relationship.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> Arrow is now "
+"directional.</p>"
 msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Il est désormais "
-"possible de contrôler plus finement le positionnement des relations.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> La flèche est "
+"désormais directionnelle.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Users search</b> Show username "
-"along with full name.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> One can now "
+"customize each relationship's line (size, color and so on).</p>"
 msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Recherche utilisateurs</b> "
-"Afficher l'identifiant avec le nom complet.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> On peut à présent "
+"personnaliser chaque ligne de relation (taille, couleur etc.).</p>"
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> "
+"Simplification of creation.</p>"
+msgstr ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Simplification des "
+"créations.</p>"
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -422,7 +415,7 @@ msgstr "Ajouter une colonne"
 msgid "Add or remove users in the group « %s »."
 msgstr "Ajouter ou retirer des utilisateurs dans le groupe « %s »."
 
-msgid "Add relationship"
+msgid "Add relation"
 msgstr "Ajouter une relation"
 
 msgid "Add row"
@@ -455,6 +448,9 @@ msgstr "Une erreur est survenue durant l'export des données du mur!"
 msgid "An error occurred while exporting wall data."
 msgstr "Une erreur est survenue durant l'export des données du mur."
 
+msgid "Animated dashed"
+msgstr "Pointillés animés"
+
 #, php-format
 msgid ""
 "Another account with the same email as the LDAP account email `%s` already "
@@ -462,6 +458,9 @@ msgid ""
 msgstr ""
 "Un autre compte avec la même email `%s` que celle de votre compte LDAP "
 "existe déjà sur wopits!"
+
+msgid "Arc"
+msgstr "Arc"
 
 msgid "Arrows"
 msgstr "Flèches"
@@ -534,6 +533,9 @@ msgstr "Fermer les murs?"
 msgid "Close this wall?"
 msgstr "Fermer ce mur?"
 
+msgid "Color"
+msgstr "Couleur"
+
 #, php-format
 msgid "Color of the wall «&nbsp;%s&nbsp;»:"
 msgstr "Couleur du mur «&nbsp;%s&nbsp;»:"
@@ -592,6 +594,9 @@ msgstr "Créateur"
 msgid "Current users"
 msgstr "Utilisateurs actuels"
 
+msgid "Dashed"
+msgstr "Pointillés"
+
 msgid "Deadline"
 msgstr "Date limite"
 
@@ -601,6 +606,9 @@ msgstr "Notification date limite"
 msgid "Dedicated"
 msgstr "Dédiés"
 
+msgid "Default style"
+msgstr "Style par défaut"
+
 msgid "Default walls color:"
 msgstr "Couleur des murs par défaut:"
 
@@ -609,9 +617,6 @@ msgstr "Supprimer"
 
 msgid "Delete my account"
 msgstr "Supprimer mon compte"
-
-msgid "Delete relationships"
-msgstr "Supprimer les relations"
 
 msgid "Delete selected notes"
 msgstr "Supprimer les notes sélectionnées"
@@ -730,6 +735,9 @@ msgstr "Filtres"
 msgid "Find notes in the current wall."
 msgstr "Rechercher des notes dans le mur courant."
 
+msgid "Fluid"
+msgstr "Fluide"
+
 msgid "For all your walls."
 msgstr "Pour tous vos murs."
 
@@ -756,6 +764,9 @@ msgstr "Vue complète"
 
 msgid "Generic"
 msgstr "Génériques"
+
+msgid "Grid"
+msgstr "Grille"
 
 #, php-format
 msgid ""
@@ -912,9 +923,6 @@ msgstr "Langue"
 msgid "Let your ideas shine!"
 msgstr "Laissez briller vos idées!"
 
-msgid "Linked documents"
-msgstr "Documents liés"
-
 msgid "Log in"
 msgstr "Se connecter"
 
@@ -926,6 +934,9 @@ msgstr "Identifiant"
 
 msgid "Login is not valid"
 msgstr "L'identifiant n'est pas valide"
+
+msgid "Magnet"
+msgstr "Aimant"
 
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
@@ -1102,6 +1113,9 @@ msgstr ""
 "Les fichiers sources du projet sont hébergés sur %s et distribués sous "
 "licence %s."
 
+msgid "Properties"
+msgstr "Propriétés"
+
 msgid "Read only"
 msgstr "Consultation uniquement"
 
@@ -1114,8 +1128,8 @@ msgstr "Rejeter le partage"
 msgid "Relationship name"
 msgstr "Nom de la relation"
 
-msgid "Relationships"
-msgstr "Relations"
+msgid "Relationship properties"
+msgstr "Propriétés de la relation"
 
 msgid "Reload needed"
 msgstr "Rechargement nécessaire"
@@ -1205,6 +1219,9 @@ msgstr "Afficher les contenus externes"
 msgid "Size"
 msgstr "Taille"
 
+msgid "Solid"
+msgstr "Continu"
+
 msgid "Some features are not available in this mode"
 msgstr "Certaines fonctionnalités ne sont pas disponibles dans ce mode"
 
@@ -1234,6 +1251,9 @@ msgstr "Création de post-it"
 
 msgid "Stop"
 msgstr "Arrêter"
+
+msgid "Straight"
+msgstr "Direct"
 
 msgid "Support"
 msgstr "Supporter"
@@ -1380,9 +1400,6 @@ msgstr ""
 "permettant d'utiliser simplement wopits sans avoir à l'installer vous-même "
 "sur un serveur."
 
-msgid "This item has been deleted"
-msgstr "Cet élément a été supprimé"
-
 msgid "This item has been deleted!"
 msgstr "Cet élément a été supprimé!"
 
@@ -1455,11 +1472,11 @@ msgstr "Pour <b>supprimer</b>, cliquer sur %s4"
 msgid "To select / unselect, <kbd>ctrl+click</kbd> on the note."
 msgstr "Pour sélectionner / désélectionner, <kbd>ctrl+clic</kbd> sur la note."
 
+msgid "Type"
+msgstr "Type"
+
 msgid "Unable to retrieve your account information"
 msgstr "Impossible de récupérer les informations de votre compte"
-
-msgid "Undo"
-msgstr "Annuler"
 
 msgid ""
 "Unknown error!<br>You are about to be disconnected...<br>Sorry for the "
@@ -1727,6 +1744,39 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed an issue with the "
+#~ "count of users in groups.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Partage</b> Correction d'un "
+#~ "problème avec le décompte des utilisateurs dans les groupes.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved "
+#~ "management of links in notes content.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Amélioration de la "
+#~ "gestion des liens contenus dans les notes.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Users search</b> Show "
+#~ "username along with full name.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Recherche utilisateurs</b> "
+#~ "Afficher l'identifiant avec le nom complet.</p>"
+
+#~ msgid "Delete relationships"
+#~ msgstr "Supprimer les relations"
+
+#~ msgid "Linked documents"
+#~ msgstr "Documents liés"
+
+#~ msgid "This item has been deleted"
+#~ msgstr "Cet élément a été supprimé"
+
+#~ msgid "Undo"
+#~ msgstr "Annuler"
 
 #~ msgid ""
 #~ "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with MS "

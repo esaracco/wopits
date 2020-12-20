@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-15 17:46+0100\n"
+"POT-Creation-Date: 2020-12-20 11:38+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -46,33 +46,28 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed an issue with the "
-"count of users in groups.</p>"
-msgstr ""
-
-msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Network</b> Use <i>fetch()</i> "
 "wherever possible.</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved management "
-"of links in notes content.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Some cosmetic changes."
+"</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Improved rendering.</"
-"p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> Arrow is now "
+"directional.</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> It is now "
-"possible to have finer control over the position of each relationship.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> One can now "
+"customize each relationship's line (size, color and so on).</p>"
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Users search</b> Show username "
-"along with full name.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relationships</b> "
+"Simplification of creation.</p>"
 msgstr ""
 
 msgid ""
@@ -254,7 +249,7 @@ msgstr ""
 msgid "Add or remove users in the group « %s »."
 msgstr ""
 
-msgid "Add relationship"
+msgid "Add relation"
 msgstr ""
 
 msgid "Add row"
@@ -287,10 +282,16 @@ msgstr ""
 msgid "An error occurred while exporting wall data."
 msgstr ""
 
+msgid "Animated dashed"
+msgstr ""
+
 #, php-format
 msgid ""
 "Another account with the same email as the LDAP account email `%s` already "
 "exists on wopits!"
+msgstr ""
+
+msgid "Arc"
 msgstr ""
 
 msgid "Arrows"
@@ -362,6 +363,9 @@ msgstr ""
 msgid "Close this wall?"
 msgstr ""
 
+msgid "Color"
+msgstr ""
+
 #, php-format
 msgid "Color of the wall «&nbsp;%s&nbsp;»:"
 msgstr ""
@@ -420,6 +424,9 @@ msgstr ""
 msgid "Current users"
 msgstr ""
 
+msgid "Dashed"
+msgstr ""
+
 msgid "Deadline"
 msgstr ""
 
@@ -429,6 +436,9 @@ msgstr ""
 msgid "Dedicated"
 msgstr ""
 
+msgid "Default style"
+msgstr ""
+
 msgid "Default walls color:"
 msgstr ""
 
@@ -436,9 +446,6 @@ msgid "Delete"
 msgstr ""
 
 msgid "Delete my account"
-msgstr ""
-
-msgid "Delete relationships"
 msgstr ""
 
 msgid "Delete selected notes"
@@ -552,6 +559,9 @@ msgstr ""
 msgid "Find notes in the current wall."
 msgstr ""
 
+msgid "Fluid"
+msgstr ""
+
 msgid "For all your walls."
 msgstr ""
 
@@ -575,6 +585,9 @@ msgid "Full view"
 msgstr ""
 
 msgid "Generic"
+msgstr ""
+
+msgid "Grid"
 msgstr ""
 
 #, php-format
@@ -684,9 +697,6 @@ msgstr ""
 msgid "Let your ideas shine!"
 msgstr ""
 
-msgid "Linked documents"
-msgstr ""
-
 msgid "Log in"
 msgstr ""
 
@@ -697,6 +707,9 @@ msgid "Login"
 msgstr ""
 
 msgid "Login is not valid"
+msgstr ""
+
+msgid "Magnet"
 msgstr ""
 
 msgid "Manage users"
@@ -861,6 +874,9 @@ msgid ""
 "Project source files are hosted on %s and distributed under the %s license."
 msgstr ""
 
+msgid "Properties"
+msgstr ""
+
 msgid "Read only"
 msgstr ""
 
@@ -873,7 +889,7 @@ msgstr ""
 msgid "Relationship name"
 msgstr ""
 
-msgid "Relationships"
+msgid "Relationship properties"
 msgstr ""
 
 msgid "Reload needed"
@@ -962,6 +978,9 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
+msgid "Solid"
+msgstr ""
+
 msgid "Some features are not available in this mode"
 msgstr ""
 
@@ -986,6 +1005,9 @@ msgid "Sticky note creation"
 msgstr ""
 
 msgid "Stop"
+msgstr ""
+
+msgid "Straight"
 msgstr ""
 
 msgid "Support"
@@ -1117,9 +1139,6 @@ msgid ""
 "use wopits without having to install it yourself on a server."
 msgstr ""
 
-msgid "This item has been deleted"
-msgstr ""
-
 msgid "This item has been deleted!"
 msgstr ""
 
@@ -1188,10 +1207,10 @@ msgstr ""
 msgid "To select / unselect, <kbd>ctrl+click</kbd> on the note."
 msgstr ""
 
-msgid "Unable to retrieve your account information"
+msgid "Type"
 msgstr ""
 
-msgid "Undo"
+msgid "Unable to retrieve your account information"
 msgstr ""
 
 msgid ""
