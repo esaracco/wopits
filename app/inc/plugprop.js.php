@@ -110,6 +110,17 @@
           }
       });
 
+      // EVENT click on colorpicker color
+      $ra.find(".cp .ui-colorpicker-swatch").on("click", function ()
+        {
+          const s = this.parentNode.querySelector (".cp-selected");
+
+          if (s)
+            s.classList.remove ("cp-selected");
+
+          this.classList.add ("cp-selected");
+        });
+
       // EVENT click on submit button
       $ra.find(".btn-primary").on("click", function ()
         {
@@ -179,6 +190,16 @@
       $ra.find("input[name='size']").val (_plug.obj.line_size);
       $ra.find("input[value='"+_plug.obj.path+"']")[0].checked = true;
       $ra.find("input[value='"+_plug.obj.line_type+"']")[0].checked = true;
+
+      const s = $ra[0].querySelector (".cp .ui-colorpicker-swatch.cp-selected");
+      if (s)
+        s.classList.remove ("cp-selected");
+
+      $ra[0].querySelectorAll(".cp .ui-colorpicker-swatch").forEach ((c) =>
+        {
+          if (H.rgb2hex ($(c).css("background-color")) == _plug.obj.color)
+            c.classList.add ("cp-selected");
+        });
     },
   };
 

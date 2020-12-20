@@ -245,6 +245,18 @@ i.settings {
   border-color:#ced4da;
 }
 
+.cp .ui-colorpicker-swatch {
+  text-align:center;
+  text-shadow: 0 0 5px #fff;
+  color:#555;
+  font-size:30px;
+  line-height:20px;
+}
+
+.cp .ui-colorpicker-swatch.cp-selected:before {
+  content: " + ";
+}
+
 #welcome {
   z-index:1;
   position: absolute;
