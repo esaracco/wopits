@@ -2036,10 +2036,9 @@ input {
 echo <<<EOC
 .color-$name,
 .postit.color-$name .dates,
-.postit.color-$name .postit-header,
-.postit.color-$name .postit-edit {
-  background:$color !important;
-  color:#43474a !important;
+.postit.color-$name .postit-header {
+  background:$color!important;
+  color:#43474a;
 }
 EOC;
   }
