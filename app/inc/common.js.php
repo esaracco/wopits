@@ -1512,7 +1512,29 @@ class WHelper
       (window.innerHeight -
         document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
   }
-  
+
+  // METHOD setColorpickerColor ()
+  setColorpickerColor ($cp, c, apply = true)
+  {
+    const s = $cp[0].querySelectorAll (".ui-colorpicker-swatch"),
+          ss = $cp[0].querySelector (".ui-colorpicker-swatch.cp-selected");
+
+    if (ss)
+      ss.classList.remove ("cp-selected");
+
+    if (apply)
+      $cp.colorpicker ("setColor", c);
+
+    for (let i = 0, iLen = s.length; i < iLen; i++)
+    {
+      if (H.rgb2hex ($(s[i]).css("background-color")) == c)
+      {
+        s[i].classList.add ("cp-selected");
+        break;
+      }
+    }
+  }
+
   // METHOD getProgressbarColor ()
   getProgressbarColor (v)
   {

@@ -187,19 +187,10 @@
 
       this.createSample ();
 
+      H.setColorpickerColor ($ra.find(".cp"), _plug.obj.color);
       $ra.find("input[name='size']").val (_plug.obj.line_size);
       $ra.find("input[value='"+_plug.obj.path+"']")[0].checked = true;
       $ra.find("input[value='"+_plug.obj.line_type+"']")[0].checked = true;
-
-      const s = $ra[0].querySelector (".cp .ui-colorpicker-swatch.cp-selected");
-      if (s)
-        s.classList.remove ("cp-selected");
-
-      $ra[0].querySelectorAll(".cp .ui-colorpicker-swatch").forEach ((c) =>
-        {
-          if (H.rgb2hex ($(c).css("background-color")) == _plug.obj.color)
-            c.classList.add ("cp-selected");
-        });
     },
   };
 

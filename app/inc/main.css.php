@@ -241,20 +241,29 @@ i.settings {
   border:none;
 }
 
-.cp .ui-colorpicker-border {
+.ui-colorpicker-swatches {
+  height:auto;
+}
+
+.ui-colorpicker-swatch {
+  height:20px;
+  width:20px;
+}
+
+.ui-colorpicker-border {
   border-color:#ced4da;
 }
 
-.cp .ui-colorpicker-swatch {
+.ui-colorpicker-swatch {
   text-align:center;
-  text-shadow: 0 0 5px #fff;
+  text-shadow: 0 0 1px #fff;
   color:#555;
-  font-size:30px;
-  line-height:20px;
+  font-size:19px;
+  line-height:18px;
 }
 
-.cp .ui-colorpicker-swatch.cp-selected:before {
-  content: " + ";
+.ui-colorpicker-swatch.cp-selected:before {
+  content: " # ";
 }
 
 #welcome {
@@ -2307,15 +2316,6 @@ button.ui-datepicker-close {
 .filters-items .tags > div i {
   margin:2px;
   color:#555;
-}
-
-.ui-colorpicker-swatches {
-  height:auto;
-}
-
-.ui-colorpicker-swatch {
-  height:20px;
-  width:20px;
 }
 
 #tpick,

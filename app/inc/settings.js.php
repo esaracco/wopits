@@ -299,10 +299,9 @@
             $settings = plugin.element,
             $wall = S.getCurrent ("wall"),
             wallId = ($wall.length) ? $wall.wall ("getId") : null,
-            $colorPicker = $settings.find (".cp"),
+            $cp = $settings.find (".cp"),
             loaded = $settings[0].dataset.loaded,
             ww = $(window).width ();
-      let setColorTimeout;
 
       if (!loaded)
         $settings.find(".modal-body").hide ();
@@ -316,11 +315,10 @@
 
       if (loaded)
       {
-        $colorPicker.colorpicker ("setColor",
-          plugin.get ("wall-background", wallId));
+        H.setColorpickerColor ($cp, plugin.get ("wall-background", wallId));
 
         //FIXME
-        $colorPicker.find(".ui-colorpicker-swatches")
+        $cp.find(".ui-colorpicker-swatches")
           .css("width", ww < 435 ? ww - 90 : 435);
       }
       else
@@ -345,7 +343,6 @@
         $settings.find(".cp").colorpicker({
           parts:  ["swatches"],
           swatchesWidth: ww < 435 ? ww - 90 : 435,
-          color: plugin.get ("wall-background", wallId),
           select: function (e, color)
             {
               const $wall = S.getCurrent ("wall"),
@@ -358,13 +355,13 @@
                 if (wallId)
                   $wall.css (style);
 
-                clearTimeout (setColorTimeout);
-                setColorTimeout =
-                  setTimeout (
-                    () => plugin.setWallBackground (style, wallId), 500);
+                H.setColorpickerColor ($cp, color.css, false);
+                plugin.setWallBackground (style, wallId);
               }
             }
         });
+
+        H.setColorpickerColor ($cp, plugin.get ("wall-background", wallId));
       }
 
       H.openModal ($settings);
