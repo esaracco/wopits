@@ -159,7 +159,9 @@
                         .style.width = (ui.size.width+2)+"px";
                     });
 
-                  $wall.wall("fixSize", ui.originalSize.width, ui.size.width);
+                  $wall.wall ("fixSize", ui.originalSize.width, ui.size.width);
+
+//$wall.wall ("displayHeaders");
                 }
 
                 $wall.find("tbody td").cell ("reorganize");
@@ -554,11 +556,19 @@
     // METHOD unedit ()
     unedit (noupdate = false, move)
     {
-      const data = noupdate ?
+      const wall0 = this.settings.wall[0],
+            data = noupdate ?
               null :
               {
                 cells: this.serialize (),
-                wall: {width: Math.trunc (this.settings.wall.outerWidth ())}
+                wall: {
+                  // If headers are hidden, add header width to wall width
+                  width: Math.trunc (
+                    wall0.dataset.displayheaders == "0" ?
+                      wall0.clientWidth +
+                        wall0.querySelector("tbody th").clientWidth :
+                      wall0.clientWidth)
+                }
               };
 
       // If we are moving col/row

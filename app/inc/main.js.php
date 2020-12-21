@@ -77,6 +77,7 @@
         wall.dataset.restoring = 1;
 
       wall.dataset.displaymode = settings.displaymode;
+      wall.dataset.displayheaders = settings.displayheaders;
 
       plugin.setName (settings.name, true);
 
@@ -176,7 +177,7 @@
 
           $("#welcome").hide ();
 
-          $wall.show ("fade");
+          $wall.show (settings.displayheaders?"fade":null);
 
           wall.dataset.cols = hcols.length;
           wall.dataset.rows = hrows.length;
@@ -230,11 +231,14 @@
             // INTERNAL FUNCTION ()
             const __postInit = ()=>
               {
+                // Applu display header mode
                 plugin.displayHeaders ();
                 // Apply display mode
                 plugin.refreshCellsToggleDisplayMode ();
 
                 $wall.parent().find(".wall-menu").css ("visibility", "visible");
+
+                plugin.displayHeaders ();
               };
 
             plugin.displayExternalRef ();
@@ -1763,11 +1767,20 @@
       if (_refreshing)
         return;
 
-      const wall = this.element[0];
+      const $wall = this.element,
+            wall = $wall[0];
       let w = Number (wall.dataset.oldwidth);
 
       if (!w)
-        w = this.element.outerWidth ();
+        w = $wall.outerWidth ();
+
+     // If no header, substract header width from wall width
+     if (wall.dataset.displayheaders == "0")
+{
+console.log ($wall.find("tbody th:eq(0)").outerWidth());
+       w -= $wall.find("tbody th:eq(0)").outerWidth();
+}
+
 
       if (newW)
       {
@@ -2109,18 +2122,43 @@
     // METHOD displayHeaders ()
     displayHeaders (v)
     {
-      const update = (v !== undefined),
+      const wall0 = this.element[0],
+            update = (v !== undefined),
             val = update ? v : this.settings.displayheaders,
             type = (val == 1) ? "show" : "hide";
 
       if (val == 1)
-        this.element.find("th").show ();
+      {
+        this.element.find("th").css ({
+          position: "relative",
+          visibility: "visible"
+        });
+
+        if (update)
+        {
+          const w = wall0.clientWidth +
+                      wall0.querySelector("tbody th").clientWidth;
+
+          wall0.style.width = w+"px";
+          wall0.dataset.oldwidth = w;
+        }
+      }
       else
-        this.element.find("th").hide ();
+      {
+        wall0.style.width = (wall0.clientWidth -
+                             wall0.querySelector("tbody th").clientWidth)+"px";
+
+        this.element.find("th").css ({
+          position: "absolute",
+          visibility: "hidden"
+        });
+      }
 
       if (update)
       {
         this.settings.displayheaders = val;
+        wall0.dataset.displayheaders = val;
+
         this.repositionPostitsPlugs ();
 
         H.fetch (
@@ -2128,6 +2166,9 @@
           `user/wall/${this.settings.id}/displayheaders`,
           {value: val});
       }
+
+      if (val == 1)
+        this.fixSize ();
 
       if (this.element.is (":visible"))
         this.menu ({from: "display", type: type+"-headers"});
