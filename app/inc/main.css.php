@@ -2136,7 +2136,8 @@ i.fa-xs {
   font-size:12px;
   height:90%;
   width:100%;
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
   border-radius:0 1px 1px 1px;
   padding:25px 5px 20px 5px;
 }

@@ -1162,7 +1162,8 @@
       _removePlug (plug, toDefrag);
 
       for (const id in toDefrag)
-        $(toDefrag[id]).postit ("defragPlugsArray");
+        if ($(toDefrag[id]).length)
+          $(toDefrag[id]).postit ("defragPlugsArray");
 
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);
@@ -1177,7 +1178,8 @@
       settings.plugs.forEach (p => _removePlug (p, toDefrag));
 
       for (const id in toDefrag)
-        $(toDefrag[id]).postit ("defragPlugsArray");
+        if ($(toDefrag[id]).length)
+          $(toDefrag[id]).postit ("defragPlugsArray");
 
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);

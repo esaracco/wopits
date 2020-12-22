@@ -534,57 +534,65 @@
       (plugs||[]).forEach (plug =>
         {
           const startId = plug.item_start,
-                endId = plug.item_end,
                 start0 = wall.querySelector (
-                           ".postit[data-id='postit-"+startId+"']"),
-                $start = $(start0),
-                startPlugin = $start.postit ("getClass"),
-                labelName = plug.label || "...";
+                           ".postit[data-id='postit-"+startId+"']");
 
-          idsNew[startId+""+endId] = 1;
-
-          if (!startPlugin.plugExists (endId))
+          if (start0)
           {
-            const end = wall.querySelector (
-                          ".postit[data-id='postit-"+endId+"']"),
-                  newPlug = {
-                    startId: startId,
-                    endId: endId,
-                    label: {
-                      name: labelName,
-                      top: plug.item_top,
-                      left: plug.item_left,
-                    },
-                    obj: startPlugin.getPlugTemplate ({
-                           hide: true,
-                           start: start0,
-                           end: end,
-                           label: labelName,
-                           line_size: plug.line_size,
-                           line_path: plug.line_path,
-                           line_color: plug.line_color,
-                           line_type: plug.line_type
-                         })
-                  };
+            const endId = plug.item_end,
+                  $start = $(start0),
+                  startPlugin = $start.postit ("getClass"),
+                  labelName = plug.label||"...";
 
-            startPlugin.addPlug (newPlug, applyZoom);
-          }
-          else
-          {
-            startPlugin.updatePlugLabel ({
-              endId: endId,
-              label: labelName,
-              top: plug.item_top,
-              left: plug.item_left
-            });
+            idsNew[startId+""+endId] = 1;
 
-            startPlugin.updatePlugProperties ({
-              endId: endId,
-              size: plug.line_size,
-              path: plug.line_path,
-              color: plug.line_color,
-              line_type: plug.line_type
-            });
+            if (!startPlugin.plugExists (endId))
+            {
+              const end = wall.querySelector (
+                            ".postit[data-id='postit-"+endId+"']");
+
+              if (end)
+              {
+                const newPlug = {
+                        startId: startId,
+                        endId: endId,
+                        label: {
+                           name: labelName,
+                           top: plug.item_top,
+                           left: plug.item_left,
+                      },
+                      obj: startPlugin.getPlugTemplate ({
+                             hide: true,
+                             start: start0,
+                             end: end,
+                             label: labelName,
+                             line_size: plug.line_size,
+                             line_path: plug.line_path,
+                             line_color: plug.line_color,
+                             line_type: plug.line_type
+                           })
+                      };
+
+                startPlugin.addPlug (newPlug, applyZoom);
+              }
+            }
+            else
+            {
+              startPlugin.updatePlugLabel ({
+                endId: endId,
+                label: labelName,
+                top: plug.item_top,
+                left: plug.item_left
+              });
+
+              startPlugin.updatePlugProperties ({
+                endId: endId,
+                size: plug.line_size,
+                path: plug.line_path,
+                color: plug.line_color,
+                line_type: plug.line_type
+              });
+            }
           }
         });
 
