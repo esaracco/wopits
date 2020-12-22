@@ -2134,7 +2134,7 @@ i.fa-xs {
 .postit .postit-edit {
   position:absolute;
   font-size:12px;
-  height:100%;
+  height:90%;
   width:100%;
   overflow:auto;
   border-radius:0 1px 1px 1px;
