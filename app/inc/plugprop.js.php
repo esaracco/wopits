@@ -1,10 +1,10 @@
 <?php
 /**
-  Javascript plugin - Relationship's arrows properties
+  Javascript plugin - Notes relations properties
 
   Scope: Note
-  Element: .plprop
-  Description: Set relationships arrows properties
+  Element: .plugprop
+  Description: Set notes relations properties
 */
 
   require_once (__DIR__.'/../prepend.php');
@@ -32,7 +32,7 @@
         {
           $(this).find(".modal-body").off ("scroll.plugprop");
 
-          // Remove relationship sample
+          // Remove leader line sample
           plugin.removeSample ();
           _postitPlugin.unedit ();
         });

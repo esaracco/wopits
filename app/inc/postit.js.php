@@ -6,7 +6,7 @@
   Elements: .postit
   Description: Note management
 
-  TODO: relationship plugin
+  TODO: relations plugin
   TODO: attachment plugin
 */
 
@@ -26,7 +26,7 @@
       _originalObject,
       _plugRabbit = {
         line: null,
-        // EVENT mousedown on destination postit for relationship creation
+        // EVENT mousedown on destination postit for relation creation
         mousedownEvent: function (e)
           {
             const from = S.get ("link-from"),
@@ -43,8 +43,7 @@
                   endPlugin = $end.postit ("getClass"),
                   endId = endPlugin.settings.id;
 
-              if (from.id != endId &&
-                  (end0.dataset.plugs||"").indexOf(from.id) == -1)
+              if (from.id != endId && !endPlugin.plugExists (from.id))
               {
                 endPlugin.edit ({plugend: true}, ()=>
                   {
@@ -70,13 +69,13 @@
                 _cancelPlugAction ();
                 H.displayMsg ({
                   type: "warning",
-                  msg: "<?=_("This relationship already exists!")?>"
+                  msg: "<?=_("This relation already exists!")?>"
                 });
               }
               else
                 _cancelPlugAction ();
           },
-        // EVENT mousemouve to track mouse pointer during relationship creation
+        // EVENT mousemouve to track mouse pointer during relation creation
         mousemoveEvent: (e) =>
           {
             const rabbit = document.getElementById ("plug-rabbit");
@@ -321,11 +320,11 @@
             $wall = settings.wall,
             writeAccess = plugin.canWrite ();
 
-      settings._plugs = [];
+      settings.plugs = [];
       postit.dataset.id = "postit-"+settings.id;
       postit.dataset.order = settings.item_order;
-      postit.className = settings.classes || "postit";
-      postit.dataset.tags = settings.tags || "";
+      postit.className = settings.classes||"postit";
+      postit.dataset.tags = settings.tags||"";
 
       if (settings.obsolete)
         postit.classList.add ("obsolete");
@@ -414,7 +413,7 @@
                 plugin.unedit ();
               }
 
-              // Update postits relationships arrows
+              // Refresh relations position
               plugin.repositionPlugs ();
 // TODO - 1 - Hide plugs instead of moving them with postits (performance
 //            issue with some touch devices)
@@ -427,7 +426,7 @@
           autoHide: false,
           resize: function(e, ui)
           {
-            // Update postits relationships arrows
+            // Refresh relations position
             plugin.repositionPlugs ();
 
             if (S.get("revertData").revert)
@@ -465,7 +464,7 @@
 
                 plugin.cancelEdit ();
 
-                // Update postits relationships arrows
+                // Refresh relations position
                 plugin.repositionPlugs ();
               }
               else
@@ -684,13 +683,7 @@
     // METHOD havePlugs ()
     havePlugs ()
     {
-      return (this.settings._plugs||[]).length;
-    },
-
-    // METHOD getPlugsIds ()
-    getPlugsIds ()
-    {
-      return this.element[0].dataset.plugs.split (",");
+      return this.settings.plugs.length;
     },
 
     // METHOD applyPlugLineType ()
@@ -760,24 +753,22 @@
     {
       const reset = (z == 1);
 
-      this.settings._plugs.forEach (plug =>
+      this.settings.plugs.forEach (p =>
         {
-          const size = Math.trunc(plug.obj.line_size * z)||1,
-                gr = Math.trunc ((100*(size*100/plug.obj.line_size))/100);
+          const size = Math.trunc(p.obj.line_size * z)||1,
+                gr = Math.trunc ((100*(size*100/p.obj.line_size))/100);
 
-          plug.labelObj[0].style.transformOrigin = (reset) ? null : "top left";
-          plug.labelObj[0].style.transform = (reset) ? null : "scale("+z+")";
+          p.labelObj[0].style.transformOrigin = (reset) ? null : "top left";
+          p.labelObj[0].style.transform = (reset) ? null : "scale("+z+")";
 
-          plug.obj.size = size;
-          if (plug.customPos)
-            plug.related.forEach (p =>
-            {
-              p.setOptions ({
-                startSocketGravity: (reset) ? "auto" : gr,
-                endSocketGravity: (reset) ? "auto" : gr,
-                size: size
-              });
-            });
+          p.obj.size = size;
+
+          if (p.customPos)
+            p.related.forEach (_p => _p.setOptions ({
+              startSocketGravity: (reset) ? "auto" : gr,
+              endSocketGravity: (reset) ? "auto" : gr,
+              size: size
+            }));
         });
     },
 
@@ -798,7 +789,7 @@
               color: color
             });
 
-      this.settings._plugs.forEach (p =>
+      this.settings.plugs.forEach (p =>
         {
           if (!p.obj.customCol)
           {
@@ -850,7 +841,7 @@
       const id = ll.endId || this.settings.id,
             defaultLineColor = S.getCurrent ("plugColor");
 
-      for (const plug of this.settings._plugs)
+      for (const plug of this.settings.plugs)
       {
         //FIXME
         if ((ll.endId && plug.endId == ll.endId) ||
@@ -901,60 +892,48 @@
     {
       const label = H.noHTML (args.label),
             wPos = this.settings.wall[0].getBoundingClientRect (),
-            canWrite = this.canWrite ();
+            canWrite = this.canWrite (),
+            p = this.getPlugById (args.endId),
+            pl = p.labelObj[0];
 
-      for (const plug of this.settings._plugs)
+      p.label.name = label;
+      p.obj.middleLabel = LeaderLine.captionLabel ({
+                            text: label,
+                            fontSize: "13px"
+                          });
+
+      pl.querySelector("a span").innerHTML = (label == ""  || label == "...") ?
+        `<i class="fas fa-ellipsis-h"></i>` : label;
+
+      if (args.top !== undefined)
       {
-        if (plug.endId == args.endId)
+        if (args.top)
         {
-          plug.label.name = label;
+          pl.dataset.pos = 1;
+          pl.dataset.origtop = args.top;
+          pl.dataset.origleft = args.left;
 
-          plug.obj.setOptions ({
-            middleLabel: LeaderLine.captionLabel ({
-              text: label,
-              fontSize: "13px"
-            })
-          });
-
-          plug.labelObj.find("a span").html (
-            (label == ""  || label == "...") ?
-              '<i class="fas fa-ellipsis-h"></i>' : label);
-
-          if (args.top !== undefined)
+          if (canWrite)
           {
-            const pl = plug.labelObj[0];
-
-            if (args.top)
-            {
-              pl.dataset.pos = 1;
-              pl.dataset.origtop = args.top;
-              pl.dataset.origleft = args.left;
-
-              if (canWrite)
-              {
-                pl.querySelector("i.fa-thumbtack").style.display = "block";
-                pl.querySelector("li[data-action='position-auto']")
-                  .style.display = "block";
-              }
-
-              if (!plug.customPos)
-              {
-                this.repositionPlugLabel (pl, args.top, args.left, wPos);
-                plug.related = this.createRelatedPlugs (plug);
-                plug.obj.hide ();
-              }
-            }
-            else if (plug.customPos)
-            {
-              this.resetPlugLabelPosition (pl);
-              plug.related.forEach (r => r.remove ());
-              plug.related = [];
-              plug.customPos = false;
-              plug.obj.show ();
-            }
+            pl.querySelector("i.fa-thumbtack").style.display = "block";
+            pl.querySelector("li[data-action='position-auto']")
+              .style.display = "block";
           }
 
-          break;
+          if (!p.customPos)
+          {
+            this.repositionPlugLabel (pl, args.top, args.left, wPos);
+            p.related = this.createRelatedPlugs (p);
+            p.obj.hide ();
+          }
+        }
+        else if (p.customPos)
+        {
+          this.resetPlugLabelPosition (pl);
+          p.related.forEach (r => r.remove ());
+          p.related = [];
+          p.customPos = false;
+          p.obj.show ();
         }
       }
 
@@ -1127,15 +1106,7 @@
     addPlug (plug, applyZoom)
     {
       const $start = this.element,
-            $end = $(plug.obj.end),
-            dataPlugsStart = $start[0].dataset.plugs||"",
-            dataPlugsEnd = $end[0].dataset.plugs||"";
-
-      $start[0].dataset.plugs =
-        (dataPlugsStart) ? dataPlugsStart+","+plug.endId : plug.endId;
-
-      $end[0].dataset.plugs =
-        (dataPlugsEnd) ? dataPlugsEnd+","+plug.startId : plug.startId;
+            $end = $(plug.obj.end);
 
       // Associate SVG line to plug and set its label
       const svg = document.querySelector (".leader-line:last-child");
@@ -1143,44 +1114,40 @@
       this.addPlugLabel (plug, svg, applyZoom);
 
       // Register plug on start point postit (current plugin)
-      this.settings._plugs.push (plug);
+      this.settings.plugs.push (plug);
       $start[0].classList.add ("with-plugs");
 
       // Register plug on end point postit
-      $end.postit("getSettings")._plugs.push (plug);
-      $end[0].classList.add ("with-plugs");
+      $end.postit("getSettings").plugs.push (plug);
     },
 
     // METHOD defragPlugsArray ()
     defragPlugsArray ()
     {
-      const $postit = this.element,
-            settings = this.settings;
-      let activePlugs = "",
-          i = settings._plugs.length;
+      const settings = this.settings;
+      let i = settings.plugs.length;
 
       while (i--)
-      {
-        const plug = settings._plugs[i];
-
-        if (!plug.obj)
-          settings._plugs.splice (i, 1);
-        else
-          activePlugs +=
-            ","+((plug.endId == settings.id) ? plug.startId : plug.endId);
-      }
-
-      $postit[0].dataset.plugs = activePlugs.substring (1);
+        if (!settings.plugs[i].obj)
+          settings.plugs.splice (i, 1);
 
       if (!this.havePlugs ())
-        $postit.removeClass ("with-plugs");
+        this.element[0].classList.remove ("with-plugs");
+    },
+
+    // METHOD plugExists ()
+    plugExists (plugId)
+    {
+      for (const plug of this.settings.plugs)
+        if (plug.startId == plugId || plug.endId == plugId)
+          return true;
     },
 
     // METHOD getPlugById ()
     getPlugById (plugId)
     {
-      for (const plug of this.settings._plugs)
-        if (plug.startId+"-"+plug.endId == plugId)
+      for (const plug of this.settings.plugs)
+        if (plug.endId == plugId)
           return plug;
     },
 
@@ -1199,31 +1166,15 @@
 
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);
-
-      return ","+plug.startId+";"+plug.endId;
     },
 
     // METHOD removePlugs ()
     removePlugs (noedit)
     {
-      const $postit = this.element,
-            settings = this.settings,
-            postitId = settings.id,
-            tmp = [],
+      const settings = this.settings,
             toDefrag = {};
 
-      (settings._plugs||[]).forEach (plug =>
-        {
-          if (!noedit)
-            tmp.push ({
-              endId: (plug.endId != settings.id) ? plug.endId : plug.startId,
-              name: plug.label.name,
-              top: plug.labelObj[0].dataset.origtop,
-              left: plug.labelObj[0].dataset.origleft
-            });
-
-          _removePlug (plug, toDefrag);
-        });
+      settings.plugs.forEach (p => _removePlug (p, toDefrag));
 
       for (const id in toDefrag)
         $(toDefrag[id]).postit ("defragPlugsArray");
@@ -1231,12 +1182,8 @@
       if (!noedit)
         S.set ("plugs-to-save", toDefrag);
 
-      $postit[0].dataset.plugs = "";
-      settings._plugs = [];
-      $postit.removeClass ("with-plugs");
-
-      if (!noedit)
-        return JSON.stringify (tmp);
+      settings.plugs = [];
+      this.element[0].classList.remove ("with-plugs");
     },
 
     // METHOD hidePlugs ()
@@ -1248,21 +1195,21 @@
 
       this.element.find(".postit-menu [data-action='plug']").hide ();
 
-      this.settings._plugs.forEach (plug =>
+      this.settings.plugs.forEach (p =>
         {
           if (!ignoreDisplayMode)
           {
-            if (plug.startId == postitId)
-              plug.startHidden = true;
+            if (p.startId == postitId)
+              p.startHidden = true;
             else
-              plug.endHidden = true;
+              p.endHidden = true;
           }
 
-          plug.labelObj.hide ();
-          if (!plug.customPos)
-            plug.obj.hide ("none");
+          p.labelObj.hide ();
+          if (!p.customPos)
+            p.obj.hide ("none");
           else
-            plug.related.forEach (p => p.hide ("none"));
+            p.related.forEach (_p => _p.hide ("none"));
         });
     },
 
@@ -1276,29 +1223,29 @@
 
       this.element.find(".postit-menu [data-action='plug']").show ();
 
-      this.settings._plugs.forEach (plug =>
+      this.settings.plugs.forEach (p =>
         {
           if (!ignoreDisplayMode)
           {
-            if (plug.startId == postitId)
-              delete plug.startHidden;
+            if (p.startId == postitId)
+              delete p.startHidden;
             else
-              delete plug.endHidden;
+              delete p.endHidden;
           }
 
-          if (!plug.startHidden && !plug.endHidden)
+          if (!p.startHidden && !p.endHidden)
           {
-            plug.labelObj.show ();
-            if (!plug.customPos)
-              plug.obj.show ("none");
+            p.labelObj.show ();
+            if (!p.customPos)
+              p.obj.show ("none");
             else
             {
-              const pl = plug.labelObj[0];
+              const pl = p.labelObj[0];
 
               this.repositionPlugLabel (
                 pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-              plug.related.forEach (p => p.show().position());
+              p.related.forEach (_p => _p.show().position());
             }
           }
         });
@@ -1310,27 +1257,26 @@
       const div = this.settings.plugsContainer[0],
             wPos = this.settings.wall[0].getBoundingClientRect ();
 
-      this.settings._plugs.forEach (plug =>
+      this.settings.plugs.forEach (p =>
         {
-           const pl = plug.labelObj[0];
+          const pl = p.labelObj[0];
 
           if (pl.dataset.pos)
           {
             this.repositionPlugLabel (
               pl, pl.dataset.origtop, pl.dataset.origleft,  wPos);
 
-            plug.related.forEach (p => p.position ());
+            p.related.forEach (_p => _p.position ());
           }
           else
           {
-            const p = div.querySelector (
-                        "#_"+plug.startId+"-"+plug.endId+" text")
+            p.obj.position ();
+
+            const pos = div.querySelector (`#_${p.startId}-${p.endId} text`)
                           .getBoundingClientRect ();
 
-            pl.style.top = p.top+"px";
-            pl.style.left = p.left+"px";
-
-            plug.obj.position ();
+            pl.style.top = pos.top+"px";
+            pl.style.left = pos.left+"px";
           }
         });
     },
@@ -1348,38 +1294,37 @@
             defaultLineColor = S.getCurrent ("plugColor");
       let ret = {};
 
-      if (settings._plugs !== undefined)
-        settings._plugs.forEach (plug =>
+      settings.plugs.forEach (p =>
+        {
+          // Take in account only plugs from this postit
+          if (p.startId == settings.id)
           {
-            // Take in account only plugs from this postit
-            if (plug.startId == settings.id)
+            const pl = p.labelObj[0];
+
+            ret[p.endId] = {
+              label: (p.label == "...") ?
+                       "" : pl.querySelector("a span").innerText,
+              line_type:
+                (p.obj.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
+                   p.obj.line_type : undefined,
+              line_size:
+                (p.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
+                   parseInt (p.obj.line_size) : undefined,
+              line_path:
+                (p.obj.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
+                   p.obj.path : undefined,
+              line_color:
+                (p.obj.color != defaultLineColor) ?
+                   p.obj.color : undefined
+            };
+
+            if (pl.dataset.pos)
             {
-              const l = plug.labelObj[0];
-
-              ret[plug.endId] = {
-                label: (plug.label == "...") ?
-                         "" : l.querySelector("a span").innerText,
-                line_type:
-                  (plug.obj.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
-                     plug.obj.line_type : undefined,
-                line_size:
-                  (plug.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
-                     parseInt (plug.obj.line_size) : undefined,
-                line_path:
-                  (plug.obj.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
-                     plug.obj.path : undefined,
-                line_color:
-                  (plug.obj.color != defaultLineColor) ?
-                     plug.obj.color : undefined
-              };
-
-              if (l.dataset.pos)
-              {
-                ret[plug.endId].top = parseInt (l.dataset.origtop);
-                ret[plug.endId].left = parseInt (l.dataset.origleft);
-              }
+              ret[p.endId].top = parseInt (pl.dataset.origtop);
+              ret[p.endId].left = parseInt (pl.dataset.origleft);
             }
-          });
+          }
+        });
 
       return ret;
     },
@@ -1481,8 +1426,8 @@
 
         // Show a lock bubble on related items
         if (!isRelated)
-          (this.settings._plugs||[]).forEach ((plug) =>
-            $(plug.obj[(plug.startId!=id)?"start":"end"])
+          this.settings.plugs.forEach (p =>
+            $(p.obj[(p.startId!=id)?"start":"end"])
               .postit ("showUserWriting", user, true));
       }
       else if (!isRelated)
@@ -2518,7 +2463,7 @@
                     H.openConfirmPopover ({
                       type: "update",
                       item: $label,
-                      title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relationship name")?>`,
+                      title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
                       content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
                       cb_close: __unedit,
                       cb_ok: ($popover) =>
@@ -2544,9 +2489,9 @@
                       item: $label,
                       placement: "left",
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                      content: "<?=_("Delete this relationship?")?>",
+                      content: "<?=_("Delete this relation?")?>",
                       cb_close: __unedit,
-                      cb_ok: () => startPlugin.removePlug (startId+"-"+endId)
+                      cb_ok: () => startPlugin.removePlug (endId)
                     });
                   });
 
@@ -2556,16 +2501,12 @@
 
                 startPlugin.edit ({}, ()=>
                   {
-                    startPlugin.settings._plugs.forEach (p =>
-                      {
-                        if (p.startId == startId && p.endId == endId)
-                        {
-                          p.related.forEach (_p => _p.remove ());
-                          p.related = [];
-                          p.customPos = false;
-                          p.obj.show ();
-                        }
-                      });
+                    const p = startPlugin.getPlugById (endId);
+
+                    p.related.forEach (_p => _p.remove ());
+                    p.related = [];
+                    p.customPos = false;
+                    p.obj.show ();
 
                     startPlugin.resetPlugLabelPosition ($label[0]);
                     startPlugin.repositionPlugs ();
@@ -2575,14 +2516,7 @@
 
               case "properties":
 
-                for (const plug of startPlugin.settings._plugs)
-                {
-                  if (plug.startId == startId && plug.endId == endId)
-                  {
-                    startPlugin.openPlugProperties (plug);
-                    break;
-                  }
-                }
+                startPlugin.openPlugProperties (startPlugin.getPlugById(endId));
                 break;
             }
           });

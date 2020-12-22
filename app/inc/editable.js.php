@@ -67,7 +67,7 @@
       settings.container
         .on("click", function (e)
         {
-          // Cancel if current relationship creation.
+          // Cancel if creation of a relation in progress
           if (S.get("link-from"))
             return false;
 

@@ -3,7 +3,7 @@
   <div class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-cogs fa-lg fa-fw"></i><?=_("Relationship properties")?></h5>
+        <h5 class="modal-title"><i class="fas fa-cogs fa-lg fa-fw"></i><?=_("Relation properties")?></h5>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>

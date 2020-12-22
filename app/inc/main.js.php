@@ -542,7 +542,7 @@
 
           idsNew[startId+""+endId] = 1;
 
-          if ((start0.dataset.plugs||"").indexOf (endId) == -1)
+          if (!startPlugin.plugExists (endId))
           {
             const end = wall.querySelector (
                           ".postit[data-id='postit-"+endId+"']"),
@@ -591,7 +591,7 @@
       if (!partial)
         wall.querySelectorAll(".postit.with-plugs").forEach (postit =>
           {
-            $(postit).postit("getSettings")._plugs.forEach (plug =>
+            $(postit).postit("getSettings").plugs.forEach (plug =>
               {
                 if (!idsNew[plug.startId+""+plug.endId])
                   $(wall.querySelector(
@@ -918,7 +918,7 @@
       if (wallIsVisible && d.postits_plugs)
         setTimeout (() =>
           {
-            // Refresh postits relationships
+            // Refresh postits relations
             plugin.refreshPostitsPlugs (
               d.postits_plugs, d.partial && d.partial != "plugs",
               !!S.get("zoom-level"));

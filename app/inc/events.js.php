@@ -24,7 +24,7 @@ $(function()
   
         if ($wall.length)
         {
-          // Reposition relationships
+          // Refresh relations position
           $wall.wall ("repositionPostitsPlugs");
 
           const modal = document.querySelector (
@@ -101,7 +101,7 @@ $(function()
             S.set ("plugs-hidden", true);
           }
 
-          // Reposition relationships
+          // Refresh relations position
           if (!S.getCurrent("filters")[0].classList.contains ("plugs-hidden"))
           {
             clearTimeout (_timeoutScroll);
@@ -176,7 +176,7 @@ $(function()
     });
 */
 
-  // EVENT hide.bs.tab on relationships label menu
+  // EVENT show.bs.dropdown on relation's label menu
    $(document).on("show.bs.dropdown", ".plug-label", ()=> !H.disabledEvent ());
 
   // EVENT hide.bs.tab on walls tabs
