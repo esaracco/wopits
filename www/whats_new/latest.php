@@ -1,8 +1,6 @@
 <?php require ($_SERVER['DOCUMENT_ROOT'].'/../app/prepend.php')?>
 <div class="newfeatures justify latest">
 <?=_("<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>")?>
-<?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> One can now customize each relation line (size, color and so on).</p>")?>
-<?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Arrow is now directional.</p>")?>
-<?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Simplification of creation.</p>")?>
-<?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Some cosmetic changes.</p>")?>
+<?=_("<p><b><i class='fas fa-broom fa-fw'></i>Relations</b> Cleaning & optimization.</p>")?>
+<?=_("<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed some issues with dragging & deletion.</p>")?>
 </div>
