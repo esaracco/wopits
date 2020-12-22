@@ -346,7 +346,7 @@
           appendTo: "parent",
           revert: "invalid",
           cursor: "pointer",
-          //cancel: ".postit-header",
+          cancel: ".postit-tags",
           containment: $wall.find ("tbody"),
           scrollSensitivity: 50,
           opacity: 0.35,

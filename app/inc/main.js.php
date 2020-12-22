@@ -101,6 +101,7 @@
           distance: 10,
           cursor: "grab",
 //          cancel: (writeAccess) ? "span,.title,.postit-edit" : null,
+          cancel: (writeAccess) ? ".postit-tags" : null,
           start: function ()
             {
               S.set ("wall-dragging", true);
