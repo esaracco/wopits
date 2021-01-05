@@ -30,6 +30,7 @@
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="YJE4Z8T66QLQ4">
           <p class="desc mt-3 mb-1 text-center">
             <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://github.com/esaracco/wopits/issues"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></a>
+            <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://twitter.com/wopitsapp"><i class="fab fa-twitter fa-fw"></i> @wopitsapp</a>
             <button class="btn btn-secondary btn-xs"><i class="fas fa-donate fa-fw"></i> <?=_("Support")?></button>
           </p>
         </form>
