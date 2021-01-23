@@ -803,16 +803,16 @@ class WHelper
     if (r > 255)
       r = 255;
     else if  (r < 0)
-      r = 0;
+      r = 50;
 
-    let b = ((num >> 8) & 0x00FF) + amt;
+    let b = ((num >> 8) & 0x00ff) + amt;
 
     if (b > 255)
       b = 255;
     else if (b < 0)
       b = 0;
 
-    let g = (num & 0x0000FF) + amt;
+    let g = (num & 0x0000ff) + amt;
 
     if (g > 255)
       g = 255;
