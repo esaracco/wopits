@@ -243,6 +243,7 @@ i.settings {
 
 .ui-colorpicker-swatches {
   height:auto;
+  overflow:hidden;
 }
 
 .ui-colorpicker-swatch {
