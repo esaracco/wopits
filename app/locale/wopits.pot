@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2020-12-22 12:05+0100\n"
+        "POT-Creation-Date: 2021-01-24 06:19+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,13 +35,10 @@ msgstr  ""
 msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
 msgstr  ""
 
-msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs at <a href='mailto:report@wopit.com'>report@wopits.com</a> or using the <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
+msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Relations</b> Cleaning & optimization.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed some issues with dragging & deletion.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relations</b> Fixed some issues with drop shadow and properties color box.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Arrow is now directional.</p>"
@@ -63,9 +60,6 @@ msgid   "<p>To create a note, double-click inside a cell. You can then move it a
 msgstr  ""
 
 msgid   "<p>To create a wall, click on <kbd>Wall</kbd>&rarr;<kbd>New...</kbd> and enter its name. If some walls are already open, you can use the shortcut <i class='fas fa-plus'></i> to the right of the tab titles.</p><p>To create a wall occupying the entire screen, without columns or rows, uncheck the <kbd>With grid</kbd> checkbox option.</p><p>Once the wall is created, you can open the rows and columns menu by clicking on <i class='far fa-caret-square-down'></i>. You have the option to rename the element, associate an image, shift left, right, top and up, or delete it. Editing header titles can also be done by clicking on them.</p><p>You can edit the name and description of a wall by clicking on its tab title.</p><p>To add a row or column, use the icons <i class='fas fa-grip-lines'></i> and <i class='fas fa-grip-lines-vertical'></i> of the wall's menu.</p><p>To open walls already created or shared with you by other users, click on <kbd>Wall</kbd>&rarr;<kbd>Open...</kbd>.</p><p>Your own walls always appear with the icon <i class='fas fa-shield-alt'></i>. Walls shared with you by other users may appear with the following icons:<dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create and modify notes.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows you to create notes and manage the wall. It's the sharing that gives you the most rights. You will also have partial management of dedicated groups.</dd></dl><p>If other users have opened the wall you are viewing, an icon <i class='fas fa-user-friends'></i> appears at the bottom of the wall's menu.</p><p>You can open multiple walls at the same time. They will be automatically reloaded when you return to the application.</p><p>To have a complete view of the wall (it may be difficult to visualize large walls), click on <kbd>View</kbd>&rarr;<kbd>Full view</kbd>. Some features are not available in this mode. To return to the standard view, click on the <i class='fas fa-crosshairs'></i> button or use <kbd>View</kbd>&rarr;<kbd>Standard view</kbd>.</p><p>To display notes as lists, click the <i class='fas fa-tasks'></i> icon on the wall's menu. In this mode, not all operations are available, but you can still edit and create notes. To return to the standard view use the <i class='fas fa-sticky-note'></i> icon. You can also choose a particular mode for each cell by clicking on its own menu.</p><p>You can export a wall with the <kbd>Wall</kbd>&rarr;<kbd>Export</kbd> menu. Click on <kbd>Wall</kbd>&rarr;<kbd>Import...</kbd> to re-import it.</p><p>At any time you can clone a wall using the <kbd>Wall</kbd>&rarr;<kbd>Clone...</kbd> menu.</p>"
-msgstr  ""
-
-msgid   "@author"
 msgstr  ""
 
 msgid   "A app for managing projects online just using sticky notes to share and collaborate."
