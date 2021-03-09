@@ -125,7 +125,7 @@ class Mailer
       $this->_mailer->Body =
         $args['msg'].
         "\n\n"._("The wopits team,")."\n\n--\n".
-        _("Message sent automatically.")."\n".WPT_URL;
+        _("Message sent automatically.");
 
       $this->_mailer->send ();
     }
