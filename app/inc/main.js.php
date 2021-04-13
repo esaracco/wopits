@@ -28,9 +28,12 @@
   // METHOD _getDirectURLData ()
   function _getDirectURLData ()
   {
-    const m = location.href.match (/\?\/(a|s)\/(\d+)(\/(\d+))?$/);
+    let m;
 
-    return m ? {type: m[1], wallId: m[2], postitId: m[4]||null} : null;
+    if (location.href.indexOf ("/?/unsubscribe") != -1)
+      return {type: "u"};
+    else if ( (m = location.href.match (/\?\/(a|s)\/(\d+)(\/(\d+))?$/)) )
+      return {type: m[1], wallId: m[2], postitId: m[4]||null};
   }
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -2141,15 +2144,30 @@
             // Check if wopits has been upgraded
             H.checkForAppUpgrade ();
 
-            const directURLData = _getDirectURLData ();
+            const directURLData = _getDirectURLData (),
+                  loadSpecific = (directURLData && directURLData.type != "u"),
+                  displayAccount = (directURLData && directURLData.type == "u");
 
             // Load previously opened walls
-            $("<div/>").wall ("restorePreviousSession", directURLData);
+            $("<div/>").wall ("restorePreviousSession", loadSpecific);
 
             // Check if we must display a postit alert or a specific wall
-            // (from direct URL)
-            if (directURLData)
+            // (from direct URL).
+            if (loadSpecific)
               $("<div/>").wall ("loadSpecific", directURLData);
+            // Display account popup and highlight emails settings field
+            // (from direct URL).
+            else if (displayAccount)
+            {
+              // Remove special alert URL.
+              history.pushState (null, null, "/");
+
+              H.loadPopup ("account", {
+                cb: ($p)=>
+                      $p.find("[name='allow_emails']")
+                        .parent().effect ("highlight", {duration: 5000})
+              });
+            }
 
             // -> 15mn
             setInterval (()=> $.get ("/api/user/ping"), 15*60*1000);

@@ -98,6 +98,7 @@
       // Emails
       'emails' => [
         'from' => 'contact@wopits.com',
+        'unsubscribe' => 'unsubscribe@wopits.com',
         'contact' => 'contact@wopits.com'
       ],
       // DKIM
@@ -190,6 +191,7 @@
       // Emails
       'emails' => [
         'from' => 'team@domain.com',
+        'unsubscribe' => 'unsubscribe@domain.com',
         'contact' => 'team@domain.com'
       ],
       // DKIM

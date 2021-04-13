@@ -73,6 +73,8 @@ define ('WPT_LOGIN_WELCOME', "");
 define ('WPT_EMAIL_FROM', "");
 // Example: contact@domain.com
 define ('WPT_EMAIL_CONTACT', "");
+// Example: unsubscribe@domain.com
+define ('WPT_EMAIL_UNSUBSCRIBE', "");
 
 // LDAP
 // If true, LDAP will be used for users authentication. Users who are not

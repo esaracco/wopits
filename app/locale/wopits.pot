@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-01-24 06:19+0100\n"
+        "POT-Creation-Date: 2021-04-13 06:09+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,13 +41,10 @@ msgstr  ""
 msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relations</b> Fixed some issues with drop shadow and properties color box.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Arrow is now directional.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Email management</b> Better management of unsubscribing to messages sent wopits.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> One can now customize each relation line (size, color and so on).</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Simplification of creation.</p>"
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, use the <i class='fas fa-share'></i> icon of the wall's menu.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of dedicated groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p><p>Sharing will not be available if you checked the invisible mode option in your account page.</p>"
@@ -169,6 +166,9 @@ msgid   "Besides, you don't have to use it online: you can %sget the code%s and 
 msgstr  ""
 
 msgid   "Block external contents"
+msgstr  ""
+
+msgid   "By unchecking this option, <b>you will no longer receive an email notification</b> when a user shares a wall with you. However, you will continue to receive notifications for your notes deadline alerts."
 msgstr  ""
 
 msgid   "Can not read file"
@@ -538,6 +538,9 @@ msgid   "Login is not valid"
 msgstr  ""
 
 msgid   "Magnet"
+msgstr  ""
+
+msgid   "Manage my options"
 msgstr  ""
 
 msgid   "Manage users"
@@ -921,9 +924,6 @@ msgid   "The wall has been successfully imported"
 msgstr  ""
 
 msgid   "The wall is shared with the following groups:"
-msgstr  ""
-
-msgid   "The wopits team,"
 msgstr  ""
 
 msgid   "Theme"

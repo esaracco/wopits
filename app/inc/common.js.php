@@ -1507,7 +1507,7 @@ class WHelper
   fixMainHeight ()
   {
     document.querySelector("html").style.overflow = "hidden";
-  
+
     S.getCurrent("walls")[0].style.height =
       (window.innerHeight -
         document.querySelector(".nav-tabs.walls").offsetHeight)+"px";

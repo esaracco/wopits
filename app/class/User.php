@@ -109,9 +109,9 @@ class User extends Base
     $ret = [];
 
     ($stmt = $this->prepare ('
-      SELECT email, username, fullname, about, visible, picture FROM users
-      WHERE id = ?'))
-       ->execute ([$this->userId]);
+      SELECT email, username, fullname, about, allow_emails, visible, picture
+        FROM users WHERE id = ?'))
+          ->execute ([$this->userId]);
     
     if (! ($ret = $stmt->fetch ()))
       $ret['error'] = _("Unable to retrieve your account information");
@@ -286,6 +286,13 @@ class User extends Base
       $this->userId = $ret['users_id'];
 
     return $ret;
+  }
+
+  public function unsubscribe ():void
+  {
+    $this->executeQuery ('UPDATE users',
+      ['allow_emails' => 0],
+      ['id' => $this->userId]);
   }
 
   public function register (object $settings = null):void
@@ -740,7 +747,8 @@ class User extends Base
             ->execute ([$field => $value, 'id' => $this->userId]);
 
           ($stmt = $this->prepare ('
-            SELECT username, fullname, email, about, visible, picture
+            SELECT username, fullname, email, about, allow_emails, visible,
+                   picture
             FROM users where id = ?'))
              ->execute ([$this->userId]);
           $ret = $stmt->fetch ();
@@ -878,7 +886,8 @@ class User extends Base
         'settings' => json_encode ([
           'locale' => $_SESSION['slocale']??WPT_DEFAULT_LOCALE,
           'timezone' => $this->getTimezone (),
-          'visible' => 1
+          'visible' => 1,
+          'allow_emails' => 1
         ])
       ]);
 

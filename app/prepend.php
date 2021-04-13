@@ -60,7 +60,8 @@ if (!$isCLI)
   $isDirectURL = false;
 
   if (!isset ($_SESSION['userId']) &&
-      preg_match ('#^/(a|s)/\d+(/\d+)?$#', $_SERVER['QUERY_STRING']))
+      preg_match ('#^(/unsubscribe|/(a|s)/\d+(/\d+)?)$#',
+                     $_SERVER['QUERY_STRING']))
   {
     $isDirectURL = true;
     $_SESSION['_directURL'] = $_SERVER['QUERY_STRING'];

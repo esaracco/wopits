@@ -148,6 +148,12 @@
                 plugin.updateField ({visible: 1}, true);
               break;
 
+            case "allow_emails":
+
+              plugin.updateField (
+                {allow_emails: $field[0].checked?1:0}, true);
+              break;
+
             case "password":
 
               H.loadPopup ("changePassword", {

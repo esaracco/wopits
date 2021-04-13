@@ -81,7 +81,7 @@ class Group extends Wall
       return ['error' => _("Access forbidden")];
 
     ($stmt = $this->prepare ('
-      SELECT id, '.($withEmail?'email,':'').'username, fullname
+      SELECT id, '.($withEmail?'email,allow_emails,':'').'username, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?
@@ -564,19 +564,22 @@ class Group extends Wall
 
          foreach ($_args['users'] as $user)
          {
-           $Task->execute ([
-             'event' => Task::EVENT_TYPE_SEND_MAIL,
-             'method' => 'wallSharing',
-             'userId' => $user['id'],
-             'email' => $user['email'],
-             'wallId' => $_args['wallId'],
-             'recipientName' => $user['fullname'],
-             'sharerName' => $_args['sharerName'],
-             'wallTitle' => $_args['wallTitle'],
-             'access' => $_args['access']
-           ]);
+           if ($user['allow_emails'])
+           {
+             $Task->execute ([
+               'event' => Task::EVENT_TYPE_SEND_MAIL,
+               'method' => 'wallSharing',
+               'userId' => $user['id'],
+               'email' => $user['email'],
+               'wallId' => $_args['wallId'],
+               'recipientName' => $user['fullname'],
+               'sharerName' => $_args['sharerName'],
+               'wallTitle' => $_args['wallTitle'],
+               'access' => $_args['access']
+             ]);
 
-           \Swoole\Coroutine::sleep (2);
+             \Swoole\Coroutine::sleep (2);
+           }
          }
        });
       }

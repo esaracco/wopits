@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-24 06:19+0100\n"
+"POT-Creation-Date: 2021-04-13 06:09+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -52,18 +52,13 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Arrow is now "
-"directional.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Email management</b> Better "
+"management of unsubscribing to messages sent wopits.</p>"
 msgstr ""
 
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> One can now "
 "customize each relation line (size, color and so on).</p>"
-msgstr ""
-
-msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Simplification of "
-"creation.</p>"
 msgstr ""
 
 msgid ""
@@ -317,6 +312,12 @@ msgid ""
 msgstr ""
 
 msgid "Block external contents"
+msgstr ""
+
+msgid ""
+"By unchecking this option, <b>you will no longer receive an email "
+"notification</b> when a user shares a wall with you. However, you will "
+"continue to receive notifications for your notes deadline alerts."
 msgstr ""
 
 msgid "Can not read file"
@@ -702,6 +703,9 @@ msgid "Login is not valid"
 msgstr ""
 
 msgid "Magnet"
+msgstr ""
+
+msgid "Manage my options"
 msgstr ""
 
 msgid "Manage users"
@@ -1107,9 +1111,6 @@ msgid "The wall has been successfully imported"
 msgstr ""
 
 msgid "The wall is shared with the following groups:"
-msgstr ""
-
-msgid "The wopits team,"
 msgstr ""
 
 msgid "Theme"

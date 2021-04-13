@@ -58,8 +58,9 @@
                 const dl = $login.find("input[name='_directURL']").val ();
 
                 plugin.login (H.trimObject ({
-                  _directURL: (dl && dl.match (/^\/(a|s)\/\d+(\/\d+)?$/)) ?
-                                "/?"+dl : null,
+                  _directURL:
+                    (dl && dl.match(/^(\/unsubscribe|\/(a|s)\/\d+(\/\d+)?)$/))?
+                      "/?"+dl : null,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val (),
                   password: $login.find("input[type='password']").val ()

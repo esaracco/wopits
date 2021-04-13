@@ -140,6 +140,8 @@
         $this->help ("Conf `emails` section is empty!");
       if (empty ($env['emails']['from']))
         $this->help ("Conf `emails->from` is empty!");
+      if (empty ($env['emails']['unsubscribe']))
+        $this->help ("Conf `emails->unsubscribe` is empty!");
       if (empty ($env['emails']['contact']))
         $this->help ("Conf `emails->contact` is empty!");
       if ($env['target']['type'] == 'remote' &&
@@ -576,6 +578,7 @@
                 'WPT_DB_PASSWORD' => $env['db']['password'],
                 'WPT_DSN' => $env['db']['dsn'],
                 'WPT_EMAIL_FROM' => $env['emails']['from'],
+                'WPT_EMAIL_UNSUBSCRIBE' => $env['emails']['unsubscribe'],
                 'WPT_EMAIL_CONTACT' => $env['emails']['contact']]
                   as $k => $v)
       {

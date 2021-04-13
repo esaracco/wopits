@@ -120,12 +120,15 @@ class Mailer
 
     try
     {
+      $unsub = WPT_URL.'/?/unsubscribe';
+
       $this->_mailer->addAddress ($args['email']);
       $this->_mailer->Subject = $args['subject'];
       $this->_mailer->Body =
-        $args['msg'].
-        "\n\n"._("The wopits team,")."\n\n--\n".
-        _("Message sent automatically.");
+        $args['msg']."\n\n--\n"._("Manage my options").": $unsub";
+
+      $this->_mailer->addCustomHeader ('List-Unsubscribe',
+        '<mailto:'.WPT_EMAIL_UNSUBSCRIBE.'?subject=Unsubscribe>, <'.$unsub.'>');
 
       $this->_mailer->send ();
     }
