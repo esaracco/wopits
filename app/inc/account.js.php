@@ -128,7 +128,7 @@
 
           if ($account.find(".ldap-msg").length &&
               e.target.tagName == 'INPUT' &&
-              name != "fullname" && name != "visible")
+              !name.match (/^fullname|visible|allow_emails$/))
             return;
 
           switch (name)
