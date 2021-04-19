@@ -289,6 +289,7 @@ class Postit extends Wall
         users.id AS alert_user_id,
         users.email AS alert_user_email,
         users.fullname AS alert_user_fullname,
+        users.allow_emails AS alert_user_allow_emails,
         postits_alerts.alertshift AS alert_shift,
         walls.id as wall_id
       FROM postits
@@ -325,8 +326,9 @@ class Postit extends Wall
           $deleteAlert = true;
 
           $Task->execute ([
-            'event' => Task::EVENT_TYPE_SEND_MAIL,
+            'event' => Task::EVENT_TYPE_SEND_MESSAGE,
             'method' => 'deadlineAlert_1',
+            'sendmail' => $item['alert_user_allow_emails'],
             'userId' => $item['alert_user_id'],
             'email' => $item['alert_user_email'],
             'wallId' => $item['wall_id'],
@@ -344,8 +346,9 @@ class Postit extends Wall
         $deleteAlert = true;
 
         $Task->execute ([
-          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'event' => Task::EVENT_TYPE_SEND_MESSAGE,
           'method' => 'deadlineAlert_2',
+          'sendmail' => $item['alert_user_allow_emails'],
           'userId' => $item['alert_user_id'],
           'email' => $item['alert_user_email'],
           'wallId' => $item['wall_id'],

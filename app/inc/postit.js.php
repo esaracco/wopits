@@ -1927,7 +1927,9 @@
 
       postit.dataset.order = d.item_order||0;
 
-      if (!d.obsolete)
+      if (d.obsolete)
+        postit.classList.add ("obsolete");
+      else
         postit.classList.remove ("obsolete");
 
       if (!d.tags)

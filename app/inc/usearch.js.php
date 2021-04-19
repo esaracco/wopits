@@ -74,7 +74,7 @@ let _lastStr = "",
             H.openConfirmPopover ({
               item: $el.find("span:eq(0)"),
               title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
-              content: isDed ? "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>" : "<?=_("This user will lose their access for all walls shared with this generic group.<br>Remove anyway?")?>",
+              content: isDed ? "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>" : "<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>",
               cb_ok: () => plugin.removeGroupUser (args)
             }); 
           }

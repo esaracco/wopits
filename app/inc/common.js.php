@@ -545,6 +545,11 @@ class WSocket
                   .chat ("refreshUserscount", data.count);
               break;
 
+            // have-msg
+            case "have-msg":
+              $("#umsg").umsg ("addMsg", data);
+              break;
+
             // unlinked
             // Either the wall has been deleted
             // or the user no longer have necessary right to access the wall.
@@ -1213,10 +1218,14 @@ class WHelper
 
         args.cb_close && args.cb_close ($popover[0].dataset.btnclicked);
 
+        $popover.find("[data-toggle='tooltip']").tooltip ("dispose");
         $popover.popover ("dispose");
   
         if (!H.haveMouse ())
           this.fixVKBScrollStop ();
+
+        //FIXME
+        $("#popup-layer").click ();
   
       }, false);
     
@@ -1227,9 +1236,6 @@ class WHelper
       boundary: "window"
     }).popover ("show");
 
-    //FIXME To prevent "title" element property to be used by default
-    $(".popover-header").last().html (args.title);
-  
     let buttons;
 
     switch (args.type)
@@ -1258,7 +1264,7 @@ class WHelper
     if (H.haveMouse ())
       $body.find("input:eq(0)").focus ();
   
-    $body.find("button").on("click", function (e)
+    $body.find("button:not(.close)").on("click", function (e)
       {
         const $btn = $(this),
               $popover = $btn.closest(".popover");
@@ -1273,6 +1279,20 @@ class WHelper
   
         $("#popup-layer").click ();
       });
+
+    const $popover = $(".popover").last ();
+
+    //FIXME To prevent "title" element property to be used by default
+    $popover.find(".popover-header").html (args.title);
+
+    if (args.class)
+      $popover.addClass (args.class);
+
+
+    if (args.cb_after)
+      args.cb_after ($popover);
+
+    H.enableTooltips ($popover);
   }
 
   // METHOD setViewToElement ()

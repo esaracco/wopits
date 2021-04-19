@@ -147,6 +147,11 @@
 
               $ret = $User->getPicture (['userId' => getParam ('userId')]);
               break;
+
+            case 'messages':
+
+              $ret = $User->getMessages (['userId' => getParam ('userId')]);
+              break;
           }
           break;
 
@@ -277,8 +282,15 @@
     // DELETE
     case 'DELETE':
 
+      $User = new User (['data' => $data]);
+
       if ($class == 'user')
-        $ret = (new User())->delete ();
+      {
+        if (getParam ('action') == 'messages')
+          $ret = $User->deleteMessage ();
+        else
+          $ret = $User->delete ();
+      }
       break;
   }
 

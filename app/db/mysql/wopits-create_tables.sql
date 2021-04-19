@@ -305,3 +305,19 @@ CREATE TABLE edit_queue
   INDEX `edit_queue-item:item_id-idx` (item, item_id)
 )
 ENGINE=INNODB;
+
+DROP TABLE IF EXISTS messages_queue;
+CREATE TABLE messages_queue
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  users_id INT UNSIGNED NOT NULL,
+  creationdate INT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+
+  PRIMARY KEY (id),
+  CONSTRAINT `messages_queue-users_id-fk` FOREIGN KEY (users_id)
+    REFERENCES users(id) ON DELETE CASCADE,
+  INDEX `messages_queue-creationdate-idx` (creationdate)
+)
+ENGINE=INNODB;

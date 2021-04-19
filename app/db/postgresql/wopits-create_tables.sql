@@ -238,3 +238,14 @@ CREATE TABLE edit_queue
 );
 CREATE INDEX "edit_queue-session_id-idx" ON edit_queue (session_id);
 CREATE INDEX "edit_queue-item:item_id-idx" ON edit_queue (item, item_id);
+
+DROP TABLE IF EXISTS messages_queue CASCADE;
+CREATE TABLE messages_queue
+(
+  id SERIAL PRIMARY KEY,
+  users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  creationdate INTEGER NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL
+);
+  CREATE INDEX "messages_queue-creationdate-idx" ON messages_queue (creationdate);

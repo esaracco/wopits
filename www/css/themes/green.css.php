@@ -37,7 +37,8 @@
 }
 
 .modal a:not(.list-group-item):not(.close),
-.modal span.name i {
+.modal span.name i,
+.popover a {
   color: #3dcc5d !important;
 }
 
@@ -61,7 +62,8 @@ button:focus {
   border-color: #3dcc5d !important;
 }
 
-.bs-popover-auto[x-placement^=bottom] .arrow:after {
+.bs-popover-auto[x-placement^=bottom] .arrow:after,
+.bs-popover-bottom > .arrow::after {
   border-color: #3dcc5d transparent !important;
 }
 

@@ -85,7 +85,7 @@ class User extends Base
         ['id' => $r['id']]);
 
         (new Task())->execute ([
-          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'event' => Task::EVENT_TYPE_SEND_MESSAGE,
           'method' => 'resetPassword',
           'userId' => $r['id'],
           'email' => $this->data->email,
@@ -597,6 +597,35 @@ class User extends Base
     return $ret;
   }
 
+  public function deleteMessage ():?array
+  {
+    $ret = [];
+
+    try
+    {
+      $this
+        ->prepare('DELETE FROM messages_queue WHERE users_id = ? AND id = ?')
+        ->execute ([$this->userId, intval ($this->data->id??0)]);
+    }
+    catch (\Exception $e)
+    {
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      $ret['error'] = 1;
+    }
+
+    return $ret;
+  }
+
+  public function getMessages ():?array
+  {
+    ($stmt = $this->prepare ('
+       SELECT id, creationdate, title, content
+         FROM messages_queue WHERE users_id = ? ORDER BY id DESC'))
+           ->execute ([$this->userId]);
+
+    return $stmt->fetchAll ();
+  }
+
   public function getPicture (array $args):?array
   {
     $userId = $args['userId'];
@@ -899,7 +928,7 @@ class User extends Base
       // Send account creation email only in standard auth mode.
       if (!WPT_USE_LDAP)
         (new Task())->execute ([
-          'event' => Task::EVENT_TYPE_SEND_MAIL,
+          'event' => Task::EVENT_TYPE_SEND_MESSAGE,
           'method' => 'accountCreation',
           'userId' => $this->userId,
           'email' => $this->data->email,

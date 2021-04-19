@@ -396,6 +396,42 @@ button[data-toggle="tooltip"].help {
   list-style-type: square;
 }
 
+.umsg-popover {
+  max-width:98%;
+  max-height:98%;
+}
+
+.umsg-popover .popover-body {
+  overflow-y:auto;
+}
+
+.umsg-item {
+  border:1px solid #e6e6e6;
+  border-radius:5px;
+}
+
+.umsg-title {
+  font-weight:bold;
+  background:#e6e6e6;
+  padding:5px;
+}
+
+.umsg-body {
+  padding:5px;
+}
+
+.umsg-date {
+  padding-left:5px;
+  font-style:italic;
+  font-size:.6rem;
+  color:#6f6f6f;
+}
+
+.umsg-popover .popover-body > div {
+  margin-top:10px;
+  padding-bottom:10px;
+}
+
 #upload-layer {
   background-color:transparent;
 }
@@ -478,6 +514,18 @@ dd {
   margin-top:-10px;
   margin-left:-15px;
   cursor:help;
+}
+
+#umsg {
+  position:absolute;
+  margin-top:-24px;
+  margin-left:20px;
+  cursor:pointer;
+}
+
+#umsg .wpt-badge {
+  display:none;
+  background-color:#ff0000;
 }
 
 .login-page .navbar-brand {
@@ -1641,7 +1689,7 @@ ul#mmenu {
 
 #postitAttachmentsPopup .modal-body .list-group li div {
   display:inline-block;
-  max-width:90%;
+  max-width:85%;
   text-overflow:ellipsis !important;
   overflow:hidden !important;
 }
@@ -1865,6 +1913,10 @@ i.set {
   color:#151719;
 }
 
+.bs-popover-bottom > .arrow::after {
+  border-bottom-color:#555;
+}
+
 .wall-menu .wpt-badge {
   margin-left:-30px;
   margin-top:11px;
@@ -2056,7 +2108,8 @@ EOC;
 ?>
 
 .modal a:not(.list-group-item):not(.close),
-.modal span.name i {
+.modal span.name i,
+.popover a {
   color: #343a40;
 }
 

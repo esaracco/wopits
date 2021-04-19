@@ -4,10 +4,41 @@ namespace Wopits;
 
 class Helper
 {
-  // Keep WS connection and database persistent connection alive 
-  public static function ping ()
+  private static function _sendToWSServer (array $data):bool
   {
-    exec (WPT_ROOT_PATH.'/app/services/websocket/client.php -p');
+    $ret = false;
+
+    try
+    {
+      $client = new Services\WebSocket\Client ('127.0.0.1', WPT_WS_PORT);
+
+      if (@$client->connect ())
+      {
+        $client->send (json_encode ($data));
+        $ret = true;
+      }
+      else
+        throw new \Exception ();
+    }
+    catch (\Exception $e)
+    {
+      error_log (__METHOD__.':'.__LINE__.
+                   ":Error while sending msg to WS server (".
+                      print_r($data, true).")!");
+    }
+
+    return $ret;
+  }
+
+  // Keep WS connection and database persistent connection alive 
+  public static function ping ():bool
+  {
+    return self::_sendToWSServer (['action' => 'ping']);
+  }
+
+  public static function sendToWSServer (array $data):bool
+  {
+    return self::_sendToWSServer ($data);
   }
 
   public static function changeLocale (string $slocale):string

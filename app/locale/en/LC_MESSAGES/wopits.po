@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-13 06:37+0200\n"
+"POT-Creation-Date: 2021-04-19 20:13+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -14,6 +14,18 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#, php-format
+msgid "%s gave you full access to the wall «%s»"
+msgstr ""
+
+#, php-format
+msgid "%s gave you limited access with creation of notes to the wall «%s»"
+msgstr ""
+
+#, php-format
+msgid "%s gave you read-only access to the wall «%s»"
+msgstr ""
 
 #, php-format
 msgid "%s notes match your search."
@@ -315,9 +327,8 @@ msgid "Block external contents"
 msgstr ""
 
 msgid ""
-"By unchecking this option, <b>you will no longer receive an email "
-"notification</b> when a user shares a wall with you. However, you will "
-"continue to receive notifications for your notes deadline alerts."
+"By unchecking this option you will no longer receive an email notification "
+"when a user shares a wall with you or when a note expires."
 msgstr ""
 
 msgid "Can not read file"
@@ -423,9 +434,6 @@ msgstr ""
 msgid "Deadline"
 msgstr ""
 
-msgid "Deadline notification"
-msgstr ""
-
 msgid "Dedicated"
 msgstr ""
 
@@ -457,6 +465,9 @@ msgid "Delete this group"
 msgstr ""
 
 msgid "Delete this group?"
+msgstr ""
+
+msgid "Delete this message"
 msgstr ""
 
 msgid "Delete this note?"
@@ -584,80 +595,7 @@ msgid "Grid"
 msgstr ""
 
 #, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you full access to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you limited access with creation of notes to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you read-only access to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note has expired:\n"
-"\n"
-"%s%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note will expire in %s days:\n"
-"\n"
-"%s%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note will expire soon:\n"
-"\n"
-"%s"
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"You are receiving this email because you requested the reset of your wopits "
-"password.\n"
-"\n"
-"- Login: %s\n"
-"- New password: %s\n"
-"\n"
-"For security reasons we advise you to change it as soon as possible."
-msgstr ""
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"Your account \"%s\" has been created!"
+msgid "Hello %s"
 msgstr ""
 
 msgid "Help"
@@ -709,6 +647,9 @@ msgid "Manage my options"
 msgstr ""
 
 msgid "Manage users"
+msgstr ""
+
+msgid "Messages"
 msgstr ""
 
 msgid "Meta menu"
@@ -776,6 +717,9 @@ msgid "No further information"
 msgstr ""
 
 msgid "No result"
+msgstr ""
+
+msgid "No title"
 msgstr ""
 
 msgid "No walls available"
@@ -1060,6 +1004,18 @@ msgid ""
 "version."
 msgstr ""
 
+#, php-format
+msgid "The following note has expired:"
+msgstr ""
+
+#, php-format
+msgid "The following note will expire in %s days:"
+msgstr ""
+
+#, php-format
+msgid "The following note will expire soon:"
+msgstr ""
+
 msgid "The following users are viewing this wall:"
 msgstr ""
 
@@ -1088,6 +1044,18 @@ msgid "The new password:"
 msgstr ""
 
 msgid "The note has been deleted"
+msgstr ""
+
+#, php-format
+msgid "The note «%s» has expired."
+msgstr ""
+
+#, php-format
+msgid "The note «%s» will expire in %s days."
+msgstr ""
+
+#, php-format
+msgid "The note «%s» will expire soon."
 msgstr ""
 
 msgid "The row/column has been deleted!"
@@ -1161,8 +1129,8 @@ msgid "This user is no longer available!"
 msgstr ""
 
 msgid ""
-"This user will lose their access for all walls shared with this generic "
-"group.<br>Remove anyway?"
+"This user will lose their access for all walls shared with this group."
+"<br>Remove anyway?"
 msgstr ""
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
@@ -1322,6 +1290,17 @@ msgid "You are not the creator of this wall"
 msgstr ""
 
 #, php-format
+msgid ""
+"You are receiving this email because you requested the reset of your wopits "
+"password.\n"
+"\n"
+"- Login: %s\n"
+"- New password: %s\n"
+"\n"
+"For security reasons we advise you to change it as soon as possible."
+msgstr ""
+
+#, php-format
 msgid "You can change it at any time in your %sSettings%s"
 msgstr ""
 
@@ -1338,6 +1317,10 @@ msgid "You need write access to perform this action!"
 msgstr ""
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
+msgstr ""
+
+#, php-format
+msgid "Your account «%s» has been created!"
 msgstr ""
 
 msgid "Your connection attempt failed!"

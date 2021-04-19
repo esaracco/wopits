@@ -157,8 +157,8 @@ class Base extends \PDO
       ' ON CONFLICT ('.implode(',',$fields).') DO UPDATE SET ';
   }
 
-  protected function executeQuery (string $sql, array $data,
-                                   array $where = null)
+  public function executeQuery (string $sql, array $data,
+                                array $where = null):int
   {
     preg_match ('/(INSERT INTO|UPDATE) ([a-z_]+)$/', $sql, $m);
     list (, $action, $table) = $m;

@@ -143,6 +143,7 @@ define ('WS_PLUG_DEFAULTS', [
     'cpick' => ['items' => WPT_POSTIT_COLORS],
     'dpick' => [],
     'chat' => [],
+    'umsg' => [],
     'filters' => [],
     'arrows' => [],
     'mmenu' => [],

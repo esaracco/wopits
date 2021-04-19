@@ -62,7 +62,8 @@ a.nav-link.disabled {
 }
 
 .modal a:not(.list-group-item):not(.close),
-.modal span.name i {
+.modal span.name i,
+.popover a {
   color: #ffbf00 !important;
 }
 
@@ -85,7 +86,8 @@ button:focus {
   border-color: #ffd350 !important;
 }
 
-.bs-popover-auto[x-placement^=bottom] .arrow:after {
+.bs-popover-auto[x-placement^=bottom] .arrow:after,
+.bs-popover-bottom > .arrow::after {
   border-color: #ffd350 transparent;
 }
 
@@ -100,6 +102,10 @@ button:focus {
 span.wpt-badge {
   background-color:#ffbf00;
   color:#555;
+}
+
+#umsg .wpt-badge {
+  color:#fff;
 }
 
 .modal:not(.no-theme) .modal-dialog .modal-content {

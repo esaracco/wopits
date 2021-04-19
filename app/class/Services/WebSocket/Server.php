@@ -395,7 +395,16 @@ class Server
           // For both generic and dedicated groups
           case 'POST':
             if ($type == 'link')
+            {
               $ret = $Group->link ();
+
+              // Push wall sharing message to group's users.
+              if (!empty ($ret) && !isset ($ret['error']))
+              {
+                $this->_pushUsersHaveMessage ($ret);
+                $ret = [];
+              }
+            }
             elseif ($type == 'unlink')
             {
               $ret = $Group->unlink ();
@@ -636,7 +645,7 @@ class Server
     // Internal wopits communication.
     else
     {
-      switch ($msg->action)
+      switch ($msg->action??null)
       {
         // ping
         case 'ping':
@@ -667,6 +676,12 @@ class Server
 
           break;
     
+        // have-msg
+        case 'have-msg':
+
+          $this->_pushUsersHaveMessage ((array)$msg);
+          break;
+
         // reload & mainupgrade
         //FIXME TODO If a user has something being edited, wait for him to
         //           finish.
@@ -1089,6 +1104,18 @@ class Server
 
     foreach ($db->jGet ('activeWalls', $activeWallId) as $_fd => $_userId)
       if ($_fd != $fd && $server->isEstablished ($_fd))
+        $server->push ($_fd, $_json);
+  }
+
+  private function _pushUsersHaveMessage (array $args):void
+  {
+    $server = $this->_server;
+    $db = $server->db;
+    $_json = json_encode (['action' => 'have-msg',
+                           'wallId' => $args['wallId']]);
+
+    foreach ($args['users'] as $id)
+      foreach ($db->lGet ('usersUnique', $id) as $_fd)
         $server->push ($_fd, $_json);
   }
 

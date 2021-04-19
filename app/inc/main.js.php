@@ -188,18 +188,17 @@
           }
 
           // Set wall users view count if needed
-          const viewcount =
-            WS.popResponse ("viewcount-wall-"+wallId);
+          const viewcount = WS.popResponse ("viewcount-wall-"+wallId);
           if (viewcount !== undefined)
             plugin.refreshUsersview (viewcount); 
 
           // If last wall to load.
           if (args.lastWall)
           {
-            if (!S.get ("fromDirectURL"))
+            if (!S.get ("noRefresh"))
               setTimeout(()=>
-              $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
-                .wall ("refresh"), 0);
+                $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
+                  .wall ("refresh"), 0);
 
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
@@ -236,29 +235,17 @@
             plugin.displayExternalRef ();
 
             // Display postit dealine alert or specific wall if needed.
-            if (settings.fromDirectURL)
+            if (args.cb_after)
             {
-              const postitId = settings.postitId;
-
               plugin.setActive ();
               //FIXME
               plugin.refresh ();
 
+              args.cb_after ();
+
               H.waitForDOMUpdate (() =>
                 {
-                  if (postitId)
-                  {
-                    const $postit =
-                            $wall.find(".postit[data-id=postit-"+postitId+"]");
-
-                    if ($postit.length)
-                      $postit.postit ("displayDeadlineAlert");
-                    else
-                      H.displayMsg ({type: "warning", msg: "<?=_("The note has been deleted")?>"});
-                  }
-                  else
-                    plugin.displayShareAlert ();
-
+                  settings.cb_after ();
                   H.waitForDOMUpdate (() => __postInit ());
                 });
             }
@@ -268,14 +255,33 @@
         });
     },
 
-    // METHOD displayShareAlert ()
-    displayShareAlert ()
+    // METHOD displayDeadlineAlert ()
+    displayDeadlineAlert (args)
     {
+      $(".wall[data-id='wall-"+args.wallId+"']").wall ("setActive");
+
+      const $wall = S.getCurrent ("wall"),
+            $postit = $wall.find (".postit[data-id=postit-"+args.postitId+"]");
+
+      if ($postit.length)
+        $postit.postit ("displayDeadlineAlert");
+      else
+        H.displayMsg ({
+          type: "warning",
+          msg: "<?=_("The note has been deleted")?>"
+        });
+    },
+
+    // METHOD displayShareAlert ()
+    displayShareAlert (wallId)
+    {
+      $(".wall[data-id='wall-"+wallId+"']").wall ("setActive");
+
       const walls = wpt_userData.walls.list;
       let owner;
 
       for (const k in walls)
-        if (walls[k].id == this.settings.id)
+        if (walls[k].id == wallId)
         {
           owner = walls[k].ownername
           break;
@@ -1228,12 +1234,9 @@
         // success cb
         (d) =>
         {
-          // If we must raise a postit deadline alert.
-          if (args.fromDirectURL)
-          {
-            d.postitId = args.postitId||null;
-            d.fromDirectURL = true;
-          }
+          // If we must execute a callback after loading the wall.
+          if (args.cb_after)
+            d.cb_after = args.cb_after;
 
           // If we are restoring a wall.
           if (args.restoring)
@@ -1244,22 +1247,25 @@
           {
             $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
 
-            if ($tabs.find(".nav-item").length)
-              $tabs.find(".nav-item:first-child").tab ("show");
+            return H.waitForDOMUpdate (()=>
+              {
+                if ($tabs.find(".nav-item").length)
+                  $tabs.find(".nav-item:first-child").tab ("show");
 
-            // Save opened walls when all walls will be loaded.
-            if (d.restoring)
-            {
-              if (args.lastWall && args.lastWall == 1)
-                $("#settingsPopup").settings ("saveOpenedWalls");
-              else
-                S.set ("save-opened-walls", true);
-            }
+                // Save opened walls when all walls will be loaded.
+                if (d.restoring)
+                {
+                  if (args.lastWall && args.lastWall == 1)
+                    $("#settingsPopup").settings ("saveOpenedWalls");
+                  else
+                    S.set ("save-opened-walls", true);
+                }
 
-            return H.displayMsg ({
-                     type: "warning",
-                     msg: "<?=_("Some walls are no longer available!")?>"
-                   });
+                return H.displayMsg ({
+                  type: "warning",
+                  msg: "<?=_("Some walls are no longer available!")?>"
+                });
+            });
           }
 
           if (d.error_msg)
@@ -1391,36 +1397,49 @@
         const {type, wallId, postitId} = args||{},
               wallsLen = walls.length;
 
-        S.set ("fromDirectURL", !!args);
+        S.set ("noRefresh", !!args);
 
         for (let i = wallsLen - 1; i >= 0; i--)
         {
-          const fromDirectURL = type && walls[i] == wallId;
-
           this.open ({
             lastWall: (i == 0) ? wallsLen : null,
             wallId: walls[i],
-            restoring: true,
-            fromDirectURL: fromDirectURL,
-            postitId: fromDirectURL ? postitId : null
+            restoring: true
           });
         }
       }
     },
 
-    // METHOD loadSpecific ()
-    loadSpecific (args)
+    // METHOD isOpened ()
+    isOpened (wallId)
     {
-      const {wallId, postitId} = args;
+      return ((wpt_userData.settings.openedWalls||[])
+                 .indexOf (String(wallId)) != -1);
+    },
 
-      if ((wpt_userData.settings.openedWalls||[]).indexOf (wallId) == -1)
+    // METHOD loadSpecific ()
+    loadSpecific (args, noDelay)
+    {
+      const {wallId, postitId} = args,
+            __displayAlert = ()=>
+            {
+              if (postitId)
+                setTimeout (
+                  ()=> this.displayDeadlineAlert ({wallId, postitId}),
+                                                  noDelay ? 0 : 250);
+              else
+                this.displayShareAlert (wallId);
+            };
+
+      if (!this.isOpened (wallId))
         this.open ({
           lastWall: 1,
           wallId: wallId,
           restoring: false,
-          fromDirectURL: true,
-          postitId: postitId
+          cb_after: __displayAlert
         });
+      else
+        setTimeout(()=> __displayAlert (), noDelay ? 0 : 500);
 
       // Remove special alert URL.
       history.pushState (null, null, "/");
@@ -1436,7 +1455,7 @@
         // success cb
         (d) =>
         {
-          wpt_userData.walls = d.list||[];
+          wpt_userData.walls = {list: d.list||[]};
 
           if (success_cb)
             success_cb ();

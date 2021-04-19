@@ -42,9 +42,6 @@
               $account.modal ("hide");
             });
 
-      // Update "invisible mode" icon in main menu.
-      plugin.updateMainMenu ();
-
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
         {
@@ -293,6 +290,7 @@
     // METHOD updateMainMenu ()
     updateMainMenu ()
     {
+      // Update "invisible mode" icon in main menu.
       document.querySelector(".invisible-mode").style.display =
         (wpt_userData.settings.visible == 1) ? "none" : "inline-block";
     },
@@ -406,5 +404,13 @@
     }
 
   });
+
+/////////////////////////// AT LOAD INIT //////////////////////////////
+
+  $(function ()
+    {
+      if (!H.isLoginPage ())
+        setTimeout (()=> $("<div/>").account ("updateMainMenu"), 0);
+    });
 
 <?php echo $Plugin->getFooter ()?>

@@ -7,7 +7,7 @@
 
   <!-- MENU main -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm">
-    <a href="#" class="navbar-brand font-weight-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"></i> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
+    <a href="#" class="navbar-brand font-weight-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"></i><div id="umsg"><span class="wpt-badge">0</span></div> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
     <button type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="navbars" aria-expanded="false" class="navbar-toggler"><span class="navbar-toggler-icon"></span></button>
     <div id="main-menu" class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">

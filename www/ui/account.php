@@ -66,7 +66,7 @@
 
           <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" name="allow_emails" id="allow_emails"<?=($user['allow_emails'] == 1)?' checked':''?>>
-            <label class="custom-control-label" for="allow_emails"> <?=_("Notify me by email")?></label> <button type="button" class="help" data-toggle="tooltip" data-html="true" title="<?=_("By unchecking this option, <b>you will no longer receive an email notification</b> when a user shares a wall with you. However, you will continue to receive notifications for your notes deadline alerts.")?>"><i class="fas fa-info-circle fa-xs"></i></button>
+            <label class="custom-control-label" for="allow_emails"> <?=_("Notify me by email")?></label> <button type="button" class="help" data-toggle="tooltip" data-html="true" title="<?=_("By unchecking this option you will no longer receive an email notification when a user shares a wall with you or when a note expires.")?>"><i class="fas fa-info-circle fa-xs"></i></button>
           </div>
 
           <div class="custom-control custom-switch">

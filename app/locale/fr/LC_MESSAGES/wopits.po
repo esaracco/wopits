@@ -1,13 +1,13 @@
 # wopits french translation.
 # This file is put in the public domain.
-# Emmanuel Saracco <contact@wopits.com>, 2020.
+# Emmanuel Saracco <contact@wopits.com>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-13 06:37+0200\n"
-"PO-Revision-Date: 2021-04-13 06:37+0200\n"
+"POT-Creation-Date: 2021-04-19 20:13+0200\n"
+"PO-Revision-Date: 2021-04-19 20:13+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -17,6 +17,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+
+#, php-format
+msgid "%s gave you full access to the wall «%s»"
+msgstr "%s vous a donné un accès complet au mur «%s»"
+
+#, php-format
+msgid "%s gave you limited access with creation of notes to the wall «%s»"
+msgstr "%s vous a donné un accès limité avec création de notes au mur «%s»"
+
+#, php-format
+msgid "%s gave you read-only access to the wall «%s»"
+msgstr "%s vous a donné un accès en lecture seule au mur «%s»"
 
 #, php-format
 msgid "%s notes match your search."
@@ -481,14 +493,12 @@ msgid "Block external contents"
 msgstr "Bloquer les contenus externes"
 
 msgid ""
-"By unchecking this option, <b>you will no longer receive an email "
-"notification</b> when a user shares a wall with you. However, you will "
-"continue to receive notifications for your notes deadline alerts."
+"By unchecking this option you will no longer receive an email notification "
+"when a user shares a wall with you or when a note expires."
 msgstr ""
-"En décochant cette option, <b>vous ne recevrez plus de notification par e-"
-"mail</b> lorsqu'un utilisateur partage un mur avec vous. Cependant, vous "
-"continuerez à recevoir des notifications pour les alertes sur la date limite "
-"de vos notes."
+"En décochant cette option, vous ne recevrez plus de notification par mail "
+"lorsqu'un utilisateur partage un mur avec vous ou lorsqu'une note arrive à "
+"expiration."
 
 msgid "Can not read file"
 msgstr "Impossible de lire le fichier"
@@ -593,9 +603,6 @@ msgstr "Pointillés"
 msgid "Deadline"
 msgstr "Date limite"
 
-msgid "Deadline notification"
-msgstr "Notification date limite"
-
 msgid "Dedicated"
 msgstr "Dédiés"
 
@@ -628,6 +635,9 @@ msgstr "Supprimer ce groupe"
 
 msgid "Delete this group?"
 msgstr "Supprimer ce groupe?"
+
+msgid "Delete this message"
+msgstr "Supprimer ce message"
 
 msgid "Delete this note?"
 msgstr "Supprimer cette note?"
@@ -762,127 +772,8 @@ msgid "Grid"
 msgstr "Grille"
 
 #, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you full access to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"%s vous a donné un accès complet au mur suivant:\n"
-"\n"
-"%s\n"
-"%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you limited access with creation of notes to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"%s vous a donné un accès limité avec création de notes au mur suivant:\n"
-"\n"
-"%s\n"
-"%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"%s gave you read-only access to the following wall:\n"
-"\n"
-"%s\n"
-"%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"%s vous a donné un accès en lecture seule au mur suivant:\n"
-"\n"
-"%s\n"
-"%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note has expired:\n"
-"\n"
-"%s%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"La note suivante a expiré:\n"
-"\n"
-"%s%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note will expire in %s days:\n"
-"\n"
-"%s%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"La note suivante expirera dans %s jours:\n"
-"\n"
-"%s%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"The following note will expire soon:\n"
-"\n"
-"%s"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"La note suivante expirera bientôt:\n"
-"\n"
-"%s"
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"You are receiving this email because you requested the reset of your wopits "
-"password.\n"
-"\n"
-"- Login: %s\n"
-"- New password: %s\n"
-"\n"
-"For security reasons we advise you to change it as soon as possible."
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"Vous recevez ce mail car vous avez demandé la réinitialisation de votre mot "
-"de passe wopits.\n"
-"\n"
-"- Identifiant: %s\n"
-"- Nouveau mot de passe: %s\n"
-"\n"
-"Pour des raisons de sécurité, nous vous conseillons de le modifier le plus "
-"rapidement possible."
-
-#, php-format
-msgid ""
-"Hello %s,\n"
-"\n"
-"Your account \"%s\" has been created!"
-msgstr ""
-"Bonjour %s,\n"
-"\n"
-"Votre compte \"%s\" a bien été créé!"
+msgid "Hello %s"
+msgstr "Bonjour %s"
 
 msgid "Help"
 msgstr "Aide"
@@ -936,6 +827,9 @@ msgstr "Gérer mes options"
 
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
+
+msgid "Messages"
+msgstr "Messages"
 
 msgid "Meta menu"
 msgstr "Méta menu"
@@ -1007,6 +901,9 @@ msgstr "Pas d'informations complémentaires"
 
 msgid "No result"
 msgstr "Aucun résultat"
+
+msgid "No title"
+msgstr "Aucun titre"
 
 msgid "No walls available"
 msgstr "Aucun mur disponible"
@@ -1313,6 +1210,18 @@ msgstr ""
 "Le fichier que vous essayez d'importer n'est pas compatible avec la version "
 "courante de wopits."
 
+#, php-format
+msgid "The following note has expired:"
+msgstr "La note suivante a expiré:"
+
+#, php-format
+msgid "The following note will expire in %s days:"
+msgstr "La note suivante expirera dans %s jours:"
+
+#, php-format
+msgid "The following note will expire soon:"
+msgstr "La note suivante expirera bientôt:"
+
 msgid "The following users are viewing this wall:"
 msgstr "Les utilisateurs suivants consultent ce mur:"
 
@@ -1345,6 +1254,18 @@ msgstr "Le nouveau mot de passe:"
 
 msgid "The note has been deleted"
 msgstr "La note a été supprimée"
+
+#, php-format
+msgid "The note «%s» has expired."
+msgstr "La note «%s» a expiré."
+
+#, php-format
+msgid "The note «%s» will expire in %s days."
+msgstr "La note «%s» expirera dans %s jour(s)."
+
+#, php-format
+msgid "The note «%s» will expire soon."
+msgstr "La note «%s» expirera bientôt."
 
 msgid "The row/column has been deleted!"
 msgstr "La ligne/colonne a été supprimée!"
@@ -1422,11 +1343,11 @@ msgid "This user is no longer available!"
 msgstr "Cet utilisateur n'est plus disponible!"
 
 msgid ""
-"This user will lose their access for all walls shared with this generic "
-"group.<br>Remove anyway?"
+"This user will lose their access for all walls shared with this group."
+"<br>Remove anyway?"
 msgstr ""
-"Cet utilisateur perdra l'accès à tous les murs partagés avec ce groupe "
-"générique.<br>Retirer quand même?"
+"Cet utilisateur perdra l'accès à tous les murs partagés avec ce groupe."
+"<br>Retirer quand même?"
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr "Cet utilisateur perdra l'accès au mur.<br>Retirer quand même?"
@@ -1597,6 +1518,25 @@ msgid "You are not the creator of this wall"
 msgstr "Vous n'êtes pas le créateur de ce mur"
 
 #, php-format
+msgid ""
+"You are receiving this email because you requested the reset of your wopits "
+"password.\n"
+"\n"
+"- Login: %s\n"
+"- New password: %s\n"
+"\n"
+"For security reasons we advise you to change it as soon as possible."
+msgstr ""
+"Vous recevez ce mail car vous avez demandé la réinitialisation de votre mot "
+"de passe wopits.\n"
+"\n"
+"- Identifiant: %s\n"
+"- Nouveau mot de passe: %s\n"
+"\n"
+"Pour des raisons de sécurité, nous vous conseillons de le modifier le plus "
+"rapidement possible."
+
+#, php-format
 msgid "You can change it at any time in your %sSettings%s"
 msgstr "Vous pouvez le changer à tout moment dans vos %sRéglages%s"
 
@@ -1614,6 +1554,10 @@ msgstr "Vous devez avoir un accès en écriture pour effectuer cette action!"
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
 msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
+
+#, php-format
+msgid "Your account «%s» has been created!"
+msgstr "Votre compte «%s» a bien été créé!"
 
 msgid "Your connection attempt failed!"
 msgstr "Votre tentative de connexion a échoué!"
@@ -1734,237 +1678,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid "Message sent automatically."
-#~ msgstr "Message envoyé automatiquement."
-
-#~ msgid "Unsubscribe"
-#~ msgstr "Se désinscrire"
-
-#, fuzzy
-#~ msgid "Unsubscribe page"
-#~ msgstr "Se désinscrire"
-
-#~ msgid "Warning: you will no longer receive messages from wopits!"
-#~ msgstr "Attention: vous ne recevrez plus de messages de wopits!"
-
-#~ msgid "You can reactivate emails at any time from your account."
-#~ msgstr "Vous pouvez réactiver les emails à tout moment depuis votre compte."
-
-#~ msgid "Allow emails related to my account"
-#~ msgstr "Autoriser les courriels relatifs à mon compte"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Arrow is now "
-#~ "directional.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> La flèche est "
-#~ "désormais directionnelle.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Simplification "
-#~ "of creation.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> Simplification "
-#~ "des créations.</p>"
-
-#~ msgid "The wopits team,"
-#~ msgstr "L'équipe de wopits,"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>Relations</b> Cleaning & "
-#~ "optimization.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>Relations</b> Nettoyage & "
-#~ "optimisation.</p>"
-
-#~ msgid "@author"
-#~ msgstr "@auteur"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Network</b> Use <i>fetch()</"
-#~ "i> wherever possible.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Réseau</b> Utilisation de "
-#~ "<i>fetch()</i> dans la mesure du possible.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Some cosmetic "
-#~ "changes.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Un peu de "
-#~ "cosmétique.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Fixed an issue with the "
-#~ "count of users in groups.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Partage</b> Correction d'un "
-#~ "problème avec le décompte des utilisateurs dans les groupes.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Users search</b> Show "
-#~ "username along with full name.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Recherche utilisateurs</b> "
-#~ "Afficher l'identifiant avec le nom complet.</p>"
-
-#~ msgid "Delete relationships"
-#~ msgstr "Supprimer les relations"
-
-#~ msgid "Linked documents"
-#~ msgstr "Documents liés"
-
-#~ msgid "This item has been deleted"
-#~ msgstr "Cet élément a été supprimé"
-
-#~ msgid "Undo"
-#~ msgstr "Annuler"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Fixed an issue with MS "
-#~ "Edge and images uploading.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Général</b> Correction d'un "
-#~ "problème avec MS Edge et le téléversement d'images.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Relationships</b> Fixed issue with "
-#~ "relationships update.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Relations</b> Correction d'un "
-#~ "problème avec la modification de relations.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Added a progress "
-#~ "bar to follow the progress of a task.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Ajout d'une barre "
-#~ "de progression pour suivre l'avancée d'une tâche.</p>"
-
-#~ msgid ""
-#~ "The server is taking too long to respond.<br>Please, try again later."
-#~ msgstr "Le serveur répond trop lentement.<br>Veuillez réessayer plus tard."
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>WebSocket</b> Some WebSocket "
-#~ "heartbeat rework. <i>Contact us ASAP if you encounter timeouts problem!</"
-#~ "i></p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>WebSocket</b> Quelques retouches "
-#~ "sur le heartbeat WebSocket. <i>Contactez-nous ASAP si vous rencontrez des "
-#~ "problèmes de timeout!</i></p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Sharing</b> Users can now "
-#~ "see in real time who is making changes and on what items.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Partage</b> Les utilisateurs "
-#~ "peuvent suivre en temps réel qui fait des modifications, et sur quels "
-#~ "éléments.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> Added the ability "
-#~ "to move rows and columns using their menu.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Ajout de la "
-#~ "possibilité de déplacer les lignes et les colonnes à l'aide de leur menu."
-#~ "</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Sticky notes</b> Fixed an issue "
-#~ "with non-existent images.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Post-its</b> Correction d'un "
-#~ "problème avec les images inexistantes.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Full view</b> More fluidity "
-#~ "and consistency.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Vue complète</b> Plus de "
-#~ "fluidité et de consistance.</p>"
-
-#~ msgid "Hide headers"
-#~ msgstr "Cacher les en-têtes"
-
-#~ msgid "Show headers"
-#~ msgstr "Afficher les en-têtes"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now "
-#~ "cancel the selections and close the menu by pressing the <kbd>esc</kbd> "
-#~ "key. Added aliases <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> to select menu "
-#~ "options, and <kbd>ctrl+v</kbd> to paste notes based on cursor position.</"
-#~ "p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Méta menu</b> Vous pouvez à "
-#~ "présent annuler les sélections et fermer le menu en pressant la touche "
-#~ "<kbd>esc</kbd>. Ajout des alias <kbd>del</kbd>, <kbd>ctrl+c/x</kbd> pour "
-#~ "sélectionner les options du menu, et <kbd>ctrl+v</kbd> pour coller les "
-#~ "notes en se basant sur la position du curseur.</p>"
-
-#~ msgid "Delete all relationships from this note?"
-#~ msgstr "Supprimer toutes les relations de cette note?"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>WebSocket server</b> Swoole "
-#~ "v4.4.22 <i class='fas fa-arrow-right fa-xs'></i> v4.5.9.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Serveur WebSocket</b> Swoole "
-#~ "v4.4.22 <i class='fas fa-arrow-right fa-xs'></i> v4.5.9.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Chat</b> Fixed an issue when "
-#~ "multiple chats are open.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Chat</b> Correction d'un problème "
-#~ "lorsque plusieurs chats sont ouverts.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Meta menu</b> You can now "
-#~ "act on several notes at the same time by selecting them with <kbd>ctrl"
-#~ "+click</kbd>. A floating Meta menu will appear. It is possible to select "
-#~ "as many notes as you want among all your opened walls.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Méta menu</b> Vous pouvez à "
-#~ "présent agir sur plusieurs notes à la fois en les sélectionnant via "
-#~ "<kbd>ctrl+clic</kbd>. Un Méta menu flottant apparaîtra. Il est possible "
-#~ "de sélectionner autant de notes que vous le voulez dans tous vos murs "
-#~ "ouverts.</p>"
-
-#~ msgid "Someone is editing this item."
-#~ msgstr "Quelqu'un édite cet élément."
-
-#~ msgid "An error occured while uploading file."
-#~ msgstr "Une erreur est survenue durant le dépôt du fichier."
-
-#~ msgid "All latest news..."
-#~ msgstr "Toutes les dernières nouvelles..."
-
-#~ msgid "Batch actions"
-#~ msgstr "Actions par lots"
-
-#~ msgid "The file is already linked to the note."
-#~ msgstr "Le fichier est déjà associé à la note."
-
-#~ msgid "Delete this sticky note?"
-#~ msgstr "Supprimer ce post-it?"
-
-#~ msgid "Sticky note update"
-#~ msgstr "Modification du post-it"
-
-#~ msgid "What's new in this release?"
-#~ msgstr "Quoi de neuf dans cette version?"
-
-#~ msgid "Upgrade done."
-#~ msgstr "La mise à jour est terminée."
-
-#~ msgid "Sharing management"
-#~ msgstr "Gestion des partages"
-
-#~ msgid "Sticky notes management"
-#~ msgstr "Gestion des post-its"
-
-#~ msgid "Walls management"
-#~ msgstr "Gestion des murs"

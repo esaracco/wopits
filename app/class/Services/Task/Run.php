@@ -20,10 +20,10 @@ class Run
       switch ($data['event'])
       {
         // Send email.
-        case Task::EVENT_TYPE_SEND_MAIL:
-          $this->_log ('info', Task::EVENT_TYPE_SEND_MAIL,
+        case Task::EVENT_TYPE_SEND_MESSAGE:
+          $this->_log ('info', Task::EVENT_TYPE_SEND_MESSAGE,
             'Executing task');
-          (new \Wopits\Mailer())->send ($data);
+          (new \Wopits\Message())->send ($data);
           return;
 
         case Task::EVENT_TYPE_DUM:

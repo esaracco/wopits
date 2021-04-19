@@ -549,8 +549,16 @@ class Group extends Wall
         $wallTitle = $this->data->sendmail->wallTitle;
         $access = $this->data->access;
 
+        $users = $this->getUsers(true)['users'];
+
+        $ret = ['wallId' => $this->wallId, 'users' => []];
+
+        // Only return users ids
+        foreach ($users as $user)
+          $ret['users'][] = $user['id'];
+
         $_args = [
-          'users' => $this->getUsers(true)['users'],
+          'users' => $users,
           'wallId' => $this->wallId,
           'sharerName' => $sharerName,
           'wallTitle' => $wallTitle,
@@ -564,22 +572,20 @@ class Group extends Wall
 
          foreach ($_args['users'] as $user)
          {
-           if ($user['allow_emails'])
-           {
-             $Task->execute ([
-               'event' => Task::EVENT_TYPE_SEND_MAIL,
-               'method' => 'wallSharing',
-               'userId' => $user['id'],
-               'email' => $user['email'],
-               'wallId' => $_args['wallId'],
-               'recipientName' => $user['fullname'],
-               'sharerName' => $_args['sharerName'],
-               'wallTitle' => $_args['wallTitle'],
-               'access' => $_args['access']
-             ]);
+           $Task->execute ([
+             'event' => Task::EVENT_TYPE_SEND_MESSAGE,
+             'method' => 'wallSharing',
+             'sendmail' => $user['allow_emails'],
+             'userId' => $user['id'],
+             'email' => $user['email'],
+             'wallId' => $_args['wallId'],
+             'recipientName' => $user['fullname'],
+             'sharerName' => $_args['sharerName'],
+             'wallTitle' => $_args['wallTitle'],
+             'access' => $_args['access']
+           ]);
 
-             \Swoole\Coroutine::sleep (2);
-           }
+           \Swoole\Coroutine::sleep (2);
          }
        });
       }
@@ -591,7 +597,7 @@ class Group extends Wall
       $this->rollback ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-      $ret['error'] = 1;
+      $ret = ['error' => 1];
     }
 
     return $ret;

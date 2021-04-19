@@ -98,7 +98,7 @@
               $owall.find(".btn-clear").show ();
 
               recentWalls.forEach ((wallId) =>
-                  wpt_userData.walls.forEach ((wall) =>
+                  wpt_userData.walls.list.forEach ((wall) =>
                     (wall.id == wallId) && walls.push (wall)));
 
               if (!auto)
@@ -249,11 +249,11 @@
             userId = wpt_userData.id,
             walls = [];
 
-      wpt_userData.walls.forEach ((wall) =>
+      wpt_userData.walls.list.forEach ((wall) =>
       {
         const re = new RegExp (H.quoteRegex(str), 'ig');
 
-        if (openedWalls.indexOf(String(wall.id)) == -1 && (
+        if (!$("<div/>").wall("isOpened", wall.id) && (
               wall.name.match (re) ||
               (userId != wall.ownerid && wall.ownername.match (re))))
           walls.push (wall);
@@ -269,11 +269,11 @@
             checked = this.getChecked ();
       let body = "";
 
-      walls = walls||wpt_userData.walls;
+      walls = walls||wpt_userData.walls.list;
 
       $owall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
-      if (!wpt_userData.walls.length)
+      if (!wpt_userData.walls.list.length)
         body = "<?=_("No walls available")?>";
       else
       { 
