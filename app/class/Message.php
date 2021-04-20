@@ -24,7 +24,7 @@ class Message
 
       if (!empty (WPT_SMTP_PORT))
          $this->_mailer->Port = WPT_SMTP_PORT;
-     }
+    }
 
     if (WPT_USE_DKIM)
     {

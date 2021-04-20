@@ -2110,7 +2110,7 @@ EOC;
 .modal a:not(.list-group-item):not(.close),
 .modal span.name i,
 .popover a {
-  color: #343a40;
+  color: #797979;
 }
 
 #accountPopup i.fa-bomb {
