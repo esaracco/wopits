@@ -14,7 +14,7 @@ class Message
 
     //$mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $this->_mailer->CharSet = 'UTF-8';
-    $this->_mailer->Encoding = 'base64';
+    $this->_mailer->Encoding = 'quoted-printable';
     $this->_mailer->isHTML (false);
 
     if (defined ('WPT_SMTP_HOST') && !empty (WPT_SMTP_HOST))
