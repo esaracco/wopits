@@ -619,6 +619,13 @@
       }
     },
 
+    // METHOD getMin ()
+    getMin ()
+    {
+      return this.settings.cell[0].querySelector (
+              ".postit-min[data-id='postit-"+this.settings.id+"']");
+    },
+
     // METHOD displayDeadlineAlert ()
     displayDeadlineAlert ()
     {
@@ -630,6 +637,8 @@
 
       H.waitForDOMUpdate (()=>
       {
+        const min = this.getMin ();
+
         if (!data.deadlineepoch)
           content = "<?=_("The deadline for this note has been removed!")?>";
         else if (this.element.hasClass ("obsolete"))
@@ -650,7 +659,7 @@
 
         H.openConfirmPopover ({
           type: "info",
-          item: this.element,
+          item: min ? $(min) : this.element,
           title: `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`,
           content: content
         });
@@ -1408,8 +1417,7 @@
       // See cell::setPostitsUserWritingListMode()
       if ($cell[0].classList.contains ("list-mode"))
       {
-        const min = $cell[0].querySelector (
-                ".postit-min[data-id='postit-"+this.settings.id+"']");
+        const min = this.getMin ();
 
         if (canWrite)
           __lock (min);
@@ -1888,8 +1896,7 @@
       if (cell && cell.id != this.settings.cellId)
       {
         if (this.settings.cell[0].classList.contains ("list-mode"))
-          this.settings.cell.find(
-            ".postit-min[data-id='postit-"+this.settings.id+"']").remove ();
+          this.getMin().remove ();
 
         this.settings.cell =
           cell.obj||this.settings.wall.find("td[data-id='cell-"+cell.id+"']");
