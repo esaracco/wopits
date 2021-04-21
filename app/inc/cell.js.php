@@ -594,7 +594,7 @@
           const $cell = $(this),
                 $mm = S.getCurrent ("mmenu");
 
-          // Click on notes in list mode
+          // Click on notes in stack mode
           if (e.target.classList.contains ("postit-min"))
           {
             const li = e.target,
