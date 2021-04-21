@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-04-19 20:43+0200\n"
+        "POT-Creation-Date: 2021-04-21 10:34+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,6 +48,9 @@ msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected note
 msgstr  ""
 
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with updating the title of notes in stack mode.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Relations</b> Fixed some issues with drop shadow and properties color box.</p>"

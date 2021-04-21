@@ -1348,7 +1348,7 @@
         else
         {
           const title = this.querySelector(".postit-header span.title")
-                          .innerText,
+                          .innerHTML,
                 content = this.querySelector(".postit-edit").innerHTML,
                 classcolor = this.className.match (/(color\-[a-z]+)/),
                 deadline = (this.dataset.deadlineepoch) ?
