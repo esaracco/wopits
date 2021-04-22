@@ -107,8 +107,8 @@ class Message
         :
         sprintf (
           _("The note «%s» will expire in %s days."),
-          $days,
-          "<a href='#' data-type='postit' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}'>".htmlentities($qTitle)."</a>")
+          "<a href='#' data-type='postit' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}'>".htmlentities($qTitle)."</a>",
+          $days)
     ]);
 
     Helper::sendToWSServer ([
