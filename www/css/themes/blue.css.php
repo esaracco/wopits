@@ -38,8 +38,9 @@
 
 .modal a:not(.list-group-item):not(.close),
 .modal span.name i,
-.popover a {
-  color: #53a9ff !important;
+.popover a,
+.msg-userref {
+  color:#53a9ff !important;
 }
 
 div.postit-mark {
@@ -110,6 +111,7 @@ span.wpt-badge {
 .form-control:disabled,
 .form-control[readonly],
 .list-group-item:not(.collapse):hover,
+.msg-item:hover,
 .list-group-item.title {
   background-color:#eef7ff !important;
 }

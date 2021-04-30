@@ -90,7 +90,7 @@
     {
       const $input = this.element.find ("input");
 
-      $input.val (S.getCurrent("wall")[0].dataset.searchstring||'');
+      $input.val (S.getCurrent("wall")[0].dataset.searchstring||"");
 
       if ($input.val())
         $input.trigger ("keyup");

@@ -30,10 +30,15 @@
   {
     let m;
 
-    if (location.href.indexOf ("/?/unsubscribe") != -1)
+    if (location.href.indexOf ("unsubscribe") != -1)
       return {type: "u"};
-    else if ( (m = location.href.match (/\?\/(a|s)\/(\d+)(\/(\d+))?$/)) )
-      return {type: m[1], wallId: m[2], postitId: m[4]||null};
+    else if (( m = location.href.match(<?=WPT_DIRECTURL_REGEXP?>) ))
+      return {
+        type: m[1],
+        wallId: m[2],
+        postitId: m[4]||null,
+        commentId: m[6]||null
+      };
   }
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -195,10 +200,9 @@
           // If last wall to load.
           if (args.lastWall)
           {
-            if (!S.get ("noRefresh"))
-              setTimeout(()=>
-                $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
-                  .wall ("refresh"), 0);
+            setTimeout(()=>
+              $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
+                .wall ("refresh"), 0);
 
             // If we must save opened walls (because user have no longer the
             // rights to load a previously opened wall for example).
@@ -223,6 +227,7 @@
 
           H.waitForDOMUpdate (()=>
           {
+            // INTERNAL FUNCTION ()
             const __postInit = ()=>
               {
                 plugin.displayHeaders ();
@@ -255,16 +260,14 @@
         });
     },
 
-    // METHOD displayDeadlineAlert ()
-    displayDeadlineAlert (args)
+    // METHOD displayPostitAlert ()
+    displayPostitAlert (args)
     {
-      $(".wall[data-id='wall-"+args.wallId+"']").wall ("setActive");
-
-      const $wall = S.getCurrent ("wall"),
+      const $wall = $(".wall[data-id='wall-"+args.wallId+"']"),
             $postit = $wall.find (".postit[data-id=postit-"+args.postitId+"]");
 
       if ($postit.length)
-        $postit.postit ("displayDeadlineAlert");
+        $postit.postit ("displayAlert", args.type);
       else
         H.displayMsg ({
           type: "warning",
@@ -275,8 +278,6 @@
     // METHOD displayShareAlert ()
     displayShareAlert (wallId)
     {
-      $(".wall[data-id='wall-"+wallId+"']").wall ("setActive");
-
       const walls = wpt_userData.walls.list;
       let owner;
 
@@ -639,7 +640,7 @@
     // METHOD showUserWriting ()
     showUserWriting (user)
     {
-      setTimeout (()=>$(".walls a[href='#wall-"+this.settings.id+"']")
+      setTimeout (()=>$(`.walls a[href="#wall-${this.settings.id}"]`)
         .prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`), 150);
     },
 
@@ -651,7 +652,7 @@
       else if (this.settings.id)
         H.fetch (
           "GET",
-          "wall/"+this.settings.id,
+          `wall/${this.settings.id}`,
           null,
           // success cb
           (d) => this._refresh (d));
@@ -663,13 +664,15 @@
       const plugin = this,
             $wall = plugin.element,
             wall = $wall[0],
-            wallIsVisible = $wall.is (":visible"),
-            __refreshWallBasicProperties = (d)=>
-            {
-              plugin.setShared (d.shared);
-              plugin.setName (d.name);
-              plugin.setDescription (d.description);
-            };
+            wallIsVisible = $wall.is (":visible");
+
+      // INTERNAL FUNCTION __refreshWallBasicProperties ()
+      const __refreshWallBasicProperties = (d)=>
+        {
+          plugin.setShared (d.shared);
+          plugin.setName (d.name);
+          plugin.setDescription (d.description);
+        };
 
       // Partial wall update
       if (d.partial)
@@ -765,6 +768,7 @@
 
         __refreshWallBasicProperties (d);
 
+        // Refresh headers
         for (let i = 0; i < colsCount; i++)
         {
           const header = d.headers.cols[i],
@@ -798,13 +802,8 @@
             const $header = $(th);
 
             if (!rowsHeadersIds[$header.header ("getId")])
-            {
-              const $cell =
-                $wall.find("tbody tr:eq("+$header.parent().index()+")");
-
-              $cell.cell ("removePostitsPlugs");
-              $cell.remove ();
-            }
+              $wall.find("tbody tr:eq("+$header.parent().index()+")").
+                cell ("remove");
           });
 
         // Remove deleted columns
@@ -820,12 +819,7 @@
             {
               $wall.find("thead th:eq("+idx+")").remove ();
               wall.querySelectorAll("tbody tr").forEach (tr =>
-                {
-                  const $cell = $(tr).find ("td:eq("+(idx-1)+")");
-
-                  $cell.cell ("removePostitsPlugs");
-                  $cell.remove();
-                });
+                $(tr).find ("td:eq("+(idx-1)+")").cell ("remove"));
             }
           });
 
@@ -838,7 +832,7 @@
           for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
             postitsIds[cell.postits[j].id] = true;
 
-          if (rows[irow] == undefined)
+          if (rows[irow] === undefined)
             rows[irow] = [];
 
           rows[irow][cell.item_col] = cell;
@@ -889,20 +883,15 @@
               // Remove deleted post-its
               $cell[0].querySelectorAll(".postit").forEach (p =>
                 {
-                  const $postit = $(p);
-
-                  if (!postitsIds[$postit.postit("getId")])
-                  {
-                    $postit.postit ("removePlugs", true);
-                    p.remove ();
-                  }
+                  if (!postitsIds[$(p).postit("getId")])
+                    $(p).postit ("remove");
                 });
             }
 
             for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
             {
               const postit = cell.postits[k],
-                    $postit = $wall.find('.postit[data-id="postit-'+
+                    $postit = $wall.find ('.postit[data-id="postit-'+
                                 cell.postits[k].id+'"]');
 
               // If new postit, add it
@@ -1111,7 +1100,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.id+"/"+type,
+        `wall/${this.settings.id}/${type}`,
         null,
         ()=>
           S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000));
@@ -1165,7 +1154,7 @@
     {
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.id+"/row/"+rowIdx,
+        `wall/${this.settings.id}/row/${rowIdx}`,
         {wall: {width: Math.trunc (this.element.outerWidth ())}});
     },
 
@@ -1176,7 +1165,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.id+"/col/"+(idx-1),
+        `wall/${this.settings.id}/col/${idx-1}`,
         {
           wall: {width: Math.trunc ($wall.outerWidth()-1)},
           width: Math.trunc ($wall.find("thead tr th:eq("+idx+")").outerWidth())
@@ -1337,12 +1326,12 @@
     {
       H.openConfirmPopup ({
         icon: "clone",
-        content: `<?=_("Depending on its content, cloning a wall can take time.<br>Clone anyway?")?>`,
+        content: `<?=_("Notes comments will not be cloned.<br>Continue?")?>`,
         cb_ok: () =>
           {
             H.fetch (
             "PUT",
-            "wall/"+this.settings.id+"/clone",
+            `wall/${this.settings.id}/clone`,
             null,
             // success cb
             (d) =>
@@ -1372,7 +1361,7 @@
     {
       H.openConfirmPopup ({
         icon: "file-export",
-        content: `<?=_("Depending on its content, the export size can be substantial.<br>Export anyway?")?>`,
+        content: `<?=_("Notes comments will not be exported.<br>Continue?")?>`,
         cb_ok: () => H.download ({
           url: "/wall/"+this.settings.id+"/export",
           fname: "wopits-wall-export-"+this.settings.id+".zip",
@@ -1397,8 +1386,6 @@
         const {type, wallId, postitId} = args||{},
               wallsLen = walls.length;
 
-        S.set ("noRefresh", !!args);
-
         for (let i = wallsLen - 1; i >= 0; i--)
         {
           this.open ({
@@ -1420,16 +1407,21 @@
     // METHOD loadSpecific ()
     loadSpecific (args, noDelay)
     {
-      const {wallId, postitId} = args,
-            __displayAlert = ()=>
-            {
-              if (postitId)
-                setTimeout (
-                  ()=> this.displayDeadlineAlert ({wallId, postitId}),
-                                                  noDelay ? 0 : 250);
-              else
-                this.displayShareAlert (wallId);
-            };
+      const {wallId, postitId, commentId} = args;
+
+      // INTERNAL FUNCTION __displayAlert ()
+      const __displayAlert = ()=>
+        {
+          if (postitId)
+            setTimeout (()=>
+              this.displayPostitAlert ({
+                wallId,
+                postitId,
+                type: commentId ? "comment" : "deadline"
+              }), noDelay ? 0 : 250);
+          else
+            this.displayShareAlert (wallId);
+        };
 
       if (!this.isOpened (wallId))
         this.open ({
@@ -1439,7 +1431,17 @@
           cb_after: __displayAlert
         });
       else
-        setTimeout(()=> __displayAlert (), noDelay ? 0 : 500);
+        setTimeout (()=>
+        {
+          // Set wall current if needed
+          if (wallId != S.getCurrent("wall").wall ("getId"))
+            $(`[href="#wall-${wallId}"]`)
+              .trigger ("mousedown")
+              .trigger ("click");
+
+          __displayAlert ();
+
+        }, noDelay ? 0 : 500);
 
       // Remove special alert URL.
       history.pushState (null, null, "/");
@@ -1508,10 +1510,10 @@
     // METHOD displayWallUsersview()
     displayWallUsersview ()
     {
-      //TODO We should use ajax instead of ws
+      //TODO We should use fetch() instead
       H.request_ws (
         "GET",
-        "wall/"+this.settings.id+"/usersview",
+        `wall/${this.settings.id}/usersview`,
         null,
         (d) =>
         {
@@ -1569,7 +1571,7 @@
               d.list.forEach (item =>
               {
                 if (item.id != userId)
-                  html += `<a href="#" data-id="${item.id}" class="list-group-item list-group-item-action" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
+                  html += `<a href="#" data-id="${item.id}" class="list-group-item" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
               });
               $p.find(".list-group").html (html);
 
@@ -1643,24 +1645,26 @@
         {
           const w = Number ($inputs[1].value) + 1,
                 h = Number ($inputs[2].value),
-                cellPlugin = $cell.cell ("getClass"),
-                __resize = (args)=>
-                {
-                  $wall.find("thead th:eq(1),td")
-                    .css ("width", args.newW);
-                  $wall.find(".ui-resizable-s")
-                    .css ("width", args.newW + 2);
+                cellPlugin = $cell.cell ("getClass");
 
-                  if (args.newH)
-                  {
-                    $wall.find("tbody th,td")
-                      .css ("height", args.newH);
-                    $wall.find(".ui-resizable-e")
-                      .css ("height", args.newH+2);
-                  }
+          // INTERNAL FUNCTION __resize ()
+          const __resize = (args)=>
+            {
+              $wall.find("thead th:eq(1),td")
+                .css ("width", args.newW);
+              $wall.find(".ui-resizable-s")
+                .css ("width", args.newW + 2);
 
-                  plugin.fixSize (args.oldW, args.newW);
-                };
+              if (args.newH)
+              {
+                $wall.find("tbody th,td")
+                  .css ("height", args.newH);
+                $wall.find(".ui-resizable-e")
+                  .css ("height", args.newH+2);
+              }
+
+              plugin.fixSize (args.oldW, args.newW);
+            };
 
           __resize ({newW: w, oldW: oldW, newH: h});
           if ($wall.find("td").outerWidth () != w)
@@ -1797,7 +1801,7 @@
 
       H.fetch (
         "POST",
-        "user/wall/"+this.settings.id+"/displaymode",
+        `user/wall/${this.settings.id}/displaymode`,
         {value: type});
     },
 
@@ -2006,7 +2010,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
+        `wall/${this.settings.id}/editQueue/wall/${this.settings.id}`,
         {todelete: todelete},
         // success cb
         (d) =>
@@ -2051,7 +2055,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.id+"/editQueue/wall/"+this.settings.id,
+        `wall/${this.settings.id}/editQueue/wall/${this.settings.id}`,
         data,
         // success cb
         (d) =>
@@ -2086,7 +2090,7 @@
 
         H.fetch (
           "POST",
-          "user/wall/"+this.settings.id+"/displayexternalref",
+          `user/wall/${this.settings.id}/displayexternalref`,
           {value: val});
       }
 
@@ -2121,7 +2125,7 @@
 
         H.fetch (
           "POST",
-          "user/wall/"+this.settings.id+"/displayheaders",
+          `user/wall/${this.settings.id}/displayheaders`,
           {value: val});
       }
 

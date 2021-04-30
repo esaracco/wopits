@@ -16,9 +16,7 @@
 
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  // Inherit from Wpt_toolbox
-  Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-  Object.assign (Plugin.prototype,
+  Plugin.prototype =
   {
     // METHOD init ()
     init ()
@@ -36,7 +34,7 @@
 
       $umsg.on ("click", ()=> plugin.open ());
 
-      $(document).on("click", ".umsg-body a", function (e)
+      $(document).on("click", ".msg-body a", function (e)
         {
           const wallId = this.dataset.wallid;
           let data;
@@ -52,16 +50,27 @@
               break;
 
             case "postit":
-              data = {wallId, postitId: this.dataset.postitid};
+              data = {
+                wallId,
+                postitId: this.dataset.postitid
+              };
+              break;
+
+            case "comment":
+              data = {
+                wallId,
+                postitId: this.dataset.postitid,
+                commentId: this.dataset.commentid
+              };
               break;
           }
 
           $("<div/>").wall ("loadSpecific", data, true);
         });
 
-      $(document).on("click", ".umsg-item .close", function (e)
+      $(document).on("click", ".umsg-popover .msg-item .close", function (e)
         {
-          const $item = $(this).closest (".umsg-item");
+          const $item = $(this).closest (".msg-item");
 
           e.preventDefault ();
           e.stopImmediatePropagation ();
@@ -86,7 +95,7 @@
           $badge.show().text (parseInt($badge.text()) + 1);
 
           // Refresh popover content if currently opened.
-          if (document.querySelector (".umsg-popover"))
+          if (document.querySelector (".msg-popover"))
             this.open (true);
 
           // Refresh wall if needed and if opened.
@@ -100,7 +109,7 @@
         });
     },
 
-    // METHOD addMsg ()
+    // METHOD removeMsg ()
     removeMsg ($item)
     {
       const $badge = this.element.find(".wpt-badge"),
@@ -131,7 +140,7 @@
 
           d.forEach (m=>
           {
-            content += `<div class="umsg-item" data-id="${m.id}"><div class="umsg-title">${m.title}<button type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this message")?>"><span>&times;</span></button></div><div class="umsg-date">${H.getUserDate(m.creationdate, null, "Y-MM-DD H:mm")}</div><div class="umsg-body">${m.content.replace(/\n\n|\n/g, "<br>")}</div></div>`;
+            content += `<div class="msg-item" data-id="${m.id}"><div class="msg-title">${m.title}<button type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this message")?>"><span>&times;</span></button></div><div class="msg-date">${H.getUserDate(m.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${m.content.replace(/\n\n|\n/g, "<br>")}</div></div>`;
           });
 
           if (refresh)
@@ -139,8 +148,8 @@
           else
           H.openConfirmPopover ({
             type: "info",
-            class: "umsg-popover",
-            placement: "top",
+            customClass: "msg-popover umsg-popover",
+            placement: "bottom",
             item: this.element.find (".wpt-badge"),
             title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Messages")?>`,
             content: content,
@@ -156,8 +165,7 @@
         }
       );
     }
-
-  });
+  };
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 

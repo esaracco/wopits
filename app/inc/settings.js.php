@@ -120,7 +120,7 @@
       if (!current || current.id != theme)
       {
         document.querySelectorAll("link[id^='theme-']").forEach ((link)=>
-          link.media = (link.id == theme) ? '' : 'none');
+          link.media = (link.id == theme) ? "" : "none");
 
         // Apply theme to postits
         if (document.querySelector(".postit"))

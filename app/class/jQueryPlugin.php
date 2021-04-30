@@ -69,7 +69,7 @@ $.fn["{$this->name}"] = function (arg)
   {
     $.extend (plugin.settings, arg);
 
-    plugin.init (arg);
+    return plugin.init (arg);
   }
   else if (typeof arg === "string" && typeof plugin[arg] === "function")
     return plugin[arg].apply (

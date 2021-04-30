@@ -52,15 +52,15 @@ class Base extends \PDO
 
   public function getUploadedFileInfos (?object $data):array
   {
-    return
-      (
-        !is_object ($data) ||
+    if (!is_object ($data) ||
         !$data->size ||
-        !preg_match ('#\.([a-z0-9]+)$#i', $data->name, $m1) ||
-        !preg_match ('#data:[^;]*;base64,(.*)#', $data->content, $m2)
-      ) ?
-      [null, null, _("Empty file or bad file format!")] :
-      [$m1[1], $m2[1], null];
+        !preg_match ('#data:[^;]*;base64,(.*)#', $data->content, $content))
+      return [null, null, _("Empty file or bad file format!")];
+
+    // File extension is not mandatory
+    preg_match ('#\.([a-z0-9]+)$#i', $data->name, $ext);
+
+    return [$ext[1]??null, $content[1], null];
   }
 
   protected function sendWsClient (array $msg):void
@@ -75,7 +75,12 @@ class Base extends \PDO
   // Very basic DB fields validator.
   protected function checkDBValue (string $table, string $field, &$value):void
   {
-    $f = $this->_dbDescription[$table][$field];
+    $f = $this->_dbDescription[$table][$field]??null;
+
+    //<WPTPROD-remove>
+    if (is_null ($f))
+      throw new \Exception ("Unknown DB field $table::$field");
+    //</WPTPROD-remove>
 
     if (is_null ($value))
     {
@@ -160,7 +165,9 @@ class Base extends \PDO
   public function executeQuery (string $sql, array $data,
                                 array $where = null):int
   {
-    preg_match ('/(INSERT INTO|UPDATE) ([a-z_]+)$/', $sql, $m);
+    if (!preg_match ('/(INSERT INTO|UPDATE) ([a-z_]+)$/', $sql, $m))
+      throw new \Exception ("Not a valid SQL exec request (`$sql`)");
+
     list (, $action, $table) = $m;
 
     // Check values. Bad values are silently converted when possible.

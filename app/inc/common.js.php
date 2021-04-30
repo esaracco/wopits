@@ -300,6 +300,7 @@ class WSharer
     this.wmenu = [];
     this.arrows = [];
     this.postit = [];
+    this.pcomm = [];
     this.header = [];
     this.plugColor = "";
   }
@@ -421,6 +422,13 @@ class WSharer
           this.mmenu = $("#mmenu");
 
         return this.mmenu;
+
+      case "pcomm":
+
+        if (!this.pcomm.length)
+          this.pcomm = this.getCurrent("postit").find(".pcomm");
+
+        return this.pcomm;
     }
   }
 }
@@ -510,6 +518,15 @@ class WSocket
               H.openModal ($popup);
 
               setTimeout (() => $popup.modal ("hide"), 3000);
+              break;
+
+            // refreshpcomm
+            case "refreshpcomm":
+
+              var $el = $("[data-id='postit-"+data.postitId+"'] .pcomm");
+
+              if ($el.length)
+                $el.pcomm ("refresh", data);
               break;
 
             // refreshwall
@@ -845,7 +862,7 @@ class WHelper
   setAutofocus ($el)
   {
     // Set focus on first autofocus field if not touch device
-    if (H.haveMouse ())
+    if (this.haveMouse ())
       setTimeout (() => $el.find("[autofocus]:eq(0)").focus (), 150);
   }
 
@@ -1207,9 +1224,10 @@ class WHelper
   // METHOD openConfirmPopover ()
   openConfirmPopover (args)
   {
+    const scroll = !!args.scrollIntoView;
     let btn;
 
-    if (!H.haveMouse ())
+    if (!this.haveMouse ())
       this.fixVKBScrollStart ();
   
     this.openPopupLayer (() =>
@@ -1221,7 +1239,7 @@ class WHelper
         $popover.find("[data-toggle='tooltip']").tooltip ("dispose");
         $popover.popover ("dispose");
   
-        if (!H.haveMouse ())
+        if (!this.haveMouse ())
           this.fixVKBScrollStop ();
 
         //FIXME
@@ -1229,10 +1247,13 @@ class WHelper
   
       }, false);
     
+    // We are not using "content" property to set popover content because
+    // it do not accept buttons and some other HTML tags
     args.item.popover({
       html: true,
       title: args.title,
-      placement: args.placement || "auto",
+      customClass:args.customClass||"",
+      placement: args.placement||"auto",
       boundary: "window"
     }).popover ("show");
 
@@ -1250,6 +1271,16 @@ class WHelper
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
         break;
 
+      case "custom":
+        btn = {primary:"save"};
+        buttons = `<button type="button" style="display:none" class="btn btn-xs btn-primary"></button>`;
+
+        if (args.html_header)
+          args.content = args.html_header+args.content;
+        else if (args.html_footer)
+          args.content += args.html_footer;
+        break;
+
       default:
         btn = {primary:"yes", secondary: "no"};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
@@ -1257,11 +1288,12 @@ class WHelper
   
     const $body = $(".popover-body").last ();
 
+//FIXME //TODO
     $body.addClass ("justify");
   
     $body.html (`<p>${args.content}</p>${buttons}`);
   
-    if (H.haveMouse ())
+    if (this.haveMouse ())
       $body.find("input:eq(0)").focus ();
   
     $body.find("button:not(.close)").on("click", function (e)
@@ -1272,12 +1304,14 @@ class WHelper
         if ($btn[0].classList.contains ("btn-primary"))
         {
           $popover[0].dataset.btnclicked = btn.primary;
-          args.cb_ok ($popover);
+          if (args.cb_ok)
+            args.cb_ok ($popover);
         }
         else
           $popover[0].dataset.btnclicked = btn.secondary;
   
-        $("#popup-layer").click ();
+        if (!args.noclosure)
+          $("#popup-layer").click ();
       });
 
     const $popover = $(".popover").last ();
@@ -1285,14 +1319,16 @@ class WHelper
     //FIXME To prevent "title" element property to be used by default
     $popover.find(".popover-header").html (args.title);
 
-    if (args.class)
-      $popover.addClass (args.class);
-
+    if (scroll)
+      args.item[0].scrollIntoView (false);
 
     if (args.cb_after)
       args.cb_after ($popover);
 
     H.enableTooltips ($popover);
+
+    if (scroll)
+      window.dispatchEvent (new Event("resize"));
   }
 
   // METHOD setViewToElement ()
@@ -1383,17 +1419,19 @@ class WHelper
   async loadPopup (type, args = {open:true})
   {
     const id = type+"Popup",
-          popup = document.getElementById (id),
-          __exec = ($p)=>
-            {
-              H.cleanPopupDataAttr ($p);
+          popup = document.getElementById (id);
 
-              if (args.cb)
-                args.cb ($p);
+    // INTERNAL FUNCTION __exec ()
+    const __exec = ($p)=>
+      {
+        H.cleanPopupDataAttr ($p);
 
-              if (args.open)
-                H.openModal ($p);
-            };
+        if (args.cb)
+          args.cb ($p);
+
+        if (args.open)
+          H.openModal ($p);
+      };
 
     if (args.open === undefined)
       args.open = true;
@@ -1402,7 +1440,7 @@ class WHelper
       __exec ($(popup));
     else
     {
-      const r = await fetch ("/ui/"+type+".php");
+      const r = await fetch (`/ui/${type}.php`);
       if (r.ok)
       {
         $("body").prepend (await r.text ());
@@ -1707,7 +1745,7 @@ class WHelper
 
     //console.log (`FETCH: ${method} ${service}`);
 
-    const r = await fetch ("/api/"+service, {
+    const r = await fetch (`/api/${service}`, {
                 method: method,
                 cache: "no-cache",
                 headers: {"Content-Type": "application/json;charset=utf-8"},
@@ -1742,28 +1780,30 @@ class WHelper
         // Progressbar for file upload
         xhr: ()=>
         {
-          const xhr = new window.XMLHttpRequest (),
-                __progress = (e)=>
+          const xhr = new window.XMLHttpRequest ();
+
+          // INTERNAL FUNCTION __progress ()
+          const __progress = (e)=>
+            {
+              if (e.lengthComputable)
                 {
-                  if (e.lengthComputable)
-                    {
-                      const $progress = $("#loader .progress"),
-                            percentComplete = e.loaded / e.total,
-                            display = Math.trunc(percentComplete*100)+"%";
+                  const $progress = $("#loader .progress"),
+                        percentComplete = e.loaded / e.total,
+                        display = Math.trunc(percentComplete*100)+"%";
 
-                      $progress.text(display).css ("width", display);
+                  $progress.text(display).css ("width", display);
 
-                      //FIXME
-                      if (percentComplete < 0.5)
-                        $progress.css ("background", "#ea6966");
-                      else if (percentComplete < 0.9)
-                        $progress.css ("background", "#f5b240");
-                      else if (percentComplete < 1)
-                        $progress.css ("background", "#6ece4b");
-                      else
-                        $progress.text ("<?=_("Upload completed.")?>");
-                    }
-                };
+                  //FIXME
+                  if (percentComplete < 0.5)
+                    $progress.css ("background", "#ea6966");
+                  else if (percentComplete < 0.9)
+                    $progress.css ("background", "#f5b240");
+                  else if (percentComplete < 1)
+                    $progress.css ("background", "#6ece4b");
+                  else
+                    $progress.text ("<?=_("Upload completed.")?>");
+                }
+            };
 
             xhr.upload.addEventListener ("progress", __progress, false);
             xhr.addEventListener ("progress", __progress, false);

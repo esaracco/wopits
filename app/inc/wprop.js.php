@@ -55,7 +55,7 @@
 
       H.fetch (
         "GET",
-        "wall/"+$wall.wall("getId")+"/infos",
+        `wall/${$wall.wall("getId")}/infos`,
         null,
         // success cb
         (d) =>

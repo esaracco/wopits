@@ -111,6 +111,34 @@ class Wall extends Base
     return $ret;
   }
 
+  public function searchUser (array $args):array
+  {
+    $ret = ['users' => null];
+
+    $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
+    if (!$r['ok'])
+      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+
+    $search = $args['search'];
+
+    if (empty ($search) || ($search = Helper::unaccent ($args['search'])) )
+    {
+      ($stmt = $this->prepare ('
+         SELECT DISTINCT(u.username), u.fullname
+         FROM users AS u
+           INNER JOIN _perf_walls_users AS pwu ON pwu.users_id = u.id
+         WHERE walls_id = ?
+           AND u.id <> ?
+           AND u.searchdata LIKE ?
+         LIMIT 10'))
+         ->execute ([$this->wallId, $this->userId, "%$search%"]);
+
+      $ret['users'] = $stmt->fetchAll ();
+    }
+
+    return $ret;
+  }
+
   public function addHeaderPicture (array $args):array
   {
     $ret = [];
@@ -607,6 +635,9 @@ class Wall extends Base
         $stmt4->execute ([$postit['id']]);
         $postit['items']['plugs'] = $stmt4->fetchAll ();
 
+        // We do not export postit comments.
+        $postit['commentscount'] = 0;
+
         $cell['postits'][] = $postit;
       }
 
@@ -793,7 +824,8 @@ class Wall extends Base
         "SELECT
            postits.id, width, height, item_top, item_left, item_order,
            classcolor, title, content, tags, creationdate, deadline, timezone,
-           obsolete, attachmentscount, progress, postits_alerts.alertshift
+           obsolete, attachmentscount, commentscount, progress,
+           postits_alerts.alertshift
          FROM postits
            LEFT JOIN postits_alerts
              ON postits_alerts.postits_id = postits.id
@@ -803,7 +835,7 @@ class Wall extends Base
         "SELECT
            id, width, height, item_top, item_left, item_order, classcolor,
            title, content, tags, creationdate, deadline, timezone, obsolete,
-           attachmentscount, progress
+           attachmentscount, commentscount, progress
          FROM postits
          WHERE cells_id = ?");
       $data['cells'] = [];

@@ -7,7 +7,6 @@
   Description: Note management
 
   TODO: relations plugin
-  TODO: attachment plugin
 */
 
   require_once (__DIR__.'/../prepend.php');
@@ -21,9 +20,7 @@
 
   const _defaultClassColor =
           "color-<?=array_keys(WPT_MODULES['cpick']['items'])[0]?>";
-  let $_attachmentsPopup,
-      $_attachmentEditPopup,
-      _originalObject,
+  let _originalObject,
       _plugRabbit = {
         line: null,
         // EVENT mousedown on destination postit for relation creation
@@ -239,8 +236,6 @@
             case "edit": return postitPlugin.openPostit ();
             // OPEN deadline date picker popup
             case "dpick": return postitPlugin.openDatePicker ();
-            // OPEN deadline date picker popup
-            case "attachments": return postitPlugin.openAttachments ();
             case "add-plug":
 
               postitPlugin.edit ({}, () =>
@@ -335,7 +330,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:'')+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format('Y-MM-DD')}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="attachmentscount"${settings.attachmentscount?'':' style="display:none"'}><i data-action="attachments" class="fas fa-paperclip"></i><span class="wpt-badge">${settings.attachmentscount}</span></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="patt"></div><div class="pcomm"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -404,9 +399,17 @@
               }
               else
               {
+                const edit = postit.querySelector (".postit-edit"),
+                      content = edit.innerHTML;
+
                 // If the postit has been dropped into another cell
                 plugin.settings.cell = $postit.parent ();
-                plugin.settings.cellId = plugin.settings.cell.cell ("getId");
+
+                // Update content cells references if any
+                if (content.indexOf ("/cell/") != -1)
+                  edit.innerHTML = content.replace (
+                              /\/cell\/\d+\//g,
+                              `/cell/${plugin.settings.cellId}/`);
 
                 S.getCurrent("mmenu").mmenu ("update", settings.id, plugin);
 
@@ -513,14 +516,33 @@
         });
       }
 
+      setTimeout (()=>
+        {
+          // Init note attachments
+          settings.attachmentsPlugin =
+            $postit.find(".patt").patt ({
+              postitPlugin: this,
+              readonly: !writeAccess,
+              count: settings.attachmentscount
+            });
+
+          // Init note comments
+          settings.commentsPlugin =
+            $postit.find(".pcomm").pcomm ({
+              postitPlugin: this,
+              readonly: !writeAccess,
+              count: settings.commentscount
+            });
+        }, 0);
+
       if (settings.creationdate)
         plugin.update (settings);
     },
 
-    // METHOD openAttachments ()
-    openAttachments ()
+    // METHOD getPlugin ()
+    getPlugin (type)
     {
-      this.edit ({}, ()=> this.displayAttachments ());
+      return this.settings[type+"Plugin"];
     },
 
     // METHOD openPlugProperties ()
@@ -626,8 +648,8 @@
               ".postit-min[data-id='postit-"+this.settings.id+"']");
     },
 
-    // METHOD displayDeadlineAlert ()
-    displayDeadlineAlert ()
+    // METHOD displayAlert ()
+    displayAlert (type)
     {
       const data = this.element[0].dataset;
       let content;
@@ -638,55 +660,80 @@
       H.waitForDOMUpdate (()=>
       {
         const min = this.getMin ();
+        let title, content;
 
-        if (!data.deadlineepoch)
-          content = "<?=_("The deadline for this note has been removed!")?>";
-        else if (this.element.hasClass ("obsolete"))
-          content = "<?=_("This note has expired.")?>";
-        else
+        switch (type)
         {
-          const a = moment.unix (data.deadlineepoch),
-                b = moment (new Date ());
-          let days = moment.duration(a.diff(b)).asDays ();
+          // Comment
+          case "comment":
 
-          if (days % 1 > 0)
-            days = Math.trunc(days) + 1;
+            title = `<i class="fa fa-comment fa-fw"></i> <?=_("Comment")?>`;
+            content =`<?=_("You were mentioned in a comment to this note.")?>`;
+            break;
 
-          content = (days > 1) ?
-            "<?=_("This note will expire in about %s day(s).")?>".replace("%s", days) :
-            "<?=_("This note will expire soon.")?>";
+          // Deadline
+          case "deadline":
+
+            title = `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`;
+
+            if (!data.deadlineepoch)
+              content ="<?=_("The deadline for this note has been removed!")?>";
+            else if (this.element.hasClass ("obsolete"))
+              content = "<?=_("This note has expired.")?>";
+            else
+            {
+              const a = moment.unix (data.deadlineepoch),
+                    b = moment (new Date ());
+              let days = moment.duration(a.diff(b)).asDays ();
+
+              if (days % 1 > 0)
+                days = Math.trunc(days) + 1;
+
+              content = (days > 1) ?
+                "<?=_("This note will expire in about %s day(s).")?>".replace("%s", days) :
+                "<?=_("This note will expire soon.")?>";
+            }
+
+            break;
         }
 
         H.openConfirmPopover ({
           type: "info",
+          scrollIntoView: true,
           item: min ? $(min) : this.element,
-          title: `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`,
-          content: content
+          title, 
+          content
         });
+
       });
     },
 
     // METHOD remove ()
-    remove ()
+    remove (noEffect)
     {
-      const __remove = ()=>
-              {
-                this.removePlugs (true);
-                this.element.remove ();
-              };
+      const postit = this.element[0];
 
-      if (H.haveMouse ())
+      // INTERNAL FUNCTION __remove ()
+      const __remove = ()=>
+        {
+          this.removePlugs (true);
+          postit.remove ();
+        };
+
+      if (!noEffect && H.haveMouse ())
       {
         // Empty postit content to prevent effect to reload deleted embedded
         // images
-        this.element[0].querySelector(".postit-edit").innerHTML = "";
-        this.element.hide ("explode", ()=> __remove ());
-       }
-       // The explode effect works poorly on mobile devices
-       else
-         __remove ();
+        postit.querySelector(".postit-edit").innerHTML = "";
+        $(postit).hide ("explode", __remove);
+      }
+      // The explode effect works poorly on mobile devices
+      else
+        __remove ();
 
       S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
+
+      this.getPlugin("comments").close ();
     },
 
     // METHOD havePlugs ()
@@ -793,6 +840,7 @@
     // METHOD applyThemeToPlugs ()
     applyThemeToPlugs (color)
     {
+      // INTERNAL FUNCTION __apply ()
       const __apply = (p) => p.setOptions ({
               dropShadow: this.getPlugDropShadowTemplate (color),
               color: color
@@ -1356,10 +1404,10 @@
           data = {id: plugin.settings.id, todelete: true};
         else
         {
-          const title = this.querySelector(".postit-header span.title")
-                          .innerHTML,
+          const title = plugin.getTitle (),
                 content = this.querySelector(".postit-edit").innerHTML,
                 classcolor = this.className.match (/(color\-[a-z]+)/),
+                patt = this.querySelector (".patt span"),
                 deadline = (this.dataset.deadlineepoch) ?
                   this.dataset.deadlineepoch :
                   this.querySelector(".dates .end span").innerText.trim (),
@@ -1386,8 +1434,7 @@
                           this.dataset.deadlinealertshift : null,
             updatetz: this.dataset.updatetz||null,
             obsolete: this.classList.contains ("obsolete"),
-            attachmentscount:
-              this.querySelector(".attachmentscount span").innerText,
+            attachmentscount: patt ? patt.innerText : 0,
             plugs: plugin.serializePlugs (),
             hadpictures: !!this.dataset.hadpictures,
             hasuploadedpictures: !!this.dataset.hasuploadedpictures,
@@ -1407,9 +1454,13 @@
       const id = this.settings.id,
             $cell = this.settings.cell,
             canWrite = this.canWrite ();
+
+      // INTERNAL FUNCTION __lock ()
       const __lock = el =>
-              el.classList.add("locked", isRelated?"related":"main"),
-            __addMain = ()=>
+              el.classList.add("locked", isRelated?"related":"main");
+
+      // INTERNAL FUNCTION __addMain ()
+      const __addMain = ()=>
               this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
 
       this.closeMenu ();
@@ -1533,11 +1584,18 @@
       }
     },
 
+    // METHOD getTitle ()
+    getTitle ()
+    {
+      return this.element[0]
+               .querySelector(".postit-header span.title").innerHTML;
+    },
+
     // METHOD setTitle ()
     setTitle (v)
     {
       this.element.find(".postit-header span.title")
-        .text (H.noHTML(v) || "...");
+        .text (H.noHTML(v)||"...");
     },
 
     // METHOD addExternalRefIcon ()
@@ -1548,15 +1606,22 @@
           const next = img.nextSibling;
 
           if (!next || !next.classList.contains ("externalref"))
+          {
+            img.parentNode.title = `<?=("This external content is filtered")?>`;
             $(`<i class="fas fa-umbrella fa-lg externalref"></i>`)
               .insertAfter ($(img));
+          }
         });
     },
 
     // METHOD removeExternalRefIcon ()
     removeExternalRefIcon (c)
     {
-      c.querySelectorAll("i.externalref").forEach (el => el.remove ());
+      c.querySelectorAll("i.externalref").forEach (el =>
+        {
+          el.parentNode.removeAttribute ("title");
+          el.remove ();
+        });
     },
 
     // METHOD setContent ()
@@ -1744,97 +1809,6 @@
       this.setClassColor (classe, $popup.find(".modal-footer"));
     },
 
-    // METHOD setAttachmentsCount ()
-    setAttachmentsCount (count)
-    {
-      this.element.find(".attachmentscount")
-        .css("display", (count) ? "inline-block": "none")
-        .find("span").text (count);
-    },
-
-    // METHOD getAttachmentTemplate ()
-    getAttachmentTemplate (item, noWriteAccess)
-    {
-      const tz = wpt_userData.settings.timezone,
-            d = `<button type="button" data-action="delete"><i class="fas fa-trash fa-xs fa-fw"></i></button>`,
-            c = (item.ownerid && item.ownerid != wpt_userData.id) ?
-                  `<span class="ownername">${item.ownername}</span>` : '';
-
-      return `<li data-target="#file${item.id}" data-toggle="collapse" data-id="${item.id}" data-url="${item.link}" data-icon="${item.icon}" data-fname="${H.htmlEscape(item.name)}" data-description="${H.htmlEscape(item.description||"")}" data-title="${H.htmlEscape(item.title||"")}" class="list-group-item list-group-item-action"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> ${item.title||item.name} <div class="item-infos"><span class="creationdate">${H.getUserDate (item.creationdate)}</span><span class="file-size">${H.getHumanSize(item.size)}</span>${c}</div><div class="right-icons"><button type="button" data-action="download"><i class="fas fa-download fa-xs fa-fw"></i></button>${noWriteAccess?'':d}</div></li><div id="file${item.id}" class="collapse list-group-item" data-parent="#pa-accordion"></div>`;
-    },
-
-    // METHOD getAttachmentsCount ()
-    getAttachmentsCount ()
-    {
-      return parseInt (this.element.find(".attachmentscount span").text ());
-    },
-
-    // METHOD displayAttachments ()
-    displayAttachments ()
-    {
-      H.fetch (
-        "GET",
-        "wall/"+this.settings.wallId+
-          "/cell/"+this.settings.cellId+
-            "/postit/"+this.settings.id+"/attachment",
-        null,
-        // success cb
-        (d) =>
-        {
-          H.loadPopup ("postitAttachments", {
-            open: false,
-            init: ($p)=>
-            {
-              $_attachmentsPopup = $p;
-              $_attachmentEditPopup = $p.find (".edit-popup");
-            },
-            cb: ($p)=>
-            {
-              const writeAccess = this.canWrite ();
-              let body = '';
-
-              d = d.files;
-
-              if (!d.length)
-                body = "<?=_("This note has no attachment")?>";
-              else
-                d.forEach (a =>
-                  body += this.getAttachmentTemplate (a, !writeAccess));
-
-              if (writeAccess)
-                $p.find(".btn-primary").show ();
-              else
-                $p.find(".btn-primary").hide ();
-
-              $p.find(".modal-body ul").html (body);
-
-              $p[0].dataset.noclosure = true;
-
-              H.openModal ($p);
-            }
-          });
-        }
-      );
-    },
-
-    // METHOD incAttachmentsCount ()
-    incAttachmentsCount ()
-    {
-      this.setAttachmentsCount (this.getAttachmentsCount () + 1);
-    },
-
-    // METHOD decAttachmentsCount ()
-    decAttachmentsCount ()
-    {
-      this.setAttachmentsCount (this.getAttachmentsCount () - 1);
-    },
-
-    // METHOD uploadAttachment ()
-    uploadAttachment ()
-    {
-      $(".upload.postit-attachment").click ();
-    },
-
     // METHOD setCurrent ()
     setCurrent ()
     {
@@ -1846,6 +1820,8 @@
     unsetCurrent ()
     {
       S.reset ("postit");
+      S.reset ("pcomm");
+
       this.element[0].classList.remove ("current");
     },
 
@@ -1857,8 +1833,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.wallId+
-        "/cell/"+this.settings.cellId+"/postit",
+        `wall/${this.settings.wallId}/cell/${this.settings.cellId}/postit`,
         data,
         // success cb
         (d) =>
@@ -1890,7 +1865,8 @@
     {
       const $postit = this.element,
             postit = $postit[0],
-            $tpick = S.getCurrent ("tpick");
+            $tpick = S.getCurrent ("tpick"),
+            attachmentsPlugin = this.getPlugin ("attachments");
 
       // Change postit cell
       if (cell && cell.id != this.settings.cellId)
@@ -1926,7 +1902,8 @@
 
       this.setContent (d.content);
 
-      this.setAttachmentsCount (d.attachmentscount);
+      if (attachmentsPlugin)
+        attachmentsPlugin.setCount (d.attachmentscount);
 
       this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):"");
 
@@ -1958,61 +1935,6 @@
       this.element[0].dataset.todelete = true;
     },
 
-    // METHOD deleteAttachment ()
-    deleteAttachment (id)
-    {
-      const $li = $_attachmentsPopup.find ("li[data-id='"+id+"']");
-
-      H.request_ws (
-        "DELETE",
-        "wall/"+this.settings.wallId+
-          "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
-            "/attachment/"+id,
-        null,
-        // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            H.raiseError (null, d.error_msg);
-          else
-          {
-            const $next = $li.next ();
-
-            if ($next.length && $next.hasClass ("collapse"))
-              $next.remove ();
-
-            $li.remove ();
-
-            this.decAttachmentsCount ();
-
-            if (!$_attachmentsPopup[0].querySelector ("li"))
-              $_attachmentsPopup.find("ul.list-group").html (
-                "<?=_("This note has no attachment")?>");
-          }
-        }
-      );
-    },
-
-    // METHOD updateAttachment ()
-    updateAttachment (args)
-    {
-      H.fetch (
-        "POST",
-        "wall/"+this.settings.wallId+
-          "/cell/"+this.settings.cellId+"/postit/"+this.settings.id+
-            "/attachment/"+args.id,
-        {title: args.title, description: args.description},
-        // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            H.raiseError (null, d.error_msg);
-          else
-            this.displayAttachments ();
-        }
-      );
-    },
-
     // METHOD edit ()
     edit (args = {}, success_cb, error_cb)
     {
@@ -2030,7 +1952,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
         data,
         // success cb
         (d) =>
@@ -2097,7 +2019,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.wallId+"/editQueue/postit/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
         data,
         // success cb
         (d) =>
@@ -2353,20 +2275,6 @@
               plugin.openDatePicker ();
           });
 
-        // EVENT click on attachment count
-        $(document).on("click", ".attachmentscount", function (e)
-          {
-            const plugin = $(this.parentNode).postit ("getClass");
-
-            if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-              plugin.openAttachments ();
-            else
-            {
-              plugin.setCurrent ();
-              plugin.displayAttachments ();
-            }
-          });
-
           // EVENT click on menu button
         $(document).on("click", ".postit .btn-menu", function (e)
           {
@@ -2452,18 +2360,20 @@
                   startPlugin =
                     $wall.find(".postit[data-id='postit-"+startId+"']")
                       .postit("getClass"),
-                  defaultLabel = H.htmlEscape ($label.find("span").text ()),
-                  __unedit = ()=>
-                  {
-                    const toSave = {};
+                  defaultLabel = H.htmlEscape ($label.find("span").text ());
 
-                    toSave[startId] = startPlugin.element;
-                    toSave[endId] =
-                      $wall.find(".postit[data-id='postit-"+endId+"']");
+            // INTERNAL FUNCTION __unedit ()
+            const __unedit = ()=>
+              {
+                const toSave = {};
 
-                    S.set ("plugs-to-save", toSave);
-                    startPlugin.unedit ();
-                  };
+                toSave[startId] = startPlugin.element;
+                toSave[endId] =
+                  $wall.find(".postit[data-id='postit-"+endId+"']");
+
+                S.set ("plugs-to-save", toSave);
+                startPlugin.unedit ();
+              };
 
             switch ($item[0].dataset.action)
             {
@@ -2532,85 +2442,23 @@
             }
           });
 
-      // Attachment upload.
-      $(`<input type="file" class="upload postit-attachment">`)
-        .on("change", function (e)
-        {
-          const $upload = $(this),
-                plugin = S.getCurrent("postit").postit ("getClass"),
-                settings = plugin.settings;
-
-          if (e.target.files && e.target.files.length)
-          {
-            H.getUploadedFiles (e.target.files, "all",
-              (e, file) =>
-              {
-                $upload.val ("");
-
-                if ($_attachmentsPopup.find(
-                      ".list-group li[data-fname='"+
-                        H.htmlEscape(file.name)+"']").length)
-                  return H.displayMsg ({
-                           type: "warning",
-                           msg: "<?=_("The file is already linked to the note!")?>"
-                         });
-
-                if (H.checkUploadFileSize ({size: e.total}) &&
-                    e.target.result)
-                {
-                  H.fetchUpload (
-                    "wall/"+settings.wallId+"/cell/"+settings.cellId+"/postit/"+
-                       settings.id+"/attachment",
-                    {
-                      name: file.name,
-                      size: file.size,
-                      item_type: file.type,
-                      content: e.target.result
-                    },
-                    // success cb
-                    (d) =>
-                    {
-                      const $body = $_attachmentsPopup.find("ul.list-group");
-
-                      $_attachmentsPopup.find(".modal-body").scrollTop (0);
-                      $_attachmentsPopup.find("div.collapse.show")
-                        .collapse ("hide");
-
-                      if (d.error_msg)
-                        return H.displayMsg ({
-                                 type: "warning",
-                                 msg: d.error_msg
-                               });
-    
-                      if (!$body.find("li").length)
-                        $body.html ("");
-    
-                      $body.prepend (plugin.getAttachmentTemplate (d));
-
-                      plugin.incAttachmentsCount ();
-
-                      H.waitForDOMUpdate (()=>$body.find("li:eq(0)").click ());
-                    });
-                }
-              });
-          }
-        }).appendTo ("body");
-
         // Picture upload.
         $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
             class="upload postit-picture">`)
           .on("change", function ()
           {
             const $upload = $(this),
-                  fname = this.files[0].name,
-                  __error_cb = (d)=>
-                  {
-                    if (d)
-                      H.displayMsg ({
-                        type: "warning",
-                        msg: d.error||d
-                      });
-                  };
+                  fname = this.files[0].name;
+
+            // INTERNAL FUNCTION __error_cb ()
+            const __error_cb = (d)=>
+              {
+                if (d)
+                  H.displayMsg ({
+                    type: "warning",
+                    msg: d.error||d
+                  });
+              };
 
             H.getUploadedFiles (this.files, "\.(jpe?g|gif|png)$",
               (e, file) =>
@@ -2629,8 +2477,8 @@
 
                     H.fetch (
                       "PUT",
-                      "wall/"+wallId+"/cell/"+cellId+"/postit/"+postitId+
-                        "/picture",
+                      `wall/${wallId}/cell/${cellId}/postit/`+
+                        `${postitId}/picture`,
                       {
                         name: file.name,
                         size: file.size,
@@ -2667,159 +2515,6 @@
                 null,
                 __error_cb);
           }).appendTo("body");
-
-        // EVENT click on attachment line buttons.
-        $(document).on("click", "#postitAttachmentsPopup .modal-body li button",
-          function (e)
-          {
-            const action = this.dataset.action,
-                  $item = $(this).closest ("li");
-
-            e.stopImmediatePropagation ();
-
-            if (action == "delete")
-            {
-              const id = $item[0].dataset.id;
-
-              $item.addClass ("active");
-
-              H.openConfirmPopover ({
-                item: $(this),
-                placement: "left",
-                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                content: "<?=_("Delete this file?")?>",
-                cb_close: ()=>
-                  {
-                    const el = document.querySelector (
-                                 ".modal li.list-group-item.active");
-
-                    if (el && el.getAttribute ("aria-expanded") != "true")
-                      el.classList.remove ("active");
-                  },
-                cb_ok: () =>
-                  S.getCurrent("postit").postit ("deleteAttachment", id)
-              });
-            }
-            else
-              H.download ($item[0].dataset);
-          });
-
-        // EVENT click on attachment thumbnail.
-        $(document).on("click", "#postitAttachmentsPopup .edit-popup img",
-          function (e)
-          {
-            $("body")
-              .append(`<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${this.getAttribute("src")}"></div>`)
-              .find(".close")
-              .on("click", function ()
-              {
-                $("#popup-layer").click ();
-              });
-
-            H.openPopupLayer (
-              () => document.getElementById("img-viewer").remove());
-          });
-
-        // EVENT click on edit popup "Save" button.
-        $(document).on("click",
-                       "#postitAttachmentsPopup .edit-popup .btn-primary",
-          function (e)
-          {
-            const popup = $_attachmentEditPopup[0];
-
-            e.stopImmediatePropagation ();
-
-            S.getCurrent("postit").postit ("updateAttachment", {
-              id: popup.dataset.id,
-              title: H.noHTML (popup.querySelector("input").value),
-              description: H.noHTML (popup.querySelector("textarea").value)
-            });
-          });
-
-        // EVENT hidden.bs.collapse attachment row.
-        $(document).on("hidden.bs.collapse",
-                       "#postitAttachmentsPopup .list-group-item.collapse",
-          function (e)
-          {
-            const li = this.previousSibling;
-
-            li.classList.remove ("no-bottom-radius");
-            li.classList.remove ("active");
-          });
-
-        // EVENT show.bs.collapse attachment row.
-        $(document).on("show.bs.collapse",
-                       "#postitAttachmentsPopup .list-group-item.collapse",
-          function (e)
-          {
-            const li = $(this).prev()[0],
-                  popup = $_attachmentEditPopup[0],
-                  liActive = $_attachmentsPopup[0].querySelector ("li.active"),
-                  fileVal = li.dataset.fname,
-                  titleVal = li.dataset.title,
-                  descVal = li.dataset.description,
-                  img = popup.querySelector (".img"),
-                  isImg = fileVal.match (/\.(jpe?g|gif|png)$/);
-
-            li.classList.add ("no-bottom-radius");
-
-            liActive && liActive.classList.remove ("active");
-            li.classList.add ("active");
-
-            popup.dataset.id = li.dataset.id;
-
-            popup.querySelector(".no-details").style.display = "none";
-            popup.querySelector(".title").style.display = "block";
-            popup.querySelector(".description").style.display = "block";
-            img.querySelector("img").setAttribute ("src", "");
-            img.style.display = "none";
-
-            popup.querySelector(".file").innerText = fileVal;
-
-            if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-            {
-              popup.querySelector(".btn-primary").style.display = "block";
-              popup.querySelectorAll(".ro").forEach (el =>
-                el.style.display = "none");
-              popup.querySelectorAll(".adm").forEach (el =>
-                el.style.display = "block");
-
-              popup.querySelector(".title input").value = titleVal;
-              popup.querySelector(".description textarea").value = descVal;
-
-              H.setAutofocus ($(popup));
-            }
-            else
-            {
-              popup.querySelector(".btn-primary").style.display = "none";
-              popup.querySelectorAll(".ro").forEach (el =>
-                el.style.display = "block");
-              popup.querySelectorAll(".adm").forEach (el =>
-                el.style.display = "none");
-
-              if (!isImg && !titleVal && !descVal)
-                popup.querySelector(".no-details").style.display = "block";
-
-              if (titleVal)
-                popup.querySelector(".title .ro").innerText = titleVal;
-              else
-                popup.querySelector(".title").style.display = "none";
-
-              if (descVal)
-                popup.querySelector(".description .ro")
-                  .innerHTML = H.nl2br (descVal);
-              else
-                popup.querySelector(".description").style.display = "none";
-            }
-
-            if (isImg)
-            {
-              img.querySelector("img").setAttribute ("src", li.dataset.url);
-              img.style.display = "block";
-            }
-
-            $(this.appendChild (popup)).show ("fade");
-          });
 
         // EVENT hide.bs.modal on postit popup
         $("#postitUpdatePopup").on("hide.bs.modal",

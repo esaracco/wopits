@@ -412,7 +412,7 @@ $(function()
           case "postitAttachmentsPopup":
 
             $popup[0].dataset.noclosure = true;
-            $postit.postit ("uploadAttachment");
+            $postit.find(".patt").patt ("upload");
             break;
 
           case "groupAccessPopup":

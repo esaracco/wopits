@@ -47,7 +47,7 @@
         {
           H.openConfirmPopup ({
             icon: "sad-tear",
-            content: `<?=_("The deletion of your account will result in the deletion of all your walls and associated items.<p/>Do you really want to permanently delete your wopits account?")?>`,
+            content: `<?=_("Do you really want to permanently delete your wopits account?")?>`,
             cb_ok: () => plugin.delete ()
           });
         });
@@ -384,8 +384,8 @@
                 }
                 else
                 {
-                  field.dataset.oldvalue = d[k]||'';
-                  field.value = d[k]||'';
+                  field.dataset.oldvalue = d[k]||"";
+                  field.value = d[k]||"";
                 }
               }
             }

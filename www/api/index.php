@@ -3,7 +3,7 @@
   require_once (__DIR__.'/../../app/prepend.php');
 
   use Wopits\{User, Wall};
-  use Wopits\Wall\{Group, Postit};
+  use Wopits\Wall\{Group, Postit, Comment, Attachment};
 
   // Ajax access point
   //
@@ -72,27 +72,25 @@
           }
           break;
 
-        case 'postit':
+        case 'attachment':
 
-          $Postit = new Postit ([
+          $ret = (new Attachment ([
             'wallId' => getParam ('wallId'),
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId'),
             'data' => $data
-          ]);
+          ]))->add ();
+          break;
 
-          switch (getParam ('item'))
-          {
-            case 'attachment':
+        case 'postit':
 
-              $ret = $Postit->addAttachment ();
-              break;
-
-            case 'picture':
-
-              $ret = $Postit->addPicture ();
-              break;
-          }
+          if (getParam ('item') == 'picture')
+            $ret = (new Postit ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId'),
+            'data' => $data
+          ]))->addPicture ();
           break;
       }
       break;
@@ -110,26 +108,31 @@
 
         case 'postit':
 
-          $Postit = new Postit ([
+          if (getParam ('item') == 'picture')
+            $ret = (new Postit ([
             'wallId' => getParam ('wallId'),
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId')
-          ]);
+          ]))->getPicture (['pictureId' => getParam ('itemId')]);
+          break;
 
-          switch (getParam ('item'))
-          {
-            case 'attachment':
+        case 'attachment':
 
-              $ret = $Postit->getAttachment ([
-                'attachmentId' => getParam ('itemId')]);
-              break;
+          $ret = (new Attachment ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId')
+//FIXME
+          ]))->get (intval (getParam ('itemId')));
+          break;
 
-            case 'picture':
+        case 'comment':
 
-              $ret = $Postit->getPicture ([
-                'pictureId' => getParam ('itemId')]);
-              break;
-          }
+          $ret = (new Comment ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId')
+          ]))->get ();
           break;
 
         case 'user':
@@ -164,6 +167,11 @@
             case 'infos':
 
               $ret = $Wall->getWallInfos ();
+              break;
+
+            case 'searchUsers':
+
+              $ret = $Wall->searchUser (['search' => getParam ('search')]);
               break;
 
             case 'getFile':
@@ -261,19 +269,14 @@
 
           break;
 
-        case 'postit':
+        case 'attachment':
 
-          $Postit = new Postit ([
+          $ret = (new Attachment ([
             'wallId' => getParam ('wallId'),
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId'),
             'data' => $data
-          ]);
-
-          if (getParam ('item') == 'attachment')
-            $ret = $Postit->updateAttachment ([
-                     'attachmentId' => getParam ('itemId')]);
-
+          ]))->update (intval (getParam ('itemId')));
           break;
       }
 

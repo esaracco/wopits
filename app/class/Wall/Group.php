@@ -179,11 +179,12 @@ class Group extends Wall
       $params = [$this->groupId, $groupUserId];
 
       // Unlink user from group
-      $this
-        ->prepare('
-          DELETE FROM users_groups
-          WHERE groups_id = ? AND users_id = ?')
-        ->execute ($params);
+      ($stmt = $this->prepare('
+        DELETE FROM users_groups WHERE groups_id = ? AND users_id = ?'))
+          ->execute ($params);
+
+      if (!$stmt->rowCount ())
+        return ['error' => 1];
 
       if (!$this->wallId)
       {
@@ -200,19 +201,20 @@ class Group extends Wall
       if ($this->wallId)
         $this
           ->prepare('
-            DELETE FROM postits_alerts
-            WHERE walls_id = ? AND users_id = ?')
+              DELETE FROM postits_alerts
+              WHERE walls_id = ? AND users_id = ?')
           ->execute ([$this->wallId, $groupUserId]);
 
       // Unlink user from group's walls
       $this
-        ->prepare('
-          DELETE FROM _perf_walls_users
-          WHERE groups_id = ? AND users_id = ?')
+        ->prepare ('
+          DELETE FROM _perf_walls_users WHERE groups_id = ? AND users_id = ?')
         ->execute ($params);
 
+       // Decrement group users count
       $this
-        ->prepare('UPDATE groups SET userscount = userscount - 1 WHERE id = ?')
+        ->prepare('
+            UPDATE groups SET userscount = userscount - 1 WHERE id = ?')
         ->execute ([$this->groupId]);
 
       $this->commit ();

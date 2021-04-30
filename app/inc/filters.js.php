@@ -30,12 +30,12 @@
             tList = S.getCurrent("tpick").tpick ("getTagsList"),
             cList = $("#cpick").cpick ("getColorsList");
 
-      let tags = '';
+      let tags = "";
       for (const t of tList)
         tags +=
           `<div><i class="fa-${t} fa-fw fas" data-tag="${t}"></i></div>`;
 
-      let colors = '';
+      let colors = "";
       for (const c of cList)
         colors += `<div class="${c}">&nbsp;</div>`;
 

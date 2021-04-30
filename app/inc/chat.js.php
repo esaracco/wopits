@@ -113,7 +113,7 @@
     {
       H.request_ws (
         "PUT",
-         "wall/"+this.settings.wallId+"/chat");
+        `wall/${this.settings.wallId}/chat`);
     },
 
     // METHOD leave ()
@@ -121,7 +121,7 @@
     {
       H.request_ws (
         "DELETE",
-         "wall/"+this.settings.wallId+"/chat");
+        `wall/${this.settings.wallId}/chat`);
     },
 
     // METHOD setFocus ()
@@ -143,7 +143,7 @@
 
         H.request_ws (
           "DELETE",
-          "wall/"+wallId+"/chat");
+          `wall/${wallId}/chat`);
 
         $chat.hide ();
       }
@@ -161,7 +161,7 @@
 
         H.request_ws (
           "PUT",
-          "wall/"+wallId+"/chat");
+          `wall/${wallId}/chat`);
       }
     },
 
@@ -206,7 +206,7 @@
   
        let title = "";
        args.userslist.forEach (
-         (user) => (user.id != userId) ? title += `${user.name}<br>`:'');
+         (user) => (user.id != userId) ? title += `${user.name}<br>`:"");
        $tooltip.attr ("title", title);
        $tooltip.tooltip ({
          html: true,
@@ -275,7 +275,7 @@
     {
       H.request_ws (
         "POST",
-        "wall/"+this.settings.wallId+"/chat",
+        `wall/${this.settings.wallId}/chat`,
         {msg: msg});
     },
 

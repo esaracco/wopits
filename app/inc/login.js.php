@@ -55,12 +55,11 @@
 
               if (plugin.checkRequired ($login.find("input"), false))
               {
-                const dl = $login.find("input[name='_directURL']").val ();
+                const du = $login.find("input[name='_directURL']").val ();
 
                 plugin.login (H.trimObject ({
-                  _directURL:
-                    (dl && dl.match(/^(\/unsubscribe|\/(a|s)\/\d+(\/\d+)?)$/))?
-                      "/?"+dl : null,
+                  directURL:
+                    (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ? "/?"+du : null,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val (),
                   password: $login.find("input[type='password']").val ()
@@ -173,6 +172,10 @@
           }
 
         });
+
+      if ($login.find("input[name='_directURL']").val()
+            .indexOf("unsubscribe") != -1)
+        H.infoPopup (`<?=_("Please log in to change your preferences.")?>`);
     },
 
     // METHOD resetCreateUserForm ()
@@ -201,8 +204,7 @@
           if (d.error_msg)
             H.displayMsg ({type: "warning", msg: d.error_msg});
           else
-            return location.href = (args._directURL) ?
-              args._directURL : "/";
+            return location.href = args.directURL||"/";
         });
     },
 

@@ -1,6 +1,7 @@
 <?php
   require_once (__DIR__.'/../../../app/prepend.php');
 ?>
+
 .bg-dark {
   background-color:#dc3545 !important;
 }
@@ -38,8 +39,9 @@
 
 .modal a:not(.list-group-item):not(.close),
 .modal span.name i,
-.popover a {
-  color: #e84c5b !important;
+.popover a,
+.msg-userref {
+  color:#e84c5b !important;
 }
 
 div.postit-mark {
@@ -110,6 +112,7 @@ span.wpt-badge {
 .form-control:disabled,
 .form-control[readonly],
 .list-group-item:not(.collapse):hover,
+.msg-item:hover,
 .list-group-item.title {
   background-color:#ffeaec !important;
 }

@@ -309,7 +309,6 @@ class Helper
       ['tpick', _('Tags'), 'tags'],
       ['cpick', _('Background color'), 'palette'],
       ['dpick', _('Deadline'), 'hourglass-end'],
-      ['attachments', _('Attachments'), 'paperclip'],
       ['add-plug', _('Add relation'), 'bezier-curve']
     ];
 

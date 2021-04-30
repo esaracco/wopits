@@ -36,8 +36,8 @@
         .on("keypress", function (e)
         {
           if (e.which == 13 &&
-              $owall.find(".list-group-item-action:visible").length == 1)
-            $owall.find(".list-group-item-action:visible").click ();
+              $owall.find(".list-group-item:visible").length == 1)
+            $owall.find(".list-group-item:visible").click ();
         });
 
       $owall.find(".clear-input")
@@ -281,14 +281,14 @@
 
         if (walls.length)
         {
-          let dt = '';
+          let dt = "";
 
           walls.forEach ((item) =>
           { 
             if (!document.querySelector ('[data-id="wall-'+item.id+'"]'))
             {
               const shared = (item.ownerid != wpt_userData.id),
-                    owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:'';
+                    owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:"";
               let dt1 = H.getUserDate (item.creationdate);
 
               if (dt1 != dt)
@@ -297,7 +297,7 @@
                 body += `<li class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item list-group-item-action"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
+              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
             }
           });
   

@@ -5,13 +5,13 @@
 
   $_SESSION['_check'] = time ();
 
-  if (isset ($_SESSION['_directURL']))
+  if (isset ($_SESSION['directURL']))
   {
-    $_directURL = $_SESSION['_directURL'];
-    unset ($_SESSION['_directURL']);
+    $directURL = $_SESSION['directURL'];
+    unset ($_SESSION['directURL']);
   }
   else
-    $_directURL = '';
+    $directURL = '';
 ?>
 <body class="login-page">
 
@@ -69,7 +69,7 @@
           <div class="d-flex justify-content-center form-container">
             <form>
               <input type="hidden" name="_check" value="<?=$_SESSION['_check']?>">
-              <input type="hidden" name="_directURL" value="<?=$_directURL?>">
+              <input type="hidden" name="_directURL" value="<?=$directURL?>">
 
               <?php if (WPT_USE_LDAP):?>
                 <div class="ldap-msg mb-3">

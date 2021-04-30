@@ -171,35 +171,36 @@
 
        if (writeAccess)
        {
+         // INTERNAL FUNCTION __dblclick ()
          const __dblclick = (e)=>
-         {
-           if (S.get ("zoom-level") ||
-               (e.target.tagName != 'TD' &&
-                 !e.target.classList.contains ("cell-list-mode")))
-                return e.stopImmediatePropagation ();
+           {
+             if (S.get ("zoom-level") ||
+                 (e.target.tagName != 'TD' &&
+                   !e.target.classList.contains ("cell-list-mode")))
+                  return e.stopImmediatePropagation ();
 
-           const cellOffset = $cell.offset (),
-                 pTop = ((_coords && _coords.changedTouches) ?
-                   _coords.changedTouches[0].clientY :
-                   e.pageY) - cellOffset.top,
-                 pLeft = ((_coords && _coords.changedTouches) ?
-                   _coords.changedTouches[0].clientX :
-                   e.pageX) - cellOffset.left;
+             const cellOffset = $cell.offset (),
+                   pTop = ((_coords && _coords.changedTouches) ?
+                     _coords.changedTouches[0].clientY :
+                     e.pageY) - cellOffset.top,
+                   pLeft = ((_coords && _coords.changedTouches) ?
+                     _coords.changedTouches[0].clientX :
+                     e.pageX) - cellOffset.left;
 
-           _coords = null;
+             _coords = null;
 
-           $wall.wall ("closeAllMenus");
+             $wall.wall ("closeAllMenus");
 
-           const $f = S.getCurrent ("filters");
-           if ($f.is (":visible"))
-             $f.filters ("reset");
+             const $f = S.getCurrent ("filters");
+             if ($f.is (":visible"))
+               $f.filters ("reset");
 
-           plugin.addPostit ({
-             access: settings.access,
-             item_top: pTop,
-             item_left: pLeft - 15
-           });
-         };
+             plugin.addPostit ({
+               access: settings.access,
+               item_top: pTop,
+               item_left: pLeft - 15
+             });
+           };
 
          // Touch devices
          if ($.support.touch)
@@ -416,7 +417,7 @@
 
         H.fetch (
           "POST",
-          "user/wall/"+settings.wallId+"/settings",
+          `user/wall/${settings.wallId}/settings`,
           {
             key: "cell-"+settings.id,
             value: settings.usersettings
@@ -424,11 +425,13 @@
       }
     },
 
-    // METHOD removePostitsPlugs ()
-    removePostitsPlugs ()
+    // METHOD remove ()
+    remove ()
     {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
-        $(p).postit ("removePlugs", true));
+      this.element[0].querySelectorAll(".postit").forEach (p =>
+        $(p).postit ("remove", true));
+
+      this.element.remove ();
     },
 
     // METHOD reorganize ()
@@ -540,7 +543,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/cell/${this.settings.id}`,
         null,
         // success cb
         (d) => d.error_msg &&
@@ -568,7 +571,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.wallId+"/editQueue/cell/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/cell/${this.settings.id}`,
         data
       );
     }

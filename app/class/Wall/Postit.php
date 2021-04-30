@@ -146,6 +146,7 @@ class Postit extends Wall
         $srcPostitId = $p['id'];
         $srcCellId = $p['cells_id'];
         $srcWallId = $p['walls_id'];
+        $copyComments = ($move && $srcWallId == $wallId);
         unset ($p['id']);
         unset ($p['walls_id']);
 
@@ -156,39 +157,66 @@ class Postit extends Wall
         $this->create ($p);
         $postitId = $this->postitId;
 
-        // Copy associated items (attachments & pictures)
-        // -> plugs are not copied
         $havePictures = false;
-        foreach (['attachments', 'pictures'] as $item)
-        {
-          $stmt = $this->prepare ("
-            SELECT * FROM postits_$item WHERE postits_id = ?");
 
-          $stmt->execute ([$srcPostitId]);
+        // Copy associated items (attachments, pictures, comments)
+        // -> plugs are not copied
+        $items = ['attachments', 'pictures'];
+        // Copy comments only in same wall
+        if ($copyComments)
+          $items[] = 'comments';
+
+        foreach ($items as $item)
+        {
+          ($stmt = $this->prepare ("
+            SELECT * FROM postits_$item WHERE postits_id = ?"))
+              ->execute ([$srcPostitId]);
+
           foreach ($stmt->fetchAll () as $a)
           {
-            $srcItemId = $a['id'];
-            $srcDir = $a['link'];
             $a['walls_id'] = $wallId;
             $a['postits_id'] = $postitId;
-            $a['link'] = str_replace (
-              ["/{$srcWallId}/", "/{$srcPostitId}/"],
-              ["/{$wallId}/", "/{$postitId}/"], $a['link']);
+
+            $srcDir = null;
+            $srcItemId = $a['id'];
             unset ($a['id']);
+
+            // Comments have no attached files
+            if ($item != 'comments')
+            {
+              $srcDir = $a['link'];
+              $a['link'] = str_replace (
+                [
+                  "/{$srcWallId}/",
+                  "/{$srcPostitId}/"
+                ],
+                [
+                  "/{$wallId}/",
+                  "/{$postitId}/"
+                ], $a['link']);
+            }
 
             // Move item
             if ($move)
             {
-              rename (WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              if (isset ($a['link']))
+                rename (WPT_ROOT_PATH."/$srcDir",
+                        WPT_ROOT_PATH."/{$a['link']}");
+
               $this->executeQuery ("UPDATE postits_$item",
                 $a, ['id' => $srcItemId]);
+
               $itemId = $srcItemId;
             }
             // Copy item
             else
             {
-              copy (WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              if (isset ($a['link']))
+                copy (WPT_ROOT_PATH."/$srcDir",
+                      WPT_ROOT_PATH."/{$a['link']}");
+
               $this->executeQuery ("INSERT INTO postits_$item", $a);
+
               $itemId = $this->lastInsertId ();
             }
 
@@ -198,7 +226,7 @@ class Postit extends Wall
               $havePictures = true;
 
               $p['content'] = preg_replace (
-                "#wall/{$srcWallId}/cell/{$srcCellId}/postit/{$srcPostitId}/".
+                "#wall/\d+/cell/\d+/postit/\d+/".
                   "picture/{$srcItemId}#",
                 "wall/{$wallId}/cell/{$cellId}/postit/{$postitId}/".
                   "picture/{$itemId}",
@@ -211,17 +239,21 @@ class Postit extends Wall
         if ($move)
         {
           $wallsIds[] = $srcWallId;
-
           $this->wallId = $srcWallId;
           $this->deletePostit ($srcPostitId);
           $this->wallId = $wallId;
         }
 
+        // Update dest postit data if needed
+        $sqlData = [];
         // Update postit body internal img links if needed
         if ($havePictures)
-          $this->executeQuery ('UPDATE postits',
-            ['content' => $p['content']],
-            ['id' => $postitId]);
+          $sqlData['content'] = $p['content'];
+        // Reset comments count if needed
+        if (!$copyComments)
+          $sqlData['commentscount'] = 0;
+        if ($sqlData)
+          $this->executeQuery ('UPDATE postits', $sqlData, ['id' => $postitId]);
 
         $i += 10;
       }
@@ -259,7 +291,7 @@ class Postit extends Wall
       SELECT
         id, cells_id, width, height, item_top, item_left, item_order,
         classcolor, title, content, tags, creationdate, deadline, timezone,
-        obsolete, attachmentscount, progress
+        obsolete, attachmentscount, commentscount, progress
       FROM postits
       WHERE postits.id = ?'))
        ->execute ([$this->postitId]);
@@ -432,236 +464,6 @@ class Postit extends Wall
         ':line_path_1' => $_p->line_path
       ]);
     }
-  }
-
-  public function deleteAttachment (array $args):array
-  {
-    $ret = [];
-    $attachmentId = $args['attachmentId'];
-
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
-
-    try
-    {
-      $this->beginTransaction ();
-
-      ($stmt = $this->prepare ('
-        SELECT link FROM postits_attachments WHERE id = ?'))
-         ->execute ([$attachmentId]);
-      $attach = $stmt->fetch ();
-
-      $this
-        ->prepare('DELETE FROM postits_attachments WHERE id = ?')
-        ->execute ([$attachmentId]);
-
-      $this
-        ->prepare('
-          UPDATE postits SET attachmentscount = attachmentscount - 1
-          WHERE id = ?')
-        ->execute ([$this->postitId]);
-    
-      $this->commit ();
-
-      Helper::rm (WPT_ROOT_PATH.$attach['link']);
-    }
-    catch (\Exception $e)
-    {
-      $this->rollback ();
-
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-      $ret['error'] = 1;
-    }
-
-    return $ret;
-  }
- 
-  public function updateAttachment (array $args):array
-  {
-    $ret = [];
-    $attachmentId = $args['attachmentId'];
-
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
-
-    if (!empty ($this->data->title))
-    {
-      ($stmt = $this->prepare ('
-        SELECT 1 FROM postits_attachments
-        WHERE postits_id = ? AND title = ? AND id <> ?'))
-         ->execute ([$this->postitId, $this->data->title, $attachmentId]);
-      if ($stmt->fetch ())
-        return ['error_msg' => _("This title already exists.")];
-    }
-
-    try
-    {
-      $this->executeQuery ('UPDATE postits_attachments', [
-        'title' => $this->data->title,
-        'description' => $this->data->description,
-      ],
-      ['id' => $attachmentId]);
-    }
-    catch (\Exception $e)
-    {
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-      $ret['error'] = 1;
-    }
-
-    return $ret;
-  }
-
-  public function addAttachment ():array
-  {
-    $ret = [];
-    $dir = $this->getWallDir ();
-    $wdir = $this->getWallDir ('web');
-    $currentDate = time ();
-
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
-
-    list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
-
-    if ($error)
-      $ret['error'] = $error;
-    else
-    {
-      $rdir = 'postit/'.$this->postitId;
-      $file = Helper::getSecureSystemName (
-        "$dir/$rdir/attachment-".hash('sha1', $this->data->content).".$ext");
-      $fname = basename ($file);
-
-      ($stmt = $this->prepare ('
-        SELECT 1 FROM postits_attachments
-        WHERE postits_id = ? AND link LIKE ?'))
-         ->execute ([
-           $this->postitId,
-           '%'.substr($fname, 0, strrpos($fname, '.')).'%'
-        ]);
-
-      if ($stmt->fetch ())
-        $ret['error_msg'] =
-          _("The file is already linked to the note!");
-      else
-      {
-        file_put_contents (
-          $file, base64_decode(str_replace(' ', '+', $content)));
-
-        // Fix wrong MIME type for images
-        if (preg_match ('/(jpe?g|gif|png)/i', $ext))
-          list ($file, $this->data->item_type, $this->data->name) =
-            Helper::checkRealFileType ($file, $this->data->name);
-
-        $ret = [
-          'postits_id' => $this->postitId,
-          'walls_id' => $this->wallId,
-          'users_id' => $this->userId,
-          'creationdate' => $currentDate,
-          'name' => $this->data->name,
-          'size' => $this->data->size,
-          'item_type' => $this->data->item_type,
-          'link' => "$wdir/$rdir/".basename($file)
-        ];
-
-        try
-        {
-          $this->beginTransaction ();
-
-          $this->executeQuery ('INSERT INTO postits_attachments', $ret);
-
-          $ret['id'] = $this->lastInsertId ();
-
-          $this
-            ->prepare('
-              UPDATE postits SET attachmentscount = attachmentscount + 1
-              WHERE id = ?')
-            ->execute ([$this->postitId]);
-          
-          $ret['icon'] = Helper::getImgFromMime ($this->data->item_type);
-          $ret['link'] =
-            "/api/wall/{$this->wallId}/cell/{$this->cellId}".
-            "/postit/{$this->postitId}/attachment/{$ret['id']}";
-
-          $this->commit ();
-        }
-        catch (\Exception $e)
-        {
-          $this->rollback ();
-
-          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
-          $ret['error'] = 1;
-        }
-      }
-    }
-
-    return $ret;
-  }
-
-  public function getAttachment (array $args = []):array
-  {
-    $attachmentId = $args['attachmentId']??null;
-    $ret = [];
-
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
-    if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
-
-    // Return all postit attachments
-    if (!$attachmentId)
-    {
-      $data = [];
-
-      ($stmt = $this->prepare ('
-        SELECT
-           postits_attachments.id
-          ,postits_attachments.link
-          ,postits_attachments.item_type
-          ,postits_attachments.name
-          ,postits_attachments.size
-          ,postits_attachments.title
-          ,postits_attachments.description
-          ,users.id AS ownerid
-          ,users.fullname AS ownername
-          ,postits_attachments.creationdate
-        FROM postits_attachments
-          LEFT JOIN users
-            ON postits_attachments.users_id = users.id
-        WHERE postits_id = ?
-        ORDER BY postits_attachments.creationdate DESC, name ASC'))
-         ->execute ([$this->postitId]);
-
-      while ($row = $stmt->fetch ())
-      {
-        $row['icon'] = Helper::getImgFromMime ($row['item_type']);
-        $row['link'] =
-          "/api/wall/{$this->wallId}/cell/{$this->cellId}/postit/".
-          "{$this->postitId}/attachment/{$row['id']}";
-        $data[] = $row;
-      }
-
-      $ret = ['files' => $data];
-    }
-    else
-    {
-      ($stmt = $this->prepare ('
-        SELECT * FROM postits_attachments WHERE id = ?'))
-         ->execute ([$attachmentId]);
-
-      // If the file has been deleted by admin while a user with readonly
-      // access was taking a look at the attachments list.
-      if ( !($data = $stmt->fetch ()) )
-        $data = ['item_type' => 404];
-      else
-        $data['path'] = WPT_ROOT_PATH.$data['link'];
-
-      Helper::download ($data);
-    }
-
-    return $ret;
   }
 
   public function addPicture ():array

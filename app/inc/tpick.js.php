@@ -146,11 +146,11 @@
     // METHOD getHTMLFromString ()
     getHTMLFromString (str)
     {
-      if (!(str = str.replace(/(^,|,$)/g, '')))
+      if (!(str = str.replace(/(^,|,$)/g, "")))
         return "";
 
       const tags = str.split (",");
-      let ret = '';
+      let ret = "";
 
       for (const t of tags)
         ret += _getTagTemplate (t);

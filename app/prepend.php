@@ -60,11 +60,10 @@ if (!$isCLI)
   $isDirectURL = false;
 
   if (!isset ($_SESSION['userId']) &&
-      preg_match ('#^(/unsubscribe|/(a|s)/\d+(/\d+)?)$#',
-                     $_SERVER['QUERY_STRING']))
+      preg_match (WPT_DIRECTURL_REGEXP, $_SERVER['QUERY_STRING']))
   {
     $isDirectURL = true;
-    $_SESSION['_directURL'] = $_SERVER['QUERY_STRING'];
+    $_SESSION['directURL'] = $_SERVER['QUERY_STRING'];
   }
 
   $_SESSION['locale'] = $locale;

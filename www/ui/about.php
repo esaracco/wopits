@@ -54,7 +54,7 @@
   
             <p class="mb-2"><?=_("Neither the data you create nor your account information is shared with any third parties.")?></p>
   
-            <p class="mb-2"><?=_("When you delete your account, your walls and all your personnal data are permanently erased.")?></p>
+            <p class="mb-2"><?=_("When you delete your account, your walls and your personal data are permanently erased.")?></p>
   
           </div>
         <?php endif?>

@@ -31,14 +31,14 @@
 
       plugin.reset ();
 
-      $sm
-        .draggable({
-          distance: 10,
-          cursor: "move",
-          drag: (e, ui)=> plugin.fixDragPosition (ui),
-          stop: ()=> S.set ("dragging", true, 500)
-        });
+      $sm.draggable ({
+        distance: 10,
+        cursor: "move",
+        drag: (e, ui)=> plugin.fixDragPosition (ui),
+        stop: ()=> S.set ("dragging", true, 500)
+      });
 
+      // EVENT click on menu close button
       $sm.find("button.close").on("click", ()=> plugin.close ());
 
       // EVENT click on menu
@@ -226,8 +226,8 @@
 
           H.request_ws (
             "PUT",
-            "wall/"+cellSettings.wallId+
-              "/cell/"+cellSettings.id+"/postits/"+action,
+            `wall/${cellSettings.wallId}/cell/${cellSettings.id}`+
+              `/postits/${action}`,
             {postits: Object.keys (_data.postits)},
             // success cb
             ()=> this.close ());
@@ -254,8 +254,7 @@
     refresh ()
     {
       for (const id in _data.postits)
-        if (!document.querySelector (
-              ".postit.selected[data-id='postit-"+id+"']"))
+        if (!document.querySelector(`.postit.selected[data-id="postit-${id}"]`))
           this.remove (id);
     },
 
@@ -278,7 +277,8 @@
     // METHOD update ()
     update (id, p)
     {
-      _data.postits[id] = p;
+      if (_data.postits[id])
+        _data.postits[id] = p;
     },
 
     // METHOD remove ()
@@ -288,7 +288,7 @@
 
       if (p)
         p.settings.cell[0].querySelectorAll(
-          ".selected[data-id='"+p.element[0].dataset.id+"']")
+          `.selected[data-id="${p.element[0].dataset.id}"]`)
              .forEach ((_p)=> _p.classList.remove ("selected"));
 
       delete _data.postits[id];
@@ -317,7 +317,8 @@
     // METHOD refreshItemsCount ()
     refreshItemsCount ()
     {
-      this.element.find(".wpt-badge").text (this.itemsCount ());
+      this.element[0].querySelector(".wpt-badge")
+        .innerText = this.itemsCount ();
     },
 
     // METHOD open ()
@@ -331,14 +332,12 @@
 
       this.element.show ();
 
-      $(document)
-        // EVENT mousemove
-        .on("mousemove.mmenu",
-          (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
+      // EVENT mousemove
+      $(document).on("mousemove.mmenu",
+         (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
 
-      $(document)
-        // EVENT keydown
-        .on("keydown.mmenu", function (e)
+      // EVENT keydown
+      $(document).on("keydown.mmenu", function (e)
         {
           // Nothing if modal was opened and is closing
           if (S.get("still-closing"))
@@ -374,17 +373,17 @@
             case 86:
 
               const mpos = S.get ("mousepos");
-              let $el = $(document.elementFromPoint (mpos.x, mpos.y));
+              let el = document.elementFromPoint (mpos.x, mpos.y);
 
-              if ($el[0].tagName != "TD")
-                $el = $el.closest ("td");
+              if (el.tagName != "TD")
+                el = el.closest ("td");
 
               // Simulate click on cell
-              if ($el.length)
+              if (el)
               {
                 S.set ("action-mmenu", true, 500);
 
-                $el[0].dispatchEvent (
+                el.dispatchEvent (
                   new MouseEvent ("click", {
                     view: window,
                     bubbles: true,
@@ -445,14 +444,14 @@
       let content;
 
       if (writeAccess)
-        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl+click</kbd> on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>".replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
+        content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl+click</kbd> on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>`.replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
       else
-        content = "<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?></li></ul>";
+        content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?></li></ul>`;
 
       H.openConfirmPopover ({
         item: this.element,
         type: "info",
-        title: "<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>",
+        title: `<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>`,
         placement: "right",
         content: content+_noDisplayBtn,
         cb_ok: ()=> ST.noDisplay ("mmenu-help-"+writeAccess, true)

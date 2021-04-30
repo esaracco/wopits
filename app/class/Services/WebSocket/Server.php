@@ -7,7 +7,7 @@ require_once (__DIR__.'/../../../config.php');
 use Swoole\{Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
 
 use Wopits\{Base, Helper, User, Wall};
-use Wopits\Wall\{EditQueue, Group, Postit};
+use Wopits\Wall\{EditQueue, Group, Postit, Comment, Attachment};
 use Wopits\Services\Task;
 
 class Server
@@ -538,11 +538,45 @@ class Server
         @list (,$wallId, $cellId, $postitId, $itemId) = $m;
 
         if ($msg->method == 'DELETE')
-          $ret = (new Postit ([
+          $ret = (new Attachment ([
             'wallId' => $wallId,
             'cellId' => $cellId,
             'postitId' => $postitId
-          ], $client))->deleteAttachment (['attachmentId' => $itemId]);
+          ], $client))->delete (intval($itemId));
+      }
+      // ROUTE Postit comments
+      elseif (preg_match (
+                '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/'.
+                'comment/?(\d+)?$#',
+                $msg->route, $m))
+      {
+        @list (,$wallId, $cellId, $postitId, $itemId) = $m;
+
+        $comment = new Comment ([
+          'wallId' => $wallId,
+          'cellId' => $cellId,
+          'postitId' => $postitId,
+          'data' => $data
+        ], $client);
+
+        switch ($msg->method)
+        {
+          case 'PUT':
+            $ret = $comment->add ();
+            break;
+
+          case 'DELETE':
+            $ret = $comment->delete (intval($itemId));
+            break;
+        }
+
+        // Push postit comments.
+        if (!isset ($ret['error']))
+          $this->_pushPostitComments ([
+            'wallId' => $wallId,
+            'postitId' => $postitId,
+            'list' => $comment->get ()
+          ]);
       }
       // ROUTE User profil picture
       elseif ($msg->route == 'user/picture')
@@ -1116,6 +1150,22 @@ class Server
 
     foreach ($args['users'] as $id)
       foreach ($db->lGet ('usersUnique', $id) as $_fd)
+        $server->push ($_fd, $_json);
+  }
+
+  private function _pushPostitComments (array $args):void
+  {
+    $server = $this->_server;
+    $db = $server->db;
+
+    $_json = json_encode ([
+      'action' => 'refreshpcomm',
+      'postitId' => $args['postitId'],
+      'comments' => $args['list']
+    ]);
+
+    foreach ($db->jGet ('openedWalls', $args['wallId']) as $_fd => $_userId)
+      if ($server->isEstablished ($_fd))
         $server->push ($_fd, $_json);
   }
 

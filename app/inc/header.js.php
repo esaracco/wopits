@@ -507,7 +507,7 @@
     {
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.wallId+"/header/"+this.settings.id+"/picture",
+        `wall/${this.settings.wallId}/header/${this.settings.id}/picture`,
         null,
         // success cb
         (d) =>
@@ -604,7 +604,7 @@
 
       H.request_ws (
         "PUT",
-        "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/header/${this.settings.id}`,
         null,
         // success cb
         (d) =>
@@ -714,7 +714,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+this.settings.wallId+"/editQueue/header/"+this.settings.id,
+        `wall/${this.settings.wallId}/editQueue/header/${this.settings.id}`,
         data,
         // success cb
         (d) => this.cancelEdit (args.bubble_cb),
@@ -765,7 +765,7 @@
                     const oldW = $header.outerWidth ();
   
                     H.fetchUpload (
-                      "wall/"+settings.wallId+"/header/"+settings.id+"/picture",
+                      `wall/${settings.wallId}/header/${settings.id}/picture`,
                       {
                         name: file.name,
                         size: file.size,

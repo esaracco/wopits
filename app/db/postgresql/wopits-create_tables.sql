@@ -153,6 +153,7 @@ CREATE TABLE postits
   item_order SMALLINT NOT NULL DEFAULT 0,
   creationdate INTEGER NOT NULL,
   attachmentscount SMALLINT NOT NULL DEFAULT 0,
+  commentscount SMALLINT NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
   title VARCHAR(50),
   content TEXT,
@@ -198,6 +199,21 @@ CREATE TABLE postits_attachments
 );
 CREATE INDEX "postits_attachments-creationdate:name-idx"
   ON postits_attachments (creationdate, name);
+
+DROP TABLE IF EXISTS postits_comments CASCADE;
+CREATE TABLE postits_comments
+(
+  id SERIAL PRIMARY KEY,
+  postits_id INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
+  -- Not a foreign key, just a helper
+  walls_id INTEGER NOT NULL,
+  -- Not a foreign key, just a helper
+  users_id INTEGER,
+  creationdate INTEGER NOT NULL,
+  content VARCHAR(2000)
+);
+CREATE INDEX "postits_comments-creationdate-idx"
+  ON postits_comments (creationdate);
 
 DROP TABLE IF EXISTS postits_pictures CASCADE;
 CREATE TABLE postits_pictures

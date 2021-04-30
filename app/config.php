@@ -49,6 +49,9 @@ define ('WPT_WRIGHTS_ADMIN', 1);
 define ('WPT_WRIGHTS_RW', 2);
 define ('WPT_WRIGHTS_RO', 3);
 
+// Regexp for direct URL
+define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|s)(\d+)(p(\d+)(c(\d+))?)?/');
+
 // Themes
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 
@@ -162,7 +165,9 @@ define ('WS_PLUG_DEFAULTS', [
     'psearch' => [],
     'owall' => [],
     'wprop' => [],
-    'plugprop' => []
+    'plugprop' => [],
+    'patt' => [],
+    'pcomm' => []
   ]);
 
   // JS node modules

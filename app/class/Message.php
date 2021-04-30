@@ -65,6 +65,31 @@ class Message
     ]);
   }
 
+  private function commentToUser (array $args):void
+  {
+    $subject = _("Comment");
+    $qTitle = ($args['title'] != '...') ? $args['title'] : _("No title");
+
+    $this->_addToQueue ([
+      'users_id' => $args['userId'],
+      'title' => $subject,
+      'content' => sprintf (_("You were mentioned in a comment to the note «%s»:")."\n\n<quote>%s</quote>", "<a href='#' data-type='comment' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}' data-commentid='{$args['commentId']}'>".htmlentities($qTitle)."</a>", htmlentities($args['msg']))
+    ]);
+
+    Helper::sendToWSServer ([
+      'action' => 'have-msg',
+      'wallId' => $args['wallId'],
+      'users' => [$args['userId']]
+    ]);
+
+    if ($args['sendmail'])
+      $this->_send ([
+        'email' => $args['email'],
+        'subject' => $subject,
+        'msg' => sprintf (_("Hello %s").",\n\n"._("You were mentioned in a comment to the note «%s»:")."\n\n%s\n----------\n%s\n----------", $args['fullname'], $qTitle, WPT_URL."/?/a{$args['wallId']}p{$args['postitId']}c{$args['commentId']}", $args['msg'])
+      ]);
+  }
+
   private function deadlineAlert_1 (array $args):void
   {
     $subject = _("Deadline");
@@ -86,7 +111,7 @@ class Message
       $this->_send ([
         'email' => $args['email'],
         'subject' => $subject,
-        'msg' => sprintf (_("Hello %s").",\n\n"._("The following note has expired:")."\n\n%s%s", $args['fullname'], ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
+        'msg' => sprintf (_("Hello %s").",\n\n"._("The following note has expired:")."\n\n%s%s", $args['fullname'], ($args['title'] != '') ? "«{$args['title']}»\n":'', WPT_URL."/?/a{$args['wallId']}p{$args['postitId']}")
       ]);
   }
 
@@ -126,7 +151,7 @@ class Message
             _("Hello %s").",\n\n".
             _("The following note will expire soon:")."\n\n%s",
             $args['fullname'],
-            WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
+            WPT_URL."/?/a{$args['wallId']}p{$args['postitId']}")
           :
           sprintf (
             _("Hello %s").",\n\n".
@@ -134,7 +159,7 @@ class Message
             $args['fullname'],
             $days,
             ($args['title'] != '')?"«{$args['title']}»\n":'',
-            WPT_URL."/?/a/{$args['wallId']}/{$args['postitId']}")
+            WPT_URL."/?/a{$args['wallId']}p{$args['postitId']}")
       ]);
   }
 
@@ -172,7 +197,7 @@ class Message
           $args['recipientName'],
           $args['sharerName'],
           "{$args['wallTitle']}",
-          WPT_URL."/?/s/{$args['wallId']}")
+          WPT_URL."/?/s{$args['wallId']}")
       ]);
   }
 
