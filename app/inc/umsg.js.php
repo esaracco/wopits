@@ -101,7 +101,7 @@
           // Refresh wall if needed and if opened.
           if (args && args.wallId)
           {
-            const $wall = $(".wall[data-id='wall-"+args.wallId+"']");
+            const $wall = $(`.wall[data-id="wall-${args.wallId}"]`);
 
             if ($wall.length)
               $wall.wall ("refresh");

@@ -28,7 +28,7 @@ class Wpt_forms
 
       if ($f.attr("required") && !$f.val().trim().length)
       {
-        this.focusBadField ($f, displayMsg ? "<?=_("Required field")?>":null);
+        this.focusBadField ($f, displayMsg?`<?=_("Required field")?>`:null);
         $f.focus ();
 
         return false;
@@ -70,7 +70,7 @@ class Wpt_accountForms extends Wpt_forms
       ret = false;
       H.displayMsg ({
         noclosure: true,
-        type: "warning", msg: "<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>"
+        type: "warning", msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>`
       });
     }
 
@@ -102,9 +102,9 @@ class Wpt_accountForms extends Wpt_forms
           {
             if ($f.attr("name") == "wall-width" && val < 300 ||
                 $f.attr("name") == "wall-height" && val < 200)
-              return this.focusBadField ($f, "<?=_("The size of a wall cannot be less than %s")?>".replace("%s", "300x200"));
+              return this.focusBadField ($f, `<?=_("The size of a wall cannot be less than %s")?>`.replace("%s", "300x200"));
             else if (val > 20000)
-              return this.focusBadField ($f, "<?=_("The size of a wall cannot be greater than %s")?>".replace("%s", "20000x20000"));
+              return this.focusBadField ($f, `<?=_("The size of a wall cannot be greater than %s")?>`.replace("%s", "20000x20000"));
           }
           break;
 
@@ -116,34 +116,34 @@ class Wpt_accountForms extends Wpt_forms
                 rows = Number ($form.find("input[name='wall-rows']").val ()) || 3;
 
           if (cols * rows > <?=WPT_MAX_CELLS?>)
-            return this.focusBadField ($f, "<?=_("For performance reasons, a wall cannot contain more than %s cells")?>".replace("%s", <?=WPT_MAX_CELLS?>));
+            return this.focusBadField ($f, `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
           break;
 
         case "email":
 
           if (!this._checkEmail (val))
-            return this.focusBadField ($f, "<?=_("Bad email address")?>");
+            return this.focusBadField ($f, `<?=_("Bad email address")?>`);
 
           break;
 
         case "email2":
 
           if (val != $f.closest("form").find("input[name='email']").val())
-            return this.focusBadField ($f, "<?=_("Emails must match")?>");
+            return this.focusBadField ($f, `<?=_("Emails must match")?>`);
 
           break;
 
         case "username":
 
           if (val.trim().length < 3 || val.match (/@|&|\\/))
-            return this.focusBadField ($f, "<?=_("Login is not valid")?>");
+            return this.focusBadField ($f, `<?=_("Login is not valid")?>`);
 
           break;
 
         case "password":
 
           if (!this._checkPassword (val))
-            return this.focusBadField ($f, "<?=_("Unsecured password")?>");
+            return this.focusBadField ($f, `<?=_("Unsecured password")?>`);
 
           break;
 
@@ -152,10 +152,10 @@ class Wpt_accountForms extends Wpt_forms
           if (!$f.closest("form").find("input[name='password3']").length)
           {
             if (val != $f.closest("form").find("input[name='password']").val())
-              return this.focusBadField ($f, "<?=_("Passwords must match")?>");
+              return this.focusBadField ($f, `<?=_("Passwords must match")?>`);
           }
           else if (!this._checkPassword (val))
-            return this.focusBadField ($f, "<?=_("Unsecured password")?>");
+            return this.focusBadField ($f, `<?=_("Unsecured password")?>`);
 
           break;
 
@@ -163,7 +163,7 @@ class Wpt_accountForms extends Wpt_forms
 
           if (val != $f.closest("form").find("input[name='password2']").val())
             return this.focusBadField (
-                     $f, "<?=_("New passwords must match")?>");
+                     $f, `<?=_("New passwords must match")?>`);
 
           break;
       }
@@ -185,13 +185,13 @@ class Wpt_toolbox
           pos = el.getBoundingClientRect ();
 
     if (pos.top <= 56 + 4)
-      el.style.top = (56 + 4)+"px";
+      el.style.top = `${56+4}px`;
     else
     {
       const wH = window.innerHeight - 15;
 
       if (pos.top + el.clientHeight > wH)
-        el.style.top = (wH - el.clientHeight - 1)+"px";
+        el.style.top = `${wH-el.clientHeight-1}px`;
     }
 
     if (pos.left <= 0)
@@ -201,7 +201,7 @@ class Wpt_toolbox
       const wW = window.innerWidth - 20;
 
       if (pos.left + el.clientWidth > wW)
-        el.style.left = (wW - el.clientWidth - 1)+"px";
+        el.style.left = `${wW-el.clientWidth-1}px`;
     }
   }
 
@@ -344,7 +344,8 @@ class WSharer
       case "postit":
 
         if (!this.postit.length)
-         this.postit=this.walls.find (".tab-pane.active .wall .postit.current");
+         this.postit = this.walls.find (
+                         ".tab-pane.active .wall .postit.current");
 
         return this.postit;
 
@@ -426,7 +427,7 @@ class WSharer
       case "pcomm":
 
         if (!this.pcomm.length)
-          this.pcomm = this.getCurrent("postit").find(".pcomm");
+          this.pcomm = this.getCurrent("postit").find (".pcomm");
 
         return this.pcomm;
     }
@@ -480,7 +481,7 @@ class WSocket
       {
         const data = JSON.parse (e.data||"{}"),
               $wall = (data.wall && data.wall.id) ?
-                $("[data-id='wall-"+data.wall.id+"']") : [],
+                $(`[data-id="wall-${data.wall.id}"]`) : [],
               isResponse = (this._send_cb[data.msgId] !== undefined);
 
         //console.log ("RECEIVED "+data.msgId+"\n");
@@ -492,8 +493,10 @@ class WSocket
           {
             // userwriting
             case "userwriting":
-              var $el = $((data.item == "postit"?".postit":"")+
-                          "[data-id='"+data.item+"-"+data.itemId+"']");
+
+              var $el = $(`${data.item=="postit"?".postit":""}`+
+                            `[data-id="${data.item}-${data.itemId}"]`);
+
               if ($el.length)
                 $el[data.item]("showUserWriting", data.user);
               break;
@@ -511,9 +514,8 @@ class WSocket
 
               H.cleanPopupDataAttr ($popup);
 
-              $popup.find(".modal-body").html ("<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>");
-              $popup.find(".modal-title").html (
-                '<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>');
+              $popup.find(".modal-body").html (`<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`);
+              $popup.find(".modal-title").html (`<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`);
               $popup[0].dataset.popuptype = "app-logout";
               H.openModal ($popup);
 
@@ -523,7 +525,7 @@ class WSocket
             // refreshpcomm
             case "refreshpcomm":
 
-              var $el = $("[data-id='postit-"+data.postitId+"'] .pcomm");
+              var $el = $(`[data-id="postit-${data.postitId}"] .pcomm`);
 
               if ($el.length)
                 $el.pcomm ("refresh", data);
@@ -552,13 +554,13 @@ class WSocket
             // chat
             case "chat":
               if ($wall.length)
-                $("#wall-"+data.wall.id+" .chat").chat ("addMsg", data);
+                $(`#wall-${data.wall.id} .chat`).chat ("addMsg", data);
               break;
 
             // chatcount
             case "chatcount":
               if ($wall.length)
-                $("#wall-"+data.wall.id+" .chat")
+                $(`#wall-${data.wall.id} .chat`)
                   .chat ("refreshUserscount", data.count);
               break;
 
@@ -575,7 +577,7 @@ class WSocket
               {
                 H.displayMsg ({
                   type: "warning",
-                  msg: "<?=_("Some walls are no longer available!")?>"
+                  msg: `<?=_("Some walls are no longer available.")?>`
                 });
 
                 $wall.wall ("close");
@@ -611,9 +613,8 @@ class WSocket
 
               H.cleanPopupDataAttr ($popup);
 
-              $popup.find(".modal-body").html ("<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>");
-              $popup.find(".modal-title").html (
-                '<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>');
+              $popup.find(".modal-body").html (`<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>`);
+              $popup.find(".modal-title").html (`<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`);
 
               $popup[0].dataset.popuptype = "app-reload";
               H.openModal ($popup);
@@ -789,7 +790,7 @@ class WHelper
   hideUserWriting (user)
   {
     document.querySelectorAll(
-      "[class^='user-writing'][data-userid='"+user.id+"']").forEach (el =>
+      `[class^="user-writing"][data-userid="${user.id}"]`).forEach (el =>
       {
         el.parentNode.classList.remove ("locked", "main");
         el.remove ();
@@ -1115,7 +1116,7 @@ class WHelper
       setTimeout(()=>
         this.displayMsg ({
           type: "warning",
-          msg: "<?=_("Content has been cleaned up")?>"
+          msg: `<?=_("Content has been cleaned up")?>`
         }), 150);
     }
 
@@ -1213,7 +1214,7 @@ class WHelper
 
     this.cleanPopupDataAttr ($popup);
   
-    popup0.querySelector(".modal-title").innerHTML = `<i class="fas fa-${args.icon} fa-fw"></i> ${args.title||"<?=_("Confirmation")?>"}`;
+    popup0.querySelector(".modal-title").innerHTML = `<i class="fas fa-${args.icon} fa-fw"></i> ${args.title||`<?=_("Confirmation")?>`}`;
     popup0.querySelector(".modal-body").innerHTML = args.content;
 
     popup0.dataset.popuptype = args.type;
@@ -1416,9 +1417,9 @@ class WHelper
   }
 
   // METHOD loadPopup ()
-  async loadPopup (type, args = {open:true})
+  async loadPopup (type, args = {open: true})
   {
-    const id = type+"Popup",
+    const id = `${type}Popup`,
           popup = document.getElementById (id);
 
     // INTERNAL FUNCTION __exec ()
@@ -1474,8 +1475,7 @@ class WHelper
   
     $popup.find(".modal-body").html (msg);
   
-    $popup.find(".modal-title").html (
-      '<i class="fas fa-bullhorn"></i> <?=_("Information")?>');
+    $popup.find(".modal-title").html (`<i class="fas fa-bullhorn"></i> <?=_("Information")?>`);
   
     this.openModal ($popup);
   }
@@ -1486,8 +1486,8 @@ class WHelper
     error_cb && error_cb ();
   
     this.displayMsg ({
-      type: (msg)?"warning" : "danger",
-      msg: (msg)?msg : "<?=_("System error. Please report it to the administrator!")?>"
+      type: msg?"warning" : "danger",
+      msg: msg?msg:`<?=_("System error. Please report it to the administrator.")?>`
     });
   }
   
@@ -1529,12 +1529,12 @@ class WHelper
       if ($previous.length)
         $previous.css ("z-index", $previous.css("z-index") - 1);
 
-      $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title ? "<b>"+args.title+"</b><br>":""}<span>${args.msg}</span></div>`);
+      $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title?`<b>${args.title}</b><br>`:""}<span>${args.msg}</span></div>`);
 
       if (!args.noclosure)
         setTimeout (() =>
           {
-            const $div = $target.find(".alert[data-timeoutid='"+id+"']");
+            const $div = $target.find (`.alert[data-timeoutid="${id}"]`);
   
             $div.hide("fade", function(){$div.remove ()})
     
@@ -1552,7 +1552,7 @@ class WHelper
     if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0)
     {
       menu.style.overflowY = "auto";
-      menu.style.maxHeight = (window.innerHeight - 56)+"px";
+      menu.style.maxHeight = `${window.innerHeight-56}px`;
     }
     else
     {
@@ -1630,8 +1630,8 @@ class WHelper
           if (req.status != 200)
             this.displayMsg ({
               type: "warning",
-              msg: args.msg ||
-                     "<?=_("An error occured while downloading file!")?>"
+              msg:
+                args.msg||`<?=_("An error occured while downloading file.")?>`
             });
         }
       };
@@ -1649,7 +1649,7 @@ class WHelper
       {
         this.displayMsg ({
           type: "warning",
-          msg: "<?=_("The file is no longer available for download!")?>"
+          msg: `<?=_("The file is no longer available for download.")?>`
         });
       }
       else
@@ -1691,10 +1691,10 @@ class WHelper
     if (d.error && isNaN (d.error))
       msg = d.error;
     else if (error_cb)
-      msg = "<?=_("Unknown error.<br>Please try again later.")?>";
+      msg = `<?=_("Unknown error.<br>Please try again later.")?>`;
     else
     {
-      msg ="<?=_("Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>";
+      msg = `<?=_("Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
       setTimeout (()=> $("<div/>").login ("logout", {auto: true}), 3000);
     }
 
@@ -1793,7 +1793,7 @@ class WHelper
 
                   $progress.text(display).css ("width", display);
 
-                  //FIXME
+                  //FIXME Use classes
                   if (percentComplete < 0.5)
                     $progress.css ("background", "#ea6966");
                   else if (percentComplete < 0.9)
@@ -1801,7 +1801,7 @@ class WHelper
                   else if (percentComplete < 1)
                     $progress.css ("background", "#6ece4b");
                   else
-                    $progress.text ("<?=_("Upload completed.")?>");
+                    $progress.text (`<?=_("Upload completed.")?>`);
                 }
             };
 
@@ -1839,7 +1839,7 @@ class WHelper
            case "abort":
              this.manageUnknownError ({
                msgtype: "warning",
-               error: "<?=_("Upload has been canceled")?>"});
+               error: `<?=_("Upload has been canceled")?>`});
              break;
   
            default:
@@ -1854,7 +1854,7 @@ class WHelper
   // METHOD checkUploadFileSize ()
   checkUploadFileSize (args)
   {
-    const msg = "<?=_("File size is too large (%sM max)!")?>".replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+    const msg = `<?=_("File size is too large (%sM max).")?>`.replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
           maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
     let ret = true;
   
@@ -1884,7 +1884,7 @@ class WHelper
     if (type != "all" && !file.name.match (new RegExp (type, 'i')))
       return _H.displayMsg ({
         type: "warning",
-        msg: "<?=_("Wrong file type for %s!")?>".replace("%s", file.name)
+        msg: `<?=_("Wrong file type for %s.")?>`.replace("%s", file.name)
       });
   
     reader.readAsDataURL (file);
@@ -1897,7 +1897,7 @@ class WHelper
   
     reader.onerror = (e) =>
       {
-        const msg = "<?=_("Can not read file")?> ("+e.target.error.code+")";
+        const msg = `<?=_("Can not read file")?> (${e.target.error.code})`;
   
         if (cb_msg)
           cb_msg (msg);
@@ -1954,9 +1954,8 @@ class WHelper
   
           this.cleanPopupDataAttr ($popup);
   
-          $popup.find(".modal-body").html ("<?=_("A new release of wopits is available!")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>".replace("%s1", "<b>"+userVersion+"</b>").replace("%s2", "<b>"+officialVersion+"</b>"));
-          $popup.find(".modal-title").html (
-            '<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>');
+          $popup.find(".modal-body").html (`<?=_("A new release of wopits is available.")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>`.replace("%s1", `<b>${userVersion}</b>`).replace("%s2", `<b>${officialVersion}</b>`));
+          $popup.find(".modal-title").html (`<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`);
   
           $popup[0].dataset.popuptype = "app-upgrade";
           this.openModal ($popup);
@@ -1969,8 +1968,7 @@ class WHelper
         html.removeAttribute ("data-upgradedone");
   
         $popup.find(".modal-dialog").removeClass ("modal-sm");
-        $popup.find(".modal-title").html (
-          '<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>');
+        $popup.find(".modal-title").html (`<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>`);
 
         const r = await fetch ("/whats_new/latest.php");
         if (r.ok)
@@ -1981,12 +1979,12 @@ class WHelper
           if (d)
             d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>`.replace("%s", "<?=WPT_VERSION?>")+d;
           else
-            d = "<?=_("Upgrade done. Thank you for using wopits!")?>";
+            d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
           <?php else:?>
-            d = "<?=_("Upgrade done. Thank you for using wopits!")?>";
+            d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
           <?php endif?>
 
-          $popup.find(".modal-body").html (d+`<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`);
+          $popup.find(".modal-body").html (`${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`);
           $popup.find(".modal-body").find("button")
             .on("click", function ()
             {
@@ -2020,12 +2018,12 @@ class WHelper
   
     body.style.position = "fixed";
     body.style.overflow = "hidden";
-    body.style.top = (bodyScrollTop * -1)+"px";
+    body.style.top = `${bodyScrollTop*-1}px`;
   
     if (this.navigatorIsEdge ())
-      S.getCurrent("wall")[0].style.left = (wallsScrollLeft * -1)+"px";
+      S.getCurrent("wall")[0].style.left = `${wallsScrollLeft*-1}px`;
   
-    walls.style.width = window.innerWidth+"px";
+    walls.style.width = `${window.innerWidth}px`;
     walls.style.overflow = "hidden";
   
     $(window).trigger ("resize");

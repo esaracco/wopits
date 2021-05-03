@@ -123,8 +123,7 @@
 
       $wall[0].dataset.searchstring = str;
 
-      $wall.find(".postit-edit,"+
-                 ".postit-header .title").not(":empty").each (
+      $wall.find(".postit-edit,.postit-header .title").not(":empty").each (
         function ()
         {
           const $edit = $(this);
@@ -138,10 +137,10 @@
 
       if (count)
         html = (count == 1) ?
-          "<?=_("1 note match your search.")?>" :
-          "<?=_("%s notes match your search.")?>".replace ("%s", count);
+          `<?=_("1 note match your search.")?>` :
+          `<?=_("%s notes match your search.")?>`.replace ("%s", count);
       else
-        html = "<?=_("No result")?>";
+        html = `<?=_("No result")?>`;
 
       $search.find(".result").html (html);
     }

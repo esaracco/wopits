@@ -41,7 +41,7 @@
 
       sb.innerText = str;
 
-      ret = (sb.clientWidth+30)+"px";
+      ret = `${sb.clientWidth+30}px`;
     }
 
     return ret;

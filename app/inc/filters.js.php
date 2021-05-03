@@ -168,17 +168,17 @@
               const tag =
                 $(this).find("i").attr("class").match (/fa\-([^ ]+) /)[1];
 
-              $cell.find(pclass+"[data-tags*=',"+tag+",']")
+              $cell.find(`${pclass}[data-tags*=",${tag},"]`)
                 .addClass("filter-display");
             });
 
           $colors.each (function ()
             {
-              $cell.find(pclass+"."+this.className.split(" ")[0])
+              $cell.find(`${pclass}.${this.className.split(" ")[0]}`)
                 .addClass("filter-display");
             });
 
-          $cell.find(pclass+":not(.filter-display)")
+          $cell.find(`${pclass}:not(.filter-display)`)
             .css ("visibility", "hidden");
         });
       }

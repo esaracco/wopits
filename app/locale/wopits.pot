@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-04-30 09:25+0200\n"
+        "POT-Creation-Date: 2021-05-03 16:57+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,7 +32,7 @@ msgid   "%s notes match your search."
 msgstr  ""
 
 #, php-format
-msgid   "%s shared this wall with you!"
+msgid   "%s shared this wall with you."
 msgstr  ""
 
 msgid   "1 note match your search."
@@ -50,25 +50,13 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Attachments</b> Fixed issues with files without extension.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Lots of debugging and improvements.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with updating the title of notes in stack mode.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with copy/paste.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Wall</b> Fixed issues with walls columns/rows removal.</p>"
-msgstr  ""
-
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Messages</b> Added a user messaging box.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can now add comments.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can comment the notes.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the visibility of walls headers (<i>still experimental... please report any strange behavior!</i>)</p>"
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, use the <i class='fas fa-share'></i> icon of the wall's menu.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of dedicated groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p><p>Sharing will not be available if you checked the invisible mode option in your account page.</p>"
@@ -90,7 +78,7 @@ msgstr  ""
 msgid   "A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."
 msgstr  ""
 
-msgid   "A new release of wopits is available!"
+msgid   "A new release of wopits is available."
 msgstr  ""
 
 msgid   "A wall with the same name already exists."
@@ -136,16 +124,13 @@ msgstr  ""
 msgid   "An error occured while cloning the wall."
 msgstr  ""
 
-msgid   "An error occured while downloading file!"
+msgid   "An error occured while downloading file."
 msgstr  ""
 
 msgid   "An error occured while processing import."
 msgstr  ""
 
-msgid   "An error occured while uploading file!"
-msgstr  ""
-
-msgid   "An error occurred while exporting wall data!"
+msgid   "An error occured while uploading file."
 msgstr  ""
 
 msgid   "An error occurred while exporting wall data."
@@ -155,7 +140,7 @@ msgid   "Animated dashed"
 msgstr  ""
 
 #, php-format
-msgid   "Another account with the same email as the LDAP account email `%s` already exists on wopits!"
+msgid   "Another account with the same email as the LDAP account email `%s` already exists on wopits."
 msgstr  ""
 
 msgid   "Arc"
@@ -198,7 +183,7 @@ msgstr  ""
 msgid   "Can not read file"
 msgstr  ""
 
-msgid   "Can't contact LDAP server!"
+msgid   "Can't contact LDAP server."
 msgstr  ""
 
 msgid   "Cancel"
@@ -400,7 +385,7 @@ msgstr  ""
 msgid   "Emails must match"
 msgstr  ""
 
-msgid   "Empty file or bad file format!"
+msgid   "Empty file or bad file format."
 msgstr  ""
 
 msgid   "Expiration"
@@ -419,7 +404,7 @@ msgid   "External contents are now filtered"
 msgstr  ""
 
 #, php-format
-msgid   "File size is too large (%sM max)!"
+msgid   "File size is too large (%sM max)."
 msgstr  ""
 
 msgid   "Filters"
@@ -436,6 +421,10 @@ msgstr  ""
 
 #, php-format
 msgid   "For performance reasons, a wall cannot contain more than %s cells"
+msgstr  ""
+
+#, php-format
+msgid   "For performance reasons, a wall cannot contain more than %s cells."
 msgstr  ""
 
 msgid   "For this wall only."
@@ -466,7 +455,13 @@ msgstr  ""
 msgid   "Help"
 msgstr  ""
 
+msgid   "Hide wall headers"
+msgstr  ""
+
 msgid   "I get it !"
+msgstr  ""
+
+msgid   "I get it!"
 msgstr  ""
 
 msgid   "If so, do not hesitate to test others:"
@@ -766,6 +761,9 @@ msgstr  ""
 msgid   "Show external contents"
 msgstr  ""
 
+msgid   "Show wall headers"
+msgstr  ""
+
 msgid   "Size"
 msgstr  ""
 
@@ -775,13 +773,13 @@ msgstr  ""
 msgid   "Some features are not available in this mode"
 msgstr  ""
 
-msgid   "Some walls are no longer available!"
+msgid   "Some walls are no longer available."
 msgstr  ""
 
-msgid   "Someone is editing a cell in the col/row you want to delete!"
+msgid   "Someone is editing a cell in the col/row you want to delete."
 msgstr  ""
 
-msgid   "Someone is editing a note in the col/row you want to delete!"
+msgid   "Someone is editing a note in the col/row you want to delete."
 msgstr  ""
 
 msgid   "Sorry, there is a compatibility issue with your browser when it comes to uploading notes images..."
@@ -808,7 +806,7 @@ msgstr  ""
 msgid   "Switch to sticky notes mode"
 msgstr  ""
 
-msgid   "System error. Please report it to the administrator!"
+msgid   "System error. Please report it to the administrator."
 msgstr  ""
 
 msgid   "Tags"
@@ -824,20 +822,20 @@ msgstr  ""
 msgid   "The application will be upgraded from v%s1 to v%s2."
 msgstr  ""
 
-msgid   "The deadline for this note has been removed!"
+msgid   "The deadline for this note has been removed."
 msgstr  ""
 
 #, php-format
 msgid   "The email `%s` already exists."
 msgstr  ""
 
-msgid   "The entire column/row was deleted while you were editing the note!"
+msgid   "The entire column/row was deleted while you were editing the note."
 msgstr  ""
 
-msgid   "The file is already linked to the note!"
+msgid   "The file is already linked to the note."
 msgstr  ""
 
-msgid   "The file is no longer available for download!"
+msgid   "The file is no longer available for download."
 msgstr  ""
 
 msgid   "The file type was not recognized."
@@ -878,7 +876,7 @@ msgstr  ""
 msgid   "The login `%s` already exists."
 msgstr  ""
 
-msgid   "The minimum zoom has been reached!"
+msgid   "The minimum zoom has been reached."
 msgstr  ""
 
 msgid   "The new password:"
@@ -899,7 +897,7 @@ msgstr  ""
 msgid   "The note «%s» will expire soon."
 msgstr  ""
 
-msgid   "The row/column has been deleted!"
+msgid   "The row/column has been deleted."
 msgstr  ""
 
 #, php-format
@@ -934,10 +932,10 @@ msgstr  ""
 msgid   "This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server."
 msgstr  ""
 
-msgid   "This item has been deleted!"
+msgid   "This item has been deleted."
 msgstr  ""
 
-msgid   "This item is locked by another user!"
+msgid   "This item is locked by another user."
 msgstr  ""
 
 msgid   "This note contains external images or videos."
@@ -956,13 +954,13 @@ msgstr  ""
 msgid   "This note will expire soon."
 msgstr  ""
 
-msgid   "This relation already exists!"
+msgid   "This relation already exists."
 msgstr  ""
 
 msgid   "This title already exists."
 msgstr  ""
 
-msgid   "This user is no longer available!"
+msgid   "This user is no longer available."
 msgstr  ""
 
 msgid   "This user will lose their access for all walls shared with this group.<br>Remove anyway?"
@@ -971,10 +969,10 @@ msgstr  ""
 msgid   "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr  ""
 
-msgid   "This wall has not been shared with any user yet!"
+msgid   "This wall has not been shared with any user yet."
 msgstr  ""
 
-msgid   "This wall is not shared with any group!"
+msgid   "This wall is not shared with any group."
 msgstr  ""
 
 msgid   "This wall is shared"
@@ -1008,9 +1006,6 @@ msgid   "Unable to retrieve your account information"
 msgstr  ""
 
 msgid   "Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience."
-msgstr  ""
-
-msgid   "Unknown error.<br>Please try again later!"
 msgstr  ""
 
 msgid   "Unknown error.<br>Please try again later."
@@ -1067,12 +1062,6 @@ msgstr  ""
 msgid   "Wall"
 msgstr  ""
 
-msgid   "Wall headers are now hidden"
-msgstr  ""
-
-msgid   "Wall headers are now visible"
-msgstr  ""
-
 msgid   "Wall properties"
 msgstr  ""
 
@@ -1108,7 +1097,7 @@ msgid   "Wrong current password."
 msgstr  ""
 
 #, php-format
-msgid   "Wrong file type for %s!"
+msgid   "Wrong file type for %s."
 msgstr  ""
 
 msgid   "Yes"
@@ -1142,7 +1131,7 @@ msgstr  ""
 msgid   "You must have write access to perform this action."
 msgstr  ""
 
-msgid   "You need write access to perform this action!"
+msgid   "You need write access to perform this action."
 msgstr  ""
 
 #, php-format
@@ -1159,7 +1148,7 @@ msgstr  ""
 msgid   "Your account «%s» has been created!"
 msgstr  ""
 
-msgid   "Your connection attempt failed!"
+msgid   "Your connection attempt failed."
 msgstr  ""
 
 msgid   "Your current password:"

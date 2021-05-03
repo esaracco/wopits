@@ -311,7 +311,7 @@
           `<?=_("Color of the wall «&nbsp;%s&nbsp;»:")?>`
             .replace("%s", $wall.wall ("getName")));
       else
-        $settings.find(".wall-color").html ("<?=_("Default walls color:")?>");
+        $settings.find(".wall-color").html (`<?=_("Default walls color:")?>`);
 
       if (loaded)
       {

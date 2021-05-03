@@ -58,8 +58,8 @@
                 const du = $login.find("input[name='_directURL']").val ();
 
                 plugin.login (H.trimObject ({
-                  directURL:
-                    (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ? "/?"+du : null,
+                  directURL: (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ?
+                                `/?${du}` : null,
                   remember: $login.find("#remember")[0].checked,
                   username: $login.find("input[type='text']").val (),
                   password: $login.find("input[type='password']").val ()
@@ -158,7 +158,7 @@
 
             $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span></div><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span></div><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
 
-            $('<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>')
+            $(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)
             .on("click", function ()
             {
               plugin.resetCreateUserForm ();
@@ -166,7 +166,7 @@
             .insertBefore ($popup.find(".btn-primary"));
 
             $popup.find(".btn-primary").html(
-              "<i class='fas fa-bolt fa-fw fa-xs'></i> <?=_("Create")?></i>");
+              `<i class='fas fa-bolt fa-fw fa-xs'></i> <?=_("Create")?></i>`);
 
             setTimeout (() => $popup.find("input").eq(0).focus (), 150);
           }
@@ -188,7 +188,7 @@
         .find("input").removeAttr ("readonly");
       $popup.find(".confirm,.btn-info").remove ();
       $popup.find(".btn-primary")
-        .html ('<?=_("Next")?> <i class="fas fa-caret-right"></i>');
+        .html (`<?=_("Next")?> <i class="fas fa-caret-right"></i>`);
     },
 
     // METHOD login ()
@@ -262,7 +262,7 @@
             H.displayMsg ({
                 noclosure: true,
                 type: "info",
-                msg: "<?=_("Your new password has been sent. Please, check your spam box if you don't receive it")?>"
+                msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it")?>`
             });
           }
         }

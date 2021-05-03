@@ -31,7 +31,7 @@ class Run
           break;
 
         default:
-          $this->_log ('warning', $data['event'], 'Unknown event!');
+          $this->_log ('warning', $data['event'], 'Unknown event.');
       }
     }
     catch (\Exception $e)

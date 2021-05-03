@@ -61,7 +61,7 @@
             H.openConfirmPopover ({
               item: $el.find("span:eq(0)"),
               title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
-              content: isDed ? "<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>" : "<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>",
+              content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
               cb_ok: () =>
               {
                 plugin.removeGroupUser (args);
@@ -222,7 +222,7 @@
     // METHOD addGroupUser ()
     addGroupUser (args)
     {
-      let service = "group/"+args.groupId+"/addUser/"+args.userId;
+      let service = `group/${args.groupId}/addUser/${args.userId}`;
 
       if (args.groupType == <?=WPT_GTYPES_DED?>)
         service = "wall/"+args.wallId+"/"+service;
@@ -237,7 +237,7 @@
           if (d.notfound)
             H.displayMsg ({
               type: "warning",
-              msg: "<?=_("This user is no longer available!")?>"
+              msg: `<?=_("This user is no longer available.")?>`
             });
 
           this.displayUsers (args);
@@ -255,10 +255,10 @@
     {
       const $ac = this.element,
             delegateAdminId = $ac[0].dataset.delegateadminid||0;
-      let service = "group/"+args.groupId+"/getUsers";
+      let service = `group/${args.groupId}/getUsers`;
 
       if (args.groupType == <?=WPT_GTYPES_DED?>)
-        service = "wall/"+args.wallId+"/"+service;
+        service = `wall/${args.wallId}/${service}`;
 
       H.fetch (
         "GET",
@@ -303,9 +303,9 @@
       const ac = this.element[0],
             wallId = S.getCurrent("wall").wall ("getId"),
             service = (args.groupType == <?=WPT_GTYPES_DED?>) ?
-              "group/"+ac.dataset.groupid+"/wall/"+wallId+
-                "/searchUsers/"+args.str :
-              "group/"+ac.dataset.groupid+"/searchUsers/"+args.str;
+              `group/${ac.dataset.groupid}/wall/${wallId}`+
+                `/searchUsers/${args.str}` :
+              `group/${ac.dataset.groupid}/searchUsers/${args.str}`;
 
       args.str = args.str.replace (/&/, "");
 

@@ -29,7 +29,7 @@
           H.openConfirmPopover ({
             item: $(this),
             title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
-            content: "<?=_("You will lose your access to the wall.<br>Reject anyway?")?>",
+            content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
             cb_ok: () => plugin.removeGroupUser ()
           });
         });
@@ -45,7 +45,7 @@
 
       H.request_ws (
         "DELETE",
-        "wall/"+wallId+"/group/"+this.element[0].dataset.groups+"/removeMe");
+        `wall/${wallId}/group/${this.element[0].dataset.groups}/removeMe`);
     },
 
     // METHOD open ()

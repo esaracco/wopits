@@ -167,7 +167,7 @@ class Wall extends Base
           $file, base64_decode(str_replace(' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file!"));
+          throw new \Exception (_("An error occured while uploading file."));
 
         ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
           ->execute ([$headerId]);
@@ -1020,7 +1020,7 @@ class Wall extends Base
               array_map ([$this, 'quote'], $ids)).') LIMIT 1') ->fetch())
         {
           $this->rollback ();
-          return ['error_msg' => _("Someone is editing a note in the col/row you want to delete!")];
+          return ['error_msg' => _("Someone is editing a note in the col/row you want to delete.")];
         }
 
         foreach ($ids as $id)
@@ -1041,7 +1041,7 @@ class Wall extends Base
         WHERE item = 'cell' AND item_id IN ($idsStr) LIMIT 1")->fetch())
       {
         $this->rollback ();
-        return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete!")];
+        return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete.")];
       }
 
       // Delete
@@ -1125,29 +1125,28 @@ class Wall extends Base
 
       if ($item == 'col')
         ($stmt = $this->prepare("
-          SELECT item_row, item_col FROM cells
+          SELECT item_row, item_col, height FROM cells
           WHERE walls_id = ? AND item_$item = ?"))
            ->execute ([$this->wallId, $order]);
       else
         ($stmt = $this->prepare('
-          SELECT item_row, item_col FROM cells
+          SELECT item_row, item_col, width FROM cells
           WHERE walls_id = ? ORDER BY item_row DESC, item_col ASC'))
            ->execute ([$this->wallId]);
 
       $r = null;
       while ($e = $stmt->fetch ())
       {
-        $data = [ 
-          'width' => 300,
-          'height' => 200,
-          'walls_id' => $this->wallId
-        ];
-
         // Col
         if ($item == 'col')
         {
-          $data['item_row'] = $e['item_row'];
-          $data['item_col'] = $order + 1;
+          $data = [
+            'walls_id' => $this->wallId,
+            'width' => 300,
+            'height' => $e['height']??200,
+            'item_row' => $e['item_row'],
+            'item_col' => $order + 1
+          ];
         }
         // Row
         else
@@ -1157,8 +1156,13 @@ class Wall extends Base
           elseif ($e['item_row'] != $r)
             break 1;
 
-          $data['item_row'] = $e['item_row'] + 1;
-          $data['item_col'] = $e['item_col'];
+          $data = [
+            'walls_id' => $this->wallId,
+            'width' => $e['width']??300,
+            'height' => 200,
+            'item_row' => $e['item_row'] + 1,
+            'item_col' => $e['item_col']
+          ];
         }
 
         $this->executeQuery ('INSERT INTO cells', $data);

@@ -945,11 +945,6 @@ span.user-writing-min {
   padding:0!important;
 }
 
-.user-writing.main,
-.user-writing-min.main {
-  font-weight:bold;
-}
-
 .user-writing:not(.main) {
   top:auto;
   left:auto;
@@ -989,11 +984,21 @@ a.active .user-writing {
   left:auto;
 }
 
-th .user-writing {
+.wall th .user-writing {
   top:auto;
   left:auto;
   border-top-left-radius:0;
   font-weight:normal;
+}
+
+.wall th.display {
+  position:auto;
+  visibility:visible;
+}
+
+.wall th.hide {
+  position:absolute;
+  visibility:hidden;
 }
 
 thead th .user-writing {
@@ -1091,13 +1096,12 @@ th .close.img-delete,
   vertical-align:top;
   margin:0 -15px 0 0 !important;
   background:#fff;
-  padding: 0 2px !important;
+  padding:0 2px !important;
 }
 
 th .close.img-delete {
-  visibility:visible !important;
-  margin-top:0 !important;
-  margin-right:-13px !important;
+  margin-top:0;
+  margin-right:-13px;
   font-size:0.9rem;
 }
 

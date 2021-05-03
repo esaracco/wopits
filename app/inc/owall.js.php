@@ -132,7 +132,7 @@
 
           if (!content)
             $owall.find (".modal-body .list-group").html (
-              "<span class='text-center'><?=_("No result")?></span>");
+              `<span class='text-center'><?=_("No result")?></span>`);
 
           plugin.controlOpenButton ();
 
@@ -179,7 +179,7 @@
         while (
           i < tmp.length &&
           !(found =
-              document.querySelector('[data-id="wall-'+tmp[i].dataset.id+'"]')))
+              document.querySelector(`[data-id="wall-${tmp[i].dataset.id}"]`)))
             i++;
 
         if (!found)
@@ -195,7 +195,7 @@
         i = 0;
         while (
           i < tmp.length &&
-          document.querySelector('[data-id="wall-'+tmp[i]+'"]'))
+          document.querySelector(`[data-id="wall-${tmp[i]}"]`))
             i++;
 
         if (i != tmp.length)
@@ -274,7 +274,7 @@
       $owall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
       if (!wpt_userData.walls.list.length)
-        body = "<?=_("No walls available")?>";
+        body = `<?=_("No walls available")?>`;
       else
       { 
         $owall.find(".ow-filters,.input-group").show ();
@@ -285,7 +285,7 @@
 
           walls.forEach ((item) =>
           { 
-            if (!document.querySelector ('[data-id="wall-'+item.id+'"]'))
+            if (!document.querySelector (`[data-id="wall-${item.id}"]`))
             {
               const shared = (item.ownerid != wpt_userData.id),
                     owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:"";
@@ -305,11 +305,11 @@
           {
             $owall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
-            body = "<i><?=_("All available walls are opened.")?></i>";
+            body = `<i><?=_("All available walls are opened.")?></i>`;
           }
         }
         else
-          body = "<span class='text-center'><?=_("No result")?></span>";
+          body = `<span class='text-center'><?=_("No result")?></span>`;
       }
 
       $owall.find (".modal-body .list-group").html (body);

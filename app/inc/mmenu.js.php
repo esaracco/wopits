@@ -14,7 +14,7 @@
 
 ?>
 
-  const _noDisplayBtn = `<div class="mt-2"><button type="button" class="btn btn-xs btn-primary nodisplay"><?=_("I get it !")?></button></div>`;
+  const _noDisplayBtn = `<div class="mt-2"><button type="button" class="btn btn-xs btn-primary nodisplay"><?=_("I get it!")?></button></div>`;
   let _data = {postits: {}, dest: null};
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -70,7 +70,7 @@
               if (!ST.noDisplay ("mmenu-copy-help"))
               {
                 title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-                content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?>"+_noDisplayBtn;
+                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?>${_noDisplayBtn}`;
                 cbOK = ()=> ST.noDisplay ("mmenu-copy-help", true);
               }
               break;
@@ -79,7 +79,7 @@
               if (!ST.noDisplay ("mmenu-move-help"))
               {
                 title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-                content = "<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes.")?>"+_noDisplayBtn;
+                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes.")?>${_noDisplayBtn}`;
                 cbOK = ()=> ST.noDisplay ("mmenu-move-help", true);
               }
               break
@@ -114,7 +114,7 @@
       if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         return H.displayMsg ({
           type: "warning",
-          msg: "<?=_("You need write access to perform this action!")?>"
+          msg: `<?=_("You need write access to perform this action.")?>`
         });
 
       _data.dest = args.cellPlugin;
@@ -123,18 +123,18 @@
       {
         case "copy":
           title =  `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-          content = "<?=_("Do you want to copy the selected notes in this cell?")?>";
+          content = `<?=_("Do you want to copy the selected notes in this cell?")?>`;
           break;
 
         case "move":
           title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-          content = "<?=_("Do you want to move the selected notes in this cell?")?>";
+          content = `<?=_("Do you want to move the selected notes in this cell?")?>`;
           break;
 
         case "delete":
           item = this.element.find ("[data-action='delete']");
           title = `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`;
-          content = "<?=_("Delete selected notes?")?>";
+          content = `<?=_("Delete selected notes?")?>`;
           break;
 
         case "cpick":
@@ -143,8 +143,8 @@
         default:
           type = "info";
           item = this.element.find ("li:eq(0)");
-          title = "<?=_("Copy/Move")?>";
-          content = "<?=_("Please, select the type of action first.")?>";
+          title = `<?=_("Copy/Move")?>`;
+          content = `<?=_("Please, select the type of action first.")?>`;
       }
 
       if (title)
@@ -265,7 +265,7 @@
         this.open ();
 
       p.settings.cell[0].querySelectorAll(
-        "[data-id='"+p.element[0].dataset.id+"']")
+        `[data-id="${p.element[0].dataset.id}"]`)
            .forEach ((_p)=> _p.classList.add ("selected"));
 
       _data.postits[p.settings.id] = p;
@@ -454,7 +454,7 @@
         title: `<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>`,
         placement: "right",
         content: content+_noDisplayBtn,
-        cb_ok: ()=> ST.noDisplay ("mmenu-help-"+writeAccess, true)
+        cb_ok: ()=> ST.noDisplay (`mmenu-help-${writeAccess}`, true)
       });
     },
 

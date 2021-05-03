@@ -105,7 +105,7 @@ class Server
           $server->push ($fd, json_encode (['action' => 'exitsession']));
         else
           $this->_log ($fd, 'warning',
-          'UNAUTHORIZED connection attempt!', $ip, (array)$req);
+          'UNAUTHORIZED connection attempt.', $ip, (array)$req);
 
         $server->disconnect ($fd);
       }
@@ -784,7 +784,7 @@ class Server
           break;
 
         default:
-          $this->_log($fd, 'error', 'Unknown action!', 'internal', (array)$msg);
+          $this->_log($fd, 'error', 'Unknown action.', 'internal', (array)$msg);
       }
     }
   }

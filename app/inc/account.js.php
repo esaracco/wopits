@@ -95,7 +95,7 @@
               item: $account.find (".img-delete"),
               placement: "right",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-              content: "<?=_("Delete your profile photo?")?>",
+              content: `<?=_("Delete your profile photo?")?>`,
               cb_ok: () => plugin.deletePicture ()
             });
           else
@@ -116,15 +116,15 @@
         .on("click", "button,input", function (e)
         {
           const $btn = $(this),
-                $field = (e.target.tagName == 'INPUT') ?
+                $field = (e.target.tagName == "INPUT") ?
                            $btn : $btn.parent().prev (),
-                name = $field.attr("name"),
+                name = $field.attr ("name"),
                 value = $field.val ();
           let title,
               $popup;
 
           if ($account.find(".ldap-msg").length &&
-              e.target.tagName == 'INPUT' &&
+              e.target.tagName == "INPUT" &&
               !name.match (/^fullname|visible|allow_emails$/))
             return;
 
@@ -137,7 +137,7 @@
                   item: $field,
                   placement: "top",
                   title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
-                  content: "<?=_("Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>",
+                  content: `<?=_("Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
                   cb_close: (btn) => (btn != "yes")&&($field[0].checked= false),
                   cb_ok: () => plugin.updateField ({visible: 0}, true)
                 });
@@ -198,21 +198,21 @@
                       title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
                       $input
                         .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
-                        .attr("placeholder", "<?=_("username")?>")
+                        .attr("placeholder", `<?=_("username")?>`)
                         .attr("autocorrect", "off")
                         .attr ("autocapitalize", "off");
                       break;
                     case "fullname":
-                      title =`<i class="fas fa-signature"></i> <?=_("Full name")?>`;
+                      title = `<i class="fas fa-signature"></i> <?=_("Full name")?>`;
                       $input
                         .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
-                        .attr("placeholder", "<?=_("full name")?>");
+                        .attr("placeholder", `<?=_("full name")?>`);
                       break;
                     case "email":
                       title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
                       $input
                         .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
-                        .attr("placeholder", "<?=_("email")?>")
+                        .attr("placeholder", `<?=_("email")?>`)
                         .attr("autocorrect", "off")
                         .attr ("autocapitalize", "off");
                       break;
@@ -292,13 +292,13 @@
     {
       // Update "invisible mode" icon in main menu.
       document.querySelector(".invisible-mode").style.display =
-        (wpt_userData.settings.visible == 1) ? "none" : "inline-block";
+        (wpt_userData.settings.visible == 1)?"none":"inline-block";
     },
 
     // METHOD getProp ()
     getProp (prop)
     {
-      return this.element.find("input[name='"+prop+"']").val ();
+      return this.element.find(`input[name="${prop}"]`).val ();
     },
 
     // METHOD deletePicture ()
@@ -334,7 +334,7 @@
           if (d.error_msg)
             H.displayMsg ({type: "warning", msg: d.error_msg});
           else
-            return location.href = '/r.php';
+            return location.href = "/r.php";
         });
     },
 
@@ -356,7 +356,7 @@
           {
             for (const k in d)
             {
-              const field = $account.find("[name='"+k+"']")[0];
+              const field = $account.find(`[name="${k}"]`)[0];
       
               if (field)
               {
@@ -394,7 +394,7 @@
               H.displayMsg ({
                 target: $account.find (".modal-body"),
                 type: "success",
-                msg: "<?=_("Your profile has been updated")?>"
+                msg: `<?=_("Your profile has been updated")?>`
               });
 
             if (!noclosure)

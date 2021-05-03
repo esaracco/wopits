@@ -66,7 +66,7 @@
                 _cancelPlugAction ();
                 H.displayMsg ({
                   type: "warning",
-                  msg: "<?=_("This relation already exists!")?>"
+                  msg: `<?=_("This relation already exists.")?>`
                 });
               }
               else
@@ -274,7 +274,7 @@
                     item: $postit.find(".btn-menu"),
                     placement: "right",
                     title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                    content: "<?=_("Delete this note?")?>",
+                    content: `<?=_("Delete this note?")?>`,
                     cb_close: () => postitPlugin.unedit (),
                     cb_ok: () => postitPlugin.delete ()
                   });
@@ -630,7 +630,7 @@
           cb: ($p)=>
           {
             $p.find(".modal-body").html ((content) ?
-              content : "<i><?=_("No content.")?></i>");
+              content : `<i><?=_("No content.")?></i>`);
 
             $p.find(".modal-title").html (
               `<i class="fas fa-sticky-note"></i> ${title}`);
@@ -645,7 +645,7 @@
     getMin ()
     {
       return this.settings.cell[0].querySelector (
-              ".postit-min[data-id='postit-"+this.settings.id+"']");
+              `.postit-min[data-id="postit-${this.settings.id}"]`);
     },
 
     // METHOD displayAlert ()
@@ -668,7 +668,7 @@
           case "comment":
 
             title = `<i class="fa fa-comment fa-fw"></i> <?=_("Comment")?>`;
-            content =`<?=_("You were mentioned in a comment to this note.")?>`;
+            content = `<?=_("You were mentioned in a comment to this note.")?>`;
             break;
 
           // Deadline
@@ -677,9 +677,9 @@
             title = `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`;
 
             if (!data.deadlineepoch)
-              content ="<?=_("The deadline for this note has been removed!")?>";
+              content =`<?=_("The deadline for this note has been removed.")?>`;
             else if (this.element.hasClass ("obsolete"))
-              content = "<?=_("This note has expired.")?>";
+              content = `<?=_("This note has expired.")?>`;
             else
             {
               const a = moment.unix (data.deadlineepoch),
@@ -690,8 +690,8 @@
                 days = Math.trunc(days) + 1;
 
               content = (days > 1) ?
-                "<?=_("This note will expire in about %s day(s).")?>".replace("%s", days) :
-                "<?=_("This note will expire soon.")?>";
+                `<?=_("This note will expire in about %s day(s).")?>`.replace("%s", days) :
+                `<?=_("This note will expire soon.")?>`;
             }
 
             break;
@@ -1667,7 +1667,7 @@
         H.openConfirmPopover ({
           item: args.item||this.element,
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
-          content: "<?=_("This note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>",
+          content: `<?=_("This note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>`,
           cb_close: args.cb_close,
           cb_ok: () =>
           {
@@ -1853,7 +1853,7 @@
           H.displayMsg ({
             type: "danger",
             msg: (isNaN (d.error)) ?
-              d.error : "<?=_("Unknown error.<br>Please try again later!")?>"
+              d.error : `<?=_("Unknown error.<br>Please try again later.")?>`
           });
 
           $postit.remove ();
@@ -1875,7 +1875,7 @@
           this.getMin().remove ();
 
         this.settings.cell =
-          cell.obj||this.settings.wall.find("td[data-id='cell-"+cell.id+"']");
+          cell.obj||this.settings.wall.find(`td[data-id="cell-${cell.id}"]`);
         this.settings.cellId = cell.id;
 
         $postit.appendTo (this.settings.cell);
@@ -2054,7 +2054,7 @@
       }
 
       if (!this.settings.id)
-        setTimeout(()=>H.raiseError (null, "<?=_("The entire column/row was deleted while you were editing the note!")?>"), 150);
+        setTimeout(()=>H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note.")?>`), 150);
     },
 
     // METHOD closePlugMenu ()
@@ -2096,7 +2096,7 @@
           selector: "#postitUpdatePopupBody",
           content_style: "p {margin: 0}",
           language: (locale != "en_US")?locale:null,
-          language_url: (locale != "en_US")?'/libs/tinymce-'+locale+'.js':null,
+          language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
           branding: false,
           plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime lists",
 
@@ -2143,7 +2143,7 @@
 
                             H.displayMsg ({
                               type: "warning",
-                              msg: "<?=_("The image %s was not available! It has been removed from the note content")?>".replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                              msg: `<?=_("The image %s was not available! It has been removed from the note content")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
                           });
                       }
@@ -2176,7 +2176,7 @@
           visual: false,
           mobile: {menubar: "edit view format insert"},
           menubar: "edit view format insert",
-          menu:{view:{title:"<?=_("View")?>", items:"fullscreen"}},
+          menu:{view:{title:`<?=_("View")?>`, items:"fullscreen"}},
           toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image",
           statusbar: false
         });
@@ -2265,7 +2265,7 @@
                 H.openConfirmPopover ({
                   item: $item,
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
-                  content: "<?=_("Reset deadline?")?>",
+                  content: `<?=_("Reset deadline?")?>`,
                   cb_close: () => plugin.unedit (),
                   cb_ok: () => plugin.resetDeadline ()
                 });
@@ -2358,7 +2358,7 @@
                   [,startId, endId] =
                     $label[0].previousSibling.id.match (/^_(\d+)\-(\d+)$/),
                   startPlugin =
-                    $wall.find(".postit[data-id='postit-"+startId+"']")
+                    $wall.find(`.postit[data-id="postit-${startId}"]`)
                       .postit("getClass"),
                   defaultLabel = H.htmlEscape ($label.find("span").text ());
 
@@ -2369,7 +2369,7 @@
 
                 toSave[startId] = startPlugin.element;
                 toSave[endId] =
-                  $wall.find(".postit[data-id='postit-"+endId+"']");
+                  $wall.find (`.postit[data-id="postit-${endId}"]`);
 
                 S.set ("plugs-to-save", toSave);
                 startPlugin.unedit ();
@@ -2410,7 +2410,7 @@
                       item: $label,
                       placement: "left",
                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                      content: "<?=_("Delete this relation?")?>",
+                      content: `<?=_("Delete this relation?")?>`,
                       cb_close: __unedit,
                       cb_ok: () => startPlugin.removePlug (endId)
                     });
@@ -2505,7 +2505,7 @@
                           setTimeout(()=>
                           {
                             if (!$f.find("input:eq(0)").val ())
-                              __error_cb ("<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>");
+                              __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
                           }, 0);
                         },
                         __error_cb

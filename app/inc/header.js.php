@@ -200,8 +200,8 @@
                        placement: (isCol) ? "left" : "right",
                        title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                        content: (isCol) ?
-                         "<?=_("Delete this column?")?>":
-                         "<?=_("Delete this row?")?>",
+                         `<?=_("Delete this column?")?>` :
+                         `<?=_("Delete this row?")?>`,
                        cb_close: () => plugin.unedit (),
                        cb_ok: () =>
                          {
@@ -224,7 +224,7 @@
                   H.openConfirmPopover ({
                     type: "update",
                     item: $li.parent().parent().find(".btn-menu"),
-                    title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?"<?=_("Column name")?>":"<?=_("Row name")?>"}`,
+                    title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
                       content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
                       cb_close: () =>
                         {
@@ -282,7 +282,7 @@
     },
 
     // METHOD moveRow ()
-    moveColRow (move, nosynchro)
+    moveColRow (move, noSynchro)
     {
       const $th = this.element,
             $tr = $th.closest ("tr"),
@@ -307,7 +307,7 @@
 
           $wall.find("tr").each (function ()
             {
-              const $td = $(this).find("td:eq("+idx+")"),
+              const $td = $(this).find (`td:eq(${idx})`),
                     $tdprev = $td.prev ();
 
               if ($tdprev.length)
@@ -323,7 +323,7 @@
 
           $wall.find("tr").each (function ()
             {
-              const $td = $(this).find("td:eq("+idx+")"),
+              const $td = $(this).find (`td:eq(${idx})`),
                     $tdnext = $td.next ();
 
               if ($tdnext.length)
@@ -332,7 +332,7 @@
           break;
       }
 
-      if (!nosynchro)
+      if (!noSynchro)
         $cell.cell ("unedit", false, {
           headerId: this.settings.id,
           move: move
@@ -418,7 +418,7 @@
             $header = plugin.element,
             adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>",
                             plugin.settings.access),
-            $img = $("<div class='img'><img src='"+src+"'></div>");
+            $img = $(`<div class='img'><img src="${src}"></div>`);
 
       // Refresh postits plugs once picture has been fully loaded
       $img.find("img")
@@ -462,7 +462,7 @@
                   item: $(this),
                   placement: "right",
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                  content: "<?=_("Delete this picture?")?>",
+                  content: `<?=_("Delete this picture?")?>`,
                   cb_close: () =>
                     {
                       if (!S.get ("unedit-done"))
@@ -574,15 +574,13 @@
               $wall.wall ("fixSize", oldW, newW);
 
               if (!isRow)
-              {
                 $wall.find("tbody tr")
-                  .find("td:eq("+(header.cellIndex-1)+")").each (function ()
+                  .find(`td:eq(${(header.cellIndex-1)})`).each (function ()
                   {
-                    this.style.width = newW+"px";
+                    this.style.width = `${newW}px`;
                     this.querySelector(".ui-resizable-s").style.width =
                       (newW+2)+"px";
                   });
-              }
             }
             else
               $wall.wall ("fixSize");
@@ -668,11 +666,11 @@
       const wall = this.settings.wall[0],
             headers = {cols: [], rows: []};
 
-      wall.querySelectorAll("thead th").forEach ((header)=>
-        (header.cellIndex > 0) && headers.cols.push (_serializeOne (header)));
+      wall.querySelectorAll("thead th").forEach (th =>
+        (th.cellIndex > 0) && headers.cols.push (_serializeOne (th)));
 
-      wall.querySelectorAll("tbody th").forEach (
-        (header)=> headers.rows.push (_serializeOne (header)));
+      wall.querySelectorAll("tbody th").forEach (th =>
+        headers.rows.push (_serializeOne (th)));
 
       return headers;
     },

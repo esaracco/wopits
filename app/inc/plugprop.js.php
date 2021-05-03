@@ -55,8 +55,8 @@
           plugin.createSample (true);
 
           $ra.find("input[name='size']").val (_ll.size);
-          $ra.find("input[value='"+_ll.path+"']")[0].checked = true;
-          $ra.find("input[value='"+_ll.line_type+"']")[0].checked = true;
+          $ra.find(`input[value="${_ll.path}"]`)[0].checked = true;
+          $ra.find(`input[value="${_ll.line_type}"]`)[0].checked = true;
 
           return false;
         });
@@ -189,8 +189,8 @@
 
       H.setColorpickerColor ($ra.find(".cp"), _plug.obj.color);
       $ra.find("input[name='size']").val (_plug.obj.line_size);
-      $ra.find("input[value='"+_plug.obj.path+"']")[0].checked = true;
-      $ra.find("input[value='"+_plug.obj.line_type+"']")[0].checked = true;
+      $ra.find(`input[value="${_plug.obj.path}"]`)[0].checked = true;
+      $ra.find(`input[value="${_plug.obj.line_type}"]`)[0].checked = true;
     },
   };
 

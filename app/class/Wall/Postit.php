@@ -35,7 +35,7 @@ class Postit extends Wall
     ($stmt = $this->prepare ('SELECT 1 FROM cells WHERE id = ?'))
       ->execute ([$this->cellId]);
     if (!$stmt->fetch ())
-      return ['error_msg' => _("The row/column has been deleted!")];
+      return ['error_msg' => _("The row/column has been deleted.")];
 
     $_data = $data??[
       'cells_id' => $this->cellId,
@@ -492,7 +492,7 @@ class Postit extends Wall
           $file, base64_decode (str_replace (' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file!"));
+          throw new \Exception (_("An error occured while uploading file."));
 
         list ($file, $this->data->item_type, $width, $height) =
           Helper::resizePicture ($file, 800, 0, false);

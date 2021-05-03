@@ -107,7 +107,7 @@
                   $p[0].dataset.grouptype = groupType;
 
                   $p
-                    .find(".desc").html ("<?=_("Add or remove users in the group « %s ».")?>".replace("%s", "<b>"+$row[0].dataset.name+"</b>"));
+                    .find(".desc").html (`<?=_("Add or remove users in the group « %s ».")?>`.replace("%s", `<b>${$row[0].dataset.name}</b>`));
 
                   $p.usearch (
                     "displayUsers",
@@ -150,7 +150,7 @@
                 H.openConfirmPopover ({
                    item: $btn.parent().find(".name"),
                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
-                   content: "<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>",
+                   content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
                    cb_close: () =>
                      $share.find("li.list-group-item.active")
                        .removeClass ("active todelete"),
@@ -251,13 +251,13 @@
 
       if (type == <?=WPT_GTYPES_GEN?>)
       {
-        title = "<?=_("Create a <b>generic</b> group")?>";
-        desc =  "<?=_("The group will also be available for all your other walls.")?>";
+        title = `<?=_("Create a <b>generic</b> group")?>`;
+        desc =  `<?=_("The group will also be available for all your other walls.")?>`;
       }
       else
       {
-        title = "<?=_("Create a <b>dedicated</b> group")?>";
-        desc = "<?=_("The group will be available only for the current wall.")?>";
+        title = `<?=_("Create a <b>dedicated</b> group")?>`;
+        desc = `<?=_("The group will be available only for the current wall.")?>`;
       }
 
       H.loadPopup ("group", {
@@ -311,7 +311,7 @@
           $p[0].dataset.action = "update";
           $p[0].dataset.noclosure = true;
 
-          $p.find(".modal-title span").html ("<?=_("Update this group")?>");
+          $p.find(".modal-title span").html (`<?=_("Update this group")?>`);
 
           $p.find("input")[0].value = args.name;
           $p.find("input")[1].value = args.description||"";
@@ -374,8 +374,8 @@
 
       $share.find(".nav-link.active").removeClass ("active");
       $share.find(".tab-content .tab-pane.active").removeClass ("show active");
-      $share.find(".nav-tabs .gtype-"+groupType).addClass ("active");
-      $share.find(".tab-content #gtype-"+groupType).tab ("show");
+      $share.find(`.nav-tabs .gtype-${groupType}`).addClass ("active");
+      $share.find(`.tab-content #gtype-${groupType}`).tab ("show");
 
       H.request_ws (
         "POST",
@@ -396,9 +396,9 @@
     {
       const $group = this.element.find("li.todelete"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES_DED?>) ?
-              "wall/"+S.getCurrent("wall").wall("getId")+
-                "/group/"+$group[0].dataset.id :
-              "group/"+$group[0].dataset.id
+              `wall/${S.getCurrent("wall").wall("getId")}/`+
+                 `group/${$group[0].dataset.id}` :
+              `group/${$group[0].dataset.id}`
 
       H.request_ws (
         "DELETE",
@@ -418,7 +418,7 @@
     createGroup (type, args)
     {
       const service = (type == <?=WPT_GTYPES_DED?>) ?
-              "wall/"+S.getCurrent("wall").wall("getId")+"/group" :
+              `wall/${S.getCurrent("wall").wall("getId")}/group` :
               "group";
 
       H.request_ws (
@@ -489,7 +489,7 @@
               wallPlugin.setShared (true);
 
             pClass.add ("scroll");
-            $share.find(".grp-lb").text ("<?=_("Other available groups:")?>");
+            $share.find(".grp-lb").text (`<?=_("Other available groups:")?>`);
 
             html = `<label><?=_("The wall is shared with the following groups:")?></label>`;
 
@@ -512,12 +512,12 @@
             if (isOwner)
               wallPlugin.setShared (false);
 
-            $share.find(".grp-lb").text ("<?=_("Available groups:")?>");
+            $share.find(".grp-lb").text (`<?=_("Available groups:")?>`);
             wallPlugin.element.find("thead th:eq(0)").html ("&nbsp;");
 
             html = (d.delegateAdminId) ?
-              "<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>" :
-              "<span class='nogroup'><?=_("This wall is not shared with any group!")?></span>";
+              `<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>` :
+              `<span class='nogroup'><?=_("This wall is not shared with any group.")?></span>`;
             pClass.remove ("scroll");
           }
 

@@ -332,7 +332,7 @@ class User extends Base
     if (!$data)
     {
       if ($this->_isDuplicate (['email' => $args['mail']]))
-        return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email `%s` already exists on wopits!"), $args['mail'])];
+        return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email `%s` already exists on wopits."), $args['mail'])];
 
       $this->data = (object)[
         'email' => $args['mail'],
@@ -374,10 +374,10 @@ class User extends Base
       $Ldap = new Ldap ();
 
       if (!$Ldap->connect ())
-        return ['error_msg' => _("Can't contact LDAP server!")];
+        return ['error_msg' => _("Can't contact LDAP server.")];
 
       if (!($ldapData = $Ldap->getUserData ($this->data->username)))
-        return ['error_msg' => _("Your connection attempt failed!")];
+        return ['error_msg' => _("Your connection attempt failed.")];
 
       // If user has been found in LDAP, try to bind with its password.
       if ($Ldap->bind ($ldapData['dn'], $this->data->password))
@@ -406,7 +406,7 @@ class User extends Base
 
     // User not found
     if (empty ($data))
-      return ['error_msg' => _("Your connection attempt failed!")];
+      return ['error_msg' => _("Your connection attempt failed.")];
 
     $this->userId = $data['id'];
 
@@ -684,7 +684,7 @@ class User extends Base
           $file, base64_decode(str_replace(' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file!"));
+          throw new \Exception (_("An error occured while uploading file."));
 
         ($stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?'))
           ->execute ([$this->userId]);

@@ -449,13 +449,13 @@ $(function()
 
               if (data.grid)
                 data.dim = {
-                  colsCount: $popup.find(".cols-rows input:eq(0)").val(),
-                  rowsCount: $popup.find(".cols-rows input:eq(1)").val()
+                  colsCount: $popup.find(".cols-rows input:eq(0)").val (),
+                  rowsCount: $popup.find(".cols-rows input:eq(1)").val ()
                 };
               else
                 data.dim = {
-                  width: $popup.find(".width-height input:eq(0)").val(),
-                  height: $popup.find(".width-height input:eq(1)").val()
+                  width: $popup.find(".width-height input:eq(0)").val (),
+                  height: $popup.find(".width-height input:eq(1)").val ()
                 };
 
               $("<div/>").wall ("addNew", data, $popup);

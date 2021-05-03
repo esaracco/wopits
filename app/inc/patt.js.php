@@ -89,7 +89,7 @@
 
             if (!$_mainPopup[0].querySelector ("li"))
               $_mainPopup.find("ul.list-group").html (
-                "<?=_("This note has no attached files.")?>");
+                `<?=_("This note has no attached files.")?>`);
           }
         }
       );
@@ -172,7 +172,7 @@
           let body = "";
 
           if (!d)
-            body = "<?=_("This note has no attached files.")?>";
+            body = `<?=_("This note has no attached files.")?>`;
           else
             d.files.forEach (a => body += this.getTemplate (a, !writeAccess));
 
@@ -234,7 +234,7 @@
                 item: $(this),
                 placement: "left",
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                content: "<?=_("Delete this file?")?>",
+                content: `<?=_("Delete this file?")?>`,
                 cb_close: ()=>
                   {
                     const el = document.querySelector (
@@ -385,7 +385,7 @@
                           H.htmlEscape(file.name)+"']").length)
                     return H.displayMsg ({
                       type: "warning",
-                      msg: "<?=_("The file is already linked to the note!")?>"
+                      msg: `<?=_("The file is already linked to the note.")?>`
                     });
 
                   if (H.checkUploadFileSize ({size: e.total}) &&

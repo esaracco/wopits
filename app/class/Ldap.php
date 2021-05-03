@@ -13,7 +13,7 @@ class Ldap
     if ( !($host = $this->checkHost (WPT_LDAP_HOST)) ||
          !($ret = $this->ldap = ldap_connect ($host)) )
       error_log (__METHOD__.':'.__LINE__.
-        ':ldap_connect '.($host?$host:WPT_LDAP_HOST).' failed!');
+        ':ldap_connect '.($host?$host:WPT_LDAP_HOST).' failed.');
     else
       $ret = $this->bind (WPT_LDAP_BINDDN, WPT_LDAP_BINDPW);
 
@@ -46,7 +46,7 @@ class Ldap
   public function bind (string $dn, string $pw):bool
   {
     if ( !($r = @ldap_bind ($this->ldap, $dn, $pw)) )
-      error_log (__METHOD__.':'.__LINE__.":ldap_bind `$dn` failed!");
+      error_log (__METHOD__.':'.__LINE__.":ldap_bind `$dn` failed.");
 
     return $r;
   }
@@ -59,7 +59,7 @@ class Ldap
     if ( !($s = @ldap_search ($this->ldap,
                   WPT_LDAP_BASEDN, $filter, ['uid', 'mail', 'cn'])) )
     {
-      $msg = __METHOD__.':'.__LINE__."ldap_search() `$filter` failed!";
+      $msg = __METHOD__.':'.__LINE__."ldap_search() `$filter` failed.";
 
       if ($fromScript)
         exit ("$msg\n");
@@ -70,7 +70,7 @@ class Ldap
     {
       if ( !($r = ldap_get_entries ($this->ldap, $s)) )
       {
-        $msg = __METHOD__.':'.__LINE__.":ldap_get_entries() `$filter` failed!";
+        $msg = __METHOD__.':'.__LINE__.":ldap_get_entries() `$filter` failed.";
 
         if ($fromScript)
           exit ("$msg\n");
@@ -105,12 +105,12 @@ class Ldap
     if ( !($s = ldap_search ($this->ldap,
              WPT_LDAP_BASEDN, $filter, ['dn', 'mail', 'cn'])) )
     {
-      error_log (__METHOD__.':'.__LINE__.":ldap_search() `$filter` failed!");
+      error_log (__METHOD__.':'.__LINE__.":ldap_search() `$filter` failed.");
     }
     elseif ( !($r = ldap_get_entries ($this->ldap, $s)) )
     {
       error_log (__METHOD__.':'.__LINE__.
-        ":ldap_get_entries() `$filter` failed!");
+        ":ldap_get_entries() `$filter` failed.");
     }
     elseif ($r['count'])
     {

@@ -136,13 +136,13 @@
                     });
 
                     // Set height for all cells of the current row
-                    $wall.find("tbody tr:eq("+$cell.parent().index ()+") td")
+                    $wall.find(`tbody tr:eq(${$cell.parent().index()}) td`)
                       .each (function ()
                       {
-                        this.style.height = ui.size.height+"px";
+                        this.style.height = `${ui.size.height}px`;
 
                         this.querySelector("div.ui-resizable-e")
-                          .style.height = (ui.size.height+2)+"px";
+                          .style.height = `${ui.size.height+2}px`;
                       });
                   }
                 }
@@ -150,18 +150,16 @@
                 // Width
                 if (absW < 2 || absW > 2)
                 {
-                  $wall.find("tbody tr").find("td:eq("+($cell.index()-1)+")")
+                  $wall.find("tbody tr").find(`td:eq(${$cell.index()-1})`)
                     .each (function ()
                     {
-                      this.style.width = ui.size.width+"px";
+                      this.style.width = `${ui.size.width}px`;
 
                       this.querySelector("div.ui-resizable-s")
-                        .style.width = (ui.size.width+2)+"px";
+                        .style.width = `${ui.size.width+2}px`;
                     });
 
                   $wall.wall ("fixSize", ui.originalSize.width, ui.size.width);
-
-//$wall.wall ("displayHeaders");
                 }
 
                 $wall.find("tbody td").cell ("reorganize");
@@ -177,7 +175,7 @@
          const __dblclick = (e)=>
            {
              if (S.get ("zoom-level") ||
-                 (e.target.tagName != 'TD' &&
+                 (e.target.tagName != "TD" &&
                    !e.target.classList.contains ("cell-list-mode")))
                   return e.stopImmediatePropagation ();
 
@@ -233,7 +231,7 @@
         {
           const $trPrev = $cell.parent().prev (),
                 $tdPrev = ($trPrev.length) ?
-                  $trPrev.find("td:eq("+($cell.index() - 1)+")") : undefined;
+                  $trPrev.find(`td:eq(${$cell.index()-1})`) : undefined;
 
           w = $tdPrev ? $tdPrev.css ("width") : settings.width;
           h = $tdPrev ? $tdPrev.css ("height") : settings.height;
@@ -256,7 +254,7 @@
         {
           const p = el.parentNode,
                 min = p.parentNode.querySelector (
-                  ".postit-min[data-id='"+p.dataset.id+"']");
+                  `.postit-min[data-id="${p.dataset.id}"]`);
 
           min.classList.add ("locked");
 
@@ -353,7 +351,7 @@
               else
               {
                 ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i) =>
-                  cell.querySelector(".postit[data-id='"+li.dataset.id+"']")
+                  cell.querySelector(`.postit[data-id="${li.dataset.id}"]`)
                     .dataset.order = i+1);
 
                 plugin.unedit ();
@@ -457,16 +455,15 @@
 
       S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach (cell =>
         {
-          const $postits = $(cell).find (".postit"),
-                bbox = cell.getBoundingClientRect ();
+          const postits = cell.querySelectorAll (".postit");
 
           cells.push ({
             id: cell.dataset.id.substring (5),
-            width: Math.trunc (bbox.width),
-            height: Math.trunc (bbox.height),
+            width: parseInt (cell.style.width),
+            height: parseInt (cell.style.height),
             item_row: cell.parentNode.rowIndex - 1,
             item_col: cell.cellIndex - 1,
-            postits: $postits.length ? $postits.postit ("serialize") : null
+            postits: postits.length?$(postits).postit ("serialize"):null
           });
         });
 
@@ -518,23 +515,34 @@
     {
       const $cell = this.element,
             cell = $cell[0],
-            chgH = (cell.clientHeight + 1 != d.height),
-            chgW = (cell.clientWidth + 1 != d.width);
+            bbox = cell.getBoundingClientRect (),
+            idx = $cell.index () - 1,
+            W = parseInt (d.width),
+            H = parseInt (d.height);
 
-      if (chgH || chgW)
+      // If width has changed
+      if (parseInt (bbox.width) != W)
+        this.settings.wall[0].querySelectorAll("tbody tr").forEach (tr =>
+          {
+            const td = tr.querySelectorAll("td")[idx];
+
+            td.style.width = `${W}px`;
+            $(td).find(">div.ui-resizable-s").css ("width", W);
+          });
+
+      // If height has changed
+      if (parseInt (bbox.height) != H)
       {
-        cell.style.width = d.width+"px";
-        cell.style.height = d.height+"px";
- 
-        if (chgW)
-          $cell.find(">div.ui-resizable-s").css ("width", d.width + 2);
+         const tr = cell.parentNode;
 
-        if (chgH)
-        {
-          $cell.closest("tr").find("th:first-child").css("height", d.height);
-          $cell.find(">div.ui-resizable-e").css ("height", d.height + 2);
-        }
-      }
+        tr.querySelectorAll("td").forEach (td =>
+          {
+            tr.querySelector("th").style.height = `${H}px`;
+
+            td.style.height = `${H}px`;
+            $(td).find(">div.ui-resizable-e").css ("height", H);
+         });
+       }
     },
 
     // METHOD edit ()
@@ -556,18 +564,18 @@
     // METHOD unedit ()
     unedit (noupdate = false, move)
     {
-      const wall0 = this.settings.wall[0],
+      const wall = this.settings.wall[0],
             data = noupdate ?
               null :
               {
                 cells: this.serialize (),
                 wall: {
-                  // If headers are hidden, add header width to wall width
-                  width: Math.trunc (
-                    wall0.dataset.displayheaders == "0" ?
-                      wall0.clientWidth +
-                        wall0.querySelector("tbody th").clientWidth :
-                      wall0.clientWidth)
+                  width: Math.trunc (wall.dataset.displayheaders == "0" ?
+                    this.settings.wall.wall ("getTDsWidth") +
+                      wall.querySelector("tbody th").clientWidth
+                    :
+                    wall.clientWidth
+                  )
                 }
               };
 
@@ -611,7 +619,7 @@
           if (e.target.classList.contains ("postit-min"))
           {
             const li = e.target,
-                  $p = $cell.find(".postit[data-id='"+li.dataset.id+"']");
+                  $p = $cell.find (`.postit[data-id="${li.dataset.id}"]`);
 
             if (e.ctrlKey)
             {

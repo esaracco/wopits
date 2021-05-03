@@ -55,7 +55,7 @@ class Base extends \PDO
     if (!is_object ($data) ||
         !$data->size ||
         !preg_match ('#data:[^;]*;base64,(.*)#', $data->content, $content))
-      return [null, null, _("Empty file or bad file format!")];
+      return [null, null, _("Empty file or bad file format.")];
 
     // File extension is not mandatory
     preg_match ('#\.([a-z0-9]+)$#i', $data->name, $ext);

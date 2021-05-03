@@ -75,7 +75,7 @@ $.fn["{$this->name}"] = function (arg)
     return plugin[arg].apply (
              plugin, Array.prototype.slice.call (arguments, 1));
   else
-    $.error("[$this->name] Method `"+arg+"` does not exist!");
+    $.error("[$this->name] Method `"+arg+"` does not exist.");
 };
 
 })(jQuery, window, document);

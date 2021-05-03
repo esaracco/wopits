@@ -24,7 +24,7 @@ class Helper
     {
       error_log (__METHOD__.':'.__LINE__.
                    ":Error while sending msg to WS server (".
-                      print_r($data, true).")!");
+                      print_r($data, true).").");
     }
 
     return $ret;
@@ -96,7 +96,7 @@ class Helper
       // itself or an external path.
       if (!preg_match ('#'.WPT_DATA_SPATH.'/.#', $path))
         return error_log (__METHOD__.':'.__LINE__.
-                            ":Forbidden root path `$path`!");
+                            ":Forbidden root path `$path`.");
 
       // If directory does not exists, return.
       if (!file_exists ($path))

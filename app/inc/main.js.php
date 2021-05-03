@@ -60,10 +60,10 @@
             rows = [];
 
       settings.tabLink =
-        $(".nav-tabs.walls").find ('a[href="#wall-'+settings.id+'"]');
+        $(".nav-tabs.walls").find (`a[href="#wall-${settings.id}"]`);
 
       // Add wall menu
-      $("#wall-"+settings.id).find(".wall-menu").wmenu ({
+      $(`#wall-${settings.id}`).find(".wall-menu").wmenu ({
         wallPlugin:plugin,
         access: access
       });
@@ -100,7 +100,7 @@
         .hide()
         .css({
           width: (settings.width) ? settings.width : "",
-          "background-color": (settings["background-color"]) ?
+          "background-color":(settings["background-color"]) ?
                                  settings["background-color"] : "auto"
         })
         .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
@@ -164,7 +164,7 @@
             for (let j = 0, jLen = row.length; j < jLen; j++)
             {
               const cell = row[j],
-                    $cell = $wall.find("[data-id='cell-"+cell.id+"']");
+                    $cell = $wall.find (`[data-id="cell-${cell.id}"]`);
 
               for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
               {
@@ -202,7 +202,7 @@
           if (args.lastWall)
           {
             setTimeout(()=>
-              $("[data-id='wall-"+wpt_userData.settings.activeWall+"']")
+              $(`[data-id="wall-${wpt_userData.settings.activeWall}"]`)
                 .wall ("refresh"), 0);
 
             // If we must save opened walls (because user have no longer the
@@ -231,14 +231,12 @@
             // INTERNAL FUNCTION ()
             const __postInit = ()=>
               {
-                // Applu display header mode
+                // Apply display header mode
                 plugin.displayHeaders ();
                 // Apply display mode
                 plugin.refreshCellsToggleDisplayMode ();
 
                 $wall.parent().find(".wall-menu").css ("visibility", "visible");
-
-                plugin.displayHeaders ();
               };
 
             plugin.displayExternalRef ();
@@ -267,15 +265,15 @@
     // METHOD displayPostitAlert ()
     displayPostitAlert (args)
     {
-      const $wall = $(".wall[data-id='wall-"+args.wallId+"']"),
-            $postit = $wall.find (".postit[data-id=postit-"+args.postitId+"]");
+      const $wall = $(`.wall[data-id="wall-${args.wallId}"]`),
+            $postit = $wall.find (`.postit[data-id="postit-${args.postitId}"]`);
 
       if ($postit.length)
         $postit.postit ("displayAlert", args.type);
       else
         H.displayMsg ({
           type: "warning",
-          msg: "<?=_("The note has been deleted")?>"
+          msg: `<?=_("The note has been deleted")?>`
         });
     },
 
@@ -296,7 +294,7 @@
         type: "info",
         item: $(".walls a.active"),
         title: `<i class="fas fa-share fa-fw"></i> <?=_("Sharing")?>`,
-        content: "<?=_("%s shared this wall with you!")?>".replace("%s", owner)
+        content: `<?=_("%s shared this wall with you.")?>`.replace("%s", owner)
       });
     },
 
@@ -511,7 +509,7 @@
           if (this.classList.contains ("ui-"+plugin))
           {
             if (forceHandle && isDisabled)
-              $(this).find(".ui-"+plugin+"-handle")
+              $(this).find(`.ui-${plugin}-handle`)
                 .css ("visibility", value?"hidden":"visible");
 
             $(this)[plugin] ("option", option, value);
@@ -549,7 +547,7 @@
         {
           const startId = plug.item_start,
                 start0 = wall.querySelector (
-                           ".postit[data-id='postit-"+startId+"']");
+                           `.postit[data-id="postit-${startId}"]`);
 
           if (start0)
           {
@@ -563,7 +561,7 @@
             if (!startPlugin.plugExists (endId))
             {
               const end = wall.querySelector (
-                            ".postit[data-id='postit-"+endId+"']");
+                            `.postit[data-id="postit-${endId}"]`);
 
               if (end)
               {
@@ -618,7 +616,7 @@
               {
                 if (!idsNew[plug.startId+""+plug.endId])
                   $(wall.querySelector(
-                      ".postit[data-id='postit-"+plug.endId+"']"))
+                      `.postit[data-id="postit-${plug.endId}"]`))
                     .postit ("removePlug", plug, true);
               });
           });
@@ -686,9 +684,9 @@
           // Postits
           case "postit":
             const $postit = $wall.find (
-                    ".postit[data-id='postit-"+d.postit.id+"']"),
+                     `.postit[data-id="postit-${d.postit.id}"]`),
                   cell = wall.querySelector (
-                    "td[data-id='cell-"+d.postit.cells_id+"']");
+                    `td[data-id="cell-${d.postit.cells_id}"]`);
 
             // Rare case, when user have multiple sessions opened
             if (d.action != "insert" && !$postit.length)
@@ -721,7 +719,7 @@
               // Remove postit
               case "delete":
 
-                $wall.find("[data-id='postit-"+d.postit.id+"']")
+                $wall.find(`[data-id="postit-${d.postit.id}"]`)
                   .postit ("remove");
                 break;
             }
@@ -736,7 +734,7 @@
               // Col/row has been moved
               case "movecolrow":
                 if (!d.isResponse)
-                  $wall.find ("th[data-id='header-"+d.header.id+"']")
+                  $wall.find (`th[data-id="header-${d.header.id}"]`)
                     .header ("moveColRow", d.move, true);
                 break;
 
@@ -762,7 +760,8 @@
               colsCount = d.headers.cols.length,
               postitsIds = {},
               rows = [],
-              plugsContainer = plugin.settings.plugsContainer;
+              plugsContainer = plugin.settings.plugsContainer,
+              showHeaders = plugin.settings.displayheaders;
 
         _refreshing = true;
 
@@ -776,12 +775,13 @@
         for (let i = 0; i < colsCount; i++)
         {
           const header = d.headers.cols[i],
-                $header =
-                  $wall.find('thead th[data-id="header-'+header.id+'"]');
+                $header = $wall.find(`thead th[data-id="header-${header.id}"]`);
 
           if (!$header.length)
           {
             const $th = $("<th/>");
+
+            $th[0].classList.add (showHeaders?"display":"hide");
 
             $wall.find("thead tr").append ($th);
             $th.header ({
@@ -806,8 +806,8 @@
             const $header = $(th);
 
             if (!rowsHeadersIds[$header.header ("getId")])
-              $wall.find("tbody tr:eq("+$header.parent().index()+")").
-                cell ("remove");
+              $wall.find(`tbody tr:eq(${$header.parent().index()})`)
+                .cell ("remove");
           });
 
         // Remove deleted columns
@@ -821,7 +821,7 @@
 
             if (idx > 0 && !colsHeadersIds[$header.header ("getId")])
             {
-              $wall.find("thead th:eq("+idx+")").remove ();
+              wall.querySelectorAll("thead th")[idx].remove ();
               wall.querySelectorAll("tbody tr").forEach (tr =>
                 $(tr).find ("td:eq("+(idx-1)+")").cell ("remove"));
             }
@@ -847,16 +847,16 @@
           const row = rows[i],
                 header = d.headers.rows[i];
 
-          if (!$wall.find('td[data-id="cell-'+row[0].id+'"]').length)
+          if (!$wall.find(`td[data-id="cell-${row[0].id}"]`).length)
             plugin.addRow (header, row);
           else
-            $wall.find('tbody th[data-id="header-'+header.id+'"]')
+            $wall.find(`tbody th[data-id="header-${header.id}"]`)
               .header ("update", header);
 
           for (let j = 0, jLen = row.length; j < jLen; j++)
           {
             const cell = row[j];
-            let $cell = $wall.find('td[data-id="cell-'+cell.id+'"]'),
+            let $cell = $wall.find(`td[data-id="cell-${cell.id}"]`),
                 isNewCell = false;
 
             // If new cell, add it
@@ -868,13 +868,14 @@
 
               $cell = $(_getCellTemplate (cell));
 
-              $wall.find("tbody tr:eq("+cell.item_row+")").append ($cell);
+              $wall.find(`tbody tr:eq(${cell.item_row})`).append ($cell);
 
               // Init cell
               $cell.cell ({
                 id: cellId,
                 access: access,
-                usersettings: plugin.settings.usersettings["cell-"+cellId]||{},
+                usersettings:
+                  plugin.settings.usersettings[`cell-${cellId}`]||{},
                 wall: $wall,
                 wallId: wallId,
                 plugsContainer: plugsContainer
@@ -895,8 +896,8 @@
             for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
             {
               const postit = cell.postits[k],
-                    $postit = $wall.find ('.postit[data-id="postit-'+
-                                cell.postits[k].id+'"]');
+                    $postit = $wall.find (
+                      `.postit[data-id="postit-${cell.postits[k].id}"]`);
 
               // If new postit, add it
               if (!$postit.length)
@@ -917,7 +918,7 @@
         }
 
         _refreshing = false;
-        plugin.fixSize ();
+//FIXME        plugin.fixSize ();
       }
 
       // Reset arrows tool
@@ -940,6 +941,8 @@
       // Apply display mode
       setTimeout (()=>
         {
+          plugin.fixSize ();
+
           if (d.reorganize)
             $wall.find("tbody td").cell ("reorganize");
 
@@ -1006,7 +1009,7 @@
     close ()
     {
       const activeTabId = "wall-"+this.settings.id,
-            activeTab = document.querySelector('a[href="#'+activeTabId+'"]'),
+            activeTab = document.querySelector(`a[href="#${activeTabId}"]`),
             newActiveTabId =
               (activeTab.previousElementSibling) ?
                 activeTab.previousElementSibling.getAttribute ("href") :
@@ -1040,7 +1043,7 @@
       }
       // Active another tabs after deletion
       else
-        $(".nav-tabs.walls").find('a[href="'+newActiveTabId+'"]').tab ("show");
+        $(".nav-tabs.walls").find(`a[href="${newActiveTabId}"]`).tab ("show");
 
       // If we are not massively closing all walls
       if (!S.get ("closing-all"))
@@ -1069,7 +1072,7 @@
               item: this.settings.tabLink,
               placement: "left",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-              content: "<?=_("Delete this wall?")?>",
+              content: `<?=_("Delete this wall?")?>`,
               cb_close: () => this.unedit (),
               cb_ok: () => this.delete ()
             });
@@ -1100,7 +1103,7 @@
 
       if (Number (wall.dataset.rows) *
             Number (wall.dataset.cols) >= <?=WPT_MAX_CELLS?>)
-        return H.infoPopup ("<?=_("For performance reasons, a wall cannot contain more than %s cells")?>.".replace("%s", <?=WPT_MAX_CELLS?>));
+        return H.infoPopup (`<?=_("For performance reasons, a wall cannot contain more than %s cells.")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
 
       H.request_ws (
         "PUT",
@@ -1115,13 +1118,14 @@
     {
       const plugin = this,
             $wall = plugin.element,
-            wallId = plugin.settings.id;
+            wallId = plugin.settings.id,
+            showHeaders = plugin.settings.displayheaders;
       let tds = "";
 
       for (let i = 0; i < row.length; i++)
         tds += _getCellTemplate (row[i]);
 
-      const $row = $(`<tr><th></th>${tds}</tr>`);
+      const $row = $(`<tr><th class="${showHeaders?"display":"hide"}"></th>${tds}</tr>`);
 
       // Add row
       $wall.find("tbody").append ($row);
@@ -1150,7 +1154,7 @@
           });
         });
 
-      plugin.fixSize ();
+//FIXME      plugin.fixSize ();
     },
 
     // METHOD deleteRow ()
@@ -1172,7 +1176,7 @@
         `wall/${this.settings.id}/col/${idx-1}`,
         {
           wall: {width: Math.trunc ($wall.outerWidth()-1)},
-          width: Math.trunc ($wall.find("thead tr th:eq("+idx+")").outerWidth())
+          width: Math.trunc ($wall.find(`thead tr th:eq(${idx})`).outerWidth())
         });
     },
 
@@ -1182,7 +1186,7 @@
       const plugin = this,
             $tabs = $(".nav-tabs.walls"),
             method = (args.load) ? "GET" : "PUT",
-            service = (args.load) ? "wall/"+args.wallId : "wall",
+            service = (args.load) ? `wall/${args.wallId}` : "wall",
             data = (args.load) ? null : {name: args.name, grid: !!args.grid};
 
        if (data)
@@ -1238,7 +1242,7 @@
           // The wall does not exists anymore.
           if (d.removed)
           {
-            $tabs.find("a[href='#wall-"+args.wallId+"']").remove ();
+            $tabs.find(`a[href="#wall-${args.wallId}"]`).remove ();
 
             return H.waitForDOMUpdate (()=>
               {
@@ -1256,7 +1260,7 @@
 
                 return H.displayMsg ({
                   type: "warning",
-                  msg: "<?=_("Some walls are no longer available!")?>"
+                  msg: `<?=_("Some walls are no longer available.")?>`
                 });
             });
           }
@@ -1272,7 +1276,7 @@
           if (!args.restoring)
             $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
-          $tabs.find('a[href="#wall-'+d.id+'"]')
+          $tabs.find(`a[href="#wall-${d.id}"]`)
             .attr("data-access", d.access)
             .prepend($(`<button type="button" class="close"><span class="close">&times;</span></button>`)
             // EVENT click on close wall icon
@@ -1282,7 +1286,7 @@
                 item: $(this).parent (),
                 placement: "left",
                 title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
-                content: "<?=_("Close this wall?")?>",
+                content: `<?=_("Close this wall?")?>`,
                 cb_ok: ()=> S.getCurrent("wall").wall ("close")
               });
             }));
@@ -1303,7 +1307,7 @@
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
             S.set ("newWall", true);
-            $tabs.find('a[href="#wall-'+d.id+'"]').tab ("show");
+            $tabs.find(`a[href="#wall-${d.id}"]`).tab ("show");
             S.unset ("newWall");
           }
 
@@ -1353,7 +1357,7 @@
 
                 H.displayMsg ({
                   type: "success",
-                  msg: "<?=_("The wall has been successfully cloned")?>"
+                  msg: `<?=_("The wall has been successfully cloned")?>`
                 });
             });
           }
@@ -1367,9 +1371,9 @@
         icon: "file-export",
         content: `<?=_("Notes comments will not be exported.<br>Continue?")?>`,
         cb_ok: () => H.download ({
-          url: "/wall/"+this.settings.id+"/export",
-          fname: "wopits-wall-export-"+this.settings.id+".zip",
-          msg: "<?=_("An error occurred while exporting wall data!")?>"
+          url: `/wall/${this.settings.id}/export`,
+          fname: `wopits-wall-export-${this.settings.id}.zip`,
+          msg: `<?=_("An error occurred while exporting wall data.")?>`
         })
       });
     },
@@ -1654,17 +1658,15 @@
           // INTERNAL FUNCTION __resize ()
           const __resize = (args)=>
             {
-              $wall.find("thead th:eq(1),td")
-                .css ("width", args.newW);
-              $wall.find(".ui-resizable-s")
-                .css ("width", args.newW + 2);
+              $wall.find("thead th:eq(1),td").css ("width", args.newW);
+              $wall[0].querySelector("td .ui-resizable-s")
+                .style.width = `${args.newW+2}px`;
 
               if (args.newH)
               {
-                $wall.find("tbody th,td")
-                  .css ("height", args.newH);
-                $wall.find(".ui-resizable-e")
-                  .css ("height", args.newH+2);
+                $wall.find("tbody th,td").css ("height", args.newH);
+                $wall[0].querySelector("td .ui-resizable-e")
+                  .style.height = `${args.newH+2}px`;
               }
 
               plugin.fixSize (args.oldW, args.newW);
@@ -1698,7 +1700,7 @@
          H.getAccessIcon (this.settings.access);
 
       if (!noIcon && notOwner)
-        html = `<i class="fas fa-user-slash wallname-icon" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>`+html;
+        html = `<i class="fas fa-user-slash wallname-icon" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>${html}`;
 
       $div.find('span.icon').html (html);
       $div.find('span.val').text (H.noHTML (name));
@@ -1769,18 +1771,13 @@
 
       const $wall = this.element,
             wall = $wall[0];
-      let w = Number (wall.dataset.oldwidth);
+      let w;
 
-      if (!w)
+      // If no header, substract header width from wall width
+      if (!this.settings.displayheaders)
+        w = this.getTDsWidth ();
+      else if (!(w = Number (wall.dataset.oldwidth)))
         w = $wall.outerWidth ();
-
-     // If no header, substract header width from wall width
-     if (wall.dataset.displayheaders == "0")
-{
-console.log ($wall.find("tbody th:eq(0)").outerWidth());
-       w -= $wall.find("tbody th:eq(0)").outerWidth();
-}
-
 
       if (newW)
       {
@@ -1854,8 +1851,8 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
         if (writeAccess && !noalert)
           H.displayMsg ({
             type: "warning",
-            title: "<?=_("Zoom enabled")?>",
-            msg: "<?=_("Some features are not available in this mode")?>"
+            title: `<?=_("Zoom enabled")?>`,
+            msg: `<?=_("Some features are not available in this mode")?>`
           });
 
         zoom0.dataset.zoomlevelorigin = level;
@@ -1900,8 +1897,8 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
       if (level <= 0)
         return H.displayMsg ({
           type: "warning",
-          title: "<?=_("Zoom")?>",
-          msg: "<?=_("The minimum zoom has been reached!")?>"
+          title: `<?=_("Zoom")?>`,
+          msg: `<?=_("The minimum zoom has been reached.")?>`
         });
 
       S.set ("zoom-level", level);
@@ -1922,8 +1919,8 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
         if (writeAccess && !noalert)
           H.displayMsg ({
             type: "info",
-            title: "<?=_("Zoom disabled")?>",
-            msg: "<?=_("All features are available again")?>"
+            title: `<?=_("Zoom disabled")?>`,
+            msg: `<?=_("All features are available again")?>`
           });
 
         zoom0.style.width = S.get ("old-styles").width;
@@ -1966,7 +1963,7 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
         }
 
         zoom0.style.transformOrigin = "top left";
-        zoom0.style.transform = "scale("+level+")";
+        zoom0.style.transform = `scale(${level})`;
 
         $("#walls").scrollLeft (((30000*level)/2-window.innerWidth/2)+20);
       }
@@ -2108,7 +2105,7 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
       }
 
       if (this.element.is (":visible"))
-        this.menu ({from: "display", type: type+"-externalref"});
+        this.menu ({from: "display", type: `${type}-externalref`});
 
       return val;
     },
@@ -2119,61 +2116,76 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
       return this.element[0].querySelector (".postit[data-haveexternalref]");
     },
 
+    // METHOD getTDsWidth ()
+    getTDsWidth ()
+    {
+      let w = 0;
+
+      this.element[0].querySelector("tbody tr").querySelectorAll("td")
+        .forEach ((td)=> w += parseFloat (td.style.width));
+
+      return w;
+    },
+
     // METHOD displayHeaders ()
     displayHeaders (v)
     {
-      const wall0 = this.element[0],
+      const wall = this.element[0],
             update = (v !== undefined),
             val = update ? v : this.settings.displayheaders,
             type = (val == 1) ? "show" : "hide";
 
       if (val == 1)
       {
-        this.element.find("th").css ({
-          position: "relative",
-          visibility: "visible"
-        });
+        wall.querySelectorAll("th").forEach ((th)=>
+          {
+            th.classList.remove ("hide");
+            th.classList.add ("display");
+          });
 
         if (update)
-        {
-          const w = wall0.clientWidth +
-                      wall0.querySelector("tbody th").clientWidth;
+          H.waitForDOMUpdate (()=>
+            {
+              let w = this.getTDsWidth ();
 
-          wall0.style.width = w+"px";
-          wall0.dataset.oldwidth = w;
-        }
+              w += wall.querySelector("tbody th").clientWidth;
+
+              wall.style.width = w+"px";
+              wall.dataset.oldwidth = w;
+
+              if (val == 1)
+                this.fixSize ();
+            });
       }
       else
       {
-        wall0.style.width = (wall0.clientWidth -
-                             wall0.querySelector("tbody th").clientWidth)+"px";
+        wall.querySelectorAll("th").forEach ((th)=>
+          {
+            th.classList.remove ("display");
+            th.classList.add ("hide");
+          });
 
-        this.element.find("th").css ({
-          position: "absolute",
-          visibility: "hidden"
-        });
-      }
-
-      if (update)
-      {
-        this.settings.displayheaders = val;
-        wall0.dataset.displayheaders = val;
-
-        this.repositionPostitsPlugs ();
-
-        H.fetch (
-          "POST",
-          `user/wall/${this.settings.id}/displayheaders`,
-          {value: val});
+        wall.style.width = `${this.getTDsWidth()}px`;
       }
 
       if (val == 1)
         this.fixSize ();
 
       if (this.element.is (":visible"))
-        this.menu ({from: "display", type: type+"-headers"});
+        this.menu ({from: "display", type: `${type}-headers`});
 
-      return val;
+      if (update)
+      {
+        this.settings.displayheaders = val;
+        wall.dataset.displayheaders = val;
+
+        H.waitForDOMUpdate (()=>this.repositionPostitsPlugs ());
+
+        H.fetch (
+          "POST",
+          `user/wall/${this.settings.id}/displayheaders`,
+          {value: val});
+      }
     },
 
   });
@@ -2188,7 +2200,7 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
         $("body").prepend (`<div id="popup-loader" class="layer"><div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div></div>`);
 
         WS.connect (
-          "wss://"+location.host+"/app/ws?token="+wpt_userData.token, ()=>
+          `wss://${location.host}/app/ws?token=${wpt_userData.token}`, ()=>
           {
             const $settings = $("#settingsPopup");
 
@@ -2309,7 +2321,7 @@ console.log ($wall.find("tbody th:eq(0)").outerWidth());
   
                           H.displayMsg ({
                             type: "success",
-                            msg: "<?=_("The wall has been successfully imported")?>"
+                            msg: `<?=_("The wall has been successfully imported")?>`
                           });
                         });
                     }

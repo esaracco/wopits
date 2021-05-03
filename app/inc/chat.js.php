@@ -150,7 +150,7 @@
       else
       {
         const el = document.querySelector (
-                     "#wall-"+wallId+" .wall-menu .chat-alert");
+                     `#wall-${wallId} .wall-menu .chat-alert`);
 
         if (el)
           el.remove ();
@@ -169,7 +169,7 @@
     removeAlert ()
     {
       const el = document.querySelector (
-                   "#wall-"+this.settings.wallId+" .wall-menu .chat-alert");
+                   `#wall-${this.settings.wallId} .wall-menu .chat-alert`);
 
       if (el)
         el.remove ();
@@ -256,7 +256,7 @@
           {
             $("#main-menu").find("li[data-action='chat'] input").click ();
           })
-          .appendTo ($("#wall-"+this.settings.wallId+" .wall-menu"));
+          .appendTo ($(`#wall-${this.settings.wallId} .wall-menu`));
       }
 
       plugin.setCursorToEnd ();

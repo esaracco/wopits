@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-30 09:25+0200\n"
-"PO-Revision-Date: 2021-04-30 09:25+0200\n"
+"POT-Creation-Date: 2021-05-03 16:57+0200\n"
+"PO-Revision-Date: 2021-05-03 16:58+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -35,8 +35,8 @@ msgid "%s notes match your search."
 msgstr "%s notes correspondent à votre recherche."
 
 #, php-format
-msgid "%s shared this wall with you!"
-msgstr "%s a partagé ce mur avec vous!"
+msgid "%s shared this wall with you."
+msgstr "%s a partagé ce mur avec vous."
 
 msgid "1 note match your search."
 msgstr "1 note correspond à votre recherche."
@@ -74,41 +74,6 @@ msgstr ""
 "GitHub</a>.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Attachments</b> Fixed issues with "
-"files without extension.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Attachements</b> Correction de "
-"problèmes avec les fichiers sans extension.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Lots of debugging and "
-"improvements.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Général</b> Beaucoup de débogage et "
-"d'améliorations.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with updating "
-"the title of notes in stack mode.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction d'un problème "
-"avec la mise à jour du titre des notes en mode liste.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with copy/paste."
-"</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction de problèmes avec "
-"le copier/coller.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Wall</b> Fixed issues with walls "
-"columns/rows removal.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Corrections de problèmes avec "
-"la suppression des colonnes/lignes.</p>"
-
-msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Messages</b> Added a user "
 "messaging box.</p>"
 msgstr ""
@@ -116,11 +81,20 @@ msgstr ""
 "de messagerie utilisateur.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can now add "
-"comments.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can comment the "
+"notes.</p>"
 msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Vous pouvez désormais "
-"ajouter des commentaires.</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Vous pouvez commenter "
+"les notes.</p>"
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the "
+"visibility of walls headers (<i>still experimental... please report any "
+"strange behavior!</i>)</p>"
+msgstr ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Vous pouvez contrôler "
+"la visibilité des en-têtes des murs (<i>encore expérimental... merci de "
+"signaler tout comportement étrange!</i>).</p>"
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -416,8 +390,8 @@ msgstr ""
 "n'ayez jamais à vous demander où partent vos données ni comment elles sont "
 "monétisées."
 
-msgid "A new release of wopits is available!"
-msgstr "Une nouvelle version de wopits est disponible!"
+msgid "A new release of wopits is available."
+msgstr "Une nouvelle version de wopits est disponible."
 
 msgid "A wall with the same name already exists."
 msgstr "Un mur du même nom existe déjà."
@@ -462,17 +436,14 @@ msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
 msgid "An error occured while cloning the wall."
 msgstr "Une erreur est survenue durant le clonage du fichier."
 
-msgid "An error occured while downloading file!"
-msgstr "Une erreur est survenue durant le téléchargement du fichier!"
+msgid "An error occured while downloading file."
+msgstr "Une erreur est survenue durant le téléchargement du fichier."
 
 msgid "An error occured while processing import."
 msgstr "Une erreur est survenue durant l'importation."
 
-msgid "An error occured while uploading file!"
-msgstr "Une erreur est survenue durant l'envoi du fichier!"
-
-msgid "An error occurred while exporting wall data!"
-msgstr "Une erreur est survenue durant l'export des données du mur!"
+msgid "An error occured while uploading file."
+msgstr "Une erreur est survenue durant l'envoi du fichier."
 
 msgid "An error occurred while exporting wall data."
 msgstr "Une erreur est survenue durant l'export des données du mur."
@@ -483,10 +454,10 @@ msgstr "Pointillés animés"
 #, php-format
 msgid ""
 "Another account with the same email as the LDAP account email `%s` already "
-"exists on wopits!"
+"exists on wopits."
 msgstr ""
 "Un autre compte avec la même email `%s` que celle de votre compte LDAP "
-"existe déjà sur wopits!"
+"existe déjà sur wopits."
 
 msgid "Arc"
 msgstr "Arc"
@@ -534,8 +505,8 @@ msgstr ""
 msgid "Can not read file"
 msgstr "Impossible de lire le fichier"
 
-msgid "Can't contact LDAP server!"
-msgstr "Impossible de contacter le serveur LDAP!"
+msgid "Can't contact LDAP server."
+msgstr "Impossible de contacter le serveur LDAP."
 
 msgid "Cancel"
 msgstr "Abandonner"
@@ -740,8 +711,8 @@ msgstr "Email"
 msgid "Emails must match"
 msgstr "Les emails doivent correspondre"
 
-msgid "Empty file or bad file format!"
-msgstr "Fichier vide ou mauvais format de fichier!"
+msgid "Empty file or bad file format."
+msgstr "Fichier vide ou au mauvais format."
 
 msgid "Expiration"
 msgstr "Expiration"
@@ -759,8 +730,8 @@ msgid "External contents are now filtered"
 msgstr "Les contenus externes sont désormais filtrés"
 
 #, php-format
-msgid "File size is too large (%sM max)!"
-msgstr "Fichier trop volumineux (%sM max)!"
+msgid "File size is too large (%sM max)."
+msgstr "Fichier trop volumineux (%sM max)."
 
 msgid "Filters"
 msgstr "Filtres"
@@ -779,6 +750,12 @@ msgid "For performance reasons, a wall cannot contain more than %s cells"
 msgstr ""
 "Pour des raisons de performances, un mur ne peut pas contenir plus de %s "
 "cellules"
+
+#, php-format
+msgid "For performance reasons, a wall cannot contain more than %s cells."
+msgstr ""
+"Pour des raisons de performances, un mur ne peut pas contenir plus de %s "
+"cellules."
 
 msgid "For this wall only."
 msgstr "Pour ce mur seulement."
@@ -808,8 +785,14 @@ msgstr "Bonjour %s"
 msgid "Help"
 msgstr "Aide"
 
+msgid "Hide wall headers"
+msgstr "Cacher les en-têtes du mur"
+
 msgid "I get it !"
 msgstr "J'ai compris !"
+
+msgid "I get it!"
+msgstr "J'ai compris!"
 
 msgid "If so, do not hesitate to test others:"
 msgstr "Si c'est le cas, n'hésitez pas à en tester d'autres:"
@@ -1139,6 +1122,9 @@ msgstr ""
 msgid "Show external contents"
 msgstr "Afficher les contenus externes"
 
+msgid "Show wall headers"
+msgstr "Afficher les en-tête du mur"
+
 msgid "Size"
 msgstr "Taille"
 
@@ -1148,16 +1134,16 @@ msgstr "Continu"
 msgid "Some features are not available in this mode"
 msgstr "Certaines fonctionnalités ne sont pas disponibles dans ce mode"
 
-msgid "Some walls are no longer available!"
-msgstr "Certains murs ne sont plus disponibles!"
+msgid "Some walls are no longer available."
+msgstr "Certains murs ne sont plus disponibles."
 
-msgid "Someone is editing a cell in the col/row you want to delete!"
+msgid "Someone is editing a cell in the col/row you want to delete."
 msgstr ""
-"Quelqu'un édite une cellule dans la colonne/ligne que vous voulez supprimer!"
+"Quelqu'un édite une cellule dans la colonne/ligne que vous voulez supprimer."
 
-msgid "Someone is editing a note in the col/row you want to delete!"
+msgid "Someone is editing a note in the col/row you want to delete."
 msgstr ""
-"Quelqu'un édite une note dans la colonne/ligne que vous voulez supprimer!"
+"Quelqu'un édite une note dans la colonne/ligne que vous voulez supprimer."
 
 msgid ""
 "Sorry, there is a compatibility issue with your browser when it comes to "
@@ -1187,8 +1173,8 @@ msgstr "Passer en mode liste"
 msgid "Switch to sticky notes mode"
 msgstr "Passer en mode post-its"
 
-msgid "System error. Please report it to the administrator!"
-msgstr "Erreur système. Veuillez signaler le problème à l'administrateur!"
+msgid "System error. Please report it to the administrator."
+msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
 
 msgid "Tags"
 msgstr "Étiquettes"
@@ -1208,21 +1194,21 @@ msgstr ""
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr "L'application sera mise à jour, de la v%s1 à la v%s2."
 
-msgid "The deadline for this note has been removed!"
-msgstr "La date limite de cette note a été réinitialisée!"
+msgid "The deadline for this note has been removed."
+msgstr "La date limite de cette note a été réinitialisée."
 
 #, php-format
 msgid "The email `%s` already exists."
 msgstr "L'email `%s` existe déjà."
 
-msgid "The entire column/row was deleted while you were editing the note!"
-msgstr "La colonne/ligne a été supprimée pendant que vous éditiez la note!"
+msgid "The entire column/row was deleted while you were editing the note."
+msgstr "La colonne/ligne a été supprimée pendant que vous éditiez la note."
 
-msgid "The file is already linked to the note!"
-msgstr "Le fichier est déjà associé à la note!"
+msgid "The file is already linked to the note."
+msgstr "Le fichier est déjà associé à la note."
 
-msgid "The file is no longer available for download!"
-msgstr "Le fichier n'est plus disponible au téléchargement!"
+msgid "The file is no longer available for download."
+msgstr "Le fichier n'est plus disponible au téléchargement."
 
 msgid "The file type was not recognized."
 msgstr "Le type du fichier n'a pas été reconnu."
@@ -1270,8 +1256,8 @@ msgstr ""
 msgid "The login `%s` already exists."
 msgstr "Cet identifiant `%s` existe déjà."
 
-msgid "The minimum zoom has been reached!"
-msgstr "Le zoom minimum a été atteint!"
+msgid "The minimum zoom has been reached."
+msgstr "Le zoom minimum a été atteint."
 
 msgid "The new password:"
 msgstr "Le nouveau mot de passe:"
@@ -1291,8 +1277,8 @@ msgstr "La note «%s» expirera dans %s jour(s)."
 msgid "The note «%s» will expire soon."
 msgstr "La note «%s» expirera bientôt."
 
-msgid "The row/column has been deleted!"
-msgstr "La ligne/colonne a été supprimée!"
+msgid "The row/column has been deleted."
+msgstr "La ligne/colonne a été supprimée."
 
 #, php-format
 msgid "The size of a wall cannot be greater than %s"
@@ -1335,11 +1321,11 @@ msgstr ""
 "permettant d'utiliser simplement wopits sans avoir à l'installer vous-même "
 "sur un serveur."
 
-msgid "This item has been deleted!"
-msgstr "Cet élément a été supprimé!"
+msgid "This item has been deleted."
+msgstr "Cet élément a été supprimé."
 
-msgid "This item is locked by another user!"
-msgstr "Cet élément est verrouillé par un autre utilisateur!"
+msgid "This item is locked by another user."
+msgstr "Cet élément est verrouillé par un autre utilisateur."
 
 msgid "This note contains external images or videos."
 msgstr "Cette note contient des images ou des vidéos externes."
@@ -1357,14 +1343,14 @@ msgstr "Cette note expirera dans environ %s jour(s)."
 msgid "This note will expire soon."
 msgstr "Cette note expirera bientôt."
 
-msgid "This relation already exists!"
-msgstr "Cette relation existe déjà!"
+msgid "This relation already exists."
+msgstr "Cette relation existe déjà."
 
 msgid "This title already exists."
 msgstr "Ce titre existe déjà."
 
-msgid "This user is no longer available!"
-msgstr "Cet utilisateur n'est plus disponible!"
+msgid "This user is no longer available."
+msgstr "Cet utilisateur n'est plus disponible."
 
 msgid ""
 "This user will lose their access for all walls shared with this group."
@@ -1376,11 +1362,11 @@ msgstr ""
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr "Cet utilisateur perdra l'accès au mur.<br>Retirer quand même?"
 
-msgid "This wall has not been shared with any user yet!"
-msgstr "Ce mur n'a encore été partagé avec aucun utilisateur!"
+msgid "This wall has not been shared with any user yet."
+msgstr "Ce mur n'a encore été partagé avec aucun utilisateur."
 
-msgid "This wall is not shared with any group!"
-msgstr "Ce mur n'est partagé avec aucun groupe!"
+msgid "This wall is not shared with any group."
+msgstr "Ce mur n'est partagé avec aucun groupe."
 
 msgid "This wall is shared"
 msgstr "Ce mur est partagé"
@@ -1422,9 +1408,6 @@ msgid ""
 msgstr ""
 "Erreur inconnue!<br>Vous allez être déconnecté...<br>Désolé pour la gêne "
 "occasionnée."
-
-msgid "Unknown error.<br>Please try again later!"
-msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard!"
 
 msgid "Unknown error.<br>Please try again later."
 msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard."
@@ -1486,12 +1469,6 @@ msgstr "Affichage"
 msgid "Wall"
 msgstr "Mur"
 
-msgid "Wall headers are now hidden"
-msgstr "Les en-têtes du mur sont désormais cachés"
-
-msgid "Wall headers are now visible"
-msgstr "Les en-têtes du mur sont désormais visibles"
-
 msgid "Wall properties"
 msgstr "Propriétés du mur"
 
@@ -1535,8 +1512,8 @@ msgid "Wrong current password."
 msgstr "Mauvais mot de passe actuel."
 
 #, php-format
-msgid "Wrong file type for %s!"
-msgstr "Mauvais type de fichier pour %s!"
+msgid "Wrong file type for %s."
+msgstr "Mauvais type de fichier pour %s."
 
 msgid "Yes"
 msgstr "Oui"
@@ -1579,8 +1556,8 @@ msgstr "Vous devez avoir un accès administrateur pour effectuer cette action."
 msgid "You must have write access to perform this action."
 msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
 
-msgid "You need write access to perform this action!"
-msgstr "Vous devez avoir un accès en écriture pour effectuer cette action!"
+msgid "You need write access to perform this action."
+msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
 
 #, php-format
 msgid "You were mentioned in a comment to the note «%s»:"
@@ -1596,8 +1573,8 @@ msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
 msgid "Your account «%s» has been created!"
 msgstr "Votre compte «%s» a bien été créé!"
 
-msgid "Your connection attempt failed!"
-msgstr "Votre tentative de connexion a échoué!"
+msgid "Your connection attempt failed."
+msgstr "Votre tentative de connexion a échoué."
 
 msgid "Your current password:"
 msgstr "Votre mot de passe actuel:"
@@ -1718,6 +1695,53 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Attachments</b> Fixed issues with "
+#~ "files without extension.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Attachements</b> Correction de "
+#~ "problèmes avec les fichiers sans extension.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> Lots of debugging and "
+#~ "improvements.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Général</b> Beaucoup de débogage et "
+#~ "d'améliorations.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with "
+#~ "updating the title of notes in stack mode.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction d'un problème "
+#~ "avec la mise à jour du titre des notes en mode liste.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with copy/"
+#~ "paste.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction de problèmes "
+#~ "avec le copier/coller.</p>"
+
+#~ msgid ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Wall</b> Fixed issues with walls "
+#~ "columns/rows removal.</p>"
+#~ msgstr ""
+#~ "<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Corrections de problèmes "
+#~ "avec la suppression des colonnes/lignes.</p>"
+
+#~ msgid "An error occurred while exporting wall data!"
+#~ msgstr "Une erreur est survenue durant l'export des données du mur!"
+
+#~ msgid "Unknown error.<br>Please try again later!"
+#~ msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard!"
+
+#~ msgid "Wall headers are now hidden"
+#~ msgstr "Les en-têtes du mur sont désormais cachés"
+
+#~ msgid "Wall headers are now visible"
+#~ msgstr "Les en-têtes du mur sont désormais visibles"
 
 #~ msgid ""
 #~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Email management</b> Better "

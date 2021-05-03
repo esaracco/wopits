@@ -22,7 +22,7 @@
   // METHOD _getEventSelector ()
   const _getEventSelector = (s)=>
   {
-    return H.haveMouse() ? ".pcomm-popover "+s : "#postitCommentsPopup "+s;
+    return H.haveMouse() ? `.pcomm-popover ${s}` : `#postitCommentsPopup ${s}`;
   };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -139,7 +139,7 @@
             if (!args.str)
               H.displayMsg ({
                 type: "warning",
-                msg: `<?=_("This wall has not been shared with any user yet!")?>`
+                msg: `<?=_("This wall has not been shared with any user yet.")?>`
               });
 
             this.reset ();
