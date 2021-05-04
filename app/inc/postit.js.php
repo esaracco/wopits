@@ -262,7 +262,6 @@
                 });
 
               break;
-
           }
 
           postitPlugin.edit ({}, ()=>
@@ -868,13 +867,31 @@
         $(p).postit ("applyThemeToPlugs", color));
     },
 
+    // METHOD getWallHeadersShift ()
+    getWallHeadersShift ()
+    {
+      const hs = this.settings.wall[0].dataset.headersshift;
+
+      return hs ? JSON.parse (hs) : null;
+    },
+
     // METHOD repositionPlugLabel ()
     repositionPlugLabel (label, top, left, wPos)
     {
-      const z = S.get("zoom-level")||1;
+      const z = S.get ("zoom-level")||1,
+            // Shift for plugs if headers are hidden
+            hs = this.getWallHeadersShift ();
+      let ptop = (parseInt(top)*z) + wPos.top,
+          pleft = (parseInt(left)*z) + wPos.left;
 
-      label.style.top = ((parseInt(top)*z)+wPos.top)+"px";
-      label.style.left = ((parseInt(left)*z)+wPos.left)+"px";
+      if (hs)
+      {
+        ptop -= hs.height*z;
+        pleft -= hs.width*z;
+      }
+
+      label.style.top = `${ptop}px`;
+      label.style.left = `${pleft}px`;
     },
 
     // METHOD resetPlugLabelPosition ()
@@ -1141,7 +1158,9 @@
                       z = S.get("zoom-level")||1,
                       toSave = {};
 
+                $label[0].dataset.changed = 1;
                 $label[0].dataset.pos = 1;
+
                 pl.querySelector("i.fa-thumbtack").style.display = "block";
                 pl.querySelector("li[data-action='position-auto']")
                   .style.display = "none";
@@ -1350,7 +1369,9 @@
     serializePlugs ()
     {
       const settings = this.settings,
-            defaultLineColor = S.getCurrent ("plugColor");
+            defaultLineColor = S.getCurrent ("plugColor"),
+            // Shift for plugs if headers are hidden
+            hs = this.getWallHeadersShift ();
       let ret = {};
 
       settings.plugs.forEach (p =>
@@ -1381,6 +1402,16 @@
             {
               ret[p.endId].top = parseInt (pl.dataset.origtop);
               ret[p.endId].left = parseInt (pl.dataset.origleft);
+
+              // We apply shift only if headers are hidden, plug has a custom
+              // position and has just been modified
+              if (hs && p.customPos && pl.dataset.changed)
+              {
+                pl.removeAttribute ("data-changed");
+
+                ret[p.endId].top += hs.height;
+                ret[p.endId].left += hs.width;
+              }
             }
           }
         });

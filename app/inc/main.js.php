@@ -231,12 +231,16 @@
             // INTERNAL FUNCTION ()
             const __postInit = ()=>
               {
-                // Apply display header mode
-                plugin.displayHeaders ();
-                // Apply display mode
-                plugin.refreshCellsToggleDisplayMode ();
+                H.waitForDOMUpdate (() =>
+                {
+                  // Apply display header mode
+                  plugin.displayHeaders ();
+                  // Apply display mode
+                  plugin.refreshCellsToggleDisplayMode ();
 
-                $wall.parent().find(".wall-menu").css ("visibility", "visible");
+                  $wall.parent().find(".wall-menu")
+                    .css ("visibility", "visible");
+                });
               };
 
             plugin.displayExternalRef ();
@@ -253,7 +257,7 @@
               H.waitForDOMUpdate (() =>
                 {
                   settings.cb_after ();
-                  H.waitForDOMUpdate (() => __postInit ());
+                  __postInit ();
                 });
             }
             else
@@ -571,7 +575,7 @@
                         label: {
                            name: labelName,
                            top: plug.item_top,
-                           left: plug.item_left,
+                           left: plug.item_left
                       },
                       obj: startPlugin.getPlugTemplate ({
                              hide: true,
@@ -2127,6 +2131,26 @@
       return w;
     },
 
+    // METHOD showHeaders ()
+    showHeaders ()
+    {
+      this.element[0].querySelectorAll("th").forEach (th =>
+        {
+          th.classList.remove ("hide");
+          th.classList.add ("display");
+        });
+    },
+
+    // METHOD hideHeaders ()
+    hideHeaders ()
+    {
+      this.element[0].querySelectorAll("th").forEach (th =>
+        {
+          th.classList.remove ("display");
+          th.classList.add ("hide");
+        });
+    },
+
     // METHOD displayHeaders ()
     displayHeaders (v)
     {
@@ -2137,11 +2161,9 @@
 
       if (val == 1)
       {
-        wall.querySelectorAll("th").forEach ((th)=>
-          {
-            th.classList.remove ("hide");
-            th.classList.add ("display");
-          });
+        this.showHeaders ();
+
+        wall.removeAttribute ("data-headersshift");
 
         if (update)
           H.waitForDOMUpdate (()=>
@@ -2159,11 +2181,20 @@
       }
       else
       {
-        wall.querySelectorAll("th").forEach ((th)=>
-          {
-            th.classList.remove ("display");
-            th.classList.add ("hide");
-          });
+        // Save plugs shift width & height for absolutely positioned plugs
+        if (!wall.dataset.headersshift)
+        {
+          //FIXME Needed to get headers dimensions
+          this.showHeaders ();
+
+          const bbox = wall.querySelector("thead th").getBoundingClientRect ();
+
+          if (bbox.width)
+            wall.dataset.headersshift =
+              JSON.stringify ({width: bbox.width, height: bbox.height});
+        }
+
+        this.hideHeaders ();
 
         wall.style.width = `${this.getTDsWidth()}px`;
       }
