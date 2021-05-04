@@ -59,7 +59,7 @@
         .on("hidden.bs.modal", function (e)
         {
           if (_smPlugin.element.is (":visible"))
-            setTimeout(()=>  _smPlugin.showHelp (), 0);
+            setTimeout(()=> _smPlugin.showHelp (), 0);
         });
     },
 
