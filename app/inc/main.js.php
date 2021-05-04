@@ -922,7 +922,7 @@
         }
 
         _refreshing = false;
-//FIXME        plugin.fixSize ();
+        plugin.fixSize ();
       }
 
       // Reset arrows tool
