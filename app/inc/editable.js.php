@@ -94,7 +94,7 @@
                   this.style.overflow = "visible";
 
                   editable.classList.add ("editing");
-                  editable.style.height = editable.clientHeight+"px";
+                  editable.style.height = `${editable.clientHeight}px`;
 
                   editable.innerHTML = `<div style="visibility:hidden;height:0">${H.htmlEscape(settings._valueOrig)}</div><input type="text" value="${H.htmlEscape(settings._valueOrig)}" maxlength="${settings.maxLength}">`;
 

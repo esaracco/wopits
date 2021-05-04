@@ -381,8 +381,8 @@
                   $upload.val ("");
 
                   if ($_mainPopup.find(
-                        ".list-group li[data-fname='"+
-                          H.htmlEscape(file.name)+"']").length)
+                        `.list-group li`+
+                           `[data-fname="${H.htmlEscape(file.name)}"]`).length)
                     return H.displayMsg ({
                       type: "warning",
                       msg: `<?=_("The file is already linked to the note.")?>`

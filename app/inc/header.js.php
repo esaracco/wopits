@@ -578,8 +578,8 @@
                   .find(`td:eq(${(header.cellIndex-1)})`).each (function ()
                   {
                     this.style.width = `${newW}px`;
-                    this.querySelector(".ui-resizable-s").style.width =
-                      (newW+2)+"px";
+                    this.querySelector(".ui-resizable-s")
+                      .style.width = `${newW+2}px`;
                   });
             }
             else

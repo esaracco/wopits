@@ -197,10 +197,10 @@
     // METHOD removeGroupUser ()
     removeGroupUser (args)
     {
-      let service = "group/"+args.groupId+"/removeUser/"+args.userId;
+      let service = `group/${args.groupId}/removeUser/${args.userId}`;
 
       if (args.groupType == <?=WPT_GTYPES_DED?>)
-        service = "wall/"+args.wallId+"/"+service;
+        service = `wall/${args.wallId}/${service}`;
 
       H.request_ws (
         "DELETE",
@@ -225,7 +225,7 @@
       let service = `group/${args.groupId}/addUser/${args.userId}`;
 
       if (args.groupType == <?=WPT_GTYPES_DED?>)
-        service = "wall/"+args.wallId+"/"+service;
+        service = `wall/${args.wallId}/${service}`;
 
       H.request_ws (
         "PUT",

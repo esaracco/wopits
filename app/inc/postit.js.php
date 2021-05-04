@@ -77,8 +77,8 @@
           {
             const rabbit = document.getElementById ("plug-rabbit");
 
-            rabbit.style.left = (e.clientX+5)+"px";
-            rabbit.style.top = (e.clientY-10)+"px";
+            rabbit.style.left = `${e.clientX+5}px`;
+            rabbit.style.top = `${e.clientY-10}px`;
 
             _plugRabbit.line.position ();
           },
@@ -324,8 +324,8 @@
         postit.classList.add ("obsolete");
 
       postit.style.visibility = "hidden";
-      postit.style.top = settings.item_top+"px";
-      postit.style.left = settings.item_left+"px";
+      postit.style.top = `${settings.item_top}px`;
+      postit.style.left = `${settings.item_left}px`;
 
       $postit
         // Append menu, header, dates, attachment count and tags
@@ -541,7 +541,7 @@
     // METHOD getPlugin ()
     getPlugin (type)
     {
-      return this.settings[type+"Plugin"];
+      return this.settings[`${type}Plugin`];
     },
 
     // METHOD openPlugProperties ()
@@ -814,7 +814,7 @@
                 gr = Math.trunc ((100*(size*100/p.obj.line_size))/100);
 
           p.labelObj[0].style.transformOrigin = (reset) ? null : "top left";
-          p.labelObj[0].style.transform = (reset) ? null : "scale("+z+")";
+          p.labelObj[0].style.transform = (reset) ? null : `scale(${z})`;
 
           p.obj.size = size;
 
@@ -1058,7 +1058,7 @@
       if (svg)
         $div[0].appendChild (svg);
       else
-        svg = $div[0].querySelector ("#_"+plug.startId+"-"+plug.endId);
+        svg = $div[0].querySelector (`#_${plug.startId}-${plug.endId}`);
 
       const text = svg.querySelector ("text"),
             pos = plug.label.top ?
@@ -1096,7 +1096,7 @@
         if (applyZoom)
         {
           pl.style.transformOrigin = "top left";
-          pl.style.transform = "scale("+(S.get("zoom-level")||1)+")";
+          pl.style.transform = `scale(${S.get("zoom-level")||1})`;
         }
 
         if (canWrite)
@@ -1186,7 +1186,7 @@
 
       // Associate SVG line to plug and set its label
       const svg = document.querySelector (".leader-line:last-child");
-      svg.id = "_"+plug.startId+"-"+plug.endId;
+      svg.id = `_${plug.startId}-${plug.endId}`;
       this.addPlugLabel (plug, svg, applyZoom);
 
       // Register plug on start point postit (current plugin)
@@ -1353,8 +1353,8 @@
             const pos = div.querySelector (`#_${p.startId}-${p.endId} text`)
                           .getBoundingClientRect ();
 
-            pl.style.top = pos.top+"px";
-            pl.style.left = pos.left+"px";
+            pl.style.top = `${pos.top}px`;
+            pl.style.left = `${pos.left}px`;
           }
         });
     },
@@ -1459,7 +1459,7 @@
             title: (title == "...") ? "" : title,
             content: displayExternalRef ?
                        content : plugin.unblockExternalRef (content),
-            tags: (tags.length) ? ","+tags.join(",")+"," : null,
+            tags: (tags.length) ? `,${tags.join(",")},` : null,
             deadline: (deadline == "...") ? "" : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?
                           this.dataset.deadlinealertshift : null,
@@ -1607,10 +1607,10 @@
         const p = ppc.querySelector (".postit-progress");
 
         this.element[0].dataset.progress = v;
-        ppc.querySelector("span").innerText = v+"%";
+        ppc.querySelector("span").innerText = `${v}%`;
         ppc.style.display = "block";
 
-        p.style.height = v+"%";
+        p.style.height = `${v}%`;
         p.style.backgroundColor = H.getProgressbarColor (v);
       }
     },
@@ -1731,7 +1731,7 @@
       {
         externalRef.forEach (src =>
           c = c.replace (new RegExp ("[^\-]"+H.escapeRegex(src), "g"),
-                " external-"+src+" "));
+                ` external-${src} `));
 
         if (content === undefined)
         {
@@ -1827,7 +1827,7 @@
        const item = ($item) ? $item[0] : this.element[0],
              classes = item.className.replace(/color\-[a-z]+/, "");
 
-       item.className = classes+" "+newClass;
+       item.className = `${classes} ${newClass}`;
     },
 
     // METHOD setPopupColor ()
@@ -1917,10 +1917,10 @@
 
       if (!d.ignoreResize)
       {
-        postit.style.top = d.item_top+"px";
-        postit.style.left = d.item_left+"px";
-        postit.style.width = d.width+"px";
-        postit.style.height = d.height+"px";
+        postit.style.top = `${d.item_top}px`;
+        postit.style.left = `${d.item_left}px`;
+        postit.style.width = `${d.width}px`;
+        postit.style.height = `${d.height}px`;
 
         H.waitForDOMUpdate (()=> this.repositionPlugs ());
       }

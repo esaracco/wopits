@@ -159,7 +159,7 @@
                     bH = $p.find(".popover-body").height ();
 
               if (bH > wH)
-                $p.find(".popover-body").css ("height", wH+"px");
+                $p.find(".popover-body").css ("height", `${wH}px`);
             }
           });
         }

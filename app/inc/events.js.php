@@ -62,8 +62,8 @@ $(function()
           // Fix TinyMCE menu placement with virtual keyboard on touch devices
           if (!H.haveMouse () && $("#postitUpdatePopup").is(":visible"))
             $(".tox-selected-menu").css ("top",
-              ($(".tox-menubar")[0].getBoundingClientRect().bottom -
-                document.body.getBoundingClientRect().bottom - 2)+"px");
+              `${$(".tox-menubar")[0].getBoundingClientRect().bottom -
+                document.body.getBoundingClientRect().bottom - 2}px`);
 
           // Reposition wall menu if it is out of bounds
           S.getCurrent("wmenu").wmenu ("fixPosition");

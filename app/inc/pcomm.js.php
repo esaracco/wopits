@@ -102,7 +102,7 @@
                 elB = el.getBoundingClientRect().bottom;
 
           if (elB > wH)
-            el.style.height = (el.offsetHeight - (elB - wH)) +"px";
+            el.style.height = `${el.offsetHeight - (elB - wH)}px`;
         };
 
       args.str = args.str.replace (/&/, "");
@@ -126,10 +126,11 @@
           {
             const rc = pc.querySelector (".result-container");
 
-            rc.style.width = _textarea.getBoundingClientRect().width+"px";
-
+            rc.style.width = `${_textarea.getBoundingClientRect().width}px`;
             rc.classList.add ("shadow");
+
             pc.querySelector (".search").classList.add ("shadow");
+
             _textarea.classList.add ("autocomplete");
 
             setTimeout (__resize, 50);
@@ -256,7 +257,7 @@
                         (bb.bottom - window.innerHeight);
 
             $_popup.addClass ("have-scroll");
-            $body.css ("height", (h-53)+"px");
+            $body.css ("height", `${h-53}px`);
           }
         };
 

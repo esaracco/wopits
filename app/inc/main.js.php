@@ -560,7 +560,7 @@
                   startPlugin = $start.postit ("getClass"),
                   labelName = plug.label||"...";
 
-            idsNew[startId+""+endId] = 1;
+            idsNew[`${startId}${endId}`] = 1;
 
             if (!startPlugin.plugExists (endId))
             {
@@ -618,7 +618,7 @@
           {
             $(postit).postit("getSettings").plugs.forEach (plug =>
               {
-                if (!idsNew[plug.startId+""+plug.endId])
+                if (!idsNew[`${plug.startId}${plug.endId}`])
                   $(wall.querySelector(
                       `.postit[data-id="postit-${plug.endId}"]`))
                     .postit ("removePlug", plug, true);
@@ -827,7 +827,7 @@
             {
               wall.querySelectorAll("thead th")[idx].remove ();
               wall.querySelectorAll("tbody tr").forEach (tr =>
-                $(tr).find ("td:eq("+(idx-1)+")").cell ("remove"));
+                $(tr).find (`td:eq(${idx-1})`).cell ("remove"));
             }
           });
 
@@ -1792,8 +1792,8 @@
       }
 
       wall.dataset.oldwidth = w;
-      wall.style.width = w+"px";
-      wall.style.maxWidth = w+"px";
+      wall.style.width = `${w}px`;
+      wall.style.maxWidth = `${w}px`;
     },
 
     // METHOD setPostitsDisplayMode ()
@@ -2100,7 +2100,7 @@
         this.settings.displayexternalref = val;
 
         this.element[0].querySelectorAll(".postit").forEach (p =>
-          $(p).postit (type+"ExternalRef"));
+          $(p).postit (`${type}ExternalRef`));
 
         H.fetch (
           "POST",
@@ -2172,7 +2172,7 @@
 
               w += wall.querySelector("tbody th").clientWidth;
 
-              wall.style.width = w+"px";
+              wall.style.width = `${w}px`;
               wall.dataset.oldwidth = w;
 
               if (val == 1)

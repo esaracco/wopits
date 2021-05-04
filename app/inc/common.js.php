@@ -195,7 +195,7 @@ class Wpt_toolbox
     }
 
     if (pos.left <= 0)
-      el.style.left = 5+"px";
+      el.style.left = "5px";
     else
     {
       const wW = window.innerWidth - 20;
@@ -484,7 +484,7 @@ class WSocket
                 $(`[data-id="wall-${data.wall.id}"]`) : [],
               isResponse = (this._send_cb[data.msgId] !== undefined);
 
-        //console.log ("RECEIVED "+data.msgId+"\n");
+        //console.log (`RECEIVED ${data.msgId}\n`);
         //console.log (data);
 
         if (data.action)
@@ -746,7 +746,7 @@ class WSocket
     // If first message or request for sending a message in queue
     if (send || this._sendQueue.length == 1)
     {
-      //console.log ("SEND "+msg.msgId+"\n");
+      //console.log (`SEND ${msg.msgId}\n`);
 
       this._send_cb[msg.msgId] = success_cb;
  
@@ -914,31 +914,31 @@ class WHelper
   // METHOD escapeRegex ()
   escapeRegex (str)
   {
-    return (str+"").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return (`${str}`).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   // METHOD quoteRegex ()
   quoteRegex (str)
   {
-    return (str+"").replace (/(\W)/g, '\\$1');
+    return (`${str}`).replace (/(\W)/g, '\\$1');
   }
 
   // METHOD HTMLEscape ()
   htmlEscape (str)
   {
-    return (str+"").replace (/[&<>"']/g, (c) => this.entitiesMap[c]);
+    return (`${str}`).replace (/[&<>"']/g, (c) => this.entitiesMap[c]);
   }
   
   // METHOD noHTML ()
   noHTML (str)
   {
-    return (str+"").trim().replace (/<[^>]+>|&[^;]+;/g, "");
+    return (`${str}`).trim().replace (/<[^>]+>|&[^;]+;/g, "");
   }
 
   // METHOD nl2br ()
   nl2br (str)
   {
-    return (str+"").replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
+    return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
   }
   
   // METHOD closeMainMenu ()
@@ -1567,8 +1567,7 @@ class WHelper
     document.querySelector("html").style.overflow = "hidden";
 
     S.getCurrent("walls")[0].style.height =
-      (window.innerHeight -
-        document.querySelector(".nav-tabs.walls").offsetHeight)+"px";
+      `${window.innerHeight - document.querySelector(".nav-tabs.walls").offsetHeight}px`;
   }
 
   // METHOD setColorpickerColor ()
@@ -1712,7 +1711,7 @@ class WHelper
   {
     this.loader ("show");
   
-    //console.log ("WS: "+method+" "+service);
+    //console.log (`WS: ${method} ${service}`);
   
     WS.send ({
       method: method,
@@ -1789,7 +1788,7 @@ class WHelper
                 {
                   const $progress = $("#loader .progress"),
                         percentComplete = e.loaded / e.total,
-                        display = Math.trunc(percentComplete*100)+"%";
+                        display = `${Math.trunc(percentComplete*100)}%`;
 
                   $progress.text(display).css ("width", display);
 

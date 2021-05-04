@@ -34,7 +34,7 @@
         return el.querySelector("input").value;
       else
       {
-        el.querySelector("label span").innerHTML = v+"%";
+        el.querySelector("label span").innerHTML = `${v}%`;
         if (setcomp)
           el.querySelector("input").value = v;
       }
