@@ -2191,7 +2191,8 @@
 
           if (bbox.width)
             wall.dataset.headersshift =
-              JSON.stringify ({width: bbox.width, height: bbox.height});
+              JSON.stringify ({width: parseInt(bbox.width),
+                               height: parseInt(bbox.height)});
         }
 
         this.hideHeaders ();
