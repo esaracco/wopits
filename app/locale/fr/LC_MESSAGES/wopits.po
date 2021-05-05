@@ -77,7 +77,7 @@ msgid ""
 "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Hotfix to adjust plugs "
 "position when headers are hidden.</p>"
 msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Hotfix pour adapter la "
+"<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Hotfix pour adapter la "
 "position des flèches de relations quand les en-têtes sont masqués.</p>"
 
 msgid ""
