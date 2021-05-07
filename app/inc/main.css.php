@@ -2050,6 +2050,10 @@ i.set {
   color:#151719;
 }
 
+i.notset {
+  opacity:.3;
+}
+
 .wall-menu .wpt-badge {
   margin-left:-30px;
   margin-top:11px;
