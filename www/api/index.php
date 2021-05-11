@@ -3,7 +3,7 @@
   require_once (__DIR__.'/../../app/prepend.php');
 
   use Wopits\{User, Wall};
-  use Wopits\Wall\{Group, Postit, Comment, Attachment};
+  use Wopits\Wall\{Group, Postit, Comment, Attachment, Worker};
 
   // Ajax access point
   //
@@ -82,6 +82,16 @@
           ]))->add ();
           break;
 
+        case 'worker':
+
+          $ret = (new Worker ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId'),
+            'data' => $data
+          ]))->add ();
+          break;
+
         case 'postit':
 
           if (getParam ('item') == 'picture')
@@ -133,6 +143,21 @@
             'cellId' => getParam ('cellId'),
             'postitId' => getParam ('postitId')
           ]))->get ();
+          break;
+
+        case 'worker':
+
+          $Worker = new Worker ([
+            'wallId' => getParam ('wallId'),
+            'cellId' => getParam ('cellId'),
+            'postitId' => getParam ('postitId')
+          ]);
+
+          if (getParam ('action') == 'search')
+            $ret = $Worker->search (['search' => getParam ('search')]);
+          else
+            $ret = $Worker->get ();
+
           break;
 
         case 'user':

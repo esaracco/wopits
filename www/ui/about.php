@@ -3,7 +3,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><img src="/img/wopits.png?<?=\Wopits\Helper::getWopitsVersion ()?>" class="float-left" width="32">&nbsp;wopits v<?=WPT_VERSION?></h5>
+        <h5 class="modal-title"><img src="/img/wopits-32x32.png?<?=\Wopits\Helper::getWopitsVersion ()?>">&nbsp;wopits v<?=WPT_VERSION?></h5>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>

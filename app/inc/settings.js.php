@@ -27,7 +27,7 @@
 
       ["<?=implode('","', WPT_THEMES)?>"].forEach ((color) =>
         {
-          const id = "theme-"+color;
+          const id = `theme-${color}`;
 
           if (!document.getElementById (id))
             $head.append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`);
@@ -84,7 +84,7 @@
                 });
               }
             })
-            .append (`<img src='/img/locale/${locale}-24.png'>`);
+            .append (`${locale} <img src='/img/locale/${locale}-24.png'>`);
         });
     },
 

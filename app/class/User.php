@@ -17,7 +17,7 @@ class User extends Base
     try
     {
       $this
-        ->prepare('DELETE FROM users_tokens WHERE users_id = ?')
+        ->db->prepare('DELETE FROM users_tokens WHERE users_id = ?')
         ->execute ([$this->userId]);
 
       session_destroy ();
@@ -72,7 +72,7 @@ class User extends Base
 
     try
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT id, username, fullname FROM users WHERE email = ?'))
          ->execute ([$this->data->email]);
 
@@ -108,7 +108,7 @@ class User extends Base
   {
     $ret = [];
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT email, username, fullname, about, allow_emails, visible, picture
         FROM users WHERE id = ?'))
           ->execute ([$this->userId]);
@@ -139,8 +139,8 @@ class User extends Base
 
   public function exists (int $id = null):int
   {
-    ($stmt = $this->prepare ('
-      SELECT visible FROM users WHERE id = ? AND visible = 1'))
+    ($stmt = $this->db->prepare ('
+      SELECT 1 FROM users WHERE id = ? AND visible = 1'))
        ->execute ([$id??$this->userId]);
 
     return $stmt->rowCount ();
@@ -170,11 +170,11 @@ class User extends Base
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       // Decrement user's groups userscount
       $this
-        ->prepare('
+        ->db->prepare('
           UPDATE groups SET userscount = userscount - 1
           WHERE id IN (
             SELECT groups_id FROM _perf_walls_users WHERE users_id = ?
@@ -182,8 +182,22 @@ class User extends Base
             SELECT groups_id FROM users_groups WHERE users_id = ?)')
         ->execute ([$this->userId, $this->userId]);
 
+      // Decrement postits workers count
+      $this
+        ->db->prepare('
+          UPDATE postits SET workerscount = workerscount - 1
+          WHERE id IN (
+            SELECT postits_id FROM postits_workers
+            WHERE users_id = ?)')
+        ->execute ([$this->userId]);
+
+      // Delete user from workers table
+      $this
+        ->db->prepare('DELETE FROM postits_workers WHERE users_id = ?')
+        ->execute ([$this->userId]);
+
       // Remove user's walls directories.
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT id FROM walls WHERE users_id = ?'))->execute ([$this->userId]);
       while ($item = $stmt->fetch ())
       {
@@ -193,10 +207,10 @@ class User extends Base
 
       // Delete user
       $this
-        ->prepare('DELETE FROM users WHERE id = ?')
+        ->db->prepare('DELETE FROM users WHERE id = ?')
         ->execute ([$this->userId]);
 
-      $this->commit ();
+      $this->db->commit ();
 
       $this->logout ();
 
@@ -204,7 +218,7 @@ class User extends Base
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -215,7 +229,7 @@ class User extends Base
 
   public function checkSession ():void
   {
-    ($stmt = $this->prepare('SELECT 1 FROM users_tokens WHERE users_id = ?'))
+    ($stmt = $this->db->prepare('SELECT 1 FROM users_tokens WHERE users_id = ?'))
       ->execute ([$_SESSION['userId']]);
 
     if (!$stmt->fetch ())
@@ -226,7 +240,7 @@ class User extends Base
   {
     if ( ($token = Helper::getCookie ()) )
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT
           users_id,
           users.settings
@@ -254,7 +268,7 @@ class User extends Base
   // Return type is mixed: array or false.
   public function loadByToken (string $token, string $ip)
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT
         users_id,
         users.username,
@@ -307,7 +321,7 @@ class User extends Base
     $current = time ();
     $diff = 30 * 60; // 30mn
 
-    $this->exec ("
+    $this->db->exec ("
       DELETE FROM users_tokens
       WHERE token IN (
         SELECT token
@@ -322,7 +336,7 @@ class User extends Base
     $fromScript = isset ($args['fromScript']);
     $data = null;
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT id, settings FROM users WHERE username = ?'))
        ->execute ([$args['username']]);
     $data = $stmt->fetch ();
@@ -395,7 +409,7 @@ class User extends Base
     }
     else
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT id, settings FROM users WHERE username = ? AND password = ?'))
          ->execute ([
            $this->data->username,
@@ -427,7 +441,7 @@ class User extends Base
 
   public function getSettings (bool $json = true)
   {
-    ($stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?'))
+    ($stmt = $this->db->prepare ('SELECT settings FROM users WHERE id = ?'))
       ->execute ([$this->userId]);
 
     $ret = ( ($ret = $stmt->fetch ()) ) ? $ret['settings'] : '[]';
@@ -449,7 +463,7 @@ class User extends Base
 
     if ($userId && !isset ($this->settings[$key]))
     {
-      ($stmt = $this->prepare ('SELECT settings FROM users WHERE id = ?'))
+      ($stmt = $this->db->prepare ('SELECT settings FROM users WHERE id = ?'))
         ->execute ([$userId]);
       if ( ($r = $stmt->fetch ()) )
         $this->settings = (array) @json_decode($r['settings']);
@@ -488,7 +502,7 @@ class User extends Base
 
   public function getWallSettings (int $wallId):object
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT settings FROM _perf_walls_users
       WHERE users_id = ? AND walls_id = ?'))
         ->execute ([$this->userId, $wallId]);
@@ -586,7 +600,7 @@ class User extends Base
     try
     {
       $this
-        ->prepare('DELETE FROM messages_queue WHERE users_id = ? AND id = ?')
+        ->db->prepare('DELETE FROM messages_queue WHERE users_id = ? AND id = ?')
         ->execute ([$this->userId, intval ($this->data->id??0)]);
     }
     catch (\Exception $e)
@@ -600,7 +614,7 @@ class User extends Base
 
   public function getMessages ():?array
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
        SELECT id, creationdate, title, content
          FROM messages_queue WHERE users_id = ? ORDER BY id DESC'))
            ->execute ([$this->userId]);
@@ -615,7 +629,7 @@ class User extends Base
     if (!$this->userId)
       return ['error' => _("Access forbidden")];
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT picture, filetype, filesize FROM users WHERE id = ?'))
        ->execute ([$userId]);
 
@@ -637,7 +651,7 @@ class User extends Base
 
     try
     {
-      ($stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?'))
+      ($stmt = $this->db->prepare ('SELECT picture FROM users WHERE id = ?'))
         ->execute ([$this->userId]);
       $r = $stmt->fetch ();
 
@@ -686,7 +700,7 @@ class User extends Base
         if (!file_exists ($file))
           throw new \Exception (_("An error occured while uploading file."));
 
-        ($stmt = $this->prepare ('SELECT picture FROM users WHERE id = ?'))
+        ($stmt = $this->db->prepare ('SELECT picture FROM users WHERE id = ?'))
           ->execute ([$this->userId]);
         $previousPicture = $stmt->fetch()['picture'];
 
@@ -750,14 +764,14 @@ class User extends Base
             _("The email `%s` already exists."), $value);
         else
         {
-          $this->beginTransaction ();
+          $this->db->beginTransaction ();
 
           $this->checkDBValue ('users', $field, $value);
           $this
-            ->prepare("UPDATE users SET $field = :$field WHERE id = :id")
+            ->db->prepare("UPDATE users SET $field = :$field WHERE id = :id")
             ->execute ([$field => $value, 'id' => $this->userId]);
 
-          ($stmt = $this->prepare ('
+          ($stmt = $this->db->prepare ('
             SELECT username, fullname, email, about, allow_emails, visible,
                    picture
             FROM users where id = ?'))
@@ -776,7 +790,7 @@ class User extends Base
                 Helper::unaccent ($ret['username'].','.$ret['fullname'])],
               ['id' => $this->userId]);
 
-          $this->commit ();
+          $this->db->commit ();
 
           // Remove user from all groups except his own.
           if ($field == 'visible' && $value == 0)
@@ -786,7 +800,7 @@ class User extends Base
               ->unlinkUserFromOthersGroups ();
 
             // Get all user's walls to disconnect users from them.
-            ($stmt = $this->prepare ('
+            ($stmt = $this->db->prepare ('
               SELECT id FROM walls WHERE users_id = ?'))
                ->execute ([$this->userId]);
             if (!empty ( ($r = $stmt->fetchAll (\PDO::FETCH_COLUMN)) ))
@@ -798,7 +812,7 @@ class User extends Base
       {
         $pwd = $this->data->password;
 
-        ($stmt = $this->prepare ('
+        ($stmt = $this->db->prepare ('
           SELECT id FROM users WHERE password = ? AND id = ?'))
            ->execute ([hash ('sha1', $pwd->current), $this->userId]);
         if (!$stmt->fetch ())
@@ -813,8 +827,8 @@ class User extends Base
     {
       $msg = $e->getMessage ();
 
-      if (\PDO::inTransaction ())
-        $this->rollback ();
+      if ($this->db->inTransaction ())
+        $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$msg);
       $ret['error_msg'] = $msg;
@@ -832,7 +846,7 @@ class User extends Base
       $this->userId.$this->data->username.$this->data->password);
 
     $this
-      ->prepare('DELETE FROM users_tokens WHERE users_id = ?')
+      ->db->prepare('DELETE FROM users_tokens WHERE users_id = ?')
       ->execute ([$this->userId]);
 
     $this->executeQuery ('INSERT INTO users_tokens', [
@@ -902,7 +916,7 @@ class User extends Base
         ])
       ]);
 
-      $this->userId = $this->lastInsertId ();
+      $this->userId = $this->db->lastInsertId ();
 
       // All is OK, user is logged
       $_SESSION['userId'] = $this->userId;
@@ -981,7 +995,7 @@ class User extends Base
     }
 
     // Check for duplicate (username or email)
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
       SELECT ".implode(',', $keys)." FROM users WHERE $where"))
        ->execute ($data);
     

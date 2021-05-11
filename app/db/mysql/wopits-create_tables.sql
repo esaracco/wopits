@@ -187,6 +187,7 @@ CREATE TABLE postits
   item_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   creationdate INT UNSIGNED NOT NULL,
   attachmentscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  workerscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   commentscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
   title VARCHAR(50),
@@ -246,6 +247,22 @@ CREATE TABLE postits_attachments
   CONSTRAINT `postits_attachments-postits_id-fk` FOREIGN KEY (postits_id)
     REFERENCES postits(id) ON DELETE CASCADE,
   INDEX `postits_attachments-creationdate:name-idx` (creationdate, name)
+)
+ENGINE=INNODB;
+
+DROP TABLE IF EXISTS postits_workers;
+CREATE TABLE postits_workers
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  postits_id INT UNSIGNED NOT NULL,
+  walls_id INT UNSIGNED NOT NULL COMMENT "Not a foreign key, just a helper",
+  users_id INT UNSIGNED COMMENT "Not a foreign key, just a helper",
+
+  PRIMARY KEY (id),
+  CONSTRAINT `postits_workers-postits_id-fk` FOREIGN KEY (postits_id)
+    REFERENCES postits(id) ON DELETE CASCADE,
+  INDEX `postits_workers-walls_id-idx` (walls_id),
+  INDEX `postits_workers-users_id-idx` (users_id)
 )
 ENGINE=INNODB;
 

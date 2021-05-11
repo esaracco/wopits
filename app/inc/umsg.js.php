@@ -50,6 +50,7 @@
               break;
 
             case "postit":
+            case "worker":
               data = {
                 wallId,
                 postitId: this.dataset.postitid
@@ -64,6 +65,8 @@
               };
               break;
           }
+
+          data.type = this.dataset.type;
 
           $("<div/>").wall ("loadSpecific", data, true);
         });

@@ -438,7 +438,7 @@
     {
       const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
 
-      if (ST.noDisplay ("mmenu-help-"+writeAccess))
+      if (ST.noDisplay (`mmenu-help-${writeAccess}`))
         return;
 
       let content;

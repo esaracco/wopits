@@ -19,33 +19,33 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD _clearSelection ()
-  function _clearSelection ()
-  {
-    window.getSelection && window.getSelection().removeAllRanges () ||
-      document.selection && document.selection.empty ();
-  }
+  const _clearSelection  = ()=>
+    {
+      window.getSelection && window.getSelection().removeAllRanges () ||
+        document.selection && document.selection.empty ();
+    };
 
   // METHOD _getTextWidth ()
-  function _getTextWidth (str, fontSize)
-  {
-    let ret = 0;
-
-    if (str != "")
+  const _getTextWidth = (str, fontSize)=>
     {
-      const sb = S.getCurrent("sandbox")[0];
+      let ret = 0;
 
-      if (fontSize)
-        sb.style.fontSize = fontSize;
-      else
-        sb.removeAttribute ("style");
+      if (str != "")
+      {
+        const sb = S.getCurrent("sandbox")[0];
 
-      sb.innerText = str;
+        if (fontSize)
+          sb.style.fontSize = fontSize;
+        else
+          sb.removeAttribute ("style");
 
-      ret = `${sb.clientWidth+30}px`;
-    }
+        sb.innerText = str;
 
-    return ret;
-  }
+        ret = `${sb.clientWidth+30}px`;
+      }
+
+      return ret;
+    };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 

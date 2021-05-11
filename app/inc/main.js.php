@@ -20,26 +20,26 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD _getCellTemplate ()
-  function _getCellTemplate (data)
-  {
-    return `<td scope="dzone" class="size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
-  }
+  const _getCellTemplate = (data)=>
+    {
+      return `<td scope="dzone" class="size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
+    };
 
   // METHOD _getDirectURLData ()
-  function _getDirectURLData ()
-  {
-    let m;
+  const _getDirectURLData = ()=>
+    {
+      let m;
 
-    if (location.href.indexOf ("unsubscribe") != -1)
-      return {type: "u"};
-    else if (( m = location.href.match(<?=WPT_DIRECTURL_REGEXP?>) ))
-      return {
-        type: m[1],
-        wallId: m[2],
-        postitId: m[4]||null,
-        commentId: m[6]||null
-      };
-  }
+      if (location.href.indexOf ("unsubscribe") != -1)
+        return {type: "u"};
+      else if (( m = location.href.match(<?=WPT_DIRECTURL_REGEXP?>) ))
+        return {
+          type: m[1],
+          wallId: m[2],
+          postitId: m[4]||null,
+          commentId: m[6]||null
+        };
+    };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -194,7 +194,7 @@
           }
 
           // Set wall users view count if needed
-          const viewcount = WS.popResponse ("viewcount-wall-"+wallId);
+          const viewcount = WS.popResponse (`viewcount-wall-${wallId}`);
           if (viewcount !== undefined)
             plugin.refreshUsersview (viewcount); 
 
@@ -308,7 +308,7 @@
       S.reset ();
 
       this.settings.tabLink.click ();
-      $("#wall-"+this.settings.id).addClass ("active");
+      $(`#wall-${this.settings.id}`).addClass ("active");
 
       this.menu ({from: "wall", type: "have-wall"});
     },
@@ -510,7 +510,7 @@
 
       this.element.find(selector).each (function ()
         {
-          if (this.classList.contains ("ui-"+plugin))
+          if (this.classList.contains (`ui-${plugin}`))
           {
             if (forceHandle && isDisabled)
               $(this).find(`.ui-${plugin}-handle`)
@@ -1012,7 +1012,7 @@
     // METHOD close ()
     close ()
     {
-      const activeTabId = "wall-"+this.settings.id,
+      const activeTabId = `wall-${this.settings.id}`,
             activeTab = document.querySelector(`a[href="#${activeTabId}"]`),
             newActiveTabId =
               (activeTab.previousElementSibling) ?
@@ -1151,7 +1151,7 @@
           $(this).cell ({
             id: cellId,
             access: plugin.settings.access,
-            usersettings: plugin.settings.usersettings["cell-"+cellId]||{},
+            usersettings: plugin.settings.usersettings[`cell-${cellId}`]||{},
             wall: $wall,
             wallId: wallId,
             plugsContainer: plugin.settings.plugsContainer
@@ -1298,7 +1298,7 @@
           d["background-color"] =
             $("#settingsPopup").settings ("get", "wall-background", d.id);
 
-          const $wallDiv = $("#wall-"+d.id);
+          const $wallDiv = $(`#wall-${d.id}`);
 
           if (args.lastWall)
             d.lastWall = args.lastWall;
@@ -1336,49 +1336,38 @@
     // METHOD clone ()
     clone ()
     {
-      H.openConfirmPopup ({
-        icon: "clone",
-        content: `<?=_("Notes comments will not be cloned.<br>Continue?")?>`,
-        cb_ok: () =>
-          {
-            H.fetch (
-            "PUT",
-            `wall/${this.settings.id}/clone`,
-            null,
-            // success cb
-            (d) =>
-              {
-                if (d.error_msg)
-                  return H.displayMsg ({
-                           type: "warning",
-                           msg: d.error_msg
-                         });
-
-                $("<div/>").wall ("open", {
-                  lastWall: 1,
-                  wallId: d.wallId
-                });
-
-                H.displayMsg ({
-                  type: "success",
-                  msg: `<?=_("The wall has been successfully cloned")?>`
-                });
+      H.fetch (
+      "PUT",
+      `wall/${this.settings.id}/clone`,
+      null,
+      // success cb
+      (d) =>
+        {
+          if (d.error_msg)
+            return H.displayMsg ({
+              type: "warning",
+              msg: d.error_msg
             });
-          }
+
+          $("<div/>").wall ("open", {
+            lastWall: 1,
+            wallId: d.wallId
+          });
+
+          H.displayMsg ({
+            type: "success",
+            msg: `<?=_("The wall has been successfully cloned")?>`
+          });
       });
     },
 
     // METHOD export ()
     export ()
     {
-      H.openConfirmPopup ({
-        icon: "file-export",
-        content: `<?=_("Notes comments will not be exported.<br>Continue?")?>`,
-        cb_ok: () => H.download ({
-          url: `/wall/${this.settings.id}/export`,
-          fname: `wopits-wall-export-${this.settings.id}.zip`,
-          msg: `<?=_("An error occurred while exporting wall data.")?>`
-        })
+      H.download ({
+        url: `/wall/${this.settings.id}/export`,
+        fname: `wopits-wall-export-${this.settings.id}.zip`,
+        msg: `<?=_("An error occurred while exporting wall data.")?>`
       });
     },
 
@@ -1420,17 +1409,29 @@
     loadSpecific (args, noDelay)
     {
       const {wallId, postitId, commentId} = args;
+      let type;
 
       // INTERNAL FUNCTION __displayAlert ()
       const __displayAlert = ()=>
         {
           if (postitId)
+          {
+            switch (args.type)
+            {
+              case "a": type = "deadline"; break;
+              case "c": type = "comment"; break;
+              case "w": type = "worker"; break;
+              default:
+                type = args.type;
+            }
+
             setTimeout (()=>
               this.displayPostitAlert ({
                 wallId,
                 postitId,
-                type: commentId ? "comment" : "deadline"
+                type: type
               }), noDelay ? 0 : 250);
+          }
           else
             this.displayShareAlert (wallId);
         };
@@ -1533,45 +1534,13 @@
             open: false,
             init: ($p)=>
             {
-              $p
-                // EVENT click on username in wall users popup
-                .on("click",".list-group a",function (e)
+              // EVENT click on username in wall users popup
+              $p.on("click",".list-group a", function (e)
                 {
-                  const a = this;
-
-                  H.loadPopup ("userView", {
-                    open: false,
-                    cb: ($p)=>
-                    {
-                      const $userPicture = $p.find (".user-picture"),
-                            $about = $p.find (".about");
-
-                      if (a.dataset.picture)
-                      {
-                        $userPicture
-                          .empty ()
-                          .append (
-                            $(`<img src="${a.dataset.picture}">`)
-                              .on("error",function (e){$userPicture.hide()}));
-
-                        $userPicture.show ();
-                      }
-                      else
-                        $userPicture.hide ();
-
-                      $p.find(".modal-title span").text (a.dataset.title);
-                      $p.find(".name dd").text (a.dataset.title);
-
-                      if (a.dataset.about)
-                      {
-                        $about.find("dd").html (H.nl2br (a.dataset.about));
-                        $about.show ();
-                      }
-                      else
-                        $about.hide ();
-
-                      H.openModal ($p);
-                    }
+                  H.openUserview ({
+                    about: this.dataset.about,
+                    picture: this.dataset.picture,
+                    title: this.dataset.title
                   });
                 });
             },
@@ -1721,7 +1690,7 @@
     // METHOD isShared ()
     isShared ()
     {
-      return this.element[0].dataset.shared;
+      return !!this.element[0].dataset.shared;
     },
 
     // METHOD setShared ()
@@ -1734,7 +1703,18 @@
       else
         wall.removeAttribute ("data-shared");
 
+      this.refreshPostitsWorkersIcon ();
       this.refreshSharedIcon ();
+    },
+
+    // METHOD refreshPostitsWorkersIcon ()
+    refreshPostitsWorkersIcon ()
+    {
+      const display = this.isShared ();
+
+      this.element[0].querySelectorAll(".postit").forEach (p =>
+        p.querySelector(".pwork")
+          .style.display = display?"inline-block":"none");
     },
 
     // METHOD refreshSharedIcon ()

@@ -760,6 +760,14 @@ a.list-group-item {
   overflow:hidden !important;
 }
 
+#owallPopup .list-group-item .item-infos {
+  left:50px;
+}
+
+#pworkPopup .list-group-item .item-infos {
+  left:22px;
+}
+
 .list-group-item .item-infos span:not(:last-child):after {
   content: " - ";
 }
@@ -777,10 +785,6 @@ a.list-group-item {
 .list-group .list-group-item.last {
   border-bottom-left-radius: .25rem;
   border-bottom-right-radius: .25rem;
-}
-
-#owallPopup .list-group-item .item-infos {
-  left:50px;
 }
 
 #usearchPopup .list-group-item .item-infos,
@@ -1936,10 +1940,10 @@ ul#mmenu {
 }
 
 #swallPopup .nogroup,
-#usearchPopup .nousers-title {
+.nousers-title {
   font-style:italic;
   opacity:0.6;
-  text-align:center;
+  font-size:.9rem;
 }
 
 button.clear-input {
@@ -2071,7 +2075,7 @@ i.notset {
 
 .postit .topicon {
   position:absolute;
-  top:-25px;
+  top:-26px;
   cursor:pointer;
   z-index:93;
   text-shadow:1px 1px 3px rgba(0,0,0, 0.5);
@@ -2083,7 +2087,7 @@ i.notset {
 
 .postit .topicon > div {
   float:left;
-  padding:5px 10px 0 5px;
+  padding:5px 9px 0 0;
 }
 
 /*.modal-dialog:not(.modal-sm) .modal-body  {*/
@@ -2101,6 +2105,21 @@ i.notset {
 .modal-body .list-group li {
   white-space:nowrap;
   text-overflow:ellipsis !important;
+  overflow:hidden !important;
+}
+
+#usearchPopup .modal-body .list-group li div.label,
+#pworkPopup .modal-body .list-group li div.label,
+.result.autocomplete li div.label {
+  display:inline-block;
+  white-space:nowrap;
+  max-width:85%;
+  text-overflow:ellipsis !important;
+  overflow:hidden !important;
+}
+
+#wallUsersviewPopup .modal-body .list-group {
+  white-space:nowrap;
   overflow:hidden !important;
 }
 
@@ -2545,19 +2564,15 @@ button.ui-datepicker-close {
 
 .locale-picker > div {
   display:inline-block;
-  padding: 0 3px 0 3px;
-  border-radius: 5px;
-  border:2px solid silver;
-  cursor: pointer;
+  padding:0 3px 0 3px;
+  border-radius:.25rem;
+  border:1px solid #ced4da;
+  cursor:pointer;
   margin-right:3px;
 }
 
 .locale-picker > .selected {
   background-color:#dadada;
-}
-
-.locale-picker img {
-  margin-top:-1px;
 }
 
 #main-menu.noarrows .display-section [data-action=arrows] {

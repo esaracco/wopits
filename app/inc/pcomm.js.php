@@ -9,7 +9,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('pcomm');
+  $Plugin = new Wopits\jQueryPlugin ('pcomm', '', 'postitElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -27,14 +27,19 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
+  // Inherit from Wpt_postitCountPlugin
+  Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
+  Object.assign (Plugin.prototype,
   {
     // METHOD init ()
     init ()
     {
       const settings = this.settings;
 
-      $(`<i data-action="comments" class="fas fa-comments" ${(settings.readonly && !settings.count)?`style="display:none"`:""}></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
+      if (settings.readonly && !settings.count)
+        this.element[0].style.display = "none";
+
+      $(`<i data-action="pcomm" class="fa-fw fas fa-comments"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
 
       this.settings._cache = settings.count ? [] : null;
 
@@ -44,34 +49,12 @@
     // METHOD refresh ()
     refresh (d)
     {
-      const $pc = this.element,
-            badge = $pc[0].querySelector (".wpt-badge"),
-            count = d.comments.length;
-
       this.settings._cache = d.comments;
 
-      if (this.settings.readonly)
-      {
-        if (count)
-          $pc.find(`[data-action="comments"]`).show ();
-        else
-          $pc.find(`[data-action="comments"]`).hide ();
-      }
-
-      badge.innerText = count;
-      badge.style.display = count ? "inline-block": "none";
+      this.setCount (d.comments.length);
 
       if ($_popup)
         this.open (true);
-    },
-
-    // METHOD getIds ()
-    getIds ()
-    {
-      const ps = this.postit().settings,
-            {wallId, cellId} = ps;
-
-      return {wallId, cellId, postitId: ps.id}
     },
 
     // METHOD injectUserRef ()
@@ -79,7 +62,7 @@
     {
       const val = _textarea.value,
             start = _textarea.selectionStart;
-      let prev = val.substring(0, start).replace (/@([^\s]+)?$/, "@"+s),
+      let prev = val.substring(0, start).replace (/@([^\s]+)?$/, `@${s}`),
           next = val.substring(start).replace (/^[^\s]+/, "");
 
       _textarea.value = prev + next;
@@ -120,7 +103,7 @@
           const users = d.users||[];
           let html = "";
 
-          users.forEach ((item, i) => html += `<li class="${!i?"selected":""} list-group-item">${item.fullname}<div class="item-infos"><span>${item.username}</span></div></li></li>`);
+          users.forEach ((item, i) => html += `<li class="${!i?"selected":""} list-group-item"><div class="label">${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div></li></li>`);
           
           if (html)
           {
@@ -175,12 +158,6 @@
 
       pc.querySelectorAll(".shadow").forEach (el=>
         el.classList.remove("shadow"));
-    },
-
-    // METHOD postit ()
-    postit ()
-    {
-      return this.settings.postitPlugin;
     },
 
     // METHOD add ()
@@ -342,7 +319,7 @@
         });
       }
     }
-  };
+  });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 

@@ -419,7 +419,7 @@
           "POST",
           `user/wall/${settings.wallId}/settings`,
           {
-            key: "cell-"+settings.id,
+            key: `cell-${settings.id}`,
             value: settings.usersettings
           });
       }

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-04 11:03+0200\n"
-"PO-Revision-Date: 2021-05-04 11:04+0200\n"
+"POT-Creation-Date: 2021-05-11 13:59+0200\n"
+"PO-Revision-Date: 2021-05-11 14:02+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+
+#, php-format
+msgid "%s assigned you the note «%s»"
+msgstr "%s vous a assigné la note «%s»"
 
 #, php-format
 msgid "%s gave you full access to the wall «%s»"
@@ -74,11 +78,18 @@ msgstr ""
 "GitHub</a>.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Hotfix to adjust plugs "
-"position when headers are hidden.</p>"
+"<p><b><i class='fas fa-broom fa-fw'></i>Framework</b> Rewrote database "
+"access layer.</p>"
 msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Hotfix pour adapter la "
-"position des flèches de relations quand les en-têtes sont masqués.</p>"
+"<p><b><i class='fas fa-broom fa-fw'></i>Framework</b> Réécriture de la "
+"couche d'accès à la base de données.</p>"
+
+msgid ""
+"<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Debugging Access Group "
+"Management.</p>"
+msgstr ""
+"<p><b><i class='fas fa-bug fa-fw'></i>Partage</b> Débogage des groupes "
+"d'accès.</p>"
 
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Messages</b> Added a user "
@@ -95,13 +106,25 @@ msgstr ""
 "les notes.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the "
-"visibility of walls headers (<i>still experimental... please report any "
-"strange behavior!</i>)</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can manage "
+"involved users for notes of shared walls.</p>"
 msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Vous pouvez contrôler "
-"la visibilité des en-têtes des murs (<i>encore expérimental... merci de "
-"signaler tout comportement étrange!</i>).</p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Gestion des "
+"participants pour les notes des murs partagés.</p>"
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> More intuitive walls "
+"menu.</p>"
+msgstr ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Menu des murs plus "
+"intuitif.</p>"
+
+msgid ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the "
+"visibility of walls headers.</p>"
+msgstr ""
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Contrôle de la "
+"visibilité des en-têtes de murs.</p>"
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -424,6 +447,9 @@ msgstr "Ajouter une colonne"
 #, php-format
 msgid "Add or remove users in the group « %s »."
 msgstr "Ajouter ou retirer des utilisateurs dans le groupe « %s »."
+
+msgid "Add or remove users."
+msgstr "Ajouter ou retirer des intervenants."
 
 msgid "Add relation"
 msgstr "Ajouter une relation"
@@ -925,8 +951,17 @@ msgstr "Aucun résultat"
 msgid "No title"
 msgstr "Aucun titre"
 
-msgid "No walls available"
-msgstr "Aucun mur disponible"
+msgid "No user for this note!"
+msgstr "Aucun intervenant sur cette note!"
+
+msgid "No user in this group."
+msgstr "Aucun utilisateur dans ce groupe."
+
+msgid "No wall available."
+msgstr "Aucun mur disponible."
+
+msgid "Note assignation"
+msgstr "Assignation de note"
 
 msgid "Note update"
 msgstr "Mise à jour de la note"
@@ -934,14 +969,14 @@ msgstr "Mise à jour de la note"
 msgid "Notes"
 msgstr "Notes"
 
-msgid "Notes comments will not be cloned.<br>Continue?"
-msgstr "Les commentaires des notes ne seront pas clonés.<br>Continuer?"
-
-msgid "Notes comments will not be exported.<br>Continue?"
-msgstr "Les commentaires des notes ne seront pas exportés.<br>Continuer?"
+msgid "Notify me"
+msgstr "Me notifier"
 
 msgid "Notify me by email"
 msgstr "Me prévenir par mail"
+
+msgid "Notify new users?"
+msgstr "Notifier les nouveaux intervenants?"
 
 msgid "Notify users"
 msgstr "Notifier les utilisateurs"
@@ -1295,6 +1330,9 @@ msgstr "La taille d'un mur ne peut pas être supérieure à %s"
 msgid "The size of a wall cannot be less than %s"
 msgstr "La taille d'un mur ne peut pas être inférieure à %s"
 
+msgid "The user is already involved in this note."
+msgstr "L'utilisateur est déjà intervenant sur cette note."
+
 msgid "The wall has been successfully cloned"
 msgstr "Le mur a été cloné avec succès"
 
@@ -1309,9 +1347,6 @@ msgstr "Thème"
 
 msgid "This group already exists."
 msgstr "Ce groupe existe déjà."
-
-msgid "This group does not contain any users!"
-msgstr "Ce groupe ne contient pas d'utilisateurs!"
 
 msgid ""
 "This group will no longer be available for the current wall or for your "
@@ -1336,6 +1371,9 @@ msgstr "Cet élément est verrouillé par un autre utilisateur."
 
 msgid "This note contains external images or videos."
 msgstr "Cette note contient des images ou des vidéos externes."
+
+msgid "This note has been assigned to you."
+msgstr "Cette note vous a été assignée."
 
 msgid "This note has expired."
 msgstr "Cette note a expiré."
@@ -1459,8 +1497,17 @@ msgstr "Utilisez ce menu pour effectuer des actions sur plusieurs notes"
 msgid "User guide"
 msgstr "Guide utilisateur"
 
+msgid "Users"
+msgstr "Utilisateurs"
+
 msgid "Users in this group:"
 msgstr "Utilisateurs dans ce groupe:"
+
+msgid "Users involved"
+msgstr "Intervenants"
+
+msgid "Users involved in this note:"
+msgstr "Intervenants sur cette note:"
 
 msgid "Users viewing this wall"
 msgstr "Utilisateurs consultant ce mur"
@@ -1682,11 +1729,11 @@ msgstr "confirmation mot de passe"
 msgid "the same day"
 msgstr "le jour même"
 
+msgid "user(s) in this group"
+msgstr "utilisateur(s) dans ce groupe"
+
 msgid "username"
 msgstr "utilisateur"
-
-msgid "users in this group"
-msgstr "utilisateurs dans ce groupe"
 
 msgid "wall description"
 msgstr "description du mur"
@@ -1702,58 +1749,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant simplement des post-its pour les "
 "partager et collaborer simultanément avec d'autres utilisateurs."
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Attachments</b> Fixed issues with "
-#~ "files without extension.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Attachements</b> Correction de "
-#~ "problèmes avec les fichiers sans extension.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with "
-#~ "updating the title of notes in stack mode.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction d'un problème "
-#~ "avec la mise à jour du titre des notes en mode liste.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with copy/"
-#~ "paste.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction de problèmes "
-#~ "avec le copier/coller.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Wall</b> Fixed issues with walls "
-#~ "columns/rows removal.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Murs</b> Corrections de problèmes "
-#~ "avec la suppression des colonnes/lignes.</p>"
-
-#~ msgid "An error occurred while exporting wall data!"
-#~ msgstr "Une erreur est survenue durant l'export des données du mur!"
-
-#~ msgid "Unknown error.<br>Please try again later!"
-#~ msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard!"
-
-#~ msgid "Wall headers are now hidden"
-#~ msgstr "Les en-têtes du mur sont désormais cachés"
-
-#~ msgid "Wall headers are now visible"
-#~ msgstr "Les en-têtes du mur sont désormais visibles"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Email management</b> Better "
-#~ "management of unsubscribing to messages sent by wopits.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Gestion des emails</b> "
-#~ "Meilleure gestion de la désinscription aux messages envoyés par wopits.</"
-#~ "p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> One can now "
-#~ "customize each relation line (size, color and so on).</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Relations</b> On peut à "
-#~ "présent personnaliser chaque ligne de relation (taille, couleur etc.).</p>"

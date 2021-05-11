@@ -25,47 +25,47 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD serializeOne ()
-  function _serializeOne (header)
-  {
-    const img = header.querySelector ("img"),
-          bbox = header.getBoundingClientRect ();
+  const _serializeOne = (header)=>
+    {
+      const img = header.querySelector ("img"),
+            bbox = header.getBoundingClientRect ();
 
-    return {
-      id: header.dataset.id.substring (7),
-      width: Math.trunc (bbox.width),
-      height: Math.trunc (bbox.height),
-      title: header.querySelector(".title").innerText,
-      picture: img ? img.getAttribute ("src") : null
+      return {
+        id: header.dataset.id.substring (7),
+        width: Math.trunc (bbox.width),
+        height: Math.trunc (bbox.height),
+        title: header.querySelector(".title").innerText,
+        picture: img ? img.getAttribute ("src") : null
+      };
     };
-  }
 
   //FIXME
   // METHOD _simulateClick ()
-  function _simulateClick (x, y)
-  {
-    const el = document.elementFromPoint (x, y),
-          $el = $(el);
-    let evtName = (el.tagName.match (/^A|I|DIV|TH|IMG$/))?"click":"mousedown";
+  const _simulateClick = (x, y)=>
+    {
+      const el = document.elementFromPoint (x, y),
+            $el = $(el);
+      let evtName = (el.tagName.match (/^A|I|DIV|TH|IMG$/))?"click":"mousedown";
 
-    //FIXME
-    // do nothing if element is the previously clicked TH
-    if ($el.hasClass ("_current") || $el.closest("th._current").length)
-      return;
+      //FIXME
+      // do nothing if element is the previously clicked TH
+      if ($el.hasClass ("_current") || $el.closest("th._current").length)
+        return;
 
-    // if cell click (TD) or cell resize, use mousedown
-    if (el.getAttribute ("scope") ||
-        el.className.indexOf ("ui-resizable-handle") != -1)
-      evtName = "mousedown";
+      // if cell click (TD) or cell resize, use mousedown
+      if (el.getAttribute ("scope") ||
+          el.className.indexOf ("ui-resizable-handle") != -1)
+        evtName = "mousedown";
 
-    el.dispatchEvent (
-      new MouseEvent (evtName, {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-        clientX: x,
-        clientY: y
-      }));
-  }
+      el.dispatchEvent (
+        new MouseEvent (evtName, {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y
+        }));
+    };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -84,12 +84,9 @@
 
       settings._timeoutEditing = 0;
 
-      $header[0].dataset.id = "header-"+settings.id;
+      $header[0].dataset.id = `header-${settings.id}`;
 
-      $header.append (
-          "<div class='title'>"+
-            ((settings.title != " ")?settings.title:"&nbsp;")+
-          "</div>");
+      $header.append (`<div class='title'>${(settings.title!=" ")?settings.title:"&nbsp;"}</div>`);
 
       if (adminAccess)
       {

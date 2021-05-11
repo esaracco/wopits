@@ -23,7 +23,7 @@ class Wall extends Base
 
   public function checkWallAccess (int $requiredRole):array
   {
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
       SELECT 1 FROM _perf_walls_users
       WHERE users_id = ? AND walls_id = ?
         AND access IN(".$this->buildAccessRightsSQL($requiredRole).")
@@ -34,7 +34,7 @@ class Wall extends Base
 
   public function checkWallName (string $name):int
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT id FROM walls WHERE id <> ? AND name = ? AND users_id = ?'))
        ->execute ([$this->wallId?$this->wallId:'0', $name, $this->userId]);
 
@@ -45,7 +45,7 @@ class Wall extends Base
   {
     if (!$this->wallName)
     {
-      ($stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?'))
+      ($stmt = $this->db->prepare ('SELECT name FROM walls WHERE id = ?'))
         ->execute ([$this->wallId]);
 
       $this->wallName = $stmt->fetch()['name'];
@@ -56,7 +56,7 @@ class Wall extends Base
 
   protected function isWallCreator (int $userId):int
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT 1 FROM walls WHERE id = ? AND users_id = ?'))
        ->execute ([$this->wallId, $userId]);
 
@@ -65,7 +65,7 @@ class Wall extends Base
 
   protected function isWallDelegateAdmin (int $userId):int
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT 1 FROM _perf_walls_users
       WHERE access = '.WPT_WRIGHTS_ADMIN.'
         AND groups_id IS NOT NULL
@@ -81,9 +81,9 @@ class Wall extends Base
   {
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT
         walls.creationdate,
         walls.name,
@@ -101,7 +101,7 @@ class Wall extends Base
 
     if ( ($ret = $stmt->fetch ()) )
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT groups_id FROM _perf_walls_users
         WHERE walls_id = ? AND users_id = ?'))
          ->execute ([$this->wallId, $this->userId]);
@@ -117,13 +117,13 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     $search = $args['search'];
 
     if (empty ($search) || ($search = Helper::unaccent ($args['search'])) )
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
          SELECT DISTINCT(u.username), u.fullname
          FROM users AS u
            INNER JOIN _perf_walls_users AS pwu ON pwu.users_id = u.id
@@ -146,7 +146,7 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
 
@@ -169,7 +169,7 @@ class Wall extends Base
         if (!file_exists ($file))
           throw new \Exception (_("An error occured while uploading file."));
 
-        ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
+        ($stmt = $this->db->prepare ('SELECT picture FROM headers WHERE id = ?'))
           ->execute ([$headerId]);
         $previousPicture = $stmt->fetch()['picture'];
 
@@ -221,11 +221,11 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     try
     {
-      ($stmt = $this->prepare ('SELECT picture FROM headers WHERE id = ?'))
+      ($stmt = $this->db->prepare ('SELECT picture FROM headers WHERE id = ?'))
         ->execute ([$headerId]);
       $r = $stmt->fetch ();
 
@@ -329,7 +329,7 @@ class Wall extends Base
         $wallName = $wall->name;
 
         // Change wall name if it already exists
-        ($stmt = $this->prepare ('
+        ($stmt = $this->db->prepare ('
           SELECT name FROM walls WHERE users_id = ?'))
            ->execute ([$this->userId]);
 
@@ -350,7 +350,7 @@ class Wall extends Base
 
         try
         {
-          $this->beginTransaction ();
+          $this->db->beginTransaction ();
 
           //FIXME //TODO factorization with createWall()
           $this->executeQuery ('INSERT INTO walls', [
@@ -361,7 +361,7 @@ class Wall extends Base
             'creationdate' => $wall->creationdate
           ]);
    
-          $this->wallId = $this->lastInsertId ();
+          $this->wallId = $this->db->lastInsertId ();
           $ret = ['wallId' => $this->wallId];
   
           $dir = $this->getWallDir ();
@@ -374,7 +374,7 @@ class Wall extends Base
             $this->executeQuery ('INSERT INTO headers',
               $this->_getImportItemData ($item));
 
-            $headerId = $this->lastInsertId ();
+            $headerId = $this->db->lastInsertId ();
             mkdir ("$dir/header/$headerId");
 
             // ADD header picture
@@ -400,7 +400,7 @@ class Wall extends Base
             $this->executeQuery ('INSERT INTO cells',
               $this->_getImportItemData ($cell, null, ['postits']));
 
-            $cellId = $this->lastInsertId ();
+            $cellId = $this->db->lastInsertId ();
             $idsMap['cells'][$cell->id] = $cellId;
 
             // ADD postits
@@ -410,14 +410,14 @@ class Wall extends Base
                 $this->_getImportItemData (
                   $postit, ['cells_id' => $cellId], ['items']));
       
-              $postitId = $this->lastInsertId();
+              $postitId = $this->db->lastInsertId();
               $idsMap['postits'][$postit->id] = $postitId;
 
               mkdir ("$dir/postit/$postitId");
             }
           }
 
-          $stmt = $this->prepare ('
+          $stmt = $this->db->prepare ('
             SELECT content FROM postits WHERE id = ?');
 
           // ADD postit attachments / pictures / plugs
@@ -471,7 +471,7 @@ class Wall extends Base
                     "#wall/{$wall->id}/cell/{$cell->id}".
                     "/postit/{$postit->id}/picture/{$item->id}#s",
                     "wall/{$this->wallId}/cell/{$cellId}".
-                    "/postit/{$postitId}/picture/{$this->lastInsertId()}",
+                    "/postit/{$postitId}/picture/{$this->db->lastInsertId()}",
                      $content);
 
                   $fname = basename ($item->link);
@@ -504,11 +504,11 @@ class Wall extends Base
             'access' => WPT_WRIGHTS_ADMIN
           ]);
 
-          $this->commit ();
+          $this->db->commit ();
         }
         catch (\Exception $e)
         {
-          $this->rollback ();
+          $this->db->rollBack ();
 
           $this->deleteWall (true);
 
@@ -533,7 +533,7 @@ class Wall extends Base
   {
     // If a user is in more than one groups for the same wall, with
     // different rights, take the more powerful right (ORDER BY access)
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
       SELECT *
       FROM walls
       WHERE users_id = :users_id_1
@@ -574,7 +574,7 @@ class Wall extends Base
       return ['error' => _("An error occurred while exporting wall data.")];
 
     // Get headers
-    ($stmt = $this->prepare ('SELECT * FROM headers WHERE walls_id = ?'))
+    ($stmt = $this->db->prepare ('SELECT * FROM headers WHERE walls_id = ?'))
       ->execute ([$this->wallId]);
     $data['headers'] = [];
     while ( ($header = $stmt->fetch ()) )
@@ -587,16 +587,16 @@ class Wall extends Base
     }
 
     // Get cells and postits
-    ($stmt = $this->prepare ('SELECT * FROM cells WHERE walls_id = ?'))
+    ($stmt = $this->db->prepare ('SELECT * FROM cells WHERE walls_id = ?'))
       ->execute ([$this->wallId]);
     // Get postits
-    $stmt1 = $this->prepare ('
+    $stmt1 = $this->db->prepare ('
       SELECT * FROM postits WHERE cells_id = ?');
-    $stmt2 = $this->prepare ('
+    $stmt2 = $this->db->prepare ('
       SELECT * FROM postits_attachments WHERE postits_id = ?');
-    $stmt3 = $this->prepare ('
+    $stmt3 = $this->db->prepare ('
       SELECT * FROM postits_pictures WHERE postits_id = ?');
-    $stmt4 = $this->prepare ('
+    $stmt4 = $this->db->prepare ('
       SELECT * FROM postits_plugs WHERE item_start = ?');
 
     $data['cells'] = [];
@@ -719,7 +719,7 @@ class Wall extends Base
         WHERE users_groups.users_id = :users_id_2";
       }
 
-      ($stmt = $this->prepare (
+      ($stmt = $this->db->prepare (
          "$sql ORDER BY creationdate DESC, ownername, name, access"))
          ->execute ($data);
 
@@ -741,7 +741,7 @@ class Wall extends Base
 
     // If a user is in more than one groups for the same wall, with
     // different rights, take the more powerful right (ORDER BY access)
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
       SELECT
         id,
         users_id AS ownerid,
@@ -785,7 +785,7 @@ class Wall extends Base
 
     if (!$basic)
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT displayexternalref, displaymode, displayheaders, settings
         FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1'))
          ->execute ([$this->wallId, $this->userId]);
@@ -796,7 +796,7 @@ class Wall extends Base
       $data['usersettings'] = json_decode ($row['settings']);
 
       // Get headers
-      ($stmt = $this->prepare ("
+      ($stmt = $this->db->prepare ("
         SELECT id, item_type, item_order, width, height, title, picture
         FROM headers
         WHERE walls_id = ?
@@ -814,17 +814,17 @@ class Wall extends Base
       }
 
       // Get cells and postits
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT id, height, width, item_col, item_row
         FROM cells
         WHERE walls_id = ?'))
          ->execute ([$this->wallId]);
       // Get postits
-      $stmt1 = $this->prepare (($withAlerts) ?
+      $stmt1 = $this->db->prepare (($withAlerts) ?
         "SELECT
            postits.id, width, height, item_top, item_left, item_order,
            classcolor, title, content, tags, creationdate, deadline, timezone,
-           obsolete, attachmentscount, commentscount, progress,
+           obsolete, attachmentscount, workerscount, commentscount, progress,
            postits_alerts.alertshift
          FROM postits
            LEFT JOIN postits_alerts
@@ -835,7 +835,7 @@ class Wall extends Base
         "SELECT
            id, width, height, item_top, item_left, item_order, classcolor,
            title, content, tags, creationdate, deadline, timezone, obsolete,
-           attachmentscount, commentscount, progress
+           attachmentscount, workerscount, commentscount, progress
          FROM postits
          WHERE cells_id = ?");
       $data['cells'] = [];
@@ -851,14 +851,14 @@ class Wall extends Base
       }
 
       // Get postits plugs
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
        SELECT * FROM postits_plugs WHERE walls_id = ?'))
          ->execute ([$this->wallId]);
       $data['postits_plugs'] = $stmt->fetchAll ();
     }
 
     // Check if the wall is shared with other users
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1'))
        ->execute ([$this->wallId]);
     $data['shared'] = boolval ($stmt->fetch ());
@@ -873,7 +873,7 @@ class Wall extends Base
     // WebSocket server)
     $ids = implode ("','", $usersIds);
 
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
      SELECT
         users.id,
         users.username,
@@ -910,7 +910,7 @@ class Wall extends Base
     //FIXME
     //$ret['list'] = $stmt->fetchAll ();
     // If user is in different groups for the same wall, there is more than
-    // one occurence in the SQL result
+    // one occurence in the SQL result. UNION DISTINCT is not ok here.
     $tmp = [];
     while ($item = $stmt->fetch ())
     {
@@ -930,9 +930,9 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT picture, filetype, filesize FROM headers WHERE id = ?'))
        ->execute ([$headerId]);
 
@@ -958,16 +958,16 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       ///////////////////////// headers
 
       // Delete headers documents
-      ($stmt = $this->prepare("
+      ($stmt = $this->db->prepare("
         SELECT id FROM headers
         WHERE walls_id = :walls_id
           AND item_type = :item_type AND item_order = :item_order"))
@@ -981,7 +981,7 @@ class Wall extends Base
 
       // Delete header
       $this
-        ->prepare("
+        ->db->prepare("
           DELETE FROM headers
           WHERE walls_id = ?
             AND item_type = ?
@@ -990,7 +990,7 @@ class Wall extends Base
 
       // Reordonate headers
       $this
-        ->prepare("
+        ->db->prepare("
           UPDATE headers SET
             item_order = item_order - 1
           WHERE walls_id = ?
@@ -1001,7 +1001,7 @@ class Wall extends Base
       ///////////////////////// postits
 
       // Delete files for all postits
-      ($stmt = $this->prepare ("
+      ($stmt = $this->db->prepare ("
         SELECT postits.id
         FROM cells
           INNER JOIN postits ON postits.cells_id = cells.id
@@ -1013,13 +1013,13 @@ class Wall extends Base
 
       if (!empty ($ids))
       {
-        if ($this->query ("
+        if ($this->db->query ("
           SELECT 1 FROM edit_queue
           WHERE item = 'postit' AND item_id IN (".
             implode(',',
-              array_map ([$this, 'quote'], $ids)).') LIMIT 1') ->fetch())
+              array_map ([$this->db, 'quote'], $ids)).') LIMIT 1') ->fetch())
         {
-          $this->rollback ();
+          $this->db->rollBack ();
           return ['error_msg' => _("Someone is editing a note in the col/row you want to delete.")];
         }
 
@@ -1029,27 +1029,27 @@ class Wall extends Base
 
       ///////////////////////// cells
 
-      ($stmt = $this->prepare ("SELECT id FROM cells
+      ($stmt = $this->db->prepare ("SELECT id FROM cells
           WHERE walls_id = ? AND item_$item = ?"))
          ->execute ([$this->wallId, $itemPos]);
 
       $ids = $stmt->fetchAll (\PDO::FETCH_COLUMN);
-      $idsStr = implode (',', array_map ([$this, 'quote'], $ids));
+      $idsStr = implode (',', array_map ([$this->db, 'quote'], $ids));
 
-      if ($this->query ("
+      if ($this->db->query ("
         SELECT 1 FROM edit_queue
         WHERE item = 'cell' AND item_id IN ($idsStr) LIMIT 1")->fetch())
       {
-        $this->rollback ();
+        $this->db->rollBack ();
         return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete.")];
       }
 
       // Delete
-      $this->exec ("DELETE FROM cells WHERE id IN ($idsStr)");
+      $this->db->exec ("DELETE FROM cells WHERE id IN ($idsStr)");
 
       // Reordonate
       $this
-        ->prepare("
+        ->db->prepare("
           UPDATE cells SET
             item_$item = item_$item - 1
           WHERE walls_id = ? AND item_$item > ?")
@@ -1068,13 +1068,13 @@ class Wall extends Base
       foreach ($toDelete as $f)
         Helper::rm ($f);
 
-      $this->commit ();
+      $this->db->commit ();
 
       $ret['wall'] = $this->getWall ();
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -1094,15 +1094,14 @@ class Wall extends Base
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r :
-        ['error' =>
-           _("You must have admin access to perform this action.")];
+      return ['error' =>
+                 _("You must have admin access to perform this action.")];
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
-      ($stmt = $this->prepare ("
+      ($stmt = $this->db->prepare ("
         SELECT item_order FROM headers
         WHERE walls_id = :walls_id
           AND item_type = :item_type ORDER BY item_order DESC LIMIT 1"))
@@ -1121,15 +1120,15 @@ class Wall extends Base
         'title' => ' '
       ]);
 
-      mkdir ("$dir/header/".$this->lastInsertId());
+      mkdir ("$dir/header/".$this->db->lastInsertId());
 
       if ($item == 'col')
-        ($stmt = $this->prepare("
+        ($stmt = $this->db->prepare("
           SELECT item_row, item_col, height FROM cells
           WHERE walls_id = ? AND item_$item = ?"))
            ->execute ([$this->wallId, $order]);
       else
-        ($stmt = $this->prepare('
+        ($stmt = $this->db->prepare('
           SELECT item_row, item_col, width FROM cells
           WHERE walls_id = ? ORDER BY item_row DESC, item_col ASC'))
            ->execute ([$this->wallId]);
@@ -1170,16 +1169,16 @@ class Wall extends Base
 
       if ($item == 'col')
         $this
-          ->prepare('UPDATE walls SET width = width + 300 WHERE id = ?')
+          ->db->prepare('UPDATE walls SET width = width + 300 WHERE id = ?')
           ->execute ([$this->wallId]);
 
-      $this->commit ();
+      $this->db->commit ();
 
       $ret = ['wall' => $this->getWall ()];
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -1249,7 +1248,7 @@ class Wall extends Base
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       //FIXME //TODO factorization with import()
       $this->executeQuery ('INSERT INTO walls', [
@@ -1259,7 +1258,7 @@ class Wall extends Base
         'creationdate' => time ()
       ]);
  
-      $this->wallId = $this->lastInsertId ();
+      $this->wallId = $this->db->lastInsertId ();
 
       $dir = $this->getWallDir ();
       mkdir ($dir);
@@ -1280,7 +1279,7 @@ class Wall extends Base
           'title' => $col['title']
         ]);
 
-        mkdir ("$dir/header/{$this->lastInsertId()}");
+        mkdir ("$dir/header/{$this->db->lastInsertId()}");
       }
 
       // INSERT row headers
@@ -1296,7 +1295,7 @@ class Wall extends Base
           'title' => $row['title']
         ]);
 
-        @mkdir ("$dir/header/{$this->lastInsertId()}");
+        @mkdir ("$dir/header/{$this->db->lastInsertId()}");
       }
 
       // INSERT cells
@@ -1321,13 +1320,13 @@ class Wall extends Base
         'access' => WPT_WRIGHTS_ADMIN
       ]);
 
-      $this->commit ();
+      $this->db->commit ();
 
       $ret = $this->getWall ();
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -1345,20 +1344,20 @@ class Wall extends Base
     {
       $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
       if (!$r['ok'])
-        return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+        return ['error' => _("Access forbidden")];
     }
 
     try
     {
       if ($returnName)
       {
-        ($stmt = $this->prepare ('SELECT name FROM walls WHERE id = ?'))
+        ($stmt = $this->db->prepare ('SELECT name FROM walls WHERE id = ?'))
           ->execute ([$this->wallId]);
         $ret['name'] = $stmt->fetch()['name'];
       }
 
       $this
-        ->prepare('DELETE FROM walls WHERE id = ?')
+        ->db->prepare('DELETE FROM walls WHERE id = ?')
         ->execute ([$this->wallId]);
 
       Helper::rm ($this->getWallDir ());
@@ -1375,13 +1374,13 @@ class Wall extends Base
   public function moveRow (object $moveData):array
   {
     $data = $this->data;
-    $newTransaction = (!\PDO::inTransaction ());
+    $newTransaction = (!$this->db->inTransaction ());
     $ret = [];
 
     try
     {
       if ($newTransaction)
-        $this->beginTransaction ();
+        $this->db->beginTransaction ();
 
       foreach (['cols', 'rows'] as $item)
       {
@@ -1416,12 +1415,12 @@ class Wall extends Base
       ]];
 
       if ($newTransaction)
-        $this->commit ();
+        $this->db->commit ();
     }
     catch (\Exception $e)
     {
       if ($newTransaction)
-        $this->rollback ();
+        $this->db->rollBack ();
 
       throw $e;
     }
@@ -1432,12 +1431,12 @@ class Wall extends Base
   public function updateCells ():array
   {
     $data = $this->data;
-    $newTransaction = (!\PDO::inTransaction ());
+    $newTransaction = (!$this->db->inTransaction ());
 
     try
     {
       if ($newTransaction)
-        $this->beginTransaction ();
+        $this->db->beginTransaction ();
 
       for ($i = 0, $iLen = count($data->cells); $i < $iLen; $i++)
       {
@@ -1472,12 +1471,12 @@ class Wall extends Base
         ['id' => $this->wallId]);
 
       if ($newTransaction)
-        $this->commit ();
+        $this->db->commit ();
     }
     catch (\Exception $e)
     {
       if ($newTransaction)
-        $this->rollback ();
+        $this->db->rollBack ();
 
       throw $e;
     }
@@ -1487,12 +1486,12 @@ class Wall extends Base
 
   public function updateHeaders ():void
   {
-    $newTransaction = (!\PDO::inTransaction ());
+    $newTransaction = (!$this->db->inTransaction ());
 
     try
     {
       if ($newTransaction)
-        $this->beginTransaction ();
+        $this->db->beginTransaction ();
 
       foreach (['cols', 'rows'] as $type)
       {
@@ -1515,12 +1514,12 @@ class Wall extends Base
         ['id' => $this->wallId]);
 
       if ($newTransaction)
-        $this->commit ();
+        $this->db->commit ();
     }
     catch (\Exception $e)
     {
       if ($newTransaction)
-        $this->rollback ();
+        $this->db->rollBack ();
 
       throw $e;
     }

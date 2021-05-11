@@ -9,7 +9,7 @@
 
   require_once (__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('patt');
+  $Plugin = new Wopits\jQueryPlugin ('patt', '', 'postitElement');
   echo $Plugin->getHeader ();
 
 ?>
@@ -19,25 +19,21 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
+  // Inherit from Wpt_postitCountPlugin
+  Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
+  Object.assign (Plugin.prototype,
   {
     // METHOD init ()
     init ()
     {
       const settings = this.settings;
 
-      $(`<i data-action="attachments" class="fas fa-paperclip"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
+      if (settings.readonly && !settings.count)
+        this.element[0].style.display = "none";
+
+      $(`<i data-action="patt" class="fa-fw fas fa-paperclip"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
 
       return this;
-    },
-
-    // METHOD getIds ()
-    getIds ()
-    {
-      const ps = this.settings.postitPlugin.settings,
-            {wallId, cellId} = ps;
-
-      return {wallId, cellId, postitId: ps.id}
     },
 
     // METHOD update ()
@@ -112,33 +108,6 @@
       document.querySelector(".upload.postit-attachment").click ();
     },
 
-    // METHOD setCount ()
-    setCount (count)
-    {
-      const el = this.element[0].querySelector ("span");
-
-      el.style.display = count ? "inline-block": "none";
-      el.innerText = count;
-    },
-
-    // METHOD getCount ()
-    getCount ()
-    {
-      return parseInt (this.element[0].querySelector("span").innerText);
-    },
-
-    // METHOD incCount ()
-    incCount ()
-    {
-      this.setCount (this.getCount() + 1);
-    },
-
-    // METHOD decCount ()
-    decCount ()
-    {
-      this.setCount (this.getCount() - 1);
-    },
-
     // METHOD display ()
     display ()
     {
@@ -192,9 +161,9 @@
     // METHOD open ()
     open (refresh)
     {
-      this.settings.postitPlugin.edit ({}, ()=> this.display ());
+      this.postit().edit ({}, ()=> this.display ());
     },
-  };
+  });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
@@ -403,7 +372,7 @@
                     // success cb
                     (d) =>
                     {
-                      const pa = plugin.getPlugin ("attachments"),
+                      const pa = plugin.getPlugin ("patt"),
                             $body = $_mainPopup.find("ul.list-group");
 
                       $_mainPopup.find(".modal-body").scrollTop (0);

@@ -15,7 +15,7 @@
             <div class="dpick-notify">
               <div class="custom-control custom-switch disabled">
                 <input type="checkbox" class="custom-control-input" name="dp-notify" id="dp-notify">
-                <label class="custom-control-label" for="dp-notify"><?=_("Notify me by email")?></label>
+                <label class="custom-control-label" for="dp-notify"><?=_("Notify me")?></label>
               </div>
               <div>
               <div class="custom-control custom-radio">

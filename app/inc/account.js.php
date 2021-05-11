@@ -16,12 +16,14 @@
 
 ?>
 
-/////////////////////////// METHODS ////////////////////////////
+  /////////////////////////// PRIVATE METHODS ///////////////////////////
 
-  function _getUserPictureTemplate (src)
-  {
-    return (src) ? `<button type="button" class="close img-delete"><span>×</span></button><img src="${src}">` : "<i class='fas fa-camera-retro fa-3x'></i>";
-  }
+  const _getUserPictureTemplate = (src)=>
+    {
+      return (src) ? `<button type="button" class="close img-delete"><span>×</span></button><img src="${src}">` : "<i class='fas fa-camera-retro fa-3x'></i>";
+    };
+
+  /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   // Inherit from Wpt_accountForms
   Plugin.prototype = Object.create(Wpt_accountForms.prototype);

@@ -245,8 +245,8 @@
 
       if (isHidden && args.method != "DELETE")
       {
-        let el = $("#wall-"+this.settings.wallId+
-                   " .wall-menu .chat-alert .wpt-badge")[0];
+        let el = $(`#wall-${this.settings.wallId} .wall-menu .chat-alert `+
+                     `.wpt-badge`)[0];
 
         if (el)
           el.textContent = Number (el.textContent) + 1;

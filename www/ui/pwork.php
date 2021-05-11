@@ -1,9 +1,9 @@
 <?php require (__DIR__.'/../../app/prepend.php')?>
-<div class="modal" id="usearchPopup" role="dialog" tabindex="-1">
+<div class="modal m-fullscreen no-theme" id="pworkPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-user-friends fa-fw"></i> <span><?=_("Users")?></span></h5>
+        <h5 class="modal-title"><i class="fas fa-users-cog fa-fw"></i> <span><?=_("Users involved")?></span></h5>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
@@ -16,8 +16,8 @@
         </div>
 
         <div>
-          <label class="users-title"><?=_("Users in this group:")?></label>
-          <label class="nousers-title"><?=_("No user in this group.")?></label>
+          <label class="users-title"><?=_("Users involved in this note:")?></label>
+          <label class="nousers-title"><?=_("No user for this note!")?></label>
           <div class="scroll mb-2">
             <ul class="list-group attr"></ul>
           </div>

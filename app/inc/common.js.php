@@ -173,6 +173,54 @@ class Wpt_accountForms extends Wpt_forms
   }
 }
 
+class Wpt_postitCountPlugin
+{
+  // METHOD getIds ()
+  getIds ()
+  {
+    const ps = this.postit().settings,
+          {wallId, cellId} = ps;
+
+    return {wallId, cellId, postitId: ps.id}
+  }
+
+  // METHOD postit ()
+  postit ()
+  {
+    return this.settings.postitPlugin;
+  }
+
+  // METHOD setCount ()
+  setCount (count)
+  {
+    const elC = this.element[0].querySelector ("span");
+
+    elC.style.display = count ? "inline-block": "none";
+    elC.innerText = count;
+
+    if (this.settings.readonly)
+      this.element[0].style.display = count ? "inline-block" : "none";
+  }
+
+  // METHOD getCount ()
+  getCount ()
+  {
+    return parseInt (this.element[0].querySelector("span").innerText);
+  }
+
+  // METHOD incCount ()
+  incCount ()
+  {
+    this.setCount (this.getCount() + 1);
+  }
+
+  // METHOD decCount ()
+  decCount ()
+  {
+    this.setCount (this.getCount() - 1);
+  }
+}
+
 // CLASS Wpt_toolbox
 class Wpt_toolbox
 {
@@ -548,7 +596,7 @@ class WSocket
               if ($wall.length)
                 $wall.wall ("refreshUsersview", data.count);
               else
-                WS.pushResponse ("viewcount-wall-"+data.wall.id, data.count);
+                WS.pushResponse (`viewcount-wall-${data.wall.id}`, data.count);
               break;
 
             // chat
@@ -856,7 +904,7 @@ class WHelper
 
     rgb = rgb.match (/^rgba?\((\d+),?\s*(\d+),?\s*(\d+)/);
 
-    return "#"+hex(rgb[1])+hex(rgb[2])+hex(rgb[3]);
+    return `#${hex(rgb[1])}${hex(rgb[2])}${hex(rgb[3])}`;
   }
 
   // METHOD setAutofocus ()
@@ -1166,6 +1214,47 @@ class WHelper
       }
     }
   }
+
+  // METHOD openUserview ()
+  openUserview (args)
+  {
+    const {about, picture, title} = args;
+
+    H.loadPopup ("userView", {
+      open: false,
+      cb: ($p)=>
+      {
+        const p = $p[0],
+              $picture = $p.find (".user-picture"),
+              aboutEl = p.querySelector (".about");
+
+        p.querySelector(".modal-title span").innerText = title;
+        p.querySelector(".name dd").innerText = title;
+
+        $picture.empty().hide ();
+
+        if (picture)
+        {
+          $picture
+            .append (
+              $(`<img src="${picture}">`)
+                .on("error",function (e){$picture.hide()}));
+
+          $picture.show ();
+        }
+
+        if (about)
+        {
+          aboutEl.querySelector("dd").innerHTML = H.nl2br (about);
+          aboutEl.style.display = "block";
+        }
+        else
+          aboutEl.style.display = "none";
+
+        H.openModal ($p);
+      }
+    });
+  }
   
   // METHOD openPopupLayer ()
   openPopupLayer (cb, closeMenus = true)
@@ -1419,7 +1508,7 @@ class WHelper
   // METHOD loadPopup ()
   async loadPopup (type, args = {open: true})
   {
-    const id = `${type}Popup`,
+    const id = `${args.template||type}Popup`,
           popup = document.getElementById (id);
 
     // INTERNAL FUNCTION __exec ()
@@ -1429,6 +1518,9 @@ class WHelper
 
         if (args.cb)
           args.cb ($p);
+
+        if (args.settings)
+          $p[type]("setSettings", args.settings);
 
         if (args.open)
           H.openModal ($p);
@@ -1441,15 +1533,15 @@ class WHelper
       __exec ($(popup));
     else
     {
-      const r = await fetch (`/ui/${type}.php`);
+      const r = await fetch (`/ui/${args.template||type}.php`);
       if (r.ok)
       {
         $("body").prepend (await r.text ());
 
-        const $p = $("#"+id);
+        const $p = $(`#${id}`);
 
         if ($p[type] !== undefined)
-          $p[type]();
+          $p[type](args.settings||{});
 
         if (args.init)
           args.init ($p);
@@ -1503,7 +1595,7 @@ class WHelper
       return tinymce.activeEditor.windowManager.alert (args.msg);
   
     const $previous = $(".alert:eq(0)"),
-          id = (args.noclosure) ? "noclosure": "timeout-"+Math.random();
+          id = (args.noclosure) ? "noclosure": `timeout-${Math.random()}`;
     let $target;
   
     if (args.target)
@@ -1545,7 +1637,7 @@ class WHelper
   // METHOD fixMenuHeight ()
   fixMenuHeight ()
   {
-    const menu = document.querySelector (".navbar-collapse.collapse"),
+    const menu = document.querySelector (".navbar-collapse"),
           mbBtn = document.querySelector (".navbar-toggler-icon");
   
     // If menu is in min mode, limit menus height
@@ -1772,7 +1864,7 @@ class WHelper
   //TODO FIXME Use fetch() when upload progress will be available!
   fetchUpload (service, args, success_cb, error_cb)
   {
-    //console.log ("AJAX: PUT "+service);
+    //console.log (`AJAX: PUT ${service}`);
   
     const xhr = $.ajax (
       {
@@ -1814,7 +1906,7 @@ class WHelper
         timeout: 0,
         async: true,
         cache: false,
-        url: "/api/"+service,
+        url: `/api/${service}`,
         data: args ? encodeURI (JSON.stringify (args)) : null,
         dataType: "json",
         contentType: "application/json;charset=utf-8"

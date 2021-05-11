@@ -92,70 +92,71 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD _getMaxEditModalWidth ()
-  function _getMaxEditModalWidth (content)
-  {
-    let maxW = 0,
-        tmp;
+  const _getMaxEditModalWidth = (content)=>
+    {
+      let maxW = 0,
+          tmp;
 
-    (content.match(/<img\s[^>]+>/g)||[]).forEach (img =>
-      {
-        if ( (tmp = img.match (/width="(\d+)"/)) )
+      (content.match(/<img\s[^>]+>/g)||[]).forEach (img =>
         {
-          const w = Number (tmp[1]);
+          if ( (tmp = img.match (/width="(\d+)"/)) )
+          {
+            const w = Number (tmp[1]);
 
-          if (w > maxW)
-            maxW = w;
-        }
-      });
+            if (w > maxW)
+              maxW = w;
+          }
+        });
 
-    return maxW;
-  }
+      return maxW;
+    };
 
   // METHOD _removePlug ()
-  function _removePlug (plug, toDefrag)
-  {
-    toDefrag[plug.startId] = plug.obj.start;
-    toDefrag[plug.endId] = plug.obj.end;
+  const _removePlug = (plug, toDefrag)=>
+    {
+      toDefrag[plug.startId] = plug.obj.start;
+      toDefrag[plug.endId] = plug.obj.end;
 
-    // Remove template line
-    document.body.appendChild (plug.obj.dom);
-    plug.obj.remove ();
-    plug.obj = null;
+      // Remove template line
+      document.body.appendChild (plug.obj.dom);
+      plug.obj.remove ();
+      plug.obj = null;
 
-    // Remove related lines
-    plug.related.forEach (r => r.remove ());
-    plug.related = [];
-    plug.customPos = false;
+      // Remove related lines
+      plug.related.forEach (r => r.remove ());
+      plug.related = [];
+      plug.customPos = false;
 
-    // Remove label
-    plug.labelObj.remove ();
-    plug.labelObj = null;
-  }
+      // Remove label
+      plug.labelObj.remove ();
+      plug.labelObj = null;
+    };
 
   // METHOD _cancelPlugAction ()
-  function _cancelPlugAction ()
-  {
-    const $postit = S.get("link-from").obj;
-
-    if (_plugRabbit.line)
+  const _cancelPlugAction = ()=>
     {
-      $(document)
-        .off("mousedown.rabbit")
-        .off ("keydown.rabbit");
+      const $postit = S.get("link-from").obj;
 
-      $("body").off ("mousemove.rabbit");
+      if (_plugRabbit.line)
+      {
+        $(document)
+          .off("mousedown.rabbit")
+          .off ("keydown.rabbit");
 
-      _plugRabbit.line.remove ();
-      _plugRabbit.line = null;
+        $("body").off ("mousemove.rabbit");
 
-      document.getElementById("plug-rabbit").remove ();
-    }
+        _plugRabbit.line.remove ();
+        _plugRabbit.line = null;
 
-    $postit.postit ("unedit");
+        document.getElementById("plug-rabbit").remove ();
+      }
 
-    S.set ("link-from", true, 500);
-  }
+      $postit.postit ("unedit");
 
+      S.set ("link-from", true, 500);
+    };
+
+  // CLASS _Menu
   class _Menu
   {
     // METHOD constructor ()
@@ -305,7 +306,7 @@
   Plugin.prototype =
   {
     // METHOD init ()
-    init ()
+    init (args)
     {
       const plugin = this,
             $postit = plugin.element,
@@ -315,7 +316,8 @@
             writeAccess = plugin.canWrite ();
 
       settings.plugs = [];
-      postit.dataset.id = "postit-"+settings.id;
+      settings.plugins = [];
+      postit.dataset.id = `postit-${settings.id}`;
       postit.dataset.order = settings.item_order;
       postit.className = settings.classes||"postit";
       postit.dataset.tags = settings.tags||"";
@@ -329,7 +331,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="patt"></div><div class="pcomm"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" data-toggle="tooltip" title="<?=_("Users involved")?>"></div><div class="pcomm" data-toggle="tooltip" title="<?=_("Comments")?>"></div><div class="patt" data-toggle="tooltip" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -517,21 +519,29 @@
 
       setTimeout (()=>
         {
+          const _args = {
+            postitPlugin: this,
+            readonly: !writeAccess,
+            shared: $wall.wall ("isShared")
+          };
+
           // Init note attachments
-          settings.attachmentsPlugin =
-            $postit.find(".patt").patt ({
-              postitPlugin: this,
-              readonly: !writeAccess,
-              count: settings.attachmentscount
-            });
+          settings.plugins.patt =
+            $postit.find(".patt").patt (Object.assign (
+              _args, {count: settings.attachmentscount}));
+
+          // Init note workers
+          settings.plugins.pwork =
+            $postit.find(".pwork").pwork (Object.assign (
+              _args, {count: settings.workerscount}));
 
           // Init note comments
-          settings.commentsPlugin =
-            $postit.find(".pcomm").pcomm ({
-              postitPlugin: this,
-              readonly: !writeAccess,
-              count: settings.commentscount
-            });
+          settings.plugins.pcomm =
+            $postit.find(".pcomm").pcomm (Object.assign (
+              _args, {count: settings.commentscount}));
+
+          H.enableTooltips ($postit);
+
         }, 0);
 
       if (settings.creationdate)
@@ -541,7 +551,7 @@
     // METHOD getPlugin ()
     getPlugin (type)
     {
-      return this.settings[`${type}Plugin`];
+      return this.settings.plugins[type];
     },
 
     // METHOD openPlugProperties ()
@@ -663,6 +673,13 @@
 
         switch (type)
         {
+          // Worker
+          case "worker":
+
+            title = `<i class="fa fa-user-cog fa-fw"></i> <?=_("Note assignation")?>`;
+            content = `<?=_("This note has been assigned to you.")?>`;
+            break;
+
           // Comment
           case "comment":
 
@@ -732,7 +749,7 @@
 
       S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
 
-      this.getPlugin("comments").close ();
+      this.getPlugin("pcomm").close ();
     },
 
     // METHOD havePlugs ()
@@ -1439,6 +1456,7 @@
                 content = this.querySelector(".postit-edit").innerHTML,
                 classcolor = this.className.match (/(color\-[a-z]+)/),
                 patt = this.querySelector (".patt span"),
+                pwork = this.querySelector (".pwork span"),
                 deadline = (this.dataset.deadlineepoch) ?
                   this.dataset.deadlineepoch :
                   this.querySelector(".dates .end span").innerText.trim (),
@@ -1466,6 +1484,7 @@
             updatetz: this.dataset.updatetz||null,
             obsolete: this.classList.contains ("obsolete"),
             attachmentscount: patt ? patt.innerText : 0,
+            workerscount: pwork ? pwork.innerText : 0,
             plugs: plugin.serializePlugs (),
             hadpictures: !!this.dataset.hadpictures,
             hasuploadedpictures: !!this.dataset.hasuploadedpictures,
@@ -1896,8 +1915,7 @@
     {
       const $postit = this.element,
             postit = $postit[0],
-            $tpick = S.getCurrent ("tpick"),
-            attachmentsPlugin = this.getPlugin ("attachments");
+            $tpick = S.getCurrent ("tpick");
 
       // Change postit cell
       if (cell && cell.id != this.settings.cellId)
@@ -1933,8 +1951,12 @@
 
       this.setContent (d.content);
 
-      if (attachmentsPlugin)
-        attachmentsPlugin.setCount (d.attachmentscount);
+      //FIXME
+      let p;
+      if (p = this.getPlugin ("patt"))
+        p.setCount (d.attachmentscount);
+      if (p = this.getPlugin ("pwork"))
+        p.setCount (d.workerscount);
 
       this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):"");
 
@@ -2561,26 +2583,28 @@
                   plugin = S.getCurrent("postit").postit ("getClass"),
                   progress = $popup.find(".slider").slider ("value"),
                   title = $("#postitUpdatePopupTitle").val (),
-                  content = tinymce.activeEditor.getContent (),
-                  cb_close = () =>
-                    {
-                      S.set ("postit-data", {closing: true});
+                  content = tinymce.activeEditor.getContent ();
 
-                      //FIXME
-                      $(".tox-toolbar__overflow").hide ();
-                      $(".tox-menu").hide ();
+            // INTERNAL FUNCTION cb_close ()
+            const __close = () =>
+              {
+                S.set ("postit-data", {closing: true});
 
-                      $popup.find("input").val ("");
-                      plugin.unedit ();
+                //FIXME
+                $(".tox-toolbar__overflow").hide ();
+                $(".tox-menu").hide ();
 
-                      $popup.modal ("hide");
-                      S.unset ("postit-data");
+                $popup.find("input").val ("");
+                plugin.unedit ();
 
-                      tinymce.activeEditor.resetContent ();
+                $popup.modal ("hide");
+                S.unset ("postit-data");
 
-                      if (!H.haveMouse ())
-                        H.fixVKBScrollStop ();
-                    };
+                tinymce.activeEditor.resetContent ();
+
+                if (!H.haveMouse ())
+                  H.fixVKBScrollStop ();
+              };
 
               // If there is pending changes, ask confirmation to user
               if (data && (
@@ -2606,13 +2630,13 @@
                       plugin.element[0]
                         .removeAttribute ("data-uploadedpictures");
                     },
-                  cb_close: cb_close
+                  cb_close: __close
                 });
 
                 S.set ("postit-data", data);
               }
               else
-                cb_close ();
+                __close ();
           })}, 0);
       });
 

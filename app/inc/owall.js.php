@@ -274,7 +274,7 @@
       $owall.find(".ow-filters,.input-group,.btn-primary").hide ();
 
       if (!wpt_userData.walls.list.length)
-        body = `<?=_("No walls available")?>`;
+        body = `<?=_("No wall available.")?>`;
       else
       { 
         $owall.find(".ow-filters,.input-group").show ();
@@ -316,7 +316,7 @@
 
       checked.forEach ((id) =>
         {
-          const el = document.getElementById ("_"+id);
+          const el = document.getElementById (`_${id}`);
 
           if (el)
             el.checked = true;

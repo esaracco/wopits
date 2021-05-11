@@ -28,27 +28,27 @@ class Comment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
-      $stmt = $this->prepare (
+      $stmt = $this->db->prepare (
                  'DELETE FROM postits_comments WHERE users_id = ? AND id = ?');
       $stmt->execute ([$this->userId, $id]);
 
       if ($stmt->rowCount ())
         $this
-          ->prepare('
+          ->db->prepare('
             UPDATE postits SET commentscount = commentscount - 1 WHERE id = ?')
           ->execute ([$this->postitId]);
 
-      $this->commit ();
+      $this->db->commit ();
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -67,7 +67,7 @@ class Comment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     $ret = [
         'postits_id' => $this->postitId,
@@ -79,19 +79,19 @@ class Comment extends Wall
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       $this->executeQuery ('INSERT INTO postits_comments', $ret);
 
-      $ret['id'] = $this->lastInsertId ();
+      $ret['id'] = $this->db->lastInsertId ();
 
       $this
-        ->prepare('
+        ->db->prepare('
           UPDATE postits SET commentscount = commentscount + 1
           WHERE id = ?')
         ->execute ([$this->postitId]);
       
-      $this->commit ();
+      $this->db->commit ();
 
       // Send a message if user ref (@xxxx) in msg content.
       if (preg_match_all ('/@([^\s\?\.:!,;"]+)/', $content, $m))
@@ -99,7 +99,7 @@ class Comment extends Wall
         foreach ($m as $username)
         {
           // The wall must be shared with the user.
-          ($stmt = $this->prepare ('
+          ($stmt = $this->db->prepare ('
              SELECT id, email, allow_emails, fullname
              FROM users AS u
                INNER JOIN _perf_walls_users AS pwu ON pwu.users_id = u.id
@@ -125,7 +125,7 @@ class Comment extends Wall
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -141,14 +141,14 @@ class Comment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     // Return all postit comments
     if (!$id)
     {
       $data = [];
 
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT
            postits_comments.id
           ,postits_comments.content
@@ -166,7 +166,7 @@ class Comment extends Wall
     }
     else
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT * FROM postits_comments WHERE id = ?'))
          ->execute ([$id]);
 

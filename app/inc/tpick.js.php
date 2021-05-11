@@ -20,10 +20,10 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD _getTagTemplate ()
-  function _getTagTemplate (tag)
-  {
-    return `<i class="fa-${tag} fa-fw fas" data-tag="${tag}"></i>`;
-  }
+  const _getTagTemplate = (tag)=>
+    {
+      return `<i class="fa-${tag} fa-fw fas" data-tag="${tag}"></i>`;
+    };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -52,7 +52,7 @@
                   tag = e.target.dataset.tag;
 
             if (!select)
-              $postit.find(".postit-tags i.fa-"+tag).remove ();
+              $postit.find(`.postit-tags i.fa-${tag}`).remove ();
             else
               $postit.find(".postit-tags").prepend (_getTagTemplate(tag));
 
@@ -93,7 +93,7 @@
       $picker.find(".selected").removeClass ("selected");
 
       $postit[0].querySelectorAll(".postit-tags i").forEach ((tag)=>
-        $picker[0].querySelector("i.fa-"+tag.dataset.tag)
+        $picker[0].querySelector(`i.fa-${tag.dataset.tag}`)
           .parentNode.classList.add ("selected"));
 
       if (x + _width > wW)

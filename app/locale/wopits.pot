@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-05-04 11:03+0200\n"
+        "POT-Creation-Date: 2021-05-11 13:59+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,6 +14,10 @@ msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "MIME-Version: 1.0\n"
         "Content-Type: text/plain; charset=UTF-8\n"
         "Content-Transfer-Encoding: 8bit\n"
+
+#, php-format
+msgid   "%s assigned you the note «%s»"
+msgstr  ""
 
 #, php-format
 msgid   "%s gave you full access to the wall «%s»"
@@ -50,7 +54,10 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Hotfix to adjust plugs position when headers are hidden.</p>"
+msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Framework</b> Rewrote database access layer.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Sharing</b> Debugging Access Group Management.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Messages</b> Added a user messaging box.</p>"
@@ -59,7 +66,13 @@ msgstr  ""
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can comment the notes.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the visibility of walls headers (<i>still experimental... please report any strange behavior!</i>)</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can manage involved users for notes of shared walls.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> More intuitive walls menu.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the visibility of walls headers.</p>"
 msgstr  ""
 
 msgid   "<p>In order to share a wall, you must first create user groups. To create a group, use the <i class='fas fa-share'></i> icon of the wall's menu.</p><p>There are two types of groups:</p><dl class='row'><dt class='col-sm-3'>Dedicated group</dt><dd class='col-sm-9'>This type of group will only be available for the current wall.</dd><dt class='col-sm-3'>Generic group</dt><dd class='col-sm-9'>This type of group will be available for the current wall but also for all your other walls.</dd></dl><p>Once you have created a group, click on the icon <i class='fas fa-user-friends'></i> to manage users. Enter their name in the search field. Users appearing in the list can be added to the group by clicking on <i class='fas fa-plus-circle'></i>.</p><p>To remove users, click on <i class='fas fa-minus-circle'></i>.</p><p>For the moment you have only done group management. Now you have to attach these groups to the current wall to define the type of sharing. Click on the button <button type='button' class='btn btn-secondary btn-xs'><i class='fas fa-plus-circle'></i> Share</button> of the group line. You can use the following types of sharing:</p><dl class='row'><dt class='col-sm-2'><i class='fas fa-sm fa-eye fa-fw'></i></dt><dd class='col-sm-9'>Sharing is read-only. Users will be able to view the wall but not modify it.</dd><dt class='col-sm-2'><i class='fas fa-sm fa-edit fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create and modify notes (their own and those of others).</dd><dt class='col-sm-2'><i class='fas fa-sm fa-shield-alt fa-fw'></i></dt><dd class='col-sm-9'>Sharing allows users to create notes and administer the wall. It is the sharing that gives the most rights to users. They will also have partial management of dedicated groups.</dd></dl><p>If you want the users of the group to be notified of the sharing, select the <i>Send an email to notify group users</i> option before validating.</p><p>By the way, you can chat with other wall users by clicking <kbd>View</kbd>&rarr;<kbd>Chat room</kbd>. Chat rooms are wall specific, i.e. you can have as many as you have open walls.</p><p>Sharing will not be available if you checked the invisible mode option in your account page.</p>"
@@ -107,6 +120,9 @@ msgstr  ""
 
 #, php-format
 msgid   "Add or remove users in the group « %s »."
+msgstr  ""
+
+msgid   "Add or remove users."
 msgstr  ""
 
 msgid   "Add relation"
@@ -579,7 +595,16 @@ msgstr  ""
 msgid   "No title"
 msgstr  ""
 
-msgid   "No walls available"
+msgid   "No user for this note!"
+msgstr  ""
+
+msgid   "No user in this group."
+msgstr  ""
+
+msgid   "No wall available."
+msgstr  ""
+
+msgid   "Note assignation"
 msgstr  ""
 
 msgid   "Note update"
@@ -588,13 +613,13 @@ msgstr  ""
 msgid   "Notes"
 msgstr  ""
 
-msgid   "Notes comments will not be cloned.<br>Continue?"
-msgstr  ""
-
-msgid   "Notes comments will not be exported.<br>Continue?"
+msgid   "Notify me"
 msgstr  ""
 
 msgid   "Notify me by email"
+msgstr  ""
+
+msgid   "Notify new users?"
 msgstr  ""
 
 msgid   "Notify users"
@@ -911,6 +936,9 @@ msgstr  ""
 msgid   "The size of a wall cannot be less than %s"
 msgstr  ""
 
+msgid   "The user is already involved in this note."
+msgstr  ""
+
 msgid   "The wall has been successfully cloned"
 msgstr  ""
 
@@ -926,9 +954,6 @@ msgstr  ""
 msgid   "This group already exists."
 msgstr  ""
 
-msgid   "This group does not contain any users!"
-msgstr  ""
-
 msgid   "This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?"
 msgstr  ""
 
@@ -942,6 +967,9 @@ msgid   "This item is locked by another user."
 msgstr  ""
 
 msgid   "This note contains external images or videos."
+msgstr  ""
+
+msgid   "This note has been assigned to you."
 msgstr  ""
 
 msgid   "This note has expired."
@@ -1050,7 +1078,16 @@ msgstr  ""
 msgid   "User guide"
 msgstr  ""
 
+msgid   "Users"
+msgstr  ""
+
 msgid   "Users in this group:"
+msgstr  ""
+
+msgid   "Users involved"
+msgstr  ""
+
+msgid   "Users involved in this note:"
 msgstr  ""
 
 msgid   "Users viewing this wall"
@@ -1239,10 +1276,10 @@ msgstr  ""
 msgid   "the same day"
 msgstr  ""
 
-msgid   "username"
+msgid   "user(s) in this group"
 msgstr  ""
 
-msgid   "users in this group"
+msgid   "username"
 msgstr  ""
 
 msgid   "wall description"

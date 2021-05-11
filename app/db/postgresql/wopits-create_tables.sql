@@ -14,8 +14,8 @@ CREATE TYPE enum_displaymode AS ENUM ('list-mode', 'postit-mode');
 DROP TYPE IF EXISTS enum_plugtype CASCADE;
 CREATE TYPE enum_plugtype AS ENUM ('solid', 'dashed', 'a-dashed');
 
-DROP TYPE IF EXISTS enum_plugtype CASCADE;
-CREATE TYPE enum_plugtype AS ENUM 'straight', 'arc', 'fluid', 'magnet', 'grid';
+DROP TYPE IF EXISTS enum_plugpath CASCADE;
+CREATE TYPE enum_plugpath AS ENUM ('straight', 'arc', 'fluid', 'magnet', 'grid');
 
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
@@ -153,6 +153,7 @@ CREATE TABLE postits
   item_order SMALLINT NOT NULL DEFAULT 0,
   creationdate INTEGER NOT NULL,
   attachmentscount SMALLINT NOT NULL DEFAULT 0,
+  workerscount SMALLINT NOT NULL DEFAULT 0,
   commentscount SMALLINT NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
   title VARCHAR(50),
@@ -199,6 +200,19 @@ CREATE TABLE postits_attachments
 );
 CREATE INDEX "postits_attachments-creationdate:name-idx"
   ON postits_attachments (creationdate, name);
+
+DROP TABLE IF EXISTS postits_workers CASCADE;
+CREATE TABLE postits_workers
+(
+  id SERIAL PRIMARY KEY,
+  postits_id INTEGER NOT NULL REFERENCES postits(id) ON DELETE CASCADE,
+  -- Not a foreign key, just a helper
+  walls_id INTEGER NOT NULL,
+  -- Not a foreign key, just a helper
+  users_id INTEGER
+);
+CREATE INDEX "postits_workers-walls_id-idx" ON postits_workers (walls_id);
+CREATE INDEX "postits_workers-users_id-idx" ON postits_workers (users_id);
 
 DROP TABLE IF EXISTS postits_comments CASCADE;
 CREATE TABLE postits_comments

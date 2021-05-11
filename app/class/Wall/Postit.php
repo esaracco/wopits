@@ -26,13 +26,13 @@ class Postit extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r :
+      return
         ['error_msg' =>
-           _("You must have write access to perform this action.")];
+            _("You must have write access to perform this action.")];
 
     // Check for the col/row (it could have been removed while user was
     // creating the new post-it.
-    ($stmt = $this->prepare ('SELECT 1 FROM cells WHERE id = ?'))
+    ($stmt = $this->db->prepare ('SELECT 1 FROM cells WHERE id = ?'))
       ->execute ([$this->cellId]);
     if (!$stmt->fetch ())
       return ['error_msg' => _("The row/column has been deleted.")];
@@ -53,7 +53,7 @@ class Postit extends Wall
     try
     {
       $this->executeQuery ('INSERT INTO postits', $_data);
-      $this->postitId = $this->lastInsertId ();
+      $this->postitId = $this->db->lastInsertId ();
 
       mkdir ("$dir/postit/".$this->postitId);
 
@@ -85,7 +85,7 @@ class Postit extends Wall
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       // Update color if it is a known color class
       if (in_array (substr ($color, 6), array_keys (WPT_POSTIT_COLORS)))
@@ -104,13 +104,13 @@ class Postit extends Wall
         }
       }
 
-      $this->commit ();
+      $this->db->commit ();
 
       $ret['walls'] = $this->getWallsById ($wallsIds);
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -128,19 +128,20 @@ class Postit extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
       $i = 5;
-      foreach ($this->query ('
+      foreach ($this->db->query ('
         SELECT postits.*, cells.walls_id
         FROM postits
           INNER JOIN cells ON cells.id = postits.cells_id
         WHERE postits.id IN ('.
-          implode(',', array_map ([$this, 'quote'], $this->data->postits)).')')
+          implode(',', array_map ([$this->db, 'quote'],
+                    $this->data->postits)).')')
             as $p)
       {
         $srcPostitId = $p['id'];
@@ -168,7 +169,7 @@ class Postit extends Wall
 
         foreach ($items as $item)
         {
-          ($stmt = $this->prepare ("
+          ($stmt = $this->db->prepare ("
             SELECT * FROM postits_$item WHERE postits_id = ?"))
               ->execute ([$srcPostitId]);
 
@@ -217,7 +218,7 @@ class Postit extends Wall
 
               $this->executeQuery ("INSERT INTO postits_$item", $a);
 
-              $itemId = $this->lastInsertId ();
+              $itemId = $this->db->lastInsertId ();
             }
 
             // Change postit body internal img links if needed
@@ -258,13 +259,13 @@ class Postit extends Wall
         $i += 10;
       }
 
-      $this->commit ();
+      $this->db->commit ();
 
       $ret['walls'] = $this->getWallsById ($wallsIds);
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -276,7 +277,7 @@ class Postit extends Wall
   public function getPlugs (bool $all = false):array
   {
     // Get postits plugs
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT * FROM postits_plugs
       WHERE '.(($all)?'walls_id':'item_start').' = ?'))
        ->execute ([($all)?$this->wallId:$this->postitId]);
@@ -287,11 +288,11 @@ class Postit extends Wall
   // Return type is mixed: array or false.
   public function getPostit ()
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT
         id, cells_id, width, height, item_top, item_left, item_order,
         classcolor, title, content, tags, creationdate, deadline, timezone,
-        obsolete, attachmentscount, commentscount, progress
+        obsolete, attachmentscount, workerscount, commentscount, progress
       FROM postits
       WHERE postits.id = ?'))
        ->execute ([$this->postitId]);
@@ -301,7 +302,7 @@ class Postit extends Wall
 
   public function getPostitAlertShift ():?int
   {
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT alertshift
       FROM postits_alerts
       WHERE postits_id = ? AND users_id = ?'))
@@ -313,7 +314,7 @@ class Postit extends Wall
   public function checkDeadline ():void
   {
     // Get all postits with a deadline, and associated alerts if available.
-    $stmt = $this->query ('
+    $stmt = $this->db->query ('
       SELECT
         postits.id AS postit_id,
         postits.deadline AS postit_deadline,
@@ -396,7 +397,7 @@ class Postit extends Wall
 
       if ($deleteAlert)
         $this
-          ->prepare ('
+          ->db->prepare ('
             DELETE FROM postits_alerts WHERE postits_id =  ? AND users_id = ?')
           ->execute ([$item['postit_id'], $item['alert_user_id']]);
     }
@@ -408,13 +409,13 @@ class Postit extends Wall
       $postitId = $this->postitId;
 
     $this
-      ->prepare('
+      ->db->prepare('
         DELETE FROM postits_plugs
         WHERE item_start = ? AND item_end NOT IN ('.
-          implode(',',array_map([$this, 'quote'], array_keys($plugs))).')')
+          implode(',',array_map([$this->db, 'quote'], array_keys($plugs))).')')
       ->execute ([$postitId]);
 
-    $stmt = $this->prepare ("
+    $stmt = $this->db->prepare ("
       INSERT INTO postits_plugs (
         walls_id, item_start, item_end, item_top, item_left, label,
         line_size, line_type, line_color, line_path
@@ -474,7 +475,7 @@ class Postit extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
 
@@ -497,7 +498,7 @@ class Postit extends Wall
         list ($file, $this->data->item_type, $width, $height) =
           Helper::resizePicture ($file, 800, 0, false);
 
-        ($stmt = $this->prepare ('
+        ($stmt = $this->db->prepare ('
           SELECT * FROM postits_pictures WHERE postits_id = ? AND link = ?'))
            ->execute ([$this->postitId, "$wdir/$rdir/".basename($file)]);
 
@@ -518,7 +519,7 @@ class Postit extends Wall
 
           $this->executeQuery ('INSERT INTO postits_pictures', $ret);
 
-          $ret['id'] = $this->lastInsertId ();
+          $ret['id'] = $this->db->lastInsertId ();
         }
 
         $ret['icon'] = Helper::getImgFromMime ($this->data->item_type);
@@ -558,9 +559,9 @@ class Postit extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
-    ($stmt = $this->prepare ('SELECT * FROM postits_pictures WHERE id = ?'))
+    ($stmt = $this->db->prepare ('SELECT * FROM postits_pictures WHERE id = ?'))
       ->execute ([$picId]);
     $data = $stmt->fetch ();
 
@@ -574,7 +575,7 @@ class Postit extends Wall
     $pics = (preg_match_all (
       "#/postit/\d+/picture/(\d+)#", $data->content, $m)) ? $m[1] : [];
 
-    ($stmt = $this->prepare ('
+    ($stmt = $this->db->prepare ('
       SELECT id, link FROM postits_pictures WHERE postits_id = ?'))
        ->execute ([$data->id]);
 
@@ -589,29 +590,29 @@ class Postit extends Wall
     }
 
     if (!empty ($toDelete))
-      $this->exec ('
+      $this->db->exec ('
         DELETE FROM postits_pictures
         WHERE id IN ('.
-          implode(',',array_map([$this, 'quote'], array_keys($toDelete))).')');
+          implode(',',array_map([$this->db, 'quote'],
+                    array_keys($toDelete))).')');
   }
 
   public function deletePostit (int $postitId = null):array
   {
     $ret = [];
     $dir = $this->getWallDir ();
-    $newTransaction = (!\PDO::inTransaction ());
 
     if (!$postitId)
       $postitId = $this->postitId;
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
     
     try
     {
       $this
-        ->prepare('DELETE FROM postits WHERE id = ?')
+        ->db->prepare('DELETE FROM postits WHERE id = ?')
         ->execute ([$postitId]);
 
       // Delete postit files
@@ -621,7 +622,7 @@ class Postit extends Wall
     {
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
 
-      if (\PDO::inTransaction ())
+      if ($this->db->inTransaction ())
         throw $e;
       else
         $ret['error'] = 1;
@@ -632,7 +633,7 @@ class Postit extends Wall
 
   public function checkPostitAccess (int $requiredRole, int $postitId):?int
   {
-    ($stmt = $this->prepare ("
+    ($stmt = $this->db->prepare ("
       SELECT _perf_walls_users.walls_id
       FROM _perf_walls_users
         INNER JOIN cells ON cells.walls_id = _perf_walls_users.walls_id

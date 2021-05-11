@@ -28,33 +28,33 @@ class Attachment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     try
     {
-      $this->beginTransaction ();
+      $this->db->beginTransaction ();
 
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
           SELECT link FROM postits_attachments WHERE id = ?'))->execute ([$id]);
       $attach = $stmt->fetch ();
 
-      $stmt = $this->prepare ('DELETE FROM postits_attachments WHERE id = ?');
+      $stmt = $this->db->prepare ('DELETE FROM postits_attachments WHERE id = ?');
       $stmt->execute ([$id]);
 
       if ($stmt->rowCount ())
         $this
-          ->prepare('
+          ->db->prepare('
             UPDATE postits SET attachmentscount = attachmentscount - 1
             WHERE id = ?')
           ->execute ([$this->postitId]);
     
-      $this->commit ();
+      $this->db->commit ();
 
       Helper::rm (WPT_ROOT_PATH.$attach['link']);
     }
     catch (\Exception $e)
     {
-      $this->rollback ();
+      $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
       $ret['error'] = 1;
@@ -72,11 +72,11 @@ class Attachment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     if (!empty ($this->data->title))
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT 1 FROM postits_attachments
         WHERE postits_id = ? AND title = ? AND id <> ?'))
          ->execute ([$this->postitId, $this->data->title, $id]);
@@ -110,7 +110,7 @@ class Attachment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
 
@@ -127,7 +127,7 @@ class Attachment extends Wall
       if (($p = strrpos($fname, '.')) !== false)
         $fname = substr ($fname, 0, $p);
 
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT 1 FROM postits_attachments
         WHERE postits_id = ? AND link LIKE ?'))
          ->execute ([
@@ -162,14 +162,14 @@ class Attachment extends Wall
 
         try
         {
-          $this->beginTransaction ();
+          $this->db->beginTransaction ();
 
           $this->executeQuery ('INSERT INTO postits_attachments', $ret);
 
-          $ret['id'] = $this->lastInsertId ();
+          $ret['id'] = $this->db->lastInsertId ();
 
           $this
-            ->prepare('
+            ->db->prepare('
               UPDATE postits SET attachmentscount = attachmentscount + 1
               WHERE id = ?')
             ->execute ([$this->postitId]);
@@ -179,11 +179,11 @@ class Attachment extends Wall
             "/api/wall/{$this->wallId}/cell/{$this->cellId}".
             "/postit/{$this->postitId}/attachment/{$ret['id']}";
 
-          $this->commit ();
+          $this->db->commit ();
         }
         catch (\Exception $e)
         {
-          $this->rollback ();
+          $this->db->rollBack ();
 
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
           $ret['error'] = 1;
@@ -200,14 +200,14 @@ class Attachment extends Wall
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r : ['error' => _("Access forbidden")];
+      return ['error' => _("Access forbidden")];
 
     // Return all postit attachments
     if (!$id)
     {
       $data = [];
 
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT
            postits_attachments.id
           ,postits_attachments.link
@@ -239,7 +239,7 @@ class Attachment extends Wall
     }
     else
     {
-      ($stmt = $this->prepare ('
+      ($stmt = $this->db->prepare ('
         SELECT * FROM postits_attachments WHERE id = ?'))->execute ([$id]);
 
       // If the file has been deleted by admin while a user with readonly

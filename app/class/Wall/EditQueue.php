@@ -35,13 +35,13 @@ class EditQueue extends Wall
       {
         $item = 'wall-delete';
 
-        ($stmt = $this->prepare ('
+        ($stmt = $this->db->prepare ('
           SELECT session_id FROM edit_queue
           WHERE walls_id = ? AND session_id <> ? LIMIT 1'))
            ->execute ([$this->wallId, $this->sessionId]);
       }
       else
-        ($stmt = $this->prepare ('
+        ($stmt = $this->db->prepare ('
           SELECT session_id FROM edit_queue WHERE item = ? AND item_id = ?'))
             ->execute ([$item, $this->itemId]);
 
@@ -54,7 +54,7 @@ class EditQueue extends Wall
       // If item is free for editing
       elseif (
         ($item == 'postit' || $item == 'header') &&
-        ($stmt = $this->prepare ("
+        ($stmt = $this->db->prepare ("
          SELECT 1 FROM {$item}s WHERE id = ?"))->execute ([$this->itemId]) &&
         !$stmt->fetch ())
       {
@@ -68,7 +68,7 @@ class EditQueue extends Wall
         // plugged with it at first level
         if ($item == 'postit')
         {
-          ($stmt = $this->prepare ('
+          ($stmt = $this->db->prepare ('
             SELECT item_start, item_end
             FROM postits_plugs WHERE item_start = ? OR item_end = ?'))
              ->execute ([$this->itemId, $this->itemId]);
@@ -99,13 +99,13 @@ class EditQueue extends Wall
 
   public function purge ():void
   {
-    $this->exec ('DELETE FROM edit_queue');
+    $this->db->exec ('DELETE FROM edit_queue');
   }
 
   public function removeUser ():void
   {
     $this
-      ->prepare('DELETE FROM edit_queue WHERE session_id = ?')
+      ->db->prepare('DELETE FROM edit_queue WHERE session_id = ?')
       ->execute ([$this->sessionId]);
   }
 
@@ -121,7 +121,7 @@ class EditQueue extends Wall
     {
       try
       {
-        $this->beginTransaction ();
+        $this->db->beginTransaction ();
 
         switch ($item)
         {
@@ -198,7 +198,7 @@ class EditQueue extends Wall
                       $Postit->addRemovePlugs ($plugs, $_postit->id);
                      else
                        $this
-                         ->prepare('
+                         ->db->prepare('
                            DELETE FROM postits_plugs WHERE item_start = ?')
                          ->execute ([$_postit->id]);
                   }
@@ -258,13 +258,13 @@ class EditQueue extends Wall
                   // Clear all alerts if deadline is reset.
                   if (!$deadline)
                     $this
-                      ->prepare('
+                      ->db->prepare('
                           DELETE FROM postits_alerts WHERE postits_id = ?')
                       ->execute ([$this->data->id]);
                   // Remove user deadline alert if not set
                   elseif (is_null ($alertShift))
                     $this
-                      ->prepare('
+                      ->db->prepare('
                           DELETE FROM postits_alerts
                           WHERE postits_id = ? AND users_id = ?')
                       ->execute ([$this->data->id, $this->userId]);
@@ -277,7 +277,7 @@ class EditQueue extends Wall
                     $this->checkDBValue (
                       'postits_alerts', 'alertshift', $alertShift);
 
-                    ($stmt = $this->prepare ("
+                    ($stmt = $this->db->prepare ("
                       INSERT INTO postits_alerts (
                         postits_id, users_id, walls_id, alertshift
                       ) VALUES (
@@ -341,11 +341,11 @@ class EditQueue extends Wall
             break;
         }
 
-        $this->commit ();
+        $this->db->commit ();
       }
       catch (\Exception $e)
       {
-        $this->rollback ();
+        $this->db->rollBack ();
 
         error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
         $ret['error'] = 1;
@@ -366,13 +366,11 @@ class EditQueue extends Wall
     $access = ($needAdminAccess) ? WPT_WRIGHTS_ADMIN : WPT_WRIGHTS_RW;
 
     $r = $this->checkWallAccess ($access);
-
     if (!$r['ok'])
-      return (isset ($r['id'])) ? $r :
-               ['ok' => 0,
-                'error_msg' => ($needAdminAccess) ?
-                  _("You must have admin access to perform this action.") :
-                  _("You must have write access to perform this action.")];
+      return ['ok' => 0,
+              'error_msg' => ($needAdminAccess) ?
+                 _("You must have admin access to perform this action.") :
+                 _("You must have write access to perform this action.")];
 
     return $r;
   }

@@ -4,7 +4,28 @@ namespace Wopits;
 
 require_once (__DIR__.'/../config.php');
 
-class Base extends \PDO
+class DB
+{
+  protected static $instance;
+
+  public static function getInstance()
+  {
+    if (empty (self::$instance))
+    {
+      self::$instance = new \PDO (
+      WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [
+        \PDO::ATTR_PERSISTENT => true,
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+        \PDO::ATTR_EMULATE_PREPARES => false,
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+      ]);
+    }
+
+    return self::$instance;
+  }
+}
+
+class Base
 {
   public $userId;
   public $wallId;
@@ -12,12 +33,16 @@ class Base extends \PDO
   public $wallName;
   public $sessionId;
   public $slocale;
+
+  protected $db;
   protected $ws;
-  private $_dbDescription;
+
+  private static $_dbDescription;
 
   function __construct (array $args = null, object $ws = null)
   {
-    $this->_dbDescription = DbCache::getDBDescription ();
+    if (empty (self::$_dbDescription))
+      self::$_dbDescription = DbCache::getDBDescription ();
 
     // Set context from WebSocket server
     if ($ws)
@@ -35,19 +60,13 @@ class Base extends \PDO
     $this->wallId = $args['wallId']??null;
     $this->data = $args['data']??null;
 
-    parent::__construct (
-      WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [
-        \PDO::ATTR_PERSISTENT => true,
-        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-        \PDO::ATTR_EMULATE_PREPARES => false,
-        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-      ]);
+    $this->db = DB::getInstance ();
   }
 
   // Dummy access to the DB, to preserve persistent connection
   public function ping ():void
   {
-    $this->query ('SELECT 1');
+    $this->db->query ('SELECT 1');
   }
 
   public function getUploadedFileInfos (?object $data):array
@@ -75,7 +94,7 @@ class Base extends \PDO
   // Very basic DB fields validator.
   protected function checkDBValue (string $table, string $field, &$value):void
   {
-    $f = $this->_dbDescription[$table][$field]??null;
+    $f = self::$_dbDescription[$table][$field]??null;
 
     //<WPTPROD-remove>
     if (is_null ($f))
@@ -155,7 +174,7 @@ class Base extends \PDO
 
   protected function getDuplicateQueryPart (array $fields):string
   {
-    return ($this->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql') ?
+    return ($this->db->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql') ?
       // MySQL
       ' ON DUPLICATE KEY UPDATE ' :
       // PostgreSQL
@@ -200,7 +219,7 @@ class Base extends \PDO
         break;
     }
 
-    $stmt = $this->prepare ($sql);
+    $stmt = $this->db->prepare ($sql);
     $stmt->execute ($data);
 
     return $stmt->rowCount ();

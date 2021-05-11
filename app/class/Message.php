@@ -65,6 +65,31 @@ class Message
     ]);
   }
 
+  private function notifyWorker (array $args):void
+  {
+    $subject = _("Note assignation");
+    $qTitle = ($args['title'] != '...') ? $args['title'] : _("No title");
+
+    $this->_addToQueue ([
+      'users_id' => $args['userId'],
+      'title' => $subject,
+      'content' => sprintf (_("%s assigned you the note «%s»").'.', $args['sharerName'], "<a href='#' data-type='worker' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}'>".htmlentities($qTitle)."</a>")
+    ]);
+
+    Helper::sendToWSServer ([
+      'action' => 'have-msg',
+      'wallId' => $args['wallId'],
+      'users' => [$args['userId']]
+    ]);
+
+    if ($args['sendmail'])
+      $this->_send ([
+        'email' => $args['email'],
+        'subject' => $subject,
+        'msg' => sprintf (_("Hello %s").",\n\n"._("%s assigned you the note «%s»").":\n\n%s", $args['fullname'], $args['sharerName'], $qTitle, WPT_URL."/?/w{$args['wallId']}p{$args['postitId']}")
+      ]);
+  }
+
   private function commentToUser (array $args):void
   {
     $subject = _("Comment");

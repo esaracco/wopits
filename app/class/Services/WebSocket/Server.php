@@ -7,7 +7,7 @@ require_once (__DIR__.'/../../../config.php');
 use Swoole\{Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
 
 use Wopits\{Base, Helper, User, Wall};
-use Wopits\Wall\{EditQueue, Group, Postit, Comment, Attachment};
+use Wopits\Wall\{EditQueue, Group, Postit, Comment, Attachment, Worker};
 use Wopits\Services\Task;
 
 class Server
@@ -578,6 +578,48 @@ class Server
             'list' => $comment->get ()
           ]);
       }
+      // ROUTE Postit workers
+      elseif (preg_match (
+                '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/'.
+                'worker/?(\d+)?$#',
+                $msg->route, $m))
+      {
+        @list (,$wallId, $cellId, $postitId, $itemId) = $m;
+
+        $worker = new Worker ([
+          'wallId' => $wallId,
+          'cellId' => $cellId,
+          'postitId' => $postitId
+        ], $client);
+
+        switch ($msg->method)
+        {
+          case 'PUT':
+            $ret = $worker->add (intval($itemId));
+            break;
+
+          case 'DELETE':
+            $ret = $worker->delete (intval($itemId));
+            break;
+        }
+      }
+      // ROUTE Postit workers notification
+      elseif (preg_match (
+                '#^wall/(\d+)/cell/(\d+)/postit/(\d+)/notifyWorkers$#',
+                $msg->route, $m))
+      {
+        @list (,$wallId, $cellId, $postitId) = $m;
+
+        if ($msg->method == 'PUT')
+        {
+          $ret = (new Worker ([
+            'wallId' => $wallId,
+            'cellId' => $cellId,
+            'postitId' => $postitId,
+            'data' => $data
+          ], $client))->notify ();
+        }
+      }
       // ROUTE User profil picture
       elseif ($msg->route == 'user/picture')
       {
@@ -644,6 +686,11 @@ class Server
 
               foreach ($w as $_fd => $_userId)
               {
+                if ($action == 'unlinked' &&
+                    !empty($ret['wall']['usersIds']) &&
+                    !in_array ($_userId, $ret['wall']['usersIds']))
+                  continue;
+
                 // Message sender material will be broadcasted later.
                 if ($_fd != $fd)
                 {
