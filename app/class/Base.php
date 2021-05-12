@@ -239,6 +239,6 @@ class Base
 
     return ($type == 'web') ?
       WPT_DATA_WPATH."/walls/{$wallId}" :
-      Helper::getSecureSystemName ("/walls/{$wallId}");
+      Helper::getSecureSystemName ("walls/{$wallId}");
   }
 }
