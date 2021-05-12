@@ -257,6 +257,7 @@ class User extends Base
         $_SESSION['userToken'] = $token;
 
         $this->refreshUpdateDate ();
+        $this->refreshInactiveData ();
 
         return true;
       }
@@ -316,6 +317,14 @@ class User extends Base
       ['id' => $this->userId]);
   }
 
+  public function refreshInactiveData ():void
+  {
+    // Remove user from users inactive table if any
+    $this->db
+      ->prepare('DELETE FROM users_inactive WHERE users_id = ?')
+      ->execute ([$this->userId]);
+  }
+
   // Only called by crons
   public function manageInactive ():void
   {
@@ -326,12 +335,14 @@ class User extends Base
 
     // Delete too old accounts
 
-    // More or less 1 year + 2 weeks (we do not need precision here)
-    $diff = (365 * (24 * 3600)) + (14 * (24 * 3600));
+    // More or less 2 weeks (we do not need precision here)
+    $diff = 14 * (24 * 3600);
 
     $stmt = $this->db->query ("
-      SELECT id, username, fullname, email FROM users
-      WHERE $current - updatedate > $diff");
+      SELECT U.id, U.username, U.fullname, U.email
+      FROM users AS U
+        INNER JOIN users_inactive AS UI ON UI.users_id = U.id
+      WHERE $current - UI.creationdate > $diff");
 
      while ($u = $stmt->fetch ())
      {
@@ -350,14 +361,15 @@ class User extends Base
        $user->delete ();
      }
 
-    // Warn users that their account will be deleted soon
+     // Warn users that their account will be deleted soon
 
-    // More or less 1 year (we do not need precision here)
-    $diff = 365 * (24 * 3600);
+     // More or less 1 year (we do not need precision here)
+     $diff = 365 * (24 * 3600);
 
-    $stmt = $this->db->query ("
-      SELECT id, username, fullname, email FROM users
-      WHERE $current - updatedate > $diff");
+     $stmt = $this->db->query ("
+       SELECT id, username, fullname, email FROM users
+       WHERE $current - updatedate > $diff
+         AND id NOT IN (SELECT users_id FROM users_inactive)");
 
      while ($u = $stmt->fetch ())
      {
@@ -368,6 +380,11 @@ class User extends Base
          'email' => $u['email'],
          'username' => $u['username'],
          'fullname' => $u['fullname']
+       ]);
+
+       $this->executeQuery ('INSERT INTO users_inactive', [
+         'users_id' => $u['id'],
+         'creationdate' => $current
        ]);
 
        sleep (2);
@@ -487,6 +504,7 @@ class User extends Base
       $this->_createToken ($data['settings']??null, $remember);
 
       $this->refreshUpdateDate ();
+      $this->refreshInactiveData ();
     }
     catch (\Exception $e)
     {

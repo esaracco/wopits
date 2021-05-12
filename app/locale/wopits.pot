@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-05-12 14:47+0200\n"
+        "POT-Creation-Date: 2021-05-12 15:53+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -500,17 +500,17 @@ msgid   "Invisible mode"
 msgstr  ""
 
 #, php-format
-msgid   "It has been over a year and 2 weeks since you used wopits.\n"
+msgid   "It has been over a year since you used wopits.\n"
+        "\n"
+        "Your account «%s» will be automatically deleted in 2 weeks if you still don't come back."
+msgstr  ""
+
+#, php-format
+msgid   "It's been a long time since you used wopits.\n"
         "\n"
         "Despite our last message you did not come back.\n"
         "\n"
         "Your account «%s» has been automatically deleted."
-msgstr  ""
-
-#, php-format
-msgid   "It has been over a year since you used wopits.\n"
-        "\n"
-        "Your account «%s» will be automatically deleted in 2 weeks if you still don't come back."
 msgstr  ""
 
 msgid   "Language"

@@ -52,6 +52,14 @@ CREATE TABLE users_tokens
 );
 CREATE INDEX "users_tokens-persistent-idx" ON users_tokens (persistent);
 
+DROP TABLE IF EXISTS users_inactive CASCADE;
+CREATE TABLE users_inactive
+(
+  id SERIAL PRIMARY KEY,
+  users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  creationdate INTEGER NOT NULL
+);
+
 DROP TABLE IF EXISTS walls CASCADE;
 CREATE TABLE walls
 (

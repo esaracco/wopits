@@ -70,7 +70,7 @@ class Message
     $this->_send ([
       'email' => $args['email'],
       'subject' => _("Your wopits account has been deleted"),
-      'msg' => sprintf(_("Hello %s").",\n\n"._("It has been over a year and 2 weeks since you used wopits.\n\nDespite our last message you did not come back.\n\nYour account «%s» has been automatically deleted."), $args['fullname'], $args['username'])
+      'msg' => sprintf(_("Hello %s").",\n\n"._("It's been a long time since you used wopits.\n\nDespite our last message you did not come back.\n\nYour account «%s» has been automatically deleted."), $args['fullname'], $args['username'])
     ], true);
   }
 

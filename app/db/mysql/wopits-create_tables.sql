@@ -49,6 +49,19 @@ CREATE TABLE users_tokens
 )
 ENGINE=INNODB;
 
+DROP TABLE IF EXISTS users_inactive;
+CREATE TABLE users_inactive
+(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  users_id INT UNSIGNED NOT NULL,
+  creationdate INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (id),
+  CONSTRAINT `users_inactive-users_id-fk` FOREIGN KEY (users_id)
+    REFERENCES users(id) ON DELETE CASCADE
+)
+ENGINE=INNODB;
+
 DROP TABLE IF EXISTS walls;
 CREATE TABLE walls
 (
