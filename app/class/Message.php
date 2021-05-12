@@ -62,7 +62,7 @@ class Message
       'email' => $args['email'],
       'subject' => _("Your wopits account"),
       'msg' => sprintf(_("Hello %s").",\n\n"._("It has been over a year since you used wopits.\n\nYour account «%s» will be automatically deleted in 2 weeks if you still don't come back."), $args['fullname'], $args['username'])
-    ]);
+    ], true);
   }
 
   private function accountAutoDeleted (array $args):void
