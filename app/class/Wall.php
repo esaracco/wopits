@@ -352,30 +352,21 @@ class Wall extends Base
         {
           $this->db->beginTransaction ();
 
-          //FIXME //TODO factorization with createWall()
-          $this->executeQuery ('INSERT INTO walls', [
+          $dir = $this->_insertWall ([
             'users_id' => $this->userId,
             'width' => $wall->width,
             'name' => $wallName,
             'description' => $wall->description,
             'creationdate' => $wall->creationdate
           ]);
-   
-          $this->wallId = $this->db->lastInsertId ();
-          $ret = ['wallId' => $this->wallId];
   
-          $dir = $this->getWallDir ();
-          mkdir ("$dir/header", 02770, true);
-          mkdir ("$dir/postit");
+          $ret = ['wallId' => $this->wallId];
     
-          // ADD headers
+          // INSERT col & row headers
           foreach ($wall->headers as $item)
           {
-            $this->executeQuery ('INSERT INTO headers',
-              $this->_getImportItemData ($item));
-
-            $headerId = $this->db->lastInsertId ();
-            mkdir ("$dir/header/$headerId");
+            $headerId = $this->_insertHeader (
+                           $this->_getImportItemData ($item), $dir);
 
             // ADD header picture
             if ($item->picture)
@@ -394,7 +385,7 @@ class Wall extends Base
             }
           }
 
-          // ADD cells
+          // INSERT cells
           foreach ($wall->cells as $cell)
           {
             $this->executeQuery ('INSERT INTO cells',
@@ -417,10 +408,10 @@ class Wall extends Base
             }
           }
 
-          $stmt = $this->db->prepare ('
+          $stmtSP = $this->db->prepare ('
             SELECT content FROM postits WHERE id = ?');
 
-          // ADD postit attachments / pictures / plugs
+          // INSERT postit attachments / pictures / plugs
           foreach ($wall->cells as $cell)
           {
             $cellId = $idsMap['cells'][$cell->id];
@@ -450,8 +441,8 @@ class Wall extends Base
               // content
               if (!empty ($postit->items->pictures))
               {
-                $stmt->execute ([$postitId]);
-                $content = $stmt->fetch()['content'];
+                $stmtSP->execute ([$postitId]);
+                $content = $stmtSP->fetch (\PDO::FETCH_COLUMN, 0);
 
                 // ADD pictures
                 foreach ($postit->items->pictures as $item)
@@ -484,7 +475,7 @@ class Wall extends Base
                   ['id' => $postitId]);
               }
 
-              // ADD plugs
+              // INSERT plugs
               foreach ($postit->items->plugs as $item)
               {
                 $this->executeQuery ('INSERT INTO postits_plugs',
@@ -496,14 +487,6 @@ class Wall extends Base
             }
           }
   
-          // Performance helper:
-          // Link wall creator to wall with admin access.
-          $this->executeQuery ('INSERT INTO _perf_walls_users', [
-            'walls_id' => $this->wallId,
-            'users_id' => $this->userId,
-            'access' => WPT_WRIGHTS_ADMIN
-          ]);
-
           $this->db->commit ();
         }
         catch (\Exception $e)
@@ -1187,6 +1170,38 @@ class Wall extends Base
     return $ret;
   }
 
+  private function _insertWall (array $args):string
+  {
+    $this->executeQuery ('INSERT INTO walls', $args);
+
+    $this->wallId = $this->db->lastInsertId ();
+
+    $dir = $this->getWallDir ();
+    mkdir ("$dir/header", 02770, true);
+    mkdir ("$dir/postit");
+
+    // Performance helper:
+    // Link wall creator to wall with admin access.
+    $this->executeQuery ('INSERT INTO _perf_walls_users', [
+      'walls_id' => $this->wallId,
+      'users_id' => $this->userId,
+      'access' => WPT_WRIGHTS_ADMIN
+    ]);
+
+    return $dir;
+  }
+
+  private function _insertHeader (array $args, string $dir):int
+  {
+    $this->executeQuery ('INSERT INTO headers', $args);
+
+    $id = $this->db->lastInsertId ();
+
+    mkdir ("$dir/header/{$id}");
+
+    return $id;
+  }
+
   public function createWall ():array
   {
     $ret = [];
@@ -1250,36 +1265,26 @@ class Wall extends Base
     {
       $this->db->beginTransaction ();
 
-      //FIXME //TODO factorization with import()
-      $this->executeQuery ('INSERT INTO walls', [
+      $dir = $this->_insertWall ([
         'users_id' => $this->userId,
         'width' => $wall['width'],
         'name' => $wall['name'] ?? '',
         'creationdate' => time ()
       ]);
- 
-      $this->wallId = $this->db->lastInsertId ();
-
-      $dir = $this->getWallDir ();
-      mkdir ($dir);
-      mkdir ("$dir/header");
-      mkdir ("$dir/postit");
 
       // INSERT col headers
       for ($i = 0, $iLen = count($wall['headers']['cols']); $i < $iLen; $i++)
       {
         $col = $wall['headers']['cols'][$i];
 
-        $this->executeQuery ('INSERT INTO headers', [
+        $this->_insertHeader ([
           'walls_id' => $this->wallId,
           'item_type' => 'col',
           'item_order' => $i,
           'width' => $col['width'],
           'height' => $col['height'],
           'title' => $col['title']
-        ]);
-
-        mkdir ("$dir/header/{$this->db->lastInsertId()}");
+        ], $dir);
       }
 
       // INSERT row headers
@@ -1287,15 +1292,13 @@ class Wall extends Base
       {
         $row = $wall['headers']['rows'][$i];
 
-        $this->executeQuery ('INSERT INTO headers', [
+        $this->_insertHeader ([
           'walls_id' => $this->wallId,
           'item_type' => 'row',
           'item_order' => $i,
           'height' => $row['height'],
           'title' => $row['title']
-        ]);
-
-        @mkdir ("$dir/header/{$this->db->lastInsertId()}");
+        ], $dir);
       }
 
       // INSERT cells
@@ -1311,14 +1314,6 @@ class Wall extends Base
           'item_col' => $cell['item_col']
         ]);
       }
-
-      // Performance helper:
-      // Link wall creator to wall with admin access.
-      $this->executeQuery ('INSERT INTO _perf_walls_users', [
-        'walls_id' => $this->wallId,
-        'users_id' => $this->userId,
-        'access' => WPT_WRIGHTS_ADMIN
-      ]);
 
       $this->db->commit ();
 
