@@ -47,8 +47,7 @@ class Wall extends Base
     {
       ($stmt = $this->db->prepare ('SELECT name FROM walls WHERE id = ?'))
         ->execute ([$this->wallId]);
-
-      $this->wallName = $stmt->fetch()['name'];
+      $this->wallName = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
     }
 
     return $this->wallName;
@@ -169,9 +168,10 @@ class Wall extends Base
         if (!file_exists ($file))
           throw new \Exception (_("An error occured while uploading file."));
 
-        ($stmt = $this->db->prepare ('SELECT picture FROM headers WHERE id = ?'))
-          ->execute ([$headerId]);
-        $previousPicture = $stmt->fetch()['picture'];
+        ($stmt = $this->db->prepare ('
+           SELECT picture FROM headers WHERE id = ?'))
+             ->execute ([$headerId]);
+        $previousPicture = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
 
         list ($file, $this->data->item_type) =
           Helper::resizePicture ($file, 100);
@@ -960,7 +960,7 @@ class Wall extends Base
            ':item_order' => $itemPos
          ]);
 
-      $toDelete[] = "$dir/header/".($stmt->fetch ())['id'];
+      $toDelete[] = "$dir/header/{$stmt->fetch(\PDO::FETCH_COLUMN, 0)}";
 
       // Delete header
       $this
@@ -1092,7 +1092,7 @@ class Wall extends Base
            ':walls_id' => $this->wallId,
            ':item_type' => $item
          ]);
-      $order = $stmt->fetch()['item_order'];
+      $order = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
 
       $this->executeQuery ('INSERT INTO headers', [
         'walls_id' => $this->wallId,
@@ -1348,7 +1348,7 @@ class Wall extends Base
       {
         ($stmt = $this->db->prepare ('SELECT name FROM walls WHERE id = ?'))
           ->execute ([$this->wallId]);
-        $ret['name'] = $stmt->fetch()['name'];
+        $ret['name'] = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
       }
 
       $this

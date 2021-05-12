@@ -702,7 +702,7 @@ class User extends Base
 
         ($stmt = $this->db->prepare ('SELECT picture FROM users WHERE id = ?'))
           ->execute ([$this->userId]);
-        $previousPicture = $stmt->fetch()['picture'];
+        $previousPicture = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
 
         list ($file, $this->data->item_type) =
           Helper::resizePicture ($file, 200);

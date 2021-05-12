@@ -195,7 +195,7 @@ class Group extends Wall
           SELECT walls_id FROM _perf_walls_users
           WHERE groups_id = ? AND users_id = ?'))
            ->execute ($params);
-        $this->wallId = $stmt->fetch()['walls_id'];
+        $this->wallId = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
       }
 
        // Decrement group users count
