@@ -9,6 +9,7 @@
   $user->purgeTokens ();
 
   // Manage inactive users
-  $user->manageInactive ();
+  if (!WPT_USE_LDAP)
+    $user->manageInactive ();
 
 ?>
