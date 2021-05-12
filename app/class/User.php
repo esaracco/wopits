@@ -20,8 +20,8 @@ class User extends Base
         ->db->prepare('DELETE FROM users_tokens WHERE users_id = ?')
         ->execute ([$this->userId]);
 
-      session_destroy ();
-      session_start ();
+      @session_destroy ();
+      @session_start ();
 
       Helper::deleteCookie ();
 
@@ -314,6 +314,64 @@ class User extends Base
     $this->executeQuery ('UPDATE users',
       ['updatedate' => time ()],
       ['id' => $this->userId]);
+  }
+
+  // Only called by crons
+  public function manageInactive ():void
+  {
+    $current = time ();
+
+    $user = new User ();
+    $task = new Task ();
+
+    // Delete too old accounts
+
+    // More or less 1 year + 2 weeks (we do not need precision here)
+    $diff = (365 * (24 * 3600)) + (14 * (24 * 3600));
+
+    $stmt = $this->db->query ("
+      SELECT id, username, fullname, email FROM users
+      WHERE $current - updatedate > $diff");
+
+     while ($u = $stmt->fetch ())
+     {
+       $task->execute ([
+         'event' => Task::EVENT_TYPE_SEND_MESSAGE,
+         'method' => 'accountAutoDeleted',
+         'userId' => $u['id'],
+         'email' => $u['email'],
+         'username' => $u['username'],
+         'fullname' => $u['fullname']
+       ]);
+
+       sleep (2);
+
+       $user->userId = $u['id'];
+       $user->delete ();
+     }
+
+    // Warn users that their account will be deleted soon
+
+    // More or less 1 year (we do not need precision here)
+    $diff = 365 * (24 * 3600);
+
+    $stmt = $this->db->query ("
+      SELECT id, username, fullname, email FROM users
+      WHERE $current - updatedate > $diff");
+
+     while ($u = $stmt->fetch ())
+     {
+       $task->execute ([
+         'event' => Task::EVENT_TYPE_SEND_MESSAGE,
+         'method' => 'accountInactive',
+         'userId' => $u['id'],
+         'email' => $u['email'],
+         'username' => $u['username'],
+         'fullname' => $u['fullname']
+       ]);
+
+       sleep (2);
+     }
   }
 
   public function purgeTokens ():void

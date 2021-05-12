@@ -311,6 +311,7 @@ class Postit extends Wall
     return ($r = $stmt->fetch ()) ? $r['alertshift'] : null;
   }
 
+  // Only called by crons
   public function checkDeadline ():void
   {
     // Get all postits with a deadline, and associated alerts if available.

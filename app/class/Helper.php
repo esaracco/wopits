@@ -146,7 +146,7 @@ class Helper
   public static function deleteCookie ()
   {
     // 24 * 3600 == 86400
-    setcookie ('wopits', '', time () - 86400, '/', null, true, true);
+    @setcookie ('wopits', '', time () - 86400, '/', null, true, true);
   }
 
   public static function setCookie (string $value):void

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-11 13:59+0200\n"
+"POT-Creation-Date: 2021-05-12 14:47+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -451,7 +451,7 @@ msgstr ""
 msgid "Creation date"
 msgstr ""
 
-msgid "Creation of your account"
+msgid "Creation of your wopits account"
 msgstr ""
 
 msgid "Creator"
@@ -659,6 +659,23 @@ msgid "Information"
 msgstr ""
 
 msgid "Invisible mode"
+msgstr ""
+
+#, php-format
+msgid ""
+"It has been over a year and 2 weeks since you used wopits.\n"
+"\n"
+"Despite our last message you did not come back.\n"
+"\n"
+"Your account «%s» has been automatically deleted."
+msgstr ""
+
+#, php-format
+msgid ""
+"It has been over a year since you used wopits.\n"
+"\n"
+"Your account «%s» will be automatically deleted in 2 weeks if you still "
+"don't come back."
 msgstr ""
 
 msgid "Language"
@@ -1411,6 +1428,12 @@ msgid "Your password reset"
 msgstr ""
 
 msgid "Your profile has been updated"
+msgstr ""
+
+msgid "Your wopits account"
+msgstr ""
+
+msgid "Your wopits account has been deleted"
 msgstr ""
 
 msgid "Zoom"

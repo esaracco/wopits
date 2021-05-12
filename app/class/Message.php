@@ -51,9 +51,27 @@ class Message
   {
     $this->_send ([
       'email' => $args['email'],
-      'subject' => _("Creation of your account"),
+      'subject' => _("Creation of your wopits account"),
       'msg' => sprintf(_("Hello %s").",\n\n"._("Your account «%s» has been created!"), $args['fullname'], $args['username'])
     ]);
+  }
+
+  private function accountInactive (array $args):void
+  {
+    $this->_send ([
+      'email' => $args['email'],
+      'subject' => _("Your wopits account"),
+      'msg' => sprintf(_("Hello %s").",\n\n"._("It has been over a year since you used wopits.\n\nYour account «%s» will be automatically deleted in 2 weeks if you still don't come back."), $args['fullname'], $args['username'])
+    ]);
+  }
+
+  private function accountAutoDeleted (array $args):void
+  {
+    $this->_send ([
+      'email' => $args['email'],
+      'subject' => _("Your wopits account has been deleted"),
+      'msg' => sprintf(_("Hello %s").",\n\n"._("It has been over a year and 2 weeks since you used wopits.\n\nDespite our last message you did not come back.\n\nYour account «%s» has been automatically deleted."), $args['fullname'], $args['username'])
+    ], true);
   }
 
   private function resetPassword (array $args):void
@@ -232,7 +250,7 @@ class Message
     (new Base())->executeQuery ('INSERT INTO messages_queue', $args);
   }
 
-  private function _send (array $args):void
+  private function _send (array $args, bool $noUnsub = false):void
   {
     //<WPTPROD-remove>
     if (WPT_DEV_MODE)
@@ -245,8 +263,10 @@ class Message
 
       $this->_mailer->addAddress ($args['email']);
       $this->_mailer->Subject = $args['subject'];
-      $this->_mailer->Body =
-        $args['msg']."\n\n--\n"._("Manage my options").": $unsub";
+      $this->_mailer->Body = $args['msg']."\n\n--\n";
+
+      $this->_mailer->Body .=
+        $noUnsub ? WPT_URL : _("Manage my options").": $unsub";
 
       $this->_mailer->addCustomHeader ('List-Unsubscribe',
         '<mailto:'.WPT_EMAIL_UNSUBSCRIBE.'?subject=Unsubscribe>, <'.$unsub.'>');
