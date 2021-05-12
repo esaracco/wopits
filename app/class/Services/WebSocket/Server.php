@@ -445,7 +445,6 @@ class Server
              ->removeMe (explode (',', $groupIds));
       }
       // ROUTE Wall users view
-      //TODO We should use ajax instead of ws
       elseif (preg_match ('#^wall/(\d+)/usersview$#',
                 $msg->route, $m))
       {

@@ -249,7 +249,7 @@
             if (args.cb_after)
             {
               plugin.setActive ();
-              //FIXME
+              //FIXME To much refresh
               plugin.refresh ();
 
               args.cb_after ();
@@ -1088,7 +1088,6 @@
     {
       this.element[0].dataset.todelete = true;
 
-      //FIXME 2x
       this.unedit (() =>
         {
           const sPlugin = $("#settingsPopup").settings ("getClass");
@@ -1157,8 +1156,6 @@
             plugsContainer: plugin.settings.plugsContainer
           });
         });
-
-//FIXME      plugin.fixSize ();
     },
 
     // METHOD deleteRow ()
@@ -1523,7 +1520,6 @@
     // METHOD displayWallUsersview()
     displayWallUsersview ()
     {
-      //TODO We should use fetch() instead
       H.request_ws (
         "GET",
         `wall/${this.settings.id}/usersview`,
@@ -2164,7 +2160,8 @@
         // Save plugs shift width & height for absolutely positioned plugs
         if (!wall.dataset.headersshift)
         {
-          //FIXME Needed to get headers dimensions
+          //FIXME
+          // Required to obtain the headers dimensions
           this.showHeaders ();
 
           const bbox = wall.querySelector("thead th").getBoundingClientRect ();

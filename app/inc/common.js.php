@@ -1378,10 +1378,9 @@ class WHelper
   
     const $body = $(".popover-body").last ();
 
-//FIXME //TODO
-    $body.addClass ("justify");
-  
-    $body.html (`<p>${args.content}</p>${buttons}`);
+    $body
+      .addClass("justify")
+      .html (`<p>${args.content}</p>${buttons}`);
   
     if (this.haveMouse ())
       $body.find("input:eq(0)").focus ();
@@ -1406,7 +1405,7 @@ class WHelper
 
     const $popover = $(".popover").last ();
 
-    //FIXME To prevent "title" element property to be used by default
+    //FIXME Required to prevent "title" element property to be used by default
     $popover.find(".popover-header").html (args.title);
 
     if (scroll)
@@ -1861,7 +1860,7 @@ class WHelper
 
   // METHOD fetchUpload ()
   // Only used for file upload
-  //TODO FIXME Use fetch() when upload progress will be available!
+  //TODO Use fetch() when upload progress will be available!
   fetchUpload (service, args, success_cb, error_cb)
   {
     //console.log (`AJAX: PUT ${service}`);
