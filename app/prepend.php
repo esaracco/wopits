@@ -18,7 +18,9 @@ else
 
   if (!isset ($_SESSION))
   {
-    session_set_cookie_params (0, '/', $_SERVER['HTTP_HOST']??null, true, true);
+    $host = empty($_SERVER['HTTP_HOST']) ?
+              null : explode (':', $_SERVER['HTTP_HOST'])[0];
+    session_set_cookie_params (0, '/', $host, true, true);
     session_start ();
   }
 

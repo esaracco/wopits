@@ -2,6 +2,10 @@
 <?php
   require (__DIR__.'/../../../site-config.php');
 
+  $options = getopt ('a');
+
+  $ignoreApache = isset ($options['a']);
+
   // Create services directory if needed.
   $runPath = __DIR__.'/../../services/run';
   if (!file_exists ($runPath))
@@ -14,7 +18,8 @@
   exec (__DIR__.'/../../services/websocket/client.php -n --from-script');
 
   // Restart apache.
-  exec (WPT_APACHE_RESTART);
+  if (!$ignoreApache)
+    exec (WPT_APACHE_RESTART);
 
   // Restart Task & WS servers.
   exec (WPT_WOPITS_TASK_RESTART);

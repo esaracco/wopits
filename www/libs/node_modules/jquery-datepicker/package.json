@@ -1,0 +1,29 @@
+{
+  "name": "jquery-datepicker",
+  "version": "1.12.3",
+  "description": "Just the datepicker lib from jquery-ui 1.12.1",
+  "main": "./jquery-datepicker.js",
+  "scripts": {
+    "start": "parcel --no-cache index.html",
+    "build-all": "npm run build-i18n && npm run cleanup",
+    "build-i18n": "babel ./lib/i18n --out-dir ./i18n",
+    "cleanup": "rm -rf ./dist",
+    "prepublishOnly": "npm run build-all"
+  },
+  "author": "cmswalker",
+  "license": "MIT",
+  "keywords": [
+    "jquery",
+    "jquery-ui",
+    "jquery-datepicker",
+    "i18n"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+    "parcel-bundler": "^1.6.2"
+  },
+  "dependencies": {}
+}

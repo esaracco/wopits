@@ -24,18 +24,9 @@ INSTALLATION
 
 ### On the source host
 
-The following actions have to be done on the machine you installed the Git repository. Which is not necessarily the target host where the wopits website will run.
+Just clone the Git:
 
 - `git clone git@github.com:esaracco/wopits.git`.
-- Install composer >= 1.8.4 & yarn >= 1.13.0. If you are using Debian **do not install the cmdtest package**. Remove it instead, and proceed like this:
-```bash
-# apt install nodejs npm
-# curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-# echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-# apt update
-# apt install yarn
-```
-See https://classic.yarnpkg.com/en/docs/install for help installing yarn.
 
 ### On the target host
 
@@ -46,6 +37,7 @@ The following actions have to be done on the machine that will host the wopits w
 swoole.enable_preemptive_scheduler=On
 ```
 - Install Apache >= 2.4, MariaDB >= 10.3 or PostgreSQL >= 11.7 and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Configure system locales by adding or uncommenting `en_US.UTF-8 UTF-8` and `fr_FR.UTF-8 UTF-8` to `/etc/locale.gen` and running `locale-gen`.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
 - Create a user and a database (using the `app/db/mysql/wopits-create_db.example.sql` (MariaDB) or `app/db/postgresql/wopits-create_db.example.sh` (PostgreSQL) file after having customize it according to your needs). Then create tables using `app/db/*/wopits-create_tables.sql`:
@@ -160,21 +152,11 @@ In order to run the task server as a daemon you must add it to the startup scrip
 
 If you are using the Git repository as your Apache DocumentRoot without deployment:
 
- 1. create a `data/` directory and give the Apache user all rights on it:
+- create a `data/` directory and give the Apache user all rights on it:
 ```bash
 # mkdir -p data/{walls,users}
 # chown -R [ApacheUser]:[wopitsUserGroup] data
 # chmod 2770 data
-```
- 2. Install external PHP modules using `composer`:
-```bash
-$ cd app/libs/
-$ composer update
-```
- 3. Install external Javascript modules using `yarn`:
-```bash
-$ cd www/libs/
-$ yarn
 ```
 
 ### Deployment
@@ -261,3 +243,13 @@ Create a `/var/log/wopits/` directory and customize the following lines before a
 1 0 * * * /var/www/wopits.domain.com/app/crons/cleanup.php >> /var/log/wopits/cleanup.log 2>&1
 1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits/check-deadline.log 2>&1
 */15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits/ping.log 2>&1
+```
+
+DOCKER
+------------
+The docker is still in beta, but you can already play with it.
+Go to the `docker/` directory, customize the `.env` file, take a look at the `docker-compose.yml` and run `docker-compose up`. Images are not on Docker Hub. The build of the 2 images `wopits_db` (MariaDB database) and `wopits_app` (Apache & Swoole services) can take time... be patient :-)
+The application needs to run on HTTPS. We use a self-signed certificate. Just ignore the browser warning.
+
+> ***It is not intended for production! and emails will not be sent.***
+> Any help is welcome!

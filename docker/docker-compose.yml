@@ -1,0 +1,48 @@
+#
+# All environment variables are in .env
+#
+version: "3"
+services:
+  # MariaDB database
+  db:
+    container_name: wopits_db
+    build:
+      context: db/
+      args:
+        WOPITS_DB_NAME: ${WOPITS_DB_NAME}
+        WOPITS_DB_USER: ${WOPITS_DB_USER}
+        WOPITS_DB_PASSWORD: ${WOPITS_DB_PASSWORD}
+
+    ports:
+      - "${WOPITS_MARIADB_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: wopits
+
+  # Web application (both apache & swoole web services)
+  app:
+    container_name: wopits_app
+    depends_on:
+      - db
+    build:
+      context: ../
+      dockerfile: docker/app/Dockerfile
+      args:
+        WOPITS_HOST: ${WOPITS_HOST}
+        WOPITS_DB_NAME: ${WOPITS_DB_NAME}
+        WOPITS_DB_USER: ${WOPITS_DB_USER}
+        WOPITS_DB_PASSWORD: ${WOPITS_DB_PASSWORD}
+    environment:
+      WOPITS_HOST: ${WOPITS_HOST}
+      WOPITS_HTTPS_PORT: ${WOPITS_HTTPS_PORT}
+## For the moment the docker does not send emails
+##      WOPITS_EMAILS_FROM: ${WOPITS_EMAILS_FROM}
+##      WOPITS_EMAILS_CONTACT: ${WOPITS_EMAILS_CONTACT}
+##      WOPITS_EMAILS_UNSUBSCRIBE: ${WOPITS_EMAILS_UNSUBSCRIBE}
+    volumes:
+      - wopits_data:/var/www/wopits.localhost/data/:rw
+    ports:
+      - "${WOPITS_HTTP_PORT}:80"
+      - "${WOPITS_HTTPS_PORT}:443"
+
+volumes:
+  wopits_data:

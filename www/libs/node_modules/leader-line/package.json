@@ -1,0 +1,51 @@
+{
+  "name": "leader-line",
+  "version": "1.0.5",
+  "title": "LeaderLine",
+  "description": "Draw a leader line in your web page.",
+  "keywords": [
+    "leader",
+    "line",
+    "markup",
+    "arrow",
+    "attention",
+    "highlight",
+    "spotlight",
+    "bubble",
+    "svg"
+  ],
+  "main": "leader-line.min.js",
+  "files": [
+    "leader-line.min.js",
+    "bower.json"
+  ],
+  "devDependencies": {
+    "anim-event": "^1.0.15",
+    "cheerio": "^1.0.0-rc.2",
+    "clean-css": "^4.1.9",
+    "grunt": "^1.0.2",
+    "grunt-task-helper": "^0.3.10",
+    "htmlclean": "^3.0.8",
+    "jasmine-core": "^2.99.1",
+    "log4js": "^2.5.3",
+    "node-static-alias": "^1.0.0",
+    "plain-draggable": "^2.0.24",
+    "pre-proc": "^0.2.8",
+    "test-page-loader": "1.0.7",
+    "uglify-js": "^3.3.11"
+  },
+  "scripts": {
+    "test": "node ./test/httpd"
+  },
+  "homepage": "https://anseki.github.io/leader-line/",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anseki/leader-line.git"
+  },
+  "bugs": "https://github.com/anseki/leader-line/issues",
+  "license": "MIT",
+  "author": {
+    "name": "anseki",
+    "url": "https://github.com/anseki"
+  }
+}

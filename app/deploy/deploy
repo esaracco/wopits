@@ -22,11 +22,12 @@
 
   use Wopits\DbCache;
 
-  $options = getopt ('Muhve:');
+  $options = getopt ('qyMuhve:');
 
   $Deploy = new Deploy ([
+    'quiet' => isset ($options['q']),
+    'assume-yes' => isset ($options['y']),
     'no-min' => isset ($options['M']),
-    'update' => isset ($options['u']),
     'help' => isset ($options['h']),
     'verbose' => isset ($options['v']),
     'env' => @$options['e'],
@@ -34,7 +35,6 @@
 
   $Deploy->checkRights ();
   $Deploy->checkMinifiers ();
-  $Deploy->updateExternalLibs ();
   $Deploy->initWorkingPath ();
   $Deploy->createLocales (); 
   $Deploy->createJS (); 
@@ -177,22 +177,7 @@
       }
 
       if (!empty ($this->opt['no-min']))
-        echo "\e[95;38;5;214mCode will not be minifyied\e[0m\n";
-
-      if (empty ($this->opt['update']))
-      {
-        if (!file_exists (__DIR__.'/../libs/vendor') ||
-            !file_exists (__DIR__.'/../../www/libs/node_modules'))
-        {
-          echo "External modules are required.\n";
-          if (readline ('Install them now from the network? [N/y] : ') == 'y')
-            $this->updateExternalLibs (true);
-          else
-            exit ("\e[1;31mDeployment has been aborted!\n\e[0m");
-        }
-      }
-      else
-        echo "\e[95;38;5;214mExternal modules will be updated\e[0m\n";
+        $this->echo ("\e[95;38;5;214mCode will not be minifyied\e[0m\n");
     }
 
     public function checkRights ()
@@ -220,24 +205,6 @@
         $this->isRemoteTarget, true);
     }
 
-    public function updateExternalLibs ($force = false)
-    {
-      if (empty ($this->opt['update']) && !$force)
-        return;
-
-      $a = ($force) ? 'Installing' : 'Updating';
-
-      echo "$a PHP external modules...\n";
-      $this->_exec ('rm -f '.__DIR__.'/../libs/composer.lock');
-      $this->_exec ('rm -rf '.__DIR__.'/../libs/vendor');
-      $this->_exec ('composer update -qn --working-dir='.__DIR__.'/../libs');
-
-      echo "$a JS external modules...\n";
-      $this->_exec ('rm -f '.__DIR__.'/../../www/libs/yarn.lock');
-      $this->_exec ('rm -rf '.__DIR__.'/../../www/libs/node_modules');
-      $this->_exec ('cd '.__DIR__.'/../../www/libs && yarn');
-    }
-
     public function initWorkingPath ()
     {
       $env = ENV[$this->opt['env']];
@@ -245,16 +212,16 @@
       // check for working path
       if (is_dir ($env['build-path']))
       {
-        echo "Working path \e[1m{$env['build-path']}\e[0m".
-               " will be deleted.\n";
-        if (readline ('Continue? [N/y] : ') == 'y')
+        $this->echo ("Working path \e[1m{$env['build-path']}\e[0m".
+                     " will be deleted.\n");
+        if ($this->opt['assume-yes'] || readline ('Continue? [N/y] : ') == 'y')
           $this->_exec ("rm -rf {$env['build-path']}");
         else
           exit ("\e[1;31mDeployment has been aborted!\n\e[0m");
       }
 
       // Prepare working directory
-      echo "Preparing working directory \e[1m{$env['build-path']}\e[0m...\n";
+      $this->echo ("Preparing working directory \e[1m{$env['build-path']}\e[0m...\n");
       foreach (['app/dkim',
                 'app/services/websocket',
                 'app/services/task',
@@ -287,9 +254,10 @@
             $txt = (isset (ENV['minifiers'][$type])) ?
               "has not been found" : "has not been filled";
       
-            echo "$lb minifier \e[1m$min\e[0m $txt.".
-                 " $lb files will not be minified.\n";
-            if (readline ('Continue? [N/y] : ') != 'y')
+            $this->echo ("$lb minifier \e[1m$min\e[0m $txt.".
+                         " $lb files will not be minified.\n");
+            if (!$this->opt['assume-yes'] &&
+                readline ('Continue? [N/y] : ') != 'y')
               exit ("\e[1;31mDeployment has been aborted!\e[0m\n");
           }
           else
@@ -303,18 +271,18 @@
       $env = ENV[$this->opt['env']];
 
       // Copying gettext locale files
-      echo "Copying gettext locales...\n ";
+      $this->echo ("Copying gettext locales...\n ");
       foreach (array_keys (WPT_LOCALES) as $l)
       {
         $dest = $env['build-path']."/app/locale/$l/LC_MESSAGES";
     
-        echo " $l";
+        $this->echo (" $l");
 
         $this->_exec ("mkdir -p $dest");
         $this->_exec ('cp -a '.__DIR__.
                        "/../locale/$l/LC_MESSAGES/wopits.mo $dest");
       }
-      echo "\n";
+      $this->echo ("\n");
     }
 
     public function createJS ()
@@ -322,12 +290,12 @@
       $env = ENV[$this->opt['env']];
 
       // Create localized main JS files
-      echo "Creating localized main JS...\n ";
+      $this->echo ("Creating localized main JS...\n ");
       foreach (array_keys (WPT_LOCALES) as $l)
       {
         $js = $env['build-path']."/www/js/all-$l.js";
 
-        echo " ".basename($js);
+        $this->echo (" ".basename($js));
     
         $this->_exec ('php '.__DIR__."/../../www/js/all.js.php $l > $js");
       }
@@ -343,7 +311,7 @@
         'cat '.$dirNode.implode($dirNode, WPT_JS_NODE_MODULES).' '.
                $dirLocal.implode($dirLocal, WPT_JS_LOCAL_MODULES).' >> '
           .$env['build-path'].'/www/libs/modules.js');
-      echo "\n";
+      $this->echo ("\n");
     }
 
     public function minifyJS ()
@@ -353,18 +321,18 @@
       // Minifying main JS files
       if ($this->minify['js'])
       {
-        echo "Minifying JS...\n ";
+        $this->echo ("Minifying JS...\n ");
         foreach (array_keys (WPT_LOCALES) as $l)
         {
           $js = "{$env['build-path']}/www/js/all-$l.js";
     
-          echo " ".basename($js);
+          $this->echo (" ".basename($js));
           $this->_execMinifier (ENV['minifiers']['js'], $js, "$js-tmp");
 //        copy ($js, "$js-tmp");
 
           rename ("$js-tmp", $js);
         }
-        echo "\n";
+        $this->echo ("\n");
       }
     }
 
@@ -373,25 +341,25 @@
       $env = ENV[$this->opt['env']];
 
       // Create main CSS file
-      echo "Creating main CSS...\n";
+      $this->echo ("Creating main CSS...\n");
 
       $css = $env['build-path']."/www/css/all.css";
 
-      echo "  ".basename($css)."\n";
+      $this->echo ("  ".basename($css)."\n");
 
       $this->_exec ('php '.__DIR__."/../../www/css/all.css.php > $css");
     
       // create theme CSS
-      echo "Creating theme CSS files...\n ";
+      $this->echo ("Creating theme CSS files...\n ");
       foreach (WPT_THEMES as $t)
       {
         $css = "{$env['build-path']}/www/css/themes/$t.css";
 
-        echo " ".basename($css);
+        $this->echo (" ".basename($css));
 
         $this->_exec ('php '.__DIR__."/../../www/css/themes/$t.css.php > $css");
       }
-      echo "\n";
+      $this->echo ("\n");
     }
 
     public function minifyCSS ()
@@ -402,28 +370,28 @@
       if ($this->minify['css'])
       {
         // Minifying main CSS file
-        echo "Minifying main CSS...\n ";
+        $this->echo ("Minifying main CSS...\n ");
 
         $css = $env['build-path']."/www/css/all.css";
     
-        echo " ".basename($css);
-        echo "\n";
+        $this->echo (" ".basename($css));
+        $this->echo ("\n");
 
         $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
         rename ("$css-tmp", $css);
     
         // Minifying theme CSS
-        echo "Minifying theme CSS...\n ";
+        $this->echo ("Minifying theme CSS...\n ");
         foreach (WPT_THEMES as $t)
         {
           $css = "{$env['build-path']}/www/css/themes/$t.css";
 
-          echo " ".basename($css);
+          $this->echo (" ".basename($css));
 
           $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
           rename ("$css-tmp", $css);
         }
-        echo "\n";
+        $this->echo ("\n");
       }
     }
 
@@ -434,11 +402,11 @@
       // Minify HTML
       if ($this->minify['html'])
       {
-        echo "Minifying HTML...\n ";
+        $this->echo ("Minifying HTML...\n ");
         foreach (['www/index.php', 'www/login.php',
                   'app/header-common.php'] as $f)
         {
-          echo " ".basename($f);
+          $this->echo (" ".basename($f));
 
           $f = "{$env['build-path']}/$f";
           $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
@@ -453,14 +421,14 @@
             if (substr ($f, -4) !== '.php')
               continue;
 
-            echo " $f";
+            $this->echo (" $f");
 
             $f = "$path/$f";
             $this->_execMinifier (ENV['minifiers']['html'], $f, "$f-tmp");
             rename ("$f-tmp", $f);
           }
         }
-        echo "\n";
+        $this->echo ("\n");
       }
     }
 
@@ -665,11 +633,11 @@
         rename ("$dest-tmp", $dest);
       }
 
-      echo "Directory \e[1m{$this->targetPath}".
+      $this->echo ("Directory \e[1m{$this->targetPath}".
            "\e[0m will be updated".(
              ($this->isRemoteTarget)?
-               " on \e[1m".$this->targetHost."\e[0m":'').".\n";
-      if (readline ('Continue? [N/y] : ') == 'y')
+               " on \e[1m".$this->targetHost."\e[0m":'').".\n");
+      if ($this->opt['assume-yes'] || readline ('Continue? [N/y] : ') == 'y')
       {
         $rsyncOptions =
           ' -ac --delete '.
@@ -691,38 +659,38 @@
             "rsync $rsyncOptions ".
             "{$env['build-path']}/ {$this->targetPath}/");
     
-        echo "\n\e[1;32mDeployment has been successfully done in \e[0m".
-             "\e[1m{$this->targetPath}\e[0m\e[0;32m\e[0m.\n";
+        $this->echo ("\n\e[1;32mDeployment has been successfully done in \e[0m".
+             "\e[1m{$this->targetPath}\e[0m\e[0;32m\e[0m.\n");
 
-        echo "\n\e[1mIMPORTANT\e[0m:\n\n";
+        $this->echo ("\n\e[1mIMPORTANT\e[0m:\n\n");
 
         // Instructions for the very first deployment
         if ($this->isFirstDeployment)
         {
           if ($this->isRemoteTarget)
-            echo "Go to the remote target {$this->targetHost}. This is the very first deployment. Read the following instructions (\e[1mexecute commands as root\e[0m):\n\n";
+            $this->echo ("Go to the remote target {$this->targetHost}. This is the very first deployment. Read the following instructions (\e[1mexecute commands as root\e[0m):\n\n");
           else
-            echo "This is the very first deployment. Read the following instructions (\e[1mexecute commands as root\e[0m):\n\n";
+            $this->echo ("This is the very first deployment. Read the following instructions (\e[1mexecute commands as root\e[0m):\n\n");
   
-          echo "# cd {$this->targetPath}\n".
+          $this->echo ("# cd {$this->targetPath}\n".
                "# mkdir -p data/{walls,users}\n".
                "# chown -R {$env['www-system-user']}:{$env['www-system-user']} data\n".
-               "# chmod -R 2770 data\n\n";
+               "# chmod -R 2770 data\n\n");
   
           if (!empty ($env['dkim']))
-            echo "* Copy your DKIM key `".realpath(__DIR__.'/../dkim')."/dkim.private` in the same path on the target and then:\n\n".
+            $this->echo ("* Copy your DKIM key `".realpath(__DIR__.'/../dkim')."/dkim.private` in the same path on the target and then:\n\n".
                  "# cd {$this->targetPath}\n".
                  "# chown {$env['www-system-user']} app/dkim/dkim.private\n".
-                 "# chmod 400 app/dkim/dkim.private\n\n";
+                 "# chmod 400 app/dkim/dkim.private\n\n");
   
-          echo "* Create a service in order to run the WebSocket server `{$this->targetPath}/app/services/websocket/server-ws.php` as a daemon (read the `README.md` file for details).\n\n";
+          $this->echo ("* Create a service in order to run the WebSocket server `{$this->targetPath}/app/services/websocket/server-ws.php` as a daemon (read the `README.md` file for details).\n\n");
 
-          echo "* Create a service in order to run the Task server `{$this->targetPath}/app/services/task/server-task.php` as a daemon (read the `README.md` file for details).\n\n";
+          $this->echo ("* Create a service in order to run the Task server `{$this->targetPath}/app/services/task/server-task.php` as a daemon (read the `README.md` file for details).\n\n");
         }
 
         // Instructions for each deployments
-        echo "Right after each deployment you must execute the following post-deployment script as root on the target:\n\n".
-             "# \e[1;34m{$this->targetPath}/app/deploy/bin/post-deploy.php\e[0m\n\n";
+        $this->echo ("Right after each deployment you must execute the following post-deployment script as root on the target:\n\n".
+             "# \e[1;34m{$this->targetPath}/app/deploy/bin/post-deploy.php\e[0m\n\n");
 
         // Delete working path.
         $this->_exec ("rm -rf {$env['build-path']}");
@@ -810,7 +778,7 @@
           "ssh {$this->deployUser}@{$this->targetHost} $cmd";
   
       if ($this->opt['verbose'])
-        echo "\n[\e[32m$cmd\e[0m]\n";
+        $this->echo ("\n[\e[32m$cmd\e[0m]\n");
   
       exec ("$cmd 2>&1", $o, $r);
 
@@ -848,15 +816,22 @@
         "perl -pi -e 's/(.$k.),\s*\"\"\)/$1, $tmp)/' ".$this->siteConfPath);
     }
 
+    private function echo ($msg)
+    {
+      if (!$this->opt['quiet'])
+        echo $msg;
+    }
+
     private function help ($msg = null)
     {
       exit ((($msg) ? "\n\e[1m$msg\e[0m\n\n" : "\n").
             "Usage: ./deploy [OPTION]...\n".
             "Synchronize wopits plateforms.\n\n".
+            "  -q\tquiet mode\n".
             "  -e\tenvironment to synchronize\n".
-            "  -u\tupdate external modules before deploying\n".
             "  -M\tdo not minify\n".
-            "  -v\tdisplay executed commands\n\n");
+            "  -v\tdisplay executed commands\n".
+            "  -y\tassume yes to all prompts\n\n");
     }
   }
 ?>

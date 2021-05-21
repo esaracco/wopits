@@ -1,0 +1,46 @@
+(function (global, factory) {
+	if (typeof define === "function" && define.amd) {
+		define(['module', 'exports'], factory);
+	} else if (typeof exports !== "undefined") {
+		factory(module, exports);
+	} else {
+		var mod = {
+			exports: {}
+		};
+		factory(mod, mod.exports);
+		global.jqueryUiDatepickerTh = mod.exports;
+	}
+})(this, function (module, exports) {
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	exports.default = function (jQuery) {
+		/* Thai initialisation for the jQuery UI date picker plugin. */
+		/* Written by pipo (pipo@sixhead.com). */
+		jQuery(function ($) {
+			$.datepicker.regional['th'] = {
+				closeText: 'ปิด',
+				prevText: '&#xAB;&#xA0;ย้อน',
+				nextText: 'ถัดไป&#xA0;&#xBB;',
+				currentText: 'วันนี้',
+				monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+				monthNamesShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+				dayNames: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
+				dayNamesShort: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+				dayNamesMin: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+				weekHeader: 'Wk',
+				dateFormat: 'dd/mm/yy',
+				firstDay: 0,
+				isRTL: false,
+				showMonthAfterYear: false,
+				yearSuffix: '' };
+			$.datepicker.setDefaults($.datepicker.regional['th']);
+		});
+	};
+
+	;
+	module.exports = exports['default'];
+});

@@ -1,0 +1,8 @@
+/nbproject/private/
+/nbproject/
+.svn
+.idea/*
+/debug/
+/node_modules/
+/bower_components/
+/npm-debug.log
