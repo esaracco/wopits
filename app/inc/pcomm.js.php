@@ -469,7 +469,7 @@
               // Display users search list if needed
               if (m = prev.match (/(^|\s)@([^\s]+)?$/))
                 S.getCurrent("pcomm").pcomm ("search", {str: m[2]||""});
-              if (this.classList.contains ("autocomplete"))
+              else if (this.classList.contains ("autocomplete"))
                 S.getCurrent("pcomm").pcomm ("reset");
             }
           });
