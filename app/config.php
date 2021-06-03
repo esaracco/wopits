@@ -50,7 +50,11 @@ define ('WPT_WRIGHTS_RW', 2);
 define ('WPT_WRIGHTS_RO', 3);
 
 // Regexp for direct URL
-define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|s|w)(\d+)(p(\d+)(c(\d+))?)?/');
+// - a = deadline alert
+// - c = comment notification
+// - s = wall sharing notification
+// - w = note assignation notification
+define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|c|s|w)(\d+)(p(\d+)(c(\d+))?)?/');
 
 // Themes
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);

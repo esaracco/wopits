@@ -129,7 +129,7 @@ class Message
       $this->_send ([
         'email' => $args['email'],
         'subject' => $subject,
-        'msg' => sprintf (_("Hello %s").",\n\n"._("You were mentioned in a comment to the note «%s»:")."\n\n%s\n----------\n%s\n----------", $args['fullname'], $qTitle, WPT_URL."/?/a{$args['wallId']}p{$args['postitId']}c{$args['commentId']}", $args['msg'])
+        'msg' => sprintf (_("Hello %s").",\n\n"._("You were mentioned in a comment to the note «%s»:")."\n\n%s\n----------\n%s\n----------", $args['fullname'], $qTitle, WPT_URL."/?/c{$args['wallId']}p{$args['postitId']}c{$args['commentId']}", $args['msg'])
       ]);
   }
 
