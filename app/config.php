@@ -115,7 +115,8 @@ define ('WS_PLUG_DEFAULTS', [
       'settings',
       'postitUpdate',
       'info',
-      'confirm'
+      'confirm',
+      'account'
     ]
   ]);
 
