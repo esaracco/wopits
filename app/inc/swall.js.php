@@ -60,8 +60,6 @@
       const plugin = this,
             $share = plugin.element;
 
-      H.loadPopup ("account", {open: false});
-
       $_groupPopup = $("#groupPopup");
 
       $share

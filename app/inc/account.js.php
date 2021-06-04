@@ -412,7 +412,7 @@
   $(function ()
     {
       if (!H.isLoginPage ())
-        setTimeout (()=> $("<div/>").account ("updateMainMenu"), 0);
+        setTimeout (()=> $("#accountPopup").account ("updateMainMenu"), 0);
     });
 
 <?php echo $Plugin->getFooter ()?>

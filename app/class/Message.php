@@ -116,7 +116,7 @@ class Message
     $this->_addToQueue ([
       'users_id' => $args['userId'],
       'title' => $subject,
-      'content' => sprintf (_("You were mentioned in a comment to the note «%s»:")."\n\n<quote>%s</quote>", "<a href='#' data-type='comment' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}' data-commentid='{$args['commentId']}'>".htmlentities($qTitle)."</a>", htmlentities($args['msg']))
+      'content' => sprintf (_("%s mentioned you in a comment to the note «%s»:")."\n\n<quote>%s</quote>", htmlentities($args['sharerName']), "<a href='#' data-type='comment' data-wallid='{$args['wallId']}' data-postitid='{$args['postitId']}' data-commentid='{$args['commentId']}'>".htmlentities($qTitle)."</a>", htmlentities($args['msg']))
     ]);
 
     Helper::sendToWSServer ([
@@ -129,7 +129,7 @@ class Message
       $this->_send ([
         'email' => $args['email'],
         'subject' => $subject,
-        'msg' => sprintf (_("Hello %s").",\n\n"._("You were mentioned in a comment to the note «%s»:")."\n\n%s\n----------\n%s\n----------", $args['fullname'], $qTitle, WPT_URL."/?/c{$args['wallId']}p{$args['postitId']}c{$args['commentId']}", $args['msg'])
+        'msg' => sprintf (_("Hello %s").",\n\n"._("%s mentioned you in a comment to the note «%s»:")."\n\n%s\n----------\n%s\n----------", $args['fullname'], $args['sharerName'], $qTitle, WPT_URL."/?/c{$args['wallId']}p{$args['postitId']}c{$args['commentId']}", $args['msg'])
       ]);
   }
 

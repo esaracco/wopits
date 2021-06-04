@@ -64,6 +64,7 @@ class Comment extends Wall
     $wdir = $this->getWallDir ('web');
     $currentDate = time ();
     $content = $this->data->content;
+    $sharerName = $this->data->userFullname;
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
@@ -111,6 +112,7 @@ class Comment extends Wall
               'event' => Task::EVENT_TYPE_SEND_MESSAGE,
               'method' => 'commentToUser',
               'sendmail' => $user['allow_emails'],
+              'sharerName' => $sharerName,
               'userId' => $user['id'],
               'fullname' => $user['fullname'],
               'title' => $this->data->postitTitle??null,

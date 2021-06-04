@@ -170,7 +170,8 @@
         `wall/${wallId}/cell/${cellId}/postit/${postitId}/comment`,
         {
           content,
-          postitTitle: this.postit().getTitle ()
+          postitTitle: this.postit().getTitle (),
+          userFullname: $("#accountPopup").account ("getProp", "fullname")
         },
         // success cb
         () => H.waitForDOMUpdate (
