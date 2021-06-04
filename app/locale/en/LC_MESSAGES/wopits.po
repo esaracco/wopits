@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-03 18:27+0200\n"
+"POT-Creation-Date: 2021-06-04 05:47+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -29,6 +29,10 @@ msgstr ""
 
 #, php-format
 msgid "%s gave you read-only access to the wall «%s»"
+msgstr ""
+
+#, php-format
+msgid "%s mentioned you in a comment to the note «%s»:"
 msgstr ""
 
 #, php-format
@@ -1378,10 +1382,6 @@ msgid "You must have write access to perform this action."
 msgstr ""
 
 msgid "You need write access to perform this action."
-msgstr ""
-
-#, php-format
-msgid "You were mentioned in a comment to the note «%s»:"
 msgstr ""
 
 msgid "You were mentioned in a comment to this note."
