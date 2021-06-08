@@ -302,7 +302,7 @@ class Helper
   public static function isBlacklistedDomain (string $email):?string
   {
     return (preg_match ('/'.WPT_BLACKLISTED_DOMAINS.'/', $email)) ?
-      sprintf ("Please, use another email! We have blacklisted the following domains: %s.", str_replace('|', ', ', WPT_BLACKLISTED_DOMAINS)) : null;
+      sprintf (_("Please, use another email! We have blacklisted the following domains: %s."), str_replace('|', ', ', WPT_BLACKLISTED_DOMAINS)) : null;
   }
 
   //<WPTPROD-remove>
