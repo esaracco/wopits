@@ -235,7 +235,7 @@
         {
           if (d.error_msg)
           {
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({type: "danger", msg: d.error_msg});
 
             this.resetCreateUserForm ();
           }

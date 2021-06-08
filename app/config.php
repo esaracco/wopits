@@ -56,6 +56,9 @@ define ('WPT_WRIGHTS_RO', 3);
 // - w = note assignation notification
 define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|c|s|w)(\d+)(p(\d+)(c(\d+))?)?/');
 
+// Blacklisted emails domains (with a pipe separator)
+define ('WPT_BLACKLISTED_DOMAINS', 'outlook.fr|outlook.com|live.fr|live.com');
+
 // Themes
 define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
 

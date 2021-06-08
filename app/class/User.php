@@ -833,11 +833,16 @@ class User extends Base
         $field = preg_replace('/^[^a-z]+$/', '', array_keys($data)[0]);
         $value = $data[$field];
 
+        // Check for duplicate (username or email)
         if ((isset ($data['username']) || isset ($data['email'])) &&
             ( ($dbl = $this->_isDuplicate ([$field => $value])) ))
           $ret['error_msg'] = sprintf (($dbl == 'username') ?
             _("The login `%s` already exists.") :
             _("The email `%s` already exists."), $value);
+        // Check for blacklisted domains
+        elseif (isset ($data['email']) &&
+                $msg = Helper::isBlacklistedDomain ($this->data->email))
+          $ret['error_msg'] = $msg;
         else
         {
           $this->db->beginTransaction ();
@@ -962,6 +967,10 @@ class User extends Base
 
     try
     {
+      // Check for blacklisted domains
+      if ($msg = Helper::isBlacklistedDomain ($this->data->email))
+        throw new \Exception ($msg);
+
       // Check for duplicate (username or email)
       if ( ($dbl = $this->_isDuplicate ([
               'username' => $this->data->username,
