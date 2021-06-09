@@ -146,6 +146,9 @@
           `wall/${wallId}/chat`);
 
         $chat.hide ();
+
+        if (!H.haveMouse ())
+          H.fixVKBScrollStop ();
       }
       else
       {
@@ -154,6 +157,9 @@
 
         if (el)
           el.remove ();
+
+        if (!H.haveMouse ())
+          H.fixVKBScrollStart ();
 
         $chat.css ({bottom: "15px", left: "5px", display: "table"});
 
