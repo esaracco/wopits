@@ -214,7 +214,7 @@ CREATE TABLE postits
   commentscount SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   classcolor VARCHAR(25),
   title VARCHAR(50),
-  content TEXT,
+  content MEDIUMTEXT,
   tags VARCHAR(255),
   deadline INT UNSIGNED,
   timezone VARCHAR (30),
