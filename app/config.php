@@ -117,9 +117,9 @@ define ('WS_PLUG_DEFAULTS', [
     'index' => [
       'settings',
       'postitUpdate',
+      'account',
       'info',
-      'confirm',
-      'account'
+      'confirm'
     ]
   ]);
 
