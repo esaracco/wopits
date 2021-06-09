@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-08 08:28+0200\n"
+"POT-Creation-Date: 2021-06-09 07:24+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -274,9 +274,6 @@ msgstr ""
 
 #, php-format
 msgid "Add or remove users in the group « %s »."
-msgstr ""
-
-msgid "Add or remove users."
 msgstr ""
 
 msgid "Add relation"
@@ -779,9 +776,6 @@ msgstr ""
 msgid "No title"
 msgstr ""
 
-msgid "No user for this note!"
-msgstr ""
-
 msgid "No user in this group."
 msgstr ""
 
@@ -1184,6 +1178,9 @@ msgid "This note has expired."
 msgstr ""
 
 msgid "This note has no attached files."
+msgstr ""
+
+msgid "This note has no users involved."
 msgstr ""
 
 #, php-format
