@@ -1657,7 +1657,7 @@
 
           if (!next || !next.classList.contains ("externalref"))
           {
-            img.parentNode.title = `<?=("This external content is filtered")?>`;
+            img.parentNode.title = `<?=_("This external content is filtered")?>`;
             $(`<i class="fas fa-umbrella fa-lg externalref"></i>`)
               .insertAfter ($(img));
           }
