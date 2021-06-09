@@ -127,6 +127,7 @@ class Base
       case 'char':
       case 'varchar':
       case 'text':
+      case 'mediumtext':
 
         $maxLength = $f['length'];
 
