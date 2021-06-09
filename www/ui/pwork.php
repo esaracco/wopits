@@ -17,7 +17,7 @@
 
         <div>
           <label class="users-title"><?=_("Users involved in this note:")?></label>
-          <label class="nousers-title"><?=_("No user for this note!")?></label>
+          <label class="nousers-title"><?=_("This note has no users involved.")?></label>
           <div class="scroll mb-2">
             <ul class="list-group attr"></ul>
           </div>

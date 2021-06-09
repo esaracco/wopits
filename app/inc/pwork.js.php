@@ -40,7 +40,7 @@
     display ()
     {
       const plugin = this,
-            ro = plugin.settings.readonly;
+            readonly = plugin.settings.readonly;
 
       H.loadPopup ("usearch", {
         open: false,
@@ -54,13 +54,8 @@
         {
           const _args = $p.usearch ("getIds");
 
-          if (ro)
-            $p.usearch ("reset", {full: true, readonly: true});
-          else
-          {
-            $p.usearch ("reset", {full: true});
-            $p.find(".desc").html (`<?=_("Add or remove users.")?>`);
-          }
+          $p.usearch ("reset", {full: true,
+                                readonly: !!plugin.settings.readonly});
 
           // Refresh counter (needed when some users have been deleted)
           _args.cb_after = (c)=> plugin.setCount(c);

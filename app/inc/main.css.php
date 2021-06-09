@@ -1941,8 +1941,6 @@ ul#mmenu {
 
 #swallPopup .nogroup,
 .nousers-title {
-  font-style:italic;
-  opacity:0.6;
   font-size:.9rem;
 }
 
