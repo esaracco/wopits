@@ -1163,7 +1163,7 @@
     {
       const th = this.element.find(`tbody tr:eq(${rowIdx}) th:eq(0)`)[0];
 
-      H.headerRemoveContentKeepingWallSize ({
+      $(th).header ("removeContentKeepingWallSize", {
         oldW: th.offsetWidth,
         cb: () =>
           {

@@ -2001,20 +2001,6 @@ class WHelper
     reader.onloadend = ((f) => (evt) => success_cb (evt, f))(file);
   }
   
-  // METHOD headerRemoveContentKeepingWallSize ()
-  headerRemoveContentKeepingWallSize (args)
-  {
-    const $wall = S.getCurrent ("wall"),
-          firstTh = $wall[0].querySelector ("thead th");
-  
-    args.cb ();
-  
-    $wall[0].style.width = "auto";
-    firstTh.style.width = 0;
-  
-    $wall.wall ("fixSize", args.oldW, firstTh.getBoundingClientRect().width);
-  }
-  
   // METHOD waitForDOMUpdate ()
   waitForDOMUpdate (cb)
   {

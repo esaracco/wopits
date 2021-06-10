@@ -520,7 +520,7 @@
             if (this.settings.item_type == "col")
               img.remove ();
             else
-              H.headerRemoveContentKeepingWallSize ({
+              H.removeContentKeepingWallSize ({
                 oldW: oldW,
                 cb: () => img.remove ()
               });
@@ -529,6 +529,20 @@
           }
         }
       );
+    },
+
+    // METHOD removeContentKeepingWallSize ()
+    removeContentKeepingWallSize (args)
+    {
+      const $wall = this.settings.wall,
+            th1 = $wall[0].querySelector ("thead th");
+
+      args.cb ();
+
+      $wall[0].style.width = "auto";
+      th1.style.width = 0;
+
+      $wall.wall ("fixSize", args.oldW, th1.offsetWidth);
     },
 
     // METHOD update ()
