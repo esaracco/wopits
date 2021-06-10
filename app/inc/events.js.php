@@ -396,16 +396,11 @@ $(function()
 
           case "postitUpdatePopup":
 
-            var c = tinymce.activeEditor.getContent (),
-                cNew = H.removeHTMLTable (c);
-
-            $postit.postit ("setProgress",
-              $popup.find(".slider").slider ("value"));
-            $postit.postit ("setTitle", $("#postitUpdatePopupTitle").val ());
-            $postit.postit ("setContent", (cNew !== null) ? cNew : c);
-
-            $postit[0].removeAttribute ("data-uploadedpictures");
-            S.unset ("postit-data");
+            $postit.postit ("save", {
+              content: tinymce.activeEditor.getContent (),
+              progress: $popup.find(".slider").slider ("value"),
+              title: $("#postitUpdatePopupTitle").val ()
+            });
             break;
 
           // Upload postit attachment

@@ -1910,6 +1910,20 @@
         });
     },
 
+    // METHOD save ()
+    save (args)
+    {
+      const c = args.content,
+            cNew = H.removeHTMLTable (c);
+
+      this.setProgress (args.progress);
+      this.setTitle (args.title);
+      this.setContent ((cNew !== null) ? cNew : c);
+
+      this.element[0].removeAttribute ("data-uploadedpictures");
+      S.unset ("postit-data");
+    },
+
     // METHOD update ()
     update (d, cell)
     {
