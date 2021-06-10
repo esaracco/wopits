@@ -1161,6 +1161,21 @@
     // METHOD deleteRow ()
     deleteRow (rowIdx)
     {
+      const th = this.element.find(`tbody tr:eq(${rowIdx}) th:eq(0)`)[0];
+
+      H.headerRemoveContentKeepingWallSize ({
+        oldW: th.offsetWidth,
+        cb: () =>
+          {
+            const img = th.querySelector (".img");
+
+            if (img)
+              img.remove ();
+
+            th.querySelector(".title").innerHTML = "&nbsp;";
+          }
+        });
+
       H.request_ws (
         "DELETE",
         `wall/${this.settings.id}/row/${rowIdx}`,
