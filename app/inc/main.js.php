@@ -22,7 +22,7 @@
   // METHOD _getCellTemplate ()
   const _getCellTemplate = (data)=>
     {
-      return `<td scope="dzone" class="size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
+      return `<td scope="dzone" class="wpt size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
     };
 
   // METHOD _getDirectURLData ()
@@ -103,7 +103,7 @@
           "background-color":(settings["background-color"]) ?
                                  settings["background-color"] : "auto"
         })
-        .html ("<thead><tr><th>&nbsp;</th></tr></thead><tbody></tbody>");
+        .html (`<thead class="wpt"><tr class="wpt"><th class="wpt">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`);
 
       if (H.haveMouse ())
         $wall.draggable({
@@ -140,9 +140,9 @@
           for (let i = 0, iLen = hcols.length; i < iLen; i++)
           {
             const header = hcols[i],
-                  $th = $("<th/>");
+                  $th = $(`<th class="wpt"/>`);
 
-            $wall.find("thead tr").append ($th);
+            $wall.find("thead.wpt tr.wpt").append ($th);
             $th.header ({
               access: access,
               item_type: "col",
@@ -779,15 +779,15 @@
         for (let i = 0; i < colsCount; i++)
         {
           const header = d.headers.cols[i],
-                $header = $wall.find(`thead th[data-id="header-${header.id}"]`);
+                $header = $wall.find(`thead.wpt th.wpt[data-id="header-${header.id}"]`);
 
           if (!$header.length)
           {
-            const $th = $("<th/>");
+            const $th = $(`<th class="wpt"/>`);
 
             $th[0].classList.add (showHeaders?"display":"hide");
 
-            $wall.find("thead tr").append ($th);
+            $wall.find("thead.wpt tr.wpt").append ($th);
             $th.header ({
               item_type: "col",
               id: header.id,
@@ -805,12 +805,12 @@
         for (let i = 0; i < rowsCount; i++)
           rowsHeadersIds[d.headers.rows[i].id] = true;
 
-        wall.querySelectorAll("tbody th").forEach (th =>
+        wall.querySelectorAll("tbody.wpt th.wpt").forEach (th =>
           {
             const $header = $(th);
 
             if (!rowsHeadersIds[$header.header ("getId")])
-              $wall.find(`tbody tr:eq(${$header.parent().index()})`)
+              $wall.find(`tbody.wpt tr.wpt:eq(${$header.parent().index()})`)
                 .cell ("remove");
           });
 
@@ -818,16 +818,16 @@
         for (let i = 0; i < colsCount; i++)
           colsHeadersIds[d.headers.cols[i].id] = true;
 
-        wall.querySelectorAll("thead th").forEach (th =>
+        wall.querySelectorAll("thead.wpt th.wpt").forEach (th =>
           {
             const $header = $(th),
                   idx = $header.index ();
 
             if (idx > 0 && !colsHeadersIds[$header.header ("getId")])
             {
-              wall.querySelectorAll("thead th")[idx].remove ();
-              wall.querySelectorAll("tbody tr").forEach (tr =>
-                $(tr).find (`td:eq(${idx-1})`).cell ("remove"));
+              wall.querySelectorAll("thead.wpt th.wpt")[idx].remove ();
+              wall.querySelectorAll("tbody.wpt tr.wpt").forEach (tr =>
+                $(tr).find (`td.wpt:eq(${idx-1})`).cell ("remove"));
             }
           });
 
@@ -851,16 +851,16 @@
           const row = rows[i],
                 header = d.headers.rows[i];
 
-          if (!$wall.find(`td[data-id="cell-${row[0].id}"]`).length)
+          if (!$wall.find(`td.wpt[data-id="cell-${row[0].id}"]`).length)
             plugin.addRow (header, row);
           else
-            $wall.find(`tbody th[data-id="header-${header.id}"]`)
+            $wall.find(`tbody.wpt th.wpt[data-id="header-${header.id}"]`)
               .header ("update", header);
 
           for (let j = 0, jLen = row.length; j < jLen; j++)
           {
             const cell = row[j];
-            let $cell = $wall.find(`td[data-id="cell-${cell.id}"]`),
+            let $cell = $wall.find(`td.wpt[data-id="cell-${cell.id}"]`),
                 isNewCell = false;
 
             // If new cell, add it
@@ -872,7 +872,7 @@
 
               $cell = $(_getCellTemplate (cell));
 
-              $wall.find(`tbody tr:eq(${cell.item_row})`).append ($cell);
+              $wall.find(`tbody.wpt tr.wpt:eq(${cell.item_row})`).append ($cell);
 
               // Init cell
               $cell.cell ({
@@ -948,7 +948,7 @@
           plugin.fixSize ();
 
           if (d.reorganize)
-            $wall.find("tbody td").cell ("reorganize");
+            $wall.find("tbody.wpt td.wpt").cell ("reorganize");
 
           plugin.refreshCellsToggleDisplayMode ();
 
@@ -1128,11 +1128,11 @@
       for (let i = 0; i < row.length; i++)
         tds += _getCellTemplate (row[i]);
 
-      const $row = $(`<tr><th class="${showHeaders?"display":"hide"}"></th>${tds}</tr>`);
+      const $row = $(`<tr class="wpt"><th class="wpt ${showHeaders?"display":"hide"}"></th>${tds}</tr>`);
 
       // Add row
-      $wall.find("tbody").append ($row);
-      $row.find("th:eq(0)").header ({
+      $wall.find("tbody.wpt").append ($row);
+      $row.find("th.wpt:eq(0)").header ({
         access: plugin.settings.access,
         item_type: "row",
         id: header.id,
@@ -1143,7 +1143,7 @@
       });
 
       // Init cells
-      $row.find("td").each (function ()
+      $row.find("td.wpt").each (function ()
         {
           const cellId = this.dataset.id.substring (5);
 
@@ -1161,7 +1161,7 @@
     // METHOD deleteRow ()
     deleteRow (rowIdx)
     {
-      const th = this.element.find(`tbody tr:eq(${rowIdx}) th:eq(0)`)[0];
+      const th = this.element.find(`tbody.wpt tr.wpt:eq(${rowIdx}) th.wpt:eq(0)`)[0];
 
       $(th).header ("removeContentKeepingWallSize", {
         oldW: th.offsetWidth,
@@ -1192,7 +1192,7 @@
         `wall/${this.settings.id}/col/${idx-1}`,
         {
           wall: {width: Math.trunc ($wall.outerWidth()-1)},
-          width: Math.trunc ($wall.find(`thead tr th:eq(${idx})`).outerWidth())
+          width: Math.trunc ($wall.find(`thead.wpt tr.wpt th.wpt:eq(${idx})`).outerWidth())
         });
     },
 
@@ -1613,7 +1613,7 @@
       if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
       {
         const oldName = plugin.getName (),
-              $cell = $wall.find ("td"),
+              $cell = $wall.find ("td.wpt"),
               oldW = $cell.outerWidth ();
 
         plugin.setName (name);
@@ -1642,14 +1642,14 @@
           // INTERNAL FUNCTION __resize ()
           const __resize = (args)=>
             {
-              $wall.find("thead th:eq(1),td").css ("width", args.newW);
-              $wall[0].querySelector("td .ui-resizable-s")
+              $wall.find("thead.wpt th.wpt:eq(1),td.wpt").css ("width", args.newW);
+              $wall[0].querySelector("td.wpt .ui-resizable-s")
                 .style.width = `${args.newW+2}px`;
 
               if (args.newH)
               {
-                $wall.find("tbody th,td").css ("height", args.newH);
-                $wall[0].querySelector("td .ui-resizable-e")
+                $wall.find("tbody.wpt th.wpt,td.wpt").css ("height", args.newH);
+                $wall[0].querySelector("td.wpt .ui-resizable-e")
                   .style.height = `${args.newH+2}px`;
               }
 
@@ -1657,8 +1657,8 @@
             };
 
           __resize ({newW: w, oldW: oldW, newH: h});
-          if ($wall.find("td").outerWidth () != w)
-            __resize ({newW: $wall.find("td").outerWidth (), oldW: w});
+          if ($wall.find("td.wpt").outerWidth () != w)
+            __resize ({newW: $wall.find("td.wpt").outerWidth (), oldW: w});
 
           cellPlugin.edit ();
           cellPlugin.reorganize ();
@@ -1794,7 +1794,7 @@
 
       this.element[0].dataset.displaymode = type;
 
-      this.element.find("td").each (function ()
+      this.element.find("td.wpt").each (function ()
         {
           $(this).cell ("setPostitsDisplayMode", type);
         });
@@ -1854,7 +1854,7 @@
 
         zoom0.style.width = "30000px";
 
-        zoom0.querySelectorAll("th").forEach (th =>
+        zoom0.querySelectorAll("th.wpt").forEach (th =>
           {
             th.style.pointerEvents = "none";
 
@@ -1922,7 +1922,7 @@
         zoom0.style.transform = S.get ("old-styles").transform;
         S.unset ("old-styles");
 
-        zoom0.querySelectorAll("th").forEach (th =>
+        zoom0.querySelectorAll("th.wpt").forEach (th =>
           {
             th.style.pointerEvents = "auto";
 
@@ -2116,7 +2116,7 @@
     {
       let w = 0;
 
-      this.element[0].querySelector("tbody tr").querySelectorAll("td")
+      this.element[0].querySelector("tbody.wpt tr.wpt").querySelectorAll("td.wpt")
         .forEach ((td)=> w += parseFloat (td.style.width));
 
       return w;
@@ -2125,7 +2125,7 @@
     // METHOD showHeaders ()
     showHeaders ()
     {
-      this.element[0].querySelectorAll("th").forEach (th =>
+      this.element[0].querySelectorAll("th.wpt").forEach (th =>
         {
           th.classList.remove ("hide");
           th.classList.add ("display");
@@ -2135,7 +2135,7 @@
     // METHOD hideHeaders ()
     hideHeaders ()
     {
-      this.element[0].querySelectorAll("th").forEach (th =>
+      this.element[0].querySelectorAll("th.wpt").forEach (th =>
         {
           th.classList.remove ("display");
           th.classList.add ("hide");
@@ -2161,7 +2161,7 @@
             {
               let w = this.getTDsWidth ();
 
-              w += wall.querySelector("tbody th").clientWidth;
+              w += wall.querySelector("tbody.wpt th.wpt").clientWidth;
 
               wall.style.width = `${w}px`;
               wall.dataset.oldwidth = w;
@@ -2179,7 +2179,7 @@
           // Required to obtain the headers dimensions
           this.showHeaders ();
 
-          const bbox = wall.querySelector("thead th").getBoundingClientRect ();
+          const bbox = wall.querySelector("thead.wpt th.wpt").getBoundingClientRect ();
 
           if (bbox.width)
             wall.dataset.headersshift =

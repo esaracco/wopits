@@ -97,9 +97,9 @@
       let maxW = 0,
           tmp;
 
-      (content.match(/<img\s[^>]+>/g)||[]).forEach (img =>
+      (content.match(/<[a-z]+\s[^>]+>/g)||[]).forEach (tag =>
         {
-          if ( (tmp = img.match (/width="(\d+)"/)) )
+          if ( (tmp = tag.match (/width\s*[=:]\s*"?(\d+)"?/)) )
           {
             const w = Number (tmp[1]);
 
@@ -108,7 +108,7 @@
           }
         });
 
-      return maxW;
+      return maxW ? maxW + 5 : 0;
     };
 
   // METHOD _removePlug ()
@@ -335,6 +335,8 @@
 
       if (writeAccess)
       {
+        const postitEdit = postit.querySelector (".postit-edit");
+
         $postit  
         // DRAGGABLE postit
         .draggable ({
@@ -343,7 +345,7 @@
           revert: "invalid",
           cursor: "pointer",
           cancel: ".postit-tags",
-          containment: $wall.find ("tbody"),
+          containment: $wall.find ("tbody.wpt"),
           scrollSensitivity: 50,
           opacity: 0.35,
           scope: "dzone",
@@ -400,15 +402,14 @@
               }
               else
               {
-                const edit = postit.querySelector (".postit-edit"),
-                      content = edit.innerHTML;
+                const content = postitEdit.innerHTML;
 
                 // If the postit has been dropped into another cell
                 plugin.settings.cell = $postit.parent ();
 
                 // Update content cells references if any
                 if (content.indexOf ("/cell/") != -1)
-                  edit.innerHTML = content.replace (
+                  postitEdit.innerHTML = content.replace (
                               /\/cell\/\d+\//g,
                               `/cell/${plugin.settings.cellId}/`);
 
@@ -432,6 +433,8 @@
           {
             // Refresh relations position
             plugin.repositionPlugs ();
+
+            plugin.fixEditHeight (ui.size.height);
 
             if (S.get("revertData").revert)
               return false;
@@ -481,7 +484,7 @@
             }
           });
 
-        $postit.find(".postit-edit")
+        $(postitEdit)
           // EVENT doubletap on content
           .doubletap ((e)=>
           {
@@ -1119,7 +1122,7 @@
         if (canWrite)
           $label.draggable ({
             distance: 10,
-//            containment: S.getCurrent("wall").find("tbody"),
+//            containment: S.getCurrent("wall").find("tbody.wpt"),
             start: function (e, ui)
             {
               const p = plug.labelObj.position ();
@@ -1655,7 +1658,8 @@
         {
           const next = img.nextSibling;
 
-          if (!next || !next.classList.contains ("externalref"))
+          if (!next || !next.classList ||
+              !next.classList.contains ("externalref"))
           {
             img.parentNode.title = `<?=_("This external content is filtered")?>`;
             $(`<i class="fas fa-umbrella fa-lg externalref"></i>`)
@@ -1791,6 +1795,16 @@
       postit.style.left = args.left + "px";
     },
 
+    // METHOD fixEditHeight ()
+    fixEditHeight (height)
+    {
+      const postit = this.element[0],
+            h = (height === undefined) ?
+                   parseInt (postit.style.height) : height;
+
+      postit.querySelector(".postit-edit").style.maxHeight = `${h-15}px`;
+    },
+
     // METHOD fixPosition ()
     fixPosition (cPos, cH, cW)
     {
@@ -1913,12 +1927,9 @@
     // METHOD save ()
     save (args)
     {
-      const c = args.content,
-            cNew = H.removeHTMLTable (c);
-
       this.setProgress (args.progress);
       this.setTitle (args.title);
-      this.setContent ((cNew !== null) ? cNew : c);
+      this.setContent (args.content);
 
       this.element[0].removeAttribute ("data-uploadedpictures");
       S.unset ("postit-data");
@@ -1953,6 +1964,8 @@
         postit.style.left = `${d.item_left}px`;
         postit.style.width = `${d.width}px`;
         postit.style.height = `${d.height}px`;
+
+        this.fixEditHeight ();
 
         H.waitForDOMUpdate (()=> this.repositionPlugs ());
       }
@@ -2165,7 +2178,7 @@
           language: (locale != "en_US")?locale:null,
           language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
           branding: false,
-          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime lists",
+          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime lists table",
 
           setup: function (editor)
           {
@@ -2174,11 +2187,14 @@
             editor.on("change", function (e)
               {
                 let c = editor.getContent ();
-                const noTab = H.removeHTMLTable (c);
 
-                // Clean up HTML tables
-                if (noTab !== null)
-                  editor.setContent (noTab);
+                // Remove unwanted images attributes
+                if (c.match (/\s(srcset|alt)\s*=/i))
+                {
+                  //FIXME
+                  c = c.replace (/\s(srcset|alt)\s*=/ig, "none=");
+                  editor.setContent (c);
+                }
 
                 // Check for img only if the TinyMCE dialog is open
                 if ($(".tox-dialog").is(":visible"))
@@ -2244,7 +2260,7 @@
           mobile: {menubar: "edit view format insert"},
           menubar: "edit view format insert",
           menu:{view:{title:`<?=_("View")?>`, items:"fullscreen"}},
-          toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image",
+          toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image | table",
           statusbar: false
         });
 

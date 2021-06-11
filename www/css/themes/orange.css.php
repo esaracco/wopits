@@ -19,8 +19,8 @@
 
 #normal-display-btn,
 .newfeatures.latest p,
-.wall th,
-.wall tbody th div.row-menu,
+.wall th.wpt,
+.wall tbody.wpt th.wpt div.row-menu,
 .postit-edit [external-src],
 .dropdown-item:active,
 .dropdown-item:hover {
@@ -28,11 +28,11 @@
   border-color: #f7e5b1;
 }
 
-.wall td {
+.wall td.wpt {
   border-right-color: #fdeec0;
 }
 
-.wall tr {
+.wall tr.wpt {
   border-color: #fdeec0;
 }
 

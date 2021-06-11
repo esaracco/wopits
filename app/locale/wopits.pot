@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-06-09 16:16+0200\n"
+        "POT-Creation-Date: 2021-06-11 13:48+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,16 +58,7 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Account</b> Fixed an issue with account removal confirmation popup.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Account</b> Fixed an issue with account update.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Chat</b> Fixed an issue with the virtual keyboard on mobile devices.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed an issue with very large content.</p>"
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Walls</b> Fixed issues with rows deletion.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Account</b> Blacklisting of the following email domains: <i>outlook.fr</i>, <i>outlook.com</i>, <i>live.fr</i>, <i>live.com</i>, <i>hotmail.fr</i>, <i>hotmail.com</i>. <u>If your email is using one of them, please update it as soon as possible!</u></p>"
@@ -76,10 +67,10 @@ msgstr  ""
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Docker</b> wopits docker is out! Help will be welcome to improve it.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can manage involved users for notes of shared walls.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Now you can create or copy/paste tables in notes body.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> More intuitive walls menu.</p>"
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can manage involved users for notes of shared walls.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the visibility of walls headers.</p>"
@@ -268,9 +259,6 @@ msgid   "Confirmation"
 msgstr  ""
 
 msgid   "Content"
-msgstr  ""
-
-msgid   "Content has been cleaned up"
 msgstr  ""
 
 msgid   "Copy"

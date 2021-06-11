@@ -516,7 +516,7 @@
               wallPlugin.setShared (false);
 
             $share.find(".grp-lb").text (`<?=_("Available groups:")?>`);
-            wallPlugin.element.find("thead th:eq(0)").html ("&nbsp;");
+            wallPlugin.element.find("thead.wpt th.wpt:eq(0)").html ("&nbsp;");
 
             html = (d.delegateAdminId) ?
               `<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>` :

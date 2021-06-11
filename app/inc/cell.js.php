@@ -128,7 +128,7 @@
                     });
                   else
                   {
-                    $cell.closest("tr").find("th:first-child")
+                    $cell.closest("tr.wpt").find("th.wpt:first-child")
                       .css("height", ui.size.height);
 
                     plugin.update ({
@@ -136,7 +136,8 @@
                     });
 
                     // Set height for all cells of the current row
-                    $wall.find(`tbody tr:eq(${$cell.parent().index()}) td`)
+                    $wall.find(
+                      `tbody.wpt tr.wpt:eq(${$cell.parent().index()}) td.wpt`)
                       .each (function ()
                       {
                         this.style.height = `${ui.size.height}px`;
@@ -150,7 +151,8 @@
                 // Width
                 if (absW < 2 || absW > 2)
                 {
-                  $wall.find("tbody tr").find(`td:eq(${$cell.index()-1})`)
+                  $wall.find("tbody.wpt tr.wpt")
+                    .find(`td.wpt:eq(${$cell.index()-1})`)
                     .each (function ()
                     {
                       this.style.width = `${ui.size.width}px`;
@@ -162,7 +164,7 @@
                   $wall.wall ("fixSize", ui.originalSize.width, ui.size.width);
                 }
 
-                $wall.find("tbody td").cell ("reorganize");
+                $wall.find("tbody.wpt td.wpt").cell ("reorganize");
 
                 plugin.unedit ();
               }
@@ -175,7 +177,8 @@
          const __dblclick = (e)=>
            {
              if (S.get ("zoom-level") ||
-                 (e.target.tagName != "TD" &&
+                 ((e.target.tagName != "TD" ||
+                   !e.target.classList.contains("wpt")) &&
                    !e.target.classList.contains ("cell-list-mode")))
                   return e.stopImmediatePropagation ();
 
@@ -231,7 +234,7 @@
         {
           const $trPrev = $cell.parent().prev (),
                 $tdPrev = ($trPrev.length) ?
-                  $trPrev.find(`td:eq(${$cell.index()-1})`) : undefined;
+                  $trPrev.find(`td.wpt:eq(${$cell.index()-1})`) : undefined;
 
           w = $tdPrev ? $tdPrev.css ("width") : settings.width;
           h = $tdPrev ? $tdPrev.css ("height") : settings.height;
@@ -453,7 +456,7 @@
     {
       const cells = [];
 
-      S.getCurrent("wall")[0].querySelectorAll("tbody td").forEach (cell =>
+      S.getCurrent("wall")[0].querySelectorAll("tbody.wpt td.wpt").forEach (cell =>
         {
           const postits = cell.querySelectorAll (".postit");
 
@@ -522,9 +525,9 @@
 
       // If width has changed
       if (parseInt (bbox.width) != W)
-        this.settings.wall[0].querySelectorAll("tbody tr").forEach (tr =>
+        this.settings.wall[0].querySelectorAll("tbody.wpt tr.wpt").forEach (tr =>
           {
-            const td = tr.querySelectorAll("td")[idx];
+            const td = tr.querySelectorAll("td.wpt")[idx];
 
             td.style.width = `${W}px`;
             $(td).find(">div.ui-resizable-s").css ("width", W);
@@ -535,9 +538,9 @@
       {
          const tr = cell.parentNode;
 
-        tr.querySelectorAll("td").forEach (td =>
+        tr.querySelectorAll("td.wpt").forEach (td =>
           {
-            tr.querySelector("th").style.height = `${H}px`;
+            tr.querySelector("th.wpt").style.height = `${H}px`;
 
             td.style.height = `${H}px`;
             $(td).find(">div.ui-resizable-e").css ("height", H);
@@ -572,7 +575,7 @@
                 wall: {
                   width: Math.trunc (wall.dataset.displayheaders == "0" ?
                     this.settings.wall.wall ("getTDsWidth") +
-                      wall.querySelector("tbody th").clientWidth
+                      wall.querySelector("tbody.wpt th.wpt").clientWidth
                     :
                     wall.clientWidth
                   )
@@ -583,7 +586,7 @@
       if (data && move)
       {
         move.headers =
-          this.element.closest("tr").find("th").header ("serialize");
+          this.element.closest("tr.wpt").find("th.wpt").header ("serialize");
         data.move = move;
       }
 
@@ -610,7 +613,7 @@
 
       // EVENT click on cells
       $(document)
-        .on("click", "td", function (e)
+        .on("click", "td.wpt", function (e)
         {
           const $cell = $(this),
                 $mm = S.getCurrent ("mmenu");

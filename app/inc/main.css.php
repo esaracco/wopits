@@ -308,6 +308,16 @@ button[data-toggle="tooltip"].help {
   z-index:5005;
 }
 
+.dropdown-menu,
+.navbar {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  /*  user-select: none;*/
+}
+
 #main-menu ul.dropdown-menu {
   overflow-x: hidden;
 }
@@ -847,7 +857,7 @@ a.list-group-item {
   margin-top:10px;
 }
 
-.wall th {
+.wall th.wpt {
   vertical-align:top;
   padding:10px;
   background:#f1f1f1;
@@ -857,45 +867,45 @@ a.list-group-item {
   border-right:1px solid #dfdfdf;
 }
 
-.wall th ul.navbar-nav {
+.wall th.wpt ul.navbar-nav {
   display:block;
   width:1px;
 }
 
-.wall th ul.submenu {
+.wall th.wpt ul.submenu {
   text-align:left;
 }
 
-.wall th a.dropdown-toggle {
+.wall th.wpt a.dropdown-toggle {
   color:#555;
 }
 
-.wall tbody tr.to-delete {
+.wall tbody.wpt tr.wpt.to-delete {
   background-color: yellow;
 }
 
-.wall thead th .title {
+.wall thead.wpt th.wpt .title {
   margin:28px 20px 0 20px;
 }
 
-.wall td {
+.wall td.wpt {
   min-height:200px;
   height:200px;
   min-width:300px;
   border-right:1px solid #dfdfdf;
 }
 
-.wall tr {
+.wall tr.wpt {
   border:1px solid #dfdfdf;
 }
 
-.wall tbody th {
+.wall tbody.wpt th.wpt {
   padding:0;
   min-width:51px;
   max-width:301px;
 }
 
-.wall tbody th .title {
+.wall tbody.wpt th.wpt .title {
   margin-top:28px;
   padding:0 10px 0 10px;
   text-overflow: ellipsis;
@@ -988,34 +998,34 @@ a.active .user-writing {
   left:auto;
 }
 
-.wall th .user-writing {
+.wall th.wpt .user-writing {
   top:auto;
   left:auto;
   border-top-left-radius:0;
   font-weight:normal;
 }
 
-.wall th.display {
+.wall th.wpt.display {
   position:auto;
   visibility:visible;
 }
 
-.wall th.hide {
+.wall th.wpt.hide {
   position:absolute;
   visibility:hidden;
 }
 
-thead th .user-writing {
+thead.wpt th.wpt .user-writing {
   margin-top:5px;
   margin-left:5px;
 }
 
-tbody th .user-writing {
+tbody.wpt th.wpt .user-writing {
   margin-left:14px;
   margin-top:15px;
 }
 
-td > .user-writing {
+td.wpt > .user-writing {
   bottom:10px;
   right:10px;
   top:auto;
@@ -1046,14 +1056,14 @@ a.active .user-writing:after {
   transform:rotate(135deg);
 }
 
-th .user-writing:after {
+th.wpt .user-writing:after {
   left:-15px;
   top:-14px;
   transform:rotate(45deg);
 }
 
-td > .user-writing:after,
-th .user-writing:after {
+td.wpt > .user-writing:after,
+th.wpt .user-writing:after {
   visibility:hidden;
 }
 
@@ -1068,7 +1078,7 @@ th .user-writing:after {
   white-space:nowrap;
 }
 
-th .editable.editing input {
+th.wpt .editable.editing input {
   position:absolute;
   text-align:center;
   transform:translate(-50%);
@@ -1094,7 +1104,7 @@ th .editable.editing input {
   font-weight: bold;
 }
 
-th .close.img-delete,
+th.wpt .close.img-delete,
 .user-picture .close.img-delete {
   float:none !important;
   vertical-align:top;
@@ -1103,28 +1113,28 @@ th .close.img-delete,
   padding:0 2px !important;
 }
 
-th .close.img-delete {
+th.wpt .close.img-delete {
   margin-top:0;
   margin-right:-13px;
   font-size:0.9rem;
 }
 
-.wall th div.img {
+.wall th.wpt div.img {
   cursor:pointer;
   display:inline-block;
   margin-top:5px;
 }
 
-.wall:not([data-access="<?=WPT_WRIGHTS_ADMIN?>"]) th div.img {
+.wall:not([data-access="<?=WPT_WRIGHTS_ADMIN?>"]) th.wpt div.img {
   cursor:auto !important;
 }
 
-.wall tbody th div.img {
+.wall tbody.wpt th.wpt div.img {
   margin-left:10px;
   margin-right:10px;
 }
 
-.wall th div.img img {
+.wall th.wpt div.img img {
   max-width:100px;
   max-height:100px;
   border-radius:3px;
@@ -1243,13 +1253,13 @@ li[data-action="properties"] {
   padding-top:3px;
 }
 
-.wall thead th .submenu {
+.wall thead.wpt th.wpt .submenu {
   margin-top:-19px;
   margin-left:-7px;
   height:1px;
 }
 
-.wall tbody th .submenu {
+.wall tbody.wpt th.wpt .submenu {
   margin-top:-9px;
   margin-left:2px;
   height:1px;
@@ -1385,7 +1395,7 @@ li[data-action="properties"] {
   margin-right:-2px;
 }
 
-th .submenu .dropdown-menu {
+th.wpt .submenu .dropdown-menu {
   top:-28px !important;
   left:15px !important;
   z-index:5003!important;
@@ -2345,10 +2355,9 @@ i.fa-xs {
 .postit .postit-edit {
   position:absolute;
   font-size:12px;
-  height:90%;
+  height:100%;
   width:100%;
-  overflow-y:auto;
-  overflow-x:hidden;
+  overflow:auto;
   border-radius:0 1px 1px 1px;
   padding:25px 5px 20px 5px;
 }

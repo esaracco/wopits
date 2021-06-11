@@ -92,7 +92,7 @@
             if ($wall[0].dataset.rows == 1 && $wall[0].dataset.cols == 1)
             {
               const $div = $popup.find(".wall-size"),
-                    $cell = $wall.find ("td");
+                    $cell = $wall.find ("td.wpt");
 
               $popup.find("[name='wall-width']")
                 .val (Math.floor ($cell.outerWidth ()));

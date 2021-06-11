@@ -343,21 +343,26 @@
           if (S.get("still-closing"))
             return;
 
+          // Nothing if modal/popover is opened or editable field is active
+          if (document.querySelector ([
+                "#popup-layer", ".modal.show", ".popover.show",
+                ".editable.editing"]))
+            return;
+
           switch (e.which)
           {
             // ESC
             case 27:
 
-              // Nothing if <esc> & menu or modal/popup is opened or editable
-              // field is active
-              if (!document.querySelector ([
-                    ".postit-header.menu", ".modal.show", ".popover.show",
-                    ".editable.editing"]))
-                plugin.close ();
-              return;
+              // Nothing if menu is postit menu opened
+              if (document.querySelector ([".postit-header.menu"]))
+                return;
+
+              return plugin.close ();
 
             // DEL
             case 46:
+
               return $sm.find("li[data-action='delete']").click ();
             // CTRL+C
             case 67:
@@ -376,7 +381,7 @@
               let el = document.elementFromPoint (mpos.x, mpos.y);
 
               if (el.tagName != "TD")
-                el = el.closest ("td");
+                el = el.closest ("td.wpt");
 
               // Simulate click on cell
               if (el)

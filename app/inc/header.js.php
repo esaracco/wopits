@@ -96,7 +96,7 @@
               const $menu = $(this),
                     menu = $menu[0],
                     wall = $wall[0],
-                    tr = $header.closest("tr")[0],
+                    tr = $header.closest("tr.wpt")[0],
                     deleteItem =
                       menu.querySelector("[data-action='delete'] a"),
                     moveUpItem =
@@ -118,26 +118,26 @@
               {
                 const thIdx = $header.index ();
 
-                if (wall.querySelectorAll("thead th").length <= 2)
+                if (wall.querySelectorAll("thead.wpt th.wpt").length <= 2)
                   deleteItem.style.display = "none";
 
                 if (thIdx == 1)
                   moveLeftItem.style.display = "none";
 
-                if (thIdx == tr.querySelectorAll("th").length-1)
+                if (thIdx == tr.querySelectorAll("th.wpt").length-1)
                   moveRightItem.style.display = "none";
               }
               else
               {
                 const trIdx = $(tr).index ();
 
-                if (wall.querySelectorAll("tbody th").length == 1)
+                if (wall.querySelectorAll("tbody.wpt th.wpt").length == 1)
                   deleteItem.style.display = "none";
 
                 if (trIdx == 0)
                   moveUpItem.style.display = "none";
 
-                if (trIdx == wall.querySelectorAll("tr").length - 2)
+                if (trIdx == wall.querySelectorAll("tr.wpt").length - 2)
                   moveDownItem.style.display = "none";
               }
 
@@ -163,7 +163,7 @@
         $part.find(".dropdown-menu li a").on("click",function(e)
         {
           const $li = $(this).parent (),
-                $cell = $li.closest ("th"),
+                $cell = $li.closest ("th.wpt"),
                 action = $li[0].dataset.action;
 
           e.stopImmediatePropagation ();
@@ -206,7 +206,7 @@
                              $wall.wall ("deleteCol", $header.index ());
                            else
                             $wall.wall (
-                              "deleteRow", $header.closest("tr").index ()); 
+                              "deleteRow", $header.closest("tr.wpt").index ());
                          }
                      });
                 });
@@ -282,9 +282,9 @@
     moveColRow (move, noSynchro)
     {
       const $th = this.element,
-            $tr = $th.closest ("tr"),
+            $tr = $th.closest ("tr.wpt"),
             $wall = this.settings.wall,
-            $cell = $wall.find ("td:eq(0)");
+            $cell = $wall.find ("td.wpt:eq(0)");
 
       switch (move)
       {
@@ -302,9 +302,9 @@
 
           $th.insertBefore ($th.prev ());
 
-          $wall.find("tr").each (function ()
+          $wall.find("tr.wpt").each (function ()
             {
-              const $td = $(this).find (`td:eq(${idx})`),
+              const $td = $(this).find (`td.wpt:eq(${idx})`),
                     $tdprev = $td.prev ();
 
               if ($tdprev.length)
@@ -318,9 +318,9 @@
 
           $th.insertAfter ($th.next ());
 
-          $wall.find("tr").each (function ()
+          $wall.find("tr.wpt").each (function ()
             {
-              const $td = $(this).find (`td:eq(${idx})`),
+              const $td = $(this).find (`td.wpt:eq(${idx})`),
                     $tdnext = $td.next ();
 
               if ($tdnext.length)
@@ -520,7 +520,7 @@
             if (this.settings.item_type == "col")
               img.remove ();
             else
-              H.removeContentKeepingWallSize ({
+              this.removeContentKeepingWallSize ({
                 oldW: oldW,
                 cb: () => img.remove ()
               });
@@ -535,7 +535,7 @@
     removeContentKeepingWallSize (args)
     {
       const $wall = this.settings.wall,
-            th1 = $wall[0].querySelector ("thead th");
+            th1 = $wall[0].querySelector ("thead.wpt th.wpt");
 
       args.cb ();
 
@@ -585,8 +585,8 @@
               $wall.wall ("fixSize", oldW, newW);
 
               if (!isRow)
-                $wall.find("tbody tr")
-                  .find(`td:eq(${(header.cellIndex-1)})`).each (function ()
+                $wall.find("tbody.wpt tr.wpt")
+                  .find(`td.wpt:eq(${(header.cellIndex-1)})`).each (function ()
                   {
                     this.style.width = `${newW}px`;
                     this.querySelector(".ui-resizable-s")
@@ -677,10 +677,10 @@
       const wall = this.settings.wall[0],
             headers = {cols: [], rows: []};
 
-      wall.querySelectorAll("thead th").forEach (th =>
+      wall.querySelectorAll("thead.wpt th.wpt").forEach (th =>
         (th.cellIndex > 0) && headers.cols.push (_serializeOne (th)));
 
-      wall.querySelectorAll("tbody th").forEach (th =>
+      wall.querySelectorAll("tbody.wpt th.wpt").forEach (th =>
         headers.rows.push (_serializeOne (th)));
 
       return headers;
@@ -716,7 +716,7 @@
           wall: {width: Math.trunc($wall.outerWidth ())}
         };
 
-        $wall.find("tbody td").cell ("reorganize");
+        $wall.find("tbody.wpt td.wpt").cell ("reorganize");
       }
       else if (!this.settings.wall.wall ("isShared"))
         return this.cancelEdit (args.bubble_cb);

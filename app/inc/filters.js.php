@@ -153,7 +153,7 @@
         plugin.hidePlugs ();
         S.getCurrent("mmenu").mmenu ("reset");
 
-        $wall[0].querySelectorAll("td").forEach ((cell)=>
+        $wall[0].querySelectorAll("td.wpt").forEach ((cell)=>
         {
           const $cell = $(cell),
                 pclass = cell.classList.contains ("list-mode") ?
@@ -184,7 +184,7 @@
       }
       else
       {
-        $wall[0].querySelectorAll("td").forEach ((cell)=>
+        $wall[0].querySelectorAll("td.wpt").forEach ((cell)=>
         {
           const $cell = $(cell);
 
