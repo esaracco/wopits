@@ -2270,7 +2270,7 @@
             }
 
             // -> 15mn
-            setInterval (()=> $.get ("/api/user/ping"), 15*60*1000);
+            setInterval (()=> fetch ("/api/user/ping"), 15*60*1000);
 
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)
