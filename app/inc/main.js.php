@@ -2274,8 +2274,7 @@
 
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)
-              setTimeout(()=>
-                $settings.settings ("openThemeChooser"), 1000);
+              setTimeout (()=> $settings.settings ("openThemeChooser"), 1000);
 
             H.enableTooltips ($("body"));
           });
