@@ -452,23 +452,24 @@
     },
 
     // METHOD serialize ()
-    serialize ()
+    serialize (noPostits)
     {
       const cells = [];
+      let postits;
 
-      S.getCurrent("wall")[0].querySelectorAll("tbody.wpt td.wpt").forEach (cell =>
-        {
-          const postits = cell.querySelectorAll (".postit");
-
+      S.getCurrent("wall")[0].querySelectorAll("tbody.wpt td.wpt")
+        .forEach (cell =>
           cells.push ({
             id: cell.dataset.id.substring (5),
             width: parseInt (cell.style.width),
             height: parseInt (cell.style.height),
             item_row: cell.parentNode.rowIndex - 1,
             item_col: cell.cellIndex - 1,
-            postits: postits.length?$(postits).postit ("serialize"):null
-          });
-        });
+            postits: (!noPostits &&
+                      (postits = cell.querySelectorAll(".postit")).length) ?
+                         $(postits).postit ("serialize") : null
+          })
+        );
 
       return cells;
     },
