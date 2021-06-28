@@ -1440,7 +1440,7 @@
     },
 
     // METHOD serialize ()
-    serialize ()
+    serialize (args = {})
     {
       const postits = [],
             displayExternalRef = this.settings.wall.wall ("displayExternalRef"),
@@ -1478,8 +1478,9 @@
             item_order: parseInt (this.dataset.order),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
-            content: displayExternalRef ?
-                       content : plugin.unblockExternalRef (content),
+            content: args.noPostitContent ? null :
+                       displayExternalRef ?
+                         content : plugin.unblockExternalRef (content),
             tags: (tags.length) ? `,${tags.join(",")},` : null,
             deadline: (deadline == "...") ? "" : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?

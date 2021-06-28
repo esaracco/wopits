@@ -452,7 +452,7 @@
     },
 
     // METHOD serialize ()
-    serialize (noPostits)
+    serialize (args = {})
     {
       const cells = [];
       let postits;
@@ -465,9 +465,9 @@
             height: parseInt (cell.style.height),
             item_row: cell.parentNode.rowIndex - 1,
             item_col: cell.cellIndex - 1,
-            postits: (!noPostits &&
+            postits: (!args.noPostits &&
                       (postits = cell.querySelectorAll(".postit")).length) ?
-                         $(postits).postit ("serialize") : null
+                         $(postits).postit ("serialize", args) : null
           })
         );
 
@@ -572,7 +572,7 @@
             data = noupdate ?
               null :
               {
-                cells: this.serialize (),
+                cells: this.serialize ({noPostitContent: true}),
                 wall: {
                   width: Math.trunc (wall.dataset.displayheaders == "0" ?
                     this.settings.wall.wall ("getTDsWidth") +

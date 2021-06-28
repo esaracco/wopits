@@ -712,7 +712,7 @@
       {
         data = {
           headers: this.serialize (),
-          cells: $("<div/>").cell ("serialize", true),
+          cells: $("<div/>").cell ("serialize", {noPostits: true}),
           wall: {width: Math.trunc($wall.outerWidth ())}
         };
 
