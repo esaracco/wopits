@@ -618,8 +618,10 @@ class Wall extends Base
         $stmt4->execute ([$postit['id']]);
         $postit['items']['plugs'] = $stmt4->fetchAll ();
 
-        // We do not export postit comments.
+        // Do not export postit comments
         $postit['commentscount'] = 0;
+        // Do not export workers comments
+        $postit['workerscount'] = 0;
 
         $cell['postits'][] = $postit;
       }

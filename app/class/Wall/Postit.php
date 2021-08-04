@@ -121,6 +121,10 @@ class Postit extends Wall
 
   public function copyPostits ($move = false):array
   {
+    // Notes properties that are specific to the src wall and will be
+    // duplicated only if the note is moving in the same wall
+    $SPECIFIC_DATA = ['comments', 'workers'];
+
     $ret = ['walls' => []];
     $wallId = $this->wallId;
     $cellId = $this->cellId;
@@ -147,7 +151,7 @@ class Postit extends Wall
         $srcPostitId = $p['id'];
         $srcCellId = $p['cells_id'];
         $srcWallId = $p['walls_id'];
-        $copyComments = ($move && $srcWallId == $wallId);
+        $copySpecific = ($move && $srcWallId == $wallId);
         unset ($p['id']);
         unset ($p['walls_id']);
 
@@ -160,12 +164,12 @@ class Postit extends Wall
 
         $havePictures = false;
 
-        // Copy associated items (attachments, pictures, comments)
+        // Copy associated items (attachments, pictures, comments, workers...)
         // -> plugs are not copied
         $items = ['attachments', 'pictures'];
-        // Copy comments only in same wall
-        if ($copyComments)
-          $items[] = 'comments';
+        // Copy specific data if needed
+        if ($copySpecific)
+          $items = array_merge ($items, $SPECIFIC_DATA);
 
         foreach ($items as $item)
         {
@@ -182,8 +186,11 @@ class Postit extends Wall
             $srcItemId = $a['id'];
             unset ($a['id']);
 
-            // Comments have no attached files
-            if ($item != 'comments')
+            // If data has file properties
+            $hasLink = isset ($a['link']);
+
+            // If file (attachment, picture...) update ids in link
+            if ($hasLink)
             {
               $srcDir = $a['link'];
               $a['link'] = str_replace (
@@ -200,7 +207,7 @@ class Postit extends Wall
             // Move item
             if ($move)
             {
-              if (isset ($a['link']))
+              if ($hasLink)
                 rename (WPT_ROOT_PATH."/$srcDir",
                         WPT_ROOT_PATH."/{$a['link']}");
 
@@ -212,7 +219,7 @@ class Postit extends Wall
             // Copy item
             else
             {
-              if (isset ($a['link']))
+              if ($hasLink)
                 copy (WPT_ROOT_PATH."/$srcDir",
                       WPT_ROOT_PATH."/{$a['link']}");
 
@@ -250,9 +257,11 @@ class Postit extends Wall
         // Update postit body internal img links if needed
         if ($havePictures)
           $sqlData['content'] = $p['content'];
-        // Reset comments count if needed
-        if (!$copyComments)
-          $sqlData['commentscount'] = 0;
+        // Reset specific data if needed
+        if (!$copySpecific)
+          foreach ($SPECIFIC_DATA as $sp)
+            $sqlData["{$sp}count"] = 0;
+
         if ($sqlData)
           $this->executeQuery ('UPDATE postits', $sqlData, ['id' => $postitId]);
 
