@@ -62,7 +62,8 @@
   
                 $postit.appendTo ($target);
   
-                $target.cell ("reorganize");
+                $target.cell ("reorganize")
+                  .then(()=> $postit.postit("dropStop"));
               }
           });
 
@@ -438,16 +439,12 @@
     },
 
     // METHOD reorganize ()
-    reorganize ()
+    async reorganize ()
     {
       this.element.each (function ()
       {
-        const cell = this,
-              bbox = cell.getBoundingClientRect ();
-
-        this.querySelectorAll(".postit").forEach (postit =>
-          $(postit).postit ("fixPosition", bbox, cell.clientHeight,
-                                           cell.clientWidth));
+        this.querySelectorAll(".postit").forEach (p =>
+          $(p).postit ("fixPosition", this.getBoundingClientRect()));
       });
     },
 

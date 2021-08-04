@@ -378,51 +378,6 @@
   
               plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
-            },
-          stop: function(e, ui)
-            {
-              const $editable = $postit.find (".editable");
-
-              // Cancel editable.
-              if ($editable.length)
-                $editable.editable ("cancel");
-
-              S.set ("dragging", true, 500);
-
-              if (S.get("revertData").revert)
-              {
-                const revertData = S.get ("revertData");
-
-                plugin.setPosition ({
-                  top: revertData.top,
-                  left: revertData.left
-                });
-
-                plugin.cancelEdit ();
-              }
-              else
-              {
-                const content = postitEdit.innerHTML;
-
-                // If the postit has been dropped into another cell
-                plugin.settings.cell = $postit.parent ();
-
-                // Update content cells references if any
-                if (content.indexOf ("/cell/") != -1)
-                  postitEdit.innerHTML = content.replace (
-                              /\/cell\/\d+\//g,
-                              `/cell/${plugin.settings.cellId}/`);
-
-                S.getCurrent("mmenu").mmenu ("update", settings.id, plugin);
-
-                plugin.unedit ();
-              }
-
-              // Refresh relations position
-              plugin.repositionPlugs ();
-// TODO - 1 - Hide plugs instead of moving them with postits (performance
-//            issue with some touch devices)
-//              H.waitForDOMUpdate (() => plugin.showPlugs ());
             }
         })
         // RESIZABLE post-it
@@ -555,6 +510,54 @@
     getPlugin (type)
     {
       return this.settings.plugins[type];
+    },
+
+    // METHOD dropStop ()
+    dropStop ()
+    {
+      const plugin = this,
+            $postit = plugin.element,
+            postitEdit = $postit[0].querySelector (".postit-edit"),
+            $editable = $postit.find (".editable");
+
+      // Cancel editable.
+      if ($editable.length)
+        $editable.editable ("cancel");
+
+      S.set ("dragging", true, 500);
+
+      if (S.get("revertData").revert)
+      {
+        const revertData = S.get ("revertData");
+
+        plugin.setPosition ({
+          top: revertData.top,
+          left: revertData.left
+        });
+
+        plugin.cancelEdit ();
+      }
+      else
+      {
+        const content = postitEdit.innerHTML;
+
+        // If the postit has been dropped into another cell
+        plugin.settings.cell = $postit.parent ();
+
+        // Update content cells references if any
+        if (content.indexOf ("/cell/") != -1)
+          postitEdit.innerHTML = content.replace (
+                                   /\/cell\/\d+\//g,
+                                   `/cell/${plugin.settings.cellId}/`);
+
+        S.getCurrent("mmenu")
+          .mmenu ("update", plugin.settings.id, plugin);
+
+        plugin.unedit ();
+      }
+
+      // Refresh relations position
+      plugin.repositionPlugs ();
     },
 
     // METHOD openPlugProperties ()
@@ -1807,13 +1810,15 @@
     },
 
     // METHOD fixPosition ()
-    fixPosition (cPos, cH, cW)
+    fixPosition (cPos)
     {
        const postit = this.element[0],
              phTop = postit.querySelector(".postit-header")
                        .getBoundingClientRect().top,
              pW = postit.clientWidth,
-             pH = postit.clientHeight;
+             pH = postit.clientHeight,
+             cH = cPos.height,
+             cW = cPos.width;
        let pPos = postit.getBoundingClientRect ();
 
        // postit is too much high
