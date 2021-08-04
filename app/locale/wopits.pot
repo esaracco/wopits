@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-06-28 10:22+0200\n"
+        "POT-Creation-Date: 2021-08-04 13:27+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,6 +59,9 @@ msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & optimization.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with notes copy/paste.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Account</b> Blacklisting of the following email domains: <i>outlook.fr</i>, <i>outlook.com</i>, <i>live.fr</i>, <i>live.com</i>, <i>hotmail.fr</i>, <i>hotmail.com</i>. <u>If your email is using one of them, please update it as soon as possible!</u></p>"
