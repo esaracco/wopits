@@ -1,15 +1,16 @@
 {
+  "license": "GPL-3.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.14.0",
+    "@fortawesome/fontawesome-free": "^5.15.3",
     "bootstrap": "^4.6.0",
-    "jquery": "^3.5.1",
+    "jquery": "^3.6.0",
     "jquery-datepicker": "^1.12.3",
     "jquery-ui-dist": "^1.12.1",
     "jquery-ui-touch-punch": "^0.2.3",
     "leader-line": "^1.0.5",
-    "moment": "^2.28.0",
-    "moment-timezone": "^0.5.31",
-    "tinymce": "^5.4.2",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.32",
+    "tinymce": "^5.8.2",
     "vanderlee-colorpicker": "^1.2.16"
   }
 }
