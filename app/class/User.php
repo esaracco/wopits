@@ -335,8 +335,8 @@ class User extends Base
 
     // Delete too old accounts
 
-    // More or less 2 weeks (we do not need precision here)
-    $diff = 14 * (24 * 3600);
+    // More or less 4 weeks (we do not need precision here)
+    $diff = 28 * (24 * 3600);
 
     $stmt = $this->db->query ("
       SELECT U.id, U.username, U.fullname, U.email
