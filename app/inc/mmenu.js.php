@@ -70,7 +70,7 @@
               if (!ST.noDisplay ("mmenu-copy-help"))
               {
                 title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?>${_noDisplayBtn}`;
+                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${_noDisplayBtn}`;
                 cbOK = ()=> ST.noDisplay ("mmenu-copy-help", true);
               }
               break;
@@ -79,7 +79,7 @@
               if (!ST.noDisplay ("mmenu-move-help"))
               {
                 title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes.")?>${_noDisplayBtn}`;
+                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${_noDisplayBtn}`;
                 cbOK = ()=> ST.noDisplay ("mmenu-move-help", true);
               }
               break
@@ -113,8 +113,9 @@
 
       if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         return H.displayMsg ({
+          title: `<?=_("Rights")?>`,
           type: "warning",
-          msg: `<?=_("You need write access to perform this action.")?>`
+          msg: `<?=_("You need write access to perform this action")?>`
         });
 
       _data.dest = args.cellPlugin;
@@ -144,7 +145,7 @@
           type = "info";
           item = this.element.find ("li:eq(0)");
           title = `<?=_("Copy/Move")?>`;
-          content = `<?=_("Please, select the type of action first.")?>`;
+          content = `<?=_("Please, select the type of action first")?>`;
       }
 
       if (title)
@@ -456,7 +457,7 @@
       H.openConfirmPopover ({
         item: this.element,
         type: "info",
-        title: `<i class='fas fa-bolt fa-fw'></i> <?=_("Meta menu")?>`,
+        title: `<i class="fas fa-bolt fa-fw"></i> <?=_("Meta menu")?>`,
         placement: "right",
         content: content+_noDisplayBtn,
         cb_ok: ()=> ST.noDisplay (`mmenu-help-${writeAccess}`, true)
@@ -471,8 +472,6 @@
       $(document).off ("keydown.mmenu");
       $(document).off ("mousemove.mmenu");
       S.unset ("mousepos");
-
-      this.element.find("[data-toggle='tooltip']").tooltip ("hide");
 
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
@@ -491,7 +490,7 @@
     {
       if (!H.isLoginPage ())
       {
-        $("body").prepend (`<ul class="toolbox" id="mmenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li data-toggle="tooltip" title="<?=_("Copy selected notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Move selected notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li data-toggle="tooltip" title="<?=_("Change selected notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li data-toggle="tooltip" title="<?=_("Delete selected notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
+        $("body").prepend (`<ul class="toolbox" id="mmenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
 
         S.getCurrent("mmenu").mmenu ();
       }

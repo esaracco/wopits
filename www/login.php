@@ -13,19 +13,14 @@
   else
     $directURL = '';
 ?>
-<body class="login-page">
+<body id="login-page">
 
-  <!-- LOADER -->
-  <div id="popup-loader" class="layer">
-    <div id="loader"><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span></div>
-  </div>
-  
   <!-- MSG CONTAINER -->
-  <div id="msg-container"></div>
+  <div id="msg-container" class="position-absolute top-0 start-50 translate-middle-x"></div>
   
   <!-- MENU -->
   <nav class="navbar bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm wopits">
-    <a href="#" class="navbar-brand font-weight-bold" data-action="about">wopits</a>
+    <a href="#" class="navbar-brand fw-bold" data-action="about">wopits</a>
     <div class="themes">
       <a class="dot-theme btn-theme-default" data-theme="theme-default"></a>
     <?php foreach (WPT_THEMES as $theme) { ?>
@@ -78,17 +73,17 @@
               <?php endif?>
 
               <div class="input-group mb-1">
-                <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-user"></i></span></div>
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
                 <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=DbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="off" autofocus>
               </div>
               <div class="input-group mb-2">
-                <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-key"></i></span></div>
+                <span class="input-group-text"><i class="fas fa-key"></i></span>
                 <input type="password" class="form-control" name="password" value="" maxlength="<?=DbCache::getFieldLength('users', 'password')?>" required placeholder="<?=_("password")?>" autocorrect="off" autocapitalize="off">
               </div>
               <div class="form-group">
-                <div class="custom-control custom-checkbox remember">
-                  <input type="checkbox" class="custom-control-input" id="remember" value="1">
-                  <label class="custom-control-label" for="remember"><?=_("Remember me")?></label>
+                <div class="form-check remember">
+                  <input type="checkbox" class="form-check-input" id="remember" value="1">
+                  <label class="form-check-label" for="remember"><?=_("Remember me")?></label>
                 </div>
               </div>
               <div class="d-flex justify-content-center mt-3">

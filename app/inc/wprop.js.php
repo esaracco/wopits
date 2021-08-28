@@ -41,11 +41,11 @@
       const $wall = S.getCurrent ("wall"),
             wallId = $wall.wall ("getId");
 
-      $wall.wall ("close");
-
       H.request_ws (
         "DELETE",
-        `wall/${wallId}/group/${this.element[0].dataset.groups}/removeMe`);
+        `wall/${wallId}/group/${this.element[0].dataset.groups}/removeMe`,
+         null,
+         ()=> $wall.wall ("close"));
     },
 
     // METHOD open ()
@@ -123,7 +123,7 @@
           }
 
           $popup[0].dataset.noclosure = true;
-          H.openModal ($popup);
+          H.openModal ({item: $popup});
         }
       );
     }

@@ -18,6 +18,7 @@ $(function()
           return;
 
         const $wall = S.getCurrent ("wall");
+        let tmp;
   
         H.fixMenuHeight ();
         H.fixMainHeight ();
@@ -27,30 +28,30 @@ $(function()
           // Refresh relations position
           $wall.wall ("repositionPostitsPlugs");
 
-          const modal = document.querySelector (
-                           ".modal.show.m-fullscreen[data-customwidth]");
-          if (modal)
-            H.resizeModal ($(modal));
+          tmp = document.querySelector (
+                  ".modal.show.m-fullscreen[data-customwidth]");
+          if (tmp)
+            H.resizeModal ($(tmp));
    
           // Reposition chat popup if it is out of bounds
-          const $c = S.getCurrent ("chat");
-          if ($c.is (":visible"))
-            $c.chat ("fixPosition");
+          tmp = S.getCurrent ("chat");
+          if (tmp.is (":visible"))
+            tmp.chat ("fixPosition");
    
           // Reposition filters popup if it is out of bounds
-          const $f = S.getCurrent ("filters");
-          if ($f.is (":visible"))
-            $f.filters ("fixPosition");
+          tmp = S.getCurrent ("filters");
+          if (tmp.is (":visible"))
+            tmp.filters ("fixPosition");
 
-          const $a = S.getCurrent ("arrows");
-          if ($a.is (":visible"))
-            $a.arrows ("reset");
+          tmp = S.getCurrent ("arrows");
+          if (tmp.is (":visible"))
+            tmp.arrows ("reset");
    
-          const $zoom = $(".tab-content.walls");
-          if ($zoom[0].dataset.zoomlevelorigin)
+          tmp = document.querySelector (".tab-content.walls");
+          if (tmp.dataset.zoomlevelorigin)
           {
-            if ($zoom[0].dataset.zoomtype == "screen")
-              $wall.wall ("zoom", {type:"screen"});
+            if (tmp.dataset.zoomtype == "screen")
+              $wall.wall ("zoom", {type: "screen"});
             else
             {
               $wall.wall ("zoom", {type: "="});
@@ -59,19 +60,13 @@ $(function()
             }
           }
      
-          // Fix TinyMCE menu placement with virtual keyboard on touch devices
-          if (!H.haveMouse () && $("#postitUpdatePopup").is(":visible"))
-            $(".tox-selected-menu").css ("top",
-              `${$(".tox-menubar")[0].getBoundingClientRect().bottom -
-                document.body.getBoundingClientRect().bottom - 2}px`);
-
           // Reposition wall menu if it is out of bounds
           S.getCurrent("wmenu").wmenu ("fixPosition");
         }
       });
   }
 
-  // EVENT walls scroll
+  // EVENT "scroll" on walls
   let _timeoutScroll,
       _scrollDiff = null;
   $_walls.on("scroll", function(e)
@@ -123,11 +118,11 @@ $(function()
       }
     });
 
-  // EVENT click on main menu
+  // EVENT "click" on main menu
   $(document).on("click", ".nav-link:not(.dropdown-toggle),"+
                           ".dropdown-item", H.closeMainMenu);
 
-  // EVENT mousedown on walls tabs
+  // EVENT "mousedown" on walls tabs
   $(document).on("mousedown", ".nav-tabs.walls a.nav-link",
     function (e)
     {
@@ -137,62 +132,46 @@ $(function()
             share = (isActive && tab.classList.contains ("fa-share")),
             rename = (isActive && !share && !close);
 
-      $(this).parent().find("[data-toggle='tooltip']").tooltip ("hide");
-
       if (share)
         return H.loadPopup ("swall", {
-                 open: false,
-                 cb: ($p)=> $p.swall ("open")
-               });
+          open: false,
+          cb: ($p)=> $p.swall ("open")
+        });
 
       if (rename)
         return S.getCurrent("wall")
                  .wall ("openPropertiesPopup", {renaming: true});
 
       if (!close)
-      {
-        const $c = S.getCurrent ("chat");
-        if ($c.is(":visible"))
-          $c.chat ("closeUsersTooltip");
-
         $("#settingsPopup").settings (
-          "saveOpenedWalls", $(this).attr("href").split("-")[1]);
-      }
+          "saveOpenedWalls", this.getAttribute("href").split("-")[1]);
     });
 
-/*FIXME Useful?
-  // Useful in rare case, when user have multiple sessions opened
-  $(window).focus (
+  // EVENT "show" on relation's label menu
+  $(document).on("show.bs.dropdown", ".plug-label", ()=> !H.disabledEvent ());
+
+  // EVENT "hidden" on alert messages
+  $(document).on("hidden.bs.toast", "#msg-container .toast",
     function (e)
     {
-      setTimeout (()=>
-        {
-          const $wall = S.getCurrent ("wall");
-
-          if ($wall.length)
-            $wall.wall ("refresh");
-
-        }, 150);
+      bootstrap.Toast.getInstance (this).dispose ();
+      this.remove ();
     });
-*/
 
-  // EVENT show.bs.dropdown on relation's label menu
-   $(document).on("show.bs.dropdown", ".plug-label", ()=> !H.disabledEvent ());
-
-  // EVENT hide.bs.tab on walls tabs
-  $(document).on("hide.bs.tab", ".walls a[data-toggle='tab']",
+  // EVENT "hide" on walls tabs
+  $(document).on("hide.bs.tab", `.walls a[data-bs-toggle="tab"]`,
     function (e)
     {
       // Cancel zoom mode
       if (S.get ("zoom-level"))
         S.getCurrent("wall").wall ("zoom", {type: "normal", "noalert": true});
 
-      document.querySelectorAll(".walls table.wall").forEach (w =>
-        $(w).wall ("hidePostitsPlugs"));
+      document.querySelectorAll(".walls table.wall").forEach (el=>
+        $(el).wall ("hidePostitsPlugs"));
     });
 
-  // EVENT shown.bs.tab on walls tabs
-  $(document).on("shown.bs.tab", ".walls a[data-toggle='tab']",
+  // EVENT "shown" on walls tabs
+  $(document).on("shown.bs.tab", `.walls a[data-bs-toggle="tab"]`,
     function (e)
     {
           // If we are massively restoring all walls, do nothing here
@@ -223,8 +202,7 @@ $(function()
       S.getCurrent("mmenu").mmenu ("checkAllowedActions");
 
       // Manage chat checkbox menu
-      $menu
-        .find("li[data-action='chat'] input")[0].checked = chatVisible;
+      $menu.find(`li[data-action="chat"] input`)[0].checked = chatVisible;
       if (chatVisible)
       {
         $chat.chat ("removeAlert");
@@ -232,11 +210,11 @@ $(function()
       }
 
       // Manage filters checkbox menu
-      $menu.find("li[data-action='filters'] input")[0].checked =
+      $menu.find(`li[data-action="filters"] input`)[0].checked =
         $filters.is (":visible");
 
       // Manage arrows checkbox menu
-      $menu.find("li[data-action='arrows'] input")[0].checked =
+      $menu.find(`li[data-action="arrows"] input`)[0].checked =
         $arrows.is (":visible");
       $arrows.arrows ("reset");
 
@@ -247,8 +225,8 @@ $(function()
         $wall.wall ("displayExternalRef");
         $wall.wall ("displayHeaders");
 
-        if (!($filters.is (":visible") &&
-              $filters[0].classList.contains ("plugs-hidden")))
+        if (!($filters[0].classList.contains ("plugs-hidden") &&
+              $filters.is (":visible")))
           $wall.wall ("showPostitsPlugs");
       }
 
@@ -257,61 +235,80 @@ $(function()
       $(window).trigger ("resize");
     });
 
-  // EVENT keypress on popups and popovers to catch <enter> key
+  // EVENT "keypress" on popups and popovers to catch <enter> key
   $(document).on("keypress", ".modal,.popover",
     function (e)
     {
       if (e.which == 13 && e.target.tagName == "INPUT")
       {
-        const $popup = $(this);
-        let $btn = $popup.find (".btn-primary.btn-sm");
+        let btn = this.querySelector (".btn-primary.btn-sm");
 
-        if (!$btn.length)
-          $btn = $popup.find (".btn-primary");
+        if (!btn)
+          btn = this.querySelector (".btn-primary");
 
-        if (!$btn.length)
-          $btn = $popup.find (".btn-success");
+        if (!btn)
+          btn = this.querySelector (".btn-success");
 
-        if ($btn.length)
+        if (btn)
         {
           e.preventDefault ();
-          $btn.click ();
+          btn.click ();
         }
       }
 
     });
 
-  // EVENT show.bs.modal on popups
+  // EVENT "show" on popups
   $(document).on("show.bs.modal", ".modal",
     function(e)
     {
-      const $popup = $(this),
-            $dialog = $popup.find (".modal-dialog"),
-            $postit = S.getCurrent ("postit"),
+      const dialog = this.querySelector (".modal-dialog"),
             modalsCount = $(".modal:visible").length;
 
       // If there is already opened modals
       if (modalsCount)
       {
-        $dialog[0].dataset.toclean = 1;
-        $dialog.addClass ("modal-sm shadow");
-        $dialog.find("button.btn").addClass ("btn-sm");
+        dialog.classList.remove ("modal-dialog-scrollable");
+
+        dialog.dataset.toclean = 1;
+        dialog.classList.add ("modal-sm", "shadow");
+        dialog.querySelectorAll("button.btn").forEach (
+          (b)=> b.classList.add ("btn-sm"));
       }
-      else if ($dialog[0].dataset.toclean)
+      else
       {
-        $dialog.find("button.btn").removeClass ("btn-sm");
-        $dialog.removeClass ("modal-sm shadow");
-        $dialog[0].removeAttribute ("data-toclean");
+        let tmp;
+
+        if (!H.haveMouse ())
+          H.fixVKBScrollStart ();
+
+        dialog.classList.add ("modal-dialog-scrollable");
+
+        if (dialog.dataset.toclean)
+        {
+          dialog.querySelectorAll("button.btn").forEach (
+            (b)=> b.classList.remove ("btn-sm"));
+          dialog.classList.remove ("modal-sm", "shadow");
+          dialog.removeAttribute ("data-toclean");
+        }
+
+        // Get postit color and set modal header color the same
+        if ((tmp = S.getCurrent ("postit")).length)
+          tmp.postit ("setPopupColor", $(this));
       }
 
-      // Get postit color and set modal header color the same
-      if (!modalsCount && $postit.length)
-        $postit.postit ("setPopupColor", $(this));
-
-      H.setAutofocus ($popup);
+      H.setAutofocus (this);
     });
 
-  // EVENT hidden.bs.modal on popups
+  // Blur input/textarea to hide virtual keyboard
+  if (!H.haveMouse ())
+  {
+    // EVENT "hide" on popups
+    $(document).on("hide.bs.modal", ".modal",
+     ()=> this.querySelectorAll("input,textarea").forEach (el=> el.blur ()));
+  }
+
+  // EVENT "hidden" on popups
   $(document).on("hidden.bs.modal", ".modal",
     function(e)
     {
@@ -319,7 +316,9 @@ $(function()
 
       // Prevent child popups from removing scroll to their parent
       if ($(".modal:visible").length)
-        $("body").addClass ("modal-open");
+        document.body.classList.add ("modal-open");
+      else if (!H.haveMouse ())
+        H.fixVKBScrollStop ();
 
       switch (e.target.id)
       {
@@ -363,31 +362,28 @@ $(function()
           S.get("confirmPopup").cb_close ();
           break;
 
-        case "usearchPopup":
         case "groupAccessPopup":
         case "groupPopup":
 
-          const a = document.querySelector(".modal li.list-group-item.active");
-          if (a)
-            a.classList.remove ("active", "todelete");
-
+          $(".modal li.list-group-item.active").removeClass ("active");
           break;
       }
     });
 
-  // EVENT click on popup buttons
+  // EVENT "click" on popup buttons
   $(document).on("click", ".modal .modal-footer .btn",
     function (e)
     {
-      const $popup = $(this).closest (".modal"),
-            closePopup = !!!$popup[0].dataset.noclosure,
+      const popup = this.closest (".modal"),
+            $popup = $(popup),
+            closePopup = !!!popup.dataset.noclosure,
             $postit = S.getCurrent ("postit");
 
-      $popup[0].removeAttribute ("data-noclosure");
+      popup.removeAttribute ("data-noclosure");
 
       if (this.classList.contains ("btn-primary"))
       {
-        switch ($popup.attr ("id"))
+        switch (popup.id)
         {
           case "dpickPopup":
 
@@ -398,7 +394,7 @@ $(function()
 
             $postit.postit ("save", {
               content: tinymce.activeEditor.getContent (),
-              progress: $popup.find(".slider").slider ("value"),
+              progress: $(popup.querySelector(".slider")).slider ("value"),
               title: $("#postitUpdatePopupTitle").val ()
             });
             break;
@@ -406,7 +402,7 @@ $(function()
           // Upload postit attachment
           case "postitAttachmentsPopup":
 
-            $popup[0].dataset.noclosure = true;
+            popup.dataset.noclosure = true;
             $postit.find(".patt").patt ("upload");
             break;
 
@@ -417,8 +413,8 @@ $(function()
 
           case "groupPopup":
 
-            if ($popup[0].dataset.action == "update")
-              $popup[0].dataset.noclosure = true;
+            if (popup.dataset.action == "update")
+              popup.dataset.noclosure = true;
             break;
 
           // Manage confirmations
@@ -433,13 +429,13 @@ $(function()
             var Form = new Wpt_accountForms (),
                 $inputs = $popup.find ("input");
 
-            $popup[0].dataset.noclosure = true;
+            popup.dataset.noclosure = true;
 
             if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
             {
               const data = {
-                      name: $popup.find("input").val(),
-                      grid: $popup.find("#w-grid")[0].checked
+                      name: popup.querySelector("input").value,
+                      grid: popup.querySelector("#w-grid").checked
                     };
 
               if (data.grid)
@@ -465,10 +461,10 @@ $(function()
       }
 
       if (closePopup)
-        $popup.modal ("hide");
+        bootstrap.Modal.getInstance(popup).hide ();
     });
 
-  // EVENT click on logout button
+  // EVENT "click" on logout button
   $("#logout").on("click",
     function (e)
     {

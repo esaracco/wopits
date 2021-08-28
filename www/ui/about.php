@@ -4,19 +4,17 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><img src="/img/wopits-32x32.png?<?=\Wopits\Helper::getWopitsVersion ()?>">&nbsp;wopits v<?=WPT_VERSION?></h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body justify">
 
         <p class="project-title">
           <b>w</b>orld <b>o</b>f <b>p</b>ost-<b>its</b><br>
-          <span class="desc"><?=sprintf(_("developed by %s"), '<a href="https://www.esaracco.fr" target="_blank">Emmanuel Saracco</a>')?></span>
+          <span class="desc"><a href="https://wopits.esaracco.fr" target="_blank"><?=_("Project page")?></a></span>
         </p>
 
         <p class="mt-2 mb-3">
-          <?=_("A app for managing projects online just using sticky notes to share and collaborate.")?>
+          <?=_("A app for managing projects online using sticky notes to share and collaborate.")?>
         </p>
 
         <p class="desc mb-1">
@@ -31,13 +29,13 @@
           <p class="desc mt-3 mb-1 text-center">
             <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://github.com/esaracco/wopits/issues"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></a>
             <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://twitter.com/wopitsapp"><i class="fab fa-twitter fa-fw"></i> @wopitsapp</a>
-            <button class="btn btn-secondary btn-xs"><i class="fas fa-donate fa-fw"></i> <?=_("Support")?></button>
+            <button class="btn btn-secondary btn-xs"><i class="fas fa-heart fa-fw"></i> <?=_("Support")?></button>
           </p>
         </form>
 
         <?php if (defined ('WPT_ABOUT_WARNING') && WPT_ABOUT_WARNING):?>
           <div class="mt-4 warning">
-            <h2 class="bg-warning"><?=_("Warning")?></h2>
+            <h2><?=_("Warning")?></h2>
   
             <p class="mb-2"><?=_("This is not a professional hosting site but a place allowing you to easily use wopits without having to install it yourself on a server.")?></p>
   
@@ -48,7 +46,7 @@
   
         <?php if (defined ('WPT_ABOUT_PRIVACY') && WPT_ABOUT_PRIVACY):?>
           <div class="mt-4 warning">
-            <h2 class="bg-info"><?=_("Privacy policy")?></h2>
+            <h2><?=_("Privacy policy")?></h2>
   
             <p class="mb-2"><?=_("Unlike other applications offering you a free service, you are not considered here as a commodity or as a product.")?></p>
   
@@ -61,7 +59,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
       </div>
     </div>
   </div>

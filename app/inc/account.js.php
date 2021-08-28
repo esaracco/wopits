@@ -20,7 +20,7 @@
 
   const _getUserPictureTemplate = (src)=>
     {
-      return (src) ? `<button type="button" class="close img-delete"><span>×</span></button><img src="${src}">` : "<i class='fas fa-camera-retro fa-3x'></i>";
+      return (src) ? `<button type="button" class="btn-close img-delete"></button><img src="${src}">` : "<i class='fas fa-camera-retro fa-3x'></i>";
     };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -35,14 +35,9 @@
       const plugin = this,
             $account = plugin.element;
 
-      H.enableTooltips ($account);
-
       if ($.support.touch)
         $account.find(".modal-title i.fa-user-circle")
-          .on("click", function ()
-            {
-              $account.modal ("hide");
-            });
+          .on("click", ()=> bootstrap.Modal.getInstance($account).hide ());
 
       $account.find("[data-action='delete-account']")
         .on("click", function (e)
@@ -92,12 +87,12 @@
           e.stopImmediatePropagation ();
 
           // If delete img
-          if (e.target.tagName == "SPAN")
+          if (e.target.classList.contains ("img-delete"))
             H.openConfirmPopover ({
-              item: $account.find (".img-delete"),
-              placement: "right",
+              item: $(e.target),
+              placement: "left",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-              content: `<?=_("Delete your profile photo?")?>`,
+              content: `<?=_("Delete your profile picture?")?>`,
               cb_ok: () => plugin.deletePicture ()
             });
           else
@@ -118,15 +113,14 @@
         .on("click", "button,input", function (e)
         {
           const $btn = $(this),
-                $field = (e.target.tagName == "INPUT") ?
-                           $btn : $btn.parent().prev (),
+                $field = (this.tagName == "INPUT") ? $btn : $btn.prev (),
                 name = $field.attr ("name"),
                 value = $field.val ();
           let title,
               $popup;
 
           if ($account.find(".ldap-msg").length &&
-              e.target.tagName == "INPUT" &&
+              this.tagName == "INPUT" &&
               !name.match (/^fullname|visible|allow_emails$/))
             return;
 
@@ -139,7 +133,7 @@
                   item: $field,
                   placement: "top",
                   title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
-                  content: `<?=_("Sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
+                  content: `<?=_("By checking this option, sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
                   cb_close: (btn) => (btn != "yes")&&($field[0].checked= false),
                   cb_ok: () => plugin.updateField ({visible: 0}, true)
                 });
@@ -149,8 +143,17 @@
 
             case "allow_emails":
 
-              plugin.updateField (
-                {allow_emails: $field[0].checked?1:0}, true);
+              if (!$field[0].checked)
+                H.openConfirmPopover ({
+                  item: $field,
+                  placement: "top",
+                  title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Notify me by email")?>`,
+                  content: `<?=_("By unchecking this option, you will no longer receive email notifications.<br>Disable notifications anyway?")?>`,
+                  cb_close: (btn) => (btn != "yes")&&($field[0].checked=true),
+                  cb_ok: () => plugin.updateField ({allow_emails: 0}, true)
+                });
+              else
+                plugin.updateField ({allow_emails: 1}, true);
               break;
 
             case "password":
@@ -164,14 +167,12 @@
                                }),
                 cb: ($p)=>
                 {
-                  H.displayMsg ({target: $p, reset: true});
-
                   $p.find("input").val ("");
 
                   $p[0].dataset.field = "password";
                   $p[0].dataset.noclosure = true;
 
-                  H.openModal ($p);
+                  H.openModal ({item: $p});
                 }
               });
 
@@ -191,8 +192,6 @@
                 cb: ($p)=>
                 {
                   const $input = $p.find ("input");
-
-                  H.displayMsg ({reset: true});
 
                   switch (name)
                   {
@@ -229,7 +228,7 @@
                   $p[0].dataset.field = name;
                   $p[0].dataset.oldvalue = value;
                   $p[0].dataset.noclosure = true;
-                  H.openModal ($p);
+                  H.openModal ({item: $p});
                 }
               });
 
@@ -248,8 +247,6 @@
 
       $popup[0].dataset.noclosure = true;
 
-      H.displayMsg ({target: $popup, reset: true});
-
       switch (field)
       {
         case "username":
@@ -260,7 +257,7 @@
                 value = $input.val().trim ();
 
           if (value == $popup[0].dataset.oldvalue)
-            return $popup.modal ("hide");
+            return bootstrap.Modal.getInstance($popup).hide ();
 
           if (plugin.checkRequired ($input) && plugin.validForm ($input))
           {
@@ -334,7 +331,11 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Account")?>`,
+              type: "danger",
+              msg: d.error_msg
+            });
           else
             return location.href = "/r.php";
         });
@@ -353,7 +354,11 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "danger", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Account")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           else
           {
             for (const k in d)
@@ -394,13 +399,15 @@
 
             if (!args.about)
               H.displayMsg ({
-                target: $account.find (".modal-body"),
+                title: `<?=_("Account")?>`,
                 type: "success",
                 msg: `<?=_("Your profile has been updated")?>`
               });
 
+            // Close field update popup
             if (!noclosure)
-              $(".modal:visible:eq(0)").modal ("hide");
+              bootstrap.Modal.getInstance(
+                document.querySelector(".modal")).hide ();
           }
         });
     }

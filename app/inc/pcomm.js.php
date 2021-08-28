@@ -122,8 +122,9 @@
           {
             if (!args.str)
               H.displayMsg ({
+                title: `<?=_("Comments")?>`,
                 type: "warning",
-                msg: `<?=_("This wall has not been shared with any user yet.")?>`
+                msg: `<?=_("The wall has not yet been shared with other users")?>`
               });
 
             this.reset ();
@@ -182,7 +183,12 @@
     close ()
     {
       if ($_popup)
+      {
+        if (!H.haveMouse ())
+          $_popup.modal ("hide");
+        else
         $("#popup-layer").click ();
+      }
     },
 
     // METHOD open ()
@@ -243,7 +249,7 @@
 
       (d||[]).forEach (c=>
       {
-        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-header"><div class="msg-date"><i class="far fa-clock"></i> ${H.getUserDate(c.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-username"><i class="far fa-user"></i> ${c.ownername||`<s><?=_("deleted")?></s>`}</div>${c.ownerid==userId?`<button type="button" class="close" data-toggle="tooltip" title="<?=_("Delete my comment")?>"><span>&times;</span></button>`:""}</div><div class="msg-body">${c.content.replace(/\n/g, "<br>")}</div></div>`;
+        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-header"><div class="msg-date"><i class="far fa-clock"></i> ${H.getUserDate(c.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-username"><i class="far fa-user"></i> ${c.ownername||`<s><?=_("deleted")?></s>`}</div>${c.ownerid==userId?`<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>`:""}</div><div class="msg-body">${c.content.replace(/\n/g, "<br>")}</div></div>`;
       });
 
       //FIXME
@@ -252,16 +258,11 @@
 
       if (refresh)
       {
-        const $el = $_popup.find (".content");
-
-        $el.find("[data-toggle='tooltip']").tooltip ("dispose");
-        $el.html (content);
+        $_popup.find (".content").html (content);
 
         // Resize only if popover
         if ($_popup[0].classList.contains ("popover"))
           H.waitForDOMUpdate (__resize);
-
-        H.enableTooltips ($el);
       }
       else if (content || !plugin.settings.readonly)
       {
@@ -287,7 +288,7 @@
           H.openConfirmPopover ({
             type: "custom",
             placement:"left",
-            html_header: plugin.settings.readonly ? "" : `<div class="search mb-1"><textarea class="form-control" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><span class="btn btn-sm btn-secondary btn-circle btn-clear"><i class="fa fa-broom"></i></span><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
+            html_header: plugin.settings.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
             customClass: "msg-popover pcomm-popover",
             noclosure: true,
             item: plugin.element,
@@ -310,12 +311,14 @@
             },
             cb_after:($p)=>
             {
+              const p = $p[0];
+
               $_popup = $p;
-              _textarea = $p[0].querySelector ("textarea");
+              _textarea = p.querySelector ("textarea");
 
-              __resize ($p);
+              __resize ();
 
-              H.setAutofocus ($p);
+              H.setAutofocus (p);
             }
         });
       }
@@ -348,8 +351,8 @@
               $_popup = undefined;
             });
 
-        // EVENT click on clear input button.
-        $(document).on("click", _getEventSelector(".btn-clear"),
+        // EVENT "click" on clear textarea button
+        $(document).on("click", _getEventSelector(".clear-textarea"),
           function (e)
           {
             _textarea.value = "";
@@ -512,7 +515,8 @@
             e.preventDefault ();
             e.stopImmediatePropagation ();
 
-            _textarea.focus ();
+            if (H.haveMouse ())
+              _textarea.focus ();
 
             H.request_ws (
               "DELETE",

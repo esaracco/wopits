@@ -3,17 +3,15 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-user-friends"></i> <?=_("Current users")?></h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+        <h5 class="modal-title"><i class="fas fa-user-friends"></i> <?=_("Connected users")?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <?=_("The following users are viewing this wall:")?>
-        <div class="list-group mt-3"></div>
+        <ul class="list-group mt-3"></ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
       </div>
     </div>
   </div>

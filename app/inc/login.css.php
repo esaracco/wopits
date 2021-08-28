@@ -10,41 +10,52 @@ html {
   overflow:auto;
 }
 
-.login-page .navbar {
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
+#login-page .navbar {
+  padding-left:20px;
+  padding-right:20px;
 }
 
-.main-login {
+#login-page .navbar-brand {
+  background:none;
+  color:#fff !important;
+}
+
+#login-page .themes * {
+  float:left;
+  margin-bottom:2px;
+}
+
+#login-page .main-login {
   height:80%;
   width:100%;
   margin-top:80px;
 }
 
-.login-page .links a,
-.login-page .custom-checkbox label {
+#login-page .links a,
+#login-page .remember label {
   color:#a5a5a5;
-  cursor: pointer;
+  cursor:pointer;
+  text-decoration:none;
 }
 
-.login-page .nowelcome label {
+#login-page .nowelcome label {
   color:#35b351;
 }
 
-.container {
+#login-page .container {
   position: relative;
   top: 45%;
   transform: translateY(-50%);
 }
 
-#desc-container {
+#login-page #desc-container {
   position:absolute;
   top:80px;
   width:100%;
   z-index:2;
 }
 
-#desc-container .alert {
+#login-page #desc-container .alert {
   margin-left:auto;
   margin-right:auto;
   max-width:600px;
@@ -56,7 +67,7 @@ html {
    hyphens: auto;
 }
 
-.user-card {
+#login-page .user-card {
   z-index:5006; 
   height: 440px;
   width: 350px;
@@ -73,15 +84,15 @@ html {
   border-radius: 5px;
 }
 
-.ldap .user-card {
+#login-page .ldap .user-card {
   height: 370px;
 }
 
-.ldap .div-logo {
+#login-page .ldap .div-logo {
   margin-bottom:60px;
 }
 
-.brand-logo-container {
+#login-page .brand-logo-container {
   position: absolute;
   height: 100px;
   width: 100px;
@@ -90,7 +101,7 @@ html {
   text-align: center;
 }
 
-.brand-logo {
+#login-page .brand-logo {
   height: 100px;
   width: 100px;
   border-radius: 50%;
@@ -98,19 +109,19 @@ html {
   margin-top:8px;
 }
 
-.form-container {
+#login-page .form-container {
   margin-top: 120px;
 }
 
-.ldap .form-container {
+#login-page .ldap .form-container {
   margin-top: 40px;
 }
 
-#login button {
+#login-page #login button {
   width: 100%;
 }
 
-.user-card form span.required {
+#login-page .user-card form span.required {
   background:#5e666f;
   color:#ff8383;
   border-radius:5px;

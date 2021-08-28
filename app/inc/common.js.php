@@ -17,19 +17,19 @@ class Wpt_forms
   // METHOD checkRequired ()
   checkRequired (fields, displayMsg = true)
   {
-    const $form = $(fields[0]).closest ("form");
+    const form = fields[0].closest ("form");
 
-    $form.find("span.required").remove ();
-    $form.find(".required").removeClass ("required");
-    
+    form.querySelectorAll("span.required").forEach (
+      (f)=> f.remove ());
+    form.querySelectorAll(".required").forEach (
+      (f)=> f.classList.remove ("required"));
+
     for (const f of fields)
     {
-      const $f = $(f);
-
-      if ($f.attr("required") && !$f.val().trim().length)
+      if (f.hasAttribute("required") && !f.value.trim())
       {
-        this.focusBadField ($f, displayMsg?`<?=_("Required field")?>`:null);
-        $f.focus ();
+        this.focusBadField (f, displayMsg?`<?=_("Required field")?>`:null);
+        f.focus ();
 
         return false;
       }
@@ -39,18 +39,18 @@ class Wpt_forms
   }
 
   // METHOD focusBadField ()
-  focusBadField ($f, msg)
+  focusBadField (f, msg)
   {
-    const $group = $f.closest (".input-group");
+    const group = f.closest (".input-group");
 
-    $group.addClass ("required");
+    group.classList.add ("required");
 
-    $f.focus ();
+    f.focus ();
 
     if (msg)
-      $(`<span class="required">${msg}:</span>`).insertBefore ($group);
+      $(`<span class="required">${msg}:</span>`).insertBefore (group);
         
-    setTimeout (() => $group.removeClass ("required"), 2000);
+    setTimeout (()=> group.classList.remove ("required"), 2000);
   }
 }
 
@@ -69,8 +69,9 @@ class Wpt_accountForms extends Wpt_forms
     {
       ret = false;
       H.displayMsg ({
-        noclosure: true,
-        type: "warning", msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>`
+        title: `<?=_("Account")?>`,
+        type: "warning",
+        msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>`
       });
     }
 
@@ -88,10 +89,9 @@ class Wpt_accountForms extends Wpt_forms
   {
     for (const f of fields)
     {
-      const $f = $(f);
-      let val = $f.val ();
+      let val = f.value;
 
-      switch ($f.attr ("name"))
+      switch (f.getAttribute ("name"))
       {
         case "wall-width":
         case "wall-height":
@@ -100,70 +100,74 @@ class Wpt_accountForms extends Wpt_forms
 
           if (val > 0)
           {
-            if ($f.attr("name") == "wall-width" && val < 300 ||
-                $f.attr("name") == "wall-height" && val < 200)
-              return this.focusBadField ($f, `<?=_("The size of a wall cannot be less than %s")?>`.replace("%s", "300x200"));
+            if (f.getAttribute("name") == "wall-width" && val < 300 ||
+                f.getAttribute("name") == "wall-height" && val < 200)
+              return this.focusBadField (f, `<?=_("The size of a wall cannot be less than %s")?>`.replace("%s", "300x200"));
             else if (val > 20000)
-              return this.focusBadField ($f, `<?=_("The size of a wall cannot be greater than %s")?>`.replace("%s", "20000x20000"));
+              return this.focusBadField (f, `<?=_("The size of a wall cannot be greater than %s")?>`.replace("%s", "20000x20000"));
           }
           break;
 
         case "wall-cols":
         case "wall-rows":
 
-          const $form = $f.closest("form"),
-                cols = Number ($form.find("input[name='wall-cols']").val ()) || 3,
-                rows = Number ($form.find("input[name='wall-rows']").val ()) || 3;
+          const form = f.closest ("form"),
+                cols = Number (form.querySelector(
+                                 "input[name='wall-cols']").value)||3,
+                rows = Number (form.querySelector(
+                                 "input[name='wall-rows']").value)||3;
 
           if (cols * rows > <?=WPT_MAX_CELLS?>)
-            return this.focusBadField ($f, `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
+            return this.focusBadField (f, `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
           break;
 
         case "email":
 
           if (!this._checkEmail (val))
-            return this.focusBadField ($f, `<?=_("Bad email address")?>`);
+            return this.focusBadField (f, `<?=_("Bad email address")?>`);
 
           break;
 
         case "email2":
 
-          if (val != $f.closest("form").find("input[name='email']").val())
-            return this.focusBadField ($f, `<?=_("Emails must match")?>`);
+          if (val != f.closest("form")
+                       .querySelector("input[name='email']").value)
+            return this.focusBadField (f, `<?=_("Emails must match")?>`);
 
           break;
 
         case "username":
 
           if (val.trim().length < 3 || val.match (/@|&|\\/))
-            return this.focusBadField ($f, `<?=_("Login is not valid")?>`);
+            return this.focusBadField (f, `<?=_("Login is not valid")?>`);
 
           break;
 
         case "password":
 
           if (!this._checkPassword (val))
-            return this.focusBadField ($f, `<?=_("Unsecured password")?>`);
+            return this.focusBadField (f, `<?=_("Unsecured password")?>`);
 
           break;
 
         case "password2":
 
-          if (!$f.closest("form").find("input[name='password3']").length)
+          if (!f.closest("form").querySelector("input[name='password3']"))
           {
-            if (val != $f.closest("form").find("input[name='password']").val())
-              return this.focusBadField ($f, `<?=_("Passwords must match")?>`);
+            if (val != f.closest("form")
+                         .querySelector("input[name='password']").value)
+              return this.focusBadField (f, `<?=_("Passwords must match")?>`);
           }
           else if (!this._checkPassword (val))
-            return this.focusBadField ($f, `<?=_("Unsecured password")?>`);
+            return this.focusBadField (f, `<?=_("Unsecured password")?>`);
 
           break;
 
         case "password3":
 
-          if (val != $f.closest("form").find("input[name='password2']").val())
-            return this.focusBadField (
-                     $f, `<?=_("New passwords must match")?>`);
+          if (val != f.closest("form")
+                       .querySelector("input[name='password2']").value)
+            return this.focusBadField (f, `<?=_("New passwords must match")?>`);
 
           break;
       }
@@ -378,22 +382,27 @@ class WSharer
   getCurrent (item)
   {
     if (!this.walls.length)
-      this.walls = $("#walls");
+    {
+      this.walls = $(document.getElementById("walls"));
+      if (!this.walls.length)
+        return $([]);
+    }
 
     switch (item)
     {
       case "wall":
 
         if (!this.wall.length)
-         this.wall = this.walls.find (".tab-pane.active .wall");
+          this.wall = $(this.walls[0].querySelector(
+                          ".tab-pane.active .wall")||[]);
 
         return this.wall;
 
       case "postit":
 
         if (!this.postit.length)
-         this.postit = this.walls.find (
-                         ".tab-pane.active .wall .postit.current");
+          this.postit = $(this.walls[0].querySelector(
+                            ".tab-pane.active .postit.current"));
 
         return this.postit;
 
@@ -415,14 +424,15 @@ class WSharer
       case "header":
 
         if (!this.header.length)
-         this.header = this.walls.find (".tab-pane.active .wall th.current");
+          this.header = $(this.walls[0].querySelector(
+                            ".tab-pane.active th.wpt.current"));
 
         return this.header;
 
       case "tpick":
 
         if (!this.tpick)
-          this.tpick = $("#tpick");
+          this.tpick = $(document.getElementById("tpick"));
 
         return this.tpick;
 
@@ -433,49 +443,52 @@ class WSharer
       case "sandbox":
 
         if (!this.sandbox)
-          this.sandbox = $("#sandbox");
+          this.sandbox = $(document.getElementById("sandbox"));
 
         return this.sandbox;
 
       case "chat":
 
         if (!this.chat.length)
-         this.chat = this.walls.find (".tab-pane.active .chat");
+          this.chat = $(this.walls[0].querySelector(".tab-pane.active .chat"));
 
         return this.chat;
 
       case "filters":
 
         if (!this.filters.length)
-         this.filters = this.walls.find (".tab-pane.active .filters");
+          this.filters = $(this.walls[0]
+                             .querySelector(".tab-pane.active .filters"));
 
         return this.filters;
 
       case "wmenu":
 
         if (!this.wmenu.length)
-         this.wmenu = this.walls.find (".tab-pane.active .wall-menu");
+          this.wmenu = $(this.walls[0]
+                           .querySelector(".tab-pane.active .wall-menu"));
 
         return this.wmenu;
 
       case "arrows":
 
         if (!this.arrows.length)
-         this.arrows = this.walls.find (".tab-pane.active .arrows");
+          this.arrows = $(this.walls[0]
+                            .querySelector(".tab-pane.active .arrows"));
 
         return this.arrows;
 
       case "mmenu":
 
         if (!this.mmenu)
-          this.mmenu = $("#mmenu");
+          this.mmenu = $(document.getElementById("mmenu"));
 
         return this.mmenu;
 
       case "pcomm":
 
         if (!this.pcomm.length)
-          this.pcomm = this.getCurrent("postit").find (".pcomm");
+          this.pcomm = $(this.getCurrent("postit")[0].querySelector(".pcomm"));
 
         return this.pcomm;
     }
@@ -556,18 +569,21 @@ class WSocket
 
             // exitsession
             case "exitsession":
+              //TODO use H.infoPopup()
               var $popup = $("#infoPopup");
 
-              $(".modal").modal ("hide");
+              bootstrap.Modal.getOrCreateInstance(
+                document.querySelector(".modal")).hide ();
 
               H.cleanPopupDataAttr ($popup);
 
               $popup.find(".modal-body").html (`<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`);
               $popup.find(".modal-title").html (`<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`);
               $popup[0].dataset.popuptype = "app-logout";
-              H.openModal ($popup);
+              H.openModal ({item: $popup, customClass: "zindexmax"});
 
-              setTimeout (() => $popup.modal ("hide"), 3000);
+              setTimeout (
+                ()=> bootstrap.Modal.getInstance($popup).hide (), 3000);
               break;
 
             // refreshpcomm
@@ -624,8 +640,9 @@ class WSocket
               if (!isResponse)
               {
                 H.displayMsg ({
+                  title: `<?=_("Walls")?>`,
                   type: "warning",
-                  msg: `<?=_("Some walls are no longer available.")?>`
+                  msg: `<?=_("Some walls are no longer available")?>`
                 });
 
                 $wall.wall ("close");
@@ -652,12 +669,15 @@ class WSocket
 
             // Maintenance reload.
             case "reload":
+              //TODO use H.infoPopup()
               var $popup = $("#infoPopup");
 
               // No need to deactivate it afterwards: page will be reloaded.
               S.set ("block-msg", true);
 
-              $(".modal").modal ("hide");
+              // Close current popup if any
+              bootstrap.Modal.getOrCreateInstance(
+                document.querySelector(".modal")).hide ();
 
               H.cleanPopupDataAttr ($popup);
 
@@ -665,7 +685,7 @@ class WSocket
               $popup.find(".modal-title").html (`<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`);
 
               $popup[0].dataset.popuptype = "app-reload";
-              H.openModal ($popup);
+              H.openModal ({item: $popup, customClass: "zindexmax"});
 
               break;
           }
@@ -848,7 +868,7 @@ class WHelper
   // METHOD isLoginPage ()
   isLoginPage ()
   {
-    return (document.body && document.body.classList.contains ("login-page"));
+    return (document.body && document.body.id == "login-page");
   }
 
   // METHOD disabledEvent ()
@@ -908,11 +928,16 @@ class WHelper
   }
 
   // METHOD setAutofocus ()
-  setAutofocus ($el)
+  setAutofocus (el)
   {
     // Set focus on first autofocus field if not touch device
     if (this.haveMouse ())
-      setTimeout (() => $el.find("[autofocus]:eq(0)").focus (), 150);
+    {
+      let tmp;
+
+      setTimeout (() =>
+        (tmp = el.querySelector("[autofocus]")) && tmp.focus (), 350);
+    }
   }
 
   // METHOD testImage ()
@@ -1141,8 +1166,9 @@ class WHelper
   // METHOD getUserDate ()
   getUserDate (dt, tz, fmt)
   {
-    return moment.unix(dt).tz(tz||wpt_userData.settings.timezone)
-             .format(fmt||"Y-MM-DD");
+    return moment.unix(dt).tz(
+      tz||wpt_userData.settings.timezone||moment.tz.guess())
+        .format(fmt||"Y-MM-DD");
   }
 
   checkUserVisible ()
@@ -1154,24 +1180,20 @@ class WHelper
   loader (action, force = false, xhr = null)
   {
     const $layer = $("#popup-loader"),
-          layer0 = $layer[0];
+          layer = $layer[0];
   
-    if ($layer.length && (WS.ready () || force))
+    if (layer && (WS.ready() || force))
     {
-      clearTimeout (layer0.dataset.timeoutid);
+      clearTimeout (layer.dataset.timeoutid);
   
       if (action == "show")
       {
-        layer0.dataset.timeoutid = setTimeout (() =>
+        layer.dataset.timeoutid = setTimeout (() =>
           {
             if (xhr)
             {
               // Abort upload on user request
-              $layer.find("button").off("click").on("click", function ()
-                {
-                  xhr.abort ();
-                });
-  
+              $layer.find("button").off("click").on("click", ()=> xhr.abort ());
               $layer.find (".progress,button").show ();
             }
   
@@ -1189,7 +1211,7 @@ class WHelper
           background: "#ea6966"
         });
 
-        layer0.removeAttribute ("data-timeoutid");
+        layer.removeAttribute ("data-timeoutid");
       }
     }
   }
@@ -1230,7 +1252,7 @@ class WHelper
         else
           aboutEl.style.display = "none";
 
-        H.openModal ($p);
+        H.openModal ({item: $p});
       }
     });
   }
@@ -1248,18 +1270,18 @@ class WHelper
           $layer.click ();
       });
   
-      $layer
-        .on("click",
-        function (e)
-        {
-          $(document).off ("keydown.popuplayer");
+    $layer
+      .on("click",
+      function (e)
+      {
+        $(document).off ("keydown.popuplayer");
   
-          // Remove the layer
-          this.remove ();
+        // Remove the layer
+        this.remove ();
   
-          if (cb)
-            cb (e);
-        });
+        if (cb)
+          cb (e);
+      });
   
     $layer.prependTo("body").show ();
   }
@@ -1287,47 +1309,36 @@ class WHelper
 
     popup0.dataset.popuptype = args.type;
 
-    this.openModal ($popup);
+    this.openModal ({item: $popup});
   }
   
   // METHOD openConfirmPopover ()
   openConfirmPopover (args)
   {
     const scroll = !!args.scrollIntoView;
-    let btn;
+    let tmp, btn, buttons;
 
     if (!this.haveMouse ())
       this.fixVKBScrollStart ();
   
-    this.openPopupLayer (() =>
+    this.openPopupLayer ((e)=>
       {
-        const $popover = $(".popover").last ();
+        const bp = bootstrap.Popover.getInstance(args.item[0])
 
-        args.cb_close && args.cb_close ($popover[0].dataset.btnclicked);
+        if (bp)
+        {
+          if (args.cb_close)
+            args.cb_close (bp.tip.dataset.btnclicked);
 
-        $popover.find("[data-toggle='tooltip']").tooltip ("dispose");
-        $popover.popover ("dispose");
+          if (document.querySelector(".popover.show"))
+            bp.dispose ();
+        }
   
         if (!this.haveMouse ())
           this.fixVKBScrollStop ();
 
-        //FIXME
-        $("#popup-layer").click ();
-  
       }, false);
     
-    // We are not using "content" property to set popover content because
-    // it do not accept buttons and some other HTML tags
-    args.item.popover({
-      html: true,
-      title: args.title,
-      customClass:args.customClass||"",
-      placement: args.placement||"auto",
-      boundary: "window"
-    }).popover ("show");
-
-    let buttons;
-
     switch (args.type)
     {
       case "info":
@@ -1355,45 +1366,44 @@ class WHelper
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
-    const $body = $(".popover-body").last ();
+    const bp = bootstrap.Popover.getOrCreateInstance (args.item[0], {
+      html: true,
+      sanitize: false,
+      title: args.title,
+      customClass:args.customClass||"",
+      placement: args.placement||"left",
+      boundary: "window",
+      content: `<p>${args.content}</p>${buttons}`
+    });
 
-    $body
-      .addClass("justify")
-      .html (`<p>${args.content}</p>${buttons}`);
-  
-    if (this.haveMouse ())
-      $body.find("input:eq(0)").focus ();
-  
-    $body.find("button:not(.close)").on("click", function (e)
+    bp.show ();
+
+    const body = bp.tip.querySelector (".popover-body");
+
+    if (this.haveMouse () && (tmp = body.querySelector("input")) )
+      tmp.focus ();
+
+    $(body).find("button:not(.close)").on("click", function (e)
       {
-        const $btn = $(this),
-              $popover = $btn.closest(".popover");
-  
-        if ($btn[0].classList.contains ("btn-primary"))
+        if (this.classList.contains ("btn-primary"))
         {
-          $popover[0].dataset.btnclicked = btn.primary;
+          bp.tip.dataset.btnclicked = btn.primary;
           if (args.cb_ok)
-            args.cb_ok ($popover);
+            args.cb_ok ($(bp.tip));
         }
         else
-          $popover[0].dataset.btnclicked = btn.secondary;
+          bp.tip.dataset.btnclicked = btn.secondary;
   
         if (!args.noclosure)
-          $("#popup-layer").click ();
+          document.getElementById("popup-layer").click ();
       });
 
-    const $popover = $(".popover").last ();
-
-    //FIXME Required to prevent "title" element property to be used by default
-    $popover.find(".popover-header").html (args.title);
-
+    // Scroll to the popover point
     if (scroll)
       args.item[0].scrollIntoView (false);
 
     if (args.cb_after)
-      args.cb_after ($popover);
-
-    H.enableTooltips ($popover);
+      args.cb_after ($(bp.tip));
 
     if (scroll)
       window.dispatchEvent (new Event("resize"));
@@ -1402,7 +1412,7 @@ class WHelper
   // METHOD setViewToElement ()
   setViewToElement ($el)
   {
-    const $view = S.getCurrent("walls"),
+    const $view = S.getCurrent ("walls"),
           posE = $el[0].getBoundingClientRect (),
           posV = $view[0].getBoundingClientRect ();
 
@@ -1416,8 +1426,10 @@ class WHelper
   // METHOD resizeModal ()
   resizeModal ($modal, w)
   {
-    const wW = $(window).width (),
-          cW = Number ($modal[0].dataset.customwidth)||0,
+    const modal = $modal[0],
+          md = modal.querySelector(".modal-dialog"),
+          wW = $(window).width (),
+          cW = Number (modal.dataset.customwidth)||0,
           oW = w;
   
     if (cW)
@@ -1439,48 +1451,43 @@ class WHelper
     }
   
     if (!cW)
-      $modal[0].dataset.customwidth = oW;
+      modal.dataset.customwidth = oW;
   
-    $modal
-      .find(".modal-dialog")
-        .css ({
-          width: w,
-          "min-width": w,
-          "max-width": w
-        });
+    md.style.width = `${w}px`;
+    md.style.minWidth = `${w}px`;
+    md.style.maxWidth = `${w}px`;
   }
   
   // METHOD openModal ()
-  openModal ($modal, w)
+  openModal (args)
   {
-    $modal[0].removeAttribute ("data-customwidth");
-  
-    $modal.modal({
-      backdrop: true,
-      show: true
-    })
-/*
-    .draggable({
-      distance: 10,
-      handle: ".modal-header",
-      cursor: "pointer"
-    })
-*/
-    .css({
-      top: 0,
-      left: 0
-    });
-  
-    if (w)
-      this.resizeModal ($modal, w);
+    const m = args.item[0],
+          md = m.querySelector(".modal-dialog"),
+          bm = bootstrap.Modal.getOrCreateInstance (m, {backdrop: true});
+
+    // Modals with transition effect
+    if (!args.noeffect)
+      m.classList.add ("fade");
+
+    m.removeAttribute ("data-customwidth");
+    m.style.top = 0;
+    m.style.left = 0;
+
+    m.querySelector(".modal-content").classList.add ("shadow-lg");
+
+    if (args.customClass)
+      m.classList.add (args.customClass);
+
+    bm.show ();
+
+    if (args.width)
+      this.resizeModal (args.item, args.width);
     else
-      $modal
-        .find(".modal-dialog")
-          .css ({
-            width: "",
-            "min-width": "",
-            "max-width": ""
-          });
+    {
+      md.style.width = "";
+      md.style.minWidth = "";
+      md.style.maxWidth = "";
+    }
   }
 
   // METHOD loadPopup ()
@@ -1501,7 +1508,10 @@ class WHelper
           $p[type]("setSettings", args.settings);
 
         if (args.open)
-          H.openModal ($p);
+          H.openModal ({
+            item: $p,
+            noeffect: !!args.noeffect
+          });
       };
 
     if (args.open === undefined)
@@ -1534,20 +1544,21 @@ class WHelper
   // METHOD infoPopup ()
   infoPopup (msg, notheme)
   {
-    const $popup = $("#infoPopup");
+    const p = document.getElementById ("infoPopup"),
+          $p = $(p);
   
     if (notheme)
-      $popup.addClass ("no-theme");
+      p.classList.add ("no-theme");
     else
-      this.cleanPopupDataAttr ($popup);
+      this.cleanPopupDataAttr ($p);
       
-    $popup.find(".modal-dialog").addClass ("modal-sm");
+    p.querySelector(".modal-dialog").classList.add ("modal-sm");
   
-    $popup.find(".modal-body").html (msg);
+    p.querySelector(".modal-body").innerHTML = msg;
   
-    $popup.find(".modal-title").html (`<i class="fas fa-bullhorn"></i> <?=_("Information")?>`);
+    p.querySelector(".modal-title").innerHTML = `<i class="fas fa-bullhorn"></i> <?=_("Information")?>`;
   
-    this.openModal ($popup);
+    this.openModal ({item: $p});
   }
   
   // METHOD raiseError ()
@@ -1556,8 +1567,9 @@ class WHelper
     error_cb && error_cb ();
   
     this.displayMsg ({
+      title: `<?=_("System")?>`,
       type: msg?"warning" : "danger",
-      msg: msg?msg:`<?=_("System error. Please report it to the administrator.")?>`
+      msg: msg?msg:`<?=_("System error. Please report it to the administrator")?>`
     });
   }
   
@@ -1571,47 +1583,26 @@ class WHelper
     // manager.
     if ($(".tox-dialog").is(":visible"))
       return tinymce.activeEditor.windowManager.alert (args.msg);
-  
-    const $previous = $(".alert:eq(0)"),
-          id = (args.noclosure) ? "noclosure": `timeout-${Math.random()}`;
-    let $target;
-  
-    if (args.target)
-      $target = args.target;
-    else
+
+    const t = args.type;
+
+    // Blur TinyMCE editor to hide virtual keyboard
+    if (!this.haveMouse ())
     {
-      let $modals = $(".modal-collapse:visible:eq(0)");
+      const ef = document.getElementById ("postitUpdatePopupBody_ifr");
 
-      if (!$modals.length)
-        $modals = $(".modal:visible:eq(0)");
-
-      $target = $modals.length ? $modals.find(".modal-body:visible") :
-                                 $("#msg-container");
+      if (ef)
+        ef.blur ();
     }
 
-    $target.find(".alert[data-timeoutid='noclosure']").remove ();
-  
-    if (args.reset)
-      return;
-  
-    if (!($previous.length && $previous.find("span").text () == args.msg))
-    {
-      if ($previous.length)
-        $previous.css ("z-index", $previous.css("z-index") - 1);
+    // Close opened alert with the same content
+    document.querySelectorAll("#msg-container .toast").forEach (
+      (el)=> (el.querySelector(".toast-body").innerHTML == args.msg) &&
+                bootstrap.Toast.getInstance(el).hide ());
 
-      $target.prepend (`<div class="alert alert-dismissible alert-${args.type}" data-timeoutid="${id}"><a href="#" class="close" data-dismiss="alert">&times;</a>${args.title?`<b>${args.title}</b><br>`:""}<span>${args.msg}</span></div>`);
-
-      if (!args.noclosure)
-        setTimeout (() =>
-          {
-            const $div = $target.find (`.alert[data-timeoutid="${id}"]`);
-  
-            $div.hide("fade", function(){$div.remove ()})
-    
-          }, (args.type == "danger") ? 5000 : 3000);
-    }
+    (new bootstrap.Toast ($(`<div class="toast align-items-center border-0 ${(t=="danger"||t=="success")?"text-white":""} bg-${t} bg-gradient" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><button type="button" class="btn-close m-auto" data-bs-dismiss="toast"></button><div class="toast-body">${args.msg}</div></div></div>`).prependTo ("#msg-container"), {delay: (t=="danger"||t=="warning")?5000:3000})).show ();
   }
-  
+
   // METHOD fixMenuHeight ()
   fixMenuHeight ()
   {
@@ -1665,22 +1656,12 @@ class WHelper
   // METHOD getProgressbarColor ()
   getProgressbarColor (v)
   {
-    let r;
-
-    if (v < 30)
-      r = "#f60104";
-    else if (v < 50)
-      r = "#f57f00";
-    else if (v < 75)
-      r = "#f5c900";
-    else if (v < 85)
-      r = "#f0f700";
-    else if (v < 95)
-      r = "#84f600";
-    else
-      r = "#26f700";
-
-    return r;
+    return (v < 30) ? "#f60104" :
+           (v < 50) ? "#f57f00" :
+           (v < 75) ? "#f5c900" :
+           (v < 85) ? "#f0f700" :
+           (v < 95) ? "#84f600" :
+           "#26f700";
   }
 
   // METHOD download ()
@@ -1698,9 +1679,9 @@ class WHelper
   
           if (req.status != 200)
             this.displayMsg ({
+              title: `<?=_("Download")?>`,
               type: "warning",
-              msg:
-                args.msg||`<?=_("An error occured while downloading file.")?>`
+              msg: args.msg||`<?=_("An error occurred while downloading")?>`
             });
         }
       };
@@ -1717,8 +1698,9 @@ class WHelper
       if (contentType == 404)
       {
         this.displayMsg ({
+          title: `<?=_("Download")?>`,
           type: "warning",
-          msg: `<?=_("The file is no longer available for download.")?>`
+          msg: `<?=_("The file is no longer available for download")?>`
         });
       }
       else
@@ -1740,18 +1722,6 @@ class WHelper
     req.send ();
   }
   
-  // METHOD enableTooltips ()
-  enableTooltips ($item, _args = {})
-  {
-    const args = $.extend ({delay: {"show": 500, "hide": 0}}, _args);
-
-    $item
-      // Enable tooltips on the element.
-      .tooltip(args)
-      // Enable tooltips on children.
-      .find("[data-toggle='tooltip']").tooltip (args);
-  }
-
   // METHOD manageUnknownError ()
   manageUnknownError (d = {}, error_cb)
   {
@@ -1763,11 +1733,12 @@ class WHelper
       msg = `<?=_("Unknown error.<br>Please try again later.")?>`;
     else
     {
-      msg = `<?=_("Unknown error!<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
+      msg = `<?=_("Unknown error.<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
       setTimeout (()=> $("<div/>").login ("logout", {auto: true}), 3000);
     }
 
     this.displayMsg ({
+      title: `<?=_("System")?>`,
       type: d.msgtype||"danger",
       msg: msg
     });
@@ -1797,7 +1768,11 @@ class WHelper
         else if (success_cb)
           success_cb (d);
         else if (d.error_msg)
-          H.displayMsg ({type: "warning", msg: d.error_msg});
+          H.displayMsg ({
+            title: `<?=_("Warning")?>`,
+            type: "warning",
+            msg: d.error_msg
+          });
       },
     ()=>
       {
@@ -1844,78 +1819,79 @@ class WHelper
   {
     //console.log (`AJAX: PUT ${service}`);
   
-    const xhr = $.ajax (
-      {
-        // Progressbar for file upload
-        xhr: ()=>
-        {
-          const xhr = new window.XMLHttpRequest ();
-
-          // INTERNAL FUNCTION __progress ()
-          const __progress = (e)=>
+    const pbar = document.querySelector ("#loader .progress"),
+          xhr = $.ajax (
             {
-              if (e.lengthComputable)
-                {
-                  const $progress = $("#loader .progress"),
-                        percentComplete = e.loaded / e.total,
-                        display = `${Math.trunc(percentComplete*100)}%`;
-
-                  $progress.text(display).css ("width", display);
-
-                  //FIXME Use classes
-                  if (percentComplete < 0.5)
-                    $progress.css ("background", "#ea6966");
-                  else if (percentComplete < 0.9)
-                    $progress.css ("background", "#f5b240");
-                  else if (percentComplete < 1)
-                    $progress.css ("background", "#6ece4b");
-                  else
-                    $progress.text (`<?=_("Upload completed.")?>`);
-                }
-            };
-
-            xhr.upload.addEventListener ("progress", __progress, false);
-            xhr.addEventListener ("progress", __progress, false);
-
-          return xhr;
-        },
-        type: "PUT",
-        // No timeout for file uploading
-        timeout: 0,
-        async: true,
-        cache: false,
-        url: `/api/${service}`,
-        data: args ? encodeURI (JSON.stringify (args)) : null,
-        dataType: "json",
-        contentType: "application/json;charset=utf-8"
-      })
-      .done ((d)=>
-       {
-         if (!d||d.error)
-         {
-           if (error_cb)
-             error_cb (d);
-           else
-             this.manageUnknownError (d);
-         }
-         else if (success_cb)
-           success_cb (d);
-       })
-      .fail ((jqXHR, textStatus, errorThrown)=>
-       {
-         switch (textStatus)
-         {
-           case "abort":
-             this.manageUnknownError ({
-               msgtype: "warning",
-               error: `<?=_("Upload has been canceled")?>`});
-             break;
-  
-           default:
-            this.manageUnknownError ();
-         }
-       })
-      .always (()=> this.loader ("hide", true));
+              // Progressbar for file upload
+              xhr: ()=>
+              {
+                const xhr = new window.XMLHttpRequest ();
+      
+                // INTERNAL FUNCTION __progress ()
+                const __progress = (e)=>
+                  {
+                    if (e.lengthComputable)
+                    {
+                      const display = Math.trunc(e.loaded/e.total*100);
+      
+                      pbar.innerText = display+"%";
+                      pbar.style.width = display+"%";
+      
+                      //FIXME Use classes
+                      if (display < 50)
+                        pbar.style.backgroundColor = "#ea6966";
+                      else if (display < 90)
+                        pbar.style.backgroundColor = "#f5b240";
+                      else if (display < 100)
+                        pbar.style.backgroundColor = "#6ece4b";
+                      else
+                        pbar.innerText = `<?=_("Upload completed")?>`;
+                    }
+                  };
+      
+                  xhr.upload.addEventListener ("progress", __progress, false);
+//FIXME useful?
+//                  xhr.addEventListener ("progress", __progress, false);
+      
+                return xhr;
+              },
+              type: "PUT",
+              // No timeout for file uploading
+              timeout: 0,
+              async: true,
+              cache: false,
+              url: `/api/${service}`,
+              data: args ? encodeURI (JSON.stringify (args)) : null,
+              dataType: "json",
+              contentType: "application/json;charset=utf-8"
+            })
+            .done ((d)=>
+             {
+               if (!d||d.error)
+               {
+                 if (error_cb)
+                   error_cb (d);
+                 else
+                   this.manageUnknownError (d);
+               }
+               else if (success_cb)
+                 success_cb (d);
+             })
+            .fail ((jqXHR, textStatus, errorThrown)=>
+             {
+               switch (textStatus)
+               {
+                 case "abort":
+                   this.manageUnknownError ({
+                     msgtype: "warning",
+                     error: `<?=_("Upload has been canceled")?>`});
+                   break;
+        
+                 default:
+                  this.manageUnknownError ();
+               }
+             })
+            .always (()=> this.loader ("hide", true));
 
     this.loader ("show", true, xhr);
   }
@@ -1923,7 +1899,7 @@ class WHelper
   // METHOD checkUploadFileSize ()
   checkUploadFileSize (args)
   {
-    const msg = `<?=_("File size is too large (%sM max).")?>`.replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
+    const msg = `<?=_("File size is too large (%sM max)")?>`.replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
           maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
     let ret = true;
   
@@ -1935,7 +1911,8 @@ class WHelper
         args.cb_msg (msg);
       else
         this.displayMsg ({
-          type: "danger",
+          title: `<?=_("File upload")?>`,
+          type: "warning",
           msg: msg
         });
     }
@@ -1952,8 +1929,9 @@ class WHelper
 
     if (type != "all" && !file.name.match (new RegExp (type, 'i')))
       return _H.displayMsg ({
+        title: `<?=_("File upload")?>`,
         type: "warning",
-        msg: `<?=_("Wrong file type for %s.")?>`.replace("%s", file.name)
+        msg: `<?=_("Wrong file type for %s")?>`.replace("%s", file.name)
       });
   
     reader.readAsDataURL (file);
@@ -1972,6 +1950,7 @@ class WHelper
           cb_msg (msg);
         else
           _H.displayMsg ({
+            title: `<?=_("File upload")?>`,
             type: "danger",
             msg: msg
           });
@@ -2004,8 +1983,9 @@ class WHelper
   
         if (userVersion)
         {
-          // Needed to unedit current items
-          $(".modal").modal ("hide");
+          // Close current popup if any
+          bootstrap.Modal.getOrCreateInstance(
+            document.querySelector(".modal")).hide ();
   
           this.cleanPopupDataAttr ($popup);
   
@@ -2013,7 +1993,7 @@ class WHelper
           $popup.find(".modal-title").html (`<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`);
   
           $popup[0].dataset.popuptype = "app-upgrade";
-          this.openModal ($popup);
+          this.openModal ({item: $popup});
   
           return true;
         }
@@ -2043,11 +2023,11 @@ class WHelper
           $popup.find(".modal-body").find("button")
             .on("click", function ()
             {
-              $popup.modal ("hide");
+              bootstrap.Modal.getInstance($popup).hide ();
               H.loadPopup ("userGuide");
             });
 
-          this.openModal ($popup);
+          this.openModal ({item: $popup, noeffect: true});
         }
       }
     }
@@ -2058,13 +2038,17 @@ class WHelper
   {
     return navigator.userAgent.match (/edg/i);
   }
-  
+
   // METHOD fixVKBScrollStart ()
   //FIXME
   fixVKBScrollStart ()
   {
+    const walls = document.getElementById ("walls");
+
+    if (!walls)
+      return;
+
     const body = document.body,
-          walls = document.getElementById ("walls"),
           bodyScrollTop = body.scrollTop,
           wallsScrollLeft = walls.scrollLeft;
   
@@ -2089,6 +2073,9 @@ class WHelper
   fixVKBScrollStop ()
   {
     const walls = document.getElementById ("walls");
+
+    if (!walls)
+      return;
   
     document.body.style = S.get ("bodyComputedStyles");
     S.unset ("bodyComputedStyles");

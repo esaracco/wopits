@@ -65,8 +65,9 @@
               {
                 _cancelPlugAction ();
                 H.displayMsg ({
+                  title: `<?=_("Note")?>`,
                   type: "warning",
-                  msg: `<?=_("This relation already exists.")?>`
+                  msg: `<?=_("The relation already exists")?>`
                 });
               }
               else
@@ -90,6 +91,12 @@
       };
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
+
+  // EVENT focusin
+  // To fix tinymce dialogs compatibility with bootstrap popups
+  const _focusinInFilter = (e)=>
+          e.target.closest(".tox-dialog,.tox-tiered-menu") &&
+            e.stopImmediatePropagation ();
 
   // METHOD _getMaxEditModalWidth ()
   const _getMaxEditModalWidth = (content)=>
@@ -177,14 +184,12 @@
     // METHOD show ()
     show ()
     {
-      H.enableTooltips (this.$menu);
       this.$menu.show ("fade");
     }
 
     // METHOD destroy ()
     destroy ()
     {
-      this.$menu.find("[data-toggle='tooltip']").tooltip ("hide");
       this.$menu.remove ();
     }
 
@@ -331,7 +336,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" data-toggle="tooltip" title="<?=_("Users involved")?>"></div><div class="pcomm" data-toggle="tooltip" title="<?=_("Comments")?>"></div><div class="patt" data-toggle="tooltip" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -378,6 +383,10 @@
   
               plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
+            },
+          stop: function(e, ui)
+            {
+              plugin.dropStop ();
             }
         })
         // RESIZABLE post-it
@@ -498,8 +507,6 @@
             $postit.find(".pcomm").pcomm (Object.assign (
               _args, {count: settings.commentscount}));
 
-          H.enableTooltips ($postit);
-
         }, 0);
 
       if (settings.creationdate)
@@ -515,6 +522,9 @@
     // METHOD dropStop ()
     dropStop ()
     {
+      if (S.get ("dragging"))
+        return;
+
       const plugin = this,
             $postit = plugin.element,
             postitEdit = $postit[0].querySelector (".postit-edit"),
@@ -629,12 +639,18 @@
         else
           postit.removeAttribute ("data-hadpictures");
 
+        // Filter the focusin event
+        document.addEventListener ("focusin", _focusinInFilter);
+
         tinymce.activeEditor.setContent (content);
 
         if (!H.haveMouse ())
           H.fixVKBScrollStart ();
 
-        H.openModal ($("#postitUpdatePopup"), _getMaxEditModalWidth (content));
+        H.openModal ({
+          item: $("#postitUpdatePopup"),
+          width: _getMaxEditModalWidth (content)
+        });
       }
       else
       {
@@ -645,12 +661,15 @@
           cb: ($p)=>
           {
             $p.find(".modal-body").html ((content) ?
-              content : `<i><?=_("No content.")?></i>`);
+              content : `<i><?=_("No content")?></i>`);
 
             $p.find(".modal-title").html (
               `<i class="fas fa-sticky-note"></i> ${title}`);
 
-            H.openModal ($p, _getMaxEditModalWidth (content));
+            H.openModal ({
+              item: $p,
+              width: _getMaxEditModalWidth (content)
+            });
           }
         });
       }
@@ -683,14 +702,14 @@
           case "worker":
 
             title = `<i class="fa fa-user-cog fa-fw"></i> <?=_("Note assignation")?>`;
-            content = `<?=_("This note has been assigned to you.")?>`;
+            content = `<?=_("This note has been assigned to you")?>`;
             break;
 
           // Comment
           case "comment":
 
             title = `<i class="fa fa-comment fa-fw"></i> <?=_("Comment")?>`;
-            content = `<?=_("You were mentioned in a comment to this note.")?>`;
+            content = `<?=_("You were mentioned in a comment to this note")?>`;
             break;
 
           // Deadline
@@ -699,9 +718,9 @@
             title = `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`;
 
             if (!data.deadlineepoch)
-              content =`<?=_("The deadline for this note has been removed.")?>`;
+              content =`<?=_("The deadline for this note has been removed")?>`;
             else if (this.element.hasClass ("obsolete"))
-              content = `<?=_("This note has expired.")?>`;
+              content = `<?=_("This note has expired")?>`;
             else
             {
               const a = moment.unix (data.deadlineepoch),
@@ -712,8 +731,8 @@
                 days = Math.trunc(days) + 1;
 
               content = (days > 1) ?
-                `<?=_("This note will expire in about %s day(s).")?>`.replace("%s", days) :
-                `<?=_("This note will expire soon.")?>`;
+                `<?=_("This note will expire in about %s day(s)")?>`.replace("%s", days) :
+                `<?=_("This note will expire soon")?>`;
             }
 
             break;
@@ -786,10 +805,6 @@
     {
       return {
         dy: 10,
-/*
-        dx: 0.2,
-        blur: 1,
-*/
         color: H.lightenDarkenColor (color, -20)
       };
     },
@@ -808,7 +823,6 @@
                size: ignoreZoom ? size : size * (S.get("zoom-level")||1),
                path: args.line_path||"<?=WS_PLUG_DEFAULTS['linePath']?>",
                color: color,
-//               startPlug: args.startPlug||"arrow1",
                endPlug: args.endPlug||"arrow1",
                middleLabel: LeaderLine.captionLabel ({
                  text: args.label,
@@ -999,7 +1013,7 @@
                             fontSize: "13px"
                           });
 
-      pl.querySelector("a span").innerHTML = (label == ""  || label == "...") ?
+      pl.querySelector("div span").innerHTML = (label == "" || label == "...") ?
         `<i class="fas fa-ellipsis-h"></i>` : label;
 
       if (args.top !== undefined)
@@ -1013,7 +1027,7 @@
           if (canWrite)
           {
             pl.querySelector("i.fa-thumbtack").style.display = "block";
-            pl.querySelector("li[data-action='position-auto']")
+            pl.querySelector(`li[data-action="position-auto"]`)
               .style.display = "block";
           }
 
@@ -1089,7 +1103,7 @@
               text.getBoundingClientRect (),
             $start = $(plug.obj.start),
             menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
-            $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<a href="#" ${canWrite?'data-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></a>${canWrite?menu:""}</div>`);
+            $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
 
         plug.labelObj = $label.appendTo ($div);
 
@@ -1125,7 +1139,7 @@
         if (canWrite)
           $label.draggable ({
             distance: 10,
-//            containment: S.getCurrent("wall").find("tbody.wpt"),
+            containment: S.getCurrent("wall").find ("tbody.wpt"),
             start: function (e, ui)
             {
               const p = plug.labelObj.position ();
@@ -1406,7 +1420,7 @@
 
             ret[p.endId] = {
               label: (p.label == "...") ?
-                       "" : pl.querySelector("a span").innerText,
+                       "" : pl.querySelector("div span").innerText,
               line_type:
                 (p.obj.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
                    p.obj.line_type : undefined,
@@ -1467,7 +1481,9 @@
                   this.dataset.deadlineepoch :
                   this.querySelector(".dates .end span").innerText.trim (),
                 bbox = this.getBoundingClientRect ();
-          let tags = [];
+          let tags = [],
+              top = Math.trunc (this.offsetTop),
+              left = Math.trunc (this.offsetLeft);
 
           this.querySelectorAll(".postit-tags i").forEach (item =>
             tags.push (item.dataset.tag));
@@ -1476,8 +1492,8 @@
             id: plugin.settings.id,
             width: Math.trunc (bbox.width/z),
             height: Math.trunc (bbox.height/z),
-            item_top: (this.offsetTop < 0) ? 0 : Math.trunc (this.offsetTop),
-            item_left: (this.offsetLeft < 0) ? 0 : Math.trunc (this.offsetLeft),
+            item_top: (this.offsetTop < 0) ? 0 : top,
+            item_left: (this.offsetLeft < 0) ? 0 : left,
             item_order: parseInt (this.dataset.order),
             classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
             title: (title == "...") ? "" : title,
@@ -1725,7 +1741,7 @@
         H.openConfirmPopover ({
           item: args.item||this.element,
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
-          content: `<?=_("This note contains external images or videos.")?><br><?=_("Do you want to load all external content for this wall?")?>`,
+          content: `<?=_("This note contains external images or videos.")?><br><?=_("Would you like to load all external content for the current wall?")?>`,
           cb_close: args.cb_close,
           cb_ok: () =>
           {
@@ -1910,6 +1926,7 @@
         {
           if (d.error_msg)
             H.displayMsg ({
+              title: `<?=_("Note")?>`,
               type: "warning",
               msg: d.error_msg
             });
@@ -1921,6 +1938,7 @@
         {
           //FIXME factorisation (cf. H.request_ws ())
           H.displayMsg ({
+            title: `<?=_("Note")?>`,
             type: "danger",
             msg: (isNaN (d.error)) ?
               d.error : `<?=_("Unknown error.<br>Please try again later.")?>`
@@ -2115,6 +2133,7 @@
 
           if (d.error_msg)
             H.displayMsg ({
+              title: `<?=_("Note")?>`,
               type: "warning",
               msg: d.error_msg
             });
@@ -2141,7 +2160,7 @@
       }
 
       if (!this.settings.id)
-        setTimeout(()=>H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note.")?>`), 150);
+        setTimeout(()=>H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
     },
 
     // METHOD closePlugMenu ()
@@ -2167,15 +2186,6 @@
     $(function()
       {
         setTimeout (()=>{
-        // EVENT focusin.
-        // To fix tinymce bootstrap compatibility with popups
-        $(document).on("focusin",
-          function (e)
-          {
-            if ($(e.target).closest(
-              ".tox-tinymce-aux,.moxman-window,.tam-assetmanager-root").length)
-              e.stopImmediatePropagation();
-          });
 
         // Init text editor
         let locale = $("html")[0].dataset.fulllocale;
@@ -2189,10 +2199,19 @@
 
           setup: function (editor)
           {
-            // Hack to catch 404 not found error on just added images
+            // "change" event can be triggered twice, we use this var to
+            // avoir that
+            let _current = false;
+
+            // Trick to catch 404 not found error on just added images
             // -> Is there a TinyMCE callback for that?
             editor.on("change", function (e)
               {
+                if (_current)
+                  return;
+
+                _current = true;
+
                 let c = editor.getContent ();
 
                 // Remove unwanted images attributes
@@ -2232,13 +2251,17 @@
                               $("#postitUpdatePopup").scrollTop (0);
 
                             H.displayMsg ({
+                              title: `<?=_("Note")?>`,
                               type: "warning",
-                              msg: `<?=_("The image %s was not available! It has been removed from the note content")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                              msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
                             });
-                          });
+                          })
+                          .finally (()=> _current = false);
                       }
                     });
                 }
+                else
+                  _current = false;
               });
           },
 
@@ -2545,6 +2568,7 @@
               {
                 if (d)
                   H.displayMsg ({
+                    title: `<?=_("Note")?>`,
                     type: "warning",
                     msg: d.error||d
                   });
@@ -2638,6 +2662,9 @@
                 S.unset ("postit-data");
 
                 tinymce.activeEditor.resetContent ();
+
+                // Stop focusin event filtering
+                document.removeEventListener ("focusin", _focusinInFilter);
 
                 if (!H.haveMouse ())
                   H.fixVKBScrollStop ();

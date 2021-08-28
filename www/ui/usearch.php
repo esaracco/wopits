@@ -4,9 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-user-friends fa-fw"></i> <span><?=_("Users")?></span></h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
 
@@ -18,14 +16,14 @@
         <div>
           <label class="users-title"><?=_("Users in this group:")?></label>
           <label class="nousers-title"><?=_("No user in this group.")?></label>
-          <div class="scroll mb-2">
+          <div class="scroll mt-2 mb-2">
             <ul class="list-group attr"></ul>
           </div>
         </div>
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
       </div>
     </div>
   </div>

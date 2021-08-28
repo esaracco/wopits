@@ -4,7 +4,7 @@ namespace Wopits\Services\WebSocket;
 
 require_once (__DIR__.'/../../../config.php');
 
-use Swoole\{Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
+use Swoole\{Timer, Http\Request, WebSocket\Frame, WebSocket\Server as SwooleServer};
 
 use Wopits\{Base, Helper, User, Wall};
 use Wopits\Wall\{EditQueue, Group, Postit, Comment, Attachment, Worker};
@@ -32,7 +32,8 @@ class Server
     $server->db = new VolatileTables ();
 
     // Attach events to WebSocket server
-    foreach (['start', 'open', 'message', 'close' ] as $e)
+    foreach (['start', 'workerStart', 'workerStop', 'open', 'message',
+              'close' ] as $e)
       $server->on ($e, [$this, "on$e"]);
 
     $this->_server = $server;
@@ -48,6 +49,21 @@ class Server
     error_log (date('Y-m-d H:i:s').
       ' [INFO][internal] wopits WebSocket server is listening on port '.
          WPT_WS_PORT);
+  }
+
+  public function onWorkerStart (SwooleServer $server, int $id):void
+  {
+    // TICK
+    // Server process heartbeat (every 15mn)
+    $server->tick (60*1000*15, function ($id)
+    {
+      $this->_ping ();
+    });
+  }
+
+  public function onWorkerStop (SwooleServer $server, int $id):void
+  {
+    Timer::clearAll ();
   }
 
   public function onOpen (SwooleServer $server, Request $req):void
@@ -88,7 +104,7 @@ class Server
 
         // TICK
         // WebSocket heartbeat (every 30s)
-        $server->tick (30000, function ($id) use ($server, $fd)
+        $server->tick (30*1000, function ($id) use ($server, $fd)
         {
           if (!$server->isEstablished ($fd))
           {
@@ -798,12 +814,9 @@ class Server
               $k = $tb->key ();
               $item = (array)$tb->get ($k);
 
-              $tmp .= "\e[33m$k\e[0m: ";
-
-              if (count ($item) == 1)
-                $tmp .= print_r(array_shift ($item), true)."\n";
-              else
-                $tmp .= "\n".print_r($item, true);
+              $tmp .= "\e[33m$k\e[0m: ".((count ($item) == 1) ?
+                print_r(array_shift ($item), true)."\n" :
+                "\n".print_r($item, true));
             }
           }
 

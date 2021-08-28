@@ -15,8 +15,7 @@
 
 ?>
 
-  let _lastStr = "",
-      _noResultStr,
+  let _noResultStr,
       _oldIds,
       _readonly = false;
 
@@ -32,35 +31,46 @@
             id = $ac[0].id,
             $search = $ac.find (".search");
 
-      $search.append (`<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span></div><input type="input" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off" autofocus></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu"><span>&times;</span></button><div class="content"></div></ul>`);
+      $search.append (`<div class="input-group"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span><input type="input" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off" autofocus><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu">×</button><div class="content"></div></ul>`);
 
       // EVENT hidden.bs.modal
       $ac.on("hidden.bs.modal", function (e)
         {
+          if (args.cb_close)
+            args.cb_close ();
+
           $(this).find(".list-group.attr").empty ();
           _oldIds = undefined;
         });
    
+      // EVENT mouseover on users search list item
+      $(document).on("mouseover", `#${id} .result .list-group-item`, function(e)
+        {
+          const elSelected = this.closest(".modal-body .search")
+                               .querySelector ("li.selected");
+
+          elSelected.classList.remove ("selected");
+          this.classList.add ("selected");
+        });
+
       // EVENT click on users search list item
       $(document).on("click", `#${id} .list-group-item`, function (e)
         {
-          const $el = $(this);
-
           if (_readonly)
             H.openUserview ({
-              about: $el[0].dataset.about,
-              picture: $el[0].dataset.picture,
-              title: $el[0].dataset.title
+              about: this.dataset.about,
+              picture: this.dataset.picture,
+              title: this.dataset.title
             });
           else
           {
             const isDed = ($ac[0].dataset.grouptype == <?=WPT_GTYPES_DED?>),
-                  actionAdd = ($el[0].dataset.action == "add"),
+                  actionAdd = (this.dataset.action == "add"),
                   args = Object.assign (
                     {
                       groupType: $ac[0].dataset.grouptype,
                       groupId: $ac[0].dataset.groupid,
-                      userId: $el[0].dataset.id
+                      userId: this.dataset.id
                     }, plugin.getIds());
 
             e.stopImmediatePropagation ();
@@ -83,13 +93,13 @@
               else
               {
                 H.openConfirmPopover ({
-                  item: $el.find("span:eq(0)"),
+                  item: $(this.querySelector("span")),
                   title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
                   content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
                   cb_ok: () =>
                   {
                     plugin.removeUser (args);
-                    $search.find("input").focus ();
+                    $search[0].querySelector("input").focus ();
                   }
                 });
               }
@@ -97,18 +107,32 @@
           }
         });
 
+      // EVENT "click" on textarea clear button
+      $search.find(".clear-input").on("click", function (e)
+        {
+          const input = $search[0].querySelector ("input");
+
+          input.value = "";
+          plugin.reset ();
+          
+          input.focus ();
+        });
+
       // EVENT keyup on input
       $search.find("input").on("keyup", function (e)
         {
-          const val = this.value.trim ();
+          const val = this.value.trim (),
+                k = e.which;
 
           if (!val || (!plugin.isWorkers () && val.length < 3))
             return plugin.reset ();
 
-          plugin.search ({
-            str: val,
-            groupType: $ac[0].dataset.grouptype
-          })
+          // Do not search if arrow keys
+          if (k < 37 || k > 40)
+            plugin.search ({
+              str: val,
+              groupType: $ac[0].dataset.grouptype
+            });
         });
 
       // EVENT keypress on input
@@ -241,15 +265,10 @@
 
         args["field"] = true;
         args["users"] = true;
-
-        _lastStr = "";
       }
 
       if (!!args.field)
         input.value = "";
-
-      if (!input.value)
-        _lastStr = "";
 
       input.classList.remove ("autocomplete");
       ac.querySelector(".result .content").innerHTML = "";
@@ -331,8 +350,9 @@
             return H.raiseError (null, d.error_msg);
           else if (d.notfound)
             H.displayMsg ({
+              title: `<?=_("Users involved")?>`,
               type: "warning",
-              msg: `<?=_("This user is no longer available.")?>`
+              msg: `<?=_("The user is no longer available")?>`
             });
 
           this.displayUsers (args);
@@ -433,9 +453,7 @@
       if (!force &&
           (
             !args.str ||
-            args.str == _lastStr ||
             (
-              args.str.length > _lastStr.length &&
               _noResultStr &&
                args.str != _noResultStr &&
                args.str.indexOf (_noResultStr) != -1
@@ -443,8 +461,6 @@
           )
         )
         return;
-
-      _lastStr = args.str;
 
       H.fetch (
         "GET",

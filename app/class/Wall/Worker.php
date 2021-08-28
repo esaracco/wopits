@@ -165,8 +165,7 @@ class Worker extends Wall
        ->execute ([$this->postitId, $userId]);
 
     if ($stmt->fetch ())
-      $ret['error_msg'] =
-        _("The user is already involved in this note.");
+      $ret['error_msg'] = _("The user is already involved in this note");
     else
     {
       try

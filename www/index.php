@@ -3,18 +3,20 @@
 
   <div id="upload-layer" class="layer"></div>
 
-  <div id="msg-container"></div>
+  <!-- MSG CONTAINER -->
+  <div id="msg-container" class="position-absolute top-0 start-50 translate-middle-x"></div>
 
   <!-- MENU main -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm">
-    <a href="#" class="navbar-brand font-weight-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" data-toggle="tooltip" data-html="true" title="<?=_("<b>Invisible mode</b>: sharing is not possible and no one can see you")?>"></i><div id="umsg"><span class="wpt-badge">0</span></div> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
-    <button type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="navbars" aria-expanded="false" class="navbar-toggler"><span class="navbar-toggler-icon"></span></button>
+    <a href="#" class="navbar-brand fw-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" title="<?=_("Invisible mode: sharing is not possible and no one can see you")?>"></i><div id="umsg"><span class="wpt-badge">0</span></div> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-menu" aria-controls="main-menu" aria-expanded="false"><span class="navbar-toggler-icon"></span></button>
+    <div class="container-fluid">
     <div id="main-menu" class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">
 
         <!--Wall-->
         <li class="nav-item dropdown">
-          <a id="dropdownWall" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-fw fas fa-border-all"></i> <?=_("Wall")?></a>
+          <div id="dropdownWall" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-fw fas fa-border-all"></i> <?=_("Wall")?></div>
           <ul class="dropdown-menu border-0 shadow">
             <li data-action="new"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-plus"></i> <?=_("New...")?></a></li>
             <li data-action="open"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-folder-open"></i> <?=_("Open...")?></a></li>
@@ -29,16 +31,16 @@
         </li>
         <!--View-->
         <li class="nav-item dropdown">
-          <a id="dropdownView" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("Display")?></a>
+          <div id="dropdownView" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("Display")?></div>
           <ul class="dropdown-menu border-0 shadow display-section">
             <li data-action="zoom+"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-plus"></i> <?=_("Zoom +")?></a></li>
             <li data-action="zoom-"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-minus"></i> <?=_("Zoom -")?></a></li>
             <li data-action="zoom-screen"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
             <li data-action="zoom-normal"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
             <li class="dropdown-divider"></li>
-            <li data-action="chat"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
-            <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>
-            <li data-action="arrows"><a class="dropdown-item" href="#"><input type="checkbox"> <i class="fa-fw fas fa-arrows-alt"></i> <?=_("Arrows")?></a></li>
+            <li data-action="chat"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
+            <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>
+            <li data-action="arrows"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-arrows-alt"></i> <?=_("Arrows")?></a></li>
           </ul>
         </li>
 
@@ -47,7 +49,7 @@
 
         <!--Help-->
         <li class="nav-item dropdown">
-          <a id="dropdownHelp" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-fw fas fa-life-ring display"></i> <?=_("Help")?></a>
+          <div id="dropdownHelp" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="fa-fw fas fa-life-ring display"></i> <?=_("Help")?></div>
           <ul class="dropdown-menu border-0 shadow">
             <li data-action="about"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-info-circle"></i> <?=_("About")?></a></li>
             <li data-action="user-guide"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-hands-helping"></i> <?=_("User guide")?></a></li>
@@ -55,6 +57,7 @@
         </li>
 
       </ul>
+    </div>
     </div>
   </nav>
 
@@ -68,7 +71,7 @@
 
   <!-- WELCOM MSG -->
   <div id="welcome" data-action="new">
-    <p><?=_("Create your walls of sticky notes, and let your ideas shine!")?></p>
+    <p><?=_("Create walls, and let ideas shine!")?></p>
     <img src="/img/wopits.png?<?=$version?>">
   </div>
 

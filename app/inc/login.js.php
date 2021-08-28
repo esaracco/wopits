@@ -30,7 +30,7 @@
 
       if ($welcome.length && !ST.noDisplay ("welcome-msg"))
       {
-        $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><a href="#" class="close" data-dismiss="alert">&times;</a><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p><div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div></div>`);
+        $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert"></button><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p><div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div></div>`);
 
         $welcome.find("button.nowelcome").on("click", function ()
           {
@@ -39,12 +39,6 @@
             $(this).closest(".alert").remove ();
           });
       }
-
-      $(".login-page .modal")
-        .on('hidden.bs.modal', function(e)
-        {
-          H.displayMsg ({target:$(this), reset: true});
-        });
 
       $login
         .on("click", "button,a", function (e)
@@ -72,12 +66,11 @@
 
               $popup = $("#createAccountPopup");
 
-              H.displayMsg ({reset: true});
               H.cleanPopupDataAttr ($popup);
 
               plugin.resetCreateUserForm ();
               $popup[0].dataset.noclosure = true;
-              H.openModal ($popup);
+              H.openModal ({item: $popup});
               break;
 
             case "forgot":
@@ -85,10 +78,9 @@
               $popup = $("#resetPasswordPopup");
 
               H.cleanPopupDataAttr ($popup);
-              H.displayMsg ({reset: true});
 
               $popup[0].dataset.noclosure = true;
-              H.openModal ($popup);
+              H.openModal ({item: $popup});
               break;
 
           }
@@ -128,8 +120,6 @@
 
           e.stopImmediatePropagation ();
 
-          H.displayMsg ({target:$popup, reset: true});
-
           $popup[0].dataset.noclosure = true;
 
           if ($popup.find(".confirm").length)
@@ -150,13 +140,11 @@
           else if (plugin.checkRequired ($popup.find("input")) &&
                    plugin.validForm ($popup.find("input")))
           {
-            H.displayMsg ({reset: true});
-
             $popup.find(".main")
               .addClass("readonly")
               .find("input").attr("readonly", "readonly");
 
-            $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span></div><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><div class="input-group-append"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span></div><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
+            $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
 
             $(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)
             .on("click", function ()
@@ -175,7 +163,7 @@
 
       if ($login.find("input[name='_directURL']").val()
             .indexOf("unsubscribe") != -1)
-        H.infoPopup (`<?=_("Please log in to change your preferences.")?>`);
+        H.infoPopup (`<?=_("Please log in to update your preferences")?>`);
     },
 
     // METHOD resetCreateUserForm ()
@@ -202,7 +190,11 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Log in")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           else
             return location.href = args.directURL||"/";
         });
@@ -235,7 +227,11 @@
         {
           if (d.error_msg)
           {
-            H.displayMsg ({type: "danger", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Account creation")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
 
             this.resetCreateUserForm ();
           }
@@ -255,14 +251,18 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Password reset")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           else
           {
             $("#resetPasswordPopup").modal ("hide");
             H.displayMsg ({
-                noclosure: true,
-                type: "info",
-                msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it")?>`
+              title: `<?=_("Password reset")?>`,
+              type: "info",
+              msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>`
             });
           }
         }

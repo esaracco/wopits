@@ -73,7 +73,7 @@
         $(`<div id="plugs-${wallId}" data-access="${access}"></div>`)
           .appendTo ("body");
 
-      if (args.restoring)
+      if (settings.restoring)
         wall.dataset.restoring = 1;
 
       wall.dataset.displaymode = settings.displaymode;
@@ -187,7 +187,7 @@
 
           $(window).trigger ("resize");
 
-          if (args.restoring)
+          if (settings.restoring)
           {
             delete settings.restoring;
             wall.removeAttribute ("data-restoring");
@@ -199,7 +199,7 @@
             plugin.refreshUsersview (viewcount); 
 
           // If last wall to load.
-          if (args.lastWall)
+          if (settings.lastWall)
           {
             setTimeout(()=>
               $(`[data-id="wall-${wpt_userData.settings.activeWall}"]`)
@@ -246,13 +246,11 @@
             plugin.displayExternalRef ();
 
             // Display postit dealine alert or specific wall if needed.
-            if (args.cb_after)
+            if (settings.cb_after)
             {
               plugin.setActive ();
               //FIXME To much refresh
               plugin.refresh ();
-
-              args.cb_after ();
 
               H.waitForDOMUpdate (() =>
                 {
@@ -276,6 +274,7 @@
         $postit.postit ("displayAlert", args.type);
       else
         H.displayMsg ({
+          title: `<?=_("Note")?>`,
           type: "warning",
           msg: `<?=_("The note has been deleted")?>`
         });
@@ -296,9 +295,9 @@
 
       H.openConfirmPopover ({
         type: "info",
-        item: $(".walls a.active"),
+        item: $(".walls a.active span.val"),
         title: `<i class="fas fa-share fa-fw"></i> <?=_("Sharing")?>`,
-        content: `<?=_("%s shared this wall with you.")?>`.replace("%s", owner)
+        content: `<?=_("%s shared this wall with you")?>`.replace("%s", owner)
       });
     },
 
@@ -1047,7 +1046,8 @@
       }
       // Active another tabs after deletion
       else
-        $(".nav-tabs.walls").find(`a[href="${newActiveTabId}"]`).tab ("show");
+        bootstrap.Tab.getOrCreateInstance(document.querySelector(
+          `.nav-tabs.walls a[href="${newActiveTabId}"]`)).show ();
 
       // If we are not massively closing all walls
       if (!S.get ("closing-all"))
@@ -1073,7 +1073,7 @@
             });
           else
             H.openConfirmPopover ({
-              item: this.settings.tabLink,
+              item: $(this.settings.tabLink[0].querySelector("span.val")),
               placement: "left",
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
               content: `<?=_("Delete this wall?")?>`,
@@ -1106,7 +1106,11 @@
 
       if (Number (wall.dataset.rows) *
             Number (wall.dataset.cols) >= <?=WPT_MAX_CELLS?>)
-        return H.infoPopup (`<?=_("For performance reasons, a wall cannot contain more than %s cells.")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
+        return H.displayMsg ({
+                 title: `<?=_("Wall")?>`,
+                 type: "warning",
+                 msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>)
+               });
 
       H.request_ws (
         "PUT",
@@ -1238,7 +1242,7 @@
       S.reset ();
 
       if (args.restoring)
-        $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
+        $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
       H.fetch (
         method,
@@ -1262,27 +1266,37 @@
 
             return H.waitForDOMUpdate (()=>
               {
-                if ($tabs.find(".nav-item").length)
-                  $tabs.find(".nav-item:first-child").tab ("show");
+                if (args.restoring && $tabs.find(".nav-item").length)
+                {
+                  const el = $tabs[0].querySelector (".nav-item:first-child");
+
+                  $(el).trigger ("mousedown");
+                  bootstrap.Tab.getOrCreateInstance(el).show ();
+                }
 
                 // Save opened walls when all walls will be loaded.
                 if (d.restoring)
                 {
-                  if (args.lastWall && args.lastWall == 1)
+                  if (args.lastWall)
                     $("#settingsPopup").settings ("saveOpenedWalls");
                   else
                     S.set ("save-opened-walls", true);
                 }
 
-                return H.displayMsg ({
+                H.displayMsg ({
+                  title: `<?=_("Wall")?>`,
                   type: "warning",
-                  msg: `<?=_("Some walls are no longer available.")?>`
+                  msg: `<?=_("Some walls are no longer available")?>`
                 });
             });
           }
 
           if (d.error_msg)
-            return H.displayMsg ({type: "warning", msg: d.error_msg});
+            return H.displayMsg ({
+              title: `<?=_("Wall")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
 
           if ($popup)
             $popup.modal ("hide");
@@ -1290,16 +1304,18 @@
           $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
 
           if (!args.restoring)
-            $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
+            $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
 
           $tabs.find(`a[href="#wall-${d.id}"]`)
             .attr("data-access", d.access)
-            .prepend($(`<button type="button" class="close"><span class="close">&times;</span></button>`)
+            .prepend($(`<button type="button" class="close" title="<?=_("Close this wall")?>"><span class="close">&times;</span></button>`)
             // EVENT click on close wall icon
-            .on("click",function()
+            .on("click",function(e)
             {
+              e.stopImmediatePropagation ();
+
               H.openConfirmPopover ({
-                item: $(this).parent (),
+                item: $(this.closest(".nav-item").querySelector ("span.val")),
                 placement: "left",
                 title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
                 content: `<?=_("Close this wall?")?>`,
@@ -1323,7 +1339,8 @@
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
             S.set ("newWall", true);
-            $tabs.find(`a[href="#wall-${d.id}"]`).tab ("show");
+            bootstrap.Tab.getOrCreateInstance ($tabs[0].querySelector(
+              `a[href="#wall-${d.id}"]`)).show ();
             S.unset ("newWall");
           }
 
@@ -1357,6 +1374,7 @@
         {
           if (d.error_msg)
             return H.displayMsg ({
+              title: `<?=_("Wall")?>`,
               type: "warning",
               msg: d.error_msg
             });
@@ -1367,6 +1385,7 @@
           });
 
           H.displayMsg ({
+            title: `<?=_("Wall")?>`,
             type: "success",
             msg: `<?=_("The wall has been successfully cloned")?>`
           });
@@ -1379,7 +1398,7 @@
       H.download ({
         url: `/wall/${this.settings.id}/export`,
         fname: `wopits-wall-export-${this.settings.id}.zip`,
-        msg: `<?=_("An error occurred while exporting wall data.")?>`
+        msg: `<?=_("An error occurred during the export")?>`
       });
     },
 
@@ -1460,9 +1479,12 @@
         {
           // Set wall current if needed
           if (wallId != S.getCurrent("wall").wall ("getId"))
-            $(`[href="#wall-${wallId}"]`)
-              .trigger ("mousedown")
-              .trigger ("click");
+          {
+            const el = document.querySelector(`a[href="#wall-${wallId}"]`);
+
+            $(el).trigger ("mousedown");
+            bootstrap.Tab.getOrCreateInstance(el).show ();
+          }
 
           __displayAlert ();
 
@@ -1546,7 +1568,7 @@
             init: ($p)=>
             {
               // EVENT click on username in wall users popup
-              $p.on("click",".list-group a", function (e)
+              $p.on("click",".list-group-item", function (e)
                 {
                   H.openUserview ({
                     about: this.dataset.about,
@@ -1563,11 +1585,11 @@
               d.list.forEach (item =>
               {
                 if (item.id != userId)
-                  html += `<a href="#" data-id="${item.id}" class="list-group-item" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}">${H.getAccessIcon(item.access)} ${item.fullname} (${item.username})</a>`;
+                  html += `<li class="list-group-item" data-id="${item.id}" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}"><div class="label">${H.getAccessIcon(item.access)} ${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div>`;
               });
               $p.find(".list-group").html (html);
 
-              H.openModal ($p);
+              H.openModal ({item: $p});
             }
           });
         }
@@ -1684,18 +1706,13 @@
          H.getAccessIcon (this.settings.access);
 
       if (!noIcon && notOwner)
-        html = `<i class="fas fa-user-slash wallname-icon" data-toggle="tooltip" title="<?=_("You are not the creator of this wall")?>"></i>${html}`;
+        html = `<i class="fas fa-user-slash wallname-icon" title="<?=_("You are not the creator of this wall")?>"></i>${html}`;
 
       $div.find('span.icon').html (html);
       $div.find('span.val').text (H.noHTML (name));
 
       if (!noIcon)
-      {
-        if (notOwner)
-          H.enableTooltips ($div.find('span.icon'));
-
         this.refreshSharedIcon ();
-      }
     },
 
     // METHOD isShared ()
@@ -1737,10 +1754,7 @@
       if (this.isShared ())
       {
         if (!$span.find(".wallname-icon").length)
-        {
-          $span.prepend (`<i class="fas fa-share wallname-icon" data-toggle="tooltip" title="<?=_("This wall is shared")?>"></i>`);
-          H.enableTooltips ($span);
-        }
+          $span.prepend (`<i class="fas fa-share wallname-icon" title="<?=_("The wall is shared")?>"></i>`);
       }
       else
         $span.find(".wallname-icon").remove ();
@@ -1845,9 +1859,9 @@
 
         if (writeAccess && !noalert)
           H.displayMsg ({
-            type: "warning",
-            title: `<?=_("Zoom enabled")?>`,
-            msg: `<?=_("Some features are not available in this mode")?>`
+            title: `<?=_("Zoom")?>`,
+            type: "info",
+            msg: `<?=_("Some features are not available when zoom is enabled")?>`
           });
 
         zoom0.dataset.zoomlevelorigin = level;
@@ -1891,9 +1905,9 @@
 
       if (level <= 0)
         return H.displayMsg ({
-          type: "warning",
           title: `<?=_("Zoom")?>`,
-          msg: `<?=_("The minimum zoom has been reached.")?>`
+          type: "warning",
+          msg: `<?=_("The minimum zoom has been reached")?>`
         });
 
       S.set ("zoom-level", level);
@@ -1913,8 +1927,8 @@
 
         if (writeAccess && !noalert)
           H.displayMsg ({
+            title: `<?=_("Zoom")?>`,
             type: "info",
-            title: `<?=_("Zoom disabled")?>`,
             msg: `<?=_("All features are available again")?>`
           });
 
@@ -2069,7 +2083,11 @@
           {
             error_cb && error_cb ();
 
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Wall")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           }
           else if (success_cb)
             success_cb ();
@@ -2269,14 +2287,13 @@
               });
             }
 
-            // -> 15mn
-            setInterval (()=> fetch ("/api/user/ping"), 15*60*1000);
+            // Websocket heartbeat (every 15mn)
+            setInterval (()=> fetch ("/api/user/ping"), 60*1000*15);
 
             // Display theme chooser if needed.
             if (!wpt_userData.settings.theme)
               setTimeout (()=> $settings.settings ("openThemeChooser"), 1000);
 
-            H.enableTooltips ($("body"));
           });
 
         H.fixMenuHeight ();
@@ -2333,9 +2350,10 @@
                         {
                           if (d.error_msg)
                             return H.displayMsg ({
-                                     type: "warning",
-                                     msg: d.error_msg
-                                   });
+                              title: `<?=_("Wall")?>`,
+                              type: "warning",
+                              msg: d.error_msg
+                            });
   
                           $("<div/>").wall ("open", {
                             lastWall: 1,
@@ -2343,6 +2361,7 @@
                           });
   
                           H.displayMsg ({
+                            title: `<?=_("Wall")?>`,
                             type: "success",
                             msg: `<?=_("The wall has been successfully imported")?>`
                           });
@@ -2507,7 +2526,7 @@
         // EVENT CLICK on about button in the login page
         .on("click", function ()
         {
-          H.openModal ($("#aboutPopup"));
+          H.openModal ({item: $("#aboutPopup")});
         });
   });
 

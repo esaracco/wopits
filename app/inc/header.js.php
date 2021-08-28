@@ -17,24 +17,20 @@
 ?>
 
   let _realEdit = false,
-      _originalObject,
-       //FIXME
-       // to bypass FF bug when file manager is triggered from a third callback
-      _ffTriggerBug = {run: false, i: 0};
+      _originalObject;
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD serializeOne ()
-  const _serializeOne = (header)=>
+  const _serializeOne = (th)=>
     {
-      const img = header.querySelector ("img"),
-            bbox = header.getBoundingClientRect ();
+      const img = th.querySelector ("img");
 
       return {
-        id: header.dataset.id.substring (7),
-        width: Math.trunc (bbox.width),
-        height: Math.trunc (bbox.height),
-        title: header.querySelector(".title").innerText,
+        id: th.dataset.id.substring (7),
+        width: Math.trunc (th.offsetWidth),
+        height: Math.trunc (th.offsetHeight),
+        title: th.querySelector(".title").innerText,
         picture: img ? img.getAttribute ("src") : null
       };
     };
@@ -43,13 +39,12 @@
   // METHOD _simulateClick ()
   const _simulateClick = (x, y)=>
     {
-      const el = document.elementFromPoint (x, y),
-            $el = $(el);
+      const el = document.elementFromPoint (x, y);
       let evtName = (el.tagName.match (/^A|I|DIV|TH|IMG$/))?"click":"mousedown";
 
       //FIXME
       // do nothing if element is the previously clicked TH
-      if ($el.hasClass ("_current") || $el.closest("th._current").length)
+      if (el.classList.contains ("_current") || el.closest ("th._current"))
         return;
 
       // if cell click (TD) or cell resize, use mousedown
@@ -90,7 +85,8 @@
 
       if (adminAccess)
       {
-        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></a><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`)
+        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><div data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></div><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`)
+          // EVENT "show" on header menu
           .on("show.bs.dropdown", function ()
             {
               const $menu = $(this),
@@ -98,19 +94,18 @@
                     wall = $wall[0],
                     tr = $header.closest("tr.wpt")[0],
                     deleteItem =
-                      menu.querySelector("[data-action='delete'] a"),
+                      menu.querySelector(`[data-action="delete"] a`),
                     moveUpItem =
-                      menu.querySelector("[data-action='move-up'] a"),
+                      menu.querySelector(`[data-action="move-up"] a`),
                     moveDownItem =
-                      menu.querySelector("[data-action='move-down'] a"),
+                      menu.querySelector(`[data-action="move-down"] a`),
                     moveLeftItem =
-                      menu.querySelector("[data-action='move-left'] a"),
+                      menu.querySelector(`[data-action="move-left"] a`),
                     moveRightItem =
-                      menu.querySelector("[data-action='move-right'] a");
+                      menu.querySelector(`[data-action="move-right"] a`);
 
-              $menu.find("a.disabled").removeClass ("disabled");
               $menu.find("a").show ();
-              $menu.find("a.dropdown-toggle i.far")
+              $menu.find(".nav-link i.far")
                 .removeClass("far")
                 .addClass ("fas");
 
@@ -153,23 +148,21 @@
                 moveDownItem.style.display = "none";
               }
             })
+          // EVENT "hide" on header menu
           .on("hide.bs.dropdown", function ()
             {
-              $(this).find("a.dropdown-toggle i.fas")
+              $(this).find(".nav-link i.fas")
                 .removeClass("fas")
                 .addClass ("far");
             });
 
+        // EVENT "click" on header menu items
         $part.find(".dropdown-menu li a").on("click",function(e)
         {
           const $li = $(this).parent (),
                 $cell = $li.closest ("th.wpt"),
                 action = $li[0].dataset.action;
 
-          e.stopImmediatePropagation ();
-  
-          $li.parent().dropdown ("hide");
-  
           switch (action)
           {
             case "add-picture":
@@ -180,7 +173,7 @@
                 // (touch device version)
                 plugin.addUploadLayer ();
   
-                plugin.edit (() => _ffTriggerBug.run = true);
+                plugin.edit ();
 
                 plugin.uploadPicture ($cell);
               }
@@ -363,43 +356,18 @@
 
       if (!plugin.useFocusTrick ())
         $("#upload-layer")
-          .off("mousedown")
-          .on("mousedown", function (e)
+          .off("mousedown touchstart")
+          .on("mousedown touchstart", function (e)
           {
-            plugin.unedit (
-              {bubble_cb: () => _simulateClick (e.pageX, e.pageY)});
+            plugin.unedit ({bubble_cb: ()=> _simulateClick (e.pageX, e.pageY)});
           })
           .show ();
     },
 
-    //FIXME
-    // to bypass FF bug when file manager is triggered from a third
-    // callback
-    // -> This trick does not fully work with edge!
     // METHOD uploadPicture ()
     uploadPicture ($item)
     {
-      const plugin = this,
-            $header = plugin.element,
-            settings = plugin.settings;
-
-      if (!settings.wall.wall("isShared") || H.navigatorIsEdge ())
-        $(".upload.header-picture").click ();
-      else
-      {
-        clearInterval (_ffTriggerBug.i);
-        _ffTriggerBug = {
-          run: false,
-          i: setInterval (() =>
-            { 
-              if (_ffTriggerBug.run)
-              {
-                clearInterval (_ffTriggerBug.i);
-                $(".upload.header-picture").click ();
-              }
-            }, 150)
-        };
-      }
+      document.querySelector(".upload.header-picture").click ();
     },
 
     // METHOD removeUploadLayer ()
@@ -439,7 +407,7 @@
               // (touch device version)
               plugin.addUploadLayer ();
 
-              plugin.edit (() => _ffTriggerBug.run = true);
+              plugin.edit ();
 
               plugin.uploadPicture ($header);
             }
@@ -448,7 +416,7 @@
           });
 
       // Create img delete button
-      const $deleteButton = $(`<button type="button" class="close img-delete"><i class="fas fa-times fa-sm"></i></button>`)
+      const $deleteButton = $(`<button type="button" class="btn-close img-delete"></button>`)
         .on("click",function(e)
           {
             e.stopImmediatePropagation ();
@@ -457,7 +425,7 @@
               {
                 H.openConfirmPopover ({
                   item: $(this),
-                  placement: "right",
+                  placement: "left",
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: `<?=_("Delete this picture?")?>`,
                   cb_close: () =>
@@ -507,7 +475,7 @@
         `wall/${this.settings.wallId}/header/${this.settings.id}/picture`,
         null,
         // success cb
-        (d) =>
+        (d)=>
         {
           if (d.error_msg)
             H.raiseError (null, d.error_msg);
@@ -652,22 +620,19 @@
     // METHOD cancelEdit ()
     cancelEdit (bubble_event_cb)
     {
-      const $header = this.element,
-            $wall = this.settings.wall;
-
-      clearInterval (_ffTriggerBug.i);
+      const header = this.element[0];
 
       _realEdit = false;
 
       this.unsetCurrent ();
 
-      $wall.wall ("closeAllMenus");
+      this.settings.wall.wall ("closeAllMenus");
 
       if (bubble_event_cb)
       {
-        $header.addClass ("_current")
+        header.classList.add ("_current")
         bubble_event_cb ();
-        $header.removeClass ("_current")
+        header.classList.remove ("_current")
       }
     },
 
@@ -702,6 +667,7 @@
 
         if (msg)
           H.displayMsg ({
+            title: `<?=_("Wall")?>`,
             type: (args.data.error) ? "danger" : "warning",
             msg: msg
           });
@@ -726,9 +692,9 @@
         `wall/${this.settings.wallId}/editQueue/header/${this.settings.id}`,
         data,
         // success cb
-        (d) => this.cancelEdit (args.bubble_cb),
+        (d)=> this.cancelEdit (args.bubble_cb),
         // error cb
-        () => this.cancelEdit (args.bubble_cb)
+        ()=> this.cancelEdit (args.bubble_cb)
       );
     }
   };
@@ -782,7 +748,7 @@
                         content: e.target.result
                       },
                       // success cb
-                      (d) =>
+                      (d)=>
                       {
                         if (d.error_msg)
                           return $header.header ("unedit", {data: d});
@@ -798,11 +764,11 @@
                           }, 500);
                       },
                       // error cb
-                      (d) => $header.header ("unedit", {data: d}));
+                      (d)=> $header.header ("unedit", {data: d}));
                   }
                 },
                 // error cb
-                () => $header.header ("unedit"));
+                ()=> $header.header ("unedit"));
             }
           }).appendTo ("body");
 

@@ -63,9 +63,9 @@ button:focus {
   border-color: #ed71ff !important;
 }
 
-.bs-popover-auto[x-placement^=bottom] .arrow:after,
-.bs-popover-bottom > .arrow::after {
-  border-color: #ed71ff transparent;
+.bs-popover-bottom>.popover-arrow::after,
+.bs-popover-bottom>.popover-arrow::before {
+  border-color:#ed71ff transparent;
 }
 
 .popover-header,
@@ -78,10 +78,6 @@ button:focus {
 
 .modal:not(.no-theme) .modal-dialog .modal-content {
   border-color: #ed71ff !important;
-}
-
-:not([class^='color']).selected {
-  background-color: #fed3ff !important;
 }
 
 .modal:not(.no-theme) .modal-dialog.shadow .modal-header,
@@ -110,32 +106,35 @@ span.wpt-badge {
 
 .form-control:disabled,
 .form-control[readonly],
-.list-group-item:not(.collapse):hover,
-.msg-item:hover,
-.list-group-item.title {
+.list-group-item,
+.msg-item:hover {
   background-color:#fce9ff !important;
 }
 
-.list-group-item.active {
-  color:inherit;
-  background-color: #fce9ff;
-  border: 1px solid rgba(0,0,0,.125);
+:not([class^='color']).selected,
+.list-group-item.title,
+.list-group-item.active,
+.accordion-button:hover,
+.accordion-button:not(.collapsed),
+.list-group-item:hover {
+  background-color:#f4d5ff!important;
 }
 
 .btn-primary,
-.login-page .btn-success {
+#login-page .btn-success {
   background-color: #5ca0e4 !important;
   border-color: #4694e6 !important;
   color: #fff !important;
 }
 
 .btn-primary:hover,
-.login-page .btn-success:hover {
+#login-page .btn-success:hover {
   background-color: #4694e6 !important;
 }
 
 .newfeatures b i.fas,
 .popover-body i,
+#postitCommentsPopup i:not(.fa-fw),
 i.set {
   color: #b967df;
 }
@@ -152,18 +151,18 @@ kbd,
   background-color: #a044df !important;
 }
 
-.custom-control-input:checked ~ .custom-control-label::before {
+.form-check-input:checked ~ .form-check-label::before {
   border-color: #c63fca;
   background-color: #c63fca;
 }
 
-.login-page .user-card {
+#login-page .user-card {
   background-color: #c63fca;
   border-color: #ed71ff;
 }
 
-.login-page .ldap-msg,
-.login-page .links a,
-.login-page .custom-checkbox.remember label {
+#login-page .ldap-msg,
+#login-page .links a,
+#login-page .custom-checkbox.remember label {
   color: #e0e0e0 !important;
 }

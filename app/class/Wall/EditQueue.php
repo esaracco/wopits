@@ -49,7 +49,7 @@ class EditQueue extends Wall
       {
         // If item is already edited by other user, error
         if ($r['session_id'] != $this->sessionId)
-          $ret['error_msg'] = _("This item is locked by another user.");
+          $ret['error_msg'] = _("Item is locked by another user");
       }
       // If item is free for editing
       elseif (
@@ -58,7 +58,7 @@ class EditQueue extends Wall
          SELECT 1 FROM {$item}s WHERE id = ?"))->execute ([$this->itemId]) &&
         !$stmt->fetch ())
       {
-        $ret['error_msg'] = _("This item has been deleted.");
+        $ret['error_msg'] = _("Item has been deleted");
       }
       else
       {
@@ -154,7 +154,7 @@ class EditQueue extends Wall
               }
               else
                 $ret['error_msg'] =
-                  _("A wall with the same name already exists.");
+                  _("A wall with the same name already exists");
             }
 
             break;
@@ -369,8 +369,8 @@ class EditQueue extends Wall
     if (!$r['ok'])
       return ['ok' => 0,
               'error_msg' => ($needAdminAccess) ?
-                 _("You must have admin access to perform this action.") :
-                 _("You must have write access to perform this action.")];
+                 _("You must have admin access to perform this action") :
+                 _("You must have write access to perform this action")];
 
     return $r;
   }

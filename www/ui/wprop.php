@@ -4,9 +4,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="fas fa-list fa-lg fa-fw"></i><?=_("Wall properties")?></h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
 
@@ -34,9 +32,7 @@
           <dt><?=_("Size")?></dt>
           <dd class="wall-size">
             <div class="input-group input-group-sm width-height">
-              <div class="input-group-prepend">
-                <span class="input-group-text"><?=_("Width/Height")?>:</span>
-              </div>
+              <span class="input-group-text"><?=_("Width/Height")?>:</span>
               <input type="number" name="wall-width" step="50" min="300" max="20000" class="form-control">
               <input type="number" name="wall-height" step="50" min="300" max="20000" class="form-control">
             </div>
@@ -59,7 +55,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><i class="fas fa-save"></i> <?=_("Save")?></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
       </div>
     </div>
   </div>

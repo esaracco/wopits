@@ -88,6 +88,9 @@
                   _editing = true;
                   plugin.disablePlugins (true);
 
+                  if (!H.haveMouse ())
+                    H.fixVKBScrollStart ();
+
                   settings._valueOrig = editable.innerText;
 
                   settings._overflowOrig = $(this).css ("overflow");
@@ -133,6 +136,9 @@
                       clearTimeout (settings._timeoutEditing);
                       _editing = false;
                       plugin.disablePlugins (false);
+
+                      if (!H.haveMouse ())
+                        H.fixVKBScrollStop ();
                     })
                     // EVENT keyup on editable element
                     .on("keyup", function (e)

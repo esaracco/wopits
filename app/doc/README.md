@@ -6,7 +6,7 @@ wopits - _A world of post-its_
 <table>
   <tr>
     <td><img src="https://www.wopits.com/img/wopits.png"></td>
-    <td>A app for managing projects online just using sticky notes to share and collaborate.</td>
+    <td>A app for managing projects online using sticky notes to share and collaborate.</td>
   </tr>
 </table>
 
@@ -32,7 +32,7 @@ Just clone the Git:
 
 The following actions have to be done on the machine that will host the wopits website. Which is not necessarily the source machine where you installed the Git repository.
 
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.4.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.7.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```

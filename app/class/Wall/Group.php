@@ -245,7 +245,7 @@ class Group extends Wall
 
     ($stmt = $this->db->prepare ($sql))->execute ($data);
     if ($stmt->fetch ())
-      $ret['error_msg'] = _("This group already exists.");
+      $ret['error_msg'] = _("The group already exists");
     else
     {
       try
@@ -278,7 +278,7 @@ class Group extends Wall
       SELECT name FROM groups WHERE id <> ? AND users_id = ? AND name = ?'))
        ->execute ([$this->groupId, $this->userId, $this->data->name]);
     if ($stmt->fetch ())
-      $ret['error_msg'] = _("This group already exists.");
+      $ret['error_msg'] = _("The group already exists");
     else
     {
       try
@@ -365,11 +365,11 @@ class Group extends Wall
           )
         ORDER BY name'))
          ->execute ([
-           ':users_id_1' => $this->userId,
-           ':users_id_2' => $this->userId,
-           ':walls_id_1' => $this->wallId,
-           ':users_id_3' => $this->userId,
-           ':walls_id_2' => $this->wallId
+             ':users_id_1' => $this->userId,
+             ':users_id_2' => $this->userId,
+             ':walls_id_1' => $this->wallId,
+             ':users_id_3' => $this->userId,
+             ':walls_id_2' => $this->wallId
          ]);
 
       $ret['notin'] = $stmt->fetchAll ();
@@ -405,12 +405,13 @@ class Group extends Wall
     // only wall creator and wall delegate admin can view groups
     else
       $ret = ['error_msg' =>
-                _("You must have admin access to perform this action.")];
+                _("You must have admin access to perform this action")];
 
     return $ret;
   }
 
-  private function removeUserDependencies (int $userId = null):array
+  private function removeUserDependencies (int $userId = null,
+                                           bool $force = false):array
   {
       //TODO SQL optimization
       // Get all users for the group to unlink
@@ -488,7 +489,7 @@ class Group extends Wall
       while ($el = $stmt->fetch ())
       {
         // Remove from workers only if user is not in another wall's group
-        if (isset ($users[$el['users_id']]))
+        if ($force || isset ($users[$el['users_id']]))
         {
           $worker->postitId = $el['postits_id'];
           $worker->delete ($el['users_id'], true);
@@ -518,6 +519,13 @@ class Group extends Wall
 
       $users = $this->removeUserDependencies ();
 
+      // Take creator in account if no groups remain
+      ($stmt = $this->db
+         ->prepare('SELECT 1 FROM walls_groups WHERE walls_id = ?'))
+         ->execute ([$this->wallId]);
+      if (!$stmt->rowCount())
+        $this->removeUserDependencies ($this->userId, true);
+
       if (isset ($users['error']))
         throw \Exception ("Error deleting user's dependencies");
 
@@ -543,26 +551,24 @@ class Group extends Wall
   public function unlinkUserFromOthersGroups ():void
   {
     // Decrement userscount from user's groups.
-    $this
-      ->db->prepare('
+    $this->db
+       ->prepare('
         UPDATE groups SET userscount = userscount - 1
-        WHERE id IN (
-          SELECT groups_id FROM _perf_walls_users
-          WHERE users_id = ? AND groups_id IS NOT NULL)')
+        WHERE id IN (SELECT groups_id FROM users_groups WHERE users_id = ?)')
       ->execute ([$this->userId]);
 
-    $this
-      ->db->prepare('DELETE FROM users_groups WHERE users_id = ?')
+    $this->db
+      ->prepare('DELETE FROM users_groups WHERE users_id = ?')
       ->execute ([$this->userId]);
 
-    $this
-      ->db->prepare('
+    $this->db
+      ->prepare('
         DELETE FROM _perf_walls_users
         WHERE users_id = ? AND groups_id IS NOT NULL')
       ->execute ([$this->userId]);
 
-    $this
-      ->db->prepare('
+    $this->db
+      ->prepare('
         DELETE FROM walls_groups
         WHERE walls_id IN (SELECT walls.id FROM walls
           INNER JOIN walls_groups ON walls_groups.walls_id = walls.id

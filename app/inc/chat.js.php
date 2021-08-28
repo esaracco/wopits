@@ -24,35 +24,28 @@
     init ()
     {
       const plugin = this,
-            $chat = plugin.element;
+            $chat = plugin.element,
+            chat = $chat[0];
 
       $chat
         .draggable({
           distance: 10,
           cursor: "move",
           drag: (e, ui)=> plugin.fixDragPosition (ui),
-          stop: ()=> S.set ("dragging", true, 500),
-          start: ()=> plugin.closeUsersTooltip (),
+          stop: ()=> S.set ("dragging", true, 500)
         })
         .resizable({
           handles: "all",
           autoHide: !$.support.touch,
           minHeight: 200,
           minWidth: 200,
-          start: function ()
-            {
-              plugin.closeUsersTooltip ();
-            },
           resize: function (e, ui)
             {
               $chat.find(".textarea").css ("height", ui.size.height - 100);
             }
         })
-        .append (`<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" data-toggle="tooltip" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
-        .on("mouseleave focusout", function ()
-        {
-          plugin.closeUsersTooltip ();
-        })
+        .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
+        // EVENT keypress on chat input
         .on("keypress", function (e)
         {
           if (e.which == 13 && e.target.tagName == "INPUT")
@@ -64,17 +57,10 @@
         });
 
       // Needed for touch devices
-      $chat.find("input").on("click",
-        function ()
-        {
-          $(this).focus ();
-        });
+      $chat.find("input").on("click", function () {this.focus ()});
 
-      $chat.find(".close").on("click",
-        function ()
-        {
-          plugin.hide ();
-        });
+      // EVENT click on close button
+      $chat.find(".btn-close").on("click", ()=> plugin.hide ());
 
       $chat.find(".btn-clear").on("click",
         function ()
@@ -82,30 +68,32 @@
           if (H.disabledEvent ())
             return false;
 
-          $(this).parent().find("li").remove ();
+          this.closest(".form-control").querySelectorAll("li").forEach (
+            (el)=> el.remove ());
+
+          chat.querySelector("input").focus ();
         });
 
       $chat.find("button.btn-primary").on("click",
         function ()
         {
-          const msg = H.noHTML ($chat.find("input").val());
+          const input = chat.querySelector ("input"),
+                msg = H.noHTML (input.value);
 
           if (!msg)
             return;
 
-          plugin.sendMsg (H.noHTML($chat.find("input").val()));
+          plugin.sendMsg (msg);
           plugin.setFocus ();
-          $chat.find("input").val ("");
+          input.value = "";
         });
-
-      H.enableTooltips ($chat);
     },
 
     // METHOD hide ()
     hide ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='chat'] a").click ();
+        document.querySelector(`#main-menu li[data-action="chat"] a`).click ();
     },
 
     // METHOD join ()
@@ -128,7 +116,8 @@
     setFocus (delay = 0)
     {
       if (H.haveMouse ())
-        setTimeout (() => this.element.find("[autofocus]").focus (), delay);
+        setTimeout (
+          ()=> this.element[0].querySelector("[autofocus]").focus (), delay);
     },
 
     // METHOD toggle ()
@@ -139,8 +128,6 @@
 
       if ($chat.is (":visible"))
       {
-        this.closeUsersTooltip (true);
-
         H.request_ws (
           "DELETE",
           `wall/${wallId}/chat`);
@@ -181,43 +168,21 @@
         el.remove ();
     },
 
-    // METHOD closeUsersTooltip ()
-    closeUsersTooltip (full = false)
-    {
-      const $tooltip = this.element.find (".usersviewcounts");
-
-      if (full)
-      {
-        $tooltip.tooltip ("dispose");
-        $tooltip.removeAttr ("data-title");
-        $tooltip.removeAttr ("data-original-title");
-      }
-      else
-        $tooltip.tooltip ("hide");
-    },
-
     // METHOD refreshUserscount ()
     refreshUserscount (args)
     {
-      const $chat = this.element,
-            $tooltip = $chat.find (".usersviewcounts"),
-            userId = wpt_userData.id;
+      const chat = this.element[0],
+            userId = wpt_userData.id
 
       if (!args)
         args = {userscount: 0, userslist: []};
 
-      this.closeUsersTooltip (true);
+      chat.querySelector(".wpt-badge").innerHTML = args.userscount;
 
-      $chat.find("h2 .wpt-badge").html (args.userscount);
-  
-       let title = "";
+      let title = "";
        args.userslist.forEach (
-         (user) => (user.id != userId) ? title += `${user.name}<br>`:"");
-       $tooltip.attr ("title", title);
-       $tooltip.tooltip ({
-         html: true,
-         trigger: (!H.haveMouse ()) ? "click" : "hover focus"
-       });
+         (el)=> (el.id != userId) ? title += `, ${el.name}`:"");
+       chat.querySelector(".usersviewcounts").title = title.substring(1);
     },
 
     // METHOD addMsg ()
@@ -271,9 +236,9 @@
     // METHOD setCursorToEnd ()
     setCursorToEnd ()
     {
-      const area = this.element.find(".textarea")[0];
+      const el = this.element[0].querySelector(".textarea");
 
-      area.scrollTop = area.scrollHeight;
+      el.scrollTop = el.scrollHeight;
     },
 
     // METHOD sendMsg ()
@@ -288,10 +253,10 @@
     // METHOD reset ()
     reset ()
     {
-      const $chat = this.element;
+      const $chat = this.element[0];
 
-      $chat.find(".textarea").html ("");
-      $chat.find("input").val ("");
+      chat.querySelector(".textarea").innerText = "";
+      chat.querySelector("input").value = "";
     }
 
   });

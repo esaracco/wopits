@@ -52,7 +52,6 @@
         // EVENT CLICK on Clear history button
         .on("click", function ()
         {
-          $owall.find(".btn-clear").tooltip ("hide");
           $("#settingsPopup").settings ("set", {recentWalls: []});
           $owall.find("#ow-all").click ();
           plugin.controlFiltersButtons ();
@@ -82,6 +81,7 @@
           switch (e.target.id)
           {
             case "ow-all":
+
               $owall.find(".list-group li.first,.list-group li.last")
                 .removeClass ("first last");
 
@@ -219,11 +219,10 @@
     // METHOD getChecked ()
     getChecked ()
     {
-      let checked = [];
+      const checked = [];
 
       this.element.find(".list-group input:checked").each (function ()
         {
-          if ($(this).is(":visible"))
             checked.push (this.id.substring(1));
         });
 
@@ -297,7 +296,7 @@
                 body += `<li class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="_${item.id}"><label class="custom-control-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
+              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item"><div class="form-check form-check-inline wpt-checkbox"><input type="checkbox" class="form-check-input" id="_${item.id}"><label class="form-check-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
             }
           });
   

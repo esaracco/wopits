@@ -23,7 +23,7 @@
   const _displaySection = ($div, type, items)=>
     {
       const pClass = $div[0].parentNode.classList,
-            active = document.querySelector (".modal li.list-group-item.active");
+            active = document.querySelector(".modal li.list-group-item.active");
 
       let html = "";
 
@@ -32,7 +32,7 @@
       items.forEach ((item) =>
         {
           if (item.item_type == type)
-            html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" class="list-group-item is-wall-creator${active&&active.dataset.id==item.id?" active todelete":""}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||""}</span><button data-action="delete-group" type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" data-toggle="tooltip" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></li>`;
+            html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" class="list-group-item is-wall-creator${active&&active.dataset.id==item.id?" active":""}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description||""}</span><div class="float-end"><button data-action="delete-group" type="button" class="close" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></div></li>`;
         });
 
       $div.html (html);
@@ -74,16 +74,14 @@
         function (e)
         {
           const $btn = $(this),
-                $row = $btn.parent(),
+                $row = $btn.closest("li"),
                 groupType = $row[0].dataset.type,
                 action = $btn[0].dataset.action,
                 id = $row[0].dataset.id;
 
           e.stopImmediatePropagation ();
 
-          $btn.tooltip ("hide");
-
-          $row.addClass ("active todelete");
+          $row.addClass ("active");
 
           switch (action)
           {
@@ -94,7 +92,9 @@
                 settings: {
                   caller: "swall",
                   cb_add: ()=> plugin.displayGroups (),
-                  cb_remove: ()=> plugin.displayGroups ()
+                  cb_remove: ()=> plugin.displayGroups (),
+                  cb_close: ()=> $share.find("li.list-group-item.active")
+                     .removeClass ("active")
                 },
                 cb: ($p)=>
                 {
@@ -120,7 +120,7 @@
                       groupType: groupType
                     });
 
-                  H.openModal ($p);
+                  H.openModal ({item: $p});
                 }
               });
               break;
@@ -133,12 +133,12 @@
                  `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`;
 
               H.openConfirmPopover ({
-                 item: $btn.parent().find(".name"),
+                 item: $btn.closest("li").find(".name"),
                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                  content: content,
                  cb_close: () =>
                    $share.find("li.list-group-item.active")
-                     .removeClass ("active todelete"),
+                     .removeClass ("active"),
                  cb_ok: () => plugin.deleteGroup ()
                });
               break;
@@ -151,12 +151,12 @@
                 plugin.unlinkGroup ({id: id}, groupType);
               else
                 H.openConfirmPopover ({
-                   item: $btn.parent().find(".name"),
+                   item: $btn.closest("li").find(".name"),
                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
                    content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
                    cb_close: () =>
                      $share.find("li.list-group-item.active")
-                       .removeClass ("active todelete"),
+                       .removeClass ("active"),
                    cb_ok: () => plugin.unlinkGroup ({id: id}, groupType)
                  });
               break;
@@ -192,7 +192,7 @@
           {
             const $row = $(this);
 
-            $row.addClass ("active todelete");
+            $row.addClass ("active");
 
             plugin.openUpdateGroup ({
               groupId: $row[0].dataset.id,
@@ -287,7 +287,7 @@
           $p.find("button.btn-primary").html (`<i class="fas fa-bolt"></i> <?=_("Create")?>`);
           $p.find("button.btn-secondary").html (`<i class="fas fa-undo-alt"></i> <?=_("Cancel")?>`);
 
-          H.openModal ($p);
+          H.openModal ({item: $p});
         }
       });
     },
@@ -323,7 +323,7 @@
           $p.find("button.btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
           $p.find("button.btn-secondary").html (`<i class="fas fa-times"></i> <?=_("Close")?>`);
 
-          H.openModal ($p);
+          H.openModal ({item: $p});
         }
       });
     },
@@ -339,7 +339,7 @@
     {
       const $wall = S.getCurrent ("wall"),
             wallId = $wall.wall ("getId"),
-            $group = this.element.find ("li.todelete"),
+            $group = this.element.find ("li.active"),
             $sendMsg = $_groupAccessPopup.find (".send-msg"),
             data = {
               type:
@@ -375,10 +375,8 @@
       const $share = this.element,
             wallId = S.getCurrent("wall").wall ("getId");
 
-      $share.find(".nav-link.active").removeClass ("active");
-      $share.find(".tab-content .tab-pane.active").removeClass ("show active");
-      $share.find(`.nav-tabs .gtype-${groupType}`).addClass ("active");
-      $share.find(`.tab-content #gtype-${groupType}`).tab ("show");
+      bootstrap.Tab.getOrCreateInstance ($share[0].querySelector(
+        `a[href="#gtype-${groupType}"]`)).show ();
 
       H.request_ws (
         "POST",
@@ -397,7 +395,7 @@
     // METHOD deleteGroup ()
     deleteGroup ()
     {
-      const $group = this.element.find("li.todelete"),
+      const $group = this.element.find ("li.active"),
             service = ($group[0].dataset.type == <?=WPT_GTYPES_DED?>) ?
               `wall/${S.getCurrent("wall").wall("getId")}/`+
                  `group/${$group[0].dataset.id}` :
@@ -432,7 +430,11 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Sharing")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           else
           {
             this.displayGroups ();
@@ -452,7 +454,11 @@
         (d) =>
         {
           if (d.error_msg)
-            H.displayMsg ({type: "warning", msg: d.error_msg});
+            H.displayMsg ({
+              title: `<?=_("Sharing")?>`,
+              type: "warning",
+              msg: d.error_msg
+            });
           else
           {
             this.displayGroups ();
@@ -480,7 +486,8 @@
             return H.raiseError (null, d.error_msg);
         
           const div = $body.find(".list-group.attr")[0],
-                pClass = div.parentNode.classList;
+                pClass = div.parentNode.classList,
+                label = div.parentNode.querySelector("span");
           let html = "";
 
           if (d.in.length)
@@ -491,18 +498,20 @@
             if (isOwner)
               wallPlugin.setShared (true);
 
-            pClass.add ("scroll");
             $share.find(".grp-lb").text (`<?=_("Other available groups:")?>`);
 
-            html = `<label><?=_("The wall is shared with the following groups:")?></label>`;
+            pClass.add ("scroll");
+
+            label.classList.remove ("nogroup");
+            label.innerHTML = `<label class="mb-2"><?=_("The wall is shared with the following groups:")?></label>`;
 
             d.in.forEach ((item) =>
               {
                 const isDed = (item.item_type == <?=WPT_GTYPES_DED?>),
                       typeIcon = (d.delegateAdminId) ? "" : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
-                      unlinkBtn = (d.delegateAdminId) ? "" : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs btn-share" data-toggle="tooltip" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
+                      unlinkBtn = (d.delegateAdminId) ? "" : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
 
-                html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item${d.delegateAdminId?"":" is-wall-creator"}${active&&active.dataset.id==item.id?" active todelete":""}"><div class="userscount" data-action="users-search" data-toggle="tooltip" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><button data-action="users-search" type="button" class="close" data-toggle="tooltip" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</li>`;
+                html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item${d.delegateAdminId?"":" is-wall-creator"}${active&&active.dataset.id==item.id?" active":""}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
               });
 
             if (d.in.length == 1)
@@ -518,10 +527,12 @@
             $share.find(".grp-lb").text (`<?=_("Available groups:")?>`);
             wallPlugin.element.find("thead.wpt th.wpt:eq(0)").html ("&nbsp;");
 
-            html = (d.delegateAdminId) ?
-              `<span class='nogroup'><?=_("You cannot manage any of the existing groups.")?></span>` :
-              `<span class='nogroup'><?=_("This wall is not shared with any group.")?></span>`;
             pClass.remove ("scroll");
+
+            label.classList.add ("nogroup");
+            label.innerHTML = (d.delegateAdminId) ?
+              `<?=_("You cannot manage any of the existing groups.")?>` :
+              `<?=_("The wall is not shared with any group.")?>`;
           }
 
           div.innerHTML = html;
@@ -542,9 +553,8 @@
             $body.find(".delegate-admin-only").show ();
           }
 
-          H.enableTooltips ($share.find(".modal-body [data-toggle='tooltip']"));
+          H.openModal ({item: $share});
 
-          H.openModal ($share);
         });
     }
 

@@ -16,6 +16,8 @@
 
 ?>
 
+let _body;
+
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   // Inherit from Wpt_toolbox
@@ -26,18 +28,21 @@
     init ()
     {
       const plugin = this,
-            $filters = plugin.element,
-            tList = S.getCurrent("tpick").tpick ("getTagsList"),
-            cList = $("#cpick").cpick ("getColorsList");
+            $filters = plugin.element;
 
-      let tags = "";
-      for (const t of tList)
-        tags +=
-          `<div><i class="fa-${t} fa-fw fas" data-tag="${t}"></i></div>`;
+      if (!_body)
+      {
+        let tags = "", colors = "";
 
-      let colors = "";
-      for (const c of cList)
-        colors += `<div class="${c}">&nbsp;</div>`;
+        for (const t of S.getCurrent("tpick").tpick ("getTagsList"))
+          tags +=
+            `<div><i class="fa-${t} fa-fw fas" data-tag="${t}"></i></div>`;
+
+        for (const c of $("#cpick").cpick ("getColorsList"))
+          colors += `<div class="${c}">&nbsp;</div>`;
+
+        _body = `<button type="button" class="btn-close"></button><h2><?=_("Filters")?></h2><div class="filters-items"><div class="tags"><h3><?=_("Tags:")?></h3>${tags}</div><div class="colors"><h3><?=_("Colors:")?></h3>${colors}</div></div>`;
+      }
 
       $filters
         .draggable({
@@ -50,14 +55,12 @@
           handles: "all",
           autoHide: !$.support.touch
         })
-        .append (`<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button><h2><?=_("Filters")?></h2><div class="filters-items"><div class="tags"><h3><?=_("Tags:")?></h3>${tags}</div><div class="colors"><h3><?=_("Colors:")?></h3>${colors}</div></div>`);
+        .append (_body);
 
-      $filters.find(".close").on("click",
-        function ()
-        {
-          plugin.hide ();            
-        });
+      // EVENT click on close button
+      $filters.find(".btn-close").on("click", ()=> plugin.hide ());
 
+      // EVENT click on tag
       $filters.find(".tags i").on("click",
         function (e)
         {
@@ -69,6 +72,7 @@
           plugin.apply ();
         });
 
+      // EVENT click on color
       $filters.find(".colors > div").on("click",
         function (e)
         {

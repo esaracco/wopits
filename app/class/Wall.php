@@ -166,7 +166,7 @@ class Wall extends Base
           $file, base64_decode(str_replace(' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file."));
+          throw new \Exception (_("An error occurred while uploading"));
 
         ($stmt = $this->db->prepare ('
            SELECT picture FROM headers WHERE id = ?'))
@@ -195,7 +195,7 @@ class Wall extends Base
         @unlink ($file);
 
         if ($e->getCode () == 425)
-          return ['error' => _("The file type was not recognized.")];
+          return ['error' => _("Unknown file type")];
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
@@ -266,9 +266,9 @@ class Wall extends Base
     $ret = [];
     $error = null;
     $errorMsg = ($exportFile) ?
-      _("An error occured while cloning the wall.") :
-      _("An error occured while processing import.");
-    $versionErrorMsg = _("The file you are trying to import is not compatible with the current wopits version.");
+      _("An error occurred while cloning the wall") :
+      _("An error occurred while processing import");
+    $versionErrorMsg = _("The file to import is not compatible with the current wopits version");
 
     if (!$exportFile)
       list (, $content, $error) = $this->getUploadedFileInfos ($this->data);
@@ -297,8 +297,12 @@ class Wall extends Base
       if ($exportFile)
         $zipPath = $exportFile;
       else
-        file_put_contents (
-          $zipPath, base64_decode(str_replace(' ', '+', $content)));
+      {
+        $content = str_replace (' ', '+', $content);
+        $content = base64_decode ($content);
+        file_put_contents ($zipPath, $content);
+        unset ($content);
+      }
 
       // Extract ZIP
       if (!file_exists ($zipPath) || $zip->open ($zipPath) !== true ||
@@ -554,7 +558,7 @@ class Wall extends Base
     $zipPath = "$dir/wopits-wall-{$this->wallId}.zip";
 
     if ($zip->open ($zipPath, \ZipArchive::CREATE) !== true)
-      return ['error' => _("An error occurred while exporting wall data.")];
+      return ['error' => _("An error occurred during the export")];
 
     // Get headers
     ($stmt = $this->db->prepare ('SELECT * FROM headers WHERE walls_id = ?'))
@@ -1005,7 +1009,7 @@ class Wall extends Base
               array_map ([$this->db, 'quote'], $ids)).') LIMIT 1') ->fetch())
         {
           $this->db->rollBack ();
-          return ['error_msg' => _("Someone is editing a note in the col/row you want to delete.")];
+          return ['error_msg' => _("Someone is editing a note in the col/row you want to delete")];
         }
 
         foreach ($ids as $id)
@@ -1026,7 +1030,7 @@ class Wall extends Base
         WHERE item = 'cell' AND item_id IN ($idsStr) LIMIT 1")->fetch())
       {
         $this->db->rollBack ();
-        return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete.")];
+        return ['error_msg' => _("Someone is editing a cell in the col/row you want to delete")];
       }
 
       // Delete
@@ -1080,7 +1084,7 @@ class Wall extends Base
     $r = $this->checkWallAccess (WPT_WRIGHTS_ADMIN);
     if (!$r['ok'])
       return ['error' =>
-                 _("You must have admin access to perform this action.")];
+                _("You must have admin access to perform this action")];
 
     try
     {
@@ -1231,7 +1235,7 @@ class Wall extends Base
     }
 
     if ($this->checkWallName ($this->data->name))
-      return ['error_msg' => _("A wall with the same name already exists.")];
+      return ['error_msg' => _("A wall with the same name already exists")];
 
     $wall = [
       'name' => $this->data->name,

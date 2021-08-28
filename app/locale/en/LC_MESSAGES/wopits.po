@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-05 02:53+0200\n"
+"POT-Creation-Date: 2021-08-25 16:00+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -40,13 +40,14 @@ msgid "%s notes match your search."
 msgstr ""
 
 #, php-format
-msgid "%s shared this wall with you."
+msgid "%s shared this wall with you"
 msgstr ""
 
 msgid "1 note match your search."
 msgstr ""
 
-msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
+msgid ""
+"<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes"
 msgstr ""
 
 msgid ""
@@ -54,7 +55,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
+"<kbd>ctrl+click</kbd> on the destination cell to move the selected notes"
 msgstr ""
 
 msgid ""
@@ -67,20 +68,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & optimization.</"
-"p>"
-msgstr ""
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with notes copy/"
-"paste.</p>"
-msgstr ""
-
-msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Account</b> Blacklisting of the "
-"following email domains: <i>outlook.fr</i>, <i>outlook.com</i>, <i>live.fr</"
-"i>, <i>live.com</i>, <i>hotmail.fr</i>, <i>hotmail.com</i>. <u>If your email "
-"is using one of them, please update it as soon as possible!</u></p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, "
+"debugging and optimization.</p>"
 msgstr ""
 
 msgid ""
@@ -237,7 +226,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"A app for managing projects online just using sticky notes to share and "
+"A app for managing projects online using sticky notes to share and "
 "collaborate."
 msgstr ""
 
@@ -251,7 +240,7 @@ msgstr ""
 msgid "A new release of wopits is available."
 msgstr ""
 
-msgid "A wall with the same name already exists."
+msgid "A wall with the same name already exists"
 msgstr ""
 
 msgid "About"
@@ -264,6 +253,9 @@ msgid "Access forbidden"
 msgstr ""
 
 msgid "Account"
+msgstr ""
+
+msgid "Account creation"
 msgstr ""
 
 msgid "Add"
@@ -291,19 +283,19 @@ msgstr ""
 msgid "All features are available again"
 msgstr ""
 
-msgid "An error occured while cloning the wall."
+msgid "An error occurred during the export"
 msgstr ""
 
-msgid "An error occured while downloading file."
+msgid "An error occurred while cloning the wall"
 msgstr ""
 
-msgid "An error occured while processing import."
+msgid "An error occurred while downloading"
 msgstr ""
 
-msgid "An error occured while uploading file."
+msgid "An error occurred while processing import"
 msgstr ""
 
-msgid "An error occurred while exporting wall data."
+msgid "An error occurred while uploading"
 msgstr ""
 
 msgid "Animated dashed"
@@ -312,7 +304,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Another account with the same email as the LDAP account email `%s` already "
-"exists on wopits."
+"exists on wopits"
 msgstr ""
 
 msgid "Arc"
@@ -352,13 +344,27 @@ msgid "Block external contents"
 msgstr ""
 
 msgid ""
+"By checking this option, sharing will be impossible, and you will be removed "
+"from all groups.<br>Become invisible anyway?"
+msgstr ""
+
+msgid ""
+"By checking this option, sharing will not be possible and no one will see you"
+msgstr ""
+
+msgid ""
+"By unchecking this option, you will no longer receive email notifications"
+msgstr ""
+
+msgid ""
 "By unchecking this option, you will no longer receive email notifications."
+"<br>Disable notifications anyway?"
 msgstr ""
 
 msgid "Can not read file"
 msgstr ""
 
-msgid "Can't contact LDAP server."
+msgid "Can't contact LDAP server"
 msgstr ""
 
 msgid "Cancel"
@@ -367,7 +373,7 @@ msgstr ""
 msgid "Cancel sharing for this group"
 msgstr ""
 
-msgid "Change selected notes color"
+msgid "Change notes color"
 msgstr ""
 
 msgid "Chat room"
@@ -386,6 +392,9 @@ msgid "Close the walls"
 msgstr ""
 
 msgid "Close the walls?"
+msgstr ""
+
+msgid "Close this wall"
 msgstr ""
 
 msgid "Close this wall?"
@@ -416,13 +425,16 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
+msgid "Connected users"
+msgstr ""
+
 msgid "Content"
 msgstr ""
 
 msgid "Copy"
 msgstr ""
 
-msgid "Copy selected notes"
+msgid "Copy notes"
 msgstr ""
 
 msgid "Copy/Move"
@@ -440,7 +452,7 @@ msgstr ""
 msgid "Create a account"
 msgstr ""
 
-msgid "Create your walls of sticky notes, and let your ideas shine!"
+msgid "Create walls, and let ideas shine!"
 msgstr ""
 
 msgid "Creation date"
@@ -450,9 +462,6 @@ msgid "Creation of your wopits account"
 msgstr ""
 
 msgid "Creator"
-msgstr ""
-
-msgid "Current users"
 msgstr ""
 
 msgid "Dashed"
@@ -479,16 +488,16 @@ msgstr ""
 msgid "Delete my comment"
 msgstr ""
 
-msgid "Delete selected notes"
+msgid "Delete notes"
 msgstr ""
 
 msgid "Delete selected notes?"
 msgstr ""
 
-msgid "Delete this column?"
+msgid "Delete the file?"
 msgstr ""
 
-msgid "Delete this file?"
+msgid "Delete this column?"
 msgstr ""
 
 msgid "Delete this group"
@@ -515,10 +524,7 @@ msgstr ""
 msgid "Delete this wall?"
 msgstr ""
 
-msgid "Delete your profile photo?"
-msgstr ""
-
-msgid "Deprecated browser"
+msgid "Delete your profile picture?"
 msgstr ""
 
 msgid "Description"
@@ -536,10 +542,10 @@ msgstr ""
 msgid "Do you want to copy the selected notes in this cell?"
 msgstr ""
 
-msgid "Do you want to load all external content for this wall?"
+msgid "Do you want to move the selected notes in this cell?"
 msgstr ""
 
-msgid "Do you want to move the selected notes in this cell?"
+msgid "Download"
 msgstr ""
 
 msgid "Edit"
@@ -578,7 +584,10 @@ msgid "External contents are now filtered"
 msgstr ""
 
 #, php-format
-msgid "File size is too large (%sM max)."
+msgid "File size is too large (%sM max)"
+msgstr ""
+
+msgid "File upload"
 msgstr ""
 
 msgid "Filters"
@@ -597,14 +606,13 @@ msgstr ""
 msgid "For performance reasons, a wall cannot contain more than %s cells"
 msgstr ""
 
-#, php-format
-msgid "For performance reasons, a wall cannot contain more than %s cells."
-msgstr ""
-
 msgid "For this wall only."
 msgstr ""
 
 msgid "Forgot your password?"
+msgstr ""
+
+msgid "Former user"
 msgstr ""
 
 msgid "Full access (admin)"
@@ -656,6 +664,9 @@ msgstr ""
 msgid "Invisible mode"
 msgstr ""
 
+msgid "Invisible mode: sharing is not possible and no one can see you"
+msgstr ""
+
 #, php-format
 msgid ""
 "It has been over a year since you used wopits.\n"
@@ -673,10 +684,16 @@ msgid ""
 "Your account «%s» has been automatically deleted."
 msgstr ""
 
+msgid "Item has been deleted"
+msgstr ""
+
+msgid "Item is locked by another user"
+msgstr ""
+
 msgid "Language"
 msgstr ""
 
-msgid "Let your ideas shine!"
+msgid "Let ideas shine!"
 msgstr ""
 
 msgid "Log in"
@@ -715,10 +732,10 @@ msgstr ""
 msgid "Move left"
 msgstr ""
 
-msgid "Move right"
+msgid "Move notes"
 msgstr ""
 
-msgid "Move selected notes"
+msgid "Move right"
 msgstr ""
 
 msgid "Move up"
@@ -756,15 +773,12 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-msgid "No content."
+msgid "No content"
 msgstr ""
 
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
 "before logging in again on wopits."
-msgstr ""
-
-msgid "No further information"
 msgstr ""
 
 msgid "No result"
@@ -777,6 +791,9 @@ msgid "No user in this group."
 msgstr ""
 
 msgid "No wall available."
+msgstr ""
+
+msgid "Note"
 msgstr ""
 
 msgid "Note assignation"
@@ -835,14 +852,13 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+msgid "Password reset"
+msgstr ""
+
 msgid "Passwords must match"
 msgstr ""
 
-msgid "Please log in to change your preferences."
-msgstr ""
-
-#, php-format
-msgid "Please use the latest version of a recent browser like %s or %s."
+msgid "Please log in to update your preferences"
 msgstr ""
 
 msgid "Please wait"
@@ -854,7 +870,7 @@ msgstr ""
 msgid "Please, confirm your password:"
 msgstr ""
 
-msgid "Please, select the type of action first."
+msgid "Please, select the type of action first"
 msgstr ""
 
 #, php-format
@@ -869,6 +885,9 @@ msgid "Privacy policy"
 msgstr ""
 
 msgid "Progress:"
+msgstr ""
+
+msgid "Project page"
 msgstr ""
 
 #, php-format
@@ -924,6 +943,9 @@ msgstr ""
 msgid "Reset deadline?"
 msgstr ""
 
+msgid "Rights"
+msgstr ""
+
 msgid "Row name"
 msgstr ""
 
@@ -969,11 +991,6 @@ msgstr ""
 msgid "Sharing type"
 msgstr ""
 
-msgid ""
-"Sharing will be impossible, and you will be removed from all groups."
-"<br>Become invisible anyway?"
-msgstr ""
-
 msgid "Show external contents"
 msgstr ""
 
@@ -986,16 +1003,16 @@ msgstr ""
 msgid "Solid"
 msgstr ""
 
-msgid "Some features are not available in this mode"
+msgid "Some features are not available when zoom is enabled"
 msgstr ""
 
-msgid "Some walls are no longer available."
+msgid "Some walls are no longer available"
 msgstr ""
 
-msgid "Someone is editing a cell in the col/row you want to delete."
+msgid "Someone is editing a cell in the col/row you want to delete"
 msgstr ""
 
-msgid "Someone is editing a note in the col/row you want to delete."
+msgid "Someone is editing a note in the col/row you want to delete"
 msgstr ""
 
 msgid ""
@@ -1024,7 +1041,10 @@ msgstr ""
 msgid "Switch to sticky notes mode"
 msgstr ""
 
-msgid "System error. Please report it to the administrator."
+msgid "System"
+msgstr ""
+
+msgid "System error. Please report it to the administrator"
 msgstr ""
 
 msgid "Tags"
@@ -1034,36 +1054,31 @@ msgid "Tags:"
 msgstr ""
 
 msgid ""
-"The account creation forms were filled out too quickly. Please reload this "
-"page and try again to verify that you are not a robot..."
+"The account creation form was completed too quickly. Please reload this page "
+"and try again to confirm that you are not a robot..."
 msgstr ""
 
 #, php-format
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr ""
 
-msgid "The deadline for this note has been removed."
+msgid "The deadline for this note has been removed"
 msgstr ""
 
 #, php-format
-msgid "The email `%s` already exists."
+msgid "The email `%s` already exists"
 msgstr ""
 
-msgid "The entire column/row was deleted while you were editing the note."
+msgid "The entire column/row was deleted while you were editing the note"
 msgstr ""
 
-msgid "The file is already linked to the note."
+msgid "The file is already linked to the note"
 msgstr ""
 
-msgid "The file is no longer available for download."
+msgid "The file is no longer available for download"
 msgstr ""
 
-msgid "The file type was not recognized."
-msgstr ""
-
-msgid ""
-"The file you are trying to import is not compatible with the current wopits "
-"version."
+msgid "The file to import is not compatible with the current wopits version"
 msgstr ""
 
 #, php-format
@@ -1084,6 +1099,9 @@ msgstr ""
 msgid "The gray color of the default theme may not suit your mood today!"
 msgstr ""
 
+msgid "The group already exists"
+msgstr ""
+
 msgid "The group will also be available for all your other walls."
 msgstr ""
 
@@ -1092,20 +1110,23 @@ msgstr ""
 
 #, php-format
 msgid ""
-"The image %s was not available! It has been removed from the note content"
+"The image %s was not available! It has been removed from the note content."
 msgstr ""
 
 #, php-format
-msgid "The login `%s` already exists."
+msgid "The login `%s` already exists"
 msgstr ""
 
-msgid "The minimum zoom has been reached."
+msgid "The minimum zoom has been reached"
 msgstr ""
 
 msgid "The new password:"
 msgstr ""
 
 msgid "The note has been deleted"
+msgstr ""
+
+msgid "The note has no attached file."
 msgstr ""
 
 #, php-format
@@ -1120,7 +1141,10 @@ msgstr ""
 msgid "The note «%s» will expire soon."
 msgstr ""
 
-msgid "The row/column has been deleted."
+msgid "The relation already exists"
+msgstr ""
+
+msgid "The row/column has been deleted"
 msgstr ""
 
 #, php-format
@@ -1131,13 +1155,28 @@ msgstr ""
 msgid "The size of a wall cannot be less than %s"
 msgstr ""
 
-msgid "The user is already involved in this note."
+msgid "The title already exists"
+msgstr ""
+
+msgid "The user is already involved in this note"
+msgstr ""
+
+msgid "The user is no longer available"
 msgstr ""
 
 msgid "The wall has been successfully cloned"
 msgstr ""
 
 msgid "The wall has been successfully imported"
+msgstr ""
+
+msgid "The wall has not yet been shared with other users"
+msgstr ""
+
+msgid "The wall is not shared with any group."
+msgstr ""
+
+msgid "The wall is shared"
 msgstr ""
 
 msgid "The wall is shared with the following groups:"
@@ -1147,9 +1186,6 @@ msgid "Theme"
 msgstr ""
 
 msgid "This external content is filtered"
-msgstr ""
-
-msgid "This group already exists."
 msgstr ""
 
 msgid ""
@@ -1162,41 +1198,23 @@ msgid ""
 "use wopits without having to install it yourself on a server."
 msgstr ""
 
-msgid "This item has been deleted."
-msgstr ""
-
-msgid "This item is locked by another user."
-msgstr ""
-
 msgid "This note contains external images or videos."
 msgstr ""
 
-msgid "This note has been assigned to you."
+msgid "This note has been assigned to you"
 msgstr ""
 
-msgid "This note has expired."
+msgid "This note has expired"
 msgstr ""
 
-msgid "This note has no attached files."
-msgstr ""
-
-msgid "This note has no users involved."
+msgid "This note has no user involved."
 msgstr ""
 
 #, php-format
-msgid "This note will expire in about %s day(s)."
+msgid "This note will expire in about %s day(s)"
 msgstr ""
 
-msgid "This note will expire soon."
-msgstr ""
-
-msgid "This relation already exists."
-msgstr ""
-
-msgid "This title already exists."
-msgstr ""
-
-msgid "This user is no longer available."
+msgid "This note will expire soon"
 msgstr ""
 
 msgid ""
@@ -1205,15 +1223,6 @@ msgid ""
 msgstr ""
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
-msgstr ""
-
-msgid "This wall has not been shared with any user yet."
-msgstr ""
-
-msgid "This wall is not shared with any group."
-msgstr ""
-
-msgid "This wall is shared"
 msgstr ""
 
 msgid "Timezone"
@@ -1245,12 +1254,15 @@ msgstr ""
 msgid "Unable to retrieve your account information"
 msgstr ""
 
+msgid "Unknown error.<br>Please try again later."
+msgstr ""
+
 msgid ""
-"Unknown error!<br>You are about to be disconnected...<br>Sorry for the "
+"Unknown error.<br>You are about to be disconnected...<br>Sorry for the "
 "inconvenience."
 msgstr ""
 
-msgid "Unknown error.<br>Please try again later."
+msgid "Unknown file type"
 msgstr ""
 
 msgid ""
@@ -1276,7 +1288,7 @@ msgstr ""
 msgid "Upgrade done. Thank you for using wopits!"
 msgstr ""
 
-msgid "Upload completed."
+msgid "Upload completed"
 msgstr ""
 
 msgid "Upload has been canceled"
@@ -1350,11 +1362,14 @@ msgstr ""
 msgid "With grid"
 msgstr ""
 
-msgid "Wrong current password."
+msgid "Would you like to load all external content for the current wall?"
+msgstr ""
+
+msgid "Wrong current password"
 msgstr ""
 
 #, php-format
-msgid "Wrong file type for %s."
+msgid "Wrong file type for %s"
 msgstr ""
 
 msgid "Yes"
@@ -1384,16 +1399,16 @@ msgstr ""
 msgid "You cannot manage any of the existing groups."
 msgstr ""
 
-msgid "You must have admin access to perform this action."
+msgid "You must have admin access to perform this action"
 msgstr ""
 
-msgid "You must have write access to perform this action."
+msgid "You must have write access to perform this action"
 msgstr ""
 
-msgid "You need write access to perform this action."
+msgid "You need write access to perform this action"
 msgstr ""
 
-msgid "You were mentioned in a comment to this note."
+msgid "You were mentioned in a comment to this note"
 msgstr ""
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
@@ -1403,7 +1418,7 @@ msgstr ""
 msgid "Your account «%s» has been created!"
 msgstr ""
 
-msgid "Your connection attempt failed."
+msgid "Your connection attempt failed"
 msgstr ""
 
 msgid "Your current password:"
@@ -1411,7 +1426,7 @@ msgstr ""
 
 msgid ""
 "Your new password has been sent. Please, check your spam box if you don't "
-"receive it"
+"receive it."
 msgstr ""
 
 msgid "Your new password will be sent to the address below:"
@@ -1444,12 +1459,6 @@ msgstr ""
 msgid "Zoom -"
 msgstr ""
 
-msgid "Zoom disabled"
-msgstr ""
-
-msgid "Zoom enabled"
-msgstr ""
-
 msgid "created by"
 msgstr ""
 
@@ -1460,10 +1469,6 @@ msgid "day(s) before"
 msgstr ""
 
 msgid "deleted"
-msgstr ""
-
-#, php-format
-msgid "developed by %s"
 msgstr ""
 
 msgid "email"
@@ -1517,7 +1522,6 @@ msgid "wall name"
 msgstr ""
 
 msgid ""
-"wopits is a multilingual application through which you can manage all kinds "
-"of projects by simply using sticky notes to share and collaborate with other "
-"users simultaneously."
+"wopits is a multilingual application that can manage all kinds of projects "
+"using sticky notes to share and collaborate with other users simultaneously."
 msgstr ""

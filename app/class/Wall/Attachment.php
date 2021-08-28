@@ -81,7 +81,7 @@ class Attachment extends Wall
         WHERE postits_id = ? AND title = ? AND id <> ?'))
          ->execute ([$this->postitId, $this->data->title, $id]);
       if ($stmt->fetch ())
-        return ['error_msg' => _("This title already exists.")];
+        return ['error_msg' => _("The title already exists")];
     }
 
     try
@@ -136,8 +136,7 @@ class Attachment extends Wall
         ]);
 
       if ($stmt->fetch ())
-        $ret['error_msg'] =
-          _("The file is already linked to the note.");
+        $ret['error_msg'] = _("The file is already linked to the note");
       else
       {
         file_put_contents (

@@ -421,7 +421,7 @@ class User extends Base
     if (!$data)
     {
       if ($this->_isDuplicate (['email' => $args['mail']]))
-        return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email `%s` already exists on wopits."), $args['mail'])];
+        return ['error_msg' => sprintf (_("Another account with the same email as the LDAP account email `%s` already exists on wopits"), $args['mail'])];
 
       $this->data = (object)[
         'email' => $args['mail'],
@@ -463,10 +463,10 @@ class User extends Base
       $Ldap = new Ldap ();
 
       if (!$Ldap->connect ())
-        return ['error_msg' => _("Can't contact LDAP server.")];
+        return ['error_msg' => _("Can't contact LDAP server")];
 
       if (!($ldapData = $Ldap->getUserData ($this->data->username)))
-        return ['error_msg' => _("Your connection attempt failed.")];
+        return ['error_msg' => _("Your connection attempt failed")];
 
       // If user has been found in LDAP, try to bind with its password.
       if ($Ldap->bind ($ldapData['dn'], $this->data->password))
@@ -495,7 +495,7 @@ class User extends Base
 
     // User not found
     if (empty ($data))
-      return ['error_msg' => _("Your connection attempt failed.")];
+      return ['error_msg' => _("Your connection attempt failed")];
 
     $this->userId = $data['id'];
 
@@ -770,11 +770,12 @@ class User extends Base
         $file = Helper::getSecureSystemName (
           "$dir/img-".hash('sha1', $this->data->content).".$ext");
 
-        file_put_contents (
-          $file, base64_decode(str_replace(' ', '+', $content)));
+        $content = str_replace (' ', '+', $content);
+        $content = base64_decode ($content);
+        file_put_contents ($file, $content);
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file."));
+          throw new \Exception (_("An error occurred while uploading"));
 
         ($stmt = $this->db->prepare ('SELECT picture FROM users WHERE id = ?'))
           ->execute ([$this->userId]);
@@ -802,7 +803,7 @@ class User extends Base
         @unlink ($file);
 
         if ($e->getCode () == 425)
-          return ['error' => _("The file type was not recognized.")];
+          return ['error' => _("Unknown file type")];
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
@@ -836,57 +837,56 @@ class User extends Base
         // Check for duplicate (username or email)
         if ((isset ($data['username']) || isset ($data['email'])) &&
             ( ($dbl = $this->_isDuplicate ([$field => $value])) ))
-          $ret['error_msg'] = sprintf (($dbl == 'username') ?
-            _("The login `%s` already exists.") :
-            _("The email `%s` already exists."), $value);
+          return ['error_msg' => sprintf (($dbl == 'username') ?
+            _("The login `%s` already exists") :
+            _("The email `%s` already exists"), $value)];
+
         // Check for blacklisted domains
-        elseif (isset ($data['email']) &&
-                $msg = Helper::isBlacklistedDomain ($this->data->email))
-          $ret['error_msg'] = $msg;
-        else
+        if (isset ($data['email']) &&
+              $msg = Helper::isBlacklistedDomain ($this->data->email))
+          return ['error_msg' => $msg];
+
+        $this->db->beginTransaction ();
+
+        $this->checkDBValue ('users', $field, $value);
+        $this->db
+          ->prepare("UPDATE users SET $field = :$field WHERE id = :id")
+          ->execute ([$field => $value, 'id' => $this->userId]);
+
+        ($stmt = $this->db->prepare ('
+          SELECT username, fullname, email, about, allow_emails, visible,
+                 picture
+          FROM users where id = ?'))
+           ->execute ([$this->userId]);
+        $ret = $stmt->fetch ();
+
+        if ($field == 'visible')
         {
-          $this->db->beginTransaction ();
+          $settings = json_decode ($this->getSettings ());
+          $settings->visible = $value;
+          $this->saveSettings (json_encode ($settings));
+        }
+        else
+          $this->executeQuery ('UPDATE users',
+            ['searchdata' =>
+              Helper::unaccent ($ret['username'].','.$ret['fullname'])],
+            ['id' => $this->userId]);
 
-          $this->checkDBValue ('users', $field, $value);
-          $this
-            ->db->prepare("UPDATE users SET $field = :$field WHERE id = :id")
-            ->execute ([$field => $value, 'id' => $this->userId]);
+        $this->db->commit ();
 
+        // Remove user from all groups except his own.
+        if ($field == 'visible' && $value == 0)
+        {
+          // Deassociate user from all groups and user's groups users too.
+          (new Group(['userId' => $this->userId], $this->ws))
+            ->unlinkUserFromOthersGroups ();
+
+          // Get all user's walls to disconnect users from them.
           ($stmt = $this->db->prepare ('
-            SELECT username, fullname, email, about, allow_emails, visible,
-                   picture
-            FROM users where id = ?'))
+            SELECT id FROM walls WHERE users_id = ?'))
              ->execute ([$this->userId]);
-          $ret = $stmt->fetch ();
-
-          if ($field == 'visible')
-          {
-            $settings = json_decode ($this->getSettings ());
-            $settings->visible = $value;
-            $this->saveSettings (json_encode ($settings));
-          }
-          else
-            $this->executeQuery ('UPDATE users',
-              ['searchdata' =>
-                Helper::unaccent ($ret['username'].','.$ret['fullname'])],
-              ['id' => $this->userId]);
-
-          $this->db->commit ();
-
-          // Remove user from all groups except his own.
-          if ($field == 'visible' && $value == 0)
-          {
-            // Deassociate user from all groups and user's groups users too.
-            (new Group(['userId' => $this->userId], $this->ws))
-              ->unlinkUserFromOthersGroups ();
-
-            // Get all user's walls to disconnect users from them.
-            ($stmt = $this->db->prepare ('
-              SELECT id FROM walls WHERE users_id = ?'))
-               ->execute ([$this->userId]);
-            if (!empty ( ($r = $stmt->fetchAll (\PDO::FETCH_COLUMN)) ))
-              $ret['closewalls'] = $r;
-          }
+          if (!empty ( ($r = $stmt->fetchAll (\PDO::FETCH_COLUMN)) ))
+            $ret['closewalls'] = $r;
         }
       }
       else
@@ -897,7 +897,7 @@ class User extends Base
           SELECT id FROM users WHERE password = ? AND id = ?'))
            ->execute ([hash ('sha1', $pwd->current), $this->userId]);
         if (!$stmt->fetch ())
-          throw new \Exception (_("Wrong current password."));
+          return ['error_msg' => _("Wrong current password")];
 
         $this->executeQuery ('UPDATE users',
          ['password' => hash ('sha1', $pwd->new)],
@@ -912,7 +912,7 @@ class User extends Base
         $this->db->rollBack ();
 
       error_log (__METHOD__.':'.__LINE__.':'.$msg);
-      $ret['error_msg'] = $msg;
+      $ret['error'] = $msg;
     }
 
     return $ret;
@@ -931,7 +931,7 @@ class User extends Base
       ->execute ([$this->userId]);
 
     $this->executeQuery ('INSERT INTO users_tokens', [
-      'creationdate' => time(),
+      'creationdate' => time (),
       'users_id' => $this->userId,
       'token' => hash ('sha1', $_SERVER['REMOTE_ADDR']).$token,
       'persistent' => intval ($remember)
@@ -961,7 +961,7 @@ class User extends Base
       {
         $this->logout ();
         error_log ("SPAM detection");
-        return ['error' => _("The account creation forms were filled out too quickly. Please reload this page and try again to verify that you are not a robot...")];
+        return ['error' => _("The account creation form was completed too quickly. Please reload this page and try again to confirm that you are not a robot...")];
       }
     }
 
@@ -969,17 +969,15 @@ class User extends Base
     {
       // Check for blacklisted domains
       if ($msg = Helper::isBlacklistedDomain ($this->data->email))
-        throw new \Exception ($msg);
+        return ['error_msg' => $msg];
 
       // Check for duplicate (username or email)
       if ( ($dbl = $this->_isDuplicate ([
               'username' => $this->data->username,
               'email' => $this->data->email])) )
-        throw new \Exception (($dbl == 'username') ?
-          sprintf (_("The login `%s` already exists."),
-                     $this->data->username) :
-          sprintf (_("The email `%s` already exists."),
-                     $this->data->email));
+        return ['error_msg' => ($dbl == 'username') ?
+          sprintf (_("The login `%s` already exists"), $this->data->username) :
+          sprintf (_("The email `%s` already exists"), $this->data->email)];
 
       // Create user
       $currentDate = time ();
@@ -1029,7 +1027,7 @@ class User extends Base
       error_log (__METHOD__.':'.__LINE__.':'.$msg);
 
       if (!WPT_USE_LDAP)
-        $ret['error_msg'] = $msg;
+        $ret['error'] = $msg;
     }
 
     return $ret;

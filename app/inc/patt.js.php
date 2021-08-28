@@ -61,7 +61,7 @@
     delete (id)
     {
       const {wallId, cellId, postitId} = this.getIds (),
-            li = $_mainPopup[0].querySelector (`li[data-id="${id}"]`);
+            li = $_mainPopup[0].querySelector (`.accordion-item[data-id="${id}"]`);
 
       H.request_ws (
         "DELETE",
@@ -74,18 +74,13 @@
             H.raiseError (null, d.error_msg);
           else
           {
-            const next = li.nextSibling;
-
-            if (next && next.classList.contains ("collapse"))
-              next.remove ();
-
             li.remove ();
 
             this.decCount ();
 
-            if (!$_mainPopup[0].querySelector ("li"))
-              $_mainPopup.find("ul.list-group").html (
-                `<?=_("This note has no attached files.")?>`);
+            if (!$_mainPopup[0].querySelector (".accordion-item"))
+              $_mainPopup.find(".list-group").html (
+                `<?=_("The note has no attached file.")?>`);
           }
         }
       );
@@ -96,10 +91,11 @@
     {
       const tz = wpt_userData.settings.timezone,
             d = `<button type="button" data-action="delete"><i class="fas fa-trash fa-xs fa-fw"></i></button>`,
-            c = (item.ownerid!==undefined && item.ownerid!=wpt_userData.id) ?
-                  `<span class="ownername"><i class="far fa-user fa-xs"></i>${item.ownername||`<s><?=_("deleted")?></s>`}</span>` : "";
+            owner = (item.ownerid !== undefined &&
+                     item.ownerid != wpt_userData.id) ?
+                       item.ownername||`<s><?=_("Former user")?></s>` : "";
 
-      return `<li data-target="#file${item.id}" data-toggle="collapse" data-id="${item.id}" data-url="${item.link}" data-icon="${item.icon}" data-fname="${H.htmlEscape(item.name)}" data-description="${H.htmlEscape(item.description||"")}" data-title="${H.htmlEscape(item.title||"")}" class="list-group-item"><div><i class="fa fa-lg ${item.icon} fa-fw"></i> <span>${item.title||item.name}</span> <div class="item-infos"><span class="creationdate">${H.getUserDate (item.creationdate)}</span><span class="file-size">${H.getHumanSize(item.size)}</span>${c}</div><div class="right-icons"><button type="button" data-action="download"><i class="fas fa-download fa-xs fa-fw"></i></button>${noWriteAccess?"":d}</div></li><div id="file${item.id}" class="collapse list-group-item" data-parent="#pa-accordion"></div>`;
+      return `<div class="accordion-item" data-id="${item.id}" data-url="${item.link}" data-icon="${item.icon}" data-fname="${H.htmlEscape(item.name)}" data-description="${H.htmlEscape(item.description||"")}" data-title="${H.htmlEscape(item.title||"")}" data-creationdate="${H.getUserDate (item.creationdate)}" data-size="${H.getHumanSize(item.size)}" data-owner="${H.htmlEscape(owner)}"><div class="accordion-header" id="hfile${item.id}"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#cfile${item.id}" aria-expanded="false" aria-controls="cfile${item.id}"><i class="fa fa-lg ${item.icon} fa-fw"></i> <span>${item.title||item.name}</div></div><div id="cfile${item.id}" class="accordion-collapse collapse" aria-labelledby="hfile${item.id}" data-bs-parent="#pa-accordion"><div class="accordion-body"></div></div></div></div>`;
     },
 
     // METHOD upload ()
@@ -141,7 +137,7 @@
           let body = "";
 
           if (!d)
-            body = `<?=_("This note has no attached files.")?>`;
+            body = `<?=_("The note has no attached file.")?>`;
           else
             d.files.forEach (a => body += this.getTemplate (a, !writeAccess));
 
@@ -150,10 +146,10 @@
           else
             $p.find(".btn-primary").hide ();
 
-          $p.find(".modal-body ul").html (body);
+          $p.find(".modal-body .list-group").html (body);
 
           $p[0].dataset.noclosure = true;
-          H.openModal ($p);
+          H.openModal ({item: $p});
         }
       });
     },
@@ -185,39 +181,54 @@
           });
 
         // EVENT click on attachment line buttons
-        $(document).on("click", "#postitAttachmentsPopup .modal-body li button",
+        $(document).on("click", "#postitAttachmentsPopup .edit-popup button",
           function (e)
           {
             const action = this.dataset.action,
-                  item = this.closest ("li");
+                  item = this.closest(".accordion-item");
 
             e.stopImmediatePropagation ();
 
-            if (action == "delete")
+            switch (action)
             {
-              const id = item.dataset.id;
+              // "Delete" button
+              case "delete":
+                const id = item.dataset.id;
 
-              item.classList.add ("active");
+                item.classList.add ("active");
 
-              H.openConfirmPopover ({
-                item: $(this),
-                placement: "left",
-                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                content: `<?=_("Delete this file?")?>`,
-                cb_close: ()=>
-                  {
-                    const el = document.querySelector (
-                                 ".modal li.list-group-item.active");
+                H.openConfirmPopover ({
+                  item: $(this),
+                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                  content: `<?=_("Delete the file?")?>`,
+                  cb_close: ()=>
+                    {
+                      const el = document.querySelector (
+                                   ".modal .accordion-item.active");
 
-                    if (el && el.getAttribute ("aria-expanded") != "true")
-                      el.classList.remove ("active");
-                  },
-                cb_ok: ()=>
-                  S.getCurrent("postit").find(".patt").patt ("delete", id)
-              });
+                      if (el && el.getAttribute ("aria-expanded") != "true")
+                        el.classList.remove ("active");
+                    },
+                  cb_ok: ()=>
+                    S.getCurrent("postit").find(".patt").patt ("delete", id)
+                });
+                break;
+
+              // "Download" button
+              case "download":
+                H.download (item.dataset);
+                break;
+
+              // "Save" button
+              case "save":
+                const popup = $_editPopup[0];
+
+                S.getCurrent("postit").find(".patt").patt ("update", {
+                  id: popup.dataset.id,
+                  title: H.noHTML (popup.querySelector("input").value),
+                  description: H.noHTML (popup.querySelector("textarea").value)
+                });
             }
-            else
-              H.download (item.dataset);
           });
 
         // EVENT click on attachment thumbnail to preview
@@ -233,28 +244,12 @@
               ()=> document.getElementById("img-viewer").remove());
           });
 
-        // EVENT click on edit popup "Save" button
-        $(document).on("click",
-                       "#postitAttachmentsPopup .edit-popup .btn-primary",
-          function (e)
-          {
-            const popup = $_editPopup[0];
-
-            e.stopImmediatePropagation ();
-
-            S.getCurrent("postit").find(".patt").patt ("update", {
-              id: popup.dataset.id,
-              title: H.noHTML (popup.querySelector("input").value),
-              description: H.noHTML (popup.querySelector("textarea").value)
-            });
-          });
-
         // EVENT hidden.bs.collapse attachment row
         $(document).on("hidden.bs.collapse",
-                       "#postitAttachmentsPopup .list-group-item.collapse",
+                       "#postitAttachmentsPopup .collapse",
           function (e)
           {
-            const li = this.previousSibling;
+            const li = this.closest (".accordion-item");
 
             li.classList.remove ("no-bottom-radius");
             li.classList.remove ("active");
@@ -262,13 +257,17 @@
 
         // EVENT show.bs.collapse attachment row
         $(document).on("show.bs.collapse",
-                       "#postitAttachmentsPopup .list-group-item.collapse",
+                       "#postitAttachmentsPopup .collapse",
           function (e)
           {
-            const li = this.previousSibling,
+            const li = this.closest (".accordion-item"),
+                  body = $(li).find(".accordion-body")[0],
                   popup = $_editPopup[0],
-                  liActive = $_mainPopup[0].querySelector ("li.active"),
+                  liActive = $_mainPopup[0].querySelector ("div.active"),
                   fileVal = li.dataset.fname,
+                  fileInfosVal = (li.dataset.owner?li.dataset.owner+", ":"")+
+                                 li.dataset.creationdate+", "+
+                                 li.dataset.size,
                   titleVal = li.dataset.title,
                   descVal = li.dataset.description,
                   img = popup.querySelector (".img"),
@@ -281,17 +280,20 @@
 
             popup.dataset.id = li.dataset.id;
 
-            popup.querySelector(".no-details").style.display = "none";
             popup.querySelector(".title").style.display = "block";
             popup.querySelector(".description").style.display = "block";
             img.querySelector("img").setAttribute ("src", "");
             img.style.display = "none";
 
             popup.querySelector(".file").innerText = fileVal;
+            popup.querySelector(".file-infos").innerHTML = fileInfosVal;
 
             if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
             {
-              popup.querySelector(".btn-primary").style.display = "block";
+              // Display "Save" button
+              popup.querySelector(".btn-primary").style.display = "inline-block";
+              // Display "Delete" button
+              popup.querySelector(".btn-secondary").style.display = "inline-block";
               popup.querySelectorAll(".ro").forEach (el =>
                 el.style.display = "none");
               popup.querySelectorAll(".adm").forEach (el =>
@@ -300,18 +302,18 @@
               popup.querySelector(".title input").value = titleVal;
               popup.querySelector(".description textarea").value = descVal;
 
-              H.setAutofocus ($(popup));
+              H.setAutofocus (popup);
             }
             else
             {
+              // Hide "Save" button
               popup.querySelector(".btn-primary").style.display = "none";
+              // Hide "Delete" button
+              popup.querySelector(".btn-secondary").style.display = "none";
               popup.querySelectorAll(".ro").forEach (el =>
                 el.style.display = "block");
               popup.querySelectorAll(".adm").forEach (el =>
                 el.style.display = "none");
-
-              if (!isImg && !titleVal && !descVal)
-                popup.querySelector(".no-details").style.display = "block";
 
               if (titleVal)
                 popup.querySelector(".title .ro").innerText = titleVal;
@@ -331,7 +333,7 @@
               img.style.display = "block";
             }
 
-            $(this.appendChild (popup)).show ("fade");
+            $(body.appendChild (popup)).show ("fade");
           });
 
         // EVENT Attachment upload
@@ -350,11 +352,12 @@
                   $upload.val ("");
 
                   if ($_mainPopup.find(
-                        `.list-group li`+
+                        `.list-group .accordion-item`+
                            `[data-fname="${H.htmlEscape(file.name)}"]`).length)
                     return H.displayMsg ({
+                      title: `<?=_("Attached files")?>`,
                       type: "warning",
-                      msg: `<?=_("The file is already linked to the note.")?>`
+                      msg: `<?=_("The file is already linked to the note")?>`
                     });
 
                   if (H.checkUploadFileSize ({size: e.total}) &&
@@ -373,24 +376,25 @@
                     (d) =>
                     {
                       const pa = plugin.getPlugin ("patt"),
-                            $body = $_mainPopup.find("ul.list-group");
+                            $body = $_mainPopup.find(".list-group");
 
                       $_mainPopup.find(".modal-body").scrollTop (0);
                       $_mainPopup.find("div.collapse.show").collapse ("hide");
 
                       if (d.error_msg)
                         return H.displayMsg ({
+                          title: `<?=_("Attached files")?>`,
                           type: "warning",
                           msg: d.error_msg
                         });
 
-                      if (!$body.find("li").length)
+                      if (!$body.find(".accordion-item").length)
                         $body.html ("");
 
                       $body.prepend (pa.getTemplate (d));
                       pa.incCount ();
 
-                      H.waitForDOMUpdate (()=>$body.find("li:eq(0)").click ());
+                      H.waitForDOMUpdate (()=>$body.find(".accordion-item:eq(0)").click ());
                     });
                 }
               });

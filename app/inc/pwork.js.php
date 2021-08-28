@@ -62,7 +62,7 @@
 
           $p.usearch ("displayUsers", _args);
 
-          H.openModal ($p);
+          H.openModal ({item: $p});
         }
       });
     },
@@ -81,12 +81,7 @@
     // METHOD open ()
     open (refresh)
     {
-      const plugin = this;
-
-      this.postit().edit ({}, ()=>
-        {
-          this.display ();
-        });
+      this.postit().edit ({}, ()=> this.display ());
     },
   });
 

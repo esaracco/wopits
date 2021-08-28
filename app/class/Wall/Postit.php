@@ -27,15 +27,14 @@ class Postit extends Wall
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
     if (!$r['ok'])
       return
-        ['error_msg' =>
-            _("You must have write access to perform this action.")];
+        ['error_msg' => _("You must have write access to perform this action")];
 
     // Check for the col/row (it could have been removed while user was
     // creating the new post-it.
     ($stmt = $this->db->prepare ('SELECT 1 FROM cells WHERE id = ?'))
       ->execute ([$this->cellId]);
     if (!$stmt->fetch ())
-      return ['error_msg' => _("The row/column has been deleted.")];
+      return ['error_msg' => _("The row/column has been deleted")];
 
     $_data = $data??[
       'cells_id' => $this->cellId,
@@ -503,7 +502,7 @@ class Postit extends Wall
           $file, base64_decode (str_replace (' ', '+', $content)));
 
         if (!file_exists ($file))
-          throw new \Exception (_("An error occured while uploading file."));
+          throw new \Exception (_("An error occurred while uploading"));
 
         list ($file, $this->data->item_type, $width, $height) =
           Helper::resizePicture ($file, 800, 0, false);
@@ -544,7 +543,7 @@ class Postit extends Wall
         @unlink ($file);
 
         if ($e->getCode () == 425)
-          return ['error' => _("The file type was not recognized.")];
+          return ['error' => _("Unknown file type")];
         else
         {
           error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());

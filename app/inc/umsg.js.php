@@ -118,7 +118,6 @@
       const $badge = this.element.find(".wpt-badge"),
             count = parseInt($badge.text()) - 1;
 
-      $item.find("[data-toggle='tooltip']").tooltip ("dispose");
       $item.remove ();
 
       $badge.text (count);
@@ -143,7 +142,7 @@
 
           d.forEach (m=>
           {
-            content += `<div class="msg-item" data-id="${m.id}"><div class="msg-title">${m.title}<button type="button" class="close" data-toggle="tooltip" title="<?=_("Delete this message")?>"><span>&times;</span></button></div><div class="msg-date">${H.getUserDate(m.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${m.content.replace(/\n\n|\n/g, "<br>")}</div></div>`;
+            content += `<div class="msg-item" data-id="${m.id}"><div class="msg-title">${m.title}<button type="button" class="close" title="<?=_("Delete this message")?>"><span><i class="fas fa-trash fa-xs"></i></span></button></div><div class="msg-date">${H.getUserDate(m.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${m.content.replace(/\n\n|\n/g, "<br>")}</div></div>`;
           });
 
           if (refresh)

@@ -91,23 +91,13 @@
     // METHOD applyLocale ()
     applyLocale (locale)
     {
-      this.set ({locale: locale}, () =>
-        {
-          this.element.modal ("hide");
-
-          location.href = '/r.php?l='+locale;
-        });
+      this.set ({locale: locale}, ()=> location.href = `/r.php?l=${locale}`);
     },
 
     // METHOD applyTimezone ()
     applyTimezone (timezone)
     {
-      this.set ({timezone: timezone}, () =>
-        {
-          this.element.modal ("hide");
-
-          location.href = '/r.php';
-        });
+      this.set ({timezone: timezone}, ()=> location.href = "/r.php");
     },
 
     // METHOD applyTheme ()
@@ -263,6 +253,7 @@
       const plugin = this;
 
       H.loadPopup ("themeChooser", {
+        noeffect: true,
         init: ($p)=>
         {
           $p.find("a.dot-theme")
@@ -285,7 +276,7 @@
             // EVENT click on settings button in theme chooser popup
             .on("click", function ()
             {
-              $p.modal ("hide");
+              bootstrap.Modal.getInstance($p).hide ();
               plugin.open ();
             });
         }
@@ -293,7 +284,7 @@
     },
 
     // METHOD open ()
-    open ()
+    open (args)
     {
       const plugin = this,
             $settings = plugin.element,
@@ -364,7 +355,7 @@
         H.setColorpickerColor ($cp, plugin.get ("wall-background", wallId));
       }
 
-      H.openModal ($settings);
+      H.openModal ({item: $settings});
 
       if (!loaded)
       {

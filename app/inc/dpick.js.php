@@ -106,7 +106,7 @@
       else
         $alert.find(">div:eq(1)").show ();
 
-      H.openModal ($popup);
+      H.openModal ({item: $popup});
     },
 
     // METHOD save ()

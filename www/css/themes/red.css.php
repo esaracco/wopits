@@ -61,12 +61,12 @@ div.postit-mark {
 textarea:focus,
 input:focus,
 button:focus {
-  border-color: #e84c5b !important;
+  border-color:#e84c5b !important;
 }
 
-.bs-popover-auto[x-placement^=bottom] .arrow:after,
-.bs-popover-bottom > .arrow::after {
-  border-color: #e84c5b transparent;
+.bs-popover-bottom>.popover-arrow::after,
+.bs-popover-bottom>.popover-arrow::before {
+  border-color:#e84c5b transparent;
 }
 
 .popover-header,
@@ -79,10 +79,6 @@ button:focus {
 
 .modal:not(.no-theme) .modal-dialog .modal-content {
   border-color: #e84c5b !important;
-}
-
-:not([class^='color']).selected {
-  background-color: #ffc6cb !important;
 }
 
 .modal:not(.no-theme) .modal-dialog.shadow .modal-header,
@@ -111,32 +107,35 @@ span.wpt-badge {
 
 .form-control:disabled,
 .form-control[readonly],
-.list-group-item:not(.collapse):hover,
-.msg-item:hover,
-.list-group-item.title {
+.list-group-item,
+.msg-item:hover {
   background-color:#ffeaec !important;
 }
 
-.list-group-item.active {
-  color:inherit;
-  background-color: #ffeaec;
-  border: 1px solid rgba(0,0,0,.125);
+:not([class^='color']).selected,
+.list-group-item.title,
+.list-group-item.active,
+.accordion-button:hover,
+.accordion-button:not(.collapsed),
+.list-group-item:hover {
+  background-color:#ffd5d9!important;
 }
 
 .btn-primary,
-.login-page .btn-success {
+#login-page .btn-success {
   background-color: #5ca0e4 !important;
   border-color: #4694e6 !important;
   color: #fff !important;
 }
 
 .btn-primary:hover,
-.login-page .btn-success:hover {
+#login-page .btn-success:hover {
   background-color: #4694e6 !important;
 }
 
 .newfeatures b i.fas,
 .popover-body i,
+#postitCommentsPopup i:not(.fa-fw),
 i.set {
   color: #e2747f;
 }
@@ -153,18 +152,18 @@ kbd,
   background-color: #da4e5b !important;
 }
 
-.custom-control-input:checked ~ .custom-control-label::before {
+.form-check-input:checked ~ .form-check-label::before {
   border-color: #dc3545;
   background-color: #dc3545;
 }
 
-.login-page .user-card {
+#login-page .user-card {
   background-color: #dc3545;
   border-color: #e84c5b;
 }
 
-.login-page .ldap-msg,
-.login-page .links a,
-.login-page .custom-checkbox.remember label {
+#login-page .ldap-msg,
+#login-page .links a,
+#login-page .custom-checkbox.remember label {
   color: #e0e0e0 !important;
 }

@@ -49,20 +49,18 @@
         });
 
       // EVENT click on reset button
-      $ra.find("button.reset").on("click", function ()
+      $ra.find("button.reset").on("click", function (e)
         {
           plugin.removeSample ();
           plugin.createSample (true);
 
-          $ra.find("input[name='size']").val (_ll.size);
+          $ra.find(`input[name="size"]`).val (_ll.size);
           $ra.find(`input[value="${_ll.path}"]`)[0].checked = true;
           $ra.find(`input[value="${_ll.line_type}"]`)[0].checked = true;
-
-          return false;
         });
 
       /// EVENT keyup & change on line size input
-      $ra.find("input[name='size']").on("keyup change", function ()
+      $ra.find(`input[name="size"]`).on("keyup change", function ()
         {
           if (_ll)
           {
@@ -83,7 +81,7 @@
         });
 
       // EVENT click on line type options
-      $ra.find("input[name='type']").on("click", function ()
+      $ra.find(`input[name="type"]`).on("click", function ()
         {
           _ll.line_type = this.value;
 
@@ -91,7 +89,7 @@
         });
 
       // EVENT click on line path options
-      $ra.find("input[name='path']").on("click", function ()
+      $ra.find(`input[name="path"]`).on("click", function ()
         {
           _ll.path = this.value;
         });
@@ -180,17 +178,21 @@
     {
       const $ra = this.element;
 
-      H.openModal ($ra);
+      H.openModal ({item: $ra});
 
       _plug = plug;
       _postitPlugin = postitPlugin;
 
-      this.createSample ();
+      setTimeout (()=>
+        {
+          this.createSample ();
 
-      H.setColorpickerColor ($ra.find(".cp"), _plug.obj.color);
-      $ra.find("input[name='size']").val (_plug.obj.line_size);
-      $ra.find(`input[value="${_plug.obj.path}"]`)[0].checked = true;
-      $ra.find(`input[value="${_plug.obj.line_type}"]`)[0].checked = true;
+          H.setColorpickerColor ($ra.find(".cp"), _plug.obj.color);
+          $ra.find(`input[name="size"]`).val (_plug.obj.line_size);
+          $ra.find(`input[value="${_plug.obj.path}"]`)[0].checked = true;
+          $ra.find(`input[value="${_plug.obj.line_type}"]`)[0].checked = true;
+
+        }, 350);
     },
   };
 

@@ -23,7 +23,7 @@
     {
       this.settings["walls"] = S.getCurrent ("walls");
 
-      this.element.html (`<div class="goto-box goto-box-y"><i class="fas fa-arrow-up fa-2x full-up" title="A"></i><i class="fas fa-chevron-up fa-2x up"></i><i class="fas fa-chevron-down fa-2x down"></i><i class="fas fa-arrow-down fa-2x full-down"></i></div><div class="goto-box goto-box-x"><i class="fas fa-arrow-left fa-2x full-left"></i><i class="fas fa-chevron-left fa-2x left"></i><i class="fas fa-chevron-right fa-2x right"></i><i class="fas fa-arrow-right fa-2x full-right"></i></div>`);
+      this.element.html (`<div class="goto-box goto-box-y"><i class="fas fa-arrow-up fa-2x full-up"></i><i class="fas fa-chevron-up fa-2x up"></i><i class="fas fa-chevron-down fa-2x down"></i><i class="fas fa-arrow-down fa-2x full-down"></i></div><div class="goto-box goto-box-x"><i class="fas fa-arrow-left fa-2x full-left"></i><i class="fas fa-chevron-left fa-2x left"></i><i class="fas fa-chevron-right fa-2x right"></i><i class="fas fa-arrow-right fa-2x full-right"></i></div>`);
     },
 
     // METHOD reset ()

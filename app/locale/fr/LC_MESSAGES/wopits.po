@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-05 02:53+0200\n"
-"PO-Revision-Date: 2021-08-05 02:53+0200\n"
+"POT-Creation-Date: 2021-08-25 16:00+0200\n"
+"PO-Revision-Date: 2021-08-24 04:29+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -43,15 +43,17 @@ msgid "%s notes match your search."
 msgstr "%s notes correspondent à votre recherche."
 
 #, php-format
-msgid "%s shared this wall with you."
-msgstr "%s a partagé ce mur avec vous."
+msgid "%s shared this wall with you"
+msgstr "%s a partagé ce mur avec vous"
 
 msgid "1 note match your search."
 msgstr "1 note correspond à votre recherche."
 
-msgid "<b>Invisible mode</b>: sharing is not possible and no one can see you"
+msgid ""
+"<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes"
 msgstr ""
-"<b>Mode invisible</b>: aucun partage possible, et personne ne peut vous voir"
+"<kbd>ctrl+clic</kbd> sur la cellule de destination pour y copier les notes "
+"sélectionnées"
 
 msgid ""
 "<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes."
@@ -60,10 +62,10 @@ msgstr ""
 "sélectionnées."
 
 msgid ""
-"<kbd>ctrl+click</kbd> on the destination cell to move the selected notes."
+"<kbd>ctrl+click</kbd> on the destination cell to move the selected notes"
 msgstr ""
 "<kbd>ctrl+clic</kbd> sur la cellule de destination pour y déplacer les notes "
-"sélectionnées."
+"sélectionnées"
 
 msgid ""
 "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></"
@@ -82,30 +84,11 @@ msgstr ""
 "GitHub</a>.</p>"
 
 msgid ""
-"<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Cleaning & optimization.</"
-"p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, "
+"debugging and optimization.</p>"
 msgstr ""
-"<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Nettoyage & optimisation."
-"</p>"
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixed issues with notes copy/"
-"paste.</p>"
-msgstr ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Correction de problèmes avec "
-"les copier-coller de notes.</p>"
-
-msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Account</b> Blacklisting of the "
-"following email domains: <i>outlook.fr</i>, <i>outlook.com</i>, <i>live.fr</"
-"i>, <i>live.com</i>, <i>hotmail.fr</i>, <i>hotmail.com</i>. <u>If your email "
-"is using one of them, please update it as soon as possible!</u></p>"
-msgstr ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Compte</b> Mise sur liste noire "
-"des domaines de messagerie suivants: <i>outlook.fr</i>, <i>outlook.com</i>, "
-"<i>live.fr</i>, <i>live.com</i>, <i>hotmail.fr</i>, <i>hotmail.com</i>. "
-"<u>Si votre email en fait partie, veuillez la modifier dès que possible!</"
-"u></p>"
+"<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, "
+"débogage et optimisation.</p>"
 
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Now you can create or "
@@ -119,14 +102,14 @@ msgid ""
 "involved users for notes of shared walls.</p>"
 msgstr ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Gestion des "
-"participants pour les notes des murs partagés.</p>"
+"intervenants pour les notes des murs partagés.</p>"
 
 msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Walls</b> You can control the "
 "visibility of walls headers.</p>"
 msgstr ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>Murs</b> Contrôle de la "
-"visibilité des en-têtes de murs.</p>"
+"visibilité des en-têtes des murs.</p>"
 
 msgid ""
 "<p>In order to share a wall, you must first create user groups. To create a "
@@ -405,11 +388,11 @@ msgstr ""
 "<kbd>Cloner</kbd>.</p>"
 
 msgid ""
-"A app for managing projects online just using sticky notes to share and "
+"A app for managing projects online using sticky notes to share and "
 "collaborate."
 msgstr ""
-"Une application pour gérer des projets en ligne en utilisant simplement des "
-"post-its pour partager et collaborer."
+"Une application pour gérer des projets en ligne en utilisant des post-its "
+"pour partager et collaborer."
 
 #, php-format
 msgid ""
@@ -425,8 +408,8 @@ msgstr ""
 msgid "A new release of wopits is available."
 msgstr "Une nouvelle version de wopits est disponible."
 
-msgid "A wall with the same name already exists."
-msgstr "Un mur du même nom existe déjà."
+msgid "A wall with the same name already exists"
+msgstr "Un mur du même nom existe déjà"
 
 msgid "About"
 msgstr "À propos"
@@ -439,6 +422,9 @@ msgstr "Accès interdit"
 
 msgid "Account"
 msgstr "Compte"
+
+msgid "Account creation"
+msgstr "Création de compte"
 
 msgid "Add"
 msgstr "Ajouter"
@@ -465,20 +451,20 @@ msgstr "Tous les murs disponibles sont ouverts."
 msgid "All features are available again"
 msgstr "Toutes les fonctionnalités sont à nouveau disponibles"
 
-msgid "An error occured while cloning the wall."
-msgstr "Une erreur est survenue durant le clonage du fichier."
+msgid "An error occurred during the export"
+msgstr "Une erreur est survenue durant l'export"
 
-msgid "An error occured while downloading file."
-msgstr "Une erreur est survenue durant le téléchargement du fichier."
+msgid "An error occurred while cloning the wall"
+msgstr "Une erreur est survenue durant le clonage du mur"
 
-msgid "An error occured while processing import."
-msgstr "Une erreur est survenue durant l'importation."
+msgid "An error occurred while downloading"
+msgstr "Une erreur est survenue durant le téléchargement"
 
-msgid "An error occured while uploading file."
-msgstr "Une erreur est survenue durant l'envoi du fichier."
+msgid "An error occurred while processing import"
+msgstr "Une erreur est survenue durant l'importation"
 
-msgid "An error occurred while exporting wall data."
-msgstr "Une erreur est survenue durant l'export des données du mur."
+msgid "An error occurred while uploading"
+msgstr "Une erreur est survenue durant l'envoi"
 
 msgid "Animated dashed"
 msgstr "Pointillés animés"
@@ -486,10 +472,10 @@ msgstr "Pointillés animés"
 #, php-format
 msgid ""
 "Another account with the same email as the LDAP account email `%s` already "
-"exists on wopits."
+"exists on wopits"
 msgstr ""
 "Un autre compte avec la même email `%s` que celle de votre compte LDAP "
-"existe déjà sur wopits."
+"existe déjà sur wopits"
 
 msgid "Arc"
 msgstr "Arc"
@@ -530,15 +516,35 @@ msgid "Block external contents"
 msgstr "Bloquer les contenus externes"
 
 msgid ""
-"By unchecking this option, you will no longer receive email notifications."
+"By checking this option, sharing will be impossible, and you will be removed "
+"from all groups.<br>Become invisible anyway?"
 msgstr ""
-"En décochant cette option, vous ne recevrez plus de notifications par mail."
+"En cochant cette option, il ne sera plus possible de partager, et vous serez "
+"retiré de tous les groupes.<br>Devenir invisible quand même?"
+
+msgid ""
+"By checking this option, sharing will not be possible and no one will see you"
+msgstr ""
+"En cochant cette options, le partage ne sera plus possible et personne ne "
+"pourra plus vous voir"
+
+msgid ""
+"By unchecking this option, you will no longer receive email notifications"
+msgstr ""
+"En décochant cette option, vous ne recevrez plus de notifications par mail"
+
+msgid ""
+"By unchecking this option, you will no longer receive email notifications."
+"<br>Disable notifications anyway?"
+msgstr ""
+"En décochant cette option vous ne recevrez plus de notifications par email."
+"<br>Désactiver quand même?"
 
 msgid "Can not read file"
 msgstr "Impossible de lire le fichier"
 
-msgid "Can't contact LDAP server."
-msgstr "Impossible de contacter le serveur LDAP."
+msgid "Can't contact LDAP server"
+msgstr "Impossible de contacter le serveur LDAP"
 
 msgid "Cancel"
 msgstr "Abandonner"
@@ -546,8 +552,8 @@ msgstr "Abandonner"
 msgid "Cancel sharing for this group"
 msgstr "Annuler le partage pour ce groupe"
 
-msgid "Change selected notes color"
-msgstr "Changer la couleurs des notes sélectionnées"
+msgid "Change notes color"
+msgstr "Changer la couleurs des notes"
 
 msgid "Chat room"
 msgstr "Salon"
@@ -566,6 +572,9 @@ msgstr "Fermer les murs"
 
 msgid "Close the walls?"
 msgstr "Fermer les murs?"
+
+msgid "Close this wall"
+msgstr "Fermer ce mur"
 
 msgid "Close this wall?"
 msgstr "Fermer ce mur?"
@@ -595,14 +604,17 @@ msgstr "Commentaires"
 msgid "Confirmation"
 msgstr "Confirmation"
 
+msgid "Connected users"
+msgstr "Utilisateurs connectés"
+
 msgid "Content"
 msgstr "Contenu"
 
 msgid "Copy"
 msgstr "Copier"
 
-msgid "Copy selected notes"
-msgstr "Copier les notes sélectionnées"
+msgid "Copy notes"
+msgstr "Copier les notes"
 
 msgid "Copy/Move"
 msgstr "Copier/Déplacer"
@@ -619,8 +631,8 @@ msgstr "Créer un groupe <b>générique</b>"
 msgid "Create a account"
 msgstr "Créer un compte"
 
-msgid "Create your walls of sticky notes, and let your ideas shine!"
-msgstr "Créez vos murs de post-its, et laissez briller vos idées!"
+msgid "Create walls, and let ideas shine!"
+msgstr "Créez des murs, et laissez briller vos idées!"
 
 msgid "Creation date"
 msgstr "Date de création"
@@ -630,9 +642,6 @@ msgstr "Création de votre compte wopits"
 
 msgid "Creator"
 msgstr "Créateur"
-
-msgid "Current users"
-msgstr "Utilisateurs actuels"
 
 msgid "Dashed"
 msgstr "Pointillés"
@@ -658,17 +667,17 @@ msgstr "Supprimer mon compte"
 msgid "Delete my comment"
 msgstr "Supprimer mon commentaire"
 
-msgid "Delete selected notes"
-msgstr "Supprimer les notes sélectionnées"
+msgid "Delete notes"
+msgstr "Supprimer les notes"
 
 msgid "Delete selected notes?"
 msgstr "Supprimer les notes sélectionnées?"
 
+msgid "Delete the file?"
+msgstr "Supprimer le fichier?"
+
 msgid "Delete this column?"
 msgstr "Supprimer cette colonne?"
-
-msgid "Delete this file?"
-msgstr "Supprimer ce fichier?"
 
 msgid "Delete this group"
 msgstr "Supprimer ce groupe"
@@ -694,11 +703,8 @@ msgstr "Supprimer cette ligne?"
 msgid "Delete this wall?"
 msgstr "Supprimer ce mur?"
 
-msgid "Delete your profile photo?"
+msgid "Delete your profile picture?"
 msgstr "Supprimer votre photo de profil?"
-
-msgid "Deprecated browser"
-msgstr "Navigateur obsolète"
 
 msgid "Description"
 msgstr "Description"
@@ -715,11 +721,11 @@ msgstr "Voulez-vous vraiment supprimer définitivement votre compte wopits?"
 msgid "Do you want to copy the selected notes in this cell?"
 msgstr "Voulez-vous copier les notes sélectionnées dans cette cellule?"
 
-msgid "Do you want to load all external content for this wall?"
-msgstr "Voulez-vous charger tous les contenus externes pour ce mur?"
-
 msgid "Do you want to move the selected notes in this cell?"
 msgstr "Voulez-vous déplacer les notes sélectionnées dans cette cellule?"
+
+msgid "Download"
+msgstr "Téléchargement"
 
 msgid "Edit"
 msgstr "Édition"
@@ -759,8 +765,11 @@ msgid "External contents are now filtered"
 msgstr "Les contenus externes sont désormais filtrés"
 
 #, php-format
-msgid "File size is too large (%sM max)."
-msgstr "Fichier trop volumineux (%sM max)."
+msgid "File size is too large (%sM max)"
+msgstr "Le fichier est trop volumineux (%sM max)"
+
+msgid "File upload"
+msgstr "Dépôt de fichier"
 
 msgid "Filters"
 msgstr "Filtres"
@@ -780,17 +789,14 @@ msgstr ""
 "Pour des raisons de performances, un mur ne peut pas contenir plus de %s "
 "cellules"
 
-#, php-format
-msgid "For performance reasons, a wall cannot contain more than %s cells."
-msgstr ""
-"Pour des raisons de performances, un mur ne peut pas contenir plus de %s "
-"cellules."
-
 msgid "For this wall only."
 msgstr "Pour ce mur seulement."
 
 msgid "Forgot your password?"
 msgstr "Mot de passe oublié?"
+
+msgid "Former user"
+msgstr "Ancien utilisateur"
 
 msgid "Full access (admin)"
 msgstr "Accès complet (admin)"
@@ -843,6 +849,9 @@ msgstr "Information"
 msgid "Invisible mode"
 msgstr "Mode invisible"
 
+msgid "Invisible mode: sharing is not possible and no one can see you"
+msgstr "Mode invisible: aucun partage possible, et personne ne peut vous voir"
+
 #, php-format
 msgid ""
 "It has been over a year since you used wopits.\n"
@@ -869,11 +878,17 @@ msgstr ""
 "\n"
 "Votre compte «%s» a été automatiquement supprimé."
 
+msgid "Item has been deleted"
+msgstr "L'élément a été supprimé"
+
+msgid "Item is locked by another user"
+msgstr "L'élément est verrouillé par un autre utilisateur"
+
 msgid "Language"
 msgstr "Langue"
 
-msgid "Let your ideas shine!"
-msgstr "Laissez briller vos idées!"
+msgid "Let ideas shine!"
+msgstr "Laissez les idées briller!"
 
 msgid "Log in"
 msgstr "Se connecter"
@@ -911,11 +926,11 @@ msgstr "Descendre"
 msgid "Move left"
 msgstr "À gauche"
 
+msgid "Move notes"
+msgstr "Déplacer les notes"
+
 msgid "Move right"
 msgstr "À droite"
-
-msgid "Move selected notes"
-msgstr "Déplacer les notes sélectionnées"
 
 msgid "Move up"
 msgstr "Monter"
@@ -954,8 +969,8 @@ msgstr "Suivant"
 msgid "No"
 msgstr "Non"
 
-msgid "No content."
-msgstr "Aucun contenu."
+msgid "No content"
+msgstr "Aucun contenu"
 
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
@@ -963,9 +978,6 @@ msgid ""
 msgstr ""
 "Aucune adresse email n'est configurée dans votre compte LDAP. Veuillez "
 "corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits."
-
-msgid "No further information"
-msgstr "Pas d'informations complémentaires"
 
 msgid "No result"
 msgstr "Aucun résultat"
@@ -978,6 +990,9 @@ msgstr "Aucun utilisateur dans ce groupe."
 
 msgid "No wall available."
 msgstr "Aucun mur disponible."
+
+msgid "Note"
+msgstr "Note"
 
 msgid "Note assignation"
 msgstr "Assignation de note"
@@ -1041,16 +1056,14 @@ msgstr "Autres groupes disponibles:"
 msgid "Password"
 msgstr "Mot de passe"
 
+msgid "Password reset"
+msgstr "Réinitialisation du mot de passe"
+
 msgid "Passwords must match"
 msgstr "Les mots de passe doivent correspondre"
 
-msgid "Please log in to change your preferences."
-msgstr "Veuillez vous loguer pour modifier vos préférences."
-
-#, php-format
-msgid "Please use the latest version of a recent browser like %s or %s."
-msgstr ""
-"Veuillez utiliser la dernière version d'un navigateur récent comme %s ou %s."
+msgid "Please log in to update your preferences"
+msgstr "Veuillez vous loguer pour modifier vos préférences"
 
 msgid "Please wait"
 msgstr "Veuillez patienter"
@@ -1061,8 +1074,8 @@ msgstr "Veuillez confirmer votre email:"
 msgid "Please, confirm your password:"
 msgstr "Veuillez confirmer votre mot de passe:"
 
-msgid "Please, select the type of action first."
-msgstr "Veuillez d'abord sélectionner le type d'action."
+msgid "Please, select the type of action first"
+msgstr "Veuillez d'abord sélectionner le type d'action"
 
 #, php-format
 msgid ""
@@ -1079,6 +1092,9 @@ msgstr "Politique de confidentialité"
 
 msgid "Progress:"
 msgstr "Progression:"
+
+msgid "Project page"
+msgstr "Page du projet"
 
 #, php-format
 msgid ""
@@ -1135,6 +1151,9 @@ msgstr "Réinitialisation"
 msgid "Reset deadline?"
 msgstr "Réinitialiser la date limite?"
 
+msgid "Rights"
+msgstr "Droits"
+
 msgid "Row name"
 msgstr "Nom de la ligne"
 
@@ -1180,13 +1199,6 @@ msgstr "Partage"
 msgid "Sharing type"
 msgstr "Type de partage"
 
-msgid ""
-"Sharing will be impossible, and you will be removed from all groups."
-"<br>Become invisible anyway?"
-msgstr ""
-"Il ne sera plus possible de partager, et vous serez retiré de tous les "
-"groupes.<br>Devenir invisible quand même?"
-
 msgid "Show external contents"
 msgstr "Afficher les contenus externes"
 
@@ -1199,19 +1211,20 @@ msgstr "Taille"
 msgid "Solid"
 msgstr "Continu"
 
-msgid "Some features are not available in this mode"
-msgstr "Certaines fonctionnalités ne sont pas disponibles dans ce mode"
-
-msgid "Some walls are no longer available."
-msgstr "Certains murs ne sont plus disponibles."
-
-msgid "Someone is editing a cell in the col/row you want to delete."
+msgid "Some features are not available when zoom is enabled"
 msgstr ""
-"Quelqu'un édite une cellule dans la colonne/ligne que vous voulez supprimer."
+"Certaines fonctionnalités ne sont pas disponibles quand le zoom est activé"
 
-msgid "Someone is editing a note in the col/row you want to delete."
+msgid "Some walls are no longer available"
+msgstr "Certains murs ne sont plus disponibles"
+
+msgid "Someone is editing a cell in the col/row you want to delete"
 msgstr ""
-"Quelqu'un édite une note dans la colonne/ligne que vous voulez supprimer."
+"Quelqu'un édite une cellule dans la colonne/ligne que vous voulez supprimer"
+
+msgid "Someone is editing a note in the col/row you want to delete"
+msgstr ""
+"Quelqu'un édite une note dans la colonne/ligne que vous voulez supprimer"
 
 msgid ""
 "Sorry, there is a compatibility issue with your browser when it comes to "
@@ -1241,8 +1254,11 @@ msgstr "Passer en mode liste"
 msgid "Switch to sticky notes mode"
 msgstr "Passer en mode post-its"
 
-msgid "System error. Please report it to the administrator."
-msgstr "Erreur système. Veuillez signaler le problème à l'administrateur."
+msgid "System"
+msgstr "Système"
+
+msgid "System error. Please report it to the administrator"
+msgstr "Erreur système. Veuillez signaler le problème à l'administrateur"
 
 msgid "Tags"
 msgstr "Étiquettes"
@@ -1251,42 +1267,36 @@ msgid "Tags:"
 msgstr "Étiquettes:"
 
 msgid ""
-"The account creation forms were filled out too quickly. Please reload this "
-"page and try again to verify that you are not a robot..."
+"The account creation form was completed too quickly. Please reload this page "
+"and try again to confirm that you are not a robot..."
 msgstr ""
-"Les formulaires de création de compte ont été remplis trop rapidement. "
-"Veuillez recharger cette page et recommencer afin de vérifier que vous "
-"n'êtes pas un robot."
+"Le formulaire de création de compte a été remplis trop rapidement. Veuillez "
+"recharger cette page et recommencer afin de vérifier que vous n'êtes pas un "
+"robot..."
 
 #, php-format
 msgid "The application will be upgraded from v%s1 to v%s2."
 msgstr "L'application sera mise à jour, de la v%s1 à la v%s2."
 
-msgid "The deadline for this note has been removed."
-msgstr "La date limite de cette note a été réinitialisée."
+msgid "The deadline for this note has been removed"
+msgstr "La date limite de cette note a été réinitialisée"
 
 #, php-format
-msgid "The email `%s` already exists."
-msgstr "L'email `%s` existe déjà."
+msgid "The email `%s` already exists"
+msgstr "L'email `%s` existe déjà"
 
-msgid "The entire column/row was deleted while you were editing the note."
-msgstr "La colonne/ligne a été supprimée pendant que vous éditiez la note."
+msgid "The entire column/row was deleted while you were editing the note"
+msgstr "La colonne/ligne a été supprimée pendant que vous éditiez la note"
 
-msgid "The file is already linked to the note."
-msgstr "Le fichier est déjà associé à la note."
+msgid "The file is already linked to the note"
+msgstr "Le fichier est déjà associé à la note"
 
-msgid "The file is no longer available for download."
-msgstr "Le fichier n'est plus disponible au téléchargement."
+msgid "The file is no longer available for download"
+msgstr "Le fichier n'est plus disponible au téléchargement"
 
-msgid "The file type was not recognized."
-msgstr "Le type du fichier n'a pas été reconnu."
-
-msgid ""
-"The file you are trying to import is not compatible with the current wopits "
-"version."
+msgid "The file to import is not compatible with the current wopits version"
 msgstr ""
-"Le fichier que vous essayez d'importer n'est pas compatible avec la version "
-"courante de wopits."
+"Le fichier à importer n'est pas compatible avec la version courante de wopits"
 
 #, php-format
 msgid "The following note has expired:"
@@ -1308,6 +1318,9 @@ msgstr ""
 "La grisaille du thème par défaut ne convient peut-être pas à votre humeur du "
 "jour!"
 
+msgid "The group already exists"
+msgstr "Ce groupe existe déjà"
+
 msgid "The group will also be available for all your other walls."
 msgstr "Ce groupe sera également disponible pour tous vos autres murs."
 
@@ -1316,22 +1329,25 @@ msgstr "Ce groupe ne sera disponible que pour le mur courant."
 
 #, php-format
 msgid ""
-"The image %s was not available! It has been removed from the note content"
+"The image %s was not available! It has been removed from the note content."
 msgstr ""
-"L'image %s n'était pas disponible! Elle a été retirée du contenu de la note"
+"L'image %s n'était pas disponible! Elle a été retirée du contenu de la note."
 
 #, php-format
-msgid "The login `%s` already exists."
-msgstr "Cet identifiant `%s` existe déjà."
+msgid "The login `%s` already exists"
+msgstr "Cet identifiant `%s` existe déjà"
 
-msgid "The minimum zoom has been reached."
-msgstr "Le zoom minimum a été atteint."
+msgid "The minimum zoom has been reached"
+msgstr "Le zoom minimum a été atteint"
 
 msgid "The new password:"
 msgstr "Le nouveau mot de passe:"
 
 msgid "The note has been deleted"
 msgstr "La note a été supprimée"
+
+msgid "The note has no attached file."
+msgstr "Cette note n'a pas de fichier attaché."
 
 #, php-format
 msgid "The note «%s» has expired."
@@ -1345,8 +1361,11 @@ msgstr "La note «%s» expirera dans %s jour(s)."
 msgid "The note «%s» will expire soon."
 msgstr "La note «%s» expirera bientôt."
 
-msgid "The row/column has been deleted."
-msgstr "La ligne/colonne a été supprimée."
+msgid "The relation already exists"
+msgstr "La relation existe déjà"
+
+msgid "The row/column has been deleted"
+msgstr "La ligne/colonne a été supprimée"
 
 #, php-format
 msgid "The size of a wall cannot be greater than %s"
@@ -1356,14 +1375,29 @@ msgstr "La taille d'un mur ne peut pas être supérieure à %s"
 msgid "The size of a wall cannot be less than %s"
 msgstr "La taille d'un mur ne peut pas être inférieure à %s"
 
-msgid "The user is already involved in this note."
-msgstr "L'utilisateur est déjà intervenant sur cette note."
+msgid "The title already exists"
+msgstr "Le titre existe déjà"
+
+msgid "The user is already involved in this note"
+msgstr "L'utilisateur est déjà intervenant sur cette note"
+
+msgid "The user is no longer available"
+msgstr "L'utilisateur n'est plus disponible"
 
 msgid "The wall has been successfully cloned"
 msgstr "Le mur a été cloné avec succès"
 
 msgid "The wall has been successfully imported"
 msgstr "Le mur a été importé avec succès"
+
+msgid "The wall has not yet been shared with other users"
+msgstr "Le mur n'a encore été partagé avec aucun utilisateur"
+
+msgid "The wall is not shared with any group."
+msgstr "Le mur n'est partagé avec aucun groupe."
+
+msgid "The wall is shared"
+msgstr "Le mur est partagé"
 
 msgid "The wall is shared with the following groups:"
 msgstr "Ce mur est partagé avec les groupes suivants:"
@@ -1373,9 +1407,6 @@ msgstr "Thème"
 
 msgid "This external content is filtered"
 msgstr "Ce contenu externe est filtré"
-
-msgid "This group already exists."
-msgstr "Ce groupe existe déjà."
 
 msgid ""
 "This group will no longer be available for the current wall or for your "
@@ -1392,42 +1423,24 @@ msgstr ""
 "permettant d'utiliser simplement wopits sans avoir à l'installer vous-même "
 "sur un serveur."
 
-msgid "This item has been deleted."
-msgstr "Cet élément a été supprimé."
-
-msgid "This item is locked by another user."
-msgstr "Cet élément est verrouillé par un autre utilisateur."
-
 msgid "This note contains external images or videos."
 msgstr "Cette note contient des images ou des vidéos externes."
 
-msgid "This note has been assigned to you."
-msgstr "Cette note vous a été assignée."
+msgid "This note has been assigned to you"
+msgstr "Cette note vous a été assignée"
 
-msgid "This note has expired."
-msgstr "Cette note a expiré."
+msgid "This note has expired"
+msgstr "Cette note a expiré"
 
-msgid "This note has no attached files."
-msgstr "Cette note n'a pas de fichiers attachés."
-
-msgid "This note has no users involved."
-msgstr "Cette note n'a pas d'intervenants."
+msgid "This note has no user involved."
+msgstr "Cette note n'a pas d'intervenant."
 
 #, php-format
-msgid "This note will expire in about %s day(s)."
-msgstr "Cette note expirera dans environ %s jour(s)."
+msgid "This note will expire in about %s day(s)"
+msgstr "Cette note expirera dans environ %s jour(s)"
 
-msgid "This note will expire soon."
-msgstr "Cette note expirera bientôt."
-
-msgid "This relation already exists."
-msgstr "Cette relation existe déjà."
-
-msgid "This title already exists."
-msgstr "Ce titre existe déjà."
-
-msgid "This user is no longer available."
-msgstr "Cet utilisateur n'est plus disponible."
+msgid "This note will expire soon"
+msgstr "Cette note expirera bientôt"
 
 msgid ""
 "This user will lose their access for all walls shared with this group."
@@ -1438,15 +1451,6 @@ msgstr ""
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr "Cet utilisateur perdra l'accès au mur.<br>Retirer quand même?"
-
-msgid "This wall has not been shared with any user yet."
-msgstr "Ce mur n'a encore été partagé avec aucun utilisateur."
-
-msgid "This wall is not shared with any group."
-msgstr "Ce mur n'est partagé avec aucun groupe."
-
-msgid "This wall is shared"
-msgstr "Ce mur est partagé"
 
 msgid "Timezone"
 msgstr "Fuseau horaire"
@@ -1479,15 +1483,18 @@ msgstr "Type"
 msgid "Unable to retrieve your account information"
 msgstr "Impossible de récupérer les informations de votre compte"
 
-msgid ""
-"Unknown error!<br>You are about to be disconnected...<br>Sorry for the "
-"inconvenience."
-msgstr ""
-"Erreur inconnue!<br>Vous allez être déconnecté...<br>Désolé pour la gêne "
-"occasionnée."
-
 msgid "Unknown error.<br>Please try again later."
 msgstr "Erreur inconnue.<br>Veuillez réessayer plus tard."
+
+msgid ""
+"Unknown error.<br>You are about to be disconnected...<br>Sorry for the "
+"inconvenience."
+msgstr ""
+"Erreur inconnue.<br>Vous allez être déconnecté...<br>Désolé pour la gêne "
+"occasionnée."
+
+msgid "Unknown file type"
+msgstr "Type de fichier inconnu"
 
 msgid ""
 "Unlike other applications offering you a free service, you are not "
@@ -1514,8 +1521,8 @@ msgstr "Mise à jour terminée"
 msgid "Upgrade done. Thank you for using wopits!"
 msgstr "Mise à jour terminée. Merci d'utiliser wopits!"
 
-msgid "Upload completed."
-msgstr "Dépôt terminé."
+msgid "Upload completed"
+msgstr "Dépôt terminé"
 
 msgid "Upload has been canceled"
 msgstr "Le dépôt a été abandonné"
@@ -1594,12 +1601,15 @@ msgstr "Largeur/Hauteur"
 msgid "With grid"
 msgstr "Avec grille"
 
-msgid "Wrong current password."
-msgstr "Mauvais mot de passe actuel."
+msgid "Would you like to load all external content for the current wall?"
+msgstr "Voulez-vous charger tous les contenus externes pour le mur courant?"
+
+msgid "Wrong current password"
+msgstr "Mauvais mot de passe actuel"
 
 #, php-format
-msgid "Wrong file type for %s."
-msgstr "Mauvais type de fichier pour %s."
+msgid "Wrong file type for %s"
+msgstr "Mauvais type de fichier pour %s"
 
 msgid "Yes"
 msgstr "Oui"
@@ -1636,17 +1646,17 @@ msgstr "Vous pouvez le changer à tout moment dans vos %sRéglages%s"
 msgid "You cannot manage any of the existing groups."
 msgstr "Vous ne pouvez gérer aucun des groupes existants."
 
-msgid "You must have admin access to perform this action."
-msgstr "Vous devez avoir un accès administrateur pour effectuer cette action."
+msgid "You must have admin access to perform this action"
+msgstr "Vous devez avoir un accès administrateur pour effectuer cette action"
 
-msgid "You must have write access to perform this action."
-msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
+msgid "You must have write access to perform this action"
+msgstr "Vous devez avoir un accès en écriture pour effectuer cette action"
 
-msgid "You need write access to perform this action."
-msgstr "Vous devez avoir un accès en écriture pour effectuer cette action."
+msgid "You need write access to perform this action"
+msgstr "Vous devez avoir un accès en écriture pour effectuer cette action"
 
-msgid "You were mentioned in a comment to this note."
-msgstr "Vous avez été mentionné dans un commentaire sur cette note."
+msgid "You were mentioned in a comment to this note"
+msgstr "Vous avez été mentionné dans un commentaire sur cette note"
 
 msgid "You will lose your access to the wall.<br>Reject anyway?"
 msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
@@ -1655,18 +1665,18 @@ msgstr "Vous perdrez votre accès au mur.<br>Rejeter quand même?"
 msgid "Your account «%s» has been created!"
 msgstr "Votre compte «%s» a bien été créé!"
 
-msgid "Your connection attempt failed."
-msgstr "Votre tentative de connexion a échoué."
+msgid "Your connection attempt failed"
+msgstr "Votre tentative de connexion a échoué"
 
 msgid "Your current password:"
 msgstr "Votre mot de passe actuel:"
 
 msgid ""
 "Your new password has been sent. Please, check your spam box if you don't "
-"receive it"
+"receive it."
 msgstr ""
 "Votre nouveau mot de passe a été envoyé. Veuillez vérifier votre boîte de "
-"spams si jamais vous ne le recevez pas"
+"spams si jamais vous ne le recevez pas."
 
 msgid "Your new password will be sent to the address below:"
 msgstr "Votre nouveau mot de passe sera envoyé à l'adresse ci-dessous:"
@@ -1701,12 +1711,6 @@ msgstr "Zoom +"
 msgid "Zoom -"
 msgstr "Zoom -"
 
-msgid "Zoom disabled"
-msgstr "Zoom désactivé"
-
-msgid "Zoom enabled"
-msgstr "Zoom activé"
-
 msgid "created by"
 msgstr "créé par"
 
@@ -1718,10 +1722,6 @@ msgstr "jour(s) avant"
 
 msgid "deleted"
 msgstr "supprimé"
-
-#, php-format
-msgid "developed by %s"
-msgstr "développé par %s"
 
 msgid "email"
 msgstr "email"
@@ -1776,10 +1776,9 @@ msgid "wall name"
 msgstr "nom du mur"
 
 msgid ""
-"wopits is a multilingual application through which you can manage all kinds "
-"of projects by simply using sticky notes to share and collaborate with other "
-"users simultaneously."
+"wopits is a multilingual application that can manage all kinds of projects "
+"using sticky notes to share and collaborate with other users simultaneously."
 msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
-"toutes sortes de projets en utilisant simplement des post-its pour les "
-"partager et collaborer simultanément avec d'autres utilisateurs."
+"toutes sortes de projets en utilisant des post-its pour les partager et "
+"collaborer simultanément avec d'autres utilisateurs."
