@@ -113,11 +113,9 @@
     },
 
     // METHOD setFocus ()
-    setFocus (delay = 0)
+    setFocus ()
     {
-      if (H.haveMouse ())
-        setTimeout (
-          ()=> this.element[0].querySelector("[autofocus]").focus (), delay);
+      H.setAutofocus (this.element[0]);
     },
 
     // METHOD toggle ()
@@ -150,7 +148,7 @@
 
         $chat.css ({bottom: "15px", left: "5px", display: "table"});
 
-        this.setFocus (150);
+        this.setFocus ();
 
         H.request_ws (
           "PUT",

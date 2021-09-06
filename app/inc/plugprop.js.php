@@ -176,9 +176,9 @@
     // METHOD open ()
     open (postitPlugin, plug)
     {
-      const $ra = this.element;
+      const ra = this.element[0];
 
-      H.openModal ({item: $ra});
+      H.openModal ({item: $(ra)});
 
       _plug = plug;
       _postitPlugin = postitPlugin;
@@ -187,10 +187,10 @@
         {
           this.createSample ();
 
-          H.setColorpickerColor ($ra.find(".cp"), _plug.obj.color);
-          $ra.find(`input[name="size"]`).val (_plug.obj.line_size);
-          $ra.find(`input[value="${_plug.obj.path}"]`)[0].checked = true;
-          $ra.find(`input[value="${_plug.obj.line_type}"]`)[0].checked = true;
+          H.setColorpickerColor ($(ra.querySelector(".cp")), _plug.obj.color);
+          ra.querySelector(`input[name="size"]`).value = _plug.obj.line_size;
+          ra.querySelector(`input[value="${_plug.obj.path}"]`).checked = true;
+          ra.querySelector(`input[value="${_plug.obj.line_type}"]`).checked = true;
 
         }, 350);
     },

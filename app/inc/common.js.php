@@ -930,14 +930,10 @@ class WHelper
   // METHOD setAutofocus ()
   setAutofocus (el)
   {
-    // Set focus on first autofocus field if not touch device
-    if (this.haveMouse ())
-    {
-      let tmp;
+    let tmp;
 
-      setTimeout (() =>
-        (tmp = el.querySelector("[autofocus]")) && tmp.focus (), 350);
-    }
+    setTimeout (() =>
+      (tmp = el.querySelector("[autofocus]")) && tmp.focus (), 350);
   }
 
   // METHOD testImage ()
@@ -1366,7 +1362,7 @@ class WHelper
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
-    const bp = bootstrap.Popover.getOrCreateInstance (args.item[0], {
+    const bp = new bootstrap.Popover (args.item[0], {
       html: true,
       sanitize: false,
       title: args.title,
@@ -1427,7 +1423,7 @@ class WHelper
   resizeModal ($modal, w)
   {
     const modal = $modal[0],
-          md = modal.querySelector(".modal-dialog"),
+          md = modal.querySelector (".modal-dialog"),
           wW = $(window).width (),
           cW = Number (modal.dataset.customwidth)||0,
           oW = w;
@@ -1461,9 +1457,7 @@ class WHelper
   // METHOD openModal ()
   openModal (args)
   {
-    const m = args.item[0],
-          md = m.querySelector(".modal-dialog"),
-          bm = bootstrap.Modal.getOrCreateInstance (m, {backdrop: true});
+    const m = args.item[0];
 
     // Modals with transition effect
     if (!args.noeffect)
@@ -1478,12 +1472,14 @@ class WHelper
     if (args.customClass)
       m.classList.add (args.customClass);
 
-    bm.show ();
+    bootstrap.Modal.getOrCreateInstance (m, {backdrop: true}).show ();
 
     if (args.width)
       this.resizeModal (args.item, args.width);
     else
     {
+      const md = m.querySelector (".modal-dialog");
+
       md.style.width = "";
       md.style.minWidth = "";
       md.style.maxWidth = "";
@@ -1586,14 +1582,20 @@ class WHelper
 
     const t = args.type;
 
-    // Blur TinyMCE editor to hide virtual keyboard
-    if (!this.haveMouse ())
+    // Blurs
+    setTimeout (()=>
     {
-      const ef = document.getElementById ("postitUpdatePopupBody_ifr");
+      const $ef = $("#postitUpdatePopupBody_ifr");
 
-      if (ef)
-        ef.blur ();
-    }
+      // TinyEditor
+      if ($ef.is (":visible"))
+        $ef.blur ();
+
+      // Forms
+      document.querySelectorAll("input:focus,textarea:focus")
+        .forEach (el=> el.blur ());
+
+    }, 150);
 
     // Close opened alert with the same content
     document.querySelectorAll("#msg-container .toast").forEach (

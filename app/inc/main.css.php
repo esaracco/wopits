@@ -485,6 +485,7 @@ button.close {
   font-style:italic;
   font-size:.6rem;
   color:#6f6f6f;
+  white-space:nowrap;
 }
 
 .pcomm-popover .msg-date,

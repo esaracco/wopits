@@ -18,77 +18,77 @@
 
 ?>
 
+  let _originalObject;
   const _defaultClassColor =
-          "color-<?=array_keys(WPT_MODULES['cpick']['items'])[0]?>";
-  let _originalObject,
-      _plugRabbit = {
-        line: null,
-        // EVENT mousedown on destination postit for relation creation
-        mousedownEvent: function (e)
-          {
-            const from = S.get ("link-from"),
-                  $start = from.obj,
-                  $end = $(e.target).closest (".postit");
+          "color-<?=array_keys(WPT_MODULES['cpick']['items'])[0]?>",
+        _plugRabbit = {
+          line: null,
+          // EVENT mousedown on destination postit for relation creation
+          mousedownEvent: function (e)
+            {
+              const from = S.get ("link-from"),
+                    $start = from.obj,
+                    $end = $(e.target).closest (".postit");
 
-            e.stopImmediatePropagation ();
-            e.preventDefault ();
+              e.stopImmediatePropagation ();
+              e.preventDefault ();
 
-            if (!$end.length)
-              return _cancelPlugAction ();
+              if (!$end.length)
+                return _cancelPlugAction ();
 
-            const end0 = $end[0],
-                  endPlugin = $end.postit ("getClass"),
-                  endId = endPlugin.settings.id;
+              const end0 = $end[0],
+                    endPlugin = $end.postit ("getClass"),
+                    endId = endPlugin.settings.id;
 
-              if (from.id != endId && !endPlugin.plugExists (from.id))
-              {
-                endPlugin.edit ({plugend: true}, ()=>
-                  {
-                    const start0 = $start[0];
+                if (from.id != endId && !endPlugin.plugExists (from.id))
+                {
+                  endPlugin.edit ({plugend: true}, ()=>
+                    {
+                      const start0 = $start[0];
 
-                    $start.postit ("addPlug", {
-                      label: {name: "..."},
-                      startId: from.id,
-                      endId: endId,
-                      obj: endPlugin.getPlugTemplate ({
-                        hide: true,
-                        label: "...",
-                        start: start0,
-                        end: end0
-                      })
-                    }, !!S.get("zoom-level"));
+                      $start.postit ("addPlug", {
+                        label: {name: "..."},
+                        startId: from.id,
+                        endId: endId,
+                        obj: endPlugin.getPlugTemplate ({
+                          hide: true,
+                          label: "...",
+                          start: start0,
+                          end: end0
+                        })
+                      }, !!S.get("zoom-level"));
 
-                    _cancelPlugAction ();
+                      _cancelPlugAction ();
+                    });
+                }
+                else if (from.id != endId)
+                {
+                  _cancelPlugAction ();
+                  H.displayMsg ({
+                    title: `<?=_("Note")?>`,
+                    type: "warning",
+                    msg: `<?=_("The relation already exists")?>`
                   });
-              }
-              else if (from.id != endId)
-              {
-                _cancelPlugAction ();
-                H.displayMsg ({
-                  title: `<?=_("Note")?>`,
-                  type: "warning",
-                  msg: `<?=_("The relation already exists")?>`
-                });
-              }
-              else
-                _cancelPlugAction ();
-          },
-        // EVENT mousemouve to track mouse pointer during relation creation
-        mousemoveEvent: (e) =>
-          {
-            const rabbit = document.getElementById ("plug-rabbit");
+                }
+                else
+                  _cancelPlugAction ();
+            },
+          // EVENT mousemouve to track mouse pointer during relation creation
+          mousemoveEvent: (e) =>
+            {
+              const rabbit = document.getElementById ("plug-rabbit");
 
-            rabbit.style.left = `${e.clientX+5}px`;
-            rabbit.style.top = `${e.clientY-10}px`;
+              rabbit.style.left = `${e.clientX+5}px`;
+              rabbit.style.top = `${e.clientY-10}px`;
 
-            _plugRabbit.line.position ();
-          },
-        escapeEvent: (e) =>
-          {
-            if (e.which == 27)
-              _cancelPlugAction ();
-          }
-      };
+              _plugRabbit.line.position ();
+            },
+          escapeEvent: (e) =>
+            {
+              if (e.which == 27)
+                _cancelPlugAction ();
+            }
+        };
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
@@ -196,12 +196,10 @@
     // METHOD setPosition ()
     setPosition (pos)
     {
-      const m = this.$menu[0];
-
       if (pos == "left")
-        m.classList.replace ("right", "left");
+        this.$menu[0].classList.replace ("right", "left");
       else
-        m.classList.replace ("left", "right");
+        this.$menu[0].classList.replace ("left", "right");
     }
 
     // METHOD getWidth ()
@@ -254,6 +252,7 @@
                     postit,
                     $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo("body")[0],
                     {
+                      path: "<?=WS_PLUG_DEFAULTS['linePath']?>",
                       size: 3,
                       color: "#9b9c9c",
                       dash: true,
@@ -363,22 +362,15 @@
               return false;
             }
 
-// TODO - 1 - Hide plugs instead of moving them with postits (performance
-//            issue with some touch devices)
+            // Refresh relations position
             plugin.repositionPlugs ();
           },
           start: function(e, ui)
             {
-              const p = $postit.position ();
-
-// TODO - 1 - Hide plugs instead of moving them with postits (performance
-//            issue with some touch devices)
-//              plugin.hidePlugs ();
-  
               S.set ("revertData", {
                 revert: false,
-                top: p.top,
-                left: p.left
+                top: postit.offsetTop,
+                left: postit.offsetLeft
               });
   
               plugin.edit ({ignoreResize: true}, null,
@@ -492,20 +484,17 @@
             shared: $wall.wall ("isShared")
           };
 
-          // Init note attachments
-          settings.plugins.patt =
-            $postit.find(".patt").patt (Object.assign (
-              _args, {count: settings.attachmentscount}));
+          // Attachments
+          _args.count = settings.attachmentscount;
+          settings.plugins.patt = $postit.find(".patt").patt (_args);
 
-          // Init note workers
-          settings.plugins.pwork =
-            $postit.find(".pwork").pwork (Object.assign (
-              _args, {count: settings.workerscount}));
+          // Workers
+          _args.count = settings.workerscount,
+          settings.plugins.pwork = $postit.find(".pwork").pwork (_args);
 
-          // Init note comments
-          settings.plugins.pcomm =
-            $postit.find(".pcomm").pcomm (Object.assign (
-              _args, {count: settings.commentscount}));
+          // Comments
+          _args.count = settings.commentscount;
+          settings.plugins.pcomm = $postit.find(".pcomm").pcomm (_args);
 
         }, 0);
 
@@ -613,7 +602,7 @@
       const plugin = this,
             postit = plugin.element[0],
             progress = parseInt (postit.dataset.progress||0),
-            title = this.element.find(".postit-header .title").text (),
+            title = plugin.element.find(".postit-header .title").text (),
             content = postit.querySelector(".postit-edit").innerHTML||"";
 
       if (plugin.canWrite ())
@@ -714,6 +703,7 @@
 
           // Deadline
           case "deadline":
+          case "postit":
 
             title = `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`;
 
@@ -1058,7 +1048,6 @@
             //FIXME Factorization
             related = [
               this.getPlugTemplate ({
-                hide: true,
                 line_size: ll.line_size,
                 line_path: ll.path,
                 line_color: ll.color,
@@ -1068,7 +1057,6 @@
                 endPlug: "behind"
               }),
               this.getPlugTemplate ({
-                hide: true,
                 line_size: ll.line_size,
                 line_path: ll.path,
                 line_color: ll.color,
@@ -1079,7 +1067,6 @@
             ];
 
       plug.customPos = true;
-      related.forEach (p => p.show ());
 
       return related;
     },
@@ -1122,7 +1109,7 @@
         else
         {
           if (canWrite)
-            pl.querySelector("li[data-action='position-auto']")
+            pl.querySelector(`li[data-action="position-auto"]`)
               .style.display = "none";
 
           plug.related = [];
@@ -1140,14 +1127,13 @@
           $label.draggable ({
             distance: 10,
             containment: S.getCurrent("wall").find ("tbody.wpt"),
+            scroll: false,
             start: function (e, ui)
             {
-              const p = plug.labelObj.position ();
-
               S.set ("revertData", {
                 revert: false,
-                top: p.top,
-                left: p.left
+                top: plug.labelObj[0].offsetTop,
+                left: plug.labelObj[0].offsetLeft
               });
 
               $start.postit ("edit", {},
@@ -1199,7 +1185,7 @@
                 $label[0].dataset.pos = 1;
 
                 pl.querySelector("i.fa-thumbtack").style.display = "block";
-                pl.querySelector("li[data-action='position-auto']")
+                pl.querySelector(`li[data-action="position-auto"]`)
                   .style.display = "none";
 
                 pl.dataset.origtop = Math.trunc ((lbPos.top-wPos.top)/z);
@@ -1308,8 +1294,6 @@
 
       const postitId = this.settings.id;
 
-      this.element.find(".postit-menu [data-action='plug']").hide ();
-
       this.settings.plugs.forEach (p =>
         {
           if (!ignoreDisplayMode)
@@ -1336,8 +1320,6 @@
       const postitId = this.settings.id,
             wPos = this.settings.wall[0].getBoundingClientRect ();
 
-      this.element.find(".postit-menu [data-action='plug']").show ();
-
       this.settings.plugs.forEach (p =>
         {
           if (!ignoreDisplayMode)
@@ -1360,7 +1342,7 @@
               this.repositionPlugLabel (
                 pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-              p.related.forEach (_p => _p.show().position());
+              p.related.forEach (_p => _p.show("none").position ());
             }
           }
         });
@@ -1379,7 +1361,7 @@
           if (pl.dataset.pos)
           {
             this.repositionPlugLabel (
-              pl, pl.dataset.origtop, pl.dataset.origleft,  wPos);
+              pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
             p.related.forEach (_p => _p.position ());
           }
@@ -1422,13 +1404,13 @@
               label: (p.label == "...") ?
                        "" : pl.querySelector("div span").innerText,
               line_type:
-                (p.obj.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
+                (p.obj.line_type != `<?=WS_PLUG_DEFAULTS['lineType']?>`) ?
                    p.obj.line_type : undefined,
               line_size:
                 (p.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
                    parseInt (p.obj.line_size) : undefined,
               line_path:
-                (p.obj.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
+                (p.obj.path != `<?=WS_PLUG_DEFAULTS['linePath']?>`) ?
                    p.obj.path : undefined,
               line_color:
                 (p.obj.color != defaultLineColor) ?
@@ -1899,7 +1881,7 @@
     setCurrent ()
     {
       S.reset ("postit");
-      this.element[0].classList.add ("current")
+      this.element[0].classList.add ("current");
     },
 
     // METHOD unsetCurrent ()
