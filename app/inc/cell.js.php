@@ -483,8 +483,7 @@
         wall: settings.wall,
         wallId: settings.wallId,
         cell: $cell,
-        cellId: settings.id,
-        plugsContainer: settings.plugsContainer
+        cellId: settings.id
       }));
 
       // Add postit on cell

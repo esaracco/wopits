@@ -68,10 +68,7 @@
         access: access
       });
 
-      // Create plugs container
-      settings.plugsContainer =
-        $(`<div id="plugs-${wallId}" data-access="${access}"></div>`)
-          .appendTo ("body");
+      settings.plugs = [];
 
       if (settings.restoring)
         wall.dataset.restoring = 1;
@@ -532,21 +529,20 @@
     {
       this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
         $(p).postit ("removePlugs", true));
-
-      this.settings.plugsContainer.remove ();
     },
 
     // METHOD refreshPostitsPlugs ()
-    refreshPostitsPlugs (plugs, partial, applyZoom)
+    refreshPostitsPlugs (partial)
     {
       const $f = S.getCurrent ("filters");
       if ($f.length && $f[0].classList.contains ("plugs-hidden"))
         return;
 
-      const wall = this.element[0];
+      const wall = this.element[0],
+            applyZoom = !!S.get("zoom-level");
       let idsNew = {};
 
-      (plugs||[]).forEach (plug =>
+      (this.settings.plugs||[]).forEach (plug =>
         {
           const startId = plug.item_start,
                 start0 = wall.querySelector (
@@ -679,6 +675,8 @@
           plugin.setDescription (d.description);
         };
 
+      this.settings.plugs = d.postits_plugs;
+
       // Partial wall update
       if (d.partial)
       {
@@ -763,7 +761,6 @@
               colsCount = d.headers.cols.length,
               postitsIds = {},
               rows = [],
-              plugsContainer = plugin.settings.plugsContainer,
               showHeaders = plugin.settings.displayheaders;
 
         _refreshing = true;
@@ -880,8 +877,7 @@
                 usersettings:
                   plugin.settings.usersettings[`cell-${cellId}`]||{},
                 wall: $wall,
-                wallId: wallId,
-                plugsContainer: plugsContainer
+                wallId: wallId
               });
             }
             else
@@ -934,9 +930,7 @@
         setTimeout (() =>
           {
             // Refresh postits relations
-            plugin.refreshPostitsPlugs (
-              d.postits_plugs, d.partial && d.partial != "plugs",
-              !!S.get("zoom-level"));
+            plugin.refreshPostitsPlugs (d.partial && d.partial != "plugs");
           }, 0);
       else
         plugin.repositionPostitsPlugs ();
@@ -1156,8 +1150,7 @@
             access: plugin.settings.access,
             usersettings: plugin.settings.usersettings[`cell-${cellId}`]||{},
             wall: $wall,
-            wallId: wallId,
-            plugsContainer: plugin.settings.plugsContainer
+            wallId: wallId
           });
         });
     },

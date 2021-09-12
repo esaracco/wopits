@@ -22,7 +22,7 @@ $(function()
   
         H.fixMenuHeight ();
         H.fixMainHeight ();
-  
+
         if ($wall.length)
         {
           // Refresh relations position
@@ -166,8 +166,7 @@ $(function()
       if (S.get ("zoom-level"))
         S.getCurrent("wall").wall ("zoom", {type: "normal", "noalert": true});
 
-      document.querySelectorAll(".walls table.wall").forEach (el=>
-        $(el).wall ("hidePostitsPlugs"));
+      S.getCurrent("wall").wall ("removePostitsPlugs", false);
     });
 
   // EVENT "shown" on walls tabs
@@ -224,10 +223,6 @@ $(function()
         $wall.wall ("refresh");
         $wall.wall ("displayExternalRef");
         $wall.wall ("displayHeaders");
-
-        if (!($filters[0].classList.contains ("plugs-hidden") &&
-              $filters.is (":visible")))
-          $wall.wall ("showPostitsPlugs");
       }
 
       $wall.wall ("menu", {from: "wall", type: "have-wall"});

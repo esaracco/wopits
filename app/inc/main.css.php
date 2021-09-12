@@ -298,7 +298,6 @@ i.settings {
 }
 
 .list-group-item .close {
-  margin-top:-5px;
   padding:0;
 }
 
@@ -314,8 +313,9 @@ button.close {
 
 .nav-tabs.walls button.close {
   display:none;
-  margin-top:-17px;
-  margin-right:-22px;
+  margin-top:-19px;
+  margin-right:-15px;
+  padding:0;
 }
 
 .nav-tabs.walls > a {
@@ -744,6 +744,11 @@ select.timezone {
 #usearchPopup .list-group-item .item-infos {
   margin-top:-5px;
   margin-left:1px;
+}
+
+
+#wallUsersviewPopup .list-group-item .item-infos {
+  margin-top:-5px;
 }
 
 .list-group-item .item-infos span:not(:last-child):after {

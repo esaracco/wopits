@@ -118,6 +118,16 @@
       return maxW ? maxW + 5 : 0;
     };
 
+  // METHOD _deleteRelatedPlugs ()
+  const _deleteRelatedPlugs = (plug)=>
+    {
+      plug.related.forEach (_r => _r.remove ());
+
+      plug.related = [];
+      plug.customPos = false;
+    };
+
+
   // METHOD _removePlug ()
   const _removePlug = (plug, toDefrag)=>
     {
@@ -125,14 +135,11 @@
       toDefrag[plug.endId] = plug.obj.end;
 
       // Remove template line
-      document.body.appendChild (plug.obj.dom);
       plug.obj.remove ();
       plug.obj = null;
 
       // Remove related lines
-      plug.related.forEach (r => r.remove ());
-      plug.related = [];
-      plug.customPos = false;
+      _deleteRelatedPlugs (plug);
 
       // Remove label
       plug.labelObj.remove ();
@@ -820,7 +827,6 @@
                })
              });
 
-      ll.dom = document.querySelector (".leader-line:last-child");
       ll.line_size = size;
       ll.line_type = args.line_type||"<?=WS_PLUG_DEFAULTS['lineType']?>";
       ll.customCol = args.line_color;
@@ -846,7 +852,7 @@
           p.obj.size = size;
 
           if (p.customPos)
-            p.related.forEach (_p => _p.setOptions ({
+            p.related.forEach (_r => _r.setOptions ({
               startSocketGravity: (reset) ? "auto" : gr,
               endSocketGravity: (reset) ? "auto" : gr,
               size: size
@@ -867,7 +873,7 @@
     applyThemeToPlugs (color)
     {
       // INTERNAL FUNCTION __apply ()
-      const __apply = (p) => p.setOptions ({
+      const __apply = (r) => r.setOptions ({
               dropShadow: this.getPlugDropShadowTemplate (color),
               color: color
             });
@@ -879,7 +885,7 @@
             __apply (p.obj);
 
             if (p.customPos)
-              p.related.forEach (_p => __apply (_p));
+              p.related.forEach (_r => __apply (_r));
           }
         });
     },
@@ -976,11 +982,11 @@
           this.applyPlugLineType (plug.obj);
 
           if (plug.customPos)
-            plug.related.forEach (p =>
+            plug.related.forEach (_r =>
               {
-                p.setOptions (props);
-                p.line_type = lineType;
-                this.applyPlugLineType (p);
+                _r.setOptions (props);
+                _r.line_type = lineType;
+                this.applyPlugLineType (_r);
               });
 
           break;
@@ -1031,9 +1037,7 @@
         else if (p.customPos)
         {
           this.resetPlugLabelPosition (pl);
-          p.related.forEach (r => r.remove ());
-          p.related = [];
-          p.customPos = false;
+          _deleteRelatedPlugs (p);
           p.obj.show ();
         }
       }
@@ -1045,23 +1049,23 @@
     createRelatedPlugs (plug)
     {
       const ll = plug.obj,
-            //FIXME Factorization
-            related = [
-              this.getPlugTemplate ({
+            pl = plug.labelObj[0],
+            obj = {
                 line_size: ll.line_size,
                 line_path: ll.path,
                 line_color: ll.color,
-                line_type: ll.line_type,
+                line_type: ll.line_type
+            },
+            related = [
+              this.getPlugTemplate ({
+                ...obj,
                 start: ll.start,
-                end: plug.labelObj[0],
+                end: pl,
                 endPlug: "behind"
               }),
               this.getPlugTemplate ({
-                line_size: ll.line_size,
-                line_path: ll.path,
-                line_color: ll.color,
-                line_type: ll.line_type,
-                start: plug.labelObj[0],
+                ...obj,
+                start: pl,
                 end: ll.end
               })
             ];
@@ -1075,24 +1079,19 @@
     addPlugLabel (plug, svg, applyZoom)
     {
       const plugin = this,
-            $div = plugin.settings.plugsContainer,
             wPos = this.settings.wall[0].getBoundingClientRect (),
             canWrite = this.canWrite ();
 
-      if (svg)
-        $div[0].appendChild (svg);
-      else
-        svg = $div[0].querySelector (`#_${plug.startId}-${plug.endId}`);
+      svg = document.querySelector (`#_${plug.startId}-${plug.endId}`);
 
-      const text = svg.querySelector ("text"),
-            pos = plug.label.top ?
+      const pos = plug.label.top ?
               {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
-              text.getBoundingClientRect (),
+              svg.querySelector("text").getBoundingClientRect (),
             $start = $(plug.obj.start),
             menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
             $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
 
-        plug.labelObj = $label.appendTo ($div);
+        plug.labelObj = $label.appendTo ("body");
 
         const pl = plug.labelObj[0];
 
@@ -1157,7 +1156,7 @@
                 return false;
               }
 
-              plug.related.forEach (p => p.position ());
+              plug.related.forEach (_r => _r.position ());
             },
             stop: function (e, ui)
             {
@@ -1308,7 +1307,7 @@
           if (!p.customPos)
             p.obj.hide ("none");
           else
-            p.related.forEach (_p => _p.hide ("none"));
+            p.related.forEach (_r => _r.hide ("none"));
         });
     },
 
@@ -1342,7 +1341,7 @@
               this.repositionPlugLabel (
                 pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-              p.related.forEach (_p => _p.show("none").position ());
+              p.related.forEach (_r => _r.show("none").position ());
             }
           }
         });
@@ -1351,8 +1350,7 @@
     // METHOD repositionPlugs ()
     repositionPlugs ()
     {
-      const div = this.settings.plugsContainer[0],
-            wPos = this.settings.wall[0].getBoundingClientRect ();
+      const wPos = this.settings.wall[0].getBoundingClientRect ();
 
       this.settings.plugs.forEach (p =>
         {
@@ -1363,13 +1361,13 @@
             this.repositionPlugLabel (
               pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-            p.related.forEach (_p => _p.position ());
+            p.related.forEach (_r => _r.position ());
           }
           else
           {
             p.obj.position ();
 
-            const pos = div.querySelector (`#_${p.startId}-${p.endId} text`)
+            const pos = document.querySelector(`#_${p.startId}-${p.endId} text`)
                           .getBoundingClientRect ();
 
             pl.style.top = `${pos.top}px`;
@@ -2519,9 +2517,7 @@
                   {
                     const p = startPlugin.getPlugById (endId);
 
-                    p.related.forEach (_p => _p.remove ());
-                    p.related = [];
-                    p.customPos = false;
+                    _deleteRelatedPlugs (p);
                     p.obj.show ();
 
                     startPlugin.resetPlugLabelPosition ($label[0]);
@@ -2610,7 +2606,7 @@
                 },
                 null,
                 __error_cb);
-          }).appendTo("body");
+          }).appendTo ("body");
 
         // EVENT hide.bs.modal on postit popup
         $("#postitUpdatePopup").on("hide.bs.modal",
