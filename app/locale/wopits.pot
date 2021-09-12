@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-08-25 16:00+0200\n"
+        "POT-Creation-Date: 2021-09-12 06:12+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,9 @@ msgid   "<kbd>ctrl+click</kbd> on the destination cell to move the selected note
 msgstr  ""
 
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-broom fa-fw'></i>Notes</b> Optimization of  relations management.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, debugging and optimization.</p>"
