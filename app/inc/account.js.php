@@ -42,9 +42,10 @@
           .addEventListener ("click",
             (e)=> bootstrap.Modal.getInstance($account[0]).hide ())
 
-      // EVENT "click" on "delete" button
-      account.querySelector(`[data-action="delete-account"]`)
-        .addEventListener ("click", (e)=>
+      // EVENT "click" on "delete" button (only if no LDAP mode)
+      const deleteBtn = account.querySelector(`[data-action="delete-account"]`);
+      if (deleteBtn)
+        deleteBtn.addEventListener ("click", (e)=>
         {
           H.openConfirmPopup ({
             icon: "sad-tear",
