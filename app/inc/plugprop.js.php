@@ -24,78 +24,58 @@
     init ()
     {
       const plugin = this,
-            $ra = plugin.element,
+            ra = plugin.element[0],
             ww = $(window).width ();
 
-      // EVENT hidden.bs.modal on popup
-      $ra.on("hidden.bs.modal", function ()
+      // EVENT "hidden.bs.modal" plug's settings popup
+      ra.addEventListener ("hidden.bs.modal", (e)=>
         {
-          $(this).find(".modal-body").off ("scroll.plugprop");
+          $(e.target.querySelector(".modal-body")).off ("scroll.plugprop");
 
           // Remove leader line sample
           plugin.removeSample ();
           _postitPlugin.unedit ();
         });
 
-      // EVENT show.bs.modal on popup
-      $ra.on("show.bs.modal", function ()
+      // EVENT "show.bs.modal" plug's settings popup
+      ra.addEventListener ("show.bs.modal", (e)=>
         {
-          // EVENT scroll on popup body
-          $(this).find(".modal-body")
+          // EVENT "scroll" on popup body
+          $(e.target.querySelector(".modal-body"))
             .on("scroll.plugprop", ()=> _ll.position ());
 
           document.getElementById("plugprop-sample").style.backgroundColor =
             S.getCurrent("wall")[0].style.backgroundColor||"#fff";
         });
 
-      // EVENT click on reset button
-      $ra.find("button.reset").on("click", function (e)
+      // EVENT "click" on plug's settings reset button
+      ra.querySelector("button.reset").addEventListener ("click", (e)=>
         {
           plugin.removeSample ();
           plugin.createSample (true);
 
-          $ra.find(`input[name="size"]`).val (_ll.size);
-          $ra.find(`input[value="${_ll.path}"]`)[0].checked = true;
-          $ra.find(`input[value="${_ll.line_type}"]`)[0].checked = true;
+          ra.querySelector(`input[name="size"]`).value = _ll.size;
+          ra.querySelector(`input[value="${_ll.path}"]`).checked = true;
+          ra.querySelector(`input[value="${_ll.line_type}"]`).checked = true;
+
         });
 
-      /// EVENT keyup & change on line size input
-      $ra.find(`input[name="size"]`).on("keyup change", function ()
+      // EVENT "click" on plug's settings "line type" options
+      const _eventLineType = (e)=>
         {
-          if (_ll)
-          {
-            const max = parseInt (this.getAttribute ("max"));
-
-            if (this.value > max)
-              this.value = max;
-            else
-            {
-              const min = parseInt (this.getAttribute ("min"));
-
-              if (this.value < min)
-                this.value = min;
-            }
-
-            _ll.size = parseInt (this.value);
-          }
-        });
-
-      // EVENT click on line type options
-      $ra.find(`input[name="type"]`).on("click", function ()
-        {
-          _ll.line_type = this.value;
-
+          _ll.line_type = e.target.value;
           _postitPlugin.applyPlugLineType (_ll);
-        });
+        };
+      ra.querySelectorAll(`input[name="type"]`)
+        .forEach (el=> el.addEventListener ("click", _eventLineType));
 
-      // EVENT click on line path options
-      $ra.find(`input[name="path"]`).on("click", function ()
-        {
-          _ll.path = this.value;
-        });
+      // EVENT "click" on plug's settings "line path" options
+      const _eventLinePath = (e)=> _ll.path = e.target.value;
+      ra.querySelectorAll(`input[name="path"]`)
+        .forEach (el=> el.addEventListener ("click", _eventLinePath));
 
       // Load color picker
-      $ra.find(".cp").colorpicker({
+      $(ra.querySelector(".cp")).colorpicker({
         parts:  ["swatches"],
         swatchesWidth: ww < 435 ? ww - 90 : 435,
         color: "#fff",
@@ -108,19 +88,22 @@
           }
       });
 
-      // EVENT click on colorpicker color
-      $ra.find(".cp .ui-colorpicker-swatch").on("click", function ()
+      // EVENT "click" on plug's settings "color" options
+      const _eventColor = (e)=>
         {
-          const s = this.parentNode.querySelector (".cp-selected");
+          const el = e.target,
+                s = el.parentNode.querySelector (".cp-selected");
 
           if (s)
             s.classList.remove ("cp-selected");
 
-          this.classList.add ("cp-selected");
-        });
+          el.classList.add ("cp-selected");
+        };
+      ra.querySelectorAll(".cp .ui-colorpicker-swatch")
+        .forEach (el=> el.addEventListener ("click", _eventColor));
 
-      // EVENT click on submit button
-      $ra.find(".btn-primary").on("click", function ()
+      // EVENT "click" on plug's settings "save" button
+      ra.querySelector(".btn-primary").addEventListener ("click", (e)=>
         {
           let toSave = {};
 
@@ -140,6 +123,32 @@
 
           plugin.removeSample ();
         });
+
+      /// EVENTS "keyup & change" on plug's settings "line size" option
+      const _eventKC = (e)=>
+        {
+          if (_ll)
+          {
+            const el = e.target,
+                  max = parseInt (el.getAttribute ("max"));
+
+            if (el.value > max)
+              el.value = max;
+            else
+            {
+              const min = parseInt (el.getAttribute ("min"));
+
+              if (el.value < min)
+                el.value = min;
+            }
+
+            _ll.size = parseInt (el.value);
+          }
+        };
+      ra.querySelector(`input[name="size"]`)
+        .addEventListener ("keyup", _eventKC);
+      ra.querySelector(`input[name="size"]`)
+        .addEventListener ("change", _eventKC);
     },
 
     // METHOD createSample ()

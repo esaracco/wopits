@@ -298,6 +298,7 @@ i.settings {
 }
 
 .list-group-item .close {
+  margin-top:-8px;
   padding:0;
 }
 
@@ -1300,12 +1301,6 @@ li[data-action="properties"] {
   cursor:pointer;
 }
 
-.postit-menu .submenu {
-  margin-left:3px;
-  margin-top:-6px;
-  height:32px;
-}
-
 .submenu .dropdown-toggle::after {
   content: none;
 }
@@ -1442,17 +1437,20 @@ th.wpt .submenu .dropdown-menu {
   font-weight:bold;
 }
 
-.postit-menu.right .btn-circle:last-child i {
+.postit-menu {
+  display:none;
+  position:absolute;
+  cursor:pointer;
+  z-index:5000;
+}
+
+.postit-menu .btn-circle:last-child i {
   margin-left:-2px;
 }
 
 .postit-menu.right {
-  display:none;
-  position:absolute;
   min-width:250px;
-  top:-34px;
-  cursor:pointer;
-  z-index:5000;
+  top:-33px;
   left:-5px;
 }
 
@@ -1463,19 +1461,11 @@ th.wpt .submenu .dropdown-menu {
   margin-right:3px;
 }
 
-.postit-menu div.submenu {
-  display:inline-block;
-}
-
 .postit-menu.left {
-  display:none;
-  position:absolute;
   max-width:70px;
   min-height:150px;
   top:-5px;
-  left:-72px;
-  cursor:pointer;
-  z-index:5000;
+  left:-71px;
 }
 
 .postit-menu.left .btn-circle {
@@ -1483,10 +1473,6 @@ th.wpt .submenu .dropdown-menu {
   height:32px;
   margin-bottom:3px;
   margin-left:3px;
-}
-
-.postit-menu.left .btn-circle:last-child i {
-  margin-left:-2px;
 }
 
 .postit .postit-tags {

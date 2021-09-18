@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body">
         <form>
-            <div class="input-group"><input type="text" class="form-control" required autofocus></div>
+            <div class="input-group"><input type="text" class="form-control" required></div>
         </form>
       </div>
       <div class="modal-footer">

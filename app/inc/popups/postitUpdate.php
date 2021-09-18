@@ -13,7 +13,7 @@
           </div>
            <div class="form-group">
             <label for="postitUpdatePopupTitle"><?=_("Title")?></label>
-            <input type="text" class="form-control" id="postitUpdatePopupTitle" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('postits', 'title')?>">
+            <input type="text" class="form-control" id="postitUpdatePopupTitle" maxlength="<?=Wopits\DbCache::getFieldLength('postits', 'title')?>">
           </div>
           <div class="form-group">
             <label for="postitUpdatePopupBody"><?=_("Content")?></label>

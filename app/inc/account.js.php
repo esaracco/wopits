@@ -33,14 +33,18 @@
     init (args)
     {
       const plugin = this,
-            $account = plugin.element;
+            $account = plugin.element,
+            account = $account[0];
 
       if ($.support.touch)
-        $account.find(".modal-title i.fa-user-circle")
-          .on("click", ()=> bootstrap.Modal.getInstance($account).hide ());
+        // EVENT "click" on modal "user" icon
+        account.querySelector(".modal-title i.fa-user-circle")
+          .addEventListener ("click",
+            (e)=> bootstrap.Modal.getInstance($account[0]).hide ())
 
-      $account.find("[data-action='delete-account']")
-        .on("click", function (e)
+      // EVENT "click" on "delete" button
+      account.querySelector(`[data-action="delete-account"]`)
+        .addEventListener ("click", (e)=>
         {
           H.openConfirmPopup ({
             icon: "sad-tear",
@@ -49,8 +53,9 @@
           });
         });
 
+      // EVENT "change" on profil picture
       $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
-          class="upload account-picture">`)
+          class="upload" id="account-picture">`)
         .on("change",function (e)
           {
             const $upload = $(this);
@@ -74,15 +79,16 @@
                         content: e.target.result
                       },
                       // success cb
-                      (d) => $account.find(".user-picture").html (
-                               _getUserPictureTemplate (d.src)));
+                      (d) => account.querySelector(".user-picture").innerHTML =
+                               _getUserPictureTemplate (d.src));
                   }
                 });
             }
           }).appendTo ("body");
 
-      $account.find(".user-picture")
-        .on("click", function (e)
+      // EVENT "click" on user profil picture
+      account.querySelector(".user-picture")
+        .addEventListener ("click", (e)=>
         {
           e.stopImmediatePropagation ();
 
@@ -96,145 +102,150 @@
               cb_ok: () => plugin.deletePicture ()
             });
           else
-            $(".upload.account-picture").click ();
+            document.getElementById("account-picture").click ();
         });
 
-      $account
-        .on("hide.bs.modal", function ()
+      // EVENT "hide.bs.modal" on account popup
+      account.addEventListener ("hide.bs.modal", (e)=>
         {
-          const about = $(this).find("[name='about']")[0],
+          const about = e.target.querySelector (`[name="about"]`),
                 val = H.noHTML (about.value);
 
           if (val != about.dataset.oldvalue)
             plugin.updateField ({about: val}, $account.find(".modal-body"));
         });
 
-      $account
-        .on("click", "button,input", function (e)
+      // EVENT "click" on account popup
+      account.addEventListener ("click", (e)=>
         {
-          const $btn = $(this),
-                $field = (this.tagName == "INPUT") ? $btn : $btn.prev (),
-                name = $field.attr ("name"),
-                value = $field.val ();
-          let title,
-              $popup;
+          const el = e.target;
 
-          if ($account.find(".ldap-msg").length &&
-              this.tagName == "INPUT" &&
-              !name.match (/^fullname|visible|allow_emails$/))
-            return;
 
-          switch (name)
+          // EVENT "click" on account popup user data
+          if (el.matches ("input,button.btn-change-input,"+
+                          "button.btn-change-input *"))
           {
-            case "visible":
-
-              if ($field[0].checked)
-                H.openConfirmPopover ({
-                  item: $field,
-                  placement: "top",
-                  title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
-                  content: `<?=_("By checking this option, sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
-                  cb_close: (btn) => (btn != "yes")&&($field[0].checked= false),
-                  cb_ok: () => plugin.updateField ({visible: 0}, true)
-                });
-              else
-                plugin.updateField ({visible: 1}, true);
-              break;
-
-            case "allow_emails":
-
-              if (!$field[0].checked)
-                H.openConfirmPopover ({
-                  item: $field,
-                  placement: "top",
-                  title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Notify me by email")?>`,
-                  content: `<?=_("By unchecking this option, you will no longer receive email notifications.<br>Disable notifications anyway?")?>`,
-                  cb_close: (btn) => (btn != "yes")&&($field[0].checked=true),
-                  cb_ok: () => plugin.updateField ({allow_emails: 0}, true)
-                });
-              else
-                plugin.updateField ({allow_emails: 1}, true);
-              break;
-
-            case "password":
-
-              H.loadPopup ("changePassword", {
-                open: false,
-                init: ($p)=> $p.find(".btn-primary")
-                               .on("click", function (e)
-                               {
-                                 plugin.onSubmit ($p, e);
-                               }),
-                cb: ($p)=>
-                {
-                  $p.find("input").val ("");
-
-                  $p[0].dataset.field = "password";
-                  $p[0].dataset.noclosure = true;
-
-                  H.openModal ({item: $p});
-                }
-              });
-
-              break;
-
-            case "username":
-            case "fullname":
-            case "email":
-
-              H.loadPopup ("updateOneInput", {
-                open: false,
-                init: ($p)=> $p.find(".btn-primary")
-                               .on("click", function (e)
-                               {
-                                 plugin.onSubmit ($p, e);
-                               }),
-                cb: ($p)=>
-                {
-                  const $input = $p.find ("input");
-
-                  switch (name)
+            const btn = el.tagName=="I"?el.parentNode:el,
+                  field = (btn.tagName=="INPUT") ?
+                             btn : btn.parentNode.querySelector("input"),
+                  name = field.getAttribute ("name"),
+                  value = field.value;
+            let title,
+                $popup;
+  
+            if (account.querySelector(".ldap-msg") &&
+                btn.tagName == "INPUT" &&
+                !name.match (/^fullname|visible|allow_emails$/))
+              return;
+  
+            switch (name)
+            {
+              case "visible":
+  
+                if (field.checked)
+                  H.openConfirmPopover ({
+                    item: $(field),
+                    placement: "top",
+                    title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
+                    content: `<?=_("By checking this option, sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
+                    cb_close: (btn) => (btn != "yes")&&(field.checked=false),
+                    cb_ok: () => plugin.updateField ({visible: 0}, true)
+                  });
+                else
+                  plugin.updateField ({visible: 1}, true);
+                break;
+  
+              case "allow_emails":
+  
+                if (!field.checked)
+                  H.openConfirmPopover ({
+                    item: $(field),
+                    placement: "top",
+                    title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Notify me by email")?>`,
+                    content: `<?=_("By unchecking this option, you will no longer receive email notifications.<br>Disable notifications anyway?")?>`,
+                    cb_close: (btn) => (btn != "yes")&&(field.checked=true),
+                    cb_ok: () => plugin.updateField ({allow_emails: 0}, true)
+                  });
+                else
+                  plugin.updateField ({allow_emails: 1}, true);
+                break;
+  
+              case "password":
+  
+                H.loadPopup ("changePassword", {
+                  open: false,
+                  init: ($p)=>
+                    $p[0].querySelector(".btn-primary").addEventListener (
+                      "click", (e)=> plugin.onSubmit ($p, e)),
+                  cb: ($p)=>
                   {
-                    case "username":
-                      title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
-                      $input
-                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
-                        .attr("placeholder", `<?=_("username")?>`)
-                        .attr("autocorrect", "off")
-                        .attr ("autocapitalize", "off");
-                      break;
-                    case "fullname":
-                      title = `<i class="fas fa-signature"></i> <?=_("Full name")?>`;
-                      $input
-                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
-                        .attr("placeholder", `<?=_("full name")?>`);
-                      break;
-                    case "email":
-                      title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
-                      $input
-                        .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
-                        .attr("placeholder", `<?=_("email")?>`)
-                        .attr("autocorrect", "off")
-                        .attr ("autocapitalize", "off");
-                      break;
+                    $p.find("input").val ("");
+  
+                    $p[0].dataset.field = "password";
+                    $p[0].dataset.noclosure = true;
+  
+                    H.openModal ({item: $p});
                   }
-
-                  $p.find(".modal-dialog").addClass ("modal-sm");
-                  $p.find(".modal-title").html (title);
-
-                  $input.attr ("name", name);
-                  $input.val (value);
-
-                  $p[0].dataset.field = name;
-                  $p[0].dataset.oldvalue = value;
-                  $p[0].dataset.noclosure = true;
-                  H.openModal ({item: $p});
-                }
-              });
-
-              break;
+                });
+  
+                break;
+  
+              case "username":
+              case "fullname":
+              case "email":
+  
+                H.loadPopup ("updateOneInput", {
+                  open: false,
+                  init: ($p)=>
+                    $p[0].querySelector(".btn-primary").addEventListener (
+                      "click", (e)=> plugin.onSubmit ($p, e)),
+                  cb: ($p)=>
+                  {
+                    const $input = $p.find ("input");
+  
+                    switch (name)
+                    {
+                      case "username":
+                        title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
+                        $input
+                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
+                          .attr("placeholder", `<?=_("username")?>`)
+                          .attr("autocorrect", "off")
+                          .attr ("autocapitalize", "off");
+                        break;
+                      case "fullname":
+                        title = `<i class="fas fa-signature"></i> <?=_("Full name")?>`;
+                        $input
+                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
+                          .attr("placeholder", `<?=_("full name")?>`);
+                        break;
+                      case "email":
+                        title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
+                        $input
+                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
+                          .attr("placeholder", `<?=_("email")?>`)
+                          .attr("autocorrect", "off")
+                          .attr ("autocapitalize", "off");
+                        break;
+                    }
+  
+                    $p.find(".modal-dialog").addClass ("modal-sm");
+                    $p.find(".modal-title").html (title);
+  
+                    $input.attr ("name", name);
+                    $input.val (value);
+  
+                    $p[0].dataset.field = name;
+                    $p[0].dataset.oldvalue = value;
+                    $p[0].dataset.noclosure = true;
+                    H.openModal ({item: $p});
+                  }
+                });
+  
+                break;
+            }
           }
-        })
+        });
     },
 
     // METHOD onSubmit ()
@@ -406,8 +417,7 @@
 
             // Close field update popup
             if (!noclosure)
-              bootstrap.Modal.getInstance(
-                document.querySelector(".modal")).hide ();
+              bootstrap.Modal.getInstance(S.get("mstack")[0]).hide ();
           }
         });
     }
@@ -416,14 +426,23 @@
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
-      if (!H.isLoginPage ())
-        setTimeout (()=>
+      if (H.isLoginPage ())
+        return;
+
+      setTimeout (()=>
+        {
+          // EVENT "click" on main menu account button
+          document.getElementById("account").addEventListener("click", (e)=>
           {
-            $("#accountPopup").account ();
-            $("#accountPopup").account ("updateMainMenu");
-          }, 0);
+            H.closeMainMenu ();
+            H.loadPopup ("account");
+          });
+
+          $("#accountPopup").account ();
+          $("#accountPopup").account ("updateMainMenu");
+        }, 0);
     });
 
 <?php echo $Plugin->getFooter ()?>

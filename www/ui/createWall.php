@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body">
         <form>
-          <div class="input-group"><input type="text" class="form-control" required autofocus placeholder="<?=_("wall name")?>" maxlength="<?=Wopits\DbCache::getFieldLength('walls', 'name')?>"></div>
+          <div class="input-group"><input type="text" class="form-control" required placeholder="<?=_("wall name")?>" maxlength="<?=Wopits\DbCache::getFieldLength('walls', 'name')?>"></div>
           <div class="form-check form-switch mt-3 mb-2">
             <input type="checkbox" checked="checked" class="form-check-input" id="w-grid">
             <label class="form-check-label" for="w-grid"><?=_("With grid")?></label>

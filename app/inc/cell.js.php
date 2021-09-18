@@ -177,11 +177,13 @@
          // INTERNAL FUNCTION __dblclick ()
          const __dblclick = (e)=>
            {
-             if (S.get ("zoom-level") ||
+             if (S.get ("zoom-level") || S.get ("postit-creating") ||
                  ((e.target.tagName != "TD" ||
                    !e.target.classList.contains("wpt")) &&
                    !e.target.classList.contains ("cell-list-mode")))
                   return e.stopImmediatePropagation ();
+
+             S.set ("postit-creating", true, 500);
 
              const cellOffset = $cell.offset (),
                    pTop = ((_coords && _coords.changedTouches) ?
@@ -429,6 +431,15 @@
       }
     },
 
+    // METHOD decCount ()
+    decCount ()
+    {
+      const el = this.element[0].querySelector(".cell-menu .wpt-badge");
+
+      if (el)
+        el.innerText = parseInt (el.innerText) - 1; 
+    },
+
     // METHOD remove ()
     remove ()
     {
@@ -597,60 +608,73 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
-      // EVENT click on cell menu
-      $(document).on("click", ".cell-menu", function ()
-        {
-          if (H.disabledEvent ())
-            return false;
+      if (H.isLoginPage ())
+        return;
 
-          $(this).parent().cell ("toggleDisplayMode");
-        });
+      const _walls = S.getCurrent("walls")[0];
 
-      // EVENT click on cells
-      $(document)
-        .on("click", "td.wpt", function (e)
+      // EVENT "click"
+      _walls.addEventListener ("click", (e)=>
         {
-          const $cell = $(this),
+          const el = e.target,
                 $mm = S.getCurrent ("mmenu");
 
-          // Click on notes in stack mode
-          if (e.target.classList.contains ("postit-min"))
+          if (el.matches ("td.wpt *"))
           {
-            const li = e.target,
-                  $p = $cell.find (`.postit[data-id="${li.dataset.id}"]`);
+            const $cell = $(el.closest ("td.wpt"));
 
-            if (e.ctrlKey)
+            // EVENT "click" on cell's menu
+            if (el.matches (".cell-menu *"))
             {
-              if (li.classList.contains ("selected"))
-                $mm.mmenu ("remove", $p.postit ("getId"));
+              e.stopImmediatePropagation ();
+
+              if (!H.disabledEvent ())
+                $cell.cell ("toggleDisplayMode");
               else
-                $mm.mmenu ("add", $p.postit ("getClass"));
+                e.preventDefault ();
+            }
+            // EVENT "click" on note in stack mode
+            else if (el.classList.contains ("postit-min"))
+            {
+              const $p = $cell.find (`.postit[data-id="${el.dataset.id}"]`);
 
               e.stopImmediatePropagation ();
-              e.preventDefault ();
-            }
-            else
-            {
-              if (e.cancelable)
+  
+              if (e.ctrlKey)
+              {
+                if (el.classList.contains ("selected"))
+                  $mm.mmenu ("remove", $p.postit ("getId"));
+                else
+                  $mm.mmenu ("add", $p.postit ("getClass"));
+  
+                e.stopImmediatePropagation ();
                 e.preventDefault ();
-
-              if (H.disabledEvent ())
-                return false;
-
-              $p.postit ("openPostit", $(li).find ("span"));
+              }
+              else
+              {
+                if (e.cancelable)
+                  e.preventDefault ();
+  
+                if (!H.disabledEvent ())
+                  $p.postit ("openPostit", $(el).find ("span"));
+              }
             }
           }
-          // ctrl+click on a cell to paste/cut on it
-          else
+          // EVENT "click" ctrl+click on cell to paste/cut into
+          else if (el.matches ("td.wpt"))
           {
             if ((e.ctrlKey || S.get ("action-mmenu")) &&
                 !$mm.mmenu ("isEmpty"))
+            {
+              e.stopImmediatePropagation ();
+
               $mm.mmenu ("apply", {
                 event: e,
-                cellPlugin: $cell.cell ("getClass")
+                cellPlugin: $(el).cell ("getClass")
               });
+            }
           }
         });
     });

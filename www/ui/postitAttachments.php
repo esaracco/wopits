@@ -26,7 +26,7 @@
       <div class="title">
         <dt><?=_("Title")?></dt>
         <dd>
-          <div class="input-group"><input autofocus type="text" class="form-control adm" maxlength="<?=Wopits\DbCache::getFieldLength('postits_attachments', 'title')?>"></div>
+          <div class="input-group"><input type="text" class="form-control adm" maxlength="<?=Wopits\DbCache::getFieldLength('postits_attachments', 'title')?>"></div>
          <div class="ro"></div>
         </dd>
       </div>

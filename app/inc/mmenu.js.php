@@ -163,7 +163,8 @@
             (args.event.target.querySelector("i")||args.event.target)
               .classList.remove ("set");
 
-            cbClose && cbClose ();
+            if (cbClose)
+              cbClose ();
 
             if (_data.dest)
             {
@@ -364,15 +365,12 @@
             // DEL
             case 46:
 
-              return $sm.find("li[data-action='delete']").click ();
+              return $sm.find(`li[data-action="delete"]`).click ();
             // CTRL+C
             case 67:
 
               if (e.ctrlKey)
-              {
-                $("#popup-layer").click ();
-                return $sm.find("li[data-action='copy']").click ();
-              }
+                return $sm.find(`li[data-action="copy"]`).click ();
               break;
 
             // CTRL+V
@@ -404,14 +402,11 @@
             case 88:
 
               if (e.ctrlKey)
-              {
-                $("#popup-layer").click ();
-                return $sm.find("li[data-action='move']").click ();
-              }
+                return $sm.find(`li[data-action="move"]`).click ();
           }
         });
 
-      if (!$(".modal:visible").length)
+      if (!S.get ("mstack"))
         this.showHelp ();
     },
 
@@ -476,8 +471,7 @@
       document.querySelectorAll(".postit.selected").forEach (
         (p)=> p.classList.remove ("selected"));
 
-      if ($ps.is (":hidden"))
-        $ps.psearch ("reset", true);
+      setTimeout (()=> $ps.is (":hidden") && $ps.psearch ("reset", true), 250);
 
       this.reset ();
       this.element.hide ();
@@ -486,7 +480,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
       if (!H.isLoginPage ())
       {

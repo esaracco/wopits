@@ -11,7 +11,7 @@
           <div><?=_("Your current password:")?></div>
           <div class="input-group mb-4">
           <span class="input-group-text"><i class="fas fa-key"></i></span>
-          <input type="password" class="form-control" name="password" value="" required placeholder="<?=_("current password")?>" autofocus>
+          <input type="password" class="form-control" name="password" value="" required placeholder="<?=_("current password")?>">
         </div>
 
           <div><?=_("The new password:")?></div>

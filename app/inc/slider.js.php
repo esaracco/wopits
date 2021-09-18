@@ -43,7 +43,7 @@
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
       if (!H.isLoginPage ())
       {

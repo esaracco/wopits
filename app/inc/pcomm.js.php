@@ -22,7 +22,7 @@
   // METHOD _getEventSelector ()
   const _getEventSelector = (s)=>
   {
-    return H.haveMouse() ? `.pcomm-popover ${s}` : `#postitCommentsPopup ${s}`;
+    return H.haveMouse()?`.pcomm-popover ${s}`:`#postitCommentsPopup ${s}`;
   };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
@@ -158,7 +158,7 @@
       _textarea.classList.remove ("autocomplete");
 
       pc.querySelectorAll(".shadow").forEach (el=>
-        el.classList.remove("shadow"));
+        el.classList.remove ("shadow"));
     },
 
     // METHOD add ()
@@ -176,7 +176,7 @@
         },
         // success cb
         () => H.waitForDOMUpdate (
-                ()=>window.dispatchEvent (new Event("resize"))));
+                ()=> window.dispatchEvent (new Event ("resize"))));
     },
 
     // METHOD close ()
@@ -187,7 +187,7 @@
         if (!H.haveMouse ())
           $_popup.modal ("hide");
         else
-        $("#popup-layer").click ();
+          document.getElementById("popup-layer").click ();
       }
     },
 
@@ -288,7 +288,7 @@
           H.openConfirmPopover ({
             type: "custom",
             placement:"left",
-            html_header: plugin.settings.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
+            html_header: plugin.settings.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
             customClass: "msg-popover pcomm-popover",
             noclosure: true,
             item: plugin.element,
@@ -317,8 +317,6 @@
               _textarea = p.querySelector ("textarea");
 
               __resize ();
-
-              H.setAutofocus (p);
             }
         });
       }
@@ -327,209 +325,237 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  if (!H.isLoginPage ())
-    $(function()
+  document.addEventListener ("DOMContentLoaded", ()=>
+    {
+      if (H.isLoginPage ())
+        return;
+
+      setTimeout (()=>
       {
-        setTimeout (()=>{
-
-        // EVENT click on postit comments button.
-        $(document).on("click", ".pcomm", function ()
+        // EVENT "click"
+        document.body.addEventListener ("click", (e)=>
           {
-            $(this).pcomm ("open");
-          }); 
- 
-        // EVENT hidden on popup (only for devices without mouse)
-        if (!H.haveMouse ())
-          $(document).on("hidden.bs.modal", "#postitCommentsPopup",
-            function (e)
+            const el = e.target;
+
+            // EVENT "click" on postit comments button
+            if (el.matches(".pcomm,.pcomm *"))
             {
-              _textarea.value = "";
+              $((el.tagName=="DIV")?el:el.closest("div")).pcomm ("open");
+            }
+            else if (el.matches (_getEventSelector ("*")))
+            {
+              // EVENT "click" on comments "clear textarea" button
+              if (el.matches(".clear-textarea,.clear-textarea *"))
+              {
+                _textarea.value = "";
+                S.getCurrent("pcomm").pcomm ("reset");
+                _textarea.focus ();
+              }
+              // EVENT "click" on comments "submit" button
+              else if (el.matches(".btn-primary"))
+              {
+                const content = H.noHTML (_textarea.value);
 
-              S.getCurrent("pcomm").pcomm ("reset");
-              S.getCurrent("postit").postit ("unsetCurrent");
+                if (!content) return;
 
-              $_popup = undefined;
-            });
+                S.getCurrent("pcomm").pcomm ("add", content);
+                _textarea.value = "";
+                _textarea.focus ();
+              }
+              // EVENT "click" on comments users list
+              else if (el.matches (".result .list-group-item,"+
+                                   ".result .list-group-item *"))
+              {
+                const pcomm = S.getCurrent("pcomm").pcomm ("getClass");
 
-        // EVENT "click" on clear textarea button
-        $(document).on("click", _getEventSelector(".clear-textarea"),
-          function (e)
-          {
-            _textarea.value = "";
-            S.getCurrent("pcomm").pcomm ("reset");
-            _textarea.focus ();
+                // Selected the current item in users search list and close the
+                // list
+                pcomm.injectUserRef (
+                  (el.tagName=="LI"?el:el.closest("li"))
+                     .querySelector("span").innerText);
+                pcomm.reset ();
+              }
+              // EVENT "click" on "delete comment" button
+              else if (el.matches (".msg-item .close,.msg-item .close *"))
+              {
+                const data = el.closest(".content").dataset,
+                      item = el.closest (".msg-item");
+    
+                e.preventDefault ();
+                e.stopImmediatePropagation ();
+    
+                if (H.haveMouse ())
+                  _textarea.focus ();
+    
+                H.request_ws (
+                  "DELETE",
+                  `wall/${data.wallid}/cell/${data.cellid}/postit/`+
+                    `${data.postitid}/comment/${item.dataset.id}`,
+                  null,
+                  // success cb
+                  ()=> H.waitForDOMUpdate (
+                         ()=>window.dispatchEvent (new Event("resize"))));
+                  }
+            }
           });
 
-        // EVENT keyup on textarea.
-        $(document).on("keyup keydown", _getEventSelector(" textarea"),
-          function (e)
-          {
-            const list = this.closest(`[class*="-body"]`)
-                           .querySelectorAll ("li");
-
-             if (!list.length)
-               return;
-
-            const k = e.which,
-                  pcomm = S.getCurrent("pcomm").pcomm ("getClass");
-
-            // If ESC, close the users search
-            if (k == 27)
+        // EVENT "hidden.bs.modal" (only for devices without mouse)
+        if (!H.haveMouse ())
+        {
+          document.body.addEventListener ("hidden.bs.modal", (e)=>
             {
-              e.stopImmediatePropagation ();
-              pcomm.reset ();
-            }
-            // Arrow up or arrow down.
-            else if (k == 38 || k == 40)
-            {
-              if (list.length == 1)
-                pcomm.reset ();
-              else
+              // EVENT "hidden.bs.modal" on popup
+              if (e.target.id == "postitCommentsPopup")
               {
+                _textarea.value = "";
+
+                S.getCurrent("pcomm").pcomm ("reset");
+                S.getCurrent("postit").postit ("unsetCurrent");
+
+                $_popup = undefined;
+              }
+            });
+         }
+
+        // EVENTS "keyup & keydown"
+        const _textareaEventK = (e)=>
+          {
+            const el = e.target;
+
+            // EVENTS "keyup & keydown" on comments textarea
+            if (el.matches (_getEventSelector ("textarea")))
+            {
+              const list=el.closest(`[class*="-body"]`).querySelectorAll ("li");
+  
+               if (!list.length)
+                 return;
+  
+              const k = e.which,
+                    pcomm = S.getCurrent("pcomm").pcomm ("getClass");
+  
+              // If ESC, close the users search
+              if (k == 27)
+              {
+                e.stopImmediatePropagation ();
+                pcomm.reset ();
+              }
+              // Arrow up or arrow down.
+              else if (k == 38 || k == 40)
+              {
+                if (list.length == 1)
+                  pcomm.reset ();
+                else
+                {
+                  e.stopImmediatePropagation ();
+                  e.preventDefault ();
+  
+                  if (e.type == "keyup")
+                  {
+                    // INTERNAL FUNCTION __select ()
+                    const __select = (i, type)=>
+                      {
+                        // Arrow up.
+                        if (i && type == "up")
+                        {
+                          const el = list[i-1];
+  
+                          list[i].classList.remove ("selected");
+                          el.classList.add ("selected");
+                          el.scrollIntoView (false);
+                        }
+                        // Arrow down.
+                        else if (i < list.length - 1 && type == "down")
+                        {
+                          const el = list[i+1];
+  
+                          list[i].classList.remove ("selected");
+                          el.classList.add ("selected");
+                          el.scrollIntoView (false);
+                        }
+                      };
+  
+                    for (let i = 0, iLen = list.length; i < iLen; i++)
+                      if (list[i].classList.contains ("selected"))
+                      {
+                        if (i == 0 && k == 38 ||
+                            i == iLen - 1 && k == 40)
+                        {
+                          pcomm.reset ();
+                          return;
+                        }
+                        else
+                        {
+                          __select (i, k == 38 ? "up": "down");
+                          return;
+                        }
+                      }
+                  }
+                }
+              }
+            }
+          };
+        document.body.addEventListener ("keyup", _textareaEventK);
+        document.body.addEventListener ("keydown", _textareaEventK);
+
+        // EVENTS "keyup & click"
+        const _textareaEventKC = (e)=>
+          {
+            const el = e.target;
+
+            // EVENTS "keyup & click" on comments textarea
+            if (el.matches (_getEventSelector ("textarea")))
+            {
+              const k = e.which,
+                    prev = el.value.substring (0, el.selectionStart),
+                    // Keys to ignore
+                    ignore = (e.ctrlKey || k == 27 || k == 16 || k == 225);
+              let m;
+  
+              // Submit if needed
+              if (k == 13)
+              {
+                if (e.ctrlKey)
+                  el.closest(`[class*="-body"]`)
+                    .querySelector(".btn-primary").click ();
+                else
+                  return e.preventDefault ();
+              }
+  
+              // Nothing if we must ignore the key
+              if (!ignore)
+              {
+                // Display users search list if needed
+                if (m = prev.match (/(^|\s)@([^\s]+)?$/))
+                  S.getCurrent("pcomm").pcomm ("search", {str: m[2]||""});
+                else if (el.classList.contains ("autocomplete"))
+                  S.getCurrent("pcomm").pcomm ("reset");
+              }
+            }
+          };
+        document.body.addEventListener ("keyup", _textareaEventKC);
+        document.body.addEventListener ("click", _textareaEventKC);
+
+        // EVENT "keypress"
+        document.body.addEventListener ("keypress", (e)=>
+          {
+            const el = e.target;
+
+            // EVENT "keypress" on comments textarea
+            if (el.matches (_getEventSelector ("textarea")))
+            {
+              // If enter on selected users search item, select it
+              if (e.which == 13 && el.classList.contains ("autocomplete"))
+              { 
                 e.stopImmediatePropagation ();
                 e.preventDefault ();
 
-                if (e.type == "keyup")
-                {
-                  // INTERNAL FUNCTION __select ()
-                  const __select = (i, type)=>
-                    {
-                      // Arrow up.
-                      if (i && type == "up")
-                      {
-                        const el = list[i-1];
-
-                        list[i].classList.remove ("selected");
-                        el.classList.add ("selected");
-                        el.scrollIntoView (false);
-                      }
-                      // Arrow down.
-                      else if (i < list.length - 1 && type == "down")
-                      {
-                        const el = list[i+1];
-
-                        list[i].classList.remove ("selected");
-                        el.classList.add ("selected");
-                        el.scrollIntoView (false);
-                      }
-                    };
-
-                  for (let i = 0, iLen = list.length; i < iLen; i++)
-                    if (list[i].classList.contains ("selected"))
-                    {
-                      if (i == 0 && k == 38 ||
-                          i == iLen - 1 && k == 40)
-                      {
-                        pcomm.reset ();
-                        return;
-                      }
-                      else
-                      {
-                        __select (i, k == 38 ? "up": "down");
-                        return;
-                      }
-                    }
-                }
+                el.closest(`[class*="-body"]`)
+                  .querySelector(".result .list-group-item.selected").click ();
               }
             }
           });
 
-         // EVENT click on submit button
-         $(document).on("click", _getEventSelector(".btn-primary"),
-          function (e)
-          {
-            const content = H.noHTML (_textarea.value);
-
-            if (!content) return;
-
-            S.getCurrent("pcomm").pcomm ("add", content);
-            _textarea.value = "";
-            _textarea.focus ();
-         });
-
-        // EVENTS keyup/click on textarea
-        $(document).on("keyup click", _getEventSelector("textarea"),
-          function (e)
-          {
-            const k = e.which,
-                  prev = this.value.substring (0, this.selectionStart),
-                  // Keys to ignore
-                  ignore = (e.ctrlKey || k == 27 || k == 16 || k == 225);
-            let m;
-
-            // Submit if needed
-            if (k == 13)
-            {
-              if (e.ctrlKey)
-                this.closest(`[class*="-body"]`)
-                  .querySelector(".btn-primary").click ();
-              else
-                return e.preventDefault ();
-            }
-
-            // Nothing if we must ignore the key
-            if (!ignore)
-            {
-              // Display users search list if needed
-              if (m = prev.match (/(^|\s)@([^\s]+)?$/))
-                S.getCurrent("pcomm").pcomm ("search", {str: m[2]||""});
-              else if (this.classList.contains ("autocomplete"))
-                S.getCurrent("pcomm").pcomm ("reset");
-            }
-          });
-
-        // EVENT keypress on textarea
-        $(document).on("keypress", _getEventSelector("textarea"),
-          function (e)
-          {
-            // If enter on selected users search item, select it
-            if (e.which == 13 && this.classList.contains ("autocomplete"))
-            { 
-              e.stopImmediatePropagation ();
-              e.preventDefault ();
-
-              this.closest(`[class*="-body"]`)
-                .querySelector(".result .list-group-item.selected").click ();
-            }
-          });
-
-        // EVENT click on users list
-        $(document).on("click", _getEventSelector(".result .list-group-item"),
-          function (e)
-          {
-            const pcomm = S.getCurrent("pcomm").pcomm("getClass");
-
-            // Selected the current item in users search list and close the
-            // list
-            pcomm.injectUserRef (this.querySelector("span").innerText);
-            pcomm.reset ();
-          });
-
-        // EVENT click on comment delete button
-        $(document).on("click", _getEventSelector(".msg-item .close"),
-          function (e)
-          {
-            const data = this.closest(".content").dataset,
-                  item = this.closest (".msg-item");
-
-            e.preventDefault ();
-            e.stopImmediatePropagation ();
-
-            if (H.haveMouse ())
-              _textarea.focus ();
-
-            H.request_ws (
-              "DELETE",
-              `wall/${data.wallid}/cell/${data.cellid}/postit/`+
-                `${data.postitid}/comment/${item.dataset.id}`,
-              null,
-              // success cb
-              ()=> H.waitForDOMUpdate (
-                     ()=>window.dispatchEvent (new Event("resize"))));
-          });
-
         }, 0);
-
       });
 
 <?php echo $Plugin->getFooter ()?>

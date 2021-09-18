@@ -84,11 +84,6 @@
             $input.val(d.name);
             $popup.find(".description textarea").val(d.description);
 
-            if (args && args.renaming)
-              $input.attr ("autofocus", "autofocus");
-            else
-              $input.removeAttr ("autofocus");
-
             if ($wall[0].dataset.rows == 1 && $wall[0].dataset.cols == 1)
             {
               const $div = $popup.find(".wall-size"),

@@ -321,19 +321,7 @@ class Helper
     $menu = '<div class="postit-menu right">';
     foreach ($items as $d)
     {
-/*
-      if (isset ($d['submenu']))
-      {
-        $menu .= '<div data-action="'.$d['submenu'][0].'" class="navbar-nav mr-auto submenu"><div class="nav-item dropdown"><a href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><span data-action="'.$d['submenu'][0].'" class="btn btn-sm btn-secondary btn-circle" data-bs-toggle="tooltip" title="'.$d['submenu'][1].'"><i class="fa-'.$d['submenu'][2].' fas"></i></span></a><ul class="dropdown-menu border-0 shadow">';
-        foreach ($d['items'] as $dd)
-          $menu .= (isset ($dd['divider'])) ?
-            '<li class="dropdown-divider"></li>' :
-            '<li data-action="'.$dd[0].'"><a class="dropdown-item'.(isset($dd[3])?' '.$dd[3]:'').'" href="#"><i class="fa-fw fas fa-'.$dd[2].'"></i> '.$dd[1].'</a></li>';
-        $menu .= '</ul></div></div>';
-      }
-      else
-*/
-        $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" data-bs-toggle=\"tooltip\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
+      $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" data-bs-toggle=\"tooltip\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
     }
     $menu .= '</div>';
 

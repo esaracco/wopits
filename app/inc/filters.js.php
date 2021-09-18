@@ -89,7 +89,7 @@ let _body;
     hide ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='filters'] a").click ();
+        document.querySelector(`#main-menu li[data-action="filters"]`).click();
     },
 
     // METHOD hidePlugs ()

@@ -73,7 +73,7 @@
           args.cb_click (this);
 
           // Remove color picker
-          $("#popup-layer").click ();
+          document.getElementById("popup-layer").click ();
 
           const $f = S.getCurrent ("filters");
           if ($f.is (":visible"))

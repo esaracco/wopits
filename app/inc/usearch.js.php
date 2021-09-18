@@ -31,7 +31,7 @@
             id = $ac[0].id,
             $search = $ac.find (".search");
 
-      $search.append (`<div class="input-group"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span><input type="input" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off" autofocus><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu">×</button><div class="content"></div></ul>`);
+      $search.append (`<div class="input-group"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span><input type="text" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off"><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu">×</button><div class="content"></div></ul>`);
 
       // EVENT hidden.bs.modal
       $ac.on("hidden.bs.modal", function (e)

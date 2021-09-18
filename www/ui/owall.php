@@ -9,7 +9,7 @@
       <div class="modal-body">
         <div class="input-group mb-2">
           <span class="input-group-text"><i class="fas fa-search fa-sm fa-fw"></i></span>
-          <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button>
+          <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none"><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button>
         </div>
 
       <div class="text-center ow-filters">

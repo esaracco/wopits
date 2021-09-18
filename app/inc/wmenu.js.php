@@ -111,6 +111,10 @@
           case "hide-headers":
             wallPlugin.displayHeaders (0, true);
             break;
+
+          case "show-users":
+            wallPlugin.displayWallUsersview ();
+            break;
         }
       });
     },

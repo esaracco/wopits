@@ -36,7 +36,7 @@ EOC;
     {
       $js .= <<<EOC
       // METHOD getName ()
-      this.getName  = ()=> "{$this->name}";
+      this.getName = ()=> "{$this->name}";
 EOC;
     }
 
@@ -47,7 +47,7 @@ EOC;
 
       $js .= <<<EOC
   // METHOD getId ()
-  this.getId  = ()=> this.settings.id;
+  this.getId = ()=> this.settings.id;
 
   // METHOD canWrite ()
   this.canWrite = ()=>

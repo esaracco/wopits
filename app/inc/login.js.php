@@ -273,7 +273,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
   {
     if (H.isLoginPage ())
       setTimeout (()=> $("#login").login (), 0);

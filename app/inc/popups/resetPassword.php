@@ -12,7 +12,7 @@
         <form>
         <div class="input-group mb-1">
           <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-          <input class="form-control" name="email" type="email" value="" required placeholder="<?=_("email")?>" autofocus>
+          <input class="form-control" name="email" type="email" value="" required placeholder="<?=_("email")?>">
         </div>
         </form>
 

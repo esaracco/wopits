@@ -12,7 +12,7 @@
 
         <div class="input-group">
           <span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span>
-          <input type="input" class="form-control" value="" autocorrect="off" autocapitalize="none" autofocus><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button>
+          <input type="text" class="form-control" value="" autocorrect="off" autocapitalize="none"><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button>
         </div>
 
         <div class="mt-3 result text-center"></div>

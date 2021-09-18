@@ -85,162 +85,164 @@
 
       if (adminAccess)
       {
-        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><div data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></div><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`)
-          // EVENT "show" on header menu
-          .on("show.bs.dropdown", function ()
+        const $part = $(`<ul class="navbar-nav mr-auto submenu"><li class="nav-item dropdown"><div data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></div><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li></ul>`);
+
+        // EVENT "show.bs.dropdown" on header menu
+        $part[0].addEventListener ("show.bs.dropdown", (e)=>
+          {
+            const el = e.target,
+                  $menu = $(el.closest("ul")),
+                  menu = $menu[0],
+                  wall = $wall[0],
+                  tr = $header.closest("tr.wpt")[0],
+                  deleteItem =
+                    menu.querySelector(`[data-action="delete"] a`),
+                  moveUpItem =
+                    menu.querySelector(`[data-action="move-up"] a`),
+                  moveDownItem =
+                    menu.querySelector(`[data-action="move-down"] a`),
+                  moveLeftItem =
+                    menu.querySelector(`[data-action="move-left"] a`),
+                  moveRightItem =
+                    menu.querySelector(`[data-action="move-right"] a`);
+
+            $menu.find("a").show ();
+            el.querySelector (".nav-link i.far")
+              .classList.replace ("far", "fas");
+
+            if (isCol)
             {
-              const $menu = $(this),
-                    menu = $menu[0],
-                    wall = $wall[0],
-                    tr = $header.closest("tr.wpt")[0],
-                    deleteItem =
-                      menu.querySelector(`[data-action="delete"] a`),
-                    moveUpItem =
-                      menu.querySelector(`[data-action="move-up"] a`),
-                    moveDownItem =
-                      menu.querySelector(`[data-action="move-down"] a`),
-                    moveLeftItem =
-                      menu.querySelector(`[data-action="move-left"] a`),
-                    moveRightItem =
-                      menu.querySelector(`[data-action="move-right"] a`);
+              const thIdx = $header.index ();
 
-              $menu.find("a").show ();
-              $menu.find(".nav-link i.far")
-                .removeClass("far")
-                .addClass ("fas");
+              if (wall.querySelectorAll("thead.wpt th.wpt").length <= 2)
+                deleteItem.style.display = "none";
 
-              if (isCol)
-              {
-                const thIdx = $header.index ();
-
-                if (wall.querySelectorAll("thead.wpt th.wpt").length <= 2)
-                  deleteItem.style.display = "none";
-
-                if (thIdx == 1)
-                  moveLeftItem.style.display = "none";
-
-                if (thIdx == tr.querySelectorAll("th.wpt").length-1)
-                  moveRightItem.style.display = "none";
-              }
-              else
-              {
-                const trIdx = $(tr).index ();
-
-                if (wall.querySelectorAll("tbody.wpt th.wpt").length == 1)
-                  deleteItem.style.display = "none";
-
-                if (trIdx == 0)
-                  moveUpItem.style.display = "none";
-
-                if (trIdx == wall.querySelectorAll("tr.wpt").length - 2)
-                  moveDownItem.style.display = "none";
-              }
-
-              if (isCol && wall.dataset.cols == "1")
-              {
+              if (thIdx == 1)
                 moveLeftItem.style.display = "none";
-                moveRightItem.style.display = "none";
-              }
 
-              if (!isCol && wall.dataset.rows == "1")
-              {
-                moveUpItem.style.display = "none";
-                moveDownItem.style.display = "none";
-              }
-            })
-          // EVENT "hide" on header menu
-          .on("hide.bs.dropdown", function ()
+              if (thIdx == tr.querySelectorAll("th.wpt").length-1)
+                moveRightItem.style.display = "none";
+            }
+            else
             {
-              $(this).find(".nav-link i.fas")
-                .removeClass("fas")
-                .addClass ("far");
-            });
+              const trIdx = $(tr).index ();
+
+              if (wall.querySelectorAll("tbody.wpt th.wpt").length == 1)
+                deleteItem.style.display = "none";
+
+              if (trIdx == 0)
+                moveUpItem.style.display = "none";
+
+              if (trIdx == wall.querySelectorAll("tr.wpt").length - 2)
+                moveDownItem.style.display = "none";
+            }
+
+            if (isCol && wall.dataset.cols == "1")
+            {
+              moveLeftItem.style.display = "none";
+              moveRightItem.style.display = "none";
+            }
+
+            if (!isCol && wall.dataset.rows == "1")
+            {
+              moveUpItem.style.display = "none";
+              moveDownItem.style.display = "none";
+            }
+          });
+
+        // EVENT "hide.bs.dropdown" on header menu
+        $part[0].addEventListener ("hide.bs.dropdown", (e)=> 
+          e.target.querySelector (".nav-link i.fas")
+            .classList.replace ("fas", "far"));
 
         // EVENT "click" on header menu items
-        $part.find(".dropdown-menu li a").on("click",function(e)
-        {
-          const $li = $(this).parent (),
-                $cell = $li.closest ("th.wpt"),
-                action = $li[0].dataset.action;
-
-          switch (action)
+        $part[0].querySelector(".dropdown-menu")
+          .addEventListener ("click", (e)=>
           {
-            case "add-picture":
-              if (settings.wall.wall ("isShared"))
-              {
-                //FIXME
-                // we need this to cancel edit if no img is selected by user
-                // (touch device version)
-                plugin.addUploadLayer ();
-  
-                plugin.edit ();
+            const el = e.target,
+                  li = el.closest ("li"),
+                  $cell = $(li.closest("th.wpt")),
+                  action = li.dataset.action;
 
-                plugin.uploadPicture ($cell);
-              }
-              else
-                plugin.edit (() => plugin.uploadPicture ($cell));
-                
-              break;
-  
-            case "delete":
-              plugin.edit (() =>
+            switch (action)
+            {
+              case "add-picture":
+                if (settings.wall.wall ("isShared"))
                 {
-                  H.openConfirmPopover ({
-                       item: $cell.find("i.btn-menu"),
-                       placement: (isCol) ? "left" : "right",
-                       title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                       content: (isCol) ?
-                         `<?=_("Delete this column?")?>` :
-                         `<?=_("Delete this row?")?>`,
-                       cb_close: () => plugin.unedit (),
-                       cb_ok: () =>
-                         {
-                           if (isCol)
-                             $wall.wall ("deleteCol", $header.index ());
-                           else
-                            $wall.wall (
-                              "deleteRow", $header.closest("tr.wpt").index ());
-                         }
-                     });
-                });
-              break;
+                  //FIXME
+                  // we need this to cancel edit if no img is selected by user
+                  // (touch device version)
+                  plugin.addUploadLayer ();
+    
+                  plugin.edit ();
   
-            case "rename":
-
-              plugin.edit (() =>
-                {
-                  plugin.saveCurrentWidth ();
-
-                  H.openConfirmPopover ({
-                    type: "update",
-                    item: $li.parent().parent().find(".btn-menu"),
-                    title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
-                      content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
-                      cb_close: () =>
-                        {
-                          if (!S.get ("no-unedit"))
-                            plugin.unedit ();
-
-                          S.unset ("no-unedit");
-                        },
-                      cb_ok: ($popover) =>
-                        {
-                          S.set ("no-unedit", true);
-                          plugin.setTitle ($popover.find("input").val(), true);
-                        }
-                    });
-                });
-              break;
-
-            case "move-up":
-            case "move-down":
-            case "move-left":
-            case "move-right":
-
-              plugin.moveColRow (action);
-              break;
-          }
-        });
+                  plugin.uploadPicture ($cell);
+                }
+                else
+                  plugin.edit (() => plugin.uploadPicture ($cell));
+                  
+                break;
+    
+              case "delete":
+                plugin.edit (() =>
+                  {
+                    H.openConfirmPopover ({
+                         item: $cell.find("i.btn-menu"),
+                         placement: (isCol) ? "left" : "right",
+                         title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                         content: (isCol) ?
+                           `<?=_("Delete this column?")?>` :
+                           `<?=_("Delete this row?")?>`,
+                         cb_close: () => plugin.unedit (),
+                         cb_ok: () =>
+                           {
+                             if (isCol)
+                               $wall.wall ("deleteCol", $header.index ());
+                             else
+                              $wall.wall (
+                                "deleteRow", $header.closest("tr.wpt").index ());
+                           }
+                       });
+                  });
+                break;
+    
+              case "rename":
+  
+                plugin.edit (() =>
+                  {
+                    plugin.saveCurrentWidth ();
+  
+                    H.openConfirmPopover ({
+                      type: "update",
+                      item: $(li.parentNode.parentNode
+                                .querySelector(".btn-menu")),
+                      title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
+                        content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
+                        cb_close: () =>
+                          {
+                            if (!S.get ("no-unedit"))
+                              plugin.unedit ();
+  
+                            S.unset ("no-unedit");
+                          },
+                        cb_ok: ($popover) =>
+                          {
+                            S.set ("no-unedit", true);
+                            plugin.setTitle ($popover.find("input").val(), true);
+                          }
+                      });
+                  });
+                break;
+  
+              case "move-up":
+              case "move-down":
+              case "move-left":
+              case "move-right":
+  
+                plugin.moveColRow (action);
+                break;
+            }
+          });
 
         $header.find(".title").editable ({
           wall: $wall,
@@ -349,6 +351,7 @@
       this.settings.thwidth = this.element.outerWidth ();
     },
 
+    //FIXME still useful?
     // METHOD addUploadLayer ()
     addUploadLayer ()
     {
@@ -364,6 +367,7 @@
           .show ();
     },
 
+    //FIXME still useful?
     // METHOD uploadPicture ()
     uploadPicture ($item)
     {
@@ -385,65 +389,65 @@
                             plugin.settings.access),
             $img = $(`<div class='img'><img src="${src}"></div>`);
 
+      // EVENT "load" on header picture
       // Refresh postits plugs once picture has been fully loaded
-      $img.find("img")
-        .on("load", function (e)
-        {
-          plugin.settings.wall.wall ("repositionPostitsPlugs");
-        });
+      $img[0].querySelector("img").addEventListener("load",
+        (e)=> plugin.settings.wall.wall ("repositionPostitsPlugs"));
 
       if (!adminAccess)
         return $img;
       
-      $img
-        .on("click",function(e)
-          {
-            e.stopImmediatePropagation ();
+      // EVENT "click" on header picture
+      $img[0].addEventListener ("click", (e)=>
+        {
+          e.stopImmediatePropagation ();
 
-            if (plugin.settings.wall.wall ("isShared"))
+          if (plugin.settings.wall.wall ("isShared"))
+          {
+            //FIXME
+            // we need this to cancel edit if no img is selected by user
+            // (touch device version)
+            plugin.addUploadLayer ();
+
+            plugin.edit ();
+
+            plugin.uploadPicture ($header);
+          }
+          else
+            plugin.edit (() => plugin.uploadPicture ($header));
+        });
+
+      // Create img "delete" button
+      const $deleteButton = $(`<button type="button" class="btn-close img-delete"></button>`);
+
+      // EVENT "click" on header picture
+      $deleteButton[0].addEventListener ("click", (e)=>
+        {
+          e.stopImmediatePropagation ();
+
+          plugin.edit (() =>
             {
-              //FIXME
-              // we need this to cancel edit if no img is selected by user
-              // (touch device version)
-              plugin.addUploadLayer ();
-
-              plugin.edit ();
-
-              plugin.uploadPicture ($header);
-            }
-            else
-              plugin.edit (() => plugin.uploadPicture ($header));
+              H.openConfirmPopover ({
+                item: $(e.target),
+                placement: "left",
+                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                content: `<?=_("Delete this picture?")?>`,
+                cb_close: () =>
+                  {
+                    if (!S.get ("unedit-done"))
+                      plugin.unedit ();
+                    else
+                      S.unset ("unedit-done");
+                  },
+                cb_ok: () =>
+                  {
+                    S.set ("unedit-done", true);
+                    plugin.deleteImg ();
+                  }
+              });
           });
 
-      // Create img delete button
-      const $deleteButton = $(`<button type="button" class="btn-close img-delete"></button>`)
-        .on("click",function(e)
-          {
-            e.stopImmediatePropagation ();
-
-            plugin.edit (() =>
-              {
-                H.openConfirmPopover ({
-                  item: $(this),
-                  placement: "left",
-                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                  content: `<?=_("Delete this picture?")?>`,
-                  cb_close: () =>
-                    {
-                      if (!S.get ("unedit-done"))
-                        plugin.unedit ();
-                      else
-                        S.unset ("unedit-done");
-                    },
-                  cb_ok: () =>
-                    {
-                      S.set ("unedit-done", true);
-                      plugin.deleteImg ();
-                    }
-                });
-            });
-
-          });
+        });
 
       $img.prepend ($deleteButton);
 
@@ -699,29 +703,37 @@
     }
   };
 
-  $(function()
+  /////////////////////////// AT LOAD INIT //////////////////////////////
+
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
-      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
-          class="upload header-picture">`)
-        .on("click", function ()
-          {
-            const $header = S.getCurrent ("header");
+      if (H.isLoginPage ())
+        return;
 
-            //FIXME
-            // we need this to cancel edit if no img is selected by user
-            // (desktop version)
-            if ($header.header ("useFocusTrick"))
-              $(window).on("focus.header", function ()
-                {
-                  $(window).off ("focus.header");
+      const upload = $(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload header-picture">`)[0];
 
-                  if (!_realEdit)
-                    $header.header ("unedit");
-                });
-          })
-        .on("change",function (e)
+      // EVENT "click" on header picture
+      upload.addEventListener ("click", (e)=>
+        {
+          const $header = S.getCurrent ("header");
+
+          //FIXME
+          // we need this to cancel edit if no img is selected by user
+          // (desktop version)
+          if ($header.header ("useFocusTrick"))
+            $(window).on("focus.header", function ()
+              {
+                $(window).off ("focus.header");
+
+                if (!_realEdit)
+                  $header.header ("unedit");
+              });
+        });
+
+      // EVENT "change" on header picture
+      upload.addEventListener ("change", (e)=>
           {
-            const $upload = $(this),
+            const $upload = $(e.target),
                   $header = S.getCurrent ("header"),
                   settings = $header.header ("getSettings");
 
@@ -770,8 +782,9 @@
                 // error cb
                 ()=> $header.header ("unedit"));
             }
-          }).appendTo ("body");
+          });
 
+       document.body.appendChild (upload);
     });
 
 <?php echo $Plugin->getFooter ()?>

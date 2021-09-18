@@ -44,7 +44,7 @@
               $chat.find(".textarea").css ("height", ui.size.height - 100);
             }
         })
-        .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" autofocus value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
+        .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
         // EVENT keypress on chat input
         .on("keypress", function (e)
         {
@@ -93,7 +93,7 @@
     hide ()
     {
       if (this.element.is (":visible"))
-        document.querySelector(`#main-menu li[data-action="chat"] a`).click ();
+        document.querySelector(`#main-menu li[data-action="chat"]`).click ();
     },
 
     // METHOD join ()
@@ -221,10 +221,9 @@
           el.textContent = Number (el.textContent) + 1;
         else
         $(`<li class="chat-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)
-          .on("click", function ()
-          {
-            $("#main-menu").find("li[data-action='chat'] input").click ();
-          })
+          .on("click",
+            ()=> document.querySelector(`#main-menu li[data-action="chat"]`)
+                   .click ())          
           .appendTo ($(`#wall-${this.settings.wallId} .wall-menu`));
       }
 

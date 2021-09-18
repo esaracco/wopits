@@ -42,7 +42,7 @@
     hide ()
     {
       if (this.element.is (":visible"))
-        $("#main-menu").find("li[data-action='arrows'] a").click ();
+        document.querySelector(`#main-menu li[data-action="arrows"]`).click ();
     },
 
     // METHOD toggle ()
@@ -99,10 +99,13 @@
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
-      if (!H.isLoginPage ())
-        setTimeout(()=>{
+      if (H.isLoginPage ())
+        return;
+
+      setTimeout(()=>
+      {
         const $walls = S.getCurrent ("walls");
 
         // EVENT click on arrows tool
@@ -140,8 +143,8 @@
             }
 
             $wall.wall ("showPostitsPlugs");
-
-          })}, 0);
+          });
+        }, 0);
     });
 
 <?php echo $Plugin->getFooter ()?>

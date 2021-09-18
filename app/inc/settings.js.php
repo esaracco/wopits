@@ -23,69 +23,74 @@
     {
       const plugin = this,
             $settings = plugin.element,
-            $head = $("head");
+            head = document.head;
 
       ["<?=implode('","', WPT_THEMES)?>"].forEach ((color) =>
         {
           const id = `theme-${color}`;
 
           if (!document.getElementById (id))
-            $head.append (`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`);
+            head.appendChild ($(`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`)[0]);
         });
 
-      $("a.dot-theme")
-        // EVENT click on theme color button
-        .on("click", function ()
+      // TODO Factoring
+      // EVENT "click" on theme color button
+      const _eventCC = (e)=>
         {
-          plugin.set ({theme: this.dataset.theme});
+          plugin.set ({theme: e.target.dataset.theme});
           plugin.applyTheme ();
-        });
+        };
+      document.querySelectorAll("a.dot-theme").forEach (
+        el=> el.addEventListener ("click", _eventCC));
 
-      $settings.find(".timezone")
-        // EVENT change on timezone select
-        .on("change", function (e)
+      // EVENT "change" on timezone select
+      $settings[0].querySelector(".timezone").addEventListener("change", (e)=>
         {
-          const timezone = this.value;
+          const el = e.target;
 
           H.openConfirmPopup ({
             type: "reload-app",
             icon: "sync-alt",
             content: `<?=_("Reload wopits to apply the new timezone?")?>`,
-            cb_ok: () => plugin.applyTimezone (timezone),
+            cb_ok: () => plugin.applyTimezone (el.value),
             cb_close: () =>
               {
-                const tz = this.dataset.timezone;
+                const tz = el.dataset.timezone;
 
                 if (tz !== undefined)
-                  $settings.find("select.timezone").val (tz);
+                  el.value = tz;
               }
           });
         });
 
-      $settings.find(".locale-picker > div").each (function ()
+      $settings.find(".locale-picker div").each (function ()
         {
-          const $item = $(this),
-                locale = $item[0].dataset.locale;
+          const locale = this.dataset.locale;
 
           if (plugin.settings.locale && plugin.settings.locale == locale)
-            $item.addClass ("selected");
+            this.classList.add ("selected");
 
-          $item
-            // EVENT click on locale buttons
-            .on("click", function ()
-            {
-              if (!$(this).hasClass ("selected"))
+          this.innerHTML = `${locale} <img src='/img/locale/${locale}-24.png'>`;
+        });
+
+        // EVENT "click" on locale buttons
+        const _eventCL = (e)=>
+          {
+            const el = e.target,
+                  div = el.tagName=="DIV"?el:el.closest("div");
+
+            if (!div.classList.contains ("selected"))
               {
                 H.openConfirmPopup ({
                   type: "reload-app",
                   icon: "sync-alt",
                   content: `<?=_("Reload wopits to apply the new language?")?>`,
-                  cb_ok: () => plugin.applyLocale (locale)
+                  cb_ok: () => plugin.applyLocale (div.dataset.locale)
                 });
               }
-            })
-            .append (`${locale} <img src='/img/locale/${locale}-24.png'>`);
-        });
+          };
+        $settings[0].querySelectorAll(".locale-picker div").forEach (
+          el=> el.addEventListener ("click", _eventCL));
     },
 
     // METHOD applyLocale ()
@@ -105,12 +110,12 @@
     {
       const theme = wpt_userData.settings.theme||"theme-default",
             current = document.querySelector (
-                        "link[id^='theme-']:not([media='none'])");
+                        `link[id^="theme-"]:not([media="none"])`);
 
       if (!current || current.id != theme)
       {
-        document.querySelectorAll("link[id^='theme-']").forEach ((link)=>
-          link.media = (link.id == theme) ? "" : "none");
+        document.querySelectorAll("link[id^='theme-']").forEach (el=>
+          el.media = (el.id == theme) ? "" : "none");
 
         // Apply theme to postits
         if (document.querySelector(".postit"))
@@ -256,25 +261,27 @@
         noeffect: true,
         init: ($p)=>
         {
-          $p.find("a.dot-theme")
-            // EVENT click on theme color button chooser
-            .on("click", function ()
-            {
-              plugin.set ({theme: this.dataset.theme});
-              plugin.applyTheme ();
-            });
+          const p = $p[0];
 
-          $p
-            // EVENT theme chooser popup closing
-            .on("hide.bs.modal", function ()
+          // TODO Factoring
+          // EVENT "click" on theme color button chooser
+          const _eventCC = (e)=>
+            {
+              plugin.set ({theme: e.target.dataset.theme});
+              plugin.applyTheme ();
+            };
+          p.querySelectorAll("a.dot-theme").forEach (
+            el=> el.addEventListener ("click", _eventCC));
+
+          // EVENT "hide.bs.modal" on theme chooser popup
+          p.addEventListener ("hide.bs.modal", (e)=>
             {
               if (!wpt_userData.settings.theme)
                 plugin.set ({theme: "theme-default"});
             });
 
-          $p.find(".settings")
-            // EVENT click on settings button in theme chooser popup
-            .on("click", function ()
+          // EVENT "click" on settings button in theme chooser popup
+          p.querySelector(".settings").addEventListener ("click", (e)=>
             {
               bootstrap.Modal.getInstance($p).hide ();
               plugin.open ();
@@ -367,7 +374,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
       if (H.isLoginPage ())
       {

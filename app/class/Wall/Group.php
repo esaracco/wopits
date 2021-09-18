@@ -564,6 +564,14 @@ class Group extends Wall
     $this->db
       ->prepare('
         DELETE FROM _perf_walls_users
+        WHERE groups_id IS NOT NULL
+          AND walls_id IN (
+            SELECT walls_id FROM _perf_walls_users WHERE users_id = ?)')
+      ->execute ([$this->userId]);
+
+    $this->db
+      ->prepare('
+        DELETE FROM _perf_walls_users
         WHERE users_id = ? AND groups_id IS NOT NULL')
       ->execute ([$this->userId]);
 

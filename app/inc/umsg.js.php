@@ -39,7 +39,7 @@
           const wallId = this.dataset.wallid;
           let data;
 
-          $("#popup-layer").click ();
+          document.getElementById("popup-layer").click ();
 
           e.preventDefault ();
 
@@ -125,7 +125,7 @@
       if (!count)
       {
         $badge.hide ();
-        $("#popup-layer").click ();
+        document.getElementById("popup-layer").click ();
       }
     },
 
@@ -171,7 +171,7 @@
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
       if (!H.isLoginPage ())
         setTimeout (()=> $("#umsg").umsg (), 0);

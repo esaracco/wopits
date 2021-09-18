@@ -66,7 +66,9 @@
     // METHOD open ()
     open ()
     {
-      S.getCurrent("filters").filters ("reset");
+      var tmp = S.getCurrent ("filters");
+      if (tmp.is (":visible"))
+        tmp.filters ("reset");
 
       H.openModal ({item: this.element});
       this.replay ();
@@ -81,19 +83,21 @@
     // METHOD restore ()
     restore (str)
     {
-      this.element.find("input").val (str);
-      this.element.find("input").trigger ("keyup");
+      const input = this.element[0].querySelector ("input");
+
+      input.value = str;
+      input.dispatchEvent (new Event("keyup"));
     },
 
     // METHOD replay ()
     replay ()
     {
-      const $input = this.element.find ("input");
+      const input = this.element[0].querySelector ("input");
 
-      $input.val (S.getCurrent("wall")[0].dataset.searchstring||"");
+      input.value = S.getCurrent("wall")[0].dataset.searchstring||"";
 
-      if ($input.val())
-        $input.trigger ("keyup");
+      if (input.value)
+        input.dispatchEvent (new Event("keyup"));
       else
         this.reset ();
     },

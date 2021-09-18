@@ -87,25 +87,38 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  if (!H.isLoginPage ())
-    $(function()
-      {
-        setTimeout (()=>{
+  document.addEventListener ("DOMContentLoaded", ()=>
+    {
+      if (H.isLoginPage ())
+        return;
 
-        // EVENT click on workers count
-        $(document).on("click", ".pwork", function (e)
+      setTimeout (()=>
+      {
+        // EVENT "click"
+        document.body.addEventListener ("click", (e)=>
           {
-            if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-              $(this).pwork ("open");
-            else
+            const el = e.target;
+
+            // EVENT "click" on workers count
+            if (el.matches (".pwork,.pwork *"))
             {
-              $(this).closest(".postit").postit ("setCurrent");
-              $(this).pwork ("display");
+              const $pwork = $((el.tagName == "DIV")?el:el.closest("div"));
+
+              if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+                $pwork.pwork ("open");
+              else
+              {
+                $pwork.closest(".postit").postit ("setCurrent");
+                $pwork.pwork ("display");
+              }
             }
           });
 
-          // EVENT hidden on popup (only for devices without mouse)
-          $(document).on ("hide.bs.modal", "#pworkPopup",  function (e)
+        // EVENT "hide.bs.modal"
+        document.body.addEventListener ("hide.bs.modal", (e)=>
+          {
+            // EVENT "hide.bs.modal" on workers popup
+            if (e.target.id == "pworkPopup")
             {
               if (S.get ("still-closing")) return;
 
@@ -117,7 +130,7 @@
                       "unedit" : "unsetCurrent");
                 };
 
-              const $popup = $(this),
+              const $popup = $(e.target),
                     pwork = S.getCurrent("postit").postit("getPlugin", "pwork"),
                     newUsers = $popup.usearch ("getNewUsers");
 
@@ -143,7 +156,8 @@
               }
               else
                 __close ();
-            });
+            }
+          });
 
         }, 0);
       });

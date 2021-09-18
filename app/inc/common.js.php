@@ -572,9 +572,6 @@ class WSocket
               //TODO use H.infoPopup()
               var $popup = $("#infoPopup");
 
-              bootstrap.Modal.getOrCreateInstance(
-                document.querySelector(".modal")).hide ();
-
               H.cleanPopupDataAttr ($popup);
 
               $popup.find(".modal-body").html (`<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`);
@@ -582,8 +579,10 @@ class WSocket
               $popup[0].dataset.popuptype = "app-logout";
               H.openModal ({item: $popup, customClass: "zindexmax"});
 
-              setTimeout (
-                ()=> bootstrap.Modal.getInstance($popup).hide (), 3000);
+              // Close current popups if any
+              setTimeout (()=>
+                (S.get("mstack")||[])
+                   .forEach(el=> bootstrap.Modal.getInstance(el).hide()), 3000);
               break;
 
             // refreshpcomm
@@ -655,7 +654,7 @@ class WSocket
               // Check only when all modals are closed
               var iid = setInterval (()=>
                 {
-                  if (!$(".modal:visible").length)
+                  if (!(S.get ("mstack")||[]).length)
                   {
                     clearInterval (iid);
                     H.checkForAppUpgrade (data.version);
@@ -665,9 +664,9 @@ class WSocket
 
             // Reload to refresh user working space.
             case "reloadsession":
-              return location.href = '/r.php?l='+data.locale;
+              return location.href = `/r.php?l=${data.locale}`;
 
-            // Maintenance reload.
+            // Maintenance reload
             case "reload":
               //TODO use H.infoPopup()
               var $popup = $("#infoPopup");
@@ -675,9 +674,9 @@ class WSocket
               // No need to deactivate it afterwards: page will be reloaded.
               S.set ("block-msg", true);
 
-              // Close current popup if any
-              bootstrap.Modal.getOrCreateInstance(
-                document.querySelector(".modal")).hide ();
+              // Close current popups if any
+              (S.get("mstack")||[])
+                .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
 
               H.cleanPopupDataAttr ($popup);
 
@@ -930,10 +929,14 @@ class WHelper
   // METHOD setAutofocus ()
   setAutofocus (el)
   {
-    let tmp;
+    var tmp = el.querySelector (
+          `input[type="text"]:not(:read-only),`+
+          `input[type="email"]:not(:read-only),`+
+          `input[type="password"]:not(:read-only),`+
+          `textarea:not(:read-only)`);
 
-    setTimeout (() =>
-      (tmp = el.querySelector("[autofocus]")) && tmp.focus (), 350);
+    if (tmp)
+      tmp.focus ();
   }
 
   // METHOD testImage ()
@@ -977,7 +980,7 @@ class WHelper
   // METHOD isMainMenuCollapsed ()
   isMainMenuCollapsed ()
   {
-    return $("button[data-target='#main-menu']").is (":visible");
+    return $(`button[data-target="#main-menu"]`).is (":visible");
   }
 
   // METHOD escapeRegex ()
@@ -1013,8 +1016,8 @@ class WHelper
   // METHOD closeMainMenu ()
   closeMainMenu ()
   {
-    if ($("#main-menu.show").length)
-      $("button.navbar-toggler").click ();
+    if (document.querySelector("#main-menu.show"))
+      document.querySelector("button.navbar-toggler").click ();
   }
   
   // METHOD trimObject ()
@@ -1312,7 +1315,7 @@ class WHelper
   openConfirmPopover (args)
   {
     const scroll = !!args.scrollIntoView;
-    let tmp, btn, buttons;
+    let btn, buttons;
 
     if (!this.haveMouse ())
       this.fixVKBScrollStart ();
@@ -1375,9 +1378,6 @@ class WHelper
     bp.show ();
 
     const body = bp.tip.querySelector (".popover-body");
-
-    if (this.haveMouse () && (tmp = body.querySelector("input")) )
-      tmp.focus ();
 
     $(body).find("button:not(.close)").on("click", function (e)
       {
@@ -1985,9 +1985,9 @@ class WHelper
   
         if (userVersion)
         {
-          // Close current popup if any
-          bootstrap.Modal.getOrCreateInstance(
-            document.querySelector(".modal")).hide ();
+          // Close current popups if any
+          (S.get("mstack")||[])
+             .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
   
           this.cleanPopupDataAttr ($popup);
   
@@ -2045,7 +2045,8 @@ class WHelper
   //FIXME
   fixVKBScrollStart ()
   {
-    const walls = document.getElementById ("walls");
+    const walls = document.getElementById ("walls"),
+          wall = S.getCurrent("wall")[0];
 
     if (!walls)
       return;
@@ -2061,20 +2062,21 @@ class WHelper
     body.style.overflow = "hidden";
     body.style.top = `${bodyScrollTop*-1}px`;
   
-    if (this.navigatorIsEdge ())
-      S.getCurrent("wall")[0].style.left = `${wallsScrollLeft*-1}px`;
+    if (this.navigatorIsEdge () && wall)
+      wall.style.left = `${wallsScrollLeft*-1}px`;
   
     walls.style.width = `${window.innerWidth}px`;
     walls.style.overflow = "hidden";
   
-    $(window).trigger ("resize");
+    window.dispatchEvent (new Event("resize"));
   }
   
   // METHOD fixVKBScrollStop ()
   //FIXME
   fixVKBScrollStop ()
   {
-    const walls = document.getElementById ("walls");
+    const walls = document.getElementById ("walls"),
+          wall = S.getCurrent("wall")[0];
 
     if (!walls)
       return;
@@ -2084,14 +2086,15 @@ class WHelper
   
     walls.style.overflow = "auto";
     walls.style.width = "auto";
-    if (this.navigatorIsEdge ())
-      S.getCurrent("wall")[0].style.left = "";
+    if (this.navigatorIsEdge () && wall)
+      wall.style.left = "";
     walls.scrollLeft = S.get ("wallsScrollLeft");
   
     this.waitForDOMUpdate (()=>
       {
         this.fixMainHeight ();
-        S.getCurrent("wall").wall ("repositionPostitsPlugs");
+        if (wall)
+          $(wall).wall ("repositionPostitsPlugs");
       });
   }
 

@@ -12,7 +12,7 @@
         <div class="main">
         <div class="input-group mb-1">
           <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
-          <input type="text" class="form-control" name="username" value="" required placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="off" autofocus maxlength="<?=Wopits\DbCache::getFieldLength('users', 'username')?>">
+          <input type="text" class="form-control" name="username" value="" required placeholder="<?=_("login")?>" autocorrect="off" autocapitalize="off" maxlength="<?=Wopits\DbCache::getFieldLength('users', 'username')?>">
         </div>
         <div class="input-group mb-1">
           <span class="input-group-text"><i class="fas fa-key fa-fw"></i></span>

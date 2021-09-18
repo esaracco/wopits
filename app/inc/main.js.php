@@ -59,8 +59,8 @@
             writeAccess = this.canWrite (),
             rows = [];
 
-      settings.tabLink =
-        $(".nav-tabs.walls").find (`a[href="#wall-${settings.id}"]`);
+      settings.tabLink = $(document.querySelector (
+                             `.nav-tabs.walls a[href="#wall-${settings.id}"]`));
 
       // Add wall menu
       $(`#wall-${settings.id}`).find(".wall-menu").wmenu ({
@@ -182,7 +182,7 @@
           plugin.setName (settings.name);
           plugin.setDescription (settings.description);
 
-          $(window).trigger ("resize");
+          window.dispatchEvent (new Event("resize"));
 
           if (settings.restoring)
           {
@@ -307,6 +307,18 @@
       $(`#wall-${this.settings.id}`).addClass ("active");
 
       this.menu ({from: "wall", type: "have-wall"});
+    },
+
+    // METHOD ctrlMenu ()
+    ctrlMenu (action, type)
+    {
+      const m = document.querySelector (
+                  `.dropdown-menu li[data-action="${action}"] a`).classList
+
+      if (type == "off")
+        m.add ("disabled");
+      else
+        m.remove ("disabled");
     },
 
     // METHOD menu ()
@@ -448,9 +460,8 @@
 
                 $menuNormal.addClass("disabled");
 
-                $('.dropdown-menu li[data-action="zoom-screen"] a')
-                  .removeClass ("disabled");
-    
+                this.ctrlMenu ("zoom-screen", "on");
+
                 if (adminAccess)
                   $menu.find('[data-action="chat"] a,'+
                              '[data-action="filters"] a,'+
@@ -684,8 +695,8 @@
         {
           // Postits
           case "postit":
-            const $postit = $wall.find (
-                     `.postit[data-id="postit-${d.postit.id}"]`),
+            const $postit = $(wall.querySelector (
+                     `.postit[data-id="postit-${d.postit.id}"]`)),
                   cell = wall.querySelector (
                     `td[data-id="cell-${d.postit.cells_id}"]`);
 
@@ -720,8 +731,7 @@
               // Remove postit
               case "delete":
 
-                $wall.find(`[data-id="postit-${d.postit.id}"]`)
-                  .postit ("remove");
+                $postit.postit ("remove");
                 break;
             }
 
@@ -1197,7 +1207,8 @@
     addNew (args, $popup)
     {
       const plugin = this,
-            $tabs = $(".nav-tabs.walls"),
+            tabs = document.querySelector (".nav-tabs.walls"),
+            $tabs = $(tabs),
             method = (args.load) ? "GET" : "PUT",
             service = (args.load) ? `wall/${args.wallId}` : "wall",
             data = (args.load) ? null : {name: args.name, grid: !!args.grid};
@@ -1235,7 +1246,7 @@
       S.reset ();
 
       if (args.restoring)
-        $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
+        tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);
 
       H.fetch (
         method,
@@ -1255,13 +1266,15 @@
           // The wall does not exists anymore.
           if (d.removed)
           {
-            $tabs.find(`a[href="#wall-${args.wallId}"]`).remove ();
+            var tmp = tabs.querySelector(`a[href="#wall-${args.wallId}"]`);
+            if (tmp)
+              tmp.remove ();
 
             return H.waitForDOMUpdate (()=>
               {
-                if (args.restoring && $tabs.find(".nav-item").length)
+                if (args.restoring && tabs.querySelector(".nav-item"))
                 {
-                  const el = $tabs[0].querySelector (".nav-item:first-child");
+                  const el = tabs.querySelector (".nav-item:first-child");
 
                   $(el).trigger ("mousedown");
                   bootstrap.Tab.getOrCreateInstance(el).show ();
@@ -1294,35 +1307,23 @@
           if ($popup)
             $popup.modal ("hide");
 
-          $(".tab-content.walls").append (`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`);
+          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
 
           if (!args.restoring)
-            $tabs.prepend (`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`);
+            tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);
 
-          $tabs.find(`a[href="#wall-${d.id}"]`)
-            .attr("data-access", d.access)
-            .prepend($(`<button type="button" class="close" title="<?=_("Close this wall")?>"><span class="close">&times;</span></button>`)
-            // EVENT click on close wall icon
-            .on("click",function(e)
-            {
-              e.stopImmediatePropagation ();
+          if (args.lastWall)
+            d.lastWall = args.lastWall;
 
-              H.openConfirmPopover ({
-                item: $(this.closest(".nav-item").querySelector ("span.val")),
-                placement: "left",
-                title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
-                content: `<?=_("Close this wall?")?>`,
-                cb_ok: ()=> S.getCurrent("wall").wall ("close")
-              });
-            }));
+          const wallTab = tabs.querySelector (`a[href="#wall-${d.id}"]`);
+
+          wallTab.setAttribute ("data-access", d.access);
+          wallTab.insertBefore ($(`<button type="button" class="close" title="<?=_("Close this wall")?>"><span class="close">&times;</span></button>`)[0], wallTab.firstChild);
 
           d["background-color"] =
             $("#settingsPopup").settings ("get", "wall-background", d.id);
 
-          const $wallDiv = $(`#wall-${d.id}`);
-
-          if (args.lastWall)
-            d.lastWall = args.lastWall;
+          const $wallDiv = $(document.getElementById(`wall-${d.id}`));
 
           $wallDiv.find(".wall").wall (d);
           $wallDiv.find(".chat").chat ({wallId: d.id});
@@ -1332,8 +1333,7 @@
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
             S.set ("newWall", true);
-            bootstrap.Tab.getOrCreateInstance ($tabs[0].querySelector(
-              `a[href="#wall-${d.id}"]`)).show ();
+            bootstrap.Tab.getOrCreateInstance (wallTab).show ();
             S.unset ("newWall");
           }
 
@@ -1525,24 +1525,24 @@
     {
       H.loadPopup ("createWall", {
         init: ($p)=>
-          $p.find("#w-grid")
+          $p[0].querySelector("#w-grid")
             // EVENT change on wall dimension in wall creation popup
-            .on("change", function ()
-            {
-              const btn = this;
+            .addEventListener("change", (e)=>
+              {
+                const btn = e.target;
 
-              $p.find("span.required").remove ();
-              $p.find(".cols-rows input").val (3);
-              $p.find(".width-height input").val ("");
-              $p.find(".cols-rows,.width-height").hide ();
+                $p.find("span.required").remove ();
+                $p.find(".cols-rows input").val (3);
+                $p.find(".width-height input").val ("");
+                $p.find(".cols-rows,.width-height").hide ();
 
-              if (btn.checked)
-                $(this).parent().removeClass ("disabled");
-              else
-                $(this).parent().addClass ("disabled");
+                if (btn.checked)
+                  btn.parentNode.classList.remove ("disabled");
+                else
+                  btn.parentNode.classList.add ("disabled");
 
-              $p.find(btn.checked?".cols-rows":".width-height").show ("fade");
-            }),
+                $p.find(btn.checked?".cols-rows":".width-height").show ("fade");
+              }),
         cb: ($p)=> $p[0].dataset.noclosure = true
       });
     },
@@ -1558,18 +1558,6 @@
         {
           H.loadPopup ("wallUsersview", {
             open: false,
-            init: ($p)=>
-            {
-              // EVENT click on username in wall users popup
-              $p.on("click",".list-group-item", function (e)
-                {
-                  H.openUserview ({
-                    about: this.dataset.about,
-                    picture: this.dataset.picture,
-                    title: this.dataset.title
-                  });
-                });
-            },
             cb: ($p)=>
             {
               const userId = wpt_userData.id;
@@ -2004,7 +1992,7 @@
       }
 
       $("#normal-display-btn").show ();
-      $('.dropdown-menu li[data-action="zoom-screen"] a').addClass ("disabled");
+      this.ctrlMenu ("zoom-screen", "off");
 
       $("#walls").scrollLeft (
         ((30000*S.get("zoom-level"))/2-window.innerWidth/2)+20);
@@ -2227,7 +2215,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
+  document.addEventListener ("DOMContentLoaded", ()=>
     {
       if (!H.isLoginPage ())
         setTimeout (()=>{
@@ -2294,35 +2282,27 @@
 
         // Arrows plugin is useless on desktop
         if (H.haveMouse ())
-          $("#main-menu").addClass ("noarrows");
+          document.getElementById("main-menu").classList.add ("noarrows");
 
-        $("body").prepend ($(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)
-          // EVENT click on back to standard view button
-          .on("click", ()=>S.getCurrent("wall").wall("zoom",{type:"normal"}))
-          .on("shown.bs.popover", function (e)
-          {
-            // Reduce the popover z-index
-            document.getElementById(this.getAttribute ("aria-describedby"))
-              .style.zIndex = 1031;
-          }));
+        const displayBtn = $(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)[0];
 
-        // EVENT click on main menu account button
-        $("#account").on("click", function (e)
-        {
-          H.closeMainMenu ();
-          H.loadPopup ("account");
-        });
+        // EVENT "click" on back to standard view button
+        displayBtn.addEventListener ("click",
+          (e)=> S.getCurrent("wall").wall("zoom",{type:"normal"}));
 
-        $(`<input type="file" accept=".zip" class="upload import-wall">`)
-          // EVENT change for wall importation upload
-          .on("change", function (e)
+        document.body.insertBefore (displayBtn, document.body.firstChild);
+
+        const upload = $(`<input type="file" accept=".zip" class="upload import-wall">`)[0];
+
+        // EVENT "change" for wall importation upload
+        upload.addEventListener ("change", (e)=>
             {
               if (e.target.files && e.target.files.length)
               {
                 H.getUploadedFiles (e.target.files, "\.zip$",
                   (e, file) =>
                   {
-                    $(this).val ("");
+                    e.target.value = "";
   
                     if (H.checkUploadFileSize ({
                           size: e.total,
@@ -2362,58 +2342,103 @@
                     }
                   });
               }
-            }).appendTo ("body");
+            });
 
-        $(document)
-          // EVENT CLICK on main menu items
-          .on("click", ".navbar.wopits a,"+
-                       ".wall-menu li,"+
-                       "#main-menu a:not(.disabled),"+
-                       ".nav-tabs.walls a[data-action='new'],"+
-                       "#welcome",function(e)
+        document.body.appendChild (upload);
+
+        // EVENT "click" on main content wopits icon
+        document.getElementById("welcome").addEventListener ("click", (e)=>
           {
-            const $wall = S.getCurrent ("wall"),
-                  action = this.dataset.action||this.parentNode.dataset.action;
+            H.closeMainMenu ();
+            $("<div/>").wall ("openNamePopup");
+          });
+
+        // EVENT "click" on walls tab
+        document.querySelector(".nav-tabs.walls")
+          .addEventListener ("click", (e)=>
+          {
+            const el = e.target;
+
+            // EVENT "click" on "close wall" tab button
+            if (el.classList.contains ("close"))
+            {
+              e.stopImmediatePropagation ();
+
+              H.openConfirmPopover ({
+                item: $(el.closest(".nav-item").querySelector ("span.val")),
+                placement: "left",
+                title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
+                content: `<?=_("Close this wall?")?>`,
+                cb_ok: ()=> S.getCurrent("wall").wall ("close")
+              });
+            }
+            // EVENT "click" on "new wall" tab button
+            else if (el.parentNode.dataset.action=="new")
+            {
+              H.closeMainMenu ();
+              $("<div/>").wall ("openNamePopup");
+            }
+          });
+
+        // EVENT "click"
+        document.body.addEventListener ("click", (e)=>
+          {
+            const el = e.target;
+
+            // "click" on wall users view popup
+            if (el.matches ("#wallUsersviewPopup *"))
+            {
+              e.stopImmediatePropagation ();
+
+              // EVENT "click" on users list
+              if (el.matches (".list-group-item,.list-group-item *"))
+              {
+                const li = el.tagName=="LI"?el:el.closest("li");
+
+                H.openUserview ({
+                  about: li.dataset.about,
+                  picture: li.dataset.picture,
+                  title: li.dataset.title
+                });
+              }
+            }
+          });
+
+        // EVENT "click" on main menu items
+        document.getElementById("main-menu").addEventListener ("click", (e)=>
+          {
+            const el = e.target,
+                  $wall = S.getCurrent ("wall"),
+                  action = el.dataset.action||el.closest("li").dataset.action;
 
             switch (action)
             {
               case "zoom+":
-
                 $wall.wall ("zoom", {type: "+"});
-
+                $wall.wall ("ctrlMenu", "zoom-screen", "on");
                 break;
 
               case "zoom-":
-
                 $wall.wall ("zoom", {type: "-"});
-
+                $wall.wall ("ctrlMenu", "zoom-screen", "on");
                 break;
 
               case "zoom-screen":
-
                 $wall.wall ("zoom", {type:"screen"});
-
                 break;
 
               case "zoom-normal":
-
                 $wall.wall ("zoom", {type: "normal"});
-
-                break;
-
-              case "show-users":
-
-                $wall.wall ("displayWallUsersview");
-
                 break;
 
               case "chat":
 
-                var input = $(this).find("input")[0];
-
                 // Manage checkbox
-                if (e.target.tagName != "INPUT")
+                if (el.tagName != "INPUT")
+                {
+                  var input = el.querySelector ("input");
                   input.checked = !input.checked;
+                }
 
                 S.getCurrent("chat").chat ("toggle");
 
@@ -2421,11 +2446,12 @@
 
               case "filters":
 
-                var input = $(this).find("input")[0];
-
                 // Manage checkbox
-                if (e.target.tagName != "INPUT")
+                if (el.tagName != "INPUT")
+                {
+                  var input = el.querySelector ("input");
                   input.checked = !input.checked;
+                }
 
                 S.getCurrent("filters").filters ("toggle");
 
@@ -2433,94 +2459,65 @@
 
               case "arrows":
 
-                var input = $(this).find("input")[0];
-
                 // Manage checkbox
-                if (e.target.tagName != "INPUT")
+                if (el.tagName != "INPUT")
+                {
+                  var input = el.querySelector ("input");
                   input.checked = !input.checked;
+                }
 
                 S.getCurrent("arrows").arrows ("toggle");
 
                 break;
 
               case "settings":
-
                 $("#settingsPopup").settings ("open");
-
                 break;
 
               case "new":
-
                 H.closeMainMenu ();
-
                 $("<div/>").wall ("openNamePopup");
-
                 break;
 
               case "about":
-
                 H.loadPopup ("about");
-
                 break;
 
               case "user-guide":
-
                 H.loadPopup ("userGuide");
-
                 break;
 
               case "open":
-
                 $("<div/>").wall ("openOpenWallPopup");
-
                 break;
 
               case "close-walls":
-
                 $("<div/>").wall ("openCloseAllWallsPopup");
-
                 break;
 
               case "delete":
-
                 $wall.wall ("openDeletePopup");
-
                 break;
 
               case "clone":
-
                 $wall.wall ("clone");
-
                 break;
 
               case "export":
-
                 $wall.wall ("export");
-
                 break;
 
               case "import":
-
                 $("<div/>").wall ("import");
-
-                break;
-
-/*
-              case "view-properties":
-
-                $wall.wall ("openPropertiesPopup");
-*/
-
                 break;
             }
-          })}, 0);
+          });
+      }, 0);
       else
-        $('[data-action="about"]')
         // EVENT CLICK on about button in the login page
-        .on("click", function ()
-        {
-          H.openModal ({item: $("#aboutPopup")});
-        });
+        document.querySelectorAll(`[data-action="about"]`).forEach (el=>
+          el.addEventListener ("click",
+            (e)=> H.openModal ({item: $("#aboutPopup")})));
   });
 
 <?php echo $Plugin->getFooter ()?>
