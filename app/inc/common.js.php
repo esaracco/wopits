@@ -71,7 +71,7 @@ class Wpt_accountForms extends Wpt_forms
       H.displayMsg ({
         title: `<?=_("Account")?>`,
         type: "warning",
-        msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>")?>`
+        msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>A <b>lower case</b> and a <b>upper case</b> letter</li><li>A <b>digit</b></li></ul>")?>`
       });
     }
 

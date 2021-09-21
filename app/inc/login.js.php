@@ -25,21 +25,34 @@
     {
       const plugin = this,
             $login = plugin.element,
-            $welcome = $("#desc-container");
+            login = $login[0];
       let $popup;
 
-      if ($welcome.length && !ST.noDisplay ("welcome-msg"))
+      if (!ST.noDisplay ("welcome-msg"))
       {
-        $welcome.html (`<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert"></button><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p><div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div></div>`);
+        const welcome = document.getElementById ("desc-container");
 
-        $welcome.find("button.nowelcome").on("click", function ()
+        welcome.innerHTML = `<div class="welcome alert alert-primary alert-dismissible fade show" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert"></button><h4 class="alert-heading"><?=_("Welcome to wopits!")?></h4><p><?=sprintf(_("A free, open-source sticky notes manager that respects your privacy, that's good, right? %s will let you do a lot of things, without ever having to worrying about where your data is going to or how it is monetized."), '<a href="https://wopits.esaracco.fr" target="_blank">wopits</a>')?></p><hr><p class="mb-0"><?=sprintf(_("Besides, you don't have to use it online: you can %sget the code%s and install it yourself!"), '<a href="https://github.com/esaracco/wopits" target="_blank">', '</a>')?></p><div class="mt-3"><button type="button" class="btn btn-sm btn-primary nowelcome"><?=_("I get it !")?></button></div></div>`;
+
+        // EVENT "closed.bs.alert" on alert
+        welcome.querySelector(".alert").addEventListener("closed.bs.alert",
+          (e)=> H.setAutofocus (login));
+
+        // EVENT "click" on "I get it!" button"
+        welcome.querySelector("button.nowelcome").addEventListener ("click",
+          (e)=>
           {
             ST.noDisplay ("welcome-msg", true);
-
-            $(this).closest(".alert").remove ();
+            e.target.closest(".alert").remove ();
+            H.setAutofocus (login);
           });
-      }
 
+        welcome.focus ();
+      }
+      else
+        H.setAutofocus (login);
+
+      // EVENT "click" on buttons and a links
       $login
         .on("click", "button,a", function (e)
         {
@@ -49,14 +62,15 @@
 
               if (plugin.checkRequired ($login.find("input"), false))
               {
-                const du = $login.find("input[name='_directURL']").val ();
+                const du =
+                        login.querySelector(`input[name="_directURL"]`).value;
 
                 plugin.login (H.trimObject ({
                   directURL: (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ?
                                 `/?${du}` : null,
-                  remember: $login.find("#remember")[0].checked,
-                  username: $login.find("input[type='text']").val (),
-                  password: $login.find("input[type='password']").val ()
+                  remember: document.getElementById("remember").checked,
+                  username: login.querySelector(`input[type="text"]`).value,
+                  password: login.querySelector(`input[type="password"]`).value
                 }, ['password']));
               }
 
@@ -85,21 +99,22 @@
 
           }
         })
+        // EVENT "keypress"
         .on("keypress", function (e)
         {
           if (e.which == 13 && e.target.tagName == "INPUT")
           {
             e.preventDefault ();
 
-            $(this).find(".btn-success").click ();
+            this.querySelector(".btn-success").click ();
           }
         });
 
       $("#resetPasswordPopup .btn-primary")
         .on("click", function (e)
         {
-          const $popup = $(this).closest(".modal"),
-                $input = $popup.find("input");
+          const $popup = $(this).closest (".modal"),
+                $input = $popup.find ("input");
 
           e.stopImmediatePropagation ();
 
@@ -115,8 +130,8 @@
       $("#createAccountPopup .btn-primary")
         .on("click", function (e)
         {
-          const $popup = $(this).closest(".modal"),
-                $form = $popup.find("form");
+          const $popup = $(this).closest (".modal"),
+                $form = $popup.find ("form");
 
           e.stopImmediatePropagation ();
 
@@ -134,7 +149,7 @@
                 fullname: $form.find("input[name='fullname']").val (),
                 password: $form.find("input[name='password']").val (),
                 email: $form.find("input[name='email']").val ()
-              }, ['password']));
+              }, ["password"]));
             }
           }
           else if (plugin.checkRequired ($popup.find("input")) &&
@@ -147,21 +162,19 @@
             $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
 
             $(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)
-            .on("click", function ()
-            {
-              plugin.resetCreateUserForm ();
-            })
-            .insertBefore ($popup.find(".btn-primary"));
+              // EVENT "click" on "previous" button
+              .on("click", (e)=> plugin.resetCreateUserForm ())
+              .insertBefore ($popup.find(".btn-primary"));
 
-            $popup.find(".btn-primary").html(
-              `<i class='fas fa-bolt fa-fw fa-xs'></i> <?=_("Create")?></i>`);
+            $popup[0].querySelector(".btn-primary").innerHTML = 
+              `<i class="fas fa-bolt fa-fw fa-xs"></i> <?=_("Create")?></i>`;
 
-            setTimeout (() => $popup.find("input").eq(0).focus (), 150);
+            setTimeout (() => $popup[0].querySelector("input").focus (), 150);
           }
 
         });
 
-      if ($login.find("input[name='_directURL']").val()
+      if (login.querySelector(`input[name="_directURL"]`).value
             .indexOf("unsubscribe") != -1)
         H.infoPopup (`<?=_("Please log in to update your preferences")?>`);
     },
@@ -212,6 +225,7 @@
           "POST",
           "user/logout",
           null,
+          // success cb
           ()=> location.href = "/login.php");
     },
 

@@ -322,14 +322,20 @@ document.addEventListener ("DOMContentLoaded", ()=>
     (e)=> H.setAutofocus (document.getElementById(
             e.target.getAttribute("aria-describedby"))));
 
-  if (!H.haveMouse ())
-  { 
     // EVENT "hide.bs.modal" on popups
     //       Blur input/textarea to hide virtual keyboard
-    document.body.addEventListener ("hide.bs.modal",
-      (e)=> e.target.querySelectorAll("input,textarea").forEach (
-              el=> el.blur ()));
-  }
+    document.body.addEventListener ("hide.bs.modal", (e)=>
+      {
+        const el = e.target;
+
+        if (!H.haveMouse ())
+          el.querySelectorAll("input,textarea").forEach ( el=> el.blur ());
+
+        if (el.id == "wpropPopup" &&
+            H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
+            !el.dataset.uneditdone)
+          S.getCurrent("wall").wall ("unedit");
+      });
 
   // EVENT "hidden" on popups
   document.body.addEventListener ("hidden.bs.modal", (e)=>
@@ -365,13 +371,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
               $("<div/>").login ("logout", {auto: true});
               break;
           }
-          break;
-
-        case "wpropPopup":
-
-          if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
-              !el.dataset.uneditdone)
-            S.getCurrent("wall").wall ("unedit");
           break;
 
         case "postitViewPopup":

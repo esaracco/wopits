@@ -73,11 +73,11 @@
               <?php endif?>
 
               <div class="input-group mb-1">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=DbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="off" autofocus>
+                <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
+                <input type="text" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=DbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="off">
               </div>
               <div class="input-group mb-2">
-                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                <span class="input-group-text"><i class="fas fa-key fa-fw"></i></span>
                 <input type="password" class="form-control" name="password" value="" maxlength="<?=DbCache::getFieldLength('users', 'password')?>" required placeholder="<?=_("password")?>" autocorrect="off" autocapitalize="off">
               </div>
               <div class="form-group">

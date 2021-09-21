@@ -21,16 +21,14 @@
     // METHOD init ()
     init (args)
     {
-      const plugin = this;
-
-      plugin.element.find(".reject-sharing button")
-        .on ("click", function ()
+      this.element[0].querySelector(".reject-sharing button")
+        .addEventListener ("click", (e)=>
         {
           H.openConfirmPopover ({
-            item: $(this),
+            item: $(e.target),
             title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
             content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
-            cb_ok: () => plugin.removeGroupUser ()
+            cb_ok: () => this.removeGroupUser ()
           });
         });
     },

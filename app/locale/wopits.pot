@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2021-09-18 18:13+0200\n"
+        "POT-Creation-Date: 2021-09-21 06:23+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1234,7 +1234,7 @@ msgstr  ""
 msgid   "Your new password will be sent to the address below:"
 msgstr  ""
 
-msgid   "Your password must contain at least:<ul><li><b>6</b> characters</li><li>One <b>lower case</b> letter and one <b>upper case</b> letter</li><li>One <b>number</b></li></ul>"
+msgid   "Your password must contain at least:<ul><li><b>6</b> characters</li><li>A <b>lower case</b> and a <b>upper case</b> letter</li><li>A <b>digit</b></li></ul>"
 msgstr  ""
 
 msgid   "Your password reset"
