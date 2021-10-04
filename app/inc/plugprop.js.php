@@ -27,10 +27,13 @@
             ra = plugin.element[0],
             ww = $(window).width ();
 
+      const _eventSP = (e)=> _ll && _ll.position ();
+
       // EVENT "hidden.bs.modal" plug's settings popup
       ra.addEventListener ("hidden.bs.modal", (e)=>
         {
-          $(e.target.querySelector(".modal-body")).off ("scroll.plugprop");
+          e.target.querySelector(".modal-body")
+            .removeEventListener ("scroll", _eventSP);
 
           // Remove leader line sample
           plugin.removeSample ();
@@ -41,8 +44,8 @@
       ra.addEventListener ("show.bs.modal", (e)=>
         {
           // EVENT "scroll" on popup body
-          $(e.target.querySelector(".modal-body"))
-            .on("scroll.plugprop", ()=> _ll.position ());
+          e.target.querySelector(".modal-body")
+            .addEventListener ("scroll", _eventSP);
 
           document.getElementById("plugprop-sample").style.backgroundColor =
             S.getCurrent("wall")[0].style.backgroundColor||"#fff";

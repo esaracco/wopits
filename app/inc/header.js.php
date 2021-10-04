@@ -334,7 +334,13 @@
     // METHOD showUserWriting ()
     showUserWriting (user)
     {
-      setTimeout (()=>this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`), 150);
+      setTimeout (()=>
+        {
+          const header = this.element[0];
+
+          header.classList.add ("locked");
+          header.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], header.firstChild);
+        }, 150);
     },
 
     // METHOD useFocusTrick ()
@@ -358,13 +364,16 @@
       const plugin = this;
 
       if (!plugin.useFocusTrick ())
-        $("#upload-layer")
-          .off("mousedown touchstart")
-          .on("mousedown touchstart", function (e)
-          {
-            plugin.unedit ({bubble_cb: ()=> _simulateClick (e.pageX, e.pageY)});
-          })
-          .show ();
+      {
+        const layer = document.getElementById ("upload-layer");
+
+        ["mousedown", "touchstart"].forEach (type=>
+          layer.addEventListener (type, (e)=>
+            plugin.unedit ({bubble_cb: ()=> _simulateClick (e.pageX, e.pageY)}),
+            {once: true}));
+
+        layer.style.display = "block";
+      }
     },
 
     //FIXME still useful?
@@ -377,7 +386,7 @@
     // METHOD removeUploadLayer ()
     removeUploadLayer ()
     {
-      $("#upload-layer").hide ();
+      document.getElementById ("upload-layer").style.display = "none";
     },
 
     // METHOD getImgTemplate ()
@@ -721,13 +730,8 @@
           // we need this to cancel edit if no img is selected by user
           // (desktop version)
           if ($header.header ("useFocusTrick"))
-            $(window).on("focus.header", function ()
-              {
-                $(window).off ("focus.header");
-
-                if (!_realEdit)
-                  $header.header ("unedit");
-              });
+            window.addEventListener ("focus", (e)=>
+              !_realEdit && $header.header ("unedit"), {once: true});
         });
 
       // EVENT "change" on header picture

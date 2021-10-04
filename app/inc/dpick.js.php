@@ -35,35 +35,32 @@
         dateFormat: "yy-mm-dd",
         minDate: moment().tz(wpt_userData.settings.timezone)
                    .add (1, "days").format ("Y-MM-DD"),
-        onSelect: function (dt, $dp)
-          {
-            $alert.show ();
-          }
+        onSelect: (dt, $dp)=> $alert.show ()
       });
 
-      $alert.find("#dp-notify")
-        .on("change", function ()
-          {
-            const $div = $alert.find(">div:eq(1)");
-
-            if (this.checked)
-            {
-              $div.show ("fade");
-              $alert.find("#_dp-shift1")[0].checked = true;
-              $(this).parent().removeClass ("disabled");
-            }
-            else
-            {
-              $div.hide ();
-              $(this).parent().addClass ("disabled");
-            }
-          });
-
-      $alert.find("input[type='number']")
-        .on("click", function ()
+      // EVENT "change" on "alert" checkbox
+      document.getElementById("dp-notify").addEventListener ("change", (e)=>
         {
-          $alert.find("#_dp-shift2")[0].checked = true;
+          const el = e.target,
+                $div = $alert.find(">div:eq(1)");
+
+          if (el.checked)
+          {
+            $div.show ("fade");
+            document.getElementById("_dp-shift1").checked = true;
+            el.parentNode.classList.remove ("disabled");
+          }
+          else
+          {
+            $div.hide ();
+            el.parentNode.classList.add ("disabled");
+           }
         });
+
+      // EVENT "click" on
+      $alert[0].querySelector(`input[type="number"]`)
+        .addEventListener ("focus", (e)=>
+          document.getElementById("_dp-shift2").checked = true);
     },
 
     // METHOD open ()

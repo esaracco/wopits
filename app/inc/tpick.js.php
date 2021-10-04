@@ -39,24 +39,28 @@
       plugin.getTagsList().forEach (
         (tag) => html += `<div>${_getTagTemplate(tag)}</div>`);
 
-      $picker.append(html)
-        .on("click", function(e)
+      $picker.append (html);
+
+      // EVENT "click" on tags
+      $picker[0].addEventListener ("click", (e)=>
         {
+          const el = e.target;
+
           e.stopImmediatePropagation ();
 
-          if (e.target.tagName == 'I')
+          if (el.tagName == 'I')
           {
-            const $div = $(e.target).parent (),
-                  select = !$div.hasClass ("selected"),
+            const div = el.parentNode,
+                  select = !div.classList.contains ("selected"),
                   $postit = S.getCurrent ("postit"),
-                  tag = e.target.dataset.tag;
+                  tag = el.dataset.tag;
 
             if (!select)
-              $postit.find(`.postit-tags i.fa-${tag}`).remove ();
+              $postit[0].querySelector(`.postit-tags i.fa-${tag}`).remove ();
             else
               $postit.find(".postit-tags").prepend (_getTagTemplate(tag));
 
-            $div.toggleClass ("selected");
+            div.classList.toggle ("selected");
 
             plugin.refreshPostitDataTag ();
 

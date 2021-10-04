@@ -24,39 +24,38 @@
     init (args)
     {
       const plugin = this,
-            $search = plugin.element;
+            search = plugin.element[0],
+            input = search.querySelector ("input");
 
       _smPlugin = S.getCurrent("mmenu").mmenu ("getClass");
 
-      $search.find("input")
-        // EVENT keyup on input
-        .on("keyup", function (e)
+      // EVENT "keyup" on input
+      input.addEventListener("keyup", (e)=>
         {
-          const val = this.value.trim ();
+          const val = e.target.value.trim ();
+
+          if (e.which == 13)
+            return;
 
           if (val.length < 3)
             return plugin.reset ();
 
           plugin.search (val)
-        })
-        // EVENT keypress on input
-        .on("keypress", function (e)
-        {
-          if (e.which == 13)
-            plugin.close ();
-        })
-
-      $search.find(".clear-input")
-        // EVENT click on input clear button
-        .on("click", function ()
-        {
-          plugin.reset (true)
-          $search.find("input").focus ();
         });
 
-      $search
-        // EVENT hidden.bs.modal on popups
-        .on("hidden.bs.modal", function (e)
+      // EVENT "keypress" on input
+      input.addEventListener ("keypress", (e)=>
+         (e.which == 13) && plugin.close ());
+
+        // EVENT "click" on input clear button
+      search.querySelector(".clear-input").addEventListener ("click", (e)=>
+        {
+          plugin.reset (true)
+          input.focus ();
+        });
+
+      // EVENT "hidden.bs.modal" on popup
+      search.addEventListener ("hidden.bs.modal", (e)=>
         {
           if (_smPlugin.element.is (":visible"))
             setTimeout(()=> _smPlugin.showHelp (), 0);
@@ -86,7 +85,7 @@
       const input = this.element[0].querySelector ("input");
 
       input.value = str;
-      input.dispatchEvent (new Event("keyup"));
+      input.dispatchEvent (new Event ("keyup"));
     },
 
     // METHOD replay ()
@@ -97,7 +96,7 @@
       input.value = S.getCurrent("wall")[0].dataset.searchstring||"";
 
       if (input.value)
-        input.dispatchEvent (new Event("keyup"));
+        input.dispatchEvent (new Event ("keyup"));
       else
         this.reset ();
     },

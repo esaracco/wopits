@@ -44,38 +44,42 @@
               $chat.find(".textarea").css ("height", ui.size.height - 100);
             }
         })
-        .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`)
-        // EVENT keypress on chat input
-        .on("keypress", function (e)
+        .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`);
+
+      // EVENT "keypress" on main input
+      chat.querySelector("input").addEventListener ("keypress", (e)=>
         {
-          if (e.which == 13 && e.target.tagName == "INPUT")
+          if (e.which == 13)
           {
             e.preventDefault ();
 
-            $(this).find(".btn-primary").click ();
+            chat.querySelector(".btn-primary").click ();
           }
         });
 
+      // EVENT "click" on main input
       // Needed for touch devices
-      $chat.find("input").on("click", function () {this.focus ()});
+      chat.querySelector("input").addEventListener ("click",
+        (e)=> e.target.focus());
 
-      // EVENT click on close button
-      $chat.find(".btn-close").on("click", ()=> plugin.hide ());
+      // EVENT "click" on close button
+      chat.querySelector(".btn-close").addEventListener ("click",
+        (e)=> plugin.hide ());
 
-      $chat.find(".btn-clear").on("click",
-        function ()
+      // EVENT "click" on "clear" button
+      chat.querySelector(".btn-clear").addEventListener ("click", (e)=>
         {
           if (H.disabledEvent ())
             return false;
 
-          this.closest(".form-control").querySelectorAll("li").forEach (
+          e.target.closest(".form-control").querySelectorAll("li").forEach (
             (el)=> el.remove ());
 
           chat.querySelector("input").focus ();
         });
 
-      $chat.find("button.btn-primary").on("click",
-        function ()
+      // EVENT "click" on "send" button
+      chat.querySelector("button.btn-primary").addEventListener ("click", (e)=>
         {
           const input = chat.querySelector ("input"),
                 msg = H.noHTML (input.value);
@@ -214,17 +218,22 @@
 
       if (isHidden && args.method != "DELETE")
       {
-        let el = $(`#wall-${this.settings.wallId} .wall-menu .chat-alert `+
+        const el = $(`#wall-${this.settings.wallId} .wall-menu .chat-alert `+
                      `.wpt-badge`)[0];
 
         if (el)
           el.textContent = Number (el.textContent) + 1;
         else
-        $(`<li class="chat-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)
-          .on("click",
-            ()=> document.querySelector(`#main-menu li[data-action="chat"]`)
-                   .click ())          
-          .appendTo ($(`#wall-${this.settings.wallId} .wall-menu`));
+        {
+          const wmenu = document.querySelector(
+                          `#wall-${this.settings.wallId} .wall-menu`);
+
+          wmenu.appendChild ($(`<li class="chat-alert"><i class="fas fa-comments fa-fw fa-lg set"></i><span class="wpt-badge">1</span></li>`)[0]);
+
+          wmenu.querySelector(".chat-alert").addEventListener ("click",
+            (e)=> document.querySelector(`#main-menu li[data-action="chat"]`)
+                    .click());
+        }
       }
 
       plugin.setCursorToEnd ();

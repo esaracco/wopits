@@ -28,89 +28,108 @@
     {
       const plugin = this,
             $ac = plugin.element,
-            id = $ac[0].id,
-            $search = $ac.find (".search");
+            ac = $ac[0],
+            id = ac.id,
+            search = ac.querySelector (".search");
 
-      $search.append (`<div class="input-group"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span><input type="text" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off"><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu">×</button><div class="content"></div></ul>`);
+      $(search).append (`<div class="input-group"><span class="input-group-text"><i class="fas fa-search fa-xs fa-fw"></i></span><input type="text" class="form-control" value="" placeholder="<?=_("username")?>" autocorrect="off" autocapitalize="off"><button class="btn clear-input" type="button"><i class="fa fa-times"></i></button></div><ul class="result autocomplete list-group"><button type="button" class="close closemenu">×</button><div class="content"></div></ul>`);
 
-      // EVENT hidden.bs.modal
-      $ac.on("hidden.bs.modal", function (e)
+      // EVENT "hidden.bs.modal"
+      ac.addEventListener ("hidden.bs.modal", (e)=>
         {
           if (args.cb_close)
             args.cb_close ();
 
-          $(this).find(".list-group.attr").empty ();
+          e.target.querySelector(".list-group.attr").innerHTML = "";
           _oldIds = undefined;
         });
    
-      // EVENT mouseover on users search list item
-      $(document).on("mouseover", `#${id} .result .list-group-item`, function(e)
+      // EVENT "mouseover"
+      document.body.addEventListener ("mouseover", (e)=>
         {
-          const elSelected = this.closest(".modal-body .search")
-                               .querySelector ("li.selected");
+          const el = e.target;
 
-          elSelected.classList.remove ("selected");
-          this.classList.add ("selected");
-        });
-
-      // EVENT click on users search list item
-      $(document).on("click", `#${id} .list-group-item`, function (e)
-        {
-          if (_readonly)
-            H.openUserview ({
-              about: this.dataset.about,
-              picture: this.dataset.picture,
-              title: this.dataset.title
-            });
-          else
+          // EVENT "mouseover" on users search result list item
+          if (el.matches (`#${id} .result .list-group-item *,`+
+                          `#${id} .result .list-group-item`))
           {
-            const isDed = ($ac[0].dataset.grouptype == <?=WPT_GTYPES_DED?>),
-                  actionAdd = (this.dataset.action == "add"),
-                  args = Object.assign (
-                    {
-                      groupType: $ac[0].dataset.grouptype,
-                      groupId: $ac[0].dataset.groupid,
-                      userId: this.dataset.id
-                    }, plugin.getIds());
+            const li = el.tagName=="LI"?el:el.closest("li");
 
             e.stopImmediatePropagation ();
 
-            $search.find("input").focus ();
+            li.closest(".modal-body .search").querySelector("li.selected")
+              .classList.remove ("selected");
+            li.classList.add ("selected");
+          }
+        });
 
-            if (plugin.isWorkers ())
-            {
-              if (actionAdd)
-                plugin.addUser (args);
-              else
-                plugin.removeUser (args);
-            }
+      // EVENT "click"
+      document.body.addEventListener ("click", (e)=>
+        {
+          const el = e.target;
+
+          // EVENT "click" on users search list item
+          if (el.matches (`#${id} .list-group-item *,`+
+                          `#${id} .list-group-item`))
+          {
+            const li = el.tagName=="LI"?el:el.closest("li");
+
+            e.stopImmediatePropagation ();
+
+            if (_readonly)
+              H.openUserview ({
+                about: li.dataset.about,
+                picture: li.dataset.picture,
+                title: li.dataset.title
+              });
             else
             {
-              if (actionAdd)
-                plugin.addUser (args);
-              else if (isDed && $ac[0].dataset.noattr)
-                plugin.removeUser (args);
+              const isDed = (ac.dataset.grouptype == <?=WPT_GTYPES_DED?>),
+                    actionAdd = (li.dataset.action == "add"),
+                    args = Object.assign (
+                      {
+                        groupType: ac.dataset.grouptype,
+                        groupId: ac.dataset.groupid,
+                        userId: li.dataset.id
+                      }, plugin.getIds());
+  
+              search.querySelector("input").focus ();
+  
+              if (plugin.isWorkers ())
+              {
+                if (actionAdd)
+                  plugin.addUser (args);
+                else
+                  plugin.removeUser (args);
+              }
               else
               {
-                H.openConfirmPopover ({
-                  item: $(this.querySelector("span")),
-                  title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
-                  content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
-                  cb_ok: () =>
-                  {
-                    plugin.removeUser (args);
-                    $search[0].querySelector("input").focus ();
-                  }
-                });
+                if (actionAdd)
+                  plugin.addUser (args);
+                else if (isDed && ac.dataset.noattr)
+                  plugin.removeUser (args);
+                else
+                {
+                  H.openConfirmPopover ({
+                    item: $(li.querySelector("span")),
+                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
+                    content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
+                    cb_ok: () =>
+                    {
+                      plugin.removeUser (args);
+                      search.querySelector("input").focus ();
+                    }
+                  });
+                }
               }
             }
           }
         });
 
       // EVENT "click" on textarea clear button
-      $search.find(".clear-input").on("click", function (e)
+      search.querySelector(".clear-input").addEventListener ("click", (e)=>
         {
-          const input = $search[0].querySelector ("input");
+          const input = search.querySelector ("input");
 
           input.value = "";
           plugin.reset ();
@@ -118,10 +137,10 @@
           input.focus ();
         });
 
-      // EVENT keyup on input
-      $search.find("input").on("keyup", function (e)
+      // EVENT "keyup" on input
+      search.querySelector("input").addEventListener ("keyup", (e)=>
         {
-          const val = this.value.trim (),
+          const val = e.target.value.trim (),
                 k = e.which;
 
           if (!val || (!plugin.isWorkers () && val.length < 3))
@@ -131,29 +150,32 @@
           if (k < 37 || k > 40)
             plugin.search ({
               str: val,
-              groupType: $ac[0].dataset.grouptype
+              groupType: ac.dataset.grouptype
             });
         });
 
-      // EVENT keypress on input
-      $search.find("input").on("keypress", function (e)
+      // EVENT "keypress" on input
+      search.querySelector("input").addEventListener ("keypress", (e)=>
         {
+          const el = e.target;
+
           // If enter on selected users search item, select it
-          if (e.which == 13 && this.classList.contains ("autocomplete"))
+          if (e.which == 13 && el.classList.contains ("autocomplete"))
           {
             e.stopImmediatePropagation ();
             e.preventDefault ();
 
-            this.closest(".modal-body")
+            el.closest(".modal-body")
               .querySelector(".search .list-group-item.selected").click ();
           }
         });
 
-      // EVENT keyup on input
-      $search.find("input").on("keyup keydown", function (e)
+      // EVENTS "keyup" & "keydown" on input
+      const _eventKK = (e)=>
         {
-          const k = e.which,
-                list = this.closest(".modal-body .search")
+          const el = e.target,
+                k = e.which,
+                list = el.closest(".modal-body .search")
                          .querySelectorAll ("li");
 
            if (!list.length)
@@ -204,13 +226,13 @@
                   }
               }
           }
-        });
+        };
+      search.querySelector("input").addEventListener ("keyup", _eventKK);
+      search.querySelector("input").addEventListener ("keydown", _eventKK);
 
-      // EVENT click on users search list close button
-      $search.find("button.closemenu").on("click", function (e)
-        {
-          plugin.reset ({field: true});
-        });
+      // EVENT "click" on users search list close button
+      search.querySelector("button.closemenu").addEventListener ("click",
+        (e)=> plugin.reset ({field: true}));
     },
 
     // METHOD getNewUsers ()

@@ -652,8 +652,14 @@
     // METHOD showUserWriting ()
     showUserWriting (user)
     {
-      setTimeout (()=>$(`.walls a[href="#wall-${this.settings.id}"]`)
-        .prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`), 150);
+      setTimeout (()=>
+        {
+          const tab = document.querySelector (
+                        `.walls a[href="#wall-${this.settings.id}"]`);
+
+          tab.classList.add ("locked");
+          tab.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], tab.firstChild);
+        }, 150);
     },
 
     // METHOD refresh ()
@@ -2409,7 +2415,27 @@
           {
             const el = e.target,
                   $wall = S.getCurrent ("wall"),
-                  action = el.dataset.action||el.closest("li").dataset.action;
+                  li = el.tagName=="LI"?el:el.closest("li"),
+                  action = li.dataset.action;
+
+            // INTERNAL FUNCTION __manageCheckbox()
+            const __manageCheckbox = (el, li, type)=>
+              {
+                if (el.tagName != "INPUT")
+                {
+                  const input = li.querySelector ("input");
+                  input.checked = !input.checked;
+                }
+
+                S.getCurrent(type)[type] ("toggle");
+              };
+
+            // Nothing if menu item is disabled
+            if (li.querySelector ("a.disabled"))
+            {
+              e.preventDefault ();
+              return;
+            }
 
             switch (action)
             {
@@ -2433,40 +2459,19 @@
 
               case "chat":
 
-                // Manage checkbox
-                if (el.tagName != "INPUT")
-                {
-                  var input = el.querySelector ("input");
-                  input.checked = !input.checked;
-                }
-
-                S.getCurrent("chat").chat ("toggle");
+                __manageCheckbox (el, li, "chat");
 
                 break;
 
               case "filters":
 
-                // Manage checkbox
-                if (el.tagName != "INPUT")
-                {
-                  var input = el.querySelector ("input");
-                  input.checked = !input.checked;
-                }
-
-                S.getCurrent("filters").filters ("toggle");
+                __manageCheckbox (el, li, "filters");
 
                 break;
 
               case "arrows":
 
-                // Manage checkbox
-                if (el.tagName != "INPUT")
-                {
-                  var input = el.querySelector ("input");
-                  input.checked = !input.checked;
-                }
-
-                S.getCurrent("arrows").arrows ("toggle");
+                __manageCheckbox (el, li, "arrows");
 
                 break;
 

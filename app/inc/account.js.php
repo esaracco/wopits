@@ -54,19 +54,21 @@
           });
         });
 
-      // EVENT "change" on profil picture
-      $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
-          class="upload" id="account-picture">`)
-        .on("change",function (e)
-          {
-            const $upload = $(this);
+      // Add upload for profil picture
+      document.body.appendChild ($(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload" id="account-picture">`)[0]);
 
-            if (e.target.files && e.target.files.length)
-            {
-              H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
-                (e, file) =>
+      // EVENT "change" on profil picture
+      document.getElementById("account-picture")
+        .addEventListener("change", (e)=>
+        {
+          const el = e.target;
+
+          if (e.target.files && e.target.files.length)
+          {
+            H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
+              (e, file) =>
                 {
-                  $upload.val ("");
+                  el.value = "";
 
                   if (H.checkUploadFileSize ({size: e.total}) &&
                       e.target.result)
@@ -80,12 +82,13 @@
                         content: e.target.result
                       },
                       // success cb
-                      (d) => account.querySelector(".user-picture").innerHTML =
-                               _getUserPictureTemplate (d.src));
+                      (d) =>
+                         account.querySelector(".user-picture").innerHTML =
+                           _getUserPictureTemplate (d.src));
                   }
                 });
-            }
-          }).appendTo ("body");
+          }
+        });
 
       // EVENT "click" on user profil picture
       account.querySelector(".user-picture")

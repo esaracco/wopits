@@ -101,7 +101,7 @@
     // METHOD upload ()
     upload ()
     {
-      document.querySelector(".upload.postit-attachment").click ();
+      document.getElementById("postit-attachment").click ();
     },
 
     // METHOD display ()
@@ -191,14 +191,13 @@
             // EVENT "click" on attachment thumbnail to preview
             else if (el.matches ("#postitAttachmentsPopup .edit-popup img"))
             {
-              $("body")
-                .append(`<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${el.getAttribute("src")}"></div>`)
-                .find(".close")
-                .on("click",
-                   ()=> document.getElementById("popup-layer").click());
+              const viewer = $(`<div id="img-viewer"><div class="close"><i class="fas fa-times-circle fa-2x"></i></div><img src="${el.getAttribute("src")}"></div>`)[0];
+              document.body.appendChild (viewer);
 
-              H.openPopupLayer (
-                ()=> document.getElementById("img-viewer").remove());
+              viewer.querySelector(".close").addEventListener ("click", (e)=>
+                document.getElementById("popup-layer").click ());
+
+              H.openPopupLayer (()=> viewer.remove());
             }
             // EVENT "click" on edit attachment buttons
             else if (el.matches("#postitAttachmentsPopup .edit-popup button,"+
@@ -365,11 +364,14 @@
               H.setAutofocus (e.target);
           });
 
-        // EVENT Attachment upload
-        $(`<input type="file" class="upload postit-attachment">`)
-          .on("change", function (e)
+        // Add upload for postit attachments
+      document.body.appendChild ($(`<input type="file" class="upload" id="postit-attachment">`)[0]);
+
+      // EVENT "change" on postit attachments
+      document.getElementById("postit-attachment")
+        .addEventListener("change", (e)=>
           {
-            const $upload = $(this),
+            const el = e.target,
                   plugin = S.getCurrent("postit").postit ("getClass"),
                   settings = plugin.settings;
 
@@ -378,7 +380,7 @@
               H.getUploadedFiles (e.target.files, "all",
                 (e, file) =>
                 {
-                  $upload.val ("");
+                  el.value = "";
 
                   if ($_mainPopup.find(
                         `.list-group .accordion-item`+
@@ -429,7 +431,7 @@
                 }
               });
             }
-          }).appendTo ("body");
+          });
         }, 0);
       });
 

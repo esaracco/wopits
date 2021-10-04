@@ -44,77 +44,84 @@
         stop: ()=> S.set ("dragging", true, 500)
       });
 
-      $menu.find("li").on("click", function ()
+      // EVENT "click" on wall menu
+      $menu[0].addEventListener ("click", (e)=>
       {
-        if (H.disabledEvent ())
-          return false;
+        const el = e.target;
 
-        const action = this.dataset.action;
-
-        switch (action)
+        if (el.tagName == "I" || el.tagName == "SPAN")
         {
-          case "share":
-            H.loadPopup ("swall", {
-              open: false,
-              cb: ($p)=> $p.swall ("open")
-            });
-            break;
-
-          case "add-col":
-            wallPlugin.createColRow ("col");
-            break;
-
-          case "add-row":
-            wallPlugin.createColRow ("row");
-            break;
-
-          case "search":
-            H.loadPopup ("psearch", {
-              open: false,
-              cb: ($p)=> $p.psearch ("open")
-            });
-            break
-
-          case "postit-mode":
-            wallPlugin.setPostitsDisplayMode (action);
-            break;
-
-          case "list-mode":
-            S.getCurrent("mmenu").mmenu ("close");
-            wallPlugin.setPostitsDisplayMode (action);
-            break;
-
-          case "unblock-externalref":
-            wallPlugin.displayExternalRef (1, true);
-
-            H.displayMsg ({
-              title: `<?=_("Wall")?>`,
-              type: "info",
-              msg: `<?=_("External contents are no longer filtered")?>`
-            });
-            break;
-
-          case "block-externalref":
-            wallPlugin.displayExternalRef (0, true);
-
-            H.displayMsg ({
-              title: `<?=_("Wall")?>`,
-              type: "info",
-              msg: `<?=_("External contents are now filtered")?>`
-            });
-            break;
-
-          case "show-headers":
-            wallPlugin.displayHeaders (1, true);
-            break;
-
-          case "hide-headers":
-            wallPlugin.displayHeaders (0, true);
-            break;
-
-          case "show-users":
-            wallPlugin.displayWallUsersview ();
-            break;
+          if (H.disabledEvent ())
+            return false;
+  
+          const li = el.closest("li"),
+                action = li.dataset.action;
+  
+          switch (action)
+          {
+            case "share":
+              H.loadPopup ("swall", {
+                open: false,
+                cb: ($p)=> $p.swall ("open")
+              });
+              break;
+  
+            case "add-col":
+              wallPlugin.createColRow ("col");
+              break;
+  
+            case "add-row":
+              wallPlugin.createColRow ("row");
+              break;
+  
+            case "search":
+              H.loadPopup ("psearch", {
+                open: false,
+                cb: ($p)=> $p.psearch ("open")
+              });
+              break
+  
+            case "postit-mode":
+              wallPlugin.setPostitsDisplayMode (action);
+              break;
+  
+            case "list-mode":
+              S.getCurrent("mmenu").mmenu ("close");
+              wallPlugin.setPostitsDisplayMode (action);
+              break;
+  
+            case "unblock-externalref":
+              wallPlugin.displayExternalRef (1, true);
+  
+              H.displayMsg ({
+                title: `<?=_("Wall")?>`,
+                type: "info",
+                msg: `<?=_("External contents are no longer filtered")?>`
+              });
+              break;
+  
+            case "block-externalref":
+              wallPlugin.displayExternalRef (0, true);
+  
+              H.displayMsg ({
+                title: `<?=_("Wall")?>`,
+                type: "info",
+                msg: `<?=_("External contents are now filtered")?>`
+              });
+              break;
+  
+            case "show-headers":
+              wallPlugin.displayHeaders (1, true);
+              break;
+  
+            case "hide-headers":
+              wallPlugin.displayHeaders (0, true);
+              break;
+  
+            case "show-users":
+              wallPlugin.displayWallUsersview ();
+              break;
+          }
         }
       });
     },

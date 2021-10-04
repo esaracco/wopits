@@ -681,7 +681,7 @@ select.timezone {
 .readonly,
 .locked {
   pointer-events:none !important;
-  opacity:.4 !important;
+  opacity:.6 !important;
 }
 
 .invisible {
@@ -1543,6 +1543,11 @@ EOC;
   float:right;
 }
 
+#mmenu .btn-close {
+  margin-top:-10px;
+  margin-right:-12px;
+}
+
 .chat {
   width:250px;
   bottom:15px;
@@ -1843,7 +1848,7 @@ ul#mmenu {
   transform: translate(-50%, -50%);
   border-radius:10px;
   box-shadow: 1px 1px 12px #555;
-  z-index:5017;
+  z-index:5018;
 }
 
 #img-viewer .close {
@@ -1851,8 +1856,8 @@ ul#mmenu {
   left:10px;
   top:50%;
   margin-top:-24px;
-  z-index:5018;
-  color:#f1f1f1;
+  z-index:5019;
+  color:#dfdfdf;
   cursor:pointer;
 }
 

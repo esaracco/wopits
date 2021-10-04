@@ -6,7 +6,7 @@
 }
 
 #img-viewer .close {
-  color:#fce9ff;
+  color:#f4d5ff;
 }
 
 .arrows .goto-box {

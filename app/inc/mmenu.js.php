@@ -38,29 +38,34 @@
         stop: ()=> S.set ("dragging", true, 500)
       });
 
-      // EVENT click on menu close button
-      $sm.find("button.close").on("click", ()=> plugin.close ());
+      // EVENT "click" on "close" button
+      $sm[0].querySelector("button.btn-close").addEventListener ("click",
+        (e)=> plugin.close ());
 
-      // EVENT click on menu
-      $sm.find("li").on("click", function (e)
+      // EVENT "click" on menu
+      $sm[0].addEventListener ("click", (e)=>
         {
-          if (H.disabledEvent (
+          const el = e.target,
+                li = el.tagName=="LI"?el:el.closest("li");
+
+          if (!li || H.disabledEvent (
                 !H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
                 $sm.find("li:visible").length == 1))
             return false;
 
-          const icon = this.querySelector ("i"),
+          const icon = li.querySelector ("i"),
                 set = icon.classList.contains ("set");
           let title, content, cbOK;
 
-          $sm.find("i").removeClass ("set");
+          $sm[0].querySelectorAll("i").forEach (
+            el=> el.classList.remove ("set"));
 
           if (set)
             return;
 
           icon.classList.add ("set");
 
-          switch (this.dataset.action)
+          switch (li.dataset.action)
           {
             case "delete":
             case "cpick":
@@ -87,7 +92,7 @@
 
           if (title)
             H.openConfirmPopover ({
-              item: $(this),
+              item: $(li),
               type: "info",
               title: title,
               placement: "right",
@@ -484,7 +489,7 @@
     {
       if (!H.isLoginPage ())
       {
-        $("body").prepend (`<ul class="toolbox" id="mmenu"><button type="button" class="close"><span>&times;</span></button><span class="wpt-badge">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
+        $("body").prepend (`<ul class="toolbox" id="mmenu"><button type="button" class="btn-close"></button><span class="wpt-badge">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
 
         S.getCurrent("mmenu").mmenu ();
       }

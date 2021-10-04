@@ -139,8 +139,8 @@ class Server
     {
       $client = $db->tGet ('clients', $fd);
 
-      // Something goes wrong. Close.
-      if (empty ($client->id))
+      // Something goes wrong: close client session.
+      if (!isset ($msg->route) || empty ($client->id))
       {
         $server->push ($fd, json_encode (['action' => 'exitsession']));
         return;

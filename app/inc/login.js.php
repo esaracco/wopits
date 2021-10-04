@@ -53,123 +53,138 @@
         H.setAutofocus (login);
 
       // EVENT "click" on buttons and a links
-      $login
-        .on("click", "button,a", function (e)
+      login.addEventListener ("click", (e)=>
         {
-         switch (e.target.dataset.type) 
+          const el = e.target;
+
+          if (el.tagName == "BUTTON" || el.tagName == "A")
           {
-            case "login":
+            switch (el.dataset.type) 
+            {
+              case "login":
 
-              if (plugin.checkRequired ($login.find("input"), false))
-              {
-                const du =
-                        login.querySelector(`input[name="_directURL"]`).value;
+                if (plugin.checkRequired ($login.find("input"), false))
+                {
+                  const du =
+                          login.querySelector(`input[name="_directURL"]`).value;
 
-                plugin.login (H.trimObject ({
-                  directURL: (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ?
-                                `/?${du}` : null,
-                  remember: document.getElementById("remember").checked,
-                  username: login.querySelector(`input[type="text"]`).value,
-                  password: login.querySelector(`input[type="password"]`).value
-                }, ['password']));
-              }
+                  plugin.login (H.trimObject ({
+                    directURL: (du&&du.match(<?=WPT_DIRECTURL_REGEXP?>)) ?
+                                  `/?${du}` : null,
+                    remember: document.getElementById("remember").checked,
+                    username: login.querySelector(`input[type="text"]`).value,
+                    password: login.querySelector(`input[type="password"]`)
+                                .value
+                  }, ['password']));
+                }
 
-              break;
+                break;
 
-            case "create":
+              case "create":
 
-              $popup = $("#createAccountPopup");
+                $popup = $("#createAccountPopup");
 
-              H.cleanPopupDataAttr ($popup);
+                H.cleanPopupDataAttr ($popup);
 
-              plugin.resetCreateUserForm ();
-              $popup[0].dataset.noclosure = true;
-              H.openModal ({item: $popup});
-              break;
+                plugin.resetCreateUserForm ();
+                $popup[0].dataset.noclosure = true;
+                H.openModal ({item: $popup});
+                break;
 
-            case "forgot":
+              case "forgot":
 
-              $popup = $("#resetPasswordPopup");
+                $popup = $("#resetPasswordPopup");
 
-              H.cleanPopupDataAttr ($popup);
+                H.cleanPopupDataAttr ($popup);
 
-              $popup[0].dataset.noclosure = true;
-              H.openModal ({item: $popup});
-              break;
-
+                $popup[0].dataset.noclosure = true;
+                H.openModal ({item: $popup});
+                break;
+            }          
           }
-        })
-        // EVENT "keypress"
-        .on("keypress", function (e)
+        });
+
+      // EVENT "keypress" on inputs
+      login.addEventListener ("keypress", (e)=>
         {
           if (e.which == 13 && e.target.tagName == "INPUT")
           {
             e.preventDefault ();
 
-            this.querySelector(".btn-success").click ();
+            login.querySelector(".btn-success").click ();
           }
         });
 
-      $("#resetPasswordPopup .btn-primary")
-        .on("click", function (e)
+      // EVENT "click" on reset password popup "send" button
+      document.querySelector("#resetPasswordPopup .btn-primary")
+        .addEventListener ("click", (e)=>
         {
-          const $popup = $(this).closest (".modal"),
-                $input = $popup.find ("input");
+          const popup = e.target.closest (".modal"),
+                input = popup.querySelector ("input"),
+                $input = $(input);
 
           e.stopImmediatePropagation ();
 
-          $popup[0].dataset.noclosure = true;
+          popup.dataset.noclosure = true;
 
           if (plugin.checkRequired ($input) && plugin.validForm ($input))
           {
-            plugin.resetPassword ({email: $input.val().trim ()});
-            $input.val ("");
+            plugin.resetPassword ({email: input.value.trim ()});
+            input.value = "";
           }
         });
 
-      $("#createAccountPopup .btn-primary")
-        .on("click", function (e)
+      // EVENT "click" on create account popup "create" button
+      document.querySelector("#createAccountPopup .btn-primary")
+        .addEventListener ("click", (e)=>
         {
-          const $popup = $(this).closest (".modal"),
-                $form = $popup.find ("form");
+          const popup = e.target.closest (".modal"),
+                $popup = $(popup),
+                form = popup.querySelector ("form"),
+                $form = $(form);
 
           e.stopImmediatePropagation ();
 
-          $popup[0].dataset.noclosure = true;
+          popup.dataset.noclosure = true;
 
-          if ($popup.find(".confirm").length)
+          if (popup.querySelector (".confirm"))
           {
             if (plugin.checkRequired ($popup.find("input").slice(0, 2)) &&
                 plugin.validForm ($popup.find("input")))
             {
               plugin.createUser (H.trimObject ({
-                _check:
-                  $(".main-login form").find("input[name='_check']").val (),
-                username: $form.find("input[name='username']").val (),
-                fullname: $form.find("input[name='fullname']").val (),
-                password: $form.find("input[name='password']").val (),
-                email: $form.find("input[name='email']").val ()
+                _check: document.querySelector(
+                          `.main-login form input[name="_check"]`).value,
+                username: form.querySelector(`input[name="username"]`).value,
+                fullname: form.querySelector(`input[name="fullname"]`).value,
+                password: form.querySelector(`input[name="password"]`).value,
+                email: form.querySelector(`input[name="email"]`).value
               }, ["password"]));
             }
           }
           else if (plugin.checkRequired ($popup.find("input")) &&
                    plugin.validForm ($popup.find("input")))
           {
-            $popup.find(".main")
-              .addClass("readonly")
-              .find("input").attr("readonly", "readonly");
+            const main = popup.querySelector (".main"),
+                  footer = popup.querySelector (".modal-footer");
 
-            $popup.find("form").prepend (`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`);
+            main.classList.add ("readonly");
+            main.querySelectorAll("input").forEach (el=> el.readOnly = true);
 
-            $(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)
-              // EVENT "click" on "previous" button
-              .on("click", (e)=> plugin.resetCreateUserForm ())
-              .insertBefore ($popup.find(".btn-primary"));
+            // Display confirmation section
+            form.insertBefore ($(`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span><input class="form-control" type="password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`)[0], form.firstChild);
 
-            $popup[0].querySelector(".btn-primary").innerHTML = 
+            // Display "previous" button
+            footer.insertBefore ($(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)[0], footer.firstChild);
+
+            // EVENT "click" on "previous" button
+            popup.querySelector(".btn-info").addEventListener ("click", (e)=>
+              plugin.resetCreateUserForm ());
+
+            popup.querySelector(".btn-primary").innerHTML = 
               `<i class="fas fa-bolt fa-fw fa-xs"></i> <?=_("Create")?></i>`;
 
-            setTimeout (() => $popup[0].querySelector("input").focus (), 150);
+            setTimeout (() => popup.querySelector("input").focus (), 150);
           }
 
         });
@@ -182,14 +197,15 @@
     // METHOD resetCreateUserForm ()
     resetCreateUserForm ()
     {
-      const $popup = $("#createAccountPopup");
+      const popup = document.getElementById ("createAccountPopup"),
+            main = popup.querySelector (".main");
 
-      $popup.find(".main")
-        .removeClass("readonly")
-        .find("input").removeAttr ("readonly");
-      $popup.find(".confirm,.btn-info").remove ();
-      $popup.find(".btn-primary")
-        .html (`<?=_("Next")?> <i class="fas fa-caret-right"></i>`);
+      main.classList.remove ("readonly");
+      main.querySelectorAll("input").forEach (el=> el.readOnly = false);
+
+      popup.querySelectorAll(".confirm,.btn-info").forEach (el=> el.remove ());
+      popup.querySelector(".btn-primary").innerHTML =
+        `<?=_("Next")?> <i class="fas fa-caret-right"></i>`;
     },
 
     // METHOD login ()

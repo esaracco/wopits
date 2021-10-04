@@ -1178,11 +1178,14 @@ class WHelper
   // METHOD loader ()
   loader (action, force = false, xhr = null)
   {
-    const $layer = $("#popup-loader"),
-          layer = $layer[0];
+    const layer = document.getElementById ("popup-loader"),
+          $layer = $(layer);
   
     if (layer && (WS.ready() || force))
     {
+      const progress = layer.querySelector (".progress"),
+            button = layer.querySelector ("button");
+
       clearTimeout (layer.dataset.timeoutid);
   
       if (action == "show")
@@ -1192,11 +1195,13 @@ class WHelper
             if (xhr)
             {
               // Abort upload on user request
-              $layer.find("button").off("click").on("click", ()=> xhr.abort ());
-              $layer.find (".progress,button").show ();
+              button.addEventListener ("click", (e)=> xhr.abort (),
+                {once: true});
+              button.style.display = "block";
+              progress.style.display = "block";
             }
   
-            $layer.show ();
+            layer.style.display = "block";
   
           }, 500);
       }
@@ -1204,11 +1209,9 @@ class WHelper
       {
         $layer.hide ();
   
-        $layer.find("button").hide ();
-        $layer.find(".progress").css ({
-          display: "none",
-          background: "#ea6966"
-        });
+        button.style.display = "none";
+        progress.style.display = "none";
+        progress.style.backgroundColor = "#ea6966";
 
         layer.removeAttribute ("data-timeoutid");
       }
@@ -1225,22 +1228,24 @@ class WHelper
       cb: ($p)=>
       {
         const p = $p[0],
-              $picture = $p.find (".user-picture"),
+              div = p.querySelector (".user-picture"),
               aboutEl = p.querySelector (".about");
 
         p.querySelector(".modal-title span").innerText = title;
         p.querySelector(".name dd").innerText = title;
 
-        $picture.empty().hide ();
+        div.innerHTML = "";
+        div.style.display = "none";
 
         if (picture)
         {
-          $picture
-            .append (
-              $(`<img src="${picture}">`)
-                .on("error",function (e){$picture.hide()}));
+          const img = document.createElement ('img');
 
-          $picture.show ();
+          img.src = picture;
+          img.addEventListener ("error", (e)=> div.style.display = "none");
+          div.appendChild (img);
+
+          div.style.display = "block";
         }
 
         if (about)
@@ -1259,30 +1264,22 @@ class WHelper
   // METHOD openPopupLayer ()
   openPopupLayer (cb, closeMenus = true)
   {
-    const $layer = $(`<div id="popup-layer" class="layer"></div>`);
+    document.body.appendChild (
+      $(`<div id="popup-layer" class="layer"></div>`)[0]);
+
+    const layer = document.getElementById ("popup-layer");
   
-    $(document)
-      .off("keydown.popuplayer")
-      .on("keydown.popuplayer", function (e)
+    // EVENT "click" on layer
+    layer.addEventListener ("click", (e)=>
       {
-        if (e.which == 27)
-          $layer.click ();
-      });
-  
-    $layer
-      .on("click",
-      function (e)
-      {
-        $(document).off ("keydown.popuplayer");
-  
         // Remove the layer
-        this.remove ();
+        e.target.remove ();
   
         if (cb)
           cb (e);
       });
-  
-    $layer.prependTo("body").show ();
+
+    layer.style.display = "block";
   }
   
   // METHOD openConfirmPopup ()
@@ -1377,11 +1374,10 @@ class WHelper
 
     bp.show ();
 
-    const body = bp.tip.querySelector (".popover-body");
-
-    $(body).find("button:not(.close)").on("click", function (e)
+    // EVENT "click" on popover buttons
+    const _eventC = (e)=>
       {
-        if (this.classList.contains ("btn-primary"))
+        if (e.target.classList.contains ("btn-primary"))
         {
           bp.tip.dataset.btnclicked = btn.primary;
           if (args.cb_ok)
@@ -1389,10 +1385,13 @@ class WHelper
         }
         else
           bp.tip.dataset.btnclicked = btn.secondary;
-  
+
         if (!args.noclosure)
           document.getElementById("popup-layer").click ();
-      });
+      };
+    bp.tip.querySelector(".popover-body")
+      .querySelectorAll("button:not(.close)").forEach (el=>
+        el.addEventListener ("click", _eventC));
 
     // Scroll to the popover point
     if (scroll)
@@ -2021,9 +2020,9 @@ class WHelper
             d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
           <?php endif?>
 
-          $popup.find(".modal-body").html (`${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`);
-          $popup.find(".modal-body").find("button")
-            .on("click", function ()
+          $popup[0].querySelector(".modal-body").innerHTML = `${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`;
+          $popup[0].querySelector(".modal-body button")
+            .addEventListener ("click", (e)=>
             {
               bootstrap.Modal.getInstance($popup).hide ();
               H.loadPopup ("userGuide");

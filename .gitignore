@@ -10,3 +10,4 @@ html-minifier
 *.lock
 data/
 app/services/run/
+.yarn-integrity

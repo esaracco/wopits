@@ -64,8 +64,7 @@
       settings._intervalBlockEditing = 0;
 
       // EVENT click on editable element
-      settings.container
-        .on("click", function (e)
+      settings.container[0].addEventListener ("click", (e)=>
         {
           // Cancel if creation of a relation in progress
           if (S.get("link-from"))
@@ -93,8 +92,8 @@
 
                   settings._valueOrig = editable.innerText;
 
-                  settings._overflowOrig = $(this).css ("overflow");
-                  this.style.overflow = "visible";
+                  settings._overflowOrig = settings.container.css ("overflow");
+                  settings.container[0].style.overflow = "visible";
 
                   editable.classList.add ("editing");
                   editable.style.height = `${editable.clientHeight}px`;
@@ -107,21 +106,22 @@
 
                   plugin.resize ();
 
-                  $(settings._input)
-                    .focus()
-                    // EVENT blur on editable element
-                    .on("blur", function (e)
+                  settings._input.focus ();
+
+                  // EVENT "blur" on editable element
+                  settings._input.addEventListener ("blur", (e)=>
                     {
-                      const title = this.value;
+                      const el = e.target,
+                            title = el.value;
 
                       e.stopImmediatePropagation ();
 
-                      this.parentNode.parentNode.style.overflow =
+                      el.parentNode.parentNode.style.overflow =
                         settings._overflowOrig;
 
                       editable.classList.remove ("editing");
                       editable.removeAttribute ("style");
-                      this.remove ();
+                      el.remove ();
 
                       if (title != settings._valueOrig)
                         cb.update (title);
@@ -139,20 +139,22 @@
 
                       if (!H.haveMouse ())
                         H.fixVKBScrollStop ();
-                    })
-                    // EVENT keyup on editable element
-                    .on("keyup", function (e)
+                    });
+
+                  // EVENT "keyup" on editable element
+                  settings._input.addEventListener ("keyup", (e)=>
                     {
-                      const k = e.which;
+                      const el = e.target,
+                            k = e.which;
 
                       // ENTER Validate changes
                       if (k == 13)
-                        this.blur ();
+                        el.blur ();
                       // ESC Cancel edition
                       else if (e.which == 27)
                       {
-                        this.value = settings._valueOrig;
-                        this.blur ();
+                        el.value = settings._valueOrig;
+                        el.blur ();
                       }
                       // Exclude some control keys
                       else if (
@@ -171,13 +173,14 @@
                       {
                         plugin.resize ();
                       }
-                    })
-                    // EVENT paste on editable element
-                    .on("paste", function (e)
+                    });
+
+                  // EVENT "paste" on editable element
+                  settings._input.addEventListener ("paste", (e)=>
                     {
                       plugin.resize (
                         e.originalEvent.clipboardData.getData ('text'));
-                    })
+                    });
                 });
               }
             }, 250);
@@ -252,7 +255,7 @@
   {
     setTimeout (()=>
     {
-      $("body").prepend (`<div id="sandbox"></div>`);
+      document.body.append ($(`<div id="sandbox"></div>`)[0]);
     }, 0);
   });
 

@@ -1521,17 +1521,18 @@
     // METHOD showUserWriting ()
     showUserWriting (user, isRelated)
     {
-      const id = this.settings.id,
+      const postit = this.element[0],
+            id = this.settings.id,
             $cell = this.settings.cell,
             canWrite = this.canWrite ();
 
       // INTERNAL FUNCTION __lock ()
       const __lock = el =>
-              el.classList.add("locked", isRelated?"related":"main");
+        el.classList.add ("locked", isRelated?"related":"main");
 
       // INTERNAL FUNCTION __addMain ()
       const __addMain = ()=>
-              this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
+        postit.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], postit.firstChild);
 
       this.closeMenu ();
 
@@ -1543,15 +1544,15 @@
         if (canWrite)
           __lock (min);
 
-        $(min).prepend (`<span class="user-writing-min${!isRelated?" main":""}" data-userid="${user.id}"><i class="fas fa-sm fa-${isRelated?"user-lock":"user-edit blink"}"></i></span>`);
+        min.insertBefore ($(`<span class="user-writing-min${!isRelated?" main":""}" data-userid="${user.id}"><i class="fas fa-sm fa-${isRelated?"user-lock":"user-edit blink"}"></i></span>`)[0], min.firstChild);
       }
 
       if (canWrite)
       {
-        __lock (this.element[0]);
+        __lock (postit);
 
         if (isRelated)
-          this.element.prepend (`<div class="user-writing" data-userid="${user.id}"><i class="fas fa-user-lock"></i></div>`);
+          postit.insertBefore ($(`<div class="user-writing" data-userid="${user.id}"><i class="fas fa-user-lock"></i></div>`)[0], postit.firstChild);
         else
           __addMain ();
 
@@ -2272,7 +2273,7 @@
           file_picker_callback: function (callback, value, meta)
           {
             S.set ("tinymce-callback", callback);
-            $(".upload.postit-picture").click ();
+            document.getElementById("postit-picture").click ();
           },
 
           // "link" plugin options
@@ -2579,13 +2580,15 @@
             }
           });
 
-        // Picture upload.
-        $(`<input type="file" accept=".jpeg,.jpg,.gif,.png"
-            class="upload postit-picture">`)
-          .on("change", function ()
+        // Add upload for postit pictures
+        document.body.appendChild ($(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload" id="postit-picture">`)[0]);
+
+        // EVENT "change" on postit pictures
+        document.getElementById("postit-picture")
+          .addEventListener("change", (e)=>
           {
-            const $upload = $(this),
-                  fname = this.files[0].name;
+            const el = e.target,
+                  fname = el.files[0].name;
 
             // INTERNAL FUNCTION __error_cb ()
             const __error_cb = (d)=>
@@ -2598,10 +2601,10 @@
                   });
               };
 
-            H.getUploadedFiles (this.files, "\.(jpe?g|gif|png)$",
+            H.getUploadedFiles (el.files, "\.(jpe?g|gif|png)$",
               (e, file) =>
                 {
-                  $upload.val ("");
+                  el.value = "";
 
                   if (H.checkUploadFileSize ({
                         size: e.total,
@@ -2652,7 +2655,7 @@
                 },
                 null,
                 __error_cb);
-          }).appendTo ("body");
+          });
 
         // EVENT hide.bs.modal on postit popup
         document.getElementById("postitUpdatePopup")

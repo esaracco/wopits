@@ -236,6 +236,19 @@ document.addEventListener ("DOMContentLoaded", ()=>
       });
   }
 
+  // EVENT "keydown"
+  document.body.addEventListener ("keydown", (e)=>
+    {
+      // If "ESC" while popup layer is opened, close it
+      if (e.which == 27)
+      {
+        const layer = document.getElementById ("popup-layer");
+
+        if (layer)
+          layer.click ();
+      }
+    });
+
   // EVENT "show.bs.dropdown" on relation's label menu, to prevent menu from
   //       opening right after dragging
   document.body.addEventListener ("show.bs.dropdown", (e)=>

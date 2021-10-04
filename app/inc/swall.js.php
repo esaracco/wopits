@@ -62,157 +62,171 @@
 
       $_groupPopup = $("#groupPopup");
 
-      $share
-        .on("hidden.bs.modal", function (e)
+      $share[0].addEventListener("hidden.bs.modal", (e)=>
+        S.getCurrent("wall").wall ("menu", {from: "wall", type:"have-wall"}));
+
+      // EVENT "click"
+      document.body.addEventListener ("click", (e)=>
         {
-          S.getCurrent("wall").wall ("menu", {from: "wall", type:"have-wall"});
-        });
+          const el = e.target;
 
-      $(document)
-        .on("click", "#swallPopup .list-group-item button,"+
-                     "#swallPopup .list-group-item div.userscount",
-        function (e)
-        {
-          const $btn = $(this),
-                $row = $btn.closest("li"),
-                groupType = $row[0].dataset.type,
-                action = $btn[0].dataset.action,
-                id = $row[0].dataset.id;
+          if (!el.matches ("#swallPopup *"))
+            return;
 
-          e.stopImmediatePropagation ();
-
-          $row.addClass ("active");
-
-          switch (action)
+          // EVENT "click" on group list item buttons
+          if (el.matches (".list-group-item [data-action],"+
+                               ".list-group-item [data-action] *"))
           {
-            case "users-search":
-
-              H.loadPopup ("usearch", {
-                open: false,
-                settings: {
-                  caller: "swall",
-                  cb_add: ()=> plugin.displayGroups (),
-                  cb_remove: ()=> plugin.displayGroups (),
-                  cb_close: ()=> $share.find("li.list-group-item.active")
-                     .removeClass ("active")
-                },
-                cb: ($p)=>
-                {
-                  const groupId = $row[0].dataset.id,
-                        delegateAdminId = $row[0].dataset.delegateadminid||0;
-
-                  $p.usearch ("reset", {full: true});
-
-                  if ($row[0].parentNode.classList.contains("noattr"))
-                    $p[0].dataset.noattr = 1;
-                  $p[0].dataset.delegateadminid = delegateAdminId;
-                  $p[0].dataset.groupid = groupId;
-                  $p[0].dataset.grouptype = groupType;
-
-                  $p
-                    .find(".desc").html (`<?=_("Add or remove users in the group « %s ».")?>`.replace("%s", `<b>${$row[0].dataset.name}</b>`));
-
-                  $p.usearch (
-                    "displayUsers",
-                    {
-                      wallId: S.getCurrent("wall").wall ("getId"),
-                      groupId: groupId,
-                      groupType: groupType
-                    });
-
-                  H.openModal ({item: $p});
-                }
-              });
-              break;
-
-            case "delete-group":
-
-              var content =
-               ($row.parent().hasClass ("gtype-<?=WPT_GTYPES_DED?>"))?
-                 `<?=_("Delete this group?")?>`:
-                 `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`;
-
-              H.openConfirmPopover ({
-                 item: $btn.closest("li").find(".name"),
-                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                 content: content,
-                 cb_close: () =>
-                   $share.find("li.list-group-item.active")
-                     .removeClass ("active"),
-                 cb_ok: () => plugin.deleteGroup ()
-               });
-              break;
-
-            case "unlink-group":
-
-              // Ask confirmation only if they are some users in the group to
-              // unlink.
-              if ($row.find(".userscount .wpt-badge").text() == 0)
-                plugin.unlinkGroup ({id: id}, groupType);
-              else
+            const $btn = $(el.getAttribute("data-action")?
+                             el:el.closest("[data-action]")),
+                  $row = $btn.closest("li"),
+                  groupType = $row[0].dataset.type,
+                  action = $btn[0].dataset.action,
+                  id = $row[0].dataset.id;
+  
+            e.stopImmediatePropagation ();
+  
+            $row.addClass ("active");
+  
+            switch (action)
+            {
+              case "users-search":
+  
+                H.loadPopup ("usearch", {
+                  open: false,
+                  settings: {
+                    caller: "swall",
+                    cb_add: ()=> plugin.displayGroups (),
+                    cb_remove: ()=> plugin.displayGroups (),
+                    cb_close: ()=> $share.find("li.list-group-item.active")
+                       .removeClass ("active")
+                  },
+                  cb: ($p)=>
+                  {
+                    const groupId = $row[0].dataset.id,
+                          delegateAdminId = $row[0].dataset.delegateadminid||0;
+  
+                    $p.usearch ("reset", {full: true});
+  
+                    if ($row[0].parentNode.classList.contains("noattr"))
+                      $p[0].dataset.noattr = 1;
+                    $p[0].dataset.delegateadminid = delegateAdminId;
+                    $p[0].dataset.groupid = groupId;
+                    $p[0].dataset.grouptype = groupType;
+  
+                    $p
+                      .find(".desc").html (`<?=_("Add or remove users in the group « %s ».")?>`.replace("%s", `<b>${$row[0].dataset.name}</b>`));
+  
+                    $p.usearch (
+                      "displayUsers",
+                      {
+                        wallId: S.getCurrent("wall").wall ("getId"),
+                        groupId: groupId,
+                        groupType: groupType
+                      });
+  
+                    H.openModal ({item: $p});
+                  }
+                });
+                break;
+  
+              case "delete-group":
+  
+                var content =
+                 ($row.parent().hasClass ("gtype-<?=WPT_GTYPES_DED?>"))?
+                   `<?=_("Delete this group?")?>`:
+                   `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`;
+  
                 H.openConfirmPopover ({
                    item: $btn.closest("li").find(".name"),
-                   title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
-                   content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
+                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                   content: content,
                    cb_close: () =>
                      $share.find("li.list-group-item.active")
                        .removeClass ("active"),
-                   cb_ok: () => plugin.unlinkGroup ({id: id}, groupType)
+                   cb_ok: () => plugin.deleteGroup ()
                  });
-              break;
-
-            case "link-group":
-
-              H.loadPopup ("groupAccess", {
-                init: ($p)=>
-                {
-                  $p.find(".send-msg input[type='checkbox']")
-                    .on("change", function ()
-                    {
-                      const $div = $(this).closest (".send-msg");
-
-                      if (this.checked)
-                        $div.removeClass ("disabled");
-                      else
-                        $div.addClass ("disabled");
-                    });
-
-                  $_groupAccessPopup = $p;
-                }
-              });
-              break;
+                break;
+  
+              case "unlink-group":
+  
+                // Ask confirmation only if they are some users in the group to
+                // unlink.
+                if ($row.find(".userscount .wpt-badge").text() == 0)
+                  plugin.unlinkGroup ({id: id}, groupType);
+                else
+                  H.openConfirmPopover ({
+                     item: $btn.closest("li").find(".name"),
+                     title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
+                     content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
+                     cb_close: () =>
+                       $share.find("li.list-group-item.active")
+                         .removeClass ("active"),
+                     cb_ok: () => plugin.unlinkGroup ({id: id}, groupType)
+                   });
+                break;
+  
+              case "link-group":
+  
+                H.loadPopup ("groupAccess", {
+                  init: ($p)=>
+                  {
+                    $p[0].querySelector(`.send-msg input[type="checkbox"]`)
+                      .addEventListener ("change", (e)=>
+                      {
+                        const el = e.target,
+                              div = el.closest (".send-msg");
+  
+                        if (el.checked)
+                          div.classList.remove ("disabled");
+                        else
+                          div.classList.add ("disabled");
+                      });
+  
+                    $_groupAccessPopup = $p;
+                  }
+                });
+                break;
+            }
           }
-        });
-
-      $(document)
-        .on("click", "#swallPopup .list-group-item",
-        function (e)
-        {
-          if (this.classList.contains ("is-wall-creator"))
+          // EVENT "click" on group list item
+          else if (el.matches (".list-group-item, .list-group-item span"))
           {
-            const $row = $(this);
+            const li = el.tagName=="SPAN"?el.closest("li"):el;
 
-            $row.addClass ("active");
+            if (li.classList.contains ("is-wall-creator"))
+            {
+              e.stopImmediatePropagation ();
 
-            plugin.openUpdateGroup ({
-              groupId: $row[0].dataset.id,
-              name: $row.find(".name").text(),
-              description: $row.find(".desc").text()
-            });
+              li.classList.add ("active");
+
+              plugin.openUpdateGroup ({
+                groupId: li.dataset.id,
+                name: li.querySelector(".name").innerText,
+                description: li.querySelector(".desc").innerText
+              });
+            }
+            else
+            {
+              e.stopImmediatePropagation ();
+
+              $share[0].querySelector(`button[data-action="users-search"] i`)
+                 .click ();
+            }
           }
-          else
-            $share.find("button[data-action='users-search'] i").click ();
         });
 
-      $share.find("button")
-        .on("click", function (e)
+      // EVENT "click" on buttons
+      const _eventCB = (e)=>
         {
-          const action = this.dataset.action;
+          const action = e.target.dataset.action;
 
           if (action == "add-gtype-<?=WPT_GTYPES_GEN?>" ||
               action == "add-gtype-<?=WPT_GTYPES_DED?>")
             plugin.openAddGroup (action.match(/add\-gtype\-([^\-]+)/)[1]);
-        });
+        };
+      $share[0].querySelectorAll("button").forEach ((el)=>
+        el.addEventListener ("click", _eventCB));
     },
 
     // METHOD onSubmitGroup ()
@@ -267,11 +281,8 @@
         open: false,
         init: ($p)=>
         {
-          $p.find(".btn-primary")
-            .on("click", function (e)
-            {
-              plugin.onSubmitGroup ($p, this, e);
-            });
+          $p[0].querySelector(".btn-primary").addEventListener("click",
+            (e)=> plugin.onSubmitGroup ($p, e.target, e));
 
           $_groupPopup = $p;
         },
@@ -301,11 +312,8 @@
         open: false,
         init: ($p)=>
         {
-          $p.find(".btn-primary")
-            .on("click", function (e)
-            {
-              plugin.onSubmitGroup ($p, this, e);
-            });
+          $p[0].querySelector(".btn-primary").addEventListener("click",
+            (e)=> plugin.onSubmitGroup ($p, e.target, e));
 
           $_groupPopup = $p;
         },

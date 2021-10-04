@@ -24,6 +24,7 @@
     {
       const plugin = this,
             $cell = plugin.element,
+            cell = $cell[0],
             settings = plugin.settings,
             cellId = settings.id,
             usersettings = settings.usersettings,
@@ -32,10 +33,11 @@
       // Coords of touchstart on touch devices
       let _coords = null;
 
-      $cell.addClass (usersettings.displaymode||$wall[0].dataset.displaymode);
+      cell.classList.add (usersettings.displaymode||
+                          $wall[0].dataset.displaymode);
 
       // Add cell menu
-      $cell.prepend (`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`);
+      cell.insertBefore ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`)[0], cell.firstChild);
 
       if (writeAccess)
         $cell
@@ -249,7 +251,13 @@
     // METHOD showUserWriting ()
     showUserWriting (user)
     {
-      this.element.prepend (`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`);
+      const cell = this.element[0];
+
+      setTimeout (()=>
+        {
+          cell.classList.add ("locked");
+          cell.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], cell.firstChild);
+        }, 150);
     },
 
     // METHOD setPostitsUserWritingListMode ()
@@ -262,9 +270,11 @@
                 min = p.parentNode.querySelector (
                   `.postit-min[data-id="${p.dataset.id}"]`);
 
-          min.classList.add ("locked");
-
-          $(min).prepend (`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`);
+          if (min)
+          {
+            min.classList.add ("locked");
+            min.insertBefore ($(`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`)[0], min.firstChild);
+          }
         });
     },
 
@@ -320,10 +330,8 @@
             html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${progress?`<div class="postit-progress-container"><div class="postit-progress" style="width:${progress}%;background:${H.getProgressbarColor(progress)}"><span>${progress}%</span></div></div>`:""}${writeAccess?`<span>${(postits.length > 1)?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:""}</span>`:""} ${title}</li>`;
           });
 
-        $cell.find(".cell-menu").append (
-          `<span class="wpt-badge">${postits.length}</span>`);
-        $cell.prepend (
-          `<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`);
+        cell.querySelector(".cell-menu").append ($(`<span class="wpt-badge">${postits.length}</span>`)[0]);
+        cell.insertBefore ($(`<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`)[0], cell.firstChild);
 
         if (writeAccess)
           $cell.find(".cell-list-mode ul").sortable ({

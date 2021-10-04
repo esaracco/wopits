@@ -64,13 +64,13 @@
 
       _cb_close = args.cb_close;
 
-      $picker.find("> div")
-        .off().on("click", function(e)
+      // EVENT "click" on colors
+      const _eventC = (e)=>
         {
           e.stopImmediatePropagation ();
 
           // Update background color
-          args.cb_click (this);
+          args.cb_click (e.target);
 
           // Remove color picker
           document.getElementById("popup-layer").click ();
@@ -78,7 +78,9 @@
           const $f = S.getCurrent ("filters");
           if ($f.is (":visible"))
             $f.filters ("apply", {norefresh: true});
-        });
+        };
+      $picker[0].removeEventListener ("click", _eventC);
+      $picker[0].addEventListener ("click", _eventC);
 
       H.openPopupLayer (() =>
         {

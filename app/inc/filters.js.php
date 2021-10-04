@@ -57,31 +57,40 @@ let _body;
         })
         .append (_body);
 
-      // EVENT click on close button
-      $filters.find(".btn-close").on("click", ()=> plugin.hide ());
+      // EVENT "click" on close button
+      $filters[0].querySelector(".btn-close")
+        .addEventListener ("click", (e)=> plugin.hide ());
 
-      // EVENT click on tag
-      $filters.find(".tags i").on("click",
-        function (e)
+      // EVENT "click" on tags
+      $filters[0].querySelector(".tags").addEventListener ("click", (e)=>
         {
-          if (H.disabledEvent ())
-            return false;
+          const el = e.target;
 
-          $(this).parent().toggleClass ("selected");
+          if (el.tagName == "I")
+          {
+            if (H.disabledEvent ())
+              return false;
 
-          plugin.apply ();
+            el.parentNode.classList.toggle ("selected");
+
+            plugin.apply ();
+          }
         });
 
-      // EVENT click on color
-      $filters.find(".colors > div").on("click",
-        function (e)
+      // EVENT "click" on colors
+      $filters[0].querySelector(".colors").addEventListener ("click", (e)=>
         {
-          if (H.disabledEvent ())
-            return false;
+          const el = e.target;
 
-          $(this).toggleClass ("selected");
+          if (el.tagName == "DIV")
+          {
+            if (H.disabledEvent ())
+              return false;
 
-          plugin.apply ();
+            el.classList.toggle ("selected");
+
+            plugin.apply ();
+          }
         });
     },
 

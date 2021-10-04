@@ -32,58 +32,72 @@
         (d)=> d.length && $umsg.find(".wpt-badge").show().text (d.length)
       );
 
-      $umsg.on ("click", ()=> plugin.open ());
+      // EVENT "click" on messages count
+      $umsg[0].addEventListener ("click", (e)=> plugin.open ());
 
-      $(document).on("click", ".msg-body a", function (e)
+      // EVENT "click"
+      document.body.addEventListener ("click", (e)=>
         {
-          const wallId = this.dataset.wallid;
-          let data;
+          const el = e.target;
 
-          document.getElementById("popup-layer").click ();
+          if (!el.matches (".umsg-popover *"))
+            return;
 
-          e.preventDefault ();
-
-          switch (this.dataset.type)
+          // EVENT "click" on user messages
+          if (el.matches (".msg-body a"))
           {
-            case "wall":
-              data = {wallId};
-              break;
+            const data = el.dataset;
+            let infos;
 
-            case "postit":
-            case "worker":
-              data = {
-                wallId,
-                postitId: this.dataset.postitid
-              };
-              break;
+            document.getElementById("popup-layer").click ();
 
-            case "comment":
-              data = {
-                wallId,
-                postitId: this.dataset.postitid,
-                commentId: this.dataset.commentid
-              };
-              break;
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
+
+            switch (data.type)
+            {
+              case "wall":
+                infos = {
+                  wallId: data.wallid
+                };
+                break;
+
+              case "postit":
+              case "worker":
+                infos = {
+                  wallId: data.wallid,
+                  postitId: data.postitid
+                };
+                break;
+
+              case "comment":
+                infos = {
+                  wallId: data.wallid,
+                  postitId: data.postitid,
+                  commentId: data.commentid
+                };
+                break;
+            }
+
+            infos.type = data.type;
+
+            $("<div/>").wall ("loadSpecific", infos, true);
           }
+          // EVENT "click" on message "delete" button
+          else if (el.matches (".msg-item .close *,.msg-item .close"))
+          {
+            const item = el.closest (".msg-item");
 
-          data.type = this.dataset.type;
+            e.stopImmediatePropagation ();
+            e.preventDefault ();
 
-          $("<div/>").wall ("loadSpecific", data, true);
-        });
-
-      $(document).on("click", ".umsg-popover .msg-item .close", function (e)
-        {
-          const $item = $(this).closest (".msg-item");
-
-          e.preventDefault ();
-          e.stopImmediatePropagation ();
-
-          H.fetch (
-            "DELETE",
-            "user/messages",
-            {id:$item.attr("data-id")},
-            (d)=> plugin.removeMsg ($item)
-          );
+            H.fetch (
+              "DELETE",
+              "user/messages",
+              {id: item.getAttribute("data-id")},
+              (d)=> plugin.removeMsg (item)
+            );
+          }
         });
     },
 
@@ -113,12 +127,12 @@
     },
 
     // METHOD removeMsg ()
-    removeMsg ($item)
+    removeMsg (item)
     {
       const $badge = this.element.find(".wpt-badge"),
             count = parseInt($badge.text()) - 1;
 
-      $item.remove ();
+      item.remove ();
 
       $badge.text (count);
 
