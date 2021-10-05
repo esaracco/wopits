@@ -3,7 +3,7 @@
 
   Wpt_forms -> parent for forms plugins (swall...)
   Wpt_accountForms -> parent for account forms plugins
-  Wpt_toolbox -> parent for toolbox utilities (filters, arrows, mmenu,  chat...)
+  Wpt_toolbox -> parent for toolbox utilities (filters, arrows, mmenu, chat...)
 
   WHelper -> alias H (helper methods)
   WSharer -> alias S (tool for sharing values between javascript elements)
@@ -236,8 +236,8 @@ class Wpt_toolbox
           mH = 56,
           pos = el.getBoundingClientRect ();
 
-    if (pos.top <= 56 + 4)
-      el.style.top = `${56+4}px`;
+    if (pos.top <= mH + 4)
+      el.style.top = `${mH+4}px`;
     else
     {
       const wH = window.innerHeight - 15;
@@ -265,8 +265,8 @@ class Wpt_toolbox
           mH = 56,
           pos = ui.position;
 
-    if (pos.top <= 56 + 4)
-      pos.top = 56 + 4;
+    if (pos.top <= mH + 4)
+      pos.top = mH + 4;
     else
     {
       const wH = window.innerHeight - 15;
@@ -770,7 +770,7 @@ class WSocket
   // METHOD displayNetworkErrorMsg ()
   displayNetworkErrorMsg ()
   {
-    $("body").html (`<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`);
+    document.body.innerHTML = `<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`;
   }
 
   // METHOD ready ()
@@ -839,22 +839,19 @@ class WSocket
   }
 }
 
+const entitiesMap = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+};
+
 // CLASS WHelper
 class WHelper
 {
-  constructor ()
-  {
-    this.entitiesMap = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    };
-  }
-
   // METHOD hideUserWriting ()
-  hideUserWriting (user)
+  static hideUserWriting (user)
   {
     document.querySelectorAll(
       `[class^="user-writing"][data-userid="${user.id}"]`).forEach (el =>
@@ -865,19 +862,19 @@ class WHelper
   }
 
   // METHOD isLoginPage ()
-  isLoginPage ()
+  static isLoginPage ()
   {
     return (document.body && document.body.id == "login-page");
   }
 
   // METHOD disabledEvent ()
-  disabledEvent (cond)
+  static disabledEvent (cond)
   {
     return !!((cond === true) || S.get ("link-from") || S.get ("dragging"));
   }
 
   // METHOD lightenDarkenColor ()
-  lightenDarkenColor (col, amt)
+  static lightenDarkenColor (col, amt)
   {
     let usePound = false;
 
@@ -913,7 +910,7 @@ class WHelper
   }
 
   // METHOD rgb2hex ()
-  rgb2hex (rgb)
+  static rgb2hex (rgb)
   {
     // If already in hex
     if (rgb.charAt(0) == "#")
@@ -927,7 +924,7 @@ class WHelper
   }
 
   // METHOD setAutofocus ()
-  setAutofocus (el)
+  static setAutofocus (el)
   {
     var tmp = el.querySelector (
           `input[type="text"]:not(:read-only),`+
@@ -940,7 +937,7 @@ class WHelper
   }
 
   // METHOD testImage ()
-  testImage (url, timeout = 10000)
+  static testImage (url, timeout = 10000)
   {
     return new Promise ((resolve, reject) =>
       {
@@ -972,56 +969,56 @@ class WHelper
   }
 
   // METHOD haveMouse ()
-  haveMouse ()
+  static haveMouse ()
   {
     return (window.matchMedia("(hover: hover)").matches);
   }
 
   // METHOD isMainMenuCollapsed ()
-  isMainMenuCollapsed ()
+  static isMainMenuCollapsed ()
   {
     return $(`button[data-target="#main-menu"]`).is (":visible");
   }
 
   // METHOD escapeRegex ()
-  escapeRegex (str)
+  static escapeRegex (str)
   {
     return (`${str}`).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   // METHOD quoteRegex ()
-  quoteRegex (str)
+  static quoteRegex (str)
   {
     return (`${str}`).replace (/(\W)/g, '\\$1');
   }
 
   // METHOD HTMLEscape ()
-  htmlEscape (str)
+  static htmlEscape (str)
   {
-    return (`${str}`).replace (/[&<>"']/g, (c) => this.entitiesMap[c]);
+    return (`${str}`).replace (/[&<>"']/g, (c) => entitiesMap[c]);
   }
   
   // METHOD noHTML ()
-  noHTML (str)
+  static noHTML (str)
   {
     return (`${str}`).trim().replace (/<[^>]+>|&[^;]+;/g, "");
   }
 
   // METHOD nl2br ()
-  nl2br (str)
+  static nl2br (str)
   {
     return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
   }
   
   // METHOD closeMainMenu ()
-  closeMainMenu ()
+  static closeMainMenu ()
   {
-    if (document.querySelector("#main-menu.show"))
+    if (document.querySelector ("#main-menu.show"))
       document.querySelector("button.navbar-toggler").click ();
   }
   
   // METHOD trimObject ()
-  trimObject (obj, exclude = [])
+  static trimObject (obj, exclude = [])
   {
     for (const key in obj)
     {
@@ -1035,7 +1032,7 @@ class WHelper
   }
 
   // METHOD updatedObject ()
-  updatedObject (obj1, obj2, ignore = {})
+  static updatedObject (obj1, obj2, ignore = {})
   {
     for (const key in obj2)
     {
@@ -1052,7 +1049,7 @@ class WHelper
   }
   
   // METHOD cleanPopupDataAttr ()
-  cleanPopupDataAttr ($popup)
+  static cleanPopupDataAttr ($popup)
   {
     // Remove all data attributes
     const attrs = [];
@@ -1112,16 +1109,16 @@ class WHelper
   }
   
   // METHOD getHumanSize ()
-  getHumanSize (bytes)
+  static getHumanSize (bytes)
   {
-    const i = Math.floor(Math.log(bytes) / Math.log(1024)),
+    const i = Math.floor (Math.log(bytes) / Math.log(1024)),
           sizes = ['B', 'KB', 'MB'];
   
     return (bytes / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + sizes[i];
   }
   
   // METHOD getAccess ()
-  getAccess ()
+  static getAccess ()
   {
     const $wall = S.getCurrent ("wall");
   
@@ -1129,7 +1126,7 @@ class WHelper
   }
   
   // METHOD checkAccess ()
-  checkAccess (requiredRights, currentAccess)
+  static checkAccess (requiredRights, currentAccess)
   {
     if (currentAccess === undefined)
     {
@@ -1145,38 +1142,35 @@ class WHelper
   }
   
   // METHOD getAccessIcon ()
-  getAccessIcon (access)
+  static getAccessIcon (access)
   {
     let icon;
   
-    if (!access)
-      access = this.getAccess ();
-  
-    switch (String (access))
+    switch (String (access||this.getAccess ()))
     {
-      case "<?=WPT_WRIGHTS_ADMIN?>": icon = 'fa-shield-alt'; break;
-      case "<?=WPT_WRIGHTS_RW?>": icon = 'fa-edit'; break;
-      case "<?=WPT_WRIGHTS_RO?>": icon = 'fa-eye'; break;
+      case "<?=WPT_WRIGHTS_ADMIN?>": icon = "shield-alt"; break;
+      case "<?=WPT_WRIGHTS_RW?>": icon = "edit"; break;
+      case "<?=WPT_WRIGHTS_RO?>": icon = "eye"; break;
     }
   
-    return `<i class="fas ${icon} fa-fw"></i>`;
+    return `<i class="fas fa-${icon} fa-fw"></i>`;
   }
   
   // METHOD getUserDate ()
-  getUserDate (dt, tz, fmt)
+  static getUserDate (dt, tz, fmt)
   {
     return moment.unix(dt).tz(
       tz||wpt_userData.settings.timezone||moment.tz.guess())
         .format(fmt||"Y-MM-DD");
   }
 
-  checkUserVisible ()
+  static checkUserVisible ()
   {
     return (wpt_userData.settings && wpt_userData.settings.visible == 1);
   }
   
   // METHOD loader ()
-  loader (action, force = false, xhr = null)
+  static loader (action, force = false, xhr = null)
   {
     const layer = document.getElementById ("popup-loader"),
           $layer = $(layer);
@@ -1219,7 +1213,7 @@ class WHelper
   }
 
   // METHOD openUserview ()
-  openUserview (args)
+  static openUserview (args)
   {
     const {about, picture, title} = args;
 
@@ -1262,7 +1256,7 @@ class WHelper
   }
   
   // METHOD openPopupLayer ()
-  openPopupLayer (cb, closeMenus = true)
+  static openPopupLayer (cb, closeMenus = true)
   {
     document.body.appendChild (
       $(`<div id="popup-layer" class="layer"></div>`)[0]);
@@ -1283,7 +1277,7 @@ class WHelper
   }
   
   // METHOD openConfirmPopup ()
-  openConfirmPopup (args)
+  static openConfirmPopup (args)
   {
     const $popup = $("#confirmPopup"),
           popup0 = $popup[0];
@@ -1309,7 +1303,7 @@ class WHelper
   }
   
   // METHOD openConfirmPopover ()
-  openConfirmPopover (args)
+  static openConfirmPopover (args)
   {
     const scroll = !!args.scrollIntoView;
     let btn, buttons;
@@ -1405,7 +1399,7 @@ class WHelper
   }
 
   // METHOD setViewToElement ()
-  setViewToElement ($el)
+  static setViewToElement ($el)
   {
     const $view = S.getCurrent ("walls"),
           posE = $el[0].getBoundingClientRect (),
@@ -1419,7 +1413,7 @@ class WHelper
   }
   
   // METHOD resizeModal ()
-  resizeModal ($modal, w)
+  static resizeModal ($modal, w)
   {
     const modal = $modal[0],
           md = modal.querySelector (".modal-dialog"),
@@ -1454,7 +1448,7 @@ class WHelper
   }
   
   // METHOD openModal ()
-  openModal (args)
+  static openModal (args)
   {
     const m = args.item[0];
 
@@ -1486,7 +1480,7 @@ class WHelper
   }
 
   // METHOD loadPopup ()
-  async loadPopup (type, args = {open: true})
+  static async loadPopup (type, args = {open: true})
   {
     const id = `${args.template||type}Popup`,
           popup = document.getElementById (id);
@@ -1537,7 +1531,7 @@ class WHelper
   }
   
   // METHOD infoPopup ()
-  infoPopup (msg, notheme)
+  static infoPopup (msg, notheme)
   {
     const p = document.getElementById ("infoPopup"),
           $p = $(p);
@@ -1557,9 +1551,10 @@ class WHelper
   }
   
   // METHOD raiseError ()
-  raiseError (error_cb, msg)
+  static raiseError (error_cb, msg)
   {
-    error_cb && error_cb ();
+    if (error_cb)
+      error_cb ();
   
     this.displayMsg ({
       title: `<?=_("System")?>`,
@@ -1569,7 +1564,7 @@ class WHelper
   }
   
   // METHOD displayMsg ()
-  displayMsg (args)
+  static displayMsg (args)
   {
     if (S.get ("block-msg"))
       return;
@@ -1605,7 +1600,7 @@ class WHelper
   }
 
   // METHOD fixMenuHeight ()
-  fixMenuHeight ()
+  static fixMenuHeight ()
   {
     const menu = document.querySelector (".navbar-collapse"),
           mbBtn = document.querySelector (".navbar-toggler-icon");
@@ -1624,7 +1619,7 @@ class WHelper
   }
   
   // METHOD fixMainHeight ()
-  fixMainHeight ()
+  static fixMainHeight ()
   {
     document.querySelector("html").style.overflow = "hidden";
 
@@ -1633,7 +1628,7 @@ class WHelper
   }
 
   // METHOD setColorpickerColor ()
-  setColorpickerColor ($cp, c, apply = true)
+  static setColorpickerColor ($cp, c, apply = true)
   {
     const s = $cp[0].querySelectorAll (".ui-colorpicker-swatch"),
           ss = $cp[0].querySelector (".ui-colorpicker-swatch.cp-selected");
@@ -1655,7 +1650,7 @@ class WHelper
   }
 
   // METHOD getProgressbarColor ()
-  getProgressbarColor (v)
+  static getProgressbarColor (v)
   {
     return (v < 30) ? "#f60104" :
            (v < 50) ? "#f57f00" :
@@ -1666,7 +1661,7 @@ class WHelper
   }
 
   // METHOD download ()
-  download (args)
+  static download (args)
   {
     const req = new XMLHttpRequest ();
   
@@ -1724,7 +1719,7 @@ class WHelper
   }
   
   // METHOD manageUnknownError ()
-  manageUnknownError (d = {}, error_cb)
+  static manageUnknownError (d = {}, error_cb)
   {
     let msg;
 
@@ -1749,7 +1744,7 @@ class WHelper
   }
   
   // METHOD request_ws ()
-  request_ws (method, service, args, success_cb, error_cb)
+  static request_ws (method, service, args, success_cb, error_cb)
   {
     this.loader ("show");
   
@@ -1784,7 +1779,7 @@ class WHelper
   }
   
   // METHOD fetch ()
-  async fetch (method, service, args, success_cb, error_cb)
+  static async fetch (method, service, args, success_cb, error_cb)
   {
     this.loader ("show");
 
@@ -1816,7 +1811,7 @@ class WHelper
   // METHOD fetchUpload ()
   // Only used for file upload
   //TODO Use fetch() when upload progress will be available!
-  fetchUpload (service, args, success_cb, error_cb)
+  static fetchUpload (service, args, success_cb, error_cb)
   {
     //console.log (`AJAX: PUT ${service}`);
   
@@ -1898,7 +1893,7 @@ class WHelper
   }
   
   // METHOD checkUploadFileSize ()
-  checkUploadFileSize (args)
+  static checkUploadFileSize (args)
   {
     const msg = `<?=_("File size is too large (%sM max)")?>`.replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
           maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
@@ -1922,7 +1917,7 @@ class WHelper
   }
   
   // METHOD getUploadedFiles ()
-  getUploadedFiles (files, type, success_cb, error_cb, cb_msg)
+  static getUploadedFiles (files, type, success_cb, error_cb, cb_msg)
   {
     const _H = this,
           reader = new FileReader (),
@@ -1961,13 +1956,13 @@ class WHelper
   }
   
   // METHOD waitForDOMUpdate ()
-  waitForDOMUpdate (cb)
+  static waitForDOMUpdate (cb)
   {
     window.requestAnimationFrame (() => window.requestAnimationFrame (cb));
   }
   
   // METHOD checkForAppUpgrade ()
-  async checkForAppUpgrade (version)
+  static async checkForAppUpgrade (version)
   {
     const html = $("html")[0],
           $popup = $("#infoPopup"),
@@ -2035,14 +2030,14 @@ class WHelper
   }
   
   // METHOD navigatorIsEdge ()
-  navigatorIsEdge ()
+  static navigatorIsEdge ()
   {
     return navigator.userAgent.match (/edg/i);
   }
 
   // METHOD fixVKBScrollStart ()
   //FIXME
-  fixVKBScrollStart ()
+  static fixVKBScrollStart ()
   {
     const walls = document.getElementById ("walls");
 
@@ -2071,7 +2066,7 @@ class WHelper
   
   // METHOD fixVKBScrollStop ()
   //FIXME
-  fixVKBScrollStop ()
+  static fixVKBScrollStop ()
   {
     const walls = document.getElementById ("walls");
 
@@ -2102,7 +2097,7 @@ class WHelper
 }
 
 // GLOBAL VARS
-const H = new WHelper (),
+const H = WHelper,
       S = new WSharer (),
       ST = new WStorage (),
       WS = new WSocket ();
