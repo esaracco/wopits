@@ -1728,8 +1728,16 @@
       const display = this.isShared ();
 
       this.element[0].querySelectorAll(".postit").forEach (p =>
-        p.querySelector(".pwork")
-          .style.display = display?"inline-block":"none");
+        {
+          const pMenu = $(p).postit ("getSettings").Menu;
+
+          p.querySelector(".pwork")
+            .style.display = display?"inline-block":"none";
+
+          if (pMenu)
+            pMenu.$menu[0].querySelector(`[data-action="pwork"]`)
+              .style.display = display?"block":"none";
+        });
     },
 
     // METHOD refreshSharedIcon ()

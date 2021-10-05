@@ -1444,28 +1444,27 @@ th.wpt .submenu .dropdown-menu {
   z-index:5000;
 }
 
-.postit-menu .btn-circle:last-child i {
-  margin-left:-2px;
+.postit-menu i.fa-bezier-curve {
+  margin-left:-1px;
 }
 
 .postit-menu.right {
-  min-width:250px;
-  top:-33px;
-  left:-5px;
+  top:20px;
+  left:-3px;
 }
 
 .postit-menu.right .btn-circle {
   float:left;
   width:32px;
   height:32px;
-  margin-right:3px;
+  margin-top:2px;
+  margin-right:2px;
 }
 
 .postit-menu.left {
   max-width:70px;
-  min-height:150px;
-  top:-5px;
-  left:-71px;
+  top:-3px;
+  left:-68px;
 }
 
 .postit-menu.left .btn-circle {

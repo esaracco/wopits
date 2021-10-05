@@ -312,16 +312,19 @@ class Helper
     $items = [
       ['delete', _('Remove'), 'trash'],
       ['edit', _('Edit'), 'edit'],
-      ['tpick', _('Tags'), 'tags'],
       ['cpick', _('Background color'), 'palette'],
       ['dpick', _('Deadline'), 'hourglass-end'],
+      ['tpick', _('Tags'), 'tags'],
+      ['pwork', _('Users involved'), 'users-cog'],
+      ['pcomm', _('Comments'), 'comments'],
+      ['patt', _('Attached files'), 'paperclip'],
       ['add-plug', _('Add relation'), 'bezier-curve']
     ];
 
     $menu = '<div class="postit-menu right">';
     foreach ($items as $d)
     {
-      $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" data-bs-toggle=\"tooltip\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
+      $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
     }
     $menu .= '</div>';
 

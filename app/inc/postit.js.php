@@ -176,7 +176,8 @@
     // METHOD constructor ()
     constructor (postitPlugin)
     {
-      const $currentMenu = postitPlugin.settings.wall.find (".postit-menu");
+      const $currentMenu = postitPlugin.settings.wall.find (".postit-menu"),
+            postit = postitPlugin.element[0];
 
       if ($currentMenu.length)
         $currentMenu.parent().postit ("closeMenu");
@@ -185,7 +186,19 @@
       this.$menu = $(`<?=Wopits\Helper::buildPostitMenu ()?>`);
 
       this.attachMenuEvents ();
-      this.postitPlugin.element.prepend (this.$menu);
+      this.init ();
+      postit.insertBefore (this.$menu[0], postit.firstChild);
+    }
+
+    // METHOD init ()
+    init ()
+    {
+      const pSettings = this.postitPlugin.settings;
+
+      if (!pSettings.wall.wall ("isShared") || 
+            !this.postitPlugin.canWrite() &&
+            !pSettings.attachmentscount)
+        this.$menu[0].querySelector(`[data-action="pwork"]`).style.display = "none";
     }
 
     // METHOD show ()
@@ -240,6 +253,12 @@
             case "edit": return postitPlugin.openPostit ();
             // OPEN deadline date picker popup
             case "dpick": return postitPlugin.openDatePicker ();
+            // OPEN popup for attachments, workers or comments
+            case "patt":
+            case "pwork":
+            case "pcomm":
+              return postit.querySelector(`.topicon [data-action="${action}"]`)
+                       .dispatchEvent (new Event ("click", {bubbles: true}));
           }
 
           postitPlugin.edit ({}, ()=>
@@ -342,7 +361,7 @@
 
       $postit
         // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-up"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-down"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
 
       if (writeAccess)
       {
@@ -2362,11 +2381,11 @@
   
                 settings.Menu = new _Menu ($postit.postit ("getClass"));
   
-                if ((coord.x||coord.left)+settings.Menu.getWidth()+20 >
+                if ((coord.x||coord.left)+settings.Menu.getWidth() >
                       $(window).width())
                 {
                   ibtn.classList
-                    .replace ("fa-caret-square-up", "fa-caret-square-left");
+                    .replace ("fa-caret-square-down", "fa-caret-square-left");
                   settings.Menu.setPosition ("left");
                 }
                 else
@@ -2393,7 +2412,7 @@
                 $header.removeClass ("menu");
                 ibtn.classList.replace("fas", "far");
                 ibtn.classList
-                  .replace ("fa-caret-square-left", "fa-caret-square-up");
+                  .replace ("fa-caret-square-left", "fa-caret-square-down");
   
                 settings.Menu.destroy ();
                 delete settings.Menu;
