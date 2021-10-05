@@ -4,11 +4,14 @@ echo "########## PLEASE WAIT for wopits deployment..."
 
 # Block output for the following commands
 {
-# Deploy wopits -> "-y" assume yes and "-M" do not minify
-sudo -Eu wopits /home/wopits/app/deploy/deploy -y -M -edocker
 
-# Run Swoole WS & Task services -> "-a" do not start apache
-sudo -Eu wopits /var/www/wopits.localhost/app/deploy/bin/post-deploy.php -a
+  # (as user "wopits") Deploy wopits -> "-y" assume yes
+  sudo -Eu wopits /home/wopits/app/deploy/deploy -y -edocker
+
+  # Run Swoole Task server
+  /var/www/wopits.localhost/app/services/task/server-task.php
+  # Run Swoole Websocket server
+  /var/www/wopits.localhost/app/services/websocket/server-ws.php
 
 } &> /dev/null
 
