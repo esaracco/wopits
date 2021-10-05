@@ -36,12 +36,6 @@
             $account = plugin.element,
             account = $account[0];
 
-      if ($.support.touch)
-        // EVENT "click" on modal "user" icon
-        account.querySelector(".modal-title i.fa-user-circle")
-          .addEventListener ("click",
-            (e)=> bootstrap.Modal.getInstance($account[0]).hide ())
-
       // EVENT "click" on "delete" button (only if no LDAP mode)
       const deleteBtn = account.querySelector(`[data-action="delete-account"]`);
       if (deleteBtn)
