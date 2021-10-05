@@ -2044,49 +2044,51 @@ class WHelper
   //FIXME
   fixVKBScrollStart ()
   {
-    const walls = document.getElementById ("walls"),
-          wall = S.getCurrent("wall")[0];
+    const walls = document.getElementById ("walls");
 
     if (!walls)
       return;
 
     const body = document.body,
-          bodyScrollTop = body.scrollTop,
-          wallsScrollLeft = walls.scrollLeft;
+          wallsScrollLeft = walls.scrollLeft,
+          wall = S.getCurrent("wall")[0];
   
     S.set ("wallsScrollLeft", wallsScrollLeft);
     S.set ("bodyComputedStyles", window.getComputedStyle (body));
   
-    body.style.position = "fixed";
     body.style.overflow = "hidden";
-    body.style.top = `${bodyScrollTop*-1}px`;
+    body.style.position = "fixed";
+    body.style.top = `${body.scrollTop*-1}px`;
   
-    if (this.navigatorIsEdge () && wall)
+    if (wall && this.navigatorIsEdge ())
       wall.style.left = `${wallsScrollLeft*-1}px`;
   
     walls.style.width = `${window.innerWidth}px`;
-    walls.style.overflow = "hidden";
+//    walls.style.overflow = "hidden";
   
-    window.dispatchEvent (new Event("resize"));
+    window.dispatchEvent (new Event ("resize"));
   }
   
   // METHOD fixVKBScrollStop ()
   //FIXME
   fixVKBScrollStop ()
   {
-    const walls = document.getElementById ("walls"),
-          wall = S.getCurrent("wall")[0];
+    const walls = document.getElementById ("walls");
 
     if (!walls)
       return;
+
+    const wall = S.getCurrent("wall")[0];
   
     document.body.style = S.get ("bodyComputedStyles");
     S.unset ("bodyComputedStyles");
   
-    walls.style.overflow = "auto";
+//    walls.style.overflow = "auto";
     walls.style.width = "auto";
-    if (this.navigatorIsEdge () && wall)
+
+    if (wall && this.navigatorIsEdge ())
       wall.style.left = "";
+
     walls.scrollLeft = S.get ("wallsScrollLeft");
   
     this.waitForDOMUpdate (()=>
