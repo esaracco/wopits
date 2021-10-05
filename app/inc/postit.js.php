@@ -237,9 +237,13 @@
       // EVENT "click" on postit menu
       this.$menu[0].addEventListener ("click", (e)=>
         {
-          const el = e.target,
-                action = (el.tagName=="SPAN"?el:el.closest("span"))
-                           .dataset.action;
+          const el = e.target;
+
+          if (el.tagName == "DIV")
+            return;
+
+          const action =
+                  (el.tagName=="SPAN"?el:el.closest("span")).dataset.action;
 
           e.stopImmediatePropagation ();
 

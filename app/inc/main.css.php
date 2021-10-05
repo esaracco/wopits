@@ -1449,6 +1449,7 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit-menu.right {
+  max-width:206px;
   top:20px;
   left:-3px;
 }
