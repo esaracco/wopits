@@ -63,11 +63,14 @@
       settings._timeoutEditing = 0;
       settings._intervalBlockEditing = 0;
 
-      // EVENT click on editable element
+      // EVENT "click" on editable element
       settings.container[0].addEventListener ("click", (e)=>
         {
-          // Cancel if creation of a relation in progress
-          if (S.get("link-from"))
+          // Cancel if:
+              // creation of a relation in progress
+          if (S.get ("link-from") ||
+              // editing has just been cancelled
+              S.get ("block-editing"))
             return false;
 
           if (!settings._intervalBlockEditing &&
@@ -102,7 +105,8 @@
 
                   settings._input = editable.querySelector ("input");
 
-                  cb.before && cb.before (plugin, settings._input.value);
+                  if (cb.before)
+                    cb.before (plugin, settings._input.value);
 
                   plugin.resize ();
 
@@ -139,6 +143,8 @@
 
                       if (!H.haveMouse ())
                         H.fixVKBScrollStop ();
+
+                      S.set ("block-editing", true, 500)
                     });
 
                   // EVENT "keyup" on editable element
@@ -177,10 +183,8 @@
 
                   // EVENT "paste" on editable element
                   settings._input.addEventListener ("paste", (e)=>
-                    {
-                      plugin.resize (
-                        e.originalEvent.clipboardData.getData ('text'));
-                    });
+                    plugin.resize (
+                      e.originalEvent.clipboardData.getData ('text')));
                 });
               }
             }, 250);
@@ -253,6 +257,9 @@
 
   $(function ()
   {
+    if (H.isLoginPage ())
+        return;
+
     setTimeout (()=>
     {
       document.body.append ($(`<div id="sandbox"></div>`)[0]);
