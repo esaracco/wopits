@@ -737,18 +737,18 @@
       // EVENT "change" on header picture
       upload.addEventListener ("change", (e)=>
           {
-            const $upload = $(e.target),
+            const el = e.target,
                   $header = S.getCurrent ("header"),
                   settings = $header.header ("getSettings");
 
-            if (e.target.files && e.target.files.length)
+            if (el.files && el.files.length)
             {
               _realEdit = true;
 
               H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
                 (e, file) =>
                 {
-                  $upload.val ("");
+                  el.value = "";
 
                   if (H.checkUploadFileSize ({size: e.total}) &&
                       e.target.result)

@@ -375,7 +375,7 @@
                   plugin = S.getCurrent("postit").postit ("getClass"),
                   settings = plugin.settings;
 
-            if (e.target.files && e.target.files.length)
+            if (el.files && el.files.length)
             {
               H.getUploadedFiles (e.target.files, "all",
                 (e, file) =>

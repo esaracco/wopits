@@ -1404,7 +1404,7 @@
     // METHOD import ()
     import ()
     {
-      $(".upload.import-wall").click ();
+      document.querySelector(".upload.import-wall").click ();
     },
 
     // METHOD restorePreviousSession ()
@@ -2311,12 +2311,13 @@
         // EVENT "change" for wall importation upload
         upload.addEventListener ("change", (e)=>
             {
-              if (e.target.files && e.target.files.length)
+              const el = e.target;
+
+              if (el.files && el.files.length)
               {
-                H.getUploadedFiles (e.target.files, "\.zip$",
-                  (e, file) =>
+                H.getUploadedFiles (el.files, "\.zip$", (e, file) =>
                   {
-                    e.target.value = "";
+                    el.value = "";
   
                     if (H.checkUploadFileSize ({
                           size: e.total,

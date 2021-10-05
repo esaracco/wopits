@@ -57,7 +57,7 @@
         {
           const el = e.target;
 
-          if (e.target.files && e.target.files.length)
+          if (el.files && el.files.length)
           {
             H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
               (e, file) =>
