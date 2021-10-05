@@ -71,10 +71,10 @@ html {
   z-index:5006; 
   height: 440px;
   width: 350px;
-  margin-top: auto;
-  margin-bottom: auto;
   background: #343a40;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
   display: flex;
   justify-content: center;
   flex-direction: column;
