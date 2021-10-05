@@ -30,10 +30,10 @@ RUN locale-gen && \
     chmod 600 /etc/apache2/*.key && \
     \
     a2enmod -q ssl rewrite headers proxy_wstunnel && a2ensite -q wopits.localhost && \
-    wget -q https://github.com/swoole/swoole-src/archive/refs/tags/v4.4.26.tar.gz && \
-    tar xf v4.4.26.tar.gz
+    wget -q https://github.com/swoole/swoole-src/archive/refs/tags/v4.7.1.tar.gz && \
+    tar xf v4.7.1.tar.gz
 
-WORKDIR swoole-src-4.4.26
+WORKDIR swoole-src-4.7.1
 RUN phpize && ./configure && make && make install && \
     \
     pecl channel-update pecl.php.net && \
