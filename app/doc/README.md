@@ -17,6 +17,13 @@ If you don't want to bother installing wopits yourself, just create an account o
 
 *wopits is **Node.js & React.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
 
+DOCKER
+------------
+Go to the `docker/` directory, customize the `.env` file, take a look at the `docker-compose.yml` and run `docker-compose build` & `docker-compose up`. Images are not on Docker Hub. The build of the 2 images `wopits_db` (MariaDB database) and `wopits_app` (Apache & Swoole services) can take a while... be patient :-)
+The application needs to run on HTTPS. We use a self-signed certificate. Just ignore the browser warning.
+
+> ***Emails will not be sent, and this docker is not intended for production use!***
+
 INSTALLATION
 ------------
 
@@ -244,12 +251,3 @@ Create a `/var/log/wopits/` directory and customize the following lines before a
 1 0 * * * /var/www/wopits.domain.com/app/crons/check-deadline.php >> /var/log/wopits/check-deadline.log 2>&1
 */15 * * * * /var/www/wopits.domain.com/app/crons/ping.php >> /var/log/wopits/ping.log 2>&1
 ```
-
-DOCKER
-------------
-The docker is still in beta, but you can already play with it.
-Go to the `docker/` directory, customize the `.env` file, take a look at the `docker-compose.yml` and run `docker-compose up`. Images are not on Docker Hub. The build of the 2 images `wopits_db` (MariaDB database) and `wopits_app` (Apache & Swoole services) can take time... be patient :-)
-The application needs to run on HTTPS. We use a self-signed certificate. Just ignore the browser warning.
-
-> ***The docker is not intended for production! and emails will not be sent.***
-> Any help is welcome!
