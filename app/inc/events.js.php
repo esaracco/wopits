@@ -242,10 +242,14 @@ document.addEventListener ("DOMContentLoaded", ()=>
       // If "ESC" while popup layer is opened, close it
       if (e.which == 27)
       {
-        const layer = document.getElementById ("popup-layer");
+        let tmp;
 
-        if (layer)
-          layer.click ();
+        // If popup layer, click on it to close popup
+        if ( tmp = document.getElementById ("popup-layer") )
+          tmp.click ();
+        // If postit menu, click on menu button to close it
+        else if ( tmp = document.querySelector (".postit-menu") )
+          tmp.nextElementSibling.click ();
       }
     });
 

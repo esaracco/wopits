@@ -153,11 +153,9 @@
 
       if (_plugRabbit.line)
       {
-        $(document)
-          .off("mousedown.rabbit")
-          .off ("keydown.rabbit");
-
-        $("body").off ("mousemove.rabbit");
+        document.removeEventListener ("keydown", _plugRabbit.escapeEvent);
+        document.removeEventListener ("mousedown", _plugRabbit.mousedownEvent);
+        document.removeEventListener ("mousemove", _plugRabbit.mousemoveEvent);
 
         _plugRabbit.line.remove ();
         _plugRabbit.line = null;
@@ -322,11 +320,12 @@
                       endPlug: "behind"
                     });
 
-                  $(document)
-                    .on("mousedown.rabbit", _plugRabbit.mousedownEvent)
-                    .on ("keydown.rabbit", _plugRabbit.escapeEvent);
-
-                  $("body").on ("mousemove.rabbit", _plugRabbit.mousemoveEvent);
+                  document.addEventListener (
+                    "keydown", _plugRabbit.escapeEvent);
+                  document.addEventListener (
+                    "mousedown", _plugRabbit.mousedownEvent);
+                  document.addEventListener (
+                    "mousemove", _plugRabbit.mousemoveEvent);
 
                   break;
               }
@@ -2399,20 +2398,10 @@
                 ibtn.classList.replace ("far", "fas");
   
                 settings.Menu.show ();
-  
-                $(document)
-                  // EVENT keydown
-                  .on("keydown.pmenu", function (e)
-                  {
-                    if (e.which == 27)
-                      btn.click ();
-                  });
               }
               // Destroy postit menu
               else
               {
-                $(document).off ("keydown.pmenu");
-  
                 $header.removeClass ("menu");
                 ibtn.classList.replace("fas", "far");
                 ibtn.classList
