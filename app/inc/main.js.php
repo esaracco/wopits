@@ -2425,7 +2425,11 @@
             const el = e.target,
                   $wall = S.getCurrent ("wall"),
                   li = el.tagName=="LI"?el:el.closest("li"),
-                  action = li.dataset.action;
+                  action = li?li.dataset.action:null;
+
+            // Nothing if menu item is disabled
+            if (!li || li.querySelector ("a.disabled"))
+              return;
 
             // INTERNAL FUNCTION __manageCheckbox()
             const __manageCheckbox = (el, li, type)=>
@@ -2438,13 +2442,6 @@
 
                 S.getCurrent(type)[type] ("toggle");
               };
-
-            // Nothing if menu item is disabled
-            if (li.querySelector ("a.disabled"))
-            {
-              e.preventDefault ();
-              return;
-            }
 
             switch (action)
             {
