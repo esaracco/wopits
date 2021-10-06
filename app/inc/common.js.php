@@ -1574,7 +1574,8 @@ class WHelper
     if ($(".tox-dialog").is(":visible"))
       return tinymce.activeEditor.windowManager.alert (args.msg);
 
-    const t = args.type;
+    const ctn = document.getElementById ("msg-container"),
+          t = args.type;
 
     // Blurs
     setTimeout (()=>
@@ -1592,11 +1593,16 @@ class WHelper
     }, 150);
 
     // Close opened alert with the same content
-    document.querySelectorAll("#msg-container .toast").forEach (
-      (el)=> (el.querySelector(".toast-body").innerHTML == args.msg) &&
-                bootstrap.Toast.getInstance(el).hide ());
+    ctn.querySelectorAll(".toast").forEach (el=>
+      el.querySelector(".toast-body").innerHTML == args.msg &&
+        bootstrap.Toast.getInstance(el).hide ());
 
-    (new bootstrap.Toast ($(`<div class="toast align-items-center border-0 ${(t=="danger"||t=="success")?"text-white":""} bg-${t} bg-gradient" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><button type="button" class="btn-close m-auto" data-bs-dismiss="toast"></button><div class="toast-body">${args.msg}</div></div></div>`).prependTo ("#msg-container"), {delay: (t=="danger"||t=="warning")?5000:3000})).show ();
+    const msg = $(`<div class="toast align-items-center border-0 ${(t=="danger"||t=="success")?"text-white":""} bg-${t} bg-gradient" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><button type="button" class="btn-close m-auto" data-bs-dismiss="toast"></button><div class="toast-body">${args.msg}</div></div></div>`)[0];
+
+    ctn.insertBefore (msg, ctn.firstChild);
+
+    new bootstrap.Toast (
+          msg, {delay: (t=="danger"||t=="warning")?5000:3000}).show ();
   }
 
   // METHOD fixMenuHeight ()
