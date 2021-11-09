@@ -1,6 +1,8 @@
 <?php include (__DIR__.'/../app/header-common.php')?>
 <body>
 
+  <div id="tpick"></div>
+  <div id="cpick"></div>
   <div id="upload-layer" class="layer"></div>
 
   <!-- MSG CONTAINER -->

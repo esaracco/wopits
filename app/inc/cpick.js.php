@@ -113,13 +113,8 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
-  {
-    setTimeout (()=>
-    {
-      $("body").prepend (`<div id="cpick"></div>`);
-      $("#cpick").cpick ();
-    }, 0);
-  });
+  document.addEventListener ("DOMContentLoaded",
+    ()=> setTimeout (()=> $("#cpick").cpick (), 0));
 
 <?php echo $Plugin->getFooter ()?>
+

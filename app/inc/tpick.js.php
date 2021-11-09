@@ -165,13 +165,7 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  $(function ()
-    {
-      setTimeout (()=>
-      {
-        $("body").prepend (`<div id="tpick"></div>`);
-        $("#tpick").tpick ();
-      }, 0);
-    });
+  document.addEventListener ("DOMContentLoaded",
+    ()=> setTimeout (()=> $("#tpick").tpick (), 0));
 
 <?php echo $Plugin->getFooter ()?>
