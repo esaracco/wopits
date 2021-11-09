@@ -281,6 +281,18 @@
               c.dataset.postitid = postitId;
 
               c.innerHTML = content;
+
+              // EVENT "hidden.bs.modal" on popup 
+              $p[0].addEventListener ("hidden.bs.modal", (e)=>
+                {
+                  _textarea.value = "";
+
+                  $_popup.pcomm ("reset");
+                  $_popup = undefined;
+
+                  plugin.postit().unsetCurrent ();
+
+                }, {once: true});
             }
           });
         // Device with mouse: open a POPOVER
@@ -398,24 +410,6 @@
                   }
             }
           });
-
-        // EVENT "hidden.bs.modal" (only for devices without mouse)
-        if (!H.haveMouse ())
-        {
-          document.body.addEventListener ("hidden.bs.modal", (e)=>
-            {
-              // EVENT "hidden.bs.modal" on popup
-              if (e.target.id == "postitCommentsPopup")
-              {
-                _textarea.value = "";
-
-                S.getCurrent("pcomm").pcomm ("reset");
-                S.getCurrent("postit").postit ("unsetCurrent");
-
-                $_popup = undefined;
-              }
-            });
-         }
 
         // EVENTS "keyup & keydown"
         const _textareaEventK = (e)=>

@@ -40,6 +40,7 @@
     display ()
     {
       const plugin = this,
+            $postit = S.getCurrent  ("postit"),
             readonly = plugin.settings.readonly;
 
       H.loadPopup ("usearch", {
@@ -63,6 +64,46 @@
           $p.usearch ("displayUsers", _args);
 
           H.openModal ({item: $p});
+
+        // EVENT "hide.bs.modal" on workers popup
+        $p[0].addEventListener ("hide.bs.modal", (e)=>
+          {
+            if (S.get ("still-closing")) return;
+
+            // INTERNAL FUNCTION __close ()
+            const __close = ()=>
+              {
+                $postit.postit (
+                  H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ?
+                    "unedit" : "unsetCurrent");
+              };
+
+            const pwork = $postit.postit("getPlugin", "pwork"),
+                  newUsers = $p.usearch ("getNewUsers");
+
+            e.stopImmediatePropagation ();
+
+            if (newUsers.length)
+            {
+              e.preventDefault ();
+
+              H.openConfirmPopup ({
+                type: "notify-users",
+                icon: "save",
+                content: `<?=_("Notify new users?")?>`,
+                cb_ok: ()=> pwork.notifyNewUsers (newUsers),
+                cb_close: ()=>
+                {
+                  S.set ("still-closing", true, 500);
+                  $p.modal ("hide");
+
+                  __close ();
+                }
+              });
+            }
+            else
+              __close ();
+          }, {once: true});
         }
       });
     },
@@ -111,51 +152,6 @@
                 $pwork.closest(".postit").postit ("setCurrent");
                 $pwork.pwork ("display");
               }
-            }
-          });
-
-        // EVENT "hide.bs.modal"
-        document.body.addEventListener ("hide.bs.modal", (e)=>
-          {
-            // EVENT "hide.bs.modal" on workers popup
-            if (e.target.id == "pworkPopup")
-            {
-              if (S.get ("still-closing")) return;
-
-              // INTERNAL FUNCTION __close ()
-              const __close = ()=>
-                {
-                  S.getCurrent("postit").postit (
-                    H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ?
-                      "unedit" : "unsetCurrent");
-                };
-
-              const $popup = $(e.target),
-                    pwork = S.getCurrent("postit").postit("getPlugin", "pwork"),
-                    newUsers = $popup.usearch ("getNewUsers");
-
-              e.stopImmediatePropagation ();
-
-              if (newUsers.length)
-              {
-                e.preventDefault ();
-
-                H.openConfirmPopup ({
-                  type: "notify-users",
-                  icon: "save",
-                  content: `<?=_("Notify new users?")?>`,
-                  cb_ok: ()=> pwork.notifyNewUsers (newUsers),
-                  cb_close: ()=>
-                  {
-                    S.set ("still-closing", true, 500);
-                    $popup.modal ("hide");
-
-                    __close ();
-                  }
-                });
-              }
-              else
-                __close ();
             }
           });
 
