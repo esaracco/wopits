@@ -17,7 +17,8 @@
   const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['cpick']['items'])).'"'?>];
   let _width = 0,
       _height = 0,
-      _cb_close;
+      _cb_close,
+      _cb_click;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -63,6 +64,7 @@
         y = wH - _height - 20;
 
       _cb_close = args.cb_close;
+      _cb_click = args.cb_click;
 
       // EVENT "click" on colors
       const _eventC = (e)=>
@@ -70,7 +72,7 @@
           e.stopImmediatePropagation ();
 
           // Update background color
-          args.cb_click (e.target);
+          _cb_click (e.target);
 
           // Remove color picker
           document.getElementById("popup-layer").click ();
@@ -114,7 +116,7 @@
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
   document.addEventListener ("DOMContentLoaded",
-    ()=> setTimeout (()=> $("#cpick").cpick (), 0));
+    ()=> (!H.isLoginPage ()) && setTimeout (()=> $("#cpick").cpick (), 0));
 
 <?php echo $Plugin->getFooter ()?>
 

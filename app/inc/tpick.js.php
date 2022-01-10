@@ -166,6 +166,6 @@
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
   document.addEventListener ("DOMContentLoaded",
-    ()=> setTimeout (()=> $("#tpick").tpick (), 0));
+    ()=> (!H.isLoginPage ()) && setTimeout (()=> $("#tpick").tpick (), 0));
 
 <?php echo $Plugin->getFooter ()?>
