@@ -115,8 +115,8 @@ class VolatileTables
 
   public function jGet (string $table, string $key):object
   {
-    return empty ( ($v = ($this->$table->get($key))['v']) ) ?
-             (object)[] : json_decode ($v);
+    return ( ($t = $this->$table->get ($key)) && !empty ( ($v = $t['v']) )) ?
+             json_decode ($v) : (object)[];
   }
 
   public function jSet (string $table, string $key, object $value):void
@@ -142,8 +142,8 @@ class VolatileTables
 
   public function lGet (string $table, string $key):array
   {
-    return empty ( ($v = ($this->$table->get($key))['v']) ) ?
-             [] : explode (',', $v);
+    return ( ($t = $this->$table->get ($key)) && !empty ( ($v = $t['v']) )) ?
+             explode (',', $v) : [];
   }
 
   public function lAdd (string $table, string $key, int $newValue):void
