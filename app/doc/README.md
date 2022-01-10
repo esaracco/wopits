@@ -39,7 +39,7 @@ Just clone the Git:
 
 The following actions have to be done on the machine that will host the wopits website. Which is not necessarily the source machine where you installed the Git repository.
 
-- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.7.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
+- Install [Swoole](https://github.com/swoole/swoole-src#2-install-from-source-recommended) from the [latest 4.8.x tag](https://github.com/swoole/swoole-src/tags) and activate it for both CLI and Apache. Then tweak `enable_preemptive_scheduler`:
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
@@ -162,7 +162,7 @@ If you are using the Git repository as your Apache DocumentRoot without deployme
 - create a `data/` directory and give the Apache user all rights on it:
 ```bash
 # mkdir -p data/{walls,users}
-# chown -R [ApacheUser]:[wopitsUserGroup] data
+# chown -R [wopitsUser]:[ApacheUserGroup] data
 # chmod 2770 data
 ```
 
