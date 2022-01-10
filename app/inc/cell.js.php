@@ -210,6 +210,7 @@
              });
            };
 
+/*
          // Touch devices
          if ($.support.touch)
            $cell
@@ -226,6 +227,21 @@
           // No touch device
           else
             $cell.dblclick (__dblclick);
+*/
+
+          // Touch devices
+         if ($.support.touch)
+           $cell
+            // EVENT touchstart on cell to retrieve touch coords
+            .on("touchstart", function (e)
+            {
+              _coords = e;
+
+              // Fix issue with some touch devices
+              $(".navbar-nav,.dropdown-menu").collapse ("hide");
+            })
+
+          $cell.dblclick (__dblclick);
         }
 
         let w, h;
