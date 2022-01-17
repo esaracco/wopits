@@ -1970,7 +1970,8 @@ class WHelper
   // METHOD supportUs ()
   static supportUs ()
   {
-    <?php if (defined ('WPT_SUPPORT_CAMPAIGN') && WPT_SUPPORT_CAMPAIGN) {?>
+    <?php if (WPT_SUPPORT_CAMPAIGN) {?>
+
     if (wpt_userData.settings.theme &&
         !ST.noDisplay ("support-msg") &&
         !document.querySelector(".modal.show,.popover.show"))
@@ -1992,6 +1993,7 @@ class WHelper
 
         this.openModal ({item: $(popup), noeffect: true});
     }
+
     <?php } ?>
   }
 
@@ -2060,9 +2062,9 @@ class WHelper
           this.openModal ({item: $popup, noeffect: true});
         }
       }
+      else
+        setTimeout (()=> this.supportUs (), 1000);
     }
-    else
-      setTimeout (()=> this.supportUs (), 1000);
   }
   
   // METHOD navigatorIsEdge ()
