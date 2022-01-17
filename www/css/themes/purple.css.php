@@ -36,7 +36,7 @@
   border-color: #fce9ff;
 }
 
-.modal a:not(.list-group-item):not(.close),
+.modal a:not(.list-group-item):not(.close):not(.btn),
 .modal span.name i,
 .popover a,
 .msg-userref {

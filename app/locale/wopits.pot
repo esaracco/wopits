@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-01-10 16:46+0100\n"
+        "POT-Creation-Date: 2022-01-17 23:17+0100\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,6 +170,10 @@ msgid   "Arc"
 msgstr  ""
 
 msgid   "Arrows"
+msgstr  ""
+
+#, php-format
+msgid   "As you probably already know, wopits is a free tool, and your data is not shared with any third party.<div class='mt-2 mb-2'>To offer you this service, we nevertheless have fixed costs for hosting and domain name.</div><div>This is why we invite you to participate in the project by making a PayPal donation:</div><div class='mt-3 mb-3 text-center'>%s1</div><div>It will not change the way you access wopits or the features available, but it would be nice to help and it will encourage us to maintain the project and the service for a few more years&nbsp;:-)</div>"
 msgstr  ""
 
 msgid   "Associate a picture"
@@ -866,6 +870,9 @@ msgstr  ""
 msgid   "Support"
 msgstr  ""
 
+msgid   "Support us"
+msgstr  ""
+
 msgid   "Switch to stack mode"
 msgstr  ""
 
@@ -1185,6 +1192,9 @@ msgid   "Wrong file type for %s"
 msgstr  ""
 
 msgid   "Yes"
+msgstr  ""
+
+msgid   "Yes, I support wopits!"
 msgstr  ""
 
 msgid   "You are connected with your LDAP account"

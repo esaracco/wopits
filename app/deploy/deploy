@@ -580,6 +580,12 @@
         $this->_updateConf ('WPT_ABOUT_PRIVACY', false);
       }
 
+      if (!empty ($env['support_campaign']))
+        $this->_updateConf ('WPT_SUPPORT_CAMPAIGN',
+                              boolval(@$env['support_campaign']));
+      else
+        $this->_updateConf ('WPT_SUPPORT_CAMPAIGN', false);
+
       if (!empty ($env['login_welcome']))
         $this->_updateConf ('WPT_LOGIN_WELCOME',
                               boolval(@$env['login_welcome']));

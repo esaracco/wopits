@@ -84,6 +84,8 @@
         'wopits-ws-restart' => 'systemctl restart wopits1-ws',
         'wopits-task-restart' => 'systemctl restart wopits1-task'
       ],
+      // Enable/disable wopits support campaign
+      'support_campaign' => false,
       // About popup
       // Display/hide about popup informations
       'about' => [

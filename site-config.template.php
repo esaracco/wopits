@@ -63,6 +63,10 @@ define ('WPT_ABOUT_WARNING', "");
 // Example: false
 define ('WPT_ABOUT_PRIVACY', "");
 
+// Control support campaign
+// Example: true
+define ('WPT_SUPPORT_CAMPAIGN', "");
+
 // Welcome message on login page
 // Display/hide welcome message.
 // Example: false

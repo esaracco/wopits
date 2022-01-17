@@ -1967,6 +1967,34 @@ class WHelper
     window.requestAnimationFrame (() => window.requestAnimationFrame (cb));
   }
   
+  // METHOD supportUs ()
+  static supportUs ()
+  {
+    <?php if (defined ('WPT_SUPPORT_CAMPAIGN') && WPT_SUPPORT_CAMPAIGN) {?>
+    if (wpt_userData.settings.theme &&
+        !ST.noDisplay ("support-msg") &&
+        !document.querySelector(".modal.show,.popover.show"))
+    {
+      const popup = document.getElementById ("infoPopup");
+
+      popup.querySelector(".modal-dialog").classList.remove ("modal-sm");
+      popup.querySelector(".modal-title").innerHTML = `<i class="fas fa-heart fa-lg fa-fw"></i> <?=_("Support us")?>`;
+
+      popup.querySelector(".modal-body").classList.add ("justify");
+      popup.querySelector(".modal-body").innerHTML = `<?=_("As you probably already know, wopits is a free tool, and your data is not shared with any third party.<div class='mt-2 mb-2'>To offer you this service, we nevertheless have fixed costs for hosting and domain name.</div><div>This is why we invite you to participate in the project by making a PayPal donation:</div><div class='mt-3 mb-3 text-center'>%s1</div><div>It will not change the way you access wopits or the features available, but it would be nice to help and it will encourage us to maintain the project and the service for a few more years&nbsp;:-)</div>")?></div><div class='mt-3'><button type='button' class='btn btn-sm btn-primary support'><?=_("I get it !")?></button></div>`.replace("%s1", `<a target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=N3FW372J2NG4E" class="btn btn-secondary btn-xs"><i class="fas fa-heart fa-fw"></i> <?=_("Yes, I support wopits!")?></a>`);
+
+      // EVENT "click" on "I get it!" button"
+      popup.querySelector("button.support").addEventListener ("click", (e)=>
+        {
+          ST.noDisplay ("support-msg", true);
+          bootstrap.Modal.getInstance(popup).hide ();
+        });
+
+        this.openModal ({item: $(popup), noeffect: true});
+    }
+    <?php } ?>
+  }
+
   // METHOD checkForAppUpgrade ()
   static async checkForAppUpgrade (version)
   {
@@ -2033,6 +2061,8 @@ class WHelper
         }
       }
     }
+    else
+      setTimeout (()=> this.supportUs (), 1000);
   }
   
   // METHOD navigatorIsEdge ()
