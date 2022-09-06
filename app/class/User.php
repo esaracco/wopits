@@ -1047,7 +1047,7 @@ class User extends Base
     do
     {
       for ($i = 0, $result = ''; $i < 8; $i++)
-        $result .= $chars{rand (0, $len)};
+        $result .= $chars[rand (0, $len)];
     }
     while (!preg_match ('/[a-z]/', $result) ||
            !preg_match ('/[A-Z]/', $result) ||
