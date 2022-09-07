@@ -618,7 +618,8 @@
                   'WPT_LDAP_BINDDN' => $env['ldap']['binddn'],
                   'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
                   'WPT_LDAP_OBJECTCLASS' => $env['ldap']['objectclass'],
-                  'WPT_LDAP_BASEDN' => $env['ldap']['basedn']]
+		  'WPT_LDAP_BASEDN' => $env['ldap']['basedn'],
+		  'WPT_LDAP_FILTER' => $env['ldap']['filter']]
                     as $k => $v)
         {
           $this->_updateConf ($k, $v);

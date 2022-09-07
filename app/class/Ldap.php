@@ -54,7 +54,11 @@ class Ldap
   public function getUsers (bool $fromScript = false):array
   {
     $ret = [];
-    $filter = '(objectClass='.WPT_LDAP_OBJECTCLASS.')';
+    if(WPT_LDAP_FILTER != ''){
+        $filter = WPT_LDAP_FILTER;
+    }else{
+        $filter = '(objectClass='.WPT_LDAP_OBJECTCLASS.')';
+    }
 
     if ( !($s = @ldap_search ($this->ldap,
                   WPT_LDAP_BASEDN, $filter, ['uid', 'mail', 'cn'])) )

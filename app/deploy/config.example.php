@@ -116,7 +116,9 @@
         // required: "dn", "uid", "cn" and "mail".
         'objectclass' => 'people',
         // Base DN for users search
-        'basedn' => 'o=domain.com'
+	'basedn' => 'o=domain.com',
+	// Filter for accepted users, will default to objectclass if empty
+        'filter' => ''
       ],
       // DKIM
       // (let this section empty if you do not want to use DKIM)
