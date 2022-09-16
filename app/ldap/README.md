@@ -11,6 +11,7 @@ Edit `app/deploy/config.php` and customize the following lines before adding the
   'binddn' => 'uid=wopits,ou=sysaccounts,o=domain.com',
   'bindpw' => 'ChangeMe',
   'objectclass' => 'people',
+  'filter' => '(memberof=ou=admins,ou=sysaccounts,o=domain.com)',
   'basedn' => 'o=domain.com'
 ]
 ```

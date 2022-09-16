@@ -102,8 +102,13 @@ class Ldap
 
   public function getUserData (string $uid):?array
   {
-    $filter = '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')'.
-              '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
+    if(WPT_LDAP_FILTER != ''){
+	$filter = '(&'.WPT_LDAP_FILTER.
+                 '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';	
+    }else{
+        $filter = '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')'.
+		 '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
+    }
     $ret = null;
 
     if ( !($s = ldap_search ($this->ldap,
