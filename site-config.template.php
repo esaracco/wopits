@@ -102,6 +102,9 @@ define ('WPT_LDAP_BASEDN', "");
 // "dn", "uid", "cn" and "mail".
 // Example: people
 define ('WPT_LDAP_OBJECTCLASS', "");
+// The LDAP filter. 
+// If the LDAP filter is left blank, the Object Class will be used as filter
+define ('WPT_LDAP_FILTER', "");
 
 // DKIM
 // I you want to use DKIM and have well configured it
