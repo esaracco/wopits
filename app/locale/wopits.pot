@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-01-17 23:17+0100\n"
+        "POT-Creation-Date: 2022-09-17 19:00+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,16 +58,10 @@ msgstr  ""
 msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>Warning</b> Please, note that wopits is still in alpha stage! You are warmly invited to report bugs: <a href='mailto:report@wopit.com?subject=Bug%20report'>report@wopits.com</a>, <a href='https://twitter.com/wopitsapp' target='_blank'>@wopitsapp</a> or <a href='https://github.com/esaracco/wopits/issues' target='_blank'>GitHub bug tracker</a>.</p>"
 msgstr  ""
 
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Global</b> The server hosting wopits has changed causing some disruption. Please excuse us!</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Notes</b> Fixes a error with color picker.</p>"
-msgstr  ""
-
-msgid   "<p><b><i class='fas fa-bug fa-fw'></i>Swoole</b> Fixes some Swoole tables access warnings.</p>"
-msgstr  ""
-
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, debugging and optimization.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>LDAP</b> Thanks to Martin Juhl, one can now disabled <i>caseExactMatch</i> and use custom filter for login.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Now you can create or copy/paste tables in notes body.</p>"
