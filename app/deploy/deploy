@@ -531,7 +531,6 @@
         "chmod 755 {$env['build-path']}/app/services/task/*.php");
 
       foreach (['WPT_DEV_MODE' => false,
-	        'WPT_CASEEXACTMATCH_DISABLED' => $env['caseexactmatch-disable'],
                 'WPT_URL' => $env['url'],
                 'WPT_LOG_PATH' => $env['log-path'],
                 'WPT_LOG_DETAILS' =>
@@ -620,8 +619,11 @@
                   'WPT_LDAP_BINDPW' => $env['ldap']['bindpw'],
                   'WPT_LDAP_OBJECTCLASS' => $env['ldap']['objectclass'],
 		  'WPT_LDAP_BASEDN' => $env['ldap']['basedn'],
-		  'WPT_LDAP_FILTER' => $env['ldap']['filter']]
-                    as $k => $v)
+		  'WPT_LDAP_FILTER' => !empty($env['ldap']['filter']) ?
+                    $env['ldap']['filter'] : '',
+                  'WPT_LDAP_NOCASEEXACTMATCH' =>
+                    boolval(@$env['ldap']['no-case-exact-match'])
+                 ] as $k => $v)
         {
           $this->_updateConf ($k, $v);
         }

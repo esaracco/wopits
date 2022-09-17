@@ -105,6 +105,11 @@ define ('WPT_LDAP_OBJECTCLASS', "");
 // The LDAP filter. 
 // If the LDAP filter is left blank, the Object Class will be used as filter
 define ('WPT_LDAP_FILTER', "");
+// Disable caseExactMatch
+// If set to true, this disables the exact case match on username
+// If you have problems with Red Hat IDM/FreeIPA, try enabling this
+// Example: true
+define ('WPT_LDAP_NOCASEEXACTMATCH', "");
 
 // DKIM
 // I you want to use DKIM and have well configured it
@@ -120,11 +125,5 @@ define ('WPT_DKIM_SELECTOR', "");
 // Control dev mode or prod mode
 // Example: false
 define ('WPT_DEV_MODE', "");
-
-// Disable caseExactMatch
-// If set to true, this disables the exact case match on username
-// If you have problems with Red Hat IDM/FreeIPA, try enabling this
-// Example: true
-define ('WPT_CASEEXACTMATCH_DISABLED', "");
 
 ?>

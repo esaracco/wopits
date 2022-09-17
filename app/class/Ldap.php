@@ -54,11 +54,9 @@ class Ldap
   public function getUsers (bool $fromScript = false):array
   {
     $ret = [];
-    if(WPT_LDAP_FILTER != ''){
-        $filter = WPT_LDAP_FILTER;
-    }else{
-        $filter = '(objectClass='.WPT_LDAP_OBJECTCLASS.')';
-    }
+
+    $filter = (WPT_LDAP_FILTER) ?
+      WPT_LDAP_FILTER : '(objectClass='.WPT_LDAP_OBJECTCLASS.')';
 
     if ( !($s = @ldap_search ($this->ldap,
                   WPT_LDAP_BASEDN, $filter, ['uid', 'mail', 'cn'])) )
@@ -102,16 +100,12 @@ class Ldap
 
   public function getUserData (string $uid):?array
   {
-    if(WPT_LDAP_FILTER != ''){
-	$filter = '(&'.WPT_LDAP_FILTER;	
-    }else{
-        $filter = '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')';
-    }
-    if(WPT_CASEEXACTMATCH_DISABLED == true){
-    	$filter .= '(uid='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
-    }else{
-    	$filter .= '(uid:caseExactMatch:='.ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
-    }
+    $filter = (WPT_LDAP_FILTER) ?
+      '(&'.WPT_LDAP_FILTER : '(&(objectClass='.WPT_LDAP_OBJECTCLASS.')';
+
+    $filter .=
+      '(uid'.(WPT_LDAP_NOCASEEXACTMATCH ? '' : ':caseExactMatch:').'='.
+      ldap_escape ($uid, '', LDAP_ESCAPE_FILTER).'))';
 
     $ret = null;
 

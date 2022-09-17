@@ -32,8 +32,6 @@
       'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
-      // Enable/Disable caseExactMatch on usernames
-      'caseexactmatch-disable' => 'false', 
       // Local working directory
       'build-path' => '/tmp/wopits-build',
       // Information about target on which application will be installed
@@ -120,7 +118,9 @@
         // Base DN for users search
 	'basedn' => 'o=domain.com',
 	// Filter for accepted users, will default to objectclass if empty
-        'filter' => ''
+        'filter' => '',
+        // Enable/Disable caseExactMatch on usernames
+        'no-case-exact-match' => true
       ],
       // DKIM
       // (let this section empty if you do not want to use DKIM)
@@ -140,8 +140,6 @@
       'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
-      // Enable/Disable caseExactMatch on usernames
-      'caseexactmatch-disable' => 'false',
       // Local working directory
       'build-path' => '/tmp/wopits-build',
       // Information about target on which application will be installed
