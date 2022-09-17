@@ -121,4 +121,10 @@ define ('WPT_DKIM_SELECTOR', "");
 // Example: false
 define ('WPT_DEV_MODE', "");
 
+// Disable caseExactMatch
+// If set to true, this disables the exact case match on username
+// If you have problems with Red Hat IDM/FreeIPA, try enabling this
+// Example: true
+define ('WPT_CASEEXACTMATCH_DISABLED', "");
+
 ?>

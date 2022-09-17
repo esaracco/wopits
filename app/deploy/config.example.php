@@ -32,6 +32,8 @@
       'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
+      // Enable/Disable caseExactMatch on usernames
+      'caseexactmatch-disable' => 'false', 
       // Local working directory
       'build-path' => '/tmp/wopits-build',
       // Information about target on which application will be installed
@@ -138,6 +140,8 @@
       'service-user' => 'wopits',
       // Apache user on target host
       'www-system-user' => 'www-data',
+      // Enable/Disable caseExactMatch on usernames
+      'caseexactmatch-disable' => 'false',
       // Local working directory
       'build-path' => '/tmp/wopits-build',
       // Information about target on which application will be installed
