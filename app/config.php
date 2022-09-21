@@ -54,7 +54,7 @@ define ('WPT_WRIGHTS_RO', 3);
 // - c = comment notification
 // - s = wall sharing notification
 // - w = note assignation notification
-define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|c|s|w)(\d+)(p(\d+)(c(\d+))?)?/');
+define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|c|s|w)(\d+)(p(\d+)(c(\d+))?)?$/');
 
 // Blacklisted emails domains (with a pipe separator)
 //define ('WPT_BLACKLISTED_DOMAINS', 'outlook.fr|outlook.com|live.fr|live.com|hotmail.fr|hotmail.com|caramail.fr');

@@ -32,7 +32,7 @@
 
       if (location.href.indexOf ("unsubscribe") != -1)
         return {type: "u"};
-      else if (( m = location.pathname.match(<?=WPT_DIRECTURL_REGEXP?>) ))
+      else if (( m = location.href.match(<?=WPT_DIRECTURL_REGEXP?>) ))
         return {
           type: m[1],
           wallId: m[2],
