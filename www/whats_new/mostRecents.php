@@ -1,5 +1,6 @@
 <?php require ($_SERVER['DOCUMENT_ROOT'].'/../app/prepend.php')?>
 <div class="newfeatures justify">
+<?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>LDAP</b> Thanks to Martin Juhl, one can now disabled <i>caseExactMatch</i> and use custom filter for login.</p>")?>
 <?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, debugging and optimization.</p>")?>
 <?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> Now you can create or copy/paste tables in notes body.</p>")?>
 <?=_("<p><b><i class='fas fa-smile-beam fa-fw'></i>Notes</b> You can manage involved users for notes of shared walls.</p>")?>
