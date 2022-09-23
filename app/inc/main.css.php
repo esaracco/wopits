@@ -2052,7 +2052,7 @@ i.notset {
 
 .postit .topicon {
   position:absolute;
-  top:-26px;
+  top:-28px;
   cursor:pointer;
   z-index:93;
   text-shadow:1px 1px 3px rgba(0,0,0, 0.5);
@@ -2402,8 +2402,7 @@ i.fa-xs {
 }
 
 .postit .end i {
-  position:absolute;
-  padding:3px;
+  margin-right: -20px;
   text-shadow: 1px 1px 3px rgba(0,0,0, 0.5);
 }
 

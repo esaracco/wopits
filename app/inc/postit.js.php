@@ -2211,12 +2211,24 @@
         let locale = $("html")[0].dataset.fulllocale;
         tinymce.init ({
           selector: "#postitUpdatePopupBody",
+          promotion: false,
           content_style: "p {margin: 0}",
           language: (locale != "en_US")?locale:null,
           language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
           branding: false,
-          plugins: "autoresize link image media charmap hr searchreplace visualchars fullscreen insertdatetime lists table",
-
+          plugins: [
+            "autoresize",
+            "link",
+            "image",
+            "media",
+            "charmap",
+            "searchreplace",
+            "visualchars",
+            "fullscreen",
+            "insertdatetime",
+            "lists",
+            "table",
+          ],
           setup: function (editor)
           {
             // "change" event can be triggered twice, we use this var to
