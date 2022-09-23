@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-09-23 10:32+0200\n"
+        "POT-Creation-Date: 2022-09-23 16:46+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,6 +59,9 @@ msgid   "<p class='warning'><b><i class='fas fa-exclamation-triangle fa-fw'></i>
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> Bootstrap 5, debugging and optimization.</p>"
+msgstr  ""
+
+msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>Global</b> PHP and JavaScript external modules upgrade.</p>"
 msgstr  ""
 
 msgid   "<p><b><i class='fas fa-smile-beam fa-fw'></i>LDAP</b> Thanks to Martin Juhl, one can now disabled <i>caseExactMatch</i> and use custom filter for login.</p>"
