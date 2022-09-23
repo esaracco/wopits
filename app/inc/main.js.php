@@ -26,20 +26,19 @@
     };
 
   // METHOD _getDirectURLData ()
-  const _getDirectURLData = ()=>
-    {
-      let m;
-
-      if (location.href.indexOf ("unsubscribe") != -1)
-        return {type: "u"};
-      else if (( m = location.href.match(<?=WPT_DIRECTURL_REGEXP?>) ))
-        return {
+  const _getDirectURLData = ()=> {
+    const m = location.search.match(<?=WPT_DIRECTURL_REGEXP?>);
+    if (m) {
+      return m[0] === 'unsubscribe' ?
+        {type: 'u'} :
+        {
           type: m[1],
           wallId: m[2],
-          postitId: m[4]||null,
-          commentId: m[6]||null
+          postitId: m[4],
+          commentId: m[6],
         };
-    };
+    }
+  };
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
