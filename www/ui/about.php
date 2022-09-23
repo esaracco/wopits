@@ -27,7 +27,6 @@
 
           <p class="desc mt-3 mb-1 text-center">
             <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://github.com/esaracco/wopits/issues"><i class="fas fa-bug fa-fw"></i> <?=_("Report")?></a>
-            <a class="btn btn-secondary btn-xs" role="button" target="_blank" href="https://twitter.com/wopitsapp"><i class="fab fa-twitter fa-fw"></i> @wopitsapp</a>
             <a target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=N3FW372J2NG4E" class="btn btn-secondary btn-xs"><i class="fas fa-heart fa-fw"></i> <?=_("Support")?></a>
           </p>
 
