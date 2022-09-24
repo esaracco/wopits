@@ -2003,15 +2003,15 @@ class WHelper
     const html = $("html")[0],
           $popup = $("#infoPopup"),
           officialVersion = (version) ? version : html.dataset.version;
-  
+
     if (!String(officialVersion).match(/^\d+$/))
     {
-      const $userSettings = $("#settingsPopup"),
-            userVersion = $userSettings.settings ("get", "version");
+      const userVersion = ST.get('version');
 
       if (userVersion != officialVersion)
       {
-        $userSettings.settings ("set", {version: officialVersion});
+        ST.set('version', officialVersion);
+        $("#settingsPopup").settings ("set", {version: officialVersion});
   
         if (userVersion)
         {
