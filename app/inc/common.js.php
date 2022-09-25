@@ -1308,9 +1308,6 @@ class WHelper
     const scroll = !!args.scrollIntoView;
     let btn, buttons;
 
-    if (!this.haveMouse ())
-      this.fixVKBScrollStart ();
-  
     this.openPopupLayer ((e)=>
       {
         const bp = bootstrap.Popover.getInstance(args.item[0])
@@ -1323,10 +1320,6 @@ class WHelper
           if (document.querySelector(".popover.show"))
             bp.dispose ();
         }
-  
-        if (!this.haveMouse ())
-          this.fixVKBScrollStop ();
-
       }, false);
     
     switch (args.type)

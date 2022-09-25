@@ -662,9 +662,6 @@
 
         tinymce.activeEditor.setContent (content);
 
-        if (!H.haveMouse ())
-          H.fixVKBScrollStart ();
-
         H.openModal ({
           item: $("#postitUpdatePopup"),
           width: _getMaxEditModalWidth (content)
@@ -796,16 +793,7 @@
           postit.remove ();
         };
 
-      if (!noEffect && H.haveMouse ())
-      {
-        // Empty postit content to prevent effect to reload deleted embedded
-        // images
-        postit.querySelector(".postit-edit").innerHTML = "";
-        $(postit).hide ("explode", __remove);
-      }
-      // The explode effect works poorly on mobile devices
-      else
-        __remove ();
+      __remove ();
 
       S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
 
@@ -2699,7 +2687,7 @@
                   content = tinymce.activeEditor.getContent ();
 
             // INTERNAL FUNCTION cb_close ()
-            const __close = () =>
+            const __close = (forceHide = false) =>
               {
                 S.set ("postit-data", {closing: true});
 
@@ -2710,16 +2698,15 @@
                 $popup.find("input").val ("");
                 plugin.unedit ();
 
-                $popup.modal ("hide");
+                if (forceHide)
+                  $popup.modal ("hide");
+
                 S.unset ("postit-data");
 
                 tinymce.activeEditor.resetContent ();
 
                 // Stop focusin event filtering
                 document.removeEventListener ("focusin", _focusinInFilter);
-
-                if (!H.haveMouse ())
-                  H.fixVKBScrollStop ();
               };
 
               // If there is pending changes, ask confirmation to user
@@ -2746,7 +2733,7 @@
                       plugin.element[0]
                         .removeAttribute ("data-uploadedpictures");
                     },
-                  cb_close: __close
+                  cb_close: () => __close(true)
                 });
 
                 S.set ("postit-data", data);

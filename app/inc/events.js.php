@@ -311,9 +311,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
       {
         const $ps = S.getCurrent ("postit");
 
-        if (!H.haveMouse ())
-          H.fixVKBScrollStart ();
-
         dialog.classList.add ("modal-dialog-scrollable");
 
         if (dialog.dataset.toclean)
@@ -368,8 +365,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
       // Prevent child popups from removing scroll to their parent
       if (mstack.length)
         document.body.classList.add ("modal-open");
-      else if (!H.haveMouse ())
-        H.fixVKBScrollStop ();
 
       switch (el.id)
       {
