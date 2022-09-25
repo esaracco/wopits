@@ -159,11 +159,16 @@ In order to run the task server as a daemon you must add it to the startup scrip
 
 If you are using the Git repository as your Apache DocumentRoot without deployment:
 
-- create a `data/` directory and give the Apache user all rights on it:
+- Create a `data/` directory and give the Apache user all rights on it:
 ```bash
 # mkdir -p data/{walls,users}
 # chown -R [wopitsUser]:[ApacheUserGroup] data
 # chmod 2770 data
+```
+- Install PHP and JavaScript external modules:
+```bash
+$ npm i --prefix=www/libs
+$ composer update -d app/libs
 ```
 
 ### Deployment
