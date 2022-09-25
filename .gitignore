@@ -11,3 +11,5 @@ html-minifier
 data/
 app/services/run/
 .yarn-integrity
+vendor/
+node_modules/
