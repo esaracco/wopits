@@ -236,6 +236,14 @@
         "/bin/post-deploy.php {$env['build-path']}/app/deploy/bin");
       $this->_exec ('cp -a '.__DIR__.
         "/../inc/popups {$env['build-path']}/app/inc/");
+
+      // Retrieve external JavaScript modules
+      $this->echo ("Retrieving/updating external JavaScript modules...\n");
+      $this->_exec('npm i --prefix '.__DIR__.'/../../www/libs/');
+
+      // Retrieve external PHP modules
+      $this->echo ("Retrieving/updating external PHP modules...\n");
+      $this->_exec('composer -d '.__DIR__.'/../../app/libs/ update');
     }
   
     public function checkMinifiers ()

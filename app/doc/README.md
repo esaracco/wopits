@@ -15,7 +15,7 @@ Groups management makes it possible to finely control the sharing of data, and a
 
 If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
-*wopits is **Node.js & React.js free** and uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
+*wopits uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
 
 DOCKER
 ------------
@@ -27,7 +27,7 @@ The application needs to run on HTTPS. We use a self-signed certificate. Just ig
 INSTALLATION
 ------------
 
-> You will need PHP, Apache, MariaDB or PostgreSQL, and Swoole to make it work.
+> You will need `PHP`, `Apache`, `MariaDB` or `PostgreSQL`, and `Swoole` to make it work. In order to retrieve external `JavaScript` and `PHP` modules, you also have to install `npm` and `composer`.
 
 ### On the source host
 
@@ -43,7 +43,7 @@ The following actions have to be done on the machine that will host the wopits w
 ```ini
 swoole.enable_preemptive_scheduler=On
 ```
-- Install Apache >= 2.4, MariaDB >= 10.3 or PostgreSQL >= 11.7 and PHP >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
+- Install `Apache` >= 2.4, `MariaDB` >= 10.3 or `PostgreSQL` >= 11.7 and `PHP` >= 7.3 (with `php-gettext`, `php-mysql`, `php-pgsql`, `php-imagick`, `php-zip` and optionally `php-ldap`). `php-ldap` will be required only if you intend to use LDAP authentication. Similarly, install `php-mysql` or `php-pgsql` depending on the SGBD you want to use.
 - Configure system locales by adding or uncommenting `en_US.UTF-8 UTF-8` and `fr_FR.UTF-8 UTF-8` to `/etc/locale.gen` and running `locale-gen`.
 - Configure Apache by customizing `/app/doc/apache/wopits.domain.com.conf`. Enable `mod_ssl`, `mod_rewrite`, `mod_headers`, `mod_proxy` and `mod_proxy_wstunnel` Apache modules.
 - Configure SSL using Let's Encrypt or whatever Certificate Authority.
