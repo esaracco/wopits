@@ -272,6 +272,7 @@ CREATE TABLE edit_queue
   users_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   walls_id INTEGER NOT NULL REFERENCES walls(id) ON DELETE CASCADE,
   session_id INTEGER NOT NULL,
+  is_end SMALLINT NOT NULL DEFAULT 0,
   item enum_item NOT NULL
 );
 CREATE INDEX "edit_queue-session_id-idx" ON edit_queue (session_id);

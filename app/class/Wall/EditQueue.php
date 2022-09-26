@@ -73,19 +73,22 @@ class EditQueue extends Wall
             FROM postits_plugs WHERE item_start = ? OR item_end = ?'))
              ->execute ([$this->itemId, $this->itemId]);
 
-          while ($plug = $stmt->fetch ())
+          foreach ($stmt->fetchAll() as $plug) {
             $editIds[] = ($plug['item_start'] == $this->itemId) ?
-                           $plug['item_end'] : $plug['item_start'];
+              $plug['item_end'] : $plug['item_start'];
+          }
         }
 
-        foreach ($editIds as $id)
-          $this->executeQuery ('INSERT INTO edit_queue', [
+        foreach ($editIds as $id) {
+          $this->executeQuery('INSERT INTO edit_queue', [
             'walls_id' => $this->wallId,
             'item_id' => $id,
+            'is_end' => ($id !== $this->itemId) ? 1 : 0,
             'users_id' => $this->userId,
             'session_id' => $this->sessionId,
             'item' => $item
           ]);
+        }
       }
     }
     catch (\Exception $e)

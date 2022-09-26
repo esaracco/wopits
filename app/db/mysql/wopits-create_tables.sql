@@ -343,6 +343,7 @@ CREATE TABLE edit_queue
   users_id INT UNSIGNED NOT NULL,
   walls_id INT UNSIGNED NOT NULL,
   session_id INT UNSIGNED NOT NULL,
+  is_end TINYINT UNSIGNED NOT NULL DEFAULT 0,
   item ENUM('wall', 'wall-delete', 'cell', 'header', 'postit', 'group') NOT NULL,
 
   CONSTRAINT `edit_queue-users_id-fk` FOREIGN KEY (users_id)

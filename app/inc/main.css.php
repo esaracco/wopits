@@ -963,7 +963,7 @@ span.user-writing-min {
 
 .postit.locked.main,
 .postit-min.locked.main {
-  opacity:.8!important;
+  opacity:.8 !important;
 }
 
 a.active .user-writing {

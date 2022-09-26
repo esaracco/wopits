@@ -852,6 +852,15 @@ class Wall extends Base
        ->execute ([$this->wallId]);
     $data['shared'] = boolval ($stmt->fetch ());
 
+    // Get locks
+    ($stmt = $this->db->prepare('
+      SELECT item, item_id, u.id AS user_id, u.fullname AS user_name
+      FROM edit_queue AS eq INNER JOIN users AS u
+        ON eq.users_id = u.id
+      WHERE walls_id = ? AND users_id <> ? AND is_end = 0'))
+       ->execute([$this->wallId, $this->userId]);
+    $data['locks'] = $stmt->fetchAll();
+
     return $data;
   }
 

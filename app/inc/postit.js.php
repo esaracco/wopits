@@ -793,7 +793,16 @@
           postit.remove ();
         };
 
-      __remove ();
+      if (!noEffect)
+      {
+        // Empty postit content to prevent effect to reload deleted embedded
+        // images
+        postit.querySelector(".postit-edit").innerHTML = "";
+        $(postit).hide ("explode", __remove);
+      }
+      // The explode effect works poorly on mobile devices
+      else
+        __remove ();
 
       S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
 
@@ -1567,10 +1576,13 @@
           __addMain ();
 
         // Show a lock bubble on related items
-        if (!isRelated)
-          this.settings.plugs.forEach (p =>
-            $(p.obj[(p.startId!=id)?"start":"end"])
-              .postit ("showUserWriting", user, true));
+        this.settings.plugs.forEach((p) => {
+          p.labelObj[0].classList.add('locked');
+          if (!isRelated) {
+            $(p.obj[(p.startId !== id) ? 'start' : 'end'])
+              .postit('showUserWriting', user, true);
+          }
+        });
       }
       else if (!isRelated)
         __addMain ();

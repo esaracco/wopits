@@ -554,12 +554,12 @@ class WSocket
           {
             // userwriting
             case "userwriting":
-
-              var $el = $(`${data.item=="postit"?".postit":""}`+
-                            `[data-id="${data.item}-${data.itemId}"]`);
-
-              if ($el.length)
-                $el[data.item]("showUserWriting", data.user);
+              var el = document.querySelector(
+                `${data.item === 'postit'? '.postit' : ''}`+
+                `[data-id="${data.item}-${data.itemId}"]`);
+              if (el) {
+                $(el)[data.item]('showUserWriting', data.user);
+              }
               break;
 
             // userstoppedwriting
@@ -850,15 +850,21 @@ const entitiesMap = {
 // CLASS WHelper
 class WHelper
 {
-  // METHOD hideUserWriting ()
-  static hideUserWriting (user)
-  {
+  // METHOD hideUserWriting()
+  static hideUserWriting({id}) {
+    // Unlock elements
     document.querySelectorAll(
-      `[class^="user-writing"][data-userid="${user.id}"]`).forEach (el =>
-      {
-        el.parentNode.classList.remove ("locked", "main");
-        el.remove ();
-      });
+      `[class^="user-writing"][data-userid="${id}"]`).forEach((el) => {
+      const parentNode = el.parentNode;
+      // Unlock postit plugs
+      if (parentNode.classList.contains('postit')) {
+        ($(parentNode).postit('getSettings').plugs || []).forEach((plug) => {
+          plug.labelObj[0].classList.remove('locked');
+        });
+      }
+      parentNode.classList.remove('locked', 'main');
+      el.remove();
+    });
   }
 
   // METHOD isLoginPage ()

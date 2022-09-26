@@ -978,6 +978,18 @@
                 zoom.dataset.zoomtype == "screen")
               plugin.zoom ({type: "screen"});
           }
+
+          // Show locks
+          if (d.locks) {
+            d.locks.forEach(({item, item_id, user_id, user_name}) => {
+              const el = document.querySelector(
+                `${item === 'postit' ? '.postit' : ''}`+
+                `[data-id="${item}-${item_id}"]`);
+              if (el) {
+                $(el)[item]('showUserWriting', {id: user_id, name: user_name});
+              }
+            });
+          }
         }, 0);
     },
 
