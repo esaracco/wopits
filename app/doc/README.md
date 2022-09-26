@@ -133,6 +133,8 @@ BUILD & DEPLOYMENT
 
 > wopits can be used "as is" from the Git repository, without any deployment. However, we highly recommend to do this only if you want to contribute! **For production use it is better to deploy it** (local or remote, whatever).
 
+> After each upgrade, check the `BREAKING_CHANGES.md` file.
+
 ### WebSocket server
 
 In order to run the WebSocket server as a daemon you must add it to the startup scripts. Depending on your system, the procedure may vary. We will describe here the basics for **systemd**:
