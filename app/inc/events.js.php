@@ -58,55 +58,33 @@ document.addEventListener ("DOMContentLoaded", ()=>
     window.addEventListener ("orientationchange", _windowResizeEvent);
 
     // EVENT "scroll" on walls
-    let _timeoutScroll,
-        _scrollDiff = null;
-    _walls.addEventListener ("scroll", (e)=>
-      {
-        const el = e.target,
-              $wall = S.getCurrent ("wall");
+    let _timeoutScroll;
+    let _plugsHidden = false;
+    _walls.addEventListener ('scroll', () => {
+      const $wall = S.getCurrent('wall');
   
-        if ($wall.length)
-        {
-          if (!S.get ("wall-dragging"))
-          {
-            const scroll = {
-              top: el.scrollTop,
-              left: el.scrollLeft
-            };
-  
-            if (_scrollDiff === null)
-              _scrollDiff = {
-                top: scroll.top,
-                left: scroll.left
-              };
-  
-            if (!S.get ("plugs-hidden") &&
-                (Math.abs(scroll.top - _scrollDiff.top) > 1 ||
-                 Math.abs(scroll.left - _scrollDiff.left) > 1))
-            {
-              $wall.wall ("hidePostitsPlugs");
-              S.set ("plugs-hidden", true);
-            }
-  
-            // Refresh relations position
-            if (!S.getCurrent("filters")[0].classList.contains ("plugs-hidden"))
-            {
-              clearTimeout (_timeoutScroll);
-              _timeoutScroll = setTimeout (() =>
-              {
-                _scrollDiff = null;
-  
-                $wall.wall ("showPostitsPlugs");
-                S.unset ("plugs-hidden");
-  
-              }, 150);
-            }
-          }
-  
-        // Update arrows
-        const $a = S.getCurrent ("arrows");
-        if ($a.is (":visible"))
-          $a.arrows ("update");
+      if (!$wall.length) return;
+
+      if (!S.get('wall-dragging')) {
+        if (!_plugsHidden) {
+          $wall.wall('hidePostitsPlugs');
+          _plugsHidden = true;
+        }
+
+        // Refresh relations position
+        if (!S.getCurrent('filters')[0].classList.contains('plugs-hidden')) {
+          clearTimeout(_timeoutScroll);
+          _timeoutScroll = setTimeout (() => {
+            $wall.wall('showPostitsPlugs');
+            _plugsHidden = false;
+          }, 150);
+        }
+      }
+
+      // Update arrows
+      const $a = S.getCurrent('arrows');
+      if ($a.is(':visible')) {
+        $a.arrows('update');
       }
     });
 
