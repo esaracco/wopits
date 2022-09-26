@@ -20,7 +20,14 @@ else
   {
     $host = empty($_SERVER['HTTP_HOST']) ?
               null : explode (':', $_SERVER['HTTP_HOST'])[0];
-    session_set_cookie_params (0, '/', $host, true, true);
+    session_set_cookie_params ([
+      'lifetime' => 0,
+      'path' => '/',
+      'domain' => $host,
+      'secure' => true,
+      'httponly' => true,
+      'samesite' => 'Strict',
+    ]);
     session_start ();
   }
 
