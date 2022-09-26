@@ -1933,6 +1933,10 @@ ul#mmenu {
   color:#555!important;
 }
 
+.newfeatures code {
+  color: #555;
+}
+
 .newfeatures p {
   border:5px solid #f7f7f7;
   border-radius:5px;
