@@ -392,7 +392,7 @@
             }
 
             // Refresh relations position
-            plugin.repositionPlugs ();
+            // plugin.repositionPlugs ();
           },
           start: function(e, ui)
             {
@@ -401,13 +401,16 @@
                 top: postit.offsetTop,
                 left: postit.offsetLeft
               });
-  
+
+              plugin.hidePlugs();
+
               plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
             },
           stop: function(e, ui)
             {
-              plugin.dropStop ();
+              plugin.showPlugs();
+              plugin.dropStop();
             }
         })
         // RESIZABLE post-it
@@ -438,6 +441,8 @@
                 height: postit.clientHeight
               });
 
+              plugin.hidePlugs();
+
               plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
             },
@@ -446,6 +451,8 @@
               const revertData = S.get ("revertData");
 
               S.set ("dragging", true, 500);
+
+              plugin.showPlugs();
 
               if (revertData.revert)
               {
@@ -1175,11 +1182,11 @@
                 // success cb
                 ()=>
                 {
-                  if (!plug.customPos)
-                  {
-                    plug.related = plugin.createRelatedPlugs (plug);
-                    plug.obj.hide ();
+                  if (!plug.customPos) {
+                    plug.related = plugin.createRelatedPlugs(plug);
+                    plug.obj.hide();
                   }
+                  plug.related.forEach ((_r) => _r.hide('none'));
                 },
                 // error cb
                 ()=> S.get("revertData").revert = true);
@@ -1192,11 +1199,13 @@
                 return false;
               }
 
-              plug.related.forEach (_r => _r.position ());
+              // plug.related.forEach (_r => _r.position ());
             },
             stop: function (e, ui)
             {
               S.set ("dragging", true, 500);
+
+              plug.related.forEach ((_r) => _r.position().show());
 
               if (S.get("revertData").revert)
               {
