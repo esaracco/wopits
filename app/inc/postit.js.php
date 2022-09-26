@@ -409,7 +409,10 @@
             },
           stop: function(e, ui)
             {
-              plugin.showPlugs();
+              if (!S.getCurrent('filters')[0]
+                  .classList.contains('plugs-hidden')) {
+                plugin.showPlugs();
+              }
               plugin.dropStop();
             }
         })
