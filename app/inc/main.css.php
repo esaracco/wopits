@@ -297,6 +297,10 @@ i.settings {
   background:white;
 }
 
+.nav-tabs.walls .nav-link.active:focus-visible {
+  border-color: var(--bs-nav-tabs-link-active-border-color);
+}
+
 .list-group-item .close {
   margin-top:-8px;
   padding:0;
