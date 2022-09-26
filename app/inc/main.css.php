@@ -2052,7 +2052,7 @@ i.notset {
 
 .postit .topicon {
   position:absolute;
-  top:-28px;
+  top:-26px;
   cursor:pointer;
   z-index:93;
   text-shadow:1px 1px 3px rgba(0,0,0, 0.5);
