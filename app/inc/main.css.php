@@ -2402,6 +2402,7 @@ i.fa-xs {
 }
 
 .postit .end i {
+  margin-top: 3px;
   margin-right: -20px;
   text-shadow: 1px 1px 3px rgba(0,0,0, 0.5);
 }
