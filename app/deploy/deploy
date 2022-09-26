@@ -243,7 +243,7 @@
 
       // Retrieve external PHP modules
       $this->echo ("Retrieving/updating external PHP modules...\n");
-      $this->_exec('composer -d '.__DIR__.'/../../app/libs/ update');
+      $this->_exec('composer update -d '.__DIR__.'/../../app/libs/');
     }
   
     public function checkMinifiers ()
