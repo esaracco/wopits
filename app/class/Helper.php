@@ -143,16 +143,25 @@ class Helper
              $name : WPT_DATA_SPATH."/$name";
   }
 
-  public static function deleteCookie ()
-  {
-    // 24 * 3600 == 86400
-    @setcookie ('wopits', '', time () - 86400, '/', null, true, true);
+  public static function deleteCookie() {
+    setCookie('wopits', $value, [
+      // 24 * 3600 == 86400
+      'expires' => time() - 86400,
+      'path' => '/',
+      'secure' => true,
+      'httponly' => true,
+      'samesite' => 'Strict',
+    ]);
   }
 
-  public static function setCookie (string $value):void
-  {
-    setcookie ('wopits', $value, mktime (0, 0, 0, 1, 1, 2035),
-               '/', null, true, true);
+  public static function setCookie(string $value):void {
+    setCookie('wopits', $value, [
+      'expires' => mktime(0, 0, 0, 1, 1, 2035),
+      'path' => '/',
+      'secure' => true,
+      'httponly' => true,
+      'samesite' => 'Strict',
+    ]);
   }
 
   public static function getCookie ():string

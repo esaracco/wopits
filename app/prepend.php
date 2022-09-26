@@ -18,12 +18,10 @@ else
 
   if (!isset ($_SESSION))
   {
-    $host = empty($_SERVER['HTTP_HOST']) ?
-              null : explode (':', $_SERVER['HTTP_HOST'])[0];
     session_set_cookie_params ([
+      // Expire at the end of the session
       'lifetime' => 0,
       'path' => '/',
-      'domain' => $host,
       'secure' => true,
       'httponly' => true,
       'samesite' => 'Strict',
