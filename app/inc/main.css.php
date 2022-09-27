@@ -361,6 +361,10 @@ button.close {
   border-color:#555 transparent;
 }
 
+.umsg-popover[data-popper-placement^="bottom"] > .popover-arrow::after {
+  border-bottom-color: #555;
+}
+
 .bs-popover-bottom .popover-header::before {
   width:0;
 }
@@ -434,13 +438,9 @@ button.close {
   font-style:italic;
 }
 
-.msg-item {
-  border:1px solid #e6e6e6;
-  border-radius:5px;
-}
-
 .msg-item:hover {
-  background:#f5f5f5;
+  background: #f5f5f5;
+  border-radius: 10px;
 }
 
 .msg-popover .msg-item {
@@ -460,13 +460,13 @@ button.close {
   background:#e6e6e6;
   padding:5px;
   font-size:.8rem;
+  border-radius: 3px;
 }
 
 .msg-body {
-  padding:5px;
-  font-size:.8rem;
-  line-height:1rem;
-  color:#555;
+  padding: 15px;
+  font-size: .8rem;
+  color: #555;
 }
 
 .msg-header {
@@ -486,11 +486,11 @@ button.close {
 }
 
 .msg-date {
-  padding-left:5px;
-  font-style:italic;
-  font-size:.6rem;
-  color:#6f6f6f;
-  white-space:nowrap;
+  opacity: .6;
+  margin-right: 5px;
+  font-size: .6rem;
+  white-space: nowrap;
+  float: right;
 }
 
 .pcomm-popover .msg-date,

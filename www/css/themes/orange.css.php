@@ -92,6 +92,10 @@ button:focus {
   border-color:#ffd350 transparent;
 }
 
+.umsg-popover[data-popper-placement^="bottom"] > .popover-arrow::after {
+  border-bottom-color: #ffd350;
+}
+
 .popover-header,
 .modal:not(.no-theme) .modal-header,
 .modal:not(.no-theme) .modal-title,
