@@ -402,17 +402,22 @@
                 left: postit.offsetLeft
               });
 
-              plugin.hidePlugs();
+              this.hideSHowPlugs =
+                !S.getCurrent('filters')[0].classList.contains('plugs-hidden');
+
+              if (this.hideSHowPlugs) {
+                plugin.hidePlugs();
+              }
 
               plugin.edit ({ignoreResize: true}, null,
                 ()=> S.get("revertData").revert = true);
             },
           stop: function(e, ui)
             {
-              if (!S.getCurrent('filters')[0]
-                  .classList.contains('plugs-hidden')) {
+              if (this.hideSHowPlugs) {
                 plugin.showPlugs();
               }
+              delete(this.hideSHowPlugs);
               plugin.dropStop();
             }
         })
