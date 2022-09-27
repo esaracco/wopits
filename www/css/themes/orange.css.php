@@ -9,10 +9,6 @@
   color:#f7e5b1;
 }
 
-.arrows .goto-box {
-  color:#ffbf00;
-}
-
 #popup-loader {
   background:rgba(255, 159, 0, .09);
 }

@@ -42,7 +42,6 @@
             <li class="dropdown-divider"></li>
             <li data-action="chat"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
             <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>
-            <li data-action="arrows"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-arrows-alt"></i> <?=_("Arrows")?></a></li>
           </ul>
         </li>
 

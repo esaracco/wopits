@@ -41,10 +41,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
           if (tmp.is (":visible"))
             tmp.filters ("fixPosition");
 
-          var tmp = S.getCurrent ("arrows");
-          if (tmp.is (":visible"))
-            tmp.arrows ("reset");
-   
           var tmp = document.querySelector (".tab-content.walls");
           if (tmp.dataset.zoomlevelorigin)
             $wall.wall ("zoom",
@@ -79,12 +75,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
             _plugsHidden = false;
           }, 150);
         }
-      }
-
-      // Update arrows
-      const $a = S.getCurrent('arrows');
-      if ($a.is(':visible')) {
-        $a.arrows('update');
       }
     });
 
@@ -163,8 +153,7 @@ document.addEventListener ("DOMContentLoaded", ()=>
     
           const menu = document.getElementById ("main-menu"),
                 $chat = S.getCurrent ("chat"),
-                $filters = S.getCurrent ("filters"),
-                $arrows = S.getCurrent ("arrows");
+                $filters = S.getCurrent ("filters");
     
           // Show/hide super menu actions menu depending on user wall rights
           S.getCurrent("mmenu").mmenu ("checkAllowedActions");
@@ -180,11 +169,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
           // Manage filters checkbox menu
           menu.querySelector(`li[data-action="filters"] input`)
             .checked = $filters.is (":visible");
-    
-          // Manage arrows checkbox menu
-          menu.querySelector(`li[data-action="arrows"] input`)
-            .checked = $arrows.is (":visible");
-          $arrows.arrows ("reset");
     
           // Refresh wall if it has not just been opened
           if (!S.get ("newWall"))

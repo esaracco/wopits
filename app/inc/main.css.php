@@ -1657,32 +1657,6 @@ EOC;
   border: 2px solid gray;
 }
 
-.arrows {
-  display:none;
-}
-
-.arrows .goto-box {
-  color:#343a40;
-  z-index:5010;
-  position:fixed;
-  cursor:pointer;
-  left:0;
-  text-align:center;
-}
-
-.arrows .goto-box-x i:not(:first-child){
-  margin-left:10px;
-}
-
-.arrows .goto-box-y {
-  bottom:40px;
-  width:35px;
-}
-
-.arrows .goto-box-x {
-  bottom:0;
-}
-
 ul#mmenu {
   list-style-type:none;
   text-align:center;
@@ -2542,10 +2516,6 @@ button.ui-datepicker-close {
 
 .locale-picker > .selected {
   background-color:#dadada;
-}
-
-#main-menu.noarrows .display-section [data-action=arrows] {
-  display:none;
 }
 
 @media (max-width:576px) {

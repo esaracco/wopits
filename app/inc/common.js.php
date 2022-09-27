@@ -3,7 +3,7 @@
 
   Wpt_forms -> parent for forms plugins (swall...)
   Wpt_accountForms -> parent for account forms plugins
-  Wpt_toolbox -> parent for toolbox utilities (filters, arrows, mmenu, chat...)
+  Wpt_toolbox -> parent for toolbox utilities (filters, mmenu, chat...)
 
   WHelper -> alias H (helper methods)
   WSharer -> alias S (tool for sharing values between javascript elements)
@@ -350,7 +350,6 @@ class WSharer
     this.chat = [];
     this.filters = [];
     this.wmenu = [];
-    this.arrows = [];
     this.postit = [];
     this.pcomm = [];
     this.header = [];
@@ -469,14 +468,6 @@ class WSharer
                            .querySelector(".tab-pane.active .wall-menu"));
 
         return this.wmenu;
-
-      case "arrows":
-
-        if (!this.arrows.length)
-          this.arrows = $(this.walls[0]
-                            .querySelector(".tab-pane.active .arrows"));
-
-        return this.arrows;
 
       case "mmenu":
 

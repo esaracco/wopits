@@ -156,7 +156,6 @@ define ('WS_PLUG_DEFAULTS', [
     'chat' => [],
     'umsg' => [],
     'filters' => [],
-    'arrows' => [],
     'mmenu' => [],
     'wmenu' => [],
     'main' => [],

@@ -116,11 +116,6 @@
             {
               S.set ("dragging", true, 500);
 
-              // Fix arrows tool appearence
-              const $a = S.getCurrent ("arrows");
-              if ($a.is (":visible"))
-                $a.arrows ("update");
-
               const $f = S.getCurrent ("filters");
               if (!$f.length || !$f.hasClass ("plugs-hidden"))
                 plugin.showPostitsPlugs ();
@@ -449,8 +444,7 @@
 
                 if (adminAccess)
                   $menu.find('[data-action="chat"] a,'+
-                             '[data-action="filters"] a,'+
-                             '[data-action="arrows"] a')
+                             '[data-action="filters"] a')
                     .addClass("disabled");
                 break;
     
@@ -463,8 +457,7 @@
 
                 if (adminAccess)
                   $menu.find('[data-action="chat"] a,'+
-                             '[data-action="filters"] a,'+
-                             '[data-action="arrows"] a')
+                             '[data-action="filters"] a')
                     .removeClass("disabled");
 
                 break;
@@ -935,9 +928,6 @@
         plugin.fixSize ();
       }
 
-      // Reset arrows tool
-      S.getCurrent("arrows").arrows ("reset");
-
       // Refresh super menu tool
       S.getCurrent("mmenu").mmenu ("refresh");
 
@@ -1324,7 +1314,7 @@
           if ($popup)
             $popup.modal ("hide");
 
-          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><div class="arrows"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
+          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
 
           if (!args.restoring)
             tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);
@@ -1345,7 +1335,6 @@
           $wallDiv.find(".wall").wall (d);
           $wallDiv.find(".chat").chat ({wallId: d.id});
           $wallDiv.find(".filters").filters ();
-          $wallDiv.find(".arrows").arrows ();
 
           if (!args.restoring || wpt_userData.settings.activeWall == d.id)
           {
@@ -2305,10 +2294,6 @@
         H.fixMenuHeight ();
         H.fixMainHeight ();
 
-        // Arrows plugin is useless on desktop
-        if (H.haveMouse ())
-          document.getElementById("main-menu").classList.add ("noarrows");
-
         const displayBtn = $(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)[0];
 
         // EVENT "click" on back to standard view button
@@ -2483,12 +2468,6 @@
               case "filters":
 
                 __manageCheckbox (el, li, "filters");
-
-                break;
-
-              case "arrows":
-
-                __manageCheckbox (el, li, "arrows");
 
                 break;
 
