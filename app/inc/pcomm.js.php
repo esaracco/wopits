@@ -247,14 +247,13 @@
 
       plugin.postit().setCurrent ();
 
-      (d||[]).forEach (c=>
-      {
-        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-header"><div class="msg-date"><i class="far fa-clock"></i> ${H.getUserDate(c.creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-username"><i class="far fa-user"></i> ${c.ownername||`<s><?=_("deleted")?></s>`}</div>${c.ownerid==userId?`<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>`:""}</div><div class="msg-body">${c.content.replace(/\n/g, "<br>")}</div></div>`;
+      (d || []).forEach((c) => {
+        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${c.ownerid === userId ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${H.getUserDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
       });
 
       //FIXME
-      content = content.replace (/(@[^\s\?\.:!,;"<@]+)/g,
-                  `<span class="msg-userref">$1</span>`);
+      content = content.replace(
+          /(@[^\s\?\.:!,;"<@]+)/g, `<span class="msg-userref">$1</span>`);
 
       if (refresh)
       {
@@ -337,219 +336,185 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ())
-        return;
+  document.addEventListener ('DOMContentLoaded', () => {
+    if (H.isLoginPage ()) return;
 
-      setTimeout (()=>
-      {
-        // EVENT "click"
-        document.body.addEventListener ("click", (e)=>
-          {
-            const el = e.target;
+    // EVENT "click"
+    document.body.addEventListener ('click', (e) => {
+        const el = e.target;
 
-            // EVENT "click" on postit comments button
-            if (el.matches(".pcomm,.pcomm *"))
-            {
-              $((el.tagName=="DIV")?el:el.closest("div")).pcomm ("open");
+        // EVENT "click" on postit comments button
+        if (el.matches('.pcomm,.pcomm *')) {
+          $((el.tagName == 'DIV') ? el : el.parentNode).pcomm('open');
+        } else if (el.matches(_getEventSelector('*'))) {
+          // EVENT "click" on comments "clear textarea" button
+          if (el.matches('.clear-textarea,.clear-textarea *')) {
+            _textarea.value = '';
+            S.getCurrent('pcomm').pcomm('reset');
+            _textarea.focus();
+
+          // EVENT "click" on comments "submit" button
+          } else if (el.matches('.btn-primary')) {
+            const content = H.noHTML(_textarea.value);
+            if (!content) return;
+            S.getCurrent('pcomm').pcomm ('add', content);
+            _textarea.value = '';
+            _textarea.focus ();
+
+          // EVENT "click" on comments users list
+          } else if (el.matches('.result .list-group-item,'+
+                                '.result .list-group-item *')) {
+            const pcomm = S.getCurrent('pcomm').pcomm('getClass');
+
+            // Selected the current item in users search list and close the
+            // list
+            pcomm.injectUserRef(
+              (el.tagName === 'LI' ? el : el.closest('li'))
+                 .querySelector('span').innerText);
+            pcomm.reset();
+
+          // EVENT "click" on "delete comment" button
+          } else if (el.matches('.msg-item .close,.msg-item .close *')) {
+            const data = el.closest('.content').dataset;
+            const item = el.closest('.msg-item');
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            if (H.haveMouse()) {
+              _textarea.focus();
             }
-            else if (el.matches (_getEventSelector ("*")))
-            {
-              // EVENT "click" on comments "clear textarea" button
-              if (el.matches(".clear-textarea,.clear-textarea *"))
-              {
-                _textarea.value = "";
-                S.getCurrent("pcomm").pcomm ("reset");
-                _textarea.focus ();
-              }
-              // EVENT "click" on comments "submit" button
-              else if (el.matches(".btn-primary"))
-              {
-                const content = H.noHTML (_textarea.value);
 
-                if (!content) return;
+            H.request_ws (
+              'DELETE',
+              `wall/${data.wallid}/cell/${data.cellid}/postit/`+
+                `${data.postitid}/comment/${item.dataset.id}`,
+              null,
+              // success cb
+              () => H.waitForDOMUpdate(
+                     () => window.dispatchEvent(new Event('resize'))));
+          }
+        }
+      });
 
-                S.getCurrent("pcomm").pcomm ("add", content);
-                _textarea.value = "";
-                _textarea.focus ();
-              }
-              // EVENT "click" on comments users list
-              else if (el.matches (".result .list-group-item,"+
-                                   ".result .list-group-item *"))
-              {
-                const pcomm = S.getCurrent("pcomm").pcomm ("getClass");
+    // EVENTS "keyup & keydown"
+    const _textareaEventK = (e) => {
+      const el = e.target;
 
-                // Selected the current item in users search list and close the
-                // list
-                pcomm.injectUserRef (
-                  (el.tagName=="LI"?el:el.closest("li"))
-                     .querySelector("span").innerText);
-                pcomm.reset ();
-              }
-              // EVENT "click" on "delete comment" button
-              else if (el.matches (".msg-item .close,.msg-item .close *"))
-              {
-                const data = el.closest(".content").dataset,
-                      item = el.closest (".msg-item");
-    
-                e.preventDefault ();
-                e.stopImmediatePropagation ();
-    
-                if (H.haveMouse ())
-                  _textarea.focus ();
-    
-                H.request_ws (
-                  "DELETE",
-                  `wall/${data.wallid}/cell/${data.cellid}/postit/`+
-                    `${data.postitid}/comment/${item.dataset.id}`,
-                  null,
-                  // success cb
-                  ()=> H.waitForDOMUpdate (
-                         ()=>window.dispatchEvent (new Event("resize"))));
-                  }
-            }
-          });
+      // EVENTS "keyup & keydown" on comments textarea
+      if (el.matches(_getEventSelector('textarea'))) {
+        const list = el.closest(`[class*="-body"]`).querySelectorAll('li');
 
-        // EVENTS "keyup & keydown"
-        const _textareaEventK = (e)=>
-          {
-            const el = e.target;
+        if (!list.length) return;
 
-            // EVENTS "keyup & keydown" on comments textarea
-            if (el.matches (_getEventSelector ("textarea")))
-            {
-              const list=el.closest(`[class*="-body"]`).querySelectorAll ("li");
-  
-               if (!list.length)
-                 return;
-  
-              const k = e.which,
-                    pcomm = S.getCurrent("pcomm").pcomm ("getClass");
-  
-              // If ESC, close the users search
-              if (k == 27)
-              {
-                e.stopImmediatePropagation ();
-                pcomm.reset ();
-              }
-              // Arrow up or arrow down.
-              else if (k == 38 || k == 40)
-              {
-                if (list.length == 1)
-                  pcomm.reset ();
-                else
-                {
-                  e.stopImmediatePropagation ();
-                  e.preventDefault ();
-  
-                  if (e.type == "keyup")
-                  {
-                    // INTERNAL FUNCTION __select ()
-                    const __select = (i, type)=>
-                      {
-                        // Arrow up.
-                        if (i && type == "up")
-                        {
-                          const el = list[i-1];
-  
-                          list[i].classList.remove ("selected");
-                          el.classList.add ("selected");
-                          el.scrollIntoView (false);
-                        }
-                        // Arrow down.
-                        else if (i < list.length - 1 && type == "down")
-                        {
-                          const el = list[i+1];
-  
-                          list[i].classList.remove ("selected");
-                          el.classList.add ("selected");
-                          el.scrollIntoView (false);
-                        }
-                      };
-  
-                    for (let i = 0, iLen = list.length; i < iLen; i++)
-                      if (list[i].classList.contains ("selected"))
-                      {
-                        if (i == 0 && k == 38 ||
-                            i == iLen - 1 && k == 40)
-                        {
-                          pcomm.reset ();
-                          return;
-                        }
-                        else
-                        {
-                          __select (i, k == 38 ? "up": "down");
-                          return;
-                        }
-                      }
+        const k = e.which;
+        const pcomm = S.getCurrent('pcomm').pcomm('getClass');
+
+        // If ESC, close the users search
+        if (k === 27) {
+          e.stopImmediatePropagation();
+          pcomm.reset();
+
+        // Arrow up or arrow down
+        } else if (k === 38 || k === 40) {
+          if (list.length === 1) {
+            pcomm.reset();
+          } else {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
+            if (e.type === 'keyup') {
+              // INTERNAL FUNCTION __select ()
+              const __select = (i, type) => {
+                // Arrow up.
+                if (i && type === 'up') {
+                  const el = list[i-1];
+
+                  list[i].classList.remove('selected');
+                  el.classList.add('selected');
+                  el.scrollIntoView(false);
+
+                // Arrow down
+                } else if (i < list.length - 1 && type === 'down') {
+                  const el = list[i+1];
+
+                  list[i].classList.remove('selected');
+                  el.classList.add('selected');
+                  el.scrollIntoView(false);
+                }
+              };
+
+              for (let i = 0, iLen = list.length; i < iLen; i++) {
+                if (list[i].classList.contains('selected')) {
+                  if (i === 0 && k === 38 || i === iLen - 1 && k === 40) {
+                    pcomm.reset();
+                    return;
+                  } else {
+                    __select (i, k === 38 ? 'up': 'down');
+                    return;
                   }
                 }
               }
             }
-          };
-        document.body.addEventListener ("keyup", _textareaEventK);
-        document.body.addEventListener ("keydown", _textareaEventK);
+          }
+        }
+      }
+    };
+    document.body.addEventListener('keyup', _textareaEventK);
+    document.body.addEventListener('keydown', _textareaEventK);
 
-        // EVENTS "keyup & click"
-        const _textareaEventKC = (e)=>
-          {
-            const el = e.target;
+    // EVENTS "keyup & click"
+    const _textareaEventKC = (e) => {
+      const el = e.target;
 
-            // EVENTS "keyup & click" on comments textarea
-            if (el.matches (_getEventSelector ("textarea")))
-            {
-              const k = e.which,
-                    prev = el.value.substring (0, el.selectionStart),
-                    // Keys to ignore
-                    ignore = (e.ctrlKey || k == 27 || k == 16 || k == 225);
-              let m;
-  
-              // Submit if needed
-              if (k == 13)
-              {
-                if (e.ctrlKey)
-                  el.closest(`[class*="-body"]`)
-                    .querySelector(".btn-primary").click ();
-                else
-                  return e.preventDefault ();
-              }
-  
-              // Nothing if we must ignore the key
-              if (!ignore)
-              {
-                // Display users search list if needed
-                if (m = prev.match (/(^|\s)@([^\s]+)?$/))
-                  S.getCurrent("pcomm").pcomm ("search", {str: m[2]||""});
-                else if (el.classList.contains ("autocomplete"))
-                  S.getCurrent("pcomm").pcomm ("reset");
-              }
-            }
-          };
-        document.body.addEventListener ("keyup", _textareaEventKC);
-        document.body.addEventListener ("click", _textareaEventKC);
+      // EVENTS "keyup & click" on comments textarea
+      if (el.matches (_getEventSelector('textarea'))) {
+        const k = e.which;
+        const prev = el.value.substring(0, el.selectionStart);
+        // Keys to ignore
+        const ignore = (e.ctrlKey || k === 27 || k === 16 || k === 225);
+        let m;
 
-        // EVENT "keypress"
-        document.body.addEventListener ("keypress", (e)=>
-          {
-            const el = e.target;
+        // Submit if needed
+        if (k === 13) {
+          if (e.ctrlKey) {
+            el.closest(`[class*="-body"]`)
+                .querySelector('.btn-primary').click();
+          } else {
+            return e.preventDefault();
+          }
+        }
 
-            // EVENT "keypress" on comments textarea
-            if (el.matches (_getEventSelector ("textarea")))
-            {
-              // If enter on selected users search item, select it
-              if (e.which == 13 && el.classList.contains ("autocomplete"))
-              { 
-                e.stopImmediatePropagation ();
-                e.preventDefault ();
+        // Nothing if we must ignore the key
+        if (!ignore) {
+          // Display users search list if needed
+          if ( (m = prev.match(/(^|\s)@([^\s]+)?$/)) ) {
+            S.getCurrent('pcomm').pcomm('search', {str: m[2] || ''});
+          } else if (el.classList.contains('autocomplete')) {
+            S.getCurrent('pcomm').pcomm('reset');
+          }
+        }
+      }
+    };
+    document.body.addEventListener('keyup', _textareaEventKC);
+    document.body.addEventListener('click', _textareaEventKC);
 
-                el.closest(`[class*="-body"]`)
-                  .querySelector(".result .list-group-item.selected").click ();
-              }
-            }
-          });
+    // EVENT "keypress"
+    document.body.addEventListener ('keypress', (e) => {
+        const el = e.target;
 
-        }, 0);
-      });
+        // EVENT "keypress" on comments textarea
+        if (el.matches (_getEventSelector('textarea'))) {
+          // If enter on selected users search item, select it
+          if (e.which === 13 && el.classList.contains('autocomplete')) { 
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
+            el.closest(`[class*="-body"]`)
+              .querySelector('.result .list-group-item.selected').click();
+          }
+        }
+    });
+  });
 
 <?php echo $Plugin->getFooter ()?>

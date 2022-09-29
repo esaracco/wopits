@@ -128,34 +128,27 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ())
-        return;
+  document.addEventListener ('DOMContentLoaded', () => {
+    if (H.isLoginPage ()) return;
 
-      setTimeout (()=>
-      {
-        // EVENT "click"
-        document.body.addEventListener ("click", (e)=>
-          {
-            const el = e.target;
+    // EVENT "click"
+    document.body.addEventListener('click', (e) => {
+      const el = e.target;
 
-            // EVENT "click" on workers count
-            if (el.matches (".pwork,.pwork *"))
-            {
-              const $pwork = $((el.tagName == "DIV")?el:el.closest("div"));
+      // EVENT "click" on workers count
+      if (el.matches('.pwork,.pwork *')) {
+        const $pwork = $((el.tagName === 'DIV') ? el : el.parentNode);
 
-              if (H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-                $pwork.pwork ("open");
-              else
-              {
-                $pwork.closest(".postit").postit ("setCurrent");
-                $pwork.pwork ("display");
-              }
-            }
-          });
+        e.stopImmediatePropagation();
 
-        }, 0);
-      });
+        if (H.checkAccess (`<?=WPT_WRIGHTS_RW?>`)) {
+          $pwork.pwork('open');
+        } else {
+          $pwork.closest('.postit').postit('setCurrent');
+          $pwork.pwork('display');
+        }
+      }
+    });
+  });
 
 <?php echo $Plugin->getFooter ()?>

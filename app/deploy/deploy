@@ -20,6 +20,8 @@
   require ($appConf);
   require ($deployConf);
 
+  define('NODE_PATH', __DIR__.'/../../www/libs/node_modules');
+
   use Wopits\DbCache;
 
   $options = getopt ('qyMuhve:');
@@ -227,11 +229,13 @@
                 'app/services/task',
                 'app/deploy/bin',
                 'app/inc',
-                'www/css/themes',
+                'www/css',
                 'www/js',
                 'www/ui'] as $v)
         $this->_exec ("mkdir -p {$env['build-path']}/$v");
 
+      $this->_exec ('cp -a '.__DIR__.
+        "/../../www/css/themes {$env['build-path']}/www/css/");
       $this->_exec ('cp -a '.__DIR__.
         "/bin/post-deploy.php {$env['build-path']}/app/deploy/bin");
       $this->_exec ('cp -a '.__DIR__.
@@ -248,10 +252,14 @@
   
     public function checkMinifiers ()
     {
+      if (!empty($this->opt["no-min"])) return;
+
+      $this->minify = ['js' => true, 'css' => true];
+
       // Check minifiers
-      if (!empty (ENV['minifiers']) && empty ($this->opt["no-min"]))
+      if (!empty (ENV['minifiers']))
       {
-        foreach (['js', 'css', 'html'] as $type)
+        foreach (['html'] as $type)
         {
           $min = '';
           if (!isset (ENV['minifiers'][$type]) ||
@@ -309,15 +317,13 @@
       }
 
       // Create modules concatenation file
-      // Path for node modules
-      $dirNode = ' '.__DIR__.'/../../www/libs/node_modules/';
       // Path for local modules
       $dirLocal = ' '.__DIR__.'/../../www/libs/';
 
       mkdir ($env['build-path'].'/www/libs', 0755);
       $this->_exec (
-        'cat '.$dirNode.implode($dirNode, WPT_JS_NODE_MODULES).' '.
-               $dirLocal.implode($dirLocal, WPT_JS_LOCAL_MODULES).' >> '
+        'cat '.NODE_PATH.'/'.implode(' '.NODE_PATH.'/', WPT_JS_NODE_MODULES).
+          ' '.$dirLocal.'/'.implode($dirLocal, WPT_JS_LOCAL_MODULES).' >> '
           .$env['build-path'].'/www/libs/modules.js');
       $this->echo ("\n");
     }
@@ -335,7 +341,8 @@
           $js = "{$env['build-path']}/www/js/all-$l.js";
     
           $this->echo (" ".basename($js));
-          $this->_execMinifier (ENV['minifiers']['js'], $js, "$js-tmp");
+          $this->_execMinifier (
+            NODE_PATH.'/minify/bin/minify.js', $js, "$js-tmp");
 //        copy ($js, "$js-tmp");
 
           rename ("$js-tmp", $js);
@@ -351,23 +358,11 @@
       // Create main CSS file
       $this->echo ("Creating main CSS...\n");
 
-      $css = $env['build-path']."/www/css/all.css";
+      $css = $env['build-path']."/www/css/main.css";
 
       $this->echo ("  ".basename($css)."\n");
 
-      $this->_exec ('php '.__DIR__."/../../www/css/all.css.php > $css");
-    
-      // create theme CSS
-      $this->echo ("Creating theme CSS files...\n ");
-      foreach (WPT_THEMES as $t)
-      {
-        $css = "{$env['build-path']}/www/css/themes/$t.css";
-
-        $this->echo (" ".basename($css));
-
-        $this->_exec ('php '.__DIR__."/../../www/css/themes/$t.css.php > $css");
-      }
-      $this->echo ("\n");
+      $this->_exec ('php '.__DIR__."/../../www/css/main.css.php > $css");
     }
 
     public function minifyCSS ()
@@ -380,12 +375,13 @@
         // Minifying main CSS file
         $this->echo ("Minifying main CSS...\n ");
 
-        $css = $env['build-path']."/www/css/all.css";
+        $css = $env['build-path']."/www/css/main.css";
     
         $this->echo (" ".basename($css));
         $this->echo ("\n");
 
-        $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
+        $this->_execMinifier (
+          NODE_PATH.'/minify/bin/minify.js', $css, "$css-tmp");
         rename ("$css-tmp", $css);
     
         // Minifying theme CSS
@@ -396,7 +392,8 @@
 
           $this->echo (" ".basename($css));
 
-          $this->_execMinifier (ENV['minifiers']['css'], $css, "$css-tmp");
+          $this->_execMinifier (
+            NODE_PATH.'/minify/bin/minify.js', $css, "$css-tmp");
           rename ("$css-tmp", $css);
         }
         $this->echo ("\n");

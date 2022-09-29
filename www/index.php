@@ -1,6 +1,19 @@
 <?php include (__DIR__.'/../app/header-common.php')?>
 <body>
 
+  <div id="popup-loader" class="layer">
+    <div id="loader">
+      <div class="progress"></div>
+      <i class="fas fa-cog fa-spin fa-lg"></i>
+      <span><?=_("Please wait")?>...</span>
+      <button
+        type="button"
+        class="btn btn-xs btn-secondary"
+      >
+        <?=_("Stop")?>
+      </button>
+    </div>
+  </div>
   <div id="tpick"></div>
   <div id="cpick"></div>
   <div id="upload-layer" class="layer"></div>
@@ -11,7 +24,7 @@
   <!-- MENU main -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm">
     <a href="#" class="navbar-brand fw-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" title="<?=_("Invisible mode: sharing is not possible and no one can see you")?>"></i><div id="umsg"><span class="wpt-badge">0</span></div> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-menu" aria-controls="main-menu" aria-expanded="false"><span class="navbar-toggler-icon"></span></button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-menu" aria-controls="main-menu" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
     <div class="container-fluid">
     <div id="main-menu" class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">

@@ -10,7 +10,6 @@
         <p><?=_("The gray color of the default theme may not suit your mood today!")?></p>
         <p><?=_("If so, do not hesitate to test others:")?></p>
         <div class="themes mb-3 inline-block">
-          <a class="dot-theme btn-theme-default" data-theme="theme-default"></a>
           <?php foreach (WPT_THEMES as $theme) { ?>
             <a class="dot-theme btn-theme-<?=$theme?>" data-theme="theme-<?=$theme?>"></a>
           <?php } ?>

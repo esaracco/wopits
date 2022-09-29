@@ -175,11 +175,13 @@
             form.insertBefore ($(`<div class="confirm"><div><?=_("Please, confirm your password:")?></div><div class="input-group mb-1"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-key fa-fw fa-xs"></i></span><input class="form-control" type="password" autocomplete="new-password" name="password2" placeholder="<?=_("password confirmation")?>" required value=""></div><div><?=_("Please, confirm your email:")?></div><div class="input-group mb-4"><span class="input-group-text"><i class="fas fa-shield-alt fa-fw fa-xs"></i> <i class="fas fa-envelope fa-fw fa-xs"></i></span><input class="form-control" type="email" name="email2" required value="" placeholder="<?=_("email confirmation")?>"></div>`)[0], form.firstChild);
 
             // Display "previous" button
-            footer.insertBefore ($(`<button type="button" class="btn btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)[0], footer.firstChild);
+            footer.insertBefore ($(`<button type="button" class="btn btn-secondary btn-info"><i class="fas fa-caret-left"></i> <?=_("Previous")?></button>`)[0], footer.firstChild);
 
             // EVENT "click" on "previous" button
-            popup.querySelector(".btn-info").addEventListener ("click", (e)=>
-              plugin.resetCreateUserForm ());
+            popup.querySelector('.btn-info').addEventListener('click', (e) => {
+              e.stopImmediatePropagation();
+              plugin.resetCreateUserForm();
+            });
 
             popup.querySelector(".btn-primary").innerHTML = 
               `<i class="fas fa-bolt fa-fw fa-xs"></i> <?=_("Create")?></i>`;

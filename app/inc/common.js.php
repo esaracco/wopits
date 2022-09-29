@@ -1167,44 +1167,35 @@ class WHelper
   }
   
   // METHOD loader ()
-  static loader (action, force = false, xhr = null)
-  {
-    const layer = document.getElementById ("popup-loader"),
-          $layer = $(layer);
+  static loader (action, force = false, xhr = null) {
+    const layer = document.getElementById('popup-loader');
+    const $layer = $(layer);
   
-    if (layer && (WS.ready() || force))
-    {
-      const progress = layer.querySelector (".progress"),
-            button = layer.querySelector ("button");
+    if (layer && (WS.ready() || force)) {
+      const progress = layer.querySelector('.progress');
+      const button = layer.querySelector('button');
 
-      clearTimeout (layer.dataset.timeoutid);
+      clearTimeout(layer.dataset.timeoutid);
   
-      if (action == "show")
-      {
-        layer.dataset.timeoutid = setTimeout (() =>
-          {
-            if (xhr)
-            {
-              // Abort upload on user request
-              button.addEventListener ("click", (e)=> xhr.abort (),
-                {once: true});
-              button.style.display = "block";
-              progress.style.display = "block";
-            }
+      if (action === 'show') {
+        layer.dataset.timeoutid = setTimeout(() => {
+          if (xhr) {
+            // Abort upload on user request
+            button.addEventListener('click', (e) => xhr.abort(), {once: true});
+            button.style.display = 'block';
+            progress.style.display = 'block';
+          }
   
-            layer.style.display = "block";
+          layer.style.display = 'block';
+        }, 500);
+      } else {
+        $layer.hide();
   
-          }, 500);
-      }
-      else
-      {
-        $layer.hide ();
-  
-        button.style.display = "none";
-        progress.style.display = "none";
-        progress.style.backgroundColor = "#ea6966";
+        button.style.display = 'none';
+        progress.style.display = 'none';
+        progress.style.backgroundColor = '#ea6966';
 
-        layer.removeAttribute ("data-timeoutid");
+        layer.removeAttribute('data-timeoutid');
       }
     }
   }
@@ -1599,7 +1590,7 @@ class WHelper
   static fixMenuHeight ()
   {
     const menu = document.querySelector (".navbar-collapse"),
-          mbBtn = document.querySelector (".navbar-toggler-icon");
+          mbBtn = document.querySelector (".navbar-toggler i");
   
     // If menu is in min mode, limit menus height
     if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0)

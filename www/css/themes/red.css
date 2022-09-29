@@ -1,0 +1,19 @@
+:root {
+  --menubar-bg-color: #dc3545;
+  --wall-th-bg-color: #ffeaec;
+  --wall-border-color: #ffd5d9;
+  --usercard-links-color: #a5a5a5;
+  --modal-links-color: #e84c5b;
+  --modal-theme-color-light: #fff;
+  --modal-theme-color-dark: #555;
+  --modal-1-theme-color: #fff;
+  --modal-1-theme-bg-color: #e84c5b;
+  --modal-2-theme-color: #fff;
+  --modal-2-theme-bg-color: #d01b1b;
+  --postit-selected-shadow-color: #dc3545;
+  --input-focus-border-color: #e84c5b;
+  --btn-primary-bg-color: #5ca0e4;
+  --btn-primary-border-color: #4694e6;
+  --btn-secondary-bg-color: #da4e5b;
+  --btn-secondary-border-color: #e2747f;
+}

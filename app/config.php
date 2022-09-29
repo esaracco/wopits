@@ -1,7 +1,7 @@
 <?php
 
-define ('WPT_VERSION', '0.64-alpha.0');
-define ('WPT_LAST_UPDATE', '2022-09-26');
+define ('WPT_VERSION', '0.64-alpha.1');
+define ('WPT_LAST_UPDATE', '2022-09-29');
 define ('WPT_DISPLAY_LATEST_NEWS', true);
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
 
@@ -60,7 +60,7 @@ define ('WPT_DIRECTURL_REGEXP', '/unsubscribe|(a|c|s|w)(\d+)(p(\d+)(c(\d+))?)?$/
 //define ('WPT_BLACKLISTED_DOMAINS', 'outlook.fr|outlook.com|live.fr|live.com|hotmail.fr|hotmail.com|caramail.fr');
 
 // Themes
-define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple']);
+define ('WPT_THEMES', ['default', 'blue', 'green', 'red', 'orange', 'purple']);
 
 // Postit colors
 define ('WPT_POSTIT_COLORS', [

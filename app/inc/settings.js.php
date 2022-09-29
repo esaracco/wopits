@@ -30,7 +30,7 @@
           const id = `theme-${color}`;
 
           if (!document.getElementById (id))
-            head.appendChild ($(`<link rel="stylesheet" href="/css/themes/${color}.css<?=(php_sapi_name()!='cli')?'.php?'.date('U'):'?'.WPT_VERSION?>" id="${id}" media="none">`)[0]);
+            head.appendChild ($(`<link rel="stylesheet" href="/css/themes/${color}.css?<?=WPT_VERSION?>" id="${id}" media="none">`)[0]);
         });
 
       // TODO Factoring

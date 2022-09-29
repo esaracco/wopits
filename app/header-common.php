@@ -14,13 +14,13 @@ if (!empty ($_SESSION['userId']))
 //<WPTPROD-remove>
 if (WPT_DEV_MODE)
 {
-  $css = '/css/all.css.php';
+  $css = '/css/main.css.php';
   $js = '/js/all.js.php';
 }
 else
 {
 //</WPTPROD-remove>
-  $css = '/css/all.css';
+  $css = '/css/main.css';
   $js = "/js/all-$slocale.js";
 }//WPTPROD-remove
 
@@ -58,10 +58,7 @@ if (!empty($_SESSION['upgradeDone']))
   <link rel="stylesheet" href="/libs/node_modules/vanderlee-colorpicker/jquery.colorpicker.css?<?=$version?>">
   <link rel="stylesheet" href="<?=$css?>">
 
-<?php if ($theme != 'theme-default'):
-        $color = explode('-', $theme)[1]?>
-  <link rel="stylesheet" href="/css/themes/<?=$color?>.css<?=((WPT_DEV_MODE)?'.php':'')."?$version"?>" id="<?=$theme?>">
-<?php endif?>
+  <link rel="stylesheet" href="/css/themes/<?=explode('-', $theme)[1]?>.css?<?=$version?>" id="<?=$theme?>">
 
 <!--//<WPTPROD-remove>-->
 <?php if (WPT_DEV_MODE):?>

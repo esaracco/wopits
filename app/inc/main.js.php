@@ -2234,8 +2234,6 @@
       if (!H.isLoginPage ())
         setTimeout (()=>{
 
-        $("body").prepend (`<div id="popup-loader" class="layer"><div id="loader"><div class="progress"></div><i class="fas fa-cog fa-spin fa-lg"></i> <span><?=_("Please wait")?>...</span> <button type="button" class="btn btn-xs btn-secondary"><?=_("Stop")?></button></div></div>`);
-
         WS.connect (
           `wss://${location.host}/app/ws?token=${wpt_userData.token}`, ()=>
           {

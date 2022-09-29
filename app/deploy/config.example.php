@@ -1,24 +1,19 @@
 <?php
   define ('ENV', [
 
-    // Paths and args for minifiers.
-    // (let this section empty if you do not want to minify)
+    // Paths and args for HTML minifiers.
+    // (let this section empty if you do not want to minify HTML)
     // WARNING : test them before using them here, as minifiers can sometimes
     //           cause malfunctions! However, default options below are known
     //           to work pretty well with wopits
     //
-    // You will find some common minifiers here:
-    // - JS   : https://dl.google.com/closure-compiler/compiler-latest.zip
-    // - CSS  : https://github.com/google/closure-stylesheets/releases
+    // You will find some common HTML minifiers here:
     // - HTML : https://code.google.com/archive/p/htmlcompressor/downloads
     //          https://github.com/kangax/html-minifier
     //
     // -> If minifier needs arguments, put them here too.
     //
     'minifiers' => [
-      // WARNING : the JS minifier must understand ECMAScript 6!
-      'js' => __DIR__.'/bin/closure-compiler-v20200517.jar',
-      'css' => __DIR__.'/bin/closure-stylesheets.jar',
       'html' => __DIR__.'/bin/htmlcompressor-1.5.3.jar'
       // WARNING : use only the following options with html-minifier!
       //'html' => __DIR__.'/bin/html-minifier --collapse-whitespace --remove-comments --remove-optional-tags'

@@ -15,4 +15,4 @@ define ('WPT_THEMES', ['blue', 'green', 'red', 'orange', 'purple', 'newtheme']);
 ```
 - Copy a existing theme file and customize it:
 ```bash
-$ cp www/css/themes/blue.css.php www/css/themes/newtheme.css.php
+$ cp www/css/themes/blue.css www/css/themes/newtheme.css

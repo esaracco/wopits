@@ -10,7 +10,6 @@
           <div class="mb-3 inline-block">
             <label><?=_("Theme")?>:</label>
             <div class="themes mt-2">
-              <a class="dot-theme btn-theme-default" data-theme="theme-default"></a>
               <?php foreach (WPT_THEMES as $theme) { ?>
                 <a class="dot-theme btn-theme-<?=$theme?>" data-theme="theme-<?=$theme?>"></a>
               <?php } ?>
