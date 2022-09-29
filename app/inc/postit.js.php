@@ -169,168 +169,58 @@
     };
 
   // CLASS _Menu
-  class _Menu
-  {
-    // METHOD constructor ()
-    constructor (postitPlugin)
-    {
-      const $currentMenu = postitPlugin.settings.wall.find (".postit-menu"),
-            postit = postitPlugin.element[0];
+  const _menuTemplate = `<?=Wopits\Helper::buildPostitMenu ()?>`;
+  class _Menu {
+    // METHOD constructor()
+    constructor(postitPlugin) {
+      const $currentMenu = postitPlugin.settings.wall.find('.postit-menu');
+      const postit = postitPlugin.element[0];
 
-      if ($currentMenu.length)
-        $currentMenu.parent().postit ("closeMenu");
+      if ($currentMenu.length) {
+        $currentMenu.parent().postit('closeMenu');
+      }
 
       this.postitPlugin = postitPlugin;
-      this.$menu = $(`<?=Wopits\Helper::buildPostitMenu ()?>`);
+      this.$menu = $(_menuTemplate);
 
-      this.attachMenuEvents ();
-      this.init ();
-      postit.insertBefore (this.$menu[0], postit.firstChild);
+      this.init();
+      postit.insertBefore(this.$menu[0], postit.firstChild);
     }
 
-    // METHOD init ()
-    init ()
-    {
+    // METHOD init()
+    init() {
       const pSettings = this.postitPlugin.settings;
 
-      if (!pSettings.wall.wall ("isShared") || 
+      if (!pSettings.wall.wall('isShared') || 
             !this.postitPlugin.canWrite() &&
-            !pSettings.attachmentscount)
-        this.$menu[0].querySelector(`[data-action="pwork"]`).style.display = "none";
+            !pSettings.attachmentscount) {
+        this.$menu[0].querySelector(`[data-action="pwork"]`)
+            .style.display = 'none';
+      }
     }
 
-    // METHOD show ()
-    show ()
-    {
-      this.$menu.show ("fade");
+    // METHOD show()
+    show() {
+      this.$menu.show();
     }
 
-    // METHOD destroy ()
-    destroy ()
-    {
-      this.$menu.remove ();
+    // METHOD destroy()
+    destroy() {
+      this.$menu.remove();
     }
 
-    // METHOD setPosition ()
-    setPosition (pos)
-    {
-      if (pos == "left")
-        this.$menu[0].classList.replace ("right", "left");
-      else
-        this.$menu[0].classList.replace ("left", "right");
+    // METHOD setPosition()
+    setPosition(pos) {
+      if (pos === 'left') {
+        this.$menu[0].classList.replace ('right', 'left');
+      } else {
+        this.$menu[0].classList.replace ('left', 'right');
+      }
     }
 
-    // METHOD getWidth ()
-    getWidth ()
-    {
-      return this.$menu.width ();
-    }
-
-    // METHOD attachMenuEvents ()
-    attachMenuEvents ()
-    {
-      const postitPlugin = this.postitPlugin,
-            postit = postitPlugin.element[0];
-
-      // EVENT "click" on postit menu
-      this.$menu[0].addEventListener ("click", (e)=>
-        {
-          const el = e.target;
-
-          if (el.tagName == "DIV")
-            return;
-
-          const action =
-                  (el.tagName=="SPAN"?el:el.closest("span")).dataset.action;
-
-          e.stopImmediatePropagation ();
-
-          // To prevent race condition with draggable & resizable plugins
-          if (H.disabledEvent ())
-            return;
-
-          switch (action)
-          {
-            // OPEN postit edit popup
-            case "edit": return postitPlugin.openPostit ();
-            // OPEN deadline date picker popup
-            case "dpick": return postitPlugin.openDatePicker ();
-            // OPEN popup for attachments, workers or comments
-            case "patt":
-            case "pwork":
-            case "pcomm":
-              return postit.querySelector(`.topicon [data-action="${action}"]`)
-                       .dispatchEvent (new Event ("click", {bubbles: true}));
-          }
-
-          postitPlugin.edit ({}, ()=>
-            {
-              switch (action)
-              {
-                // DELETE postit
-                case "delete":
-                  H.openConfirmPopover ({
-                    item: $(postit.querySelector(".btn-menu")),
-                    placement: "right",
-                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                    content: `<?=_("Delete this note?")?>`,
-                    cb_close: () => postitPlugin.unedit (),
-                    cb_ok: () => postitPlugin.delete ()
-                  });
-                  break;
-
-                // OPEN tags picker
-                case "tpick":
-                  return S.getCurrent("tpick").tpick ("open", e);
-
-                // OPEN color picker
-                case "cpick":
-
-                  var cp = $("#cpick").cpick ("getClass");
-
-                  cp.open ({
-                    event: e,
-                    cb_close: ()=> postitPlugin.element.trigger ("mouseleave"),
-                    cb_click: (div) =>
-                      postitPlugin.element
-                        .removeClass(cp.getColorsList().join(" "))
-                        .addClass($(div).attr ("class"))
-                  });
-
-                  break;
-
-                // ADD plug
-                case "add-plug":
-
-                  postitPlugin.closeMenu ();
-
-                  S.set ("link-from", {
-                    id: postitPlugin.settings.id,
-                    obj: $(postit)
-                  });
-
-                  _plugRabbit.line = new LeaderLine (
-                    postit,
-                    $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo("body")[0],
-                    {
-                      path: "<?=WS_PLUG_DEFAULTS['linePath']?>",
-                      size: 3,
-                      color: "#9b9c9c",
-                      dash: true,
-                      endPlug: "behind"
-                    });
-
-                  document.addEventListener (
-                    "keydown", _plugRabbit.escapeEvent);
-                  document.addEventListener (
-                    "mousedown", _plugRabbit.mousedownEvent);
-                  document.addEventListener (
-                    "mousemove", _plugRabbit.mousemoveEvent);
-
-                  break;
-              }
-          });
-        });
+    // METHOD getWidth()
+    getWidth() {
+      return this.$menu.width();
     }
   }
 
@@ -978,18 +868,16 @@
       label.style.left = `${pleft}px`;
     },
 
-    // METHOD resetPlugLabelPosition ()
-    resetPlugLabelPosition (label)
-    {
-      label.removeAttribute ("data-pos");
-      label.removeAttribute ("data-origtop");
-      label.removeAttribute ("data-origleft");
+    // METHOD resetPlugLabelPosition()
+    resetPlugLabelPosition(label) {
+      label.removeAttribute('data-pos');
+      label.removeAttribute('data-origtop');
+      label.removeAttribute('data-origleft');
 
-      if (this.canWrite ())
-      {
-        label.querySelector("i.fa-thumbtack").style.display = "none";
-        label.querySelector("li[data-action='position-auto']")
-         .style.display = "none";
+      if (this.canWrite()) {
+        label.querySelector('i.fa-thumbtack').style.display = 'none';
+        label.querySelector(`li[data-action="position-auto"]`)
+            .style.display = 'none';
       }
     },
 
@@ -1046,54 +934,48 @@
     },
 
     // METHOD updatePlugLabel ()
-    updatePlugLabel (args)
-    {
-      const label = H.noHTML (args.label),
-            wPos = this.settings.wall[0].getBoundingClientRect (),
-            canWrite = this.canWrite (),
-            p = this.getPlugById (args.endId),
-            pl = p.labelObj[0];
+    updatePlugLabel(args) {
+      const label = H.noHTML(args.label);
+      const wPos = this.settings.wall[0].getBoundingClientRect();
+      const canWrite = this.canWrite();
+      const p = this.getPlugById(args.endId);
+      const pl = p.labelObj[0];
 
       p.label.name = label;
       p.obj.middleLabel = LeaderLine.captionLabel ({
-                            text: label,
-                            fontSize: "13px"
-                          });
+          text: label,
+          fontSize: '13px',
+      });
 
-      pl.querySelector("div span").innerHTML = (label == "" || label == "...") ?
-        `<i class="fas fa-ellipsis-h"></i>` : label;
+      pl.querySelector('div span').innerHTML =
+          (label === '' || label === '...') ?
+            `<i class="fas fa-ellipsis-h"></i>` : label;
 
-      if (args.top !== undefined)
-      {
-        if (args.top)
-        {
+      if (args.top !== undefined) {
+        if (args.top) {
           pl.dataset.pos = 1;
           pl.dataset.origtop = args.top;
           pl.dataset.origleft = args.left;
 
-          if (canWrite)
-          {
-            pl.querySelector("i.fa-thumbtack").style.display = "block";
+          if (canWrite) {
+            pl.querySelector('i.fa-thumbtack').style.display = 'block';
             pl.querySelector(`li[data-action="position-auto"]`)
-              .style.display = "block";
+                .style.display = 'block';
           }
 
-          if (!p.customPos)
-          {
-            this.repositionPlugLabel (pl, args.top, args.left, wPos);
-            p.related = this.createRelatedPlugs (p);
-            p.obj.hide ();
+          if (!p.customPos) {
+            this.repositionPlugLabel(pl, args.top, args.left, wPos);
+            p.related = this.createRelatedPlugs(p);
+            p.obj.hide();
           }
-        }
-        else if (p.customPos)
-        {
-          this.resetPlugLabelPosition (pl);
-          _deleteRelatedPlugs (p);
-          p.obj.show ();
+        } else if (p.customPos) {
+          this.resetPlugLabelPosition(pl);
+          _deleteRelatedPlugs(p);
+          p.obj.show();
         }
       }
 
-      this.repositionPlugs ();
+      this.repositionPlugs();
     },
 
     // METHOD createRelatedPlugs ()
@@ -1400,33 +1282,28 @@
         });
     },
 
-    // METHOD repositionPlugs ()
-    repositionPlugs ()
-    {
-      const wPos = this.settings.wall[0].getBoundingClientRect ();
+    // METHOD repositionPlugs()
+    repositionPlugs() {
+      const wPos = this.settings.wall[0].getBoundingClientRect();
 
-      this.settings.plugs.forEach (p =>
-        {
-          const pl = p.labelObj[0];
+      this.settings.plugs.forEach((p) => {
+        const pl = p.labelObj[0];
 
-          if (pl.dataset.pos)
-          {
-            this.repositionPlugLabel (
+        if (pl.dataset.pos) {
+          this.repositionPlugLabel(
               pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-            p.related.forEach (_r => _r.position ());
-          }
-          else
-          {
-            p.obj.position ();
+          p.related.forEach((r) => r.position());
+        } else {
+          p.obj.position ();
 
-            const pos = document.querySelector(`#_${p.startId}-${p.endId} text`)
-                          .getBoundingClientRect ();
+          const pos = document.querySelector(`#_${p.startId}-${p.endId} text`)
+                          .getBoundingClientRect();
 
-            pl.style.top = `${pos.top}px`;
-            pl.style.left = `${pos.left}px`;
-          }
-        });
+          pl.style.top = `${pos.top}px`;
+          pl.style.left = `${pos.left}px`;
+        }
+      });
     },
 
     // METHOD getCellId ()
@@ -2215,562 +2092,642 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ())
-        return;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage ()) return;
 
-      setTimeout (()=>
+    const _walls = S.getCurrent("walls")[0];
+
+    // Init text editor
+    let locale = $("html")[0].dataset.fulllocale;
+    tinymce.init ({
+      selector: "#postitUpdatePopupBody",
+      promotion: false,
+      content_style: "p {margin: 0}",
+      language: (locale != "en_US")?locale:null,
+      language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
+      branding: false,
+      plugins: [
+        "autoresize",
+        "link",
+        "image",
+        "media",
+        "charmap",
+        "searchreplace",
+        "visualchars",
+        "fullscreen",
+        "insertdatetime",
+        "lists",
+        "table",
+      ],
+      setup: function (editor)
       {
-        const _walls = S.getCurrent("walls")[0];
+        // "change" event can be triggered twice, we use this var to
+        // avoir that
+        let _current = false;
 
-        // Init text editor
-        let locale = $("html")[0].dataset.fulllocale;
-        tinymce.init ({
-          selector: "#postitUpdatePopupBody",
-          promotion: false,
-          content_style: "p {margin: 0}",
-          language: (locale != "en_US")?locale:null,
-          language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
-          branding: false,
-          plugins: [
-            "autoresize",
-            "link",
-            "image",
-            "media",
-            "charmap",
-            "searchreplace",
-            "visualchars",
-            "fullscreen",
-            "insertdatetime",
-            "lists",
-            "table",
-          ],
-          setup: function (editor)
+        // Trick to catch 404 not found error on just added images
+        // -> Is there a TinyMCE callback for that?
+        editor.on("change", function (e)
           {
-            // "change" event can be triggered twice, we use this var to
-            // avoir that
-            let _current = false;
+            if (_current)
+              return;
 
-            // Trick to catch 404 not found error on just added images
-            // -> Is there a TinyMCE callback for that?
-            editor.on("change", function (e)
-              {
-                if (_current)
-                  return;
+            _current = true;
 
-                _current = true;
+            let c = editor.getContent ();
 
-                let c = editor.getContent ();
+            // Remove unwanted images attributes
+            if (c.match (/\s(srcset|alt)\s*=/i))
+            {
+              //FIXME
+              c = c.replace (/\s(srcset|alt)\s*=/ig, "none=");
+              editor.setContent (c);
+            }
 
-                // Remove unwanted images attributes
-                if (c.match (/\s(srcset|alt)\s*=/i))
+            // Check for img only if the TinyMCE dialog is open
+            if ($(".tox-dialog").is(":visible"))
+            {
+              (c.match(/<img\s[^>]+>/g)||[]).forEach (img =>
                 {
-                  //FIXME
-                  c = c.replace (/\s(srcset|alt)\s*=/ig, "none=");
-                  editor.setContent (c);
-                }
+                  var tmp = img.match (/src="([^\"]+)"/);
+                  if (tmp)
+                  {
+                    const src = tmp[1];
 
-                // Check for img only if the TinyMCE dialog is open
-                if ($(".tox-dialog").is(":visible"))
-                {
-                  (c.match(/<img\s[^>]+>/g)||[]).forEach (img =>
-                    {
-                      var tmp = img.match (/src="([^\"]+)"/);
-                      if (tmp)
+                    H.loader ("show");
+                    H.testImage(src)
+                      .then (
+                      // Needed for some Safari on iOS that do not support
+                      // Promise finally() callback.
+                      ()=> H.loader("hide"),
+                      ()=>
                       {
-                        const src = tmp[1];
+                        H.loader("hide");
 
-                        H.loader ("show");
-                        H.testImage(src)
-                          .then (
-                          // Needed for some Safari on iOS that do not support
-                          // Promise finally() callback.
-                          ()=> H.loader("hide"),
-                          ()=>
-                          {
-                            H.loader("hide");
+                        editor.setContent (
+                          c.replace(new RegExp (H.quoteRegex(img)), ""));
 
-                            editor.setContent (
-                              c.replace(new RegExp (H.quoteRegex(img)), ""));
+                        // Return to the top of the modal if mobile device
+                        if (!H.haveMouse ())
+                          $("#postitUpdatePopup").scrollTop (0);
 
-                            // Return to the top of the modal if mobile device
-                            if (!H.haveMouse ())
-                              $("#postitUpdatePopup").scrollTop (0);
-
-                            H.displayMsg ({
-                              title: `<?=_("Note")?>`,
-                              type: "warning",
-                              msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
-                            });
-                          })
-                          .finally (()=> _current = false);
-                      }
-                    });
-                }
-                else
-                  _current = false;
-              });
-          },
-
-          // "media" plugin options.
-          media_alt_source: false,
-          media_poster: false,
-
-          // "image" plugin options
-          image_description: false,
-          automatic_uploads: true,
-          file_picker_types: "image",
-          file_picker_callback: function (callback, value, meta)
-          {
-            S.set ("tinymce-callback", callback);
-            document.getElementById("postit-picture").click ();
-          },
-
-          // "link" plugin options
-          default_link_target: "_blank",
-          link_assume_external_targets: true,
-          link_default_protocol: "https",
-          link_title: false,
-          target_list: false,
-
-          visual: false,
-          mobile: {menubar: "edit view format insert"},
-          menubar: "edit view format insert",
-          menu:{view:{title:`<?=_("View")?>`, items:"fullscreen"}},
-          toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image | table",
-          statusbar: false
-        });
-
-      // EVENTS mouseenter touchstart on postit
-      // Sort of ":hover" simulation with z-index persistence
-      $(document).on("mouseenter touchstart", ".postit", function ()
-        {
-          const el = S.getCurrent("wall")[0].querySelector (".postit.hover");
-
-          if (el)
-            el.classList.remove ("hover");
-
-          this.classList.add ("hover");
-        });
-
-      // EVENT "click"
-      _walls.addEventListener ("click", (e)=>
-        {
-          const el = e.target;
-
-          // EVENT "click" on postit
-          if (el.matches (".postit *"))
-          {
-            const postit = el.closest (".postit");
-
-            // EVENT "click" ctrl+click on postit
-            if (e.ctrlKey)
-            {
-              const id = postit.dataset.id.substring (7),
-                    menu = S.getCurrent("mmenu").mmenu ("getClass");
-  
-              e.stopImmediatePropagation ();
-              e.preventDefault ();
-  
-              if (postit.classList.contains ("selected"))
-                menu.remove (id);
-              else
-                menu.add ($(postit).postit ("getClass"));
-            }
-            // EVENT "click" on postit for READ-ONLY mode
-            else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-            {
-              if (H.disabledEvent ())
-              {
-                e.preventDefault ();
-                return;
-              }
-
-              if (!el.closest(".topicon"))
-                $(postit).postit ("openPostit");
-            }
-            // EVENT "click" on postit menu button
-            else if (el.matches (".btn-menu,.btn-menu *"))
-            {
-              if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-                return;
-  
-              const btn = (el.tagName == "DIV")?el:el.closest("div"),
-                    ibtn = btn.querySelector ("i"),
-                    $postit = $(postit),
-                    id = $postit.postit ("getId"),
-                    settings = $postit.postit ("getSettings"),
-                    $wall = settings.wall,
-                    $header = $postit.find (".postit-header");
-  
-              // Create postit menu and show it
-              if (!settings.Menu)
-              {
-                const coord = $header[0].getBoundingClientRect ();
-  
-                $wall.wall ("closeAllMenus");
-  
-                settings.Menu = new _Menu ($postit.postit ("getClass"));
-  
-                if ((coord.x||coord.left)+settings.Menu.getWidth() >
-                      $(window).width())
-                {
-                  ibtn.classList
-                    .replace ("fa-caret-square-down", "fa-caret-square-left");
-                  settings.Menu.setPosition ("left");
-                }
-                else
-                  settings.Menu.setPosition ("right");
-  
-                $header.addClass ("menu");
-                ibtn.classList.replace ("far", "fas");
-  
-                settings.Menu.show ();
-              }
-              // Destroy postit menu
-              else
-              {
-                $header.removeClass ("menu");
-                ibtn.classList.replace("fas", "far");
-                ibtn.classList
-                  .replace ("fa-caret-square-left", "fa-caret-square-down");
-  
-                settings.Menu.destroy ();
-                delete settings.Menu;
-              }
-            }
-            // EVENT "click" on postit dates
-            else if (el.matches (".dates .end,.dates .end *"))
-            {
-              if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-              {
-                e.preventDefault ();
-                return;
-              }
-  
-              const $item = $(el.tagName == "DIV"?el:el.closest("div")),
-                    plugin = $(postit).postit ("getClass");
-  
-              if (el.classList.contains ("fa-times-circle"))
-              {
-                plugin.edit ({}, () =>
-                {
-                  H.openConfirmPopover ({
-                    item: $item,
-                    title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
-                    content: `<?=_("Reset deadline?")?>`,
-                    cb_close: () => plugin.unedit (),
-                    cb_ok: () => plugin.resetDeadline ()
-                  });
-                });
-              }
-              else
-                plugin.openDatePicker ();
-            }
-            // EVENT "click" on postit content links
-            else if (el.matches (".postit-edit a[href],.postit-edit a[href] *"))
-            {
-              if (e.ctrlKey || H.disabledEvent ())
-                return;
-  
-              const link = (el.tagName == "A") ? el : el.closest ("a"),
-                    canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
-                    $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
-  
-              e.stopImmediatePropagation ();
-              e.preventDefault ();
-  
-              // EVENT "click" on content links menu
-              $menu[0].addEventListener ("click", (e)=>
-                {
-                  const li = e.target.tagName=="LI"?
-                               e.target:e.target.closest("li");
-
-                  document.getElementById("popup-layer").click ();
-  
-                  if (li.dataset.action == "open-link")
-                    window.open (link.href, "_blank");
-                  else
-                    $(postit).postit ("openPostit");
-                });
-  
-              H.openPopupLayer (()=> $menu.remove ());
-              $menu.prependTo ("body");
-              $menu.css ({top: e.clientY, left: e.clientX});
-            }
-          }
-        });
-
-      // EVENT "click"
-      document.body.addEventListener ("click", (e)=>
-        {
-          const el = e.target;
-
-          // EVENT "click" on plugs menu
-          if (el.matches (".plug-label li,.plug-label li *"))
-          {
-            const item = el.tagName=="li"?el:el.closest("li"),
-                  label = item.closest ("div"),
-                  $wall = S.getCurrent ("wall"),
-                  [,startId, endId] =
-                    label.previousSibling.id.match (/^_(\d+)\-(\d+)$/),
-                  startPlugin =
-                    $wall.find(`.postit[data-id="postit-${startId}"]`)
-                      .postit("getClass"),
-                  defaultLabel =
-                    H.htmlEscape (label.querySelector("span").innerText);
-
-            // INTERNAL FUNCTION __unedit ()
-            const __unedit = ()=>
-              {
-                const toSave = {};
-
-                toSave[startId] = startPlugin.element;
-                toSave[endId] =
-                  $wall.find (`.postit[data-id="postit-${endId}"]`);
-
-                S.set ("plugs-to-save", toSave);
-                startPlugin.unedit ();
-              };
-
-            switch (item.dataset.action)
-            {
-              case "rename":
-
-                startPlugin.edit ({}, ()=>
-                  {
-                    H.openConfirmPopover ({
-                      type: "update",
-                      item: $(label),
-                      title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
-                      content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
-                      cb_close: __unedit,
-                      cb_ok: ($popover) =>
-                        {
-                          const label = $popover.find("input").val().trim ();
-
-                          if (label != defaultLabel)
-                            startPlugin.updatePlugLabel ({
-                              label: $popover.find("input").val().trim (),
-                              endId: endId
-                            });
-                        }
-                    });
-                  });
-
-                break;
-
-              case "delete":
-
-                startPlugin.edit ({}, ()=>
-                  {
-                    H.openConfirmPopover ({
-                      item: $(label),
-                      placement: "left",
-                      title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                      content: `<?=_("Delete this relation?")?>`,
-                      cb_close: __unedit,
-                      cb_ok: () => startPlugin.removePlug (endId)
-                    });
-                  });
-
-                break;
-
-              case "position-auto":
-
-                startPlugin.edit ({}, ()=>
-                  {
-                    const p = startPlugin.getPlugById (endId);
-
-                    _deleteRelatedPlugs (p);
-                    p.obj.show ();
-
-                    startPlugin.resetPlugLabelPosition (label);
-                    startPlugin.repositionPlugs ();
-                    __unedit ();
-                  });
-                break;
-
-              case "properties":
-
-                startPlugin.openPlugProperties (startPlugin.getPlugById(endId));
-                break;
-            }
-          }
-        });
-
-        // EVENT "mousedown"
-        _walls.addEventListener ("mousedown", (e)=>
-          {
-            const el = e.target;
-
-            // EVENT "mousedown" on postit tags
-            if (el.matches (".postit-tags i"))
-            {
-              e.stopImmediatePropagation ();
-
-              if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-              {
-                e.preventDefault ();
-                return;
-              }
-
-              $(el.closest(".postit")).postit ("edit", {},
-                () => S.getCurrent("tpick").tpick ("open", e));
-            }
-          });
-
-        // Add upload for postit pictures
-        document.body.appendChild ($(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload" id="postit-picture">`)[0]);
-
-        // EVENT "change" on postit pictures
-        document.getElementById("postit-picture")
-          .addEventListener("change", (e)=>
-          {
-            const el = e.target,
-                  fname = el.files[0].name;
-
-            // INTERNAL FUNCTION __error_cb ()
-            const __error_cb = (d)=>
-              {
-                if (d)
-                  H.displayMsg ({
-                    title: `<?=_("Note")?>`,
-                    type: "warning",
-                    msg: d.error||d
-                  });
-              };
-
-            H.getUploadedFiles (el.files, "\.(jpe?g|gif|png)$",
-              (e, file) =>
-                {
-                  el.value = "";
-
-                  if (H.checkUploadFileSize ({
-                        size: e.total,
-                        cb_msg: __error_cb
-                      }) && e.target.result)
-                  {
-                    const wallId = S.getCurrent("wall").wall ("getId"),
-                          $postit = S.getCurrent ("postit"),
-                          postitId = $postit.postit ("getId"),
-                          cellId = $postit.postit ("getCellId");
-
-                    H.fetch (
-                      "PUT",
-                      `wall/${wallId}/cell/${cellId}/postit/`+
-                        `${postitId}/picture`,
-                      {
-                        name: file.name,
-                        size: file.size,
-                        item_type: file.type,
-                        content: e.target.result
-                      },
-                      // success cb
-                      (d) =>
-                        {
-                          const $f = $(".tox-dialog");
-
-                          $postit[0].dataset.hasuploadedpictures = true;
-
-                          //FIXME
-                          // If uploaded img is too large TinyMCE plugin
-                          // take too much time to gather informations
-                          // about it. If user close popup before that,
-                          // img is inserted without width/height
-                          $f.find("input:eq(1)").val (d.width);
-                          $f.find("input:eq(2)").val (d.height);
-
-                          S.get("tinymce-callback")(d.link);
-
-                          setTimeout(()=>
-                          {
-                            if (!$f.find("input:eq(0)").val ())
-                              __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
-                          }, 0);
-                        },
-                        __error_cb
-                    );
+                        H.displayMsg ({
+                          title: `<?=_("Note")?>`,
+                          type: "warning",
+                          msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                        });
+                      })
+                      .finally (()=> _current = false);
                   }
-                },
-                null,
-                __error_cb);
-          });
-
-        // EVENT hide.bs.modal on postit popup
-        document.getElementById("postitUpdatePopup")
-          .addEventListener("hide.bs.modal", (e)=>
-          {
-            const el = e.target,
-                  data = S.get ("postit-data");
-
-            // Return if we are closing the postit modal from the confirmation
-            // popup
-            if (data && data.closing) return;
-
-            const $popup = $(el),
-                  plugin = S.getCurrent("postit").postit ("getClass"),
-                  progress = $popup.find(".slider").slider ("value"),
-                  title = $("#postitUpdatePopupTitle").val (),
-                  content = tinymce.activeEditor.getContent ();
-
-            // INTERNAL FUNCTION cb_close ()
-            const __close = (forceHide = false) =>
-              {
-                S.set ("postit-data", {closing: true});
-
-                //FIXME
-                $(".tox-toolbar__overflow").hide ();
-                $(".tox-menu").hide ();
-
-                $popup.find("input").val ("");
-                plugin.unedit ();
-
-                if (forceHide)
-                  $popup.modal ("hide");
-
-                S.unset ("postit-data");
-
-                tinymce.activeEditor.resetContent ();
-
-                // Stop focusin event filtering
-                document.removeEventListener ("focusin", _focusinInFilter);
-              };
-
-              // If there is pending changes, ask confirmation to user
-              if (data && (
-                // Content change detection
-                tinymce.activeEditor.isDirty () ||
-                // Title change detection
-                H.htmlEscape(data.title) != H.htmlEscape(title) ||
-                // Progress change detection
-                data.progress != progress))
-              {
-                e.preventDefault ();
-
-                H.openConfirmPopup ({
-                  type: "save-postits-changes",
-                  icon: "save",
-                  content: `<?=_("Save changes?")?>`,
-                  cb_ok: () =>
-                    {
-                      plugin.setProgress (progress);
-                      plugin.setTitle (title);
-                      plugin.setContent (content);
-
-                      plugin.element[0]
-                        .removeAttribute ("data-uploadedpictures");
-                    },
-                  cb_close: () => __close(true)
                 });
-
-                S.set ("postit-data", data);
-              }
-              else
-                __close ();
+            }
+            else
+              _current = false;
           });
-        }, 0);
+      },
+
+      // "media" plugin options.
+      media_alt_source: false,
+      media_poster: false,
+
+      // "image" plugin options
+      image_description: false,
+      automatic_uploads: true,
+      file_picker_types: "image",
+      file_picker_callback: function (callback, value, meta)
+      {
+        S.set ("tinymce-callback", callback);
+        document.getElementById("postit-picture").click ();
+      },
+
+      // "link" plugin options
+      default_link_target: "_blank",
+      link_assume_external_targets: true,
+      link_default_protocol: "https",
+      link_title: false,
+      target_list: false,
+
+      visual: false,
+      mobile: {menubar: "edit view format insert"},
+      menubar: "edit view format insert",
+      menu:{view:{title:`<?=_("View")?>`, items:"fullscreen"}},
+      toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image | table",
+      statusbar: false
     });
+
+    // EVENTS mouseenter touchstart on postit
+    // Sort of ":hover" simulation with z-index persistence
+    $(document).on("mouseenter touchstart", ".postit", function ()
+      {
+        const el = S.getCurrent("wall")[0].querySelector (".postit.hover");
+
+        if (el)
+          el.classList.remove ("hover");
+
+        this.classList.add ("hover");
+      });
+
+    // EVENT "click"
+    _walls.addEventListener ("click", (e)=>
+    {
+      const el = e.target;
+
+      // EVENT "click" on postit
+      if (el.matches (".postit *"))
+      {
+        const postit = el.closest (".postit");
+
+        // EVENT "click" ctrl+click on postit
+        if (e.ctrlKey)
+        {
+          const id = postit.dataset.id.substring (7),
+                menu = S.getCurrent("mmenu").mmenu ("getClass");
+  
+          e.stopImmediatePropagation ();
+          e.preventDefault ();
+  
+          if (postit.classList.contains ("selected"))
+            menu.remove (id);
+          else
+            menu.add ($(postit).postit ("getClass"));
+        }
+        // EVENT "click" on postit for READ-ONLY mode
+        else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+        {
+          if (H.disabledEvent ())
+          {
+            e.preventDefault ();
+            return;
+          }
+
+          if (!el.closest(".topicon"))
+            $(postit).postit ("openPostit");
+        }
+        // EVENT "click" on postit menu button
+        else if (el.matches (".btn-menu,.btn-menu *"))
+        {
+          if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+            return;
+  
+          const btn = (el.tagName == "DIV")?el:el.closest("div"),
+                ibtn = btn.querySelector ("i"),
+                $postit = $(postit),
+                id = $postit.postit ("getId"),
+                settings = $postit.postit ("getSettings"),
+                $wall = settings.wall,
+                $header = $postit.find (".postit-header");
+  
+          // Create postit menu and show it
+          if (!settings.Menu)
+          {
+            const coord = $header[0].getBoundingClientRect ();
+  
+            $wall.wall ("closeAllMenus");
+  
+            settings.Menu = new _Menu ($postit.postit ("getClass"));
+  
+            if ((coord.x||coord.left)+settings.Menu.getWidth() >
+                  $(window).width())
+            {
+              ibtn.classList
+                .replace ("fa-caret-square-down", "fa-caret-square-left");
+              settings.Menu.setPosition ("left");
+            }
+            else
+              settings.Menu.setPosition ("right");
+  
+            $header.addClass ("menu");
+            ibtn.classList.replace ("far", "fas");
+  
+            settings.Menu.show ();
+          }
+          // Destroy postit menu
+          else
+          {
+            $header.removeClass ("menu");
+            ibtn.classList.replace("fas", "far");
+            ibtn.classList
+              .replace ("fa-caret-square-left", "fa-caret-square-down");
+  
+            settings.Menu.destroy ();
+            delete settings.Menu;
+          }
+        }
+        // EVENT "click" on postit dates
+        else if (el.matches (".dates .end,.dates .end *"))
+        {
+          if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
+          {
+            e.preventDefault ();
+            return;
+          }
+  
+          const $item = $(el.tagName == "DIV"?el:el.closest("div")),
+                plugin = $(postit).postit ("getClass");
+  
+          if (el.classList.contains ("fa-times-circle"))
+          {
+            plugin.edit ({}, () =>
+            {
+              H.openConfirmPopover ({
+                item: $item,
+                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
+                content: `<?=_("Reset deadline?")?>`,
+                cb_close: () => plugin.unedit (),
+                cb_ok: () => plugin.resetDeadline ()
+              });
+            });
+          }
+          else
+            plugin.openDatePicker ();
+        }
+        // EVENT "click" on postit content links
+        else if (el.matches (".postit-edit a[href],.postit-edit a[href] *"))
+        {
+          if (e.ctrlKey || H.disabledEvent ())
+            return;
+  
+          const link = (el.tagName == "A") ? el : el.closest ("a"),
+                canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
+                $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
+  
+          e.stopImmediatePropagation ();
+          e.preventDefault ();
+  
+          // EVENT "click" on content links menu
+          $menu[0].addEventListener ("click", (e)=>
+            {
+              const li = e.target.tagName=="LI"?
+                           e.target:e.target.closest("li");
+
+              document.getElementById("popup-layer").click ();
+  
+              if (li.dataset.action == "open-link")
+                window.open (link.href, "_blank");
+              else
+                $(postit).postit ("openPostit");
+            });
+  
+          H.openPopupLayer (()=> $menu.remove ());
+          $menu.prependTo ("body");
+          $menu.css ({top: e.clientY, left: e.clientX});
+        }
+      }
+    });
+
+  // EVENT "click"
+  document.body.addEventListener ("click", (e)=>
+    {
+      const el = e.target;
+
+      // EVENT "click" on plugs menu
+      if (el.matches (".plug-label li,.plug-label li *"))
+      {
+        const item = el.tagName=="li"?el:el.closest("li"),
+              label = item.closest ("div"),
+              $wall = S.getCurrent ("wall"),
+              [,startId, endId] =
+                label.previousSibling.id.match (/^_(\d+)\-(\d+)$/),
+              startPlugin =
+                $wall.find(`.postit[data-id="postit-${startId}"]`)
+                  .postit("getClass"),
+              defaultLabel =
+                H.htmlEscape (label.querySelector("span").innerText);
+
+        // INTERNAL FUNCTION __unedit ()
+        const __unedit = ()=>
+          {
+            const toSave = {};
+
+            toSave[startId] = startPlugin.element;
+            toSave[endId] =
+              $wall.find (`.postit[data-id="postit-${endId}"]`);
+
+            S.set ("plugs-to-save", toSave);
+            startPlugin.unedit ();
+          };
+
+        switch (item.dataset.action)
+        {
+          case "rename":
+            startPlugin.edit ({}, () => {
+              H.openConfirmPopover ({
+                type: 'update',
+                item: $(label),
+                title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
+                content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
+                cb_close: __unedit,
+                cb_ok: ($p) => {
+                  const label = $p.find('input').val().trim();
+
+                  if (label !== defaultLabel) {
+                    startPlugin.updatePlugLabel ({label, endId});
+                  }
+                }
+              });
+            });
+            break;
+
+          case "delete":
+
+            startPlugin.edit ({}, ()=>
+              {
+                H.openConfirmPopover ({
+                  item: $(label),
+                  placement: "left",
+                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                  content: `<?=_("Delete this relation?")?>`,
+                  cb_close: __unedit,
+                  cb_ok: () => startPlugin.removePlug (endId)
+                });
+              });
+
+            break;
+
+          case "position-auto":
+
+            startPlugin.edit ({}, ()=>
+              {
+                const p = startPlugin.getPlugById (endId);
+
+                _deleteRelatedPlugs (p);
+                p.obj.show ();
+
+                startPlugin.resetPlugLabelPosition (label);
+                startPlugin.repositionPlugs ();
+                __unedit ();
+              });
+            break;
+
+          case "properties":
+
+            startPlugin.openPlugProperties (startPlugin.getPlugById(endId));
+            break;
+        }
+      }
+    });
+
+    // EVENT "mousedown"
+    _walls.addEventListener ("mousedown", (e)=>
+      {
+        const el = e.target;
+
+        // EVENT "mousedown" on postit tags
+        if (el.matches (".postit-tags i"))
+        {
+          e.stopImmediatePropagation ();
+
+          if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
+          {
+            e.preventDefault ();
+            return;
+          }
+
+          $(el.closest(".postit")).postit ("edit", {},
+            () => S.getCurrent("tpick").tpick ("open", e));
+        }
+      });
+
+    // Add upload for postit pictures
+    document.body.appendChild ($(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload" id="postit-picture">`)[0]);
+
+    // EVENT "change" on postit pictures
+    document.getElementById("postit-picture")
+      .addEventListener("change", (e)=>
+      {
+        const el = e.target,
+              fname = el.files[0].name;
+
+        // INTERNAL FUNCTION __error_cb ()
+        const __error_cb = (d)=>
+          {
+            if (d)
+              H.displayMsg ({
+                title: `<?=_("Note")?>`,
+                type: "warning",
+                msg: d.error||d
+              });
+          };
+
+        H.getUploadedFiles (el.files, "\.(jpe?g|gif|png)$",
+          (e, file) =>
+            {
+              el.value = "";
+
+              if (H.checkUploadFileSize ({
+                    size: e.total,
+                    cb_msg: __error_cb
+                  }) && e.target.result)
+              {
+                const wallId = S.getCurrent("wall").wall ("getId"),
+                      $postit = S.getCurrent ("postit"),
+                      postitId = $postit.postit ("getId"),
+                      cellId = $postit.postit ("getCellId");
+
+                H.fetch (
+                  "PUT",
+                  `wall/${wallId}/cell/${cellId}/postit/`+
+                    `${postitId}/picture`,
+                  {
+                    name: file.name,
+                    size: file.size,
+                    item_type: file.type,
+                    content: e.target.result
+                  },
+                  // success cb
+                  (d) =>
+                    {
+                      const $f = $(".tox-dialog");
+
+                      $postit[0].dataset.hasuploadedpictures = true;
+
+                      //FIXME
+                      // If uploaded img is too large TinyMCE plugin
+                      // take too much time to gather informations
+                      // about it. If user close popup before that,
+                      // img is inserted without width/height
+                      $f.find("input:eq(1)").val (d.width);
+                      $f.find("input:eq(2)").val (d.height);
+
+                      S.get("tinymce-callback")(d.link);
+
+                      setTimeout(()=>
+                      {
+                        if (!$f.find("input:eq(0)").val ())
+                          __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
+                      }, 0);
+                    },
+                    __error_cb
+                );
+              }
+            },
+            null,
+            __error_cb);
+      });
+
+    // EVENT hide.bs.modal on postit popup
+    document.getElementById("postitUpdatePopup")
+      .addEventListener("hide.bs.modal", (e)=>
+      {
+        const el = e.target,
+              data = S.get ("postit-data");
+
+        // Return if we are closing the postit modal from the confirmation
+        // popup
+        if (data && data.closing) return;
+
+        const $popup = $(el),
+              plugin = S.getCurrent("postit").postit ("getClass"),
+              progress = $popup.find(".slider").slider ("value"),
+              title = $("#postitUpdatePopupTitle").val (),
+              content = tinymce.activeEditor.getContent ();
+
+        // INTERNAL FUNCTION cb_close ()
+        const __close = (forceHide = false) =>
+          {
+            S.set ("postit-data", {closing: true});
+
+            //FIXME
+            $(".tox-toolbar__overflow").hide ();
+            $(".tox-menu").hide ();
+
+            $popup.find("input").val ("");
+            plugin.unedit ();
+
+            if (forceHide)
+              $popup.modal ("hide");
+
+            S.unset ("postit-data");
+
+            tinymce.activeEditor.resetContent ();
+
+            // Stop focusin event filtering
+            document.removeEventListener ("focusin", _focusinInFilter);
+          };
+
+          // If there is pending changes, ask confirmation to user
+          if (data && (
+            // Content change detection
+            tinymce.activeEditor.isDirty () ||
+            // Title change detection
+            H.htmlEscape(data.title) != H.htmlEscape(title) ||
+            // Progress change detection
+            data.progress != progress))
+          {
+            e.preventDefault ();
+
+            H.openConfirmPopup ({
+              type: "save-postits-changes",
+              icon: "save",
+              content: `<?=_("Save changes?")?>`,
+              cb_ok: () =>
+                {
+                  plugin.setProgress (progress);
+                  plugin.setTitle (title);
+                  plugin.setContent (content);
+
+                  plugin.element[0]
+                    .removeAttribute ("data-uploadedpictures");
+                },
+              cb_close: () => __close(true)
+            });
+
+            S.set ("postit-data", data);
+          }
+          else
+            __close ();
+      });
+
+  // EVENT "click" on postit menu
+  document.body.addEventListener ('click', (e) => {
+    const el = e.target;
+
+    if (!el.matches('.postit-menu, .postit-menu *') ||
+        el.tagName === 'DIV') return;
+
+    const postitPlugin = $(el.closest('.postit')).postit('getClass');
+    const postit = postitPlugin.element[0];
+    const action =
+        (el.tagName === 'SPAN'? el : el.closest('span')).dataset.action;
+
+    e.stopImmediatePropagation();
+
+    // To prevent race condition with draggable & resizable plugins
+    if (H.disabledEvent()) return;
+
+    switch (action) {
+      // OPEN postit edit popup
+      case 'edit': return postitPlugin.openPostit();
+      // OPEN deadline date picker popup
+      case 'dpick': return postitPlugin.openDatePicker();
+      // OPEN popup for attachments, workers or comments
+      case 'patt':
+      case 'pwork':
+      case 'pcomm':
+        return postit.querySelector(`.topicon [data-action="${action}"]`)
+                   .dispatchEvent(new Event('click', {bubbles: true}));
+    }
+
+    postitPlugin.edit({}, () => {
+      switch (action) {
+        // DELETE postit
+        case 'delete':
+          H.openConfirmPopover({
+            item: $(postit.querySelector('.btn-menu')),
+            placement: 'right',
+            title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+            content: `<?=_("Delete this note?")?>`,
+            cb_close: () => postitPlugin.unedit(),
+            cb_ok: () => postitPlugin.delete(),
+          });
+          break;
+
+        // OPEN tags picker
+        case 'tpick':
+          return S.getCurrent('tpick').tpick('open', e);
+
+        // OPEN color picker
+        case 'cpick':
+          const cp = $('#cpick').cpick('getClass');
+
+          cp.open({
+            event: e,
+            cb_close: () => postitPlugin.element.trigger('mouseleave'),
+            cb_click: (div) =>
+              postitPlugin.element
+                .removeClass(cp.getColorsList().join(' '))
+                .addClass($(div).attr('class')),
+          });
+          break;
+
+        // ADD plug
+        case 'add-plug':
+          postitPlugin.closeMenu();
+
+          S.set('link-from', {
+            id: postitPlugin.settings.id,
+            obj: $(postit),
+          });
+
+          _plugRabbit.line = new LeaderLine(
+            postit,
+            $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo('body')[0],
+            {
+              path: `<?=WS_PLUG_DEFAULTS['linePath']?>`,
+              size: 3,
+              color: '#9b9c9c',
+              dash: true,
+              endPlug: 'behind'
+            }
+          );
+
+        document.addEventListener('keydown', _plugRabbit.escapeEvent);
+          document.addEventListener ('mousedown', _plugRabbit.mousedownEvent);
+          document.addEventListener ('mousemove', _plugRabbit.mousemoveEvent);
+          break;
+      }
+    });
+  });
+});
 
 <?php echo $Plugin->getFooter ()?>

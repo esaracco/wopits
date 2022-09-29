@@ -5,19 +5,16 @@
 
   $_SESSION['_check'] = time ();
 
-  if (isset ($_SESSION['directURL']))
-  {
+  if (isset ($_SESSION['directURL'])) {
     $directURL = $_SESSION['directURL'];
     unset ($_SESSION['directURL']);
-  }
-  else
+  } else {
     $directURL = '';
+  }
 ?>
 <body id="login-page">
-
   <!-- MSG CONTAINER -->
   <div id="msg-container" class="position-absolute top-0 start-50 translate-middle-x"></div>
-  
   <!-- MENU -->
   <nav class="navbar bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm wopits">
     <a href="#" class="navbar-brand fw-bold" data-action="about">wopits</a>
@@ -27,7 +24,7 @@
     <?php } ?>
     </div>
   
-  <!--MENU main-->
+    <!--MENU main-->
     <div id="main-menu">
       <!--About-->
       <ul class="navbar-nav mr-auto">
@@ -35,41 +32,31 @@
       </ul>
     </div>
   </nav>
-
   <!--<WPTPROD-inject-WPT_POPUPS['login']/>-->
   <?php
     //<WPTPROD-remove>
-      foreach (WPT_POPUPS['login'] as $popup)
-          include ((file_exists (__DIR__."/../app/inc/popups/$popup.php"))?
-                     __DIR__."/../app/inc/popups/$popup.php":
-                     __DIR__."/ui/$popup.php");
+    foreach (WPT_POPUPS['login'] as $popup) {
+      include ((file_exists (__DIR__."/../app/inc/popups/$popup.php")) ?
+        __DIR__."/../app/inc/popups/$popup.php" : __DIR__."/ui/$popup.php");
+    }
     //</WPTPROD-remove>
   ?>
-  
-  <div class="main-login<?=WPT_USE_LDAP?' ldap':''?>">
-
-  <?php if (WPT_LOGIN_WELCOME):?>
-    <div id="desc-container"></div>
-  <?php endif?>
-
+  <div class="main-login<?=WPT_USE_LDAP ? ' ldap' : ''?>">
+    <?php if (WPT_LOGIN_WELCOME):?>
+      <div id="desc-container"></div>
+    <?php endif?>
     <div class="container h-100" id="login">
+    <div class="app-short-desc"><?=_("A app for managing projects online using sticky notes to share and collaborate.")?></div>
       <div class="user-card">
-        <div class="div-logo">
-          <div class="brand-logo-container">
-            <img src="/img/wopits-192x192.png" class="brand-logo" alt="Logo">
+        <?php if (WPT_USE_LDAP):?>
+          <div class="ldap-msg">
+            <?=_("Log in with your LDAP account")?>
           </div>
-        </div>
+        <?php endif?>
         <div class="justify-content-center form-container">
           <form>
             <input type="hidden" name="_check" value="<?=$_SESSION['_check']?>">
             <input type="hidden" name="_directURL" value="<?=$directURL?>">
-
-            <?php if (WPT_USE_LDAP):?>
-              <div class="ldap-msg mb-3">
-                <?=_("Log in with your LDAP account")?>
-              </div>
-            <?php endif?>
-
             <div class="input-group mb-1">
               <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
               <input type="text" autocomplete="username" class="form-control" name="login" value="" required placeholder="<?=_("login")?>" maxlength="<?=DbCache::getFieldLength('users', 'username')?>" autocorrect="off" autocapitalize="off">
@@ -104,6 +91,5 @@
       </div>
     </div>
   </div>
-
 </body>
 </html>

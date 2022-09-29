@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><?=_("The gray color of the default theme may not suit your mood today!")?></p>
+        <p><?=_("The default theme may not suit your mood today!")?></p>
         <p><?=_("If so, do not hesitate to test others:")?></p>
         <div class="themes mb-3 inline-block">
           <?php foreach (WPT_THEMES as $theme) { ?>

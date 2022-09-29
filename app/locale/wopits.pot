@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-09-29 02:14+0200\n"
+        "POT-Creation-Date: 2022-09-29 22:57+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -502,10 +502,6 @@ msgstr  ""
 msgid   "If so, do not hesitate to test others:"
 msgstr  ""
 
-#, php-format
-msgid   "If you need professional hosting or special features, don't hesitate to contact %s."
-msgstr  ""
-
 msgid   "Import..."
 msgstr  ""
 
@@ -901,6 +897,9 @@ msgstr  ""
 msgid   "The deadline for this note has been removed"
 msgstr  ""
 
+msgid   "The default theme may not suit your mood today!"
+msgstr  ""
+
 #, php-format
 msgid   "The email `%s` already exists"
 msgstr  ""
@@ -930,9 +929,6 @@ msgid   "The following note will expire soon:"
 msgstr  ""
 
 msgid   "The following users are viewing this wall:"
-msgstr  ""
-
-msgid   "The gray color of the default theme may not suit your mood today!"
 msgstr  ""
 
 msgid   "The group already exists"

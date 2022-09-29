@@ -206,32 +206,29 @@
                   });
                 break;
     
-              case "rename":
-  
-                plugin.edit (() =>
-                  {
-                    plugin.saveCurrentWidth ();
-  
-                    H.openConfirmPopover ({
-                      type: "update",
-                      item: $(li.parentNode.parentNode
-                                .querySelector(".btn-menu")),
-                      title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
-                        content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
-                        cb_close: () =>
-                          {
-                            if (!S.get ("no-unedit"))
-                              plugin.unedit ();
-  
-                            S.unset ("no-unedit");
-                          },
-                        cb_ok: ($popover) =>
-                          {
-                            S.set ("no-unedit", true);
-                            plugin.setTitle ($popover.find("input").val(), true);
-                          }
-                      });
+              case 'rename':
+                plugin.edit(() => {
+                  plugin.saveCurrentWidth();
+
+                  H.openConfirmPopover({
+                    type: 'update',
+                    scrollIntoView: isCol,
+                    item: $(li.parentNode.parentNode
+                              .querySelector(".btn-menu")),
+                    title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
+                    content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
+                    cb_close: () => {
+                      if (!S.get('no-unedit')) {
+                        plugin.unedit();
+                      }
+                      S.unset('no-unedit');
+                    },
+                    cb_ok: ($p) => {
+                      S.set('no-unedit', true);
+                      plugin.setTitle ($p.find('input').val(), true);
+                    }
                   });
+                });
                 break;
   
               case "move-up":

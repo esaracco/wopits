@@ -13,16 +13,12 @@
           <span class="desc"><a href="https://wopits.esaracco.fr" target="_blank"><?=_("Project page")?></a></span>
         </p>
 
-        <p class="mt-2 mb-3">
+        <p class="app-short-desc mt-2 mb-3">
           <?=_("A app for managing projects online using sticky notes to share and collaborate.")?>
         </p>
 
         <p class="desc mb-1">
           <?=sprintf(_("Project source files are hosted on %s and distributed under the %s license."), '<a href="https://github.com/esaracco/wopits" target="_blank">GitHub</a>', '<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPL</a>')?>
-        </p>
-
-        <p class="desc mb-1">
-          <?=sprintf(_("If you need professional hosting or special features, don't hesitate to contact %s."), '<a href="https://www.easter-eggs.com" target="_blank">Easter-eggs</a>')?>
         </p>
 
           <p class="desc mt-3 mb-1 text-center">

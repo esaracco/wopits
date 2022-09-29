@@ -249,69 +249,67 @@ document.addEventListener ("DOMContentLoaded", ()=>
     });
 
   // EVENT "show" on popups
-  document.body.addEventListener ("show.bs.modal", (e)=>
-    {
-      const el = e.target,
-            dialog = el.querySelector (".modal-dialog"),
-            mstack = S.get("mstack")||[],
-            modalsCount = mstack.length;
+  document.body.addEventListener('show.bs.modal', (e) => {
+    const el = e.target;
+    const dialog = el.querySelector('.modal-dialog');
+    const mstack = S.get('mstack') || [];
+    const modalsCount = mstack.length;
 
-      mstack.unshift (el);
-      S.set ("mstack", mstack);
+    mstack.unshift(el);
+    S.set('mstack', mstack);
 
-      // If there is already opened modals
-      if (modalsCount)
-      {
-        dialog.classList.remove ("modal-dialog-scrollable");
+    // If there is already opened modals
+    if (modalsCount) {
+      dialog.classList.remove('modal-dialog-scrollable');
+      dialog.dataset.toclean = 1;
+      dialog.classList.add('modal-sm', 'shadow');
+      dialog.querySelectorAll('button.btn')
+          .forEach ((b) => b.classList.add('btn-sm'));
+    } else {
+      const $ps = S.getCurrent('postit');
 
-        dialog.dataset.toclean = 1;
-        dialog.classList.add ("modal-sm", "shadow");
-        dialog.querySelectorAll("button.btn").forEach (
-          (b)=> b.classList.add ("btn-sm"));
+      if (!H.haveMouse() && H.getFirstInputFields(dialog)) {
+        H.fixVKBScrollStart();
       }
-      else
-      {
-        const $ps = S.getCurrent ("postit");
 
-        dialog.classList.add ("modal-dialog-scrollable");
+      dialog.classList.add('modal-dialog-scrollable');
 
-        if (dialog.dataset.toclean)
-        {
-          dialog.querySelectorAll("button.btn").forEach (
-            (b)=> b.classList.remove ("btn-sm"));
-          dialog.classList.remove ("modal-sm", "shadow");
-          dialog.removeAttribute ("data-toclean");
-        }
-
-        // Get postit color and set modal header color the same
-        if ($ps.length)
-          $ps.postit ("setPopupColor", $(el));
+      if (dialog.dataset.toclean) {
+        dialog.querySelectorAll('button.btn')
+            .forEach ((b) => b.classList.remove('btn-sm'));
+        dialog.classList.remove('modal-sm', 'shadow');
+        dialog.removeAttribute('data-toclean');
       }
-    });
+
+      // Get postit color and set modal header color the same
+      if ($ps.length) {
+        $ps.postit('setPopupColor', $(el));
+      }
+    }
+  });
 
   // EVENT "shown" on popups
-  document.body.addEventListener ("shown.bs.modal", 
-    (e)=> H.setAutofocus (e.target));
+  document.body.addEventListener('shown.bs.modal', (e) => {
+    if (H.haveMouse()) {
+      H.setAutofocus(e.target);
+    }
+  });
 
-  // EVENT "shown" on popovers
-  document.body.addEventListener ("shown.bs.popover", 
-    (e)=> H.setAutofocus (document.getElementById(
-            e.target.getAttribute("aria-describedby"))));
+  // EVENT "hide.bs.modal" on popups
+  //       Blur input/textarea to hide virtual keyboard
+  document.body.addEventListener ('hide.bs.modal', (e) => {
+    const el = e.target;
 
-    // EVENT "hide.bs.modal" on popups
-    //       Blur input/textarea to hide virtual keyboard
-    document.body.addEventListener ("hide.bs.modal", (e)=>
-      {
-        const el = e.target;
+    if (!H.haveMouse()) {
+      el.querySelectorAll('input,textarea').forEach((el) => el.blur());
+    }
 
-        if (!H.haveMouse ())
-          el.querySelectorAll("input,textarea").forEach ( el=> el.blur ());
-
-        if (el.id == "wpropPopup" &&
-            H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>") &&
-            !el.dataset.uneditdone)
-          S.getCurrent("wall").wall ("unedit");
-      });
+    if (el.id === 'wpropPopup' &&
+        H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`) &&
+        !el.dataset.uneditdone) {
+      S.getCurrent('wall').wall('unedit');
+    }
+  });
 
   // EVENT "hidden" on popups
   document.body.addEventListener ("hidden.bs.modal", (e)=>
@@ -323,6 +321,10 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
       mstack.shift ();
       S.set ("mstack", mstack);
+
+      if (S.get('vkbData')) {
+        H.fixVKBScrollStop();
+      }
 
       // Prevent child popups from removing scroll to their parent
       if (mstack.length)

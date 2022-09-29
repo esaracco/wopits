@@ -920,17 +920,22 @@ class WHelper
     return `#${hex(rgb[1])}${hex(rgb[2])}${hex(rgb[3])}`;
   }
 
-  // METHOD setAutofocus ()
-  static setAutofocus (el)
-  {
-    var tmp = el.querySelector (
-          `input[type="text"]:not(:read-only),`+
-          `input[type="email"]:not(:read-only),`+
-          `input[type="password"]:not(:read-only),`+
-          `textarea:not(:read-only)`);
+  // METHOD getFirstInputFields()
+  static getFirstInputFields(el) {
+    return el.querySelector(
+        `input[type="text"]:not(:read-only),`+
+        `input[type="email"]:not(:read-only),`+
+        `input[type="password"]:not(:read-only),`+
+        `textarea:not(:read-only)`);
+  }
 
-    if (tmp)
-      tmp.focus ();
+  // METHOD setAutofocus ()
+  static setAutofocus(el) {
+    const input = this.getFirstInputFields(el);
+
+    if (input) {
+      input.focus();
+    }
   }
 
   // METHOD testImage ()
@@ -1290,93 +1295,112 @@ class WHelper
     this.openModal ({item: $popup});
   }
   
-  // METHOD openConfirmPopover ()
-  static openConfirmPopover (args)
-  {
+  // METHOD openConfirmPopover()
+  static openConfirmPopover(args) {
     const scroll = !!args.scrollIntoView;
-    let btn, buttons;
+    let btn;
+    let buttons;
 
-    this.openPopupLayer ((e)=>
-      {
-        const bp = bootstrap.Popover.getInstance(args.item[0])
+    this.openPopupLayer((e) => {
+      const bp = bootstrap.Popover.getInstance(args.item[0]);
 
-        if (bp)
-        {
-          if (args.cb_close)
-            args.cb_close (bp.tip.dataset.btnclicked);
-
-          if (document.querySelector(".popover.show"))
-            bp.dispose ();
+      if (bp) {
+        if (args.cb_close) {
+          args.cb_close(bp.tip.dataset.btnclicked);
         }
-      }, false);
-    
-    switch (args.type)
-    {
-      case "info":
-        btn = {primary:"save"};
-        buttons = "";
-        break;
 
-      case "update":
-        btn = {primary:"save", secondary: "close"};
+        if (document.querySelector('.popover.show')) {
+          bp.hide();
+          setTimeout(() => {
+            if (S.get('vkbData')) {
+              H.fixVKBScrollStop();
+            }
+            bp.dispose();
+          }, 250);
+        }
+      }
+    }, false);
+    
+    switch (args.type) {
+      case 'info':
+        btn = {primary: 'save'};
+        buttons = '';
+        break;
+      case 'update':
+        btn = {primary: 'save', secondary: 'close'};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Save")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("Close")?></button>`;
         break;
-
-      case "custom":
-        btn = {primary:"save"};
+      case 'custom':
+        btn = {primary: 'save'};
         buttons = `<button type="button" style="display:none" class="btn btn-xs btn-primary"></button>`;
 
-        if (args.html_header)
-          args.content = args.html_header+args.content;
-        else if (args.html_footer)
+        if (args.html_header) {
+          args.content = args.html_header + args.content;
+        } else if (args.html_footer) {
           args.content += args.html_footer;
+        }
         break;
-
       default:
-        btn = {primary:"yes", secondary: "no"};
+        btn = {primary: 'yes', secondary: 'no'};
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
-    const bp = new bootstrap.Popover (args.item[0], {
+    const bp = new bootstrap.Popover(args.item[0], {
       html: true,
       sanitize: false,
       title: args.title,
-      customClass:args.customClass||"",
-      placement: args.placement||"left",
-      boundary: "window",
-      content: `<p>${args.content}</p>${buttons}`
+      customClass: args.customClass || '',
+      placement: args.placement || 'left',
+      boundary: 'window',
+      content: `<p>${args.content}</p>${buttons}`,
     });
 
-    bp.show ();
+    bp.show();
+
+    const input = this.getFirstInputFields(bp.tip);
+    // If popover contains input fields
+    if (input) {
+      // Trick for virtual keyboard
+      if (!H.haveMouse()) {
+        H.fixVKBScrollStart();
+      // If no virtual keyboard, focus on the first input
+      } else {
+        input.focus();
+      }
+    }
 
     // EVENT "click" on popover buttons
-    const _eventC = (e)=>
-      {
-        if (e.target.classList.contains ("btn-primary"))
-        {
-          bp.tip.dataset.btnclicked = btn.primary;
-          if (args.cb_ok)
-            args.cb_ok ($(bp.tip));
+    const _eventC = (e) => {
+      if (e.target.classList.contains('btn-primary')) {
+        bp.tip.dataset.btnclicked = btn.primary;
+        if (args.cb_ok) {
+          args.cb_ok($(bp.tip));
         }
-        else
-          bp.tip.dataset.btnclicked = btn.secondary;
+      } else {
+        bp.tip.dataset.btnclicked = btn.secondary;
+      }
 
-        if (!args.noclosure)
-          document.getElementById("popup-layer").click ();
-      };
-    bp.tip.querySelector(".popover-body")
-      .querySelectorAll("button:not(.close)").forEach (el=>
-        el.addEventListener ("click", _eventC));
+      if (!args.noclosure) {
+        document.getElementById("popup-layer").click ();
+      }
+    };
+
+    bp.tip.querySelector('.popover-body')
+        .querySelectorAll('button:not(.close)')
+            .forEach((el) => el.addEventListener('click', _eventC));
 
     // Scroll to the popover point
-    if (scroll)
-      args.item[0].scrollIntoView (false);
+    if (scroll) {
+      args.item[0].scrollIntoView(false);
+    }
 
-    if (args.cb_after)
-      args.cb_after ($(bp.tip));
+    if (args.cb_after) {
+      args.cb_after($(bp.tip));
+    }
 
-    if (scroll)
-      window.dispatchEvent (new Event("resize"));
+    if (scroll) {
+      window.dispatchEvent(new Event('resize'));
+    }
   }
 
   // METHOD setViewToElement ()
@@ -2054,65 +2078,62 @@ class WHelper
     return navigator.userAgent.match (/edg/i);
   }
 
-  // METHOD fixVKBScrollStart ()
+  // METHOD fixVKBScrollStart()
   //FIXME
-  static fixVKBScrollStart ()
-  {
-    const walls = document.getElementById ("walls");
+  static fixVKBScrollStart() {
+     const walls = document.getElementById('walls');
 
-    if (!walls)
-      return;
+    if (!walls) return;
 
-    const body = document.body,
-          wallsScrollLeft = walls.scrollLeft,
-          wall = S.getCurrent("wall")[0];
-  
-    S.set ("wallsScrollLeft", wallsScrollLeft);
-    S.set ("bodyComputedStyles", window.getComputedStyle (body));
-  
-    body.style.overflow = "hidden";
-    body.style.position = "fixed";
-    body.style.top = `${body.scrollTop*-1}px`;
-  
-    if (wall && this.navigatorIsEdge ())
-      wall.style.left = `${wallsScrollLeft*-1}px`;
-  
+    const body = document.body;
+    const wallsScrollLeft = walls.scrollLeft;
+    const wall = S.getCurrent('wall')[0];
+
+    S.set('vkbData', {
+      wallsScrollLeft,
+      bodyComputedStyles: window.getComputedStyle(body),
+    });
+
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `${body.scrollTop * -1}px`;
+
+    if (wall && this.navigatorIsEdge()) {
+      wall.style.left = `${wallsScrollLeft * -1}px`;
+    }
+
     walls.style.width = `${window.innerWidth}px`;
-//    walls.style.overflow = "hidden";
-  
-    window.dispatchEvent (new Event ("resize"));
+
+    window.dispatchEvent(new Event('resize'));
   }
   
-  // METHOD fixVKBScrollStop ()
+  // METHOD fixVKBScrollStop()
   //FIXME
-  static fixVKBScrollStop ()
-  {
-    const walls = document.getElementById ("walls");
+  static fixVKBScrollStop() {
+    const data = S.get('vkbData');
 
-    if (!walls)
-      return;
+    if (!data) return;
 
-    const wall = S.getCurrent("wall")[0];
+    const walls = document.getElementById('walls');
+    const wall = S.getCurrent('wall')[0];
+    const {wallsScrollLeft, bodyComputedStyles} = data;
   
-    document.body.style = S.get ("bodyComputedStyles");
-    S.unset ("bodyComputedStyles");
-  
-//    walls.style.overflow = "auto";
+    document.body.style = bodyComputedStyles;
     walls.style.width = "auto";
+    walls.scrollLeft = wallsScrollLeft;
+    if (wall && this.navigatorIsEdge()) {
+      wall.style.left = '';
+    }
 
-    if (wall && this.navigatorIsEdge ())
-      wall.style.left = "";
-
-    walls.scrollLeft = S.get ("wallsScrollLeft");
+    S.unset('vkbData');
   
-    this.waitForDOMUpdate (()=>
-      {
-        this.fixMainHeight ();
-        if (wall)
-          $(wall).wall ("repositionPostitsPlugs");
-      });
+    this.waitForDOMUpdate(() => {
+      this.fixMainHeight();
+      if (wall) {
+        $(wall).wall('repositionPostitsPlugs');
+      }
+    });
   }
-
 }
 
 // GLOBAL VARS
