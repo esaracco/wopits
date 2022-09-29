@@ -1,6 +1,6 @@
 <?php
 
-define ('WPT_VERSION', '0.64-alpha.1');
+define ('WPT_VERSION', '0.64-alpha.2');
 define ('WPT_LAST_UPDATE', '2022-09-29');
 define ('WPT_DISPLAY_LATEST_NEWS', true);
 define ('WPT_EXPORT_MIN_VERSION', '0.21');
