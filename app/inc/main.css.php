@@ -2318,6 +2318,10 @@ i.fa-xs {
   display: none;
 }
 
+.nousers-title {
+  font-size: .9rem;
+}
+
 .postit .postit-edit {
   position: absolute;
   font-size: 12px;

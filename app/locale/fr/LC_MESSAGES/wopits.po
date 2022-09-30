@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 22:57+0200\n"
-"PO-Revision-Date: 2022-09-29 22:58+0200\n"
+"POT-Creation-Date: 2022-09-30 10:50+0200\n"
+"PO-Revision-Date: 2022-09-30 10:50+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -1389,6 +1389,9 @@ msgstr "La note a été supprimée"
 msgid "The note has no attached file."
 msgstr "Cette note n'a pas de fichier attaché."
 
+msgid "The note has no user involved."
+msgstr "La note n'a pas d'intervenant."
+
 #, php-format
 msgid "The note «%s» has expired."
 msgstr "La note «%s» a expiré."
@@ -1471,9 +1474,6 @@ msgstr "Cette note vous a été assignée"
 
 msgid "This note has expired"
 msgstr "Cette note a expiré"
-
-msgid "This note has no user involved."
-msgstr "Cette note n'a pas d'intervenant."
 
 #, php-format
 msgid "This note will expire in about %s day(s)"
@@ -1585,8 +1585,8 @@ msgstr "Utilisateurs dans ce groupe:"
 msgid "Users involved"
 msgstr "Intervenants"
 
-msgid "Users involved in this note:"
-msgstr "Intervenants sur cette note:"
+msgid "Users involved:"
+msgstr "Intervenants:"
 
 msgid "Users viewing this wall"
 msgstr "Utilisateurs consultant ce mur"
@@ -1825,3 +1825,6 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant des post-its pour les partager et "
 "collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "Users involved in this note:"
+#~ msgstr "Intervenants sur cette note:"

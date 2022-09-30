@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-09-29 22:57+0200\n"
+        "POT-Creation-Date: 2022-09-30 10:50+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -960,6 +960,9 @@ msgstr  ""
 msgid   "The note has no attached file."
 msgstr  ""
 
+msgid   "The note has no user involved."
+msgstr  ""
+
 #, php-format
 msgid   "The note «%s» has expired."
 msgstr  ""
@@ -1032,9 +1035,6 @@ msgid   "This note has been assigned to you"
 msgstr  ""
 
 msgid   "This note has expired"
-msgstr  ""
-
-msgid   "This note has no user involved."
 msgstr  ""
 
 #, php-format
@@ -1131,7 +1131,7 @@ msgstr  ""
 msgid   "Users involved"
 msgstr  ""
 
-msgid   "Users involved in this note:"
+msgid   "Users involved:"
 msgstr  ""
 
 msgid   "Users viewing this wall"

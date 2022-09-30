@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 22:57+0200\n"
+"POT-Creation-Date: 2022-09-30 10:50+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -1155,6 +1155,9 @@ msgstr ""
 msgid "The note has no attached file."
 msgstr ""
 
+msgid "The note has no user involved."
+msgstr ""
+
 #, php-format
 msgid "The note «%s» has expired."
 msgstr ""
@@ -1231,9 +1234,6 @@ msgid "This note has been assigned to you"
 msgstr ""
 
 msgid "This note has expired"
-msgstr ""
-
-msgid "This note has no user involved."
 msgstr ""
 
 #, php-format
@@ -1338,7 +1338,7 @@ msgstr ""
 msgid "Users involved"
 msgstr ""
 
-msgid "Users involved in this note:"
+msgid "Users involved:"
 msgstr ""
 
 msgid "Users viewing this wall"
