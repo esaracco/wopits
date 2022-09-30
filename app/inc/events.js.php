@@ -268,10 +268,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
     } else {
       const $ps = S.getCurrent('postit');
 
-      if (!H.haveMouse() && H.getFirstInputFields(dialog)) {
-        H.fixVKBScrollStart();
-      }
-
       dialog.classList.add('modal-dialog-scrollable');
 
       if (dialog.dataset.toclean) {
@@ -290,7 +286,12 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
   // EVENT "shown" on popups
   document.body.addEventListener('shown.bs.modal', (e) => {
-    if (H.haveMouse()) {
+    if (!H.haveMouse()) {
+      if (S.get('mstack').length === 1 &&
+          H.getFirstInputFields(e.target.querySelector('.modal-dialog'))) {
+        H.fixVKBScrollStart();
+      }
+    } else {
       H.setAutofocus(e.target);
     }
   });
