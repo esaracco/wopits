@@ -1772,14 +1772,11 @@ ul#mmenu {
   color: #fff;
 }
 
-.btn-theme-default {
-  background-color: #28a745;
-}
-
 .btn-theme-black {
   background-color: #343a40;
 }
 
+.btn-theme-default,
 .btn-theme-blue {
   background-color: #007bff;
 }
