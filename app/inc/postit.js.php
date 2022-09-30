@@ -1790,23 +1790,25 @@
       return (classe && classe.length) ? classe[0] : _defaultClassColor;
     },
 
-    // METHOD setClassColor ()
-    setClassColor (newClass, $item)
-    {
-       const item = ($item) ? $item[0] : this.element[0],
-             classes = item.className.replace(/color\-[a-z]+/, "");
+    // METHOD setClassColor()
+    setClassColor (newClass, item) {
+      if (item !== undefined && item === null) return;
 
-       item.className = `${classes} ${newClass}`;
+      const el = (item) ? item : this.element[0];
+      const classes = el.className.replace(/color\-[a-z]+/, '');
+
+      el.className = `${classes} ${newClass}`;
     },
 
     // METHOD setPopupColor ()
     setPopupColor ($popup)
     {
-      const classe = this.getClassColor ();
+      const popup = $popup[0];
+      const cls = this.getClassColor();
 
-      this.setClassColor (classe, $popup.find(".modal-header"));
-      this.setClassColor (classe, $popup.find(".modal-title"));
-      this.setClassColor (classe, $popup.find(".modal-footer"));
+      this.setClassColor (cls, popup.querySelector('.modal-header'));
+      this.setClassColor (cls, popup.querySelector('.modal-title'));
+      this.setClassColor (cls, popup.querySelector('.modal-footer'));
     },
 
     // METHOD setCurrent ()
