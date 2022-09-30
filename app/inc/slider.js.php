@@ -16,42 +16,43 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init (args)
-    {
-      this.element[0].querySelector("input").addEventListener ("input",
-        e => this.value (e.target.value));
+  Plugin.prototype = {
+    // DOM element
+    el: null,
+    // Input field
+    input: null,
+
+    // METHOD init()
+    init(args) {
+      this.el = this.element[0];
+      this.input = this.el.querySelector('input');
+
+      this.input.addEventListener('input', (e) => this.value(e.target.value));
     },
 
-    // METHOD value ()
-    value (v, setcomp)
-    {
-      const el = this.element[0];
-
-      if (v === undefined)
-        return el.querySelector("input").value;
-      else
-      {
-        el.querySelector("label span").innerHTML = `${v}%`;
-        if (setcomp)
-          el.querySelector("input").value = v;
+    // METHOD value()
+    value(v, setcomp) {
+      if (v === undefined) {
+        return this.input.value;
+      } else {
+        this.el.querySelector('label span').innerHTML = v + '%';
+        if (setcomp) {
+          this.input.value = v;
+        }
       }
     }
   };
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (!H.isLoginPage ())
-      {
-        const $plugin = $(".slider");
+  document.addEventListener ('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
-        if ($plugin.length)
-          $plugin.slider ();
-      }
-    });
+    const plugin = document.querySelector('#postitUpdatePopup .slider');
+
+    if (plugin) {
+      $(plugin).slider();
+    }
+  });
 
 <?php echo $Plugin->getFooter ()?>

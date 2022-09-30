@@ -2310,7 +2310,6 @@ i.fa-xs {
 }
 
 .slider input {
-  width: 100%;
   cursor: pointer;
 }
 

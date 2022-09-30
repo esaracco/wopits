@@ -9,7 +9,7 @@
         <form>
            <div class="slider">
             <label><?=_("Progress:")?> <span></span></label>
-            <div class="slider"><input type="range" min="0" max="100" value="0"></div>
+            <div class="slider"><input type="range" class="form-range" min="0" max="100" value="0"></div>
           </div>
            <div class="form-group">
             <label for="postitUpdatePopupTitle"><?=_("Title")?></label>
