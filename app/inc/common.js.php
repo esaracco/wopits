@@ -1248,25 +1248,24 @@ class WHelper
     });
   }
   
-  // METHOD openPopupLayer ()
-  static openPopupLayer (cb, closeMenus = true)
-  {
+  // METHOD openPopupLayer()
+  static openPopupLayer(cb) {
     document.body.appendChild (
-      $(`<div id="popup-layer" class="layer"></div>`)[0]);
+        $(`<div id="popup-layer" class="layer"></div>`)[0]);
 
-    const layer = document.getElementById ("popup-layer");
+    const layer = document.getElementById('popup-layer');
   
     // EVENT "click" on layer
-    layer.addEventListener ("click", (e)=>
-      {
-        // Remove the layer
-        e.target.remove ();
+    layer.addEventListener('click', (e) => {
+      // Remove the layer
+      e.target.remove();
   
-        if (cb)
-          cb (e);
-      });
+      if (cb) {
+        cb(e);
+      }
+    });
 
-    layer.style.display = "block";
+    layer.style.display = 'block';
   }
   
   // METHOD openConfirmPopup ()

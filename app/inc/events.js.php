@@ -199,19 +199,19 @@ document.addEventListener ("DOMContentLoaded", ()=>
   }
 
   // EVENT "keydown"
-  document.body.addEventListener ("keydown", (e)=>
-    {
+  document.body.addEventListener ('keydown', (e) => {
       // If "ESC" while popup layer is opened, close it
-      if (e.which == 27)
-      {
+      if (e.which === 27) {
         let tmp;
 
         // If popup layer, click on it to close popup
-        if ( tmp = document.getElementById ("popup-layer") )
-          tmp.click ();
+        if ( tmp = document.getElementById('popup-layer') ) {
+          tmp.click();
+
         // If postit menu, click on menu button to close it
-        else if ( tmp = document.querySelector (".postit-menu") )
-          tmp.nextElementSibling.click ();
+        } else if ( tmp = document.querySelector('.postit-menu') ) {
+          tmp.nextElementSibling.click();
+        }
       }
     });
 
