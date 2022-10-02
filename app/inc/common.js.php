@@ -1049,7 +1049,8 @@ class WHelper
         const wGrid = popup.querySelector('#w-grid');
   
         popup.querySelector('input').value = '';
-        popup.querySelector('.cols-rows input').value = 3;
+        popup.querySelectorAll('.cols-rows input').forEach(
+            (el) => el.value = 3);
         popup.querySelectorAll('.cols-rows,.width-height')
             .forEach((el) => el.style.display = 'none');
         popup.querySelector('.cols-rows').style.display = 'flex';

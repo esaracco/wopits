@@ -1536,8 +1536,10 @@
           p.querySelector('#w-grid').addEventListener('change', (e) => {
             const btn = e.target;
 
-            p.querySelector('.cols-rows input').value = 3;
-            p.querySelector('.width-height input').value = '';
+            p.querySelectorAll('.cols-rows input').forEach(
+                (el) => el.value = 3);
+            p.querySelectorAll('.width-height input').forEach(
+                (el) => el.value = '');
             p.querySelectorAll('.cols-rows,.width-height').forEach(
                 (el) => el.style.display = 'none');
 
