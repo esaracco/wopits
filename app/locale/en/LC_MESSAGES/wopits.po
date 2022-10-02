@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-30 10:50+0200\n"
+"POT-Creation-Date: 2022-10-02 14:39+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -67,13 +67,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"<p><b><i class='fas fa-broom fa-fw'></i>Deploy</b> We now use <code>minify</"
-"code> for JavaScript and CSS compression.</p>"
-msgstr ""
-
-msgid ""
-"<p><b><i class='fas fa-bug fa-fw'></i>Accounts</b> Fixed issue with account "
-"creation.</p>"
+"<p><b><i class='fas fa-broom fa-fw'></i>Global</b> Lot of debugging and "
+"cleaning!</p>"
 msgstr ""
 
 msgid ""
@@ -100,11 +95,6 @@ msgid ""
 "<p><b><i class='fas fa-smile-beam fa-fw'></i>LDAP</b> Thanks to Martin Juhl, "
 "one can now disabled <i>caseExactMatch</i> and use custom filter for login.</"
 "p>"
-msgstr ""
-
-msgid ""
-"<p><b><i class='fas fa-smile-beam fa-fw'></i>Themes</b> Big rewrite of theme "
-"management.</p>"
 msgstr ""
 
 msgid ""
@@ -713,6 +703,9 @@ msgstr ""
 msgid "Item is locked by another user"
 msgstr ""
 
+msgid "Label"
+msgstr ""
+
 msgid "Language"
 msgstr ""
 
@@ -838,9 +831,6 @@ msgid "Notify new users?"
 msgstr ""
 
 msgid "Notify users"
-msgstr ""
-
-msgid "OK"
 msgstr ""
 
 msgid ""

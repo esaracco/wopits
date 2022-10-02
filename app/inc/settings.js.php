@@ -25,12 +25,17 @@
             $settings = plugin.element,
             head = document.head;
 
-      ["<?=implode('","', WPT_THEMES)?>"].forEach ((color) =>
-        {
+      ["<?=implode('","', WPT_THEMES)?>"].forEach((color) => {
           const id = `theme-${color}`;
 
-          if (!document.getElementById (id))
-            head.appendChild ($(`<link rel="stylesheet" href="/css/themes/${color}.css?<?=WPT_VERSION?>" id="${id}" media="none">`)[0]);
+          if (!document.getElementById (id)) {
+            const el = document.createElement('link');
+            el.id = id;
+            el.media = 'none';
+            el.rel = 'stylesheet';
+            el.href = `/css/themes/${color}.css?<?=WPT_VERSION?>`;
+            head.appendChild(el);
+          }
         });
 
       // TODO Factoring
@@ -105,21 +110,22 @@
       this.set ({timezone: timezone}, ()=> location.href = "/r.php");
     },
 
-    // METHOD applyTheme ()
-    applyTheme ()
-    {
-      const theme = wpt_userData.settings.theme||"theme-default",
-            current = document.querySelector (
-                        `link[id^="theme-"]:not([media="none"])`);
+    // METHOD applyTheme()
+    applyTheme() {
+      const theme = wpt_userData.settings.theme || 'theme-default';
+      const current =
+          document.querySelector(`link[id^="theme-"]:not([media="none"])`);
 
-      if (!current || current.id != theme)
-      {
-        document.querySelectorAll("link[id^='theme-']").forEach (el=>
-          el.media = (el.id == theme) ? "" : "none");
+      if (current.id !== theme) {
+        const postit = document.querySelector('.postit');
+
+        document.getElementById(theme).media = '';
+        current.media = 'none';
 
         // Apply theme to postits
-        if (document.querySelector(".postit"))
-          setTimeout (()=> $("<div/>").postit ("applyTheme"), 250);
+        if (postit) {
+          setTimeout(() => $(postit).postit('applyTheme'), 250);
+        }
       }
     },
 

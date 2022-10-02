@@ -260,15 +260,12 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
     // If there is already opened modals
     if (modalsCount) {
-      dialog.classList.remove('modal-dialog-scrollable');
       dialog.dataset.toclean = 1;
       dialog.classList.add('modal-sm', 'shadow');
       dialog.querySelectorAll('button.btn')
           .forEach ((b) => b.classList.add('btn-sm'));
     } else {
       const $ps = S.getCurrent('postit');
-
-      dialog.classList.add('modal-dialog-scrollable');
 
       if (dialog.dataset.toclean) {
         dialog.querySelectorAll('button.btn')
@@ -286,9 +283,15 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
   // EVENT "shown" on popups
   document.body.addEventListener('shown.bs.modal', (e) => {
+    const target = e.target;
+
     if (!H.haveMouse()) {
       if (S.get('mstack').length === 1 &&
-          H.getFirstInputFields(e.target.querySelector('.modal-dialog'))) {
+          (
+            // Exception for sharing wall popup
+            target.id === 'swallPopup' ||
+            H.getFirstInputFields(e.target.querySelector('.modal-dialog'))
+          )) {
         H.fixVKBScrollStart();
       }
     } else {
@@ -310,6 +313,10 @@ document.addEventListener ("DOMContentLoaded", ()=>
         !el.dataset.uneditdone) {
       S.getCurrent('wall').wall('unedit');
     }
+
+    if (S.get('vkbData')) {
+      H.fixVKBScrollStop();
+    }
   });
 
   // EVENT "hidden" on popups
@@ -322,10 +329,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
       mstack.shift ();
       S.set ("mstack", mstack);
-
-      if (S.get('vkbData')) {
-        H.fixVKBScrollStop();
-      }
 
       // Prevent child popups from removing scroll to their parent
       if (mstack.length)

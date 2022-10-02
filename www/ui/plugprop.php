@@ -7,6 +7,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+          <div class="form-group mb-3">
+            <label><?=_("Label")?>:</label>
+            <input type="text" name="label" class="form-control form-control-sm" maxlength="<?=Wopits\DbCache::getFieldLength('postits_plugs', 'label')?>">
+          </div>
           <div class="text-center">
             <button type="button" class="btn btn-xs btn-secondary reset"><i class="fas fa-undo"></i> <?=_("Default style")?></button>
           </div>

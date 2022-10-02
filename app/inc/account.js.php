@@ -199,47 +199,59 @@
                       "click", (e)=> plugin.onSubmit ($p, e)),
                   cb: ($p)=>
                   {
-                    const $input = $p.find ("input");
+                    const p = $p[0];
+                    const input = document.createElement('input');
+
+                    input.className = 'form-control';
   
-                    switch (name)
-                    {
-                      case "username":
+                    switch (name) {
+                      case 'username':
                         title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
-                        $input
-                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'username')?>")
-                          .attr("placeholder", `<?=_("username")?>`)
-                          .attr("autocorrect", "off")
-                          .attr ("autocapitalize", "off");
+                        input.setAttribute('maxlength',
+                            <?=DbCache::getFieldLength('users', 'username')?>);
+                        input.setAttribute('placeholder', `<?=_("username")?>`);
+                        input.setAttribute('autocorrect', 'off');
+                        input.setAttribute('autocapitalize', 'off');
+                        input.setAttribute('autocomplete', 'on');
                         break;
-                      case "fullname":
+                      case 'fullname':
                         title = `<i class="fas fa-signature"></i> <?=_("Full name")?>`;
-                        $input
-                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'fullname')?>")
-                          .attr("placeholder", `<?=_("full name")?>`);
+                        input.setAttribute('maxlength',
+                            <?=DbCache::getFieldLength('users', 'fullname')?>);
+                        input.setAttribute('placeholder',
+                            `<?=_("full name")?>`);
+                        input.setAttribute('autocomplete', 'off');
                         break;
-                      case "email":
+                      case 'email':
                         title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
-                        $input
-                          .attr("maxlength", "<?=DbCache::getFieldLength('users', 'email')?>")
-                          .attr("placeholder", `<?=_("email")?>`)
-                          .attr("autocorrect", "off")
-                          .attr ("autocapitalize", "off");
+                        input.setAttribute('maxlength',
+                            <?=DbCache::getFieldLength('users', 'email')?>);
+                        input.setAttribute('placeholder', `<?=_("email")?>`);
+                        input.setAttribute('autocorrect', 'off');
+                        input.setAttribute('autocapitalize', 'off');
+                        input.setAttribute('autocomplete', 'off');
                         break;
                     }
   
-                    $p.find(".modal-dialog").addClass ("modal-sm");
-                    $p.find(".modal-title").html (title);
+                    p.querySelector('.modal-dialog').classList.add('modal-sm');
+                    p.querySelector('.modal-title').innerHTML = title;
   
-                    $input.attr ("name", name);
-                    $input.val (value);
+                    input.setAttribute('name', name);
+                    input.value = value;
   
-                    $p[0].dataset.field = name;
-                    $p[0].dataset.oldvalue = value;
-                    $p[0].dataset.noclosure = true;
+                    p.dataset.field = name;
+                    p.dataset.oldvalue = value;
+                    p.dataset.noclosure = true;
+
+                    const group = p.querySelector('.input-group');
+                    if (group.lastChild) {
+                      group.removeChild(group.lastChild);
+                    }
+                    p.querySelector('.input-group').appendChild(input);
+
                     H.openModal ({item: $p});
                   }
                 });
-  
                 break;
             }
           }

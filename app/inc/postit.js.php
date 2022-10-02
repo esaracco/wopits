@@ -881,53 +881,54 @@
       }
     },
 
-    // METHOD updatePlugProperties ()
-    updatePlugProperties (ll)
-    {
-      const id = ll.endId || this.settings.id,
-            defaultLineColor = S.getCurrent ("plugColor");
+    // METHOD updatePlugProperties()
+    updatePlugProperties(ll) {
+      const id = ll.endId || this.settings.id;
+      const defaultLineColor = S.getCurrent('plugColor');
 
-      for (const plug of this.settings.plugs)
-      {
+      for (const plug of this.settings.plugs) {
         //FIXME
-        if ((ll.endId && plug.endId == ll.endId) ||
-            (!ll.endId && plug.startId == this.settings.id))
-        {
-          const customCol = (ll.color && ll.color != defaultLineColor),
-                lineColor = customCol ? ll.color : defaultLineColor,
-                lineType =
-                  (ll.line_type &&
-                   ll.line_type != "<?=WS_PLUG_DEFAULTS['lineType']?>") ?
-                     ll.line_type : "<?=WS_PLUG_DEFAULTS['lineType']?>",
-                lineSize =
-                  (ll.size &&
-                   ll.size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
-                     ll.size : <?=WS_PLUG_DEFAULTS['lineSize']?>,
-                props = {
-                  size: lineSize * (S.get("zoom-level")||1),
-                  path:
-                    (ll.path &&
-                     ll.path != "<?=WS_PLUG_DEFAULTS['linePath']?>") ?
-                       ll.path : "<?=WS_PLUG_DEFAULTS['linePath']?>",
-                  color: lineColor,
-                  dropShadow: this.getPlugDropShadowTemplate (lineColor)
-                };
+        if ((ll.endId && plug.endId === ll.endId) ||
+            (!ll.endId && plug.startId === this.settings.id)) {
+          const customCol = (ll.color && ll.color !== defaultLineColor);
+          const lineColor = customCol ? ll.color : defaultLineColor;
+          const lineType = (
+            ll.line_type &&
+            ll.line_type !== `<?=WS_PLUG_DEFAULTS['lineType']?>`) ?
+                ll.line_type : `<?=WS_PLUG_DEFAULTS['lineType']?>`;
+          const lineSize = (
+            ll.size &&
+            ll.size !== <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
+                ll.size : <?=WS_PLUG_DEFAULTS['lineSize']?>;
+          const props = {
+            size: lineSize * (S.get('zoom-level') || 1),
+            path: (
+              ll.path &&
+              ll.path !== `<?=WS_PLUG_DEFAULTS['linePath']?>`) ?
+                  ll.path : `<?=WS_PLUG_DEFAULTS['linePath']?>`,
+              color: lineColor,
+              dropShadow: this.getPlugDropShadowTemplate(lineColor),
+            };
 
-          plug.obj.setOptions (props);
+          plug.obj.setOptions(props);
           plug.obj.line_type = lineType;
           plug.obj.line_size = lineSize;
           plug.obj.customCol = customCol;
 
-          this.applyPlugLineType (plug.obj);
+          this.applyPlugLineType(plug.obj);
 
-          if (plug.customPos)
-            plug.related.forEach (_r =>
-              {
-                _r.setOptions (props);
-                _r.line_type = lineType;
-                this.applyPlugLineType (_r);
-              });
+          if (plug.customPos) {
+            plug.related.forEach((_r) => {
+              _r.setOptions(props);
+              _r.line_type = lineType;
+              this.applyPlugLineType(_r);
+            });
+          }
 
+          // Update label
+          if (ll.label !== undefined && plug.label.name !== ll.label) {
+            this.updatePlugLabel({label: ll.label, endId: ll.endId});
+          }
           break;
         }
       }
@@ -1019,10 +1020,11 @@
 
       const pos = plug.label.top ?
               {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
-              svg.querySelector("text").getBoundingClientRect (),
-            $start = $(plug.obj.start),
-            menu = `<ul class="dropdown-menu"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`,
-            $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
+              svg.querySelector("text").getBoundingClientRect ();
+      const $start = $(plug.obj.start);
+      const renameItem = H.haveMouse() ? `<li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li>` : '';
+      const menu = `<ul class="dropdown-menu">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
+      const $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
 
         plug.labelObj = $label.appendTo ("body");
 

@@ -84,7 +84,7 @@
 
                 $popup = $("#createAccountPopup");
 
-                H.cleanPopupDataAttr ($popup);
+                H.cleanPopupDataAttr ($popup[0]);
 
                 plugin.resetCreateUserForm ();
                 $popup[0].dataset.noclosure = true;
@@ -95,7 +95,7 @@
 
                 $popup = $("#resetPasswordPopup");
 
-                H.cleanPopupDataAttr ($popup);
+                H.cleanPopupDataAttr ($popup[0]);
 
                 $popup[0].dataset.noclosure = true;
                 H.openModal ({item: $popup});

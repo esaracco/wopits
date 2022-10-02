@@ -1526,30 +1526,31 @@
         });
     },
 
-    // METHOD openNamePopup ()
-    openNamePopup ()
-    {
-      H.loadPopup ("createWall", {
-        init: ($p)=>
-          $p[0].querySelector("#w-grid")
-            // EVENT change on wall dimension in wall creation popup
-            .addEventListener("change", (e)=>
-              {
-                const btn = e.target;
+    // METHOD openNamePopup()
+    openNamePopup() {
+      H.loadPopup('createWall', {
+        init: ($p) => {
+          const p = $p[0];
 
-                $p.find("span.required").remove ();
-                $p.find(".cols-rows input").val (3);
-                $p.find(".width-height input").val ("");
-                $p.find(".cols-rows,.width-height").hide ();
+          // EVENT change on wall dimension in wall creation popup
+          p.querySelector('#w-grid').addEventListener('change', (e) => {
+            const btn = e.target;
 
-                if (btn.checked)
-                  btn.parentNode.classList.remove ("disabled");
-                else
-                  btn.parentNode.classList.add ("disabled");
+            p.querySelector('.cols-rows input').value = 3;
+            p.querySelector('.width-height input').value = '';
+            p.querySelectorAll('.cols-rows,.width-height').forEach(
+                (el) => el.style.display = 'none');
 
-                $p.find(btn.checked?".cols-rows":".width-height").show ("fade");
-              }),
-        cb: ($p)=> $p[0].dataset.noclosure = true
+            if (btn.checked)
+              btn.parentNode.classList.remove('disabled');
+            else
+              btn.parentNode.classList.add('disabled');
+
+            p.querySelector(btn.checked ? '.cols-rows' : '.width-height')
+                .style.display = 'flex';
+          });
+        },
+        cb: ($p) => $p[0].dataset.noclosure = true
       });
     },
 
@@ -1909,7 +1910,11 @@
 
       if (from != "screen" && level == zoom0.dataset.zoomlevelorigin)
       {
+        const $walls = S.getCurrent('walls');
+
         S.unset ("zoom-level");
+
+        $walls[0].style.overflow = 'auto';
 
         this.hidePostitsPlugs ();
 
@@ -1950,7 +1955,7 @@
         this.UIPluginCtrl (".wall,.postit",
                            "draggable", "disabled", false);
 
-        $("#walls")
+        $walls
           .scrollLeft(0)
           .scrollTop (0);
 
@@ -1983,6 +1988,8 @@
 
       this.hidePostitsPlugs ();
 
+      $(walls).scrollLeft(0).scrollTop(0);
+
       if (position.bottom - position.top < walls.clientHeight &&
           position.right < walls.clientWidth)
       {
@@ -2012,6 +2019,8 @@
         ((30000*S.get("zoom-level"))/2-window.innerWidth/2)+20);
 
       $("<div/>").postit ("applyZoom");
+
+      walls.style.overflow = 'hidden';
     },
 
     // METHOD edit ()

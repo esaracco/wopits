@@ -106,16 +106,16 @@
         .forEach (el=> el.addEventListener ("click", _eventColor));
 
       // EVENT "click" on plug's settings "save" button
-      ra.querySelector(".btn-primary").addEventListener ("click", (e)=>
-        {
+      ra.querySelector('.btn-primary').addEventListener('click', (e) => {
           let toSave = {};
 
           toSave[_plug.startId] = $(_plug.obj.start);
           toSave[_plug.endId] = $(_plug.obj.end);
 
-          S.set ("plugs-to-save", toSave);
+          S.set('plugs-to-save', toSave);
 
           _postitPlugin.updatePlugProperties ({
+            label: ra.querySelector(`input[name="label"]`).value,
             startId: _plug.startId,
             endId: _plug.endId,
             size: _ll.size,
@@ -124,7 +124,7 @@
             line_type: _ll.line_type
           });
 
-          plugin.removeSample ();
+          plugin.removeSample();
         });
 
       /// EVENTS "keyup & change" on plug's settings "line size" option
@@ -185,24 +185,28 @@
       }
     },
 
-    // METHOD open ()
-    open (postitPlugin, plug)
-    {
+    // METHOD open()
+    open (postitPlugin, plug) {
       const ra = this.element[0];
 
-      H.openModal ({item: $(ra)});
+      H.openModal({item: $(ra)});
 
       _plug = plug;
       _postitPlugin = postitPlugin;
 
-      setTimeout (()=>
-        {
-          this.createSample ();
+      setTimeout (() => {
+          const label = _plug.label.name;
 
-          H.setColorpickerColor ($(ra.querySelector(".cp")), _plug.obj.color);
+          this.createSample();
+
+          H.setColorpickerColor($(ra.querySelector('.cp')), _plug.obj.color);
+          ra.querySelector(`input[name="label"]`).value =
+              (label === '...') ? '' : label;
           ra.querySelector(`input[name="size"]`).value = _plug.obj.line_size;
-          ra.querySelector(`input[value="${_plug.obj.path}"]`).checked = true;
-          ra.querySelector(`input[value="${_plug.obj.line_type}"]`).checked = true;
+          ra.querySelector(`input[value="${_plug.obj.path}"]`)
+              .checked = true;
+          ra.querySelector(`input[value="${_plug.obj.line_type}"]`)
+              .checked = true;
 
         }, 350);
     },

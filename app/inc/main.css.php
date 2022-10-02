@@ -205,7 +205,7 @@ kbd {
 }
 
 #walls {
-  overflow-x: auto !important;
+  overflow-x: auto;
   padding-left: 10px;
   position: relative;
 }
@@ -2575,10 +2575,6 @@ button.ui-datepicker-close {
   .modal.m-fullscreen .modal-content {
     min-height: 100%;
     border: 0 none;
-  }
-  
-  .modal.m-fullscreen .modal-dialog-scrollable {
-    max-height:100%;
   }
 }
 

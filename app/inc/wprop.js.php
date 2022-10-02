@@ -33,17 +33,17 @@
         });
     },
 
-    // METHOD removeGroupUser ()
-    removeGroupUser (args)
-    {
-      const $wall = S.getCurrent ("wall"),
-            wallId = $wall.wall ("getId");
+    // METHOD removeGroupUser()
+    removeGroupUser(args) {
+      const $wall = S.getCurrent('wall');
 
-      H.request_ws (
-        "DELETE",
-        `wall/${wallId}/group/${this.element[0].dataset.groups}/removeMe`,
-         null,
-         ()=> $wall.wall ("close"));
+      $wall.wall('close');
+
+      H.request_ws(
+        'DELETE',
+        `wall/${$wall.wall('getId')}/group/`+
+            `${this.element[0].dataset.groups}/removeMe`,
+      );
     },
 
     // METHOD open ()
@@ -61,7 +61,7 @@
           const $popup = this.element,
                 isCreator = (d.user_id == wpt_userData.id);
 
-          H.cleanPopupDataAttr ($popup);
+          H.cleanPopupDataAttr ($popup[0]);
 
           $popup.find(".description").show ();
 

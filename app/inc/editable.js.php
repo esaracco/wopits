@@ -67,7 +67,7 @@
       settings.container[0].addEventListener ("click", (e)=>
         {
           // Cancel if:
-              // creation of a relation in progress
+          // creation of a relation in progress
           if (S.get ("link-from") ||
               // editing has just been cancelled
               S.get ("block-editing"))
@@ -110,8 +110,6 @@
                     cb.before (plugin, settings._input.value);
 
                   plugin.resize ();
-
-                  settings._input.focus ();
 
                   // EVENT "blur" on editable element
                   settings._input.addEventListener ("blur", (e)=>
@@ -186,6 +184,8 @@
                   settings._input.addEventListener ("paste", (e)=>
                     plugin.resize (
                       e.originalEvent.clipboardData.getData ('text')));
+
+                  settings._input.focus();
                 });
               }
             }, 250);

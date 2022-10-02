@@ -144,7 +144,7 @@ class Helper
   }
 
   public static function deleteCookie() {
-    setCookie('wopits', $value, [
+    setCookie('wopits', '', [
       // 24 * 3600 == 86400
       'expires' => time() - 86400,
       'path' => '/',

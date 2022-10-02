@@ -10,9 +10,6 @@
         <?=_("The following users are viewing this wall:")?>
         <ul class="list-group mt-3"></ul>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> <?=_("Close")?></button>
-      </div>
     </div>
   </div>
   </div>

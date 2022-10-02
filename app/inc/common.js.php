@@ -529,194 +529,172 @@ class WSocket
       };
 
     // EVENT message
-    this.cnx.onmessage = (e) =>
-      {
-        const data = JSON.parse (e.data||"{}"),
-              $wall = (data.wall && data.wall.id) ?
-                $(`[data-id="wall-${data.wall.id}"]`) : [],
-              isResponse = (this._send_cb[data.msgId] !== undefined);
+    this.cnx.onmessage = (e) => {
+      const data = JSON.parse (e.data || '{}');
+      const $wall = (data.wall && data.wall.id) ?
+                $(`[data-id="wall-${data.wall.id}"]`) : [];
+      const isResponse = (this._send_cb[data.msgId] !== undefined);
+      let el;
+      let popup;
 
-        //console.log (`RECEIVED ${data.msgId}\n`);
-        //console.log (data);
+      //console.log (`RECEIVED ${data.msgId}\n`);
+      //console.log (data);
 
-        if (data.action)
-        {
-          switch (data.action)
-          {
-            // userwriting
-            case "userwriting":
-              var el = document.querySelector(
-                `${data.item === 'postit'? '.postit' : ''}`+
+      if (data.action) {
+        switch (data.action) {
+          // userwriting
+          case 'userwriting':
+            el = document.querySelector(
+                `${data.item === 'postit' ? '.postit' : ''}`+
                 `[data-id="${data.item}-${data.itemId}"]`);
-              if (el) {
-                $(el)[data.item]('showUserWriting', data.user);
-              }
-              break;
-
-            // userstoppedwriting
-            case "userstoppedwriting":
-                H.hideUserWriting (data.userstoppedwriting.user);
-              break;
-
-            // exitsession
-            case "exitsession":
-              //TODO use H.infoPopup()
-              var $popup = $("#infoPopup");
-
-              H.cleanPopupDataAttr ($popup);
-
-              $popup.find(".modal-body").html (`<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`);
-              $popup.find(".modal-title").html (`<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`);
-              $popup[0].dataset.popuptype = "app-logout";
-              H.openModal ({item: $popup, customClass: "zindexmax"});
-
-              // Close current popups if any
-              setTimeout (()=>
-                (S.get("mstack")||[])
-                   .forEach(el=> bootstrap.Modal.getInstance(el).hide()), 3000);
-              break;
-
-            // refreshpcomm
-            case "refreshpcomm":
-
-              var $el = $(`[data-id="postit-${data.postitId}"] .pcomm`);
-
-              if ($el.length)
-                $el.pcomm ("refresh", data);
-              break;
-
-            // refreshwall
-            case "refreshwall":
-              if ($wall.length && data.wall)
-              {
-                data.wall.isResponse = isResponse;
-                $wall.wall ("refresh", data.wall);
-
-                if (data.userstoppedwriting)
-                  H.hideUserWriting (data.userstoppedwriting.user);
-              }
-              break;
-
-            // viewcount
-            case "viewcount":
-              if ($wall.length)
-                $wall.wall ("refreshUsersview", data.count);
-              else
-                WS.pushResponse (`viewcount-wall-${data.wall.id}`, data.count);
-              break;
-
-            // chat
-            case "chat":
-              if ($wall.length)
-                $(`#wall-${data.wall.id} .chat`).chat ("addMsg", data);
-              break;
-
-            // chatcount
-            case "chatcount":
-              if ($wall.length)
-                $(`#wall-${data.wall.id} .chat`)
-                  .chat ("refreshUserscount", data.count);
-              break;
-
-            // have-msg
-            case "have-msg":
-              $("#umsg").umsg ("addMsg", data);
-              break;
-
-            // unlinked
-            // Either the wall has been deleted
-            // or the user no longer have necessary right to access the wall.
-            case "unlinked":
-              if (!isResponse)
-              {
-                H.displayMsg ({
-                  title: `<?=_("Walls")?>`,
-                  type: "warning",
-                  msg: `<?=_("Some walls are no longer available")?>`
-                });
-
-                $wall.wall ("close");
-                $("#settingsPopup").settings ("removeRecentWall", data.wall.id);
-              }
-              break;
-
-            // mainupgrade
-            case "mainupgrade":
-              // Check only when all modals are closed
-              var iid = setInterval (()=>
-                {
-                  if (!(S.get ("mstack")||[]).length)
-                  {
-                    clearInterval (iid);
-                    H.checkForAppUpgrade (data.version);
-                  }
-                }, 5000);
-              break;
-
-            // Reload to refresh user working space.
-            case "reloadsession":
-              return location.href = `/r.php?l=${data.locale}`;
-
-            // Maintenance reload
-            case "reload":
-              //TODO use H.infoPopup()
-              var $popup = $("#infoPopup");
-
-              // No need to deactivate it afterwards: page will be reloaded.
-              S.set ("block-msg", true);
-
-              // Close current popups if any
-              (S.get("mstack")||[])
-                .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
-
-              H.cleanPopupDataAttr ($popup);
-
-              $popup.find(".modal-body").html (`<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>`);
-              $popup.find(".modal-title").html (`<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`);
-
-              $popup[0].dataset.popuptype = "app-reload";
-              H.openModal ({item: $popup, customClass: "zindexmax"});
-
-              break;
-          }
-        }
-
-        let nextMsg = null;
-
-        if (data.msgId)
-        {
-          const msgId = data.msgId;
-          let i = this._sendQueue.length;
-
-          // Remove request from sending queue
-          while (i--)
-          {
-            if (this._sendQueue[i].msg.msgId == msgId)
-            {
-              if (this._sendQueue[i+1])
-                nextMsg = this._sendQueue[i+1];
-
-              this._sendQueue.splice (i, 1);
-              break;
+            if (el) {
+              $(el)[data.item]('showUserWriting', data.user);
             }
-          }
+            break;
+          // userstoppedwriting
+          case 'userstoppedwriting':
+              H.hideUserWriting(data.userstoppedwriting.user);
+            break;
+          // exitsession
+          case 'exitsession':
+            //TODO use H.infoPopup()
+            popup = document.getElementById('infoPopup');
 
-          delete (data.msgId);
+            popup.querySelector('.modal-body').innerHTML = `<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`;
+            popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`;
+            popup.dataset.popuptype = "app-logout";
+            H.openModal ({item: $(popup), customClass: "zindexmax"});
 
-          if (isResponse)
+            // Close current popups if any
+            setTimeout (()=> (S.get("mstack") || []).forEach(
+                (el) => bootstrap.Modal.getInstance(el).hide()), 3000);
+            break;
+          // refreshpcomm
+          case 'refreshpcomm':
+            el = document.querySelector(
+                `[data-id="postit-${data.postitId}"] .pcomm`);
+
+            if (el)
+              $(el).pcomm('refresh', data);
+            break;
+          // refreshwall
+          case 'refreshwall':
+            if ($wall.length && data.wall) {
+              data.wall.isResponse = isResponse;
+              $wall.wall('refresh', data.wall);
+
+              if (data.userstoppedwriting) {
+                H.hideUserWriting(data.userstoppedwriting.user);
+              }
+            }
+            break;
+          // viewcount
+          case 'viewcount':
+            if ($wall.length) {
+              $wall.wall('refreshUsersview', data.count);
+            } else {
+              WS.pushResponse (`viewcount-wall-${data.wall.id}`, data.count);
+            }
+            break;
+          // chat
+          case 'chat':
+            if ($wall.length) {
+              $(`#wall-${data.wall.id} .chat`).chat('addMsg', data);
+            }
+            break;
+          // chatcount
+          case 'chatcount':
+            if ($wall.length) {
+              $(`#wall-${data.wall.id} .chat`)
+                  .chat('refreshUserscount', data.count);
+            }
+            break;
+          // have-msg
+          case 'have-msg':
+            $('#umsg').umsg('addMsg', data);
+            break;
+          // unlinked
+          // Either the wall has been deleted
+          // or the user no longer have necessary right to access the wall.
+          case 'unlinked':
+            if (!isResponse) {
+              H.displayMsg({
+                title: `<?=_("Walls")?>`,
+                type: 'warning',
+                msg: `<?=_("Some walls are no longer available")?>`,
+              });
+              $wall.wall('close');
+              $('#settingsPopup').settings('removeRecentWall', data.wall.id);
+            }
+            break;
+          // mainupgrade
+          case 'mainupgrade':
+            // Check only when all modals are closed
+            const iid = setInterval(() => {
+                if (!(S.get ("mstack") || []).length) {
+                  clearInterval(iid);
+                  H.checkForAppUpgrade(data.version);
+                }
+              }, 5000);
+            break;
+          // Reload to refresh user working space.
+          case 'reloadsession':
+            return location.href = `/r.php?l=${data.locale}`;
+          // Maintenance reload
+          case 'reload':
+            //TODO use H.infoPopup()
+            popup = document.getElementById('infoPopup');
+
+            // No need to deactivate it afterwards: page will be reloaded.
+            S.set('block-msg', true);
+
+            // Close current popups if any
+            (S.get('mstack') || [])
+              .forEach ((el) => bootstrap.Modal.getInstance(el).hide());
+
+            popup.querySelector('.modal-body').innerHTML = `<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>`;
+            popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`;
+
+            popup.dataset.popuptype = 'app-reload';
+            H.openModal ({item: $(popup), customClass: 'zindexmax'});
+            break;
+        }
+      }
+
+      let nextMsg = null;
+
+      if (data.msgId) {
+        const msgId = data.msgId;
+        let i = this._sendQueue.length;
+
+        // Remove request from sending queue
+        while (i--) {
+          if (this._sendQueue[i].msg.msgId === msgId)
           {
-            this._send_cb[msgId](data);
+            if (this._sendQueue[i+1]) {
+              nextMsg = this._sendQueue[i+1];
+            }
 
-            delete this._send_cb[msgId];
+            this._sendQueue.splice(i, 1);
+            break;
           }
         }
 
-        H.loader ("hide");
+        delete(data.msgId);
 
-        // Send next message pending in sending queue
-        if (nextMsg)
-          this.send (nextMsg.msg, nextMsg.success_cb, nextMsg.error_cb);
-      };
+        if (isResponse) {
+          this._send_cb[msgId](data);
+          delete this._send_cb[msgId];
+        }
+      }
+
+      H.loader('hide');
+
+      // Send next message pending in sending queue
+      if (nextMsg) {
+        this.send(nextMsg.msg, nextMsg.success_cb, nextMsg.error_cb);
+      }
+    };
 
     // EVENT error
     this.cnx.onerror = (e) =>
@@ -931,6 +909,8 @@ class WHelper
 
   // METHOD setAutofocus ()
   static setAutofocus(el) {
+    if (!this.haveMouse()) return;
+
     const input = this.getFirstInputFields(el);
 
     if (input) {
@@ -1050,63 +1030,42 @@ class WHelper
     return false;
   }
   
-  // METHOD cleanPopupDataAttr ()
-  static cleanPopupDataAttr ($popup)
-  {
-    // Remove all data attributes
-    const attrs = [];
-    $.each ($popup[0].attributes, function (i, a)
-      {
-        if (a.name.indexOf ("data-") == 0)
-          attrs.push (a.name);
-      });
-    attrs.forEach ((item) => $popup.removeAttr (item));
+  // METHOD cleanPopupDataAttr()
+  static cleanPopupDataAttr(popup) {
+    // Remove all popup data attributes
+    Array.from(popup.attributes).forEach((a) => {
+      if (a.name.indexOf('data-') === 0) {
+        popup.removeAttribute(a.name);
+      }
+    });
   
-    $popup.find("span.required").remove ();
-    $popup.find(".input-group.required").removeClass ("required");
+    // Remove required warnings
+    popup.querySelectorAll('span.required').forEach((el) => el.remove());
+    popup.querySelectorAll('.input-group.required').forEach(
+        (el) => el.classList.remove('required'));
   
-    switch ($popup.attr ("id"))
-    {
-      case "createWallPopup":
+    switch (popup.id) {
+      case 'createWallPopup':
+        const wGrid = popup.querySelector('#w-grid');
   
-        $popup.find("input").val ("");
-        $popup.find(".cols-rows input").val (3);
-        $popup.find(".cols-rows,.width-height").hide ();
-        $popup.find(".cols-rows").show ();
-        $popup.find("#w-grid")[0].checked = true;
-        $popup.find("#w-grid").parent().removeClass ("disabled");
+        popup.querySelector('input').value = '';
+        popup.querySelector('.cols-rows input').value = 3;
+        popup.querySelectorAll('.cols-rows,.width-height')
+            .forEach((el) => el.style.display = 'none');
+        popup.querySelector('.cols-rows').style.display = 'flex';
+        wGrid.checked = true;
+        wGrid.parentNode.classList.remove('disabled');
         break;
-  
-      case "groupPopup":
-  
-        $popup.find("input").val (""); 
-        $popup.find(".desc").html ("");
-        $popup.find("button.btn-primary").removeAttr ("data-type data-groupid");
-        break;
-  
-      case "updateOneInputPopup":
-  
-        $popup.find(".modal-dialog").removeClass ("modal-sm");
-        $popup.find("#w-grid").parent().remove ();
-        $popup.find(".btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
-  
-        $popup.find("input")
-          .removeAttr ("placeholder autocorrect autocapitalize maxlength")
-          .val ("");
-        break;
-  
-      case "confirmPopup":
-  
-        $popup.removeClass ("no-theme");
-        break;
+      case 'groupPopup':
+        const btn = popup.querySelector('button.btn-primary');
 
-      case "groupAccessPopup":
-
-        const $cb = $popup.find(".send-msg input[type='checkbox']");
-
-        if ($cb[0].checked)
-          $cb.click ();
+        ['data-type', 'data-groupid'].forEach((c) => btn.removeAttribute(c));
+        popup.querySelectorAll('input').forEach((el) => el.value = ''); 
         break;
+      case 'groupAccessPopup':
+        popup.querySelector('.send-msg input[type="checkbox"]').checked = false;
+        break;
+      default:
     }
   }
   
@@ -1268,30 +1227,26 @@ class WHelper
     layer.style.display = 'block';
   }
   
-  // METHOD openConfirmPopup ()
-  static openConfirmPopup (args)
-  {
-    const $popup = $("#confirmPopup"),
-          popup0 = $popup[0];
+  // METHOD openConfirmPopup()
+  static openConfirmPopup(args) {
+    const popup = document.getElementById('confirmPopup');
   
-    S.set ("confirmPopup", {
+    S.set('confirmPopup', {
       cb_ok: args.cb_ok,
-      cb_close: () =>
-        {
-          args.cb_close && args.cb_close ();
-
-          S.unset ("confirmPopup");
+      cb_close: () => {
+        if (args.cb_close) {
+          args.cb_close();
         }
+        S.unset('confirmPopup');
+      },
     });
 
-    this.cleanPopupDataAttr ($popup);
-  
-    popup0.querySelector(".modal-title").innerHTML = `<i class="fas fa-${args.icon} fa-fw"></i> ${args.title||`<?=_("Confirmation")?>`}`;
-    popup0.querySelector(".modal-body").innerHTML = args.content;
+    popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-${args.icon} fa-fw"></i> ${args.title || `<?=_("Confirmation")?>`}`;
+    popup.querySelector('.modal-body').innerHTML = args.content;
 
-    popup0.dataset.popuptype = args.type;
+    popup.dataset.popuptype = args.type;
 
-    this.openModal ({item: $popup});
+    this.openModal ({item: $(popup)});
   }
   
   // METHOD openConfirmPopover()
@@ -1492,7 +1447,7 @@ class WHelper
     // INTERNAL FUNCTION __exec ()
     const __exec = ($p)=>
       {
-        H.cleanPopupDataAttr ($p);
+        H.cleanPopupDataAttr ($p[0]);
 
         if (args.cb)
           args.cb ($p);
@@ -1543,7 +1498,7 @@ class WHelper
     if (notheme)
       p.classList.add ("no-theme");
     else
-      this.cleanPopupDataAttr ($p);
+      this.cleanPopupDataAttr (p);
       
     p.querySelector(".modal-dialog").classList.add ("modal-sm");
   
@@ -2023,7 +1978,7 @@ class WHelper
           (S.get("mstack")||[])
              .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
   
-          this.cleanPopupDataAttr ($popup);
+          this.cleanPopupDataAttr ($popup[0]);
   
           $popup.find(".modal-body").html (`<?=_("A new release of wopits is available.")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>`.replace("%s1", `<b>${userVersion}</b>`).replace("%s2", `<b>${officialVersion}</b>`));
           $popup.find(".modal-title").html (`<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`);
