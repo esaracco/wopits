@@ -14,7 +14,7 @@
 ?>
 <body id="login-page">
   <!-- MSG CONTAINER -->
-  <div id="msg-container" class="position-absolute top-0 start-50 translate-middle-x"></div>
+  <div id="msg-container" class="position-fixed top-0 start-50 translate-middle-x"></div>
   <!-- MENU -->
   <nav class="navbar bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm wopits">
     <a href="#" class="navbar-brand fw-bold" data-action="about">wopits</a>
