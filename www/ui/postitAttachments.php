@@ -1,5 +1,10 @@
 <?php require (__DIR__.'/../../app/prepend.php')?>
-<div class="modal m-fullscreen no-theme" id="postitAttachmentsPopup" role="dialog" tabindex="-1">
+<div
+  class="modal m-fullscreen no-theme contains-inputs"
+  id="postitAttachmentsPopup"
+  role="dialog"
+  tabindex="-1"
+>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

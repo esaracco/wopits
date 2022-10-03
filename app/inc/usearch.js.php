@@ -281,7 +281,7 @@
       if (!args)
         args = {};
 
-      if (!!args.full)
+      if (Boolean(args.full))
       {
         ac.removeAttribute ("data-delegateadminid");
 
@@ -289,7 +289,7 @@
         args["users"] = true;
       }
 
-      if (!!args.field)
+      if (Boolean(args.field))
         input.value = "";
 
       input.classList.remove ("autocomplete");

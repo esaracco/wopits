@@ -103,16 +103,17 @@
                   },
                   cb: ($p)=>
                   {
+                    const p = $p[0];
                     const groupId = $row[0].dataset.id,
                           delegateAdminId = $row[0].dataset.delegateadminid||0;
   
                     $p.usearch ("reset", {full: true});
   
                     if ($row[0].parentNode.classList.contains("noattr"))
-                      $p[0].dataset.noattr = 1;
-                    $p[0].dataset.delegateadminid = delegateAdminId;
-                    $p[0].dataset.groupid = groupId;
-                    $p[0].dataset.grouptype = groupType;
+                      p.dataset.noattr = 1;
+                    p.dataset.delegateadminid = delegateAdminId;
+                    p.dataset.groupid = groupId;
+                    p.dataset.grouptype = groupType;
   
                     $p
                       .find(".desc").html (`<?=_("Add or remove users in the group « %s ».")?>`.replace("%s", `<b>${$row[0].dataset.name}</b>`));
@@ -125,7 +126,7 @@
                         groupType: groupType
                       });
   
-                    H.openModal ({item: $p});
+                    H.openModal ({item: p});
                   }
                 });
                 break;
@@ -288,8 +289,10 @@
         },
         cb: ($p)=>
         {
-          $p[0].dataset.action = "create";
-          $p[0].dataset.noclosure = true;
+          const p = $p[0];
+
+          p.dataset.action = "create";
+          p.dataset.noclosure = true;
 
           $p.find(".modal-title span").html (title);
           $p.find(".desc").html (desc);
@@ -298,7 +301,7 @@
           $p.find("button.btn-primary").html (`<i class="fas fa-bolt"></i> <?=_("Create")?>`);
           $p.find("button.btn-secondary").html (`<i class="fas fa-undo-alt"></i> <?=_("Cancel")?>`);
 
-          H.openModal ({item: $p});
+          H.openModal ({item: p});
         }
       });
     },
@@ -319,8 +322,10 @@
         },
         cb: ($p)=>
         {
-          $p[0].dataset.action = "update";
-          $p[0].dataset.noclosure = true;
+          const p = $p[0];
+
+          p.dataset.action = "update";
+          p.dataset.noclosure = true;
 
           $p.find(".modal-title span").html (`<?=_("Update this group")?>`);
 
@@ -331,7 +336,7 @@
           $p.find("button.btn-primary").html (`<i class="fas fa-save"></i> <?=_("Save")?>`);
           $p.find("button.btn-secondary").html (`<i class="fas fa-times"></i> <?=_("Close")?>`);
 
-          H.openModal ({item: $p});
+          H.openModal ({item: p});
         }
       });
     },
@@ -561,7 +566,7 @@
             $body.find(".delegate-admin-only").show ();
           }
 
-          H.openModal ({item: $share});
+          H.openModal ({item: $share[0]});
 
         });
     }

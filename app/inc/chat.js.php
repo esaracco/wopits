@@ -136,8 +136,9 @@
 
         $chat.hide ();
 
-        if (!H.haveMouse ())
-          H.fixVKBScrollStop ();
+        if (S.get('vkbData')) {
+          H.fixVKBScrollStop();
+        }
       }
       else
       {
@@ -147,8 +148,9 @@
         if (el)
           el.remove ();
 
-        if (!H.haveMouse ())
-          H.fixVKBScrollStart ();
+        if (!H.haveMouse()) {
+          H.fixVKBScrollStart();
+        }
 
         $chat.css ({bottom: "15px", left: "5px", display: "table"});
 

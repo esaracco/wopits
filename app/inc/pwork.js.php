@@ -56,14 +56,14 @@
           const _args = $p.usearch ("getIds");
 
           $p.usearch ("reset", {full: true,
-                                readonly: !!plugin.settings.readonly});
+                                readonly: Boolean(plugin.settings.readonly)});
 
           // Refresh counter (needed when some users have been deleted)
           _args.cb_after = (c)=> plugin.setCount(c);
 
           $p.usearch ("displayUsers", _args);
 
-          H.openModal ({item: $p});
+          H.openModal ({item: $p[0]});
 
         // EVENT "hide.bs.modal" on workers popup
         $p[0].addEventListener ("hide.bs.modal", (e)=>

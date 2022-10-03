@@ -66,8 +66,7 @@
     // METHOD open ()
     open ()
     {
-      const $popup = this.element,
-            $picker = this.settings.$picker,
+      const $picker = this.settings.$picker,
             $alert = this.settings.$alert,
             $postit = S.getCurrent ("postit"),
             days = $postit[0].dataset.deadlinealertshift;
@@ -103,7 +102,7 @@
       else
         $alert.find(">div:eq(1)").show ();
 
-      H.openModal ({item: $popup});
+      H.openModal ({item: this.element[0]});
     },
 
     // METHOD save ()

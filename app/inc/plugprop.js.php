@@ -27,13 +27,14 @@
             ra = plugin.element[0],
             ww = $(window).width ();
 
+      // FIXME
       const _eventSP = (e)=> _ll && _ll.position ();
 
       // EVENT "hidden.bs.modal" plug's settings popup
       ra.addEventListener ("hidden.bs.modal", (e)=>
         {
-          e.target.querySelector(".modal-body")
-            .removeEventListener ("scroll", _eventSP);
+          // FIXME
+          ra.removeEventListener ("scroll", _eventSP);
 
           // Remove leader line sample
           plugin.removeSample ();
@@ -44,8 +45,8 @@
       ra.addEventListener ("show.bs.modal", (e)=>
         {
           // EVENT "scroll" on popup body
-          e.target.querySelector(".modal-body")
-            .addEventListener ("scroll", _eventSP);
+          // FIXME
+          ra.addEventListener ("scroll", _eventSP);
 
           document.getElementById("plugprop-sample").style.backgroundColor =
             S.getCurrent("wall")[0].style.backgroundColor||"#fff";
@@ -189,7 +190,7 @@
     open (postitPlugin, plug) {
       const ra = this.element[0];
 
-      H.openModal({item: $(ra)});
+      H.openModal({item: ra});
 
       _plug = plug;
       _postitPlugin = postitPlugin;

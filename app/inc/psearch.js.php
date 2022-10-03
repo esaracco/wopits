@@ -69,7 +69,7 @@
       if (tmp.is (":visible"))
         tmp.filters ("reset");
 
-      H.openModal ({item: this.element});
+      H.openModal ({item: this.element[0]});
       this.replay ();
     },
 

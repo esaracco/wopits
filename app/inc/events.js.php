@@ -2,66 +2,67 @@
   Global javascript events
 */
 
-document.addEventListener ("DOMContentLoaded", ()=>
-{
-  "use strict";
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
 
-  const _walls = document.getElementById ("walls");
+  const _walls = document.getElementById('walls');
 
-  if (!H.isLoginPage ())
-  {
+  if (!H.isLoginPage()) {
     // EVENTS resize & orientationchange on window
-    const _windowResizeEvent = (e)=>
-      {
-        if (e.target.tagName)
-          return;
+    let _timeoutResize;
+    window.addEventListener('resize', (e) => {
+      clearTimeout(_timeoutResize);
+      _timeoutResize = setTimeout(() =>  {
+        const $wall = S.getCurrent('wall');
+        const mstack = S.get('mstack') || [];
+ 
+        // FIXME // TODO
+        if (S.get('zoom-level') && mstack.length > 0) return;
 
-        const $wall = S.getCurrent ("wall");
-  
-        H.fixMenuHeight ();
-        H.fixMainHeight ();
+        H.fixHeight();
 
-        if ($wall.length)
-        {
+        if ($wall.length) {
+          let tmp;
+
           // Refresh relations position
-          $wall.wall ("repositionPostitsPlugs");
+          $wall.wall('repositionPostitsPlugs');
 
-          var tmp = document.querySelector (
-                      ".modal.show.m-fullscreen[data-customwidth]");
-          if (tmp)
-            H.resizeModal ($(tmp));
-   
+          if ( (tmp = document.querySelector(
+                    '.modal.show.m-fullscreen[data-customwidth]')) ) {
+            H.resizeModal(tmp);
+          }
+
           // Reposition chat popup if it is out of bounds
-          var tmp = S.getCurrent ("chat");
-          if (tmp.is (":visible"))
-            tmp.chat ("fixPosition");
-   
-          // Reposition filters popup if it is out of bounds
-          var tmp = S.getCurrent ("filters");
-          if (tmp.is (":visible"))
-            tmp.filters ("fixPosition");
+          if ( (tmp = S.getCurrent('chat')) && tmp.is(':visible')) {
+            tmp.chat('fixPosition');
+          }
 
-          var tmp = document.querySelector (".tab-content.walls");
-          if (tmp.dataset.zoomlevelorigin)
-            $wall.wall ("zoom",
-              {type: (tmp.dataset.zoomtype == "screen")?"screen":"="});
-     
+          // Reposition filters popup if it is out of bounds
+          if ( (tmp = S.getCurrent('filters')) && tmp.is(':visible')) {
+            tmp.filters('fixPosition');
+          }
+
+          if ( (tmp = document.querySelector('.tab-content.walls')) &&
+              tmp.dataset.zoomlevelorigin) {
+            $wall.wall('zoom',
+              {type: (tmp.dataset.zoomtype === 'screen') ? 'screen' : '='});
+          }
+
           // Reposition wall menu if it is out of bounds
-          S.getCurrent("wmenu").wmenu ("fixPosition");
+          S.getCurrent('wmenu').wmenu('fixPosition');
         }
-      };
-    window.addEventListener ("resize", _windowResizeEvent);
-    window.addEventListener ("orientationchange", _windowResizeEvent);
+      }, 150);
+    });
 
     // EVENT "scroll" on walls
     let _timeoutScroll;
     let _plugsHidden = false;
-    _walls.addEventListener ('scroll', () => {
+    _walls.addEventListener('scroll', () => {
       const $wall = S.getCurrent('wall');
+      const mstack = S.get('mstack') || [];
   
-      if (!$wall.length) return;
-
-      if (!S.get('wall-dragging')) {
+      if (!S.get('wall-dragging') && !S.get('still-closing') &&
+          !mstack.length) {
         if (!_plugsHidden) {
           $wall.wall('hidePostitsPlugs');
           _plugsHidden = true;
@@ -70,7 +71,7 @@ document.addEventListener ("DOMContentLoaded", ()=>
         // Refresh relations position
         if (!S.getCurrent('filters')[0].classList.contains('plugs-hidden')) {
           clearTimeout(_timeoutScroll);
-          _timeoutScroll = setTimeout (() => {
+          _timeoutScroll = setTimeout(() => {
             $wall.wall('showPostitsPlugs');
             _plugsHidden = false;
           }, 150);
@@ -79,127 +80,126 @@ document.addEventListener ("DOMContentLoaded", ()=>
     });
 
     // EVENT "mousedown"
-    document.body.addEventListener ("mousedown", function (e)
-      {
-        const el = e.target;
+    document.body.addEventListener('mousedown', (e) => {
+      const el = e.target;
 
-        // EVENT "mousedown" on walls tabs
-        if (el.matches (".nav-tabs.walls a.nav-link,"+
-                        ".nav-tabs.walls a.nav-link *"))
-        {
-          const a = (el.tagName == "A")?el:el.closest ("a.nav-link"),
-                isActive = a.classList.contains ("active"),
-                close = el.classList.contains ("close"),
-                share = (isActive && el.classList.contains ("fa-share")),
-                rename = (isActive && !share && !close);
-    
-          if (share)
-            return H.loadPopup ("swall", {
-              open: false,
-              cb: ($p)=> $p.swall ("open")
-            });
-    
-          if (rename)
-            return S.getCurrent("wall")
-                     .wall ("openPropertiesPopup", {renaming: true});
-    
-          if (!close)
-            $("#settingsPopup").settings (
-              "saveOpenedWalls", a.getAttribute("href").split("-")[1]);
+      // EVENT "mousedown" on walls tabs
+      if (el.matches('.nav-tabs.walls a.nav-link,'+
+                     '.nav-tabs.walls a.nav-link *')) {
+        const a = (el.tagName === 'A') ? el : el.closest('a.nav-link');
+        const isActive = a.classList.contains('active');
+        const close = el.classList.contains('close');
+        const share = (isActive && el.classList.contains('fa-share'));
+        const rename = (isActive && !share && !close);
+
+        // Open the wall's sharing popup
+        if (share) {
+          return H.loadPopup('swall', {
+            open: false,
+            cb: ($p) => $p.swall('open'),
+          });
         }
-      });
+
+        // Open the popup for renaming a wall
+        if (rename) {
+          return S.getCurrent('wall')
+                     .wall('openPropertiesPopup', {renaming: true});
+        }
+
+        // Save new current wall ID
+        if (!close) {
+          $('#settingsPopup').settings(
+            'saveOpenedWalls', a.getAttribute('href').split('-')[1]);
+        }
+      }
+    });
 
     // EVENT "hide.bs.tab"
-    document.body.addEventListener ("hide.bs.tab", (e)=>
-      {
-        const el = e.target;
+    document.body.addEventListener('hide.bs.tab', (e) => {
+      const el = e.target;
   
-        // EVENT "hide.bs.tab" on walls tabs
-        if (el.matches (`.walls a[data-bs-toggle="tab"]`))
-        {
-          // Cancel zoom mode
-          if (S.get ("zoom-level"))
-            S.getCurrent("wall").wall("zoom", {type: "normal","noalert": true});
-  
-          S.getCurrent("wall").wall ("removePostitsPlugs", false);
+      // EVENT "hide.bs.tab" on walls tabs
+      if (el.matches(`.walls a[data-bs-toggle="tab"]`)) {
+        const $wall = S.getCurrent('wall');
+
+        // Cancel zoom mode
+        if (S.get('zoom-level')) {
+          $wall.wall('zoom', {type: 'normal', noalert: true});
         }
-      });
+  
+        $wall.wall('removePostitsPlugs', false);
+      }
+    });
   
     // EVENT "shown.bs.tab"
-    document.body.addEventListener ("shown.bs.tab", (e)=>
-      {
-            // If we are massively restoring all walls, do nothing here
-        if (_walls.querySelector(".wall[data-restoring]") ||
-            // If we are massively closing all walls, do nothing here
-            S.get ("closing-all"))
-          return;
+    document.body.addEventListener('shown.bs.tab', (e) => {
+      // If we are massively closing or restoring all walls, do nothing here
+      if (S.get('closing-all') ||
+          _walls.querySelector('.wall[data-restoring]')) {
+        return;
+      }
   
-        const el = e.target;
+      const el = e.target;
   
-        // EVENT "shown.bs.tab" on walls tabs
-        if (el.matches (`.walls a[data-bs-toggle="tab"]`))
-        {
-          S.reset ();
+      // EVENT "shown.bs.tab" on walls tabs
+      if (el.matches(`.walls a[data-bs-toggle="tab"]`)) {
+        S.reset();
     
-          // The new wall
-          const $wall = S.getCurrent ("wall");
+        // The new wall
+        const $wall = S.getCurrent('wall');
     
-          // Need a wall to continue
-          if (!$wall.length) return;
+        // Need a wall to continue
+        if (!$wall.length) return;
     
-          $("#walls")
-              .scrollLeft(0)
-              .scrollTop (0);
+        _walls.scrollTop = 0;
+        _walls.scrollLeft = 0;
     
-          const menu = document.getElementById ("main-menu"),
-                $chat = S.getCurrent ("chat"),
-                $filters = S.getCurrent ("filters");
+        const menu = document.getElementById('main-menu');
+        const $chat = S.getCurrent('chat');
+        const $filters = S.getCurrent('filters');
     
-          // Show/hide super menu actions menu depending on user wall rights
-          S.getCurrent("mmenu").mmenu ("checkAllowedActions");
+        // Show/hide super menu actions menu depending on user wall rights
+        S.getCurrent('mmenu').mmenu('checkAllowedActions');
     
-          // Manage chat checkbox menu
-          if ( (menu.querySelector(`li[data-action="chat"] input`)
-                  .checked = $chat.is (":visible")) )
-          {
-            $chat.chat ("removeAlert");
-            $chat.chat ("setCursorToEnd");
-          }
-    
-          // Manage filters checkbox menu
-          menu.querySelector(`li[data-action="filters"] input`)
-            .checked = $filters.is (":visible");
-    
-          // Refresh wall if it has not just been opened
-          if (!S.get ("newWall"))
-          {
-            $wall.wall ("refresh");
-            $wall.wall ("displayExternalRef");
-            $wall.wall ("displayHeaders");
-          }
-    
-          $wall.wall ("menu", {from: "wall", type: "have-wall"});
-    
-          window.dispatchEvent (new Event("resize"));
+        // Manage chat checkbox menu
+        if ( (menu.querySelector(`li[data-action="chat"] input`)
+                 .checked = $chat.is(':visible')) ) {
+          $chat.chat('removeAlert');
+          $chat.chat('setCursorToEnd');
         }
-      });
+    
+        // Manage filters checkbox menu
+        menu.querySelector(`li[data-action="filters"] input`)
+            .checked = $filters.is(':visible');
+    
+        // Refresh wall if it has not just been opened
+        if (!S.get('newWall')) {
+          $wall.wall('refresh');
+          $wall.wall('displayExternalRef');
+          $wall.wall('displayHeaders');
+        }
+    
+        $wall.wall('menu', {from: 'wall', type: 'have-wall'});
+    
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
 
     // EVENT "click" on logout button
-    document.getElementById("logout").addEventListener ("click", ()=>
-      {
-        H.closeMainMenu ();
+    document.getElementById('logout').addEventListener('click', () => {
+      H.closeMainMenu();
   
-        H.openConfirmPopup ({
-          type: "logout",
-          icon: "power-off",
-          content: `<?=_("Do you really want to logout from wopits?")?>`,
-          cb_ok: () => $("<div/>").login ("logout")
-        });
+      H.openConfirmPopup({
+        type: 'logout',
+        icon: 'power-off',
+        content: `<?=_("Do you really want to logout from wopits?")?>`,
+        cb_ok: () => $("<div/>").login('logout'),
       });
+    });
   }
 
   // EVENT "keydown"
-  document.body.addEventListener ('keydown', (e) => {
+  document.body.addEventListener('keydown', (e) => {
       // If "ESC" while popup layer is opened, close it
       if (e.which === 27) {
         let tmp;
@@ -207,7 +207,6 @@ document.addEventListener ("DOMContentLoaded", ()=>
         // If popup layer, click on it to close popup
         if ( tmp = document.getElementById('popup-layer') ) {
           tmp.click();
-
         // If postit menu, click on menu button to close it
         } else if ( tmp = document.querySelector('.postit-menu') ) {
           tmp.nextElementSibling.click();
@@ -217,36 +216,33 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
   // EVENT "show.bs.dropdown" on relation's label menu, to prevent menu from
   //       opening right after dragging
-  document.body.addEventListener ("show.bs.dropdown", (e)=>
-    H.disabledEvent () && e.preventDefault ());
+  document.body.addEventListener('show.bs.dropdown', (e) =>
+    H.disabledEvent() && e.preventDefault());
 
   // EVENT "hidden.bs.toast" on alert messages
-  document.body.addEventListener ("hidden.bs.toast", (e)=>
-    {
-      const el = e.target;
+  document.body.addEventListener('hidden.bs.toast', (e) => {
+    const el = e.target;
 
-      bootstrap.Toast.getInstance (el).dispose ();
-      el.remove ();
-    });
+    bootstrap.Toast.getInstance(el).dispose();
+    el.remove();
+  });
 
   // EVENT "keypress" on popups and popovers to catch <enter> key
-  document.body.addEventListener ("keypress", (e)=>
-    {
-      if (e.which != 13 || e.target.tagName != "INPUT")
-        return;
+  document.body.addEventListener('keypress', (e) => {
+    if (e.which !== 13 || e.target.tagName !== 'INPUT') return;
 
-      const popup = e.target.closest (".popover,.modal");
-      if (!popup)
-        return;
+    const popup = e.target.closest('.popover,.modal');
 
-      const btn = popup.querySelector (
-                    ".btn-primary.btn-sm,.btn-primary,.btn-success");
-      if (btn)
-      {
-        e.preventDefault ();
-        btn.click ();
-      }
-    });
+    if (!popup) return;
+
+    const btn = popup.querySelector(
+        '.btn-primary.btn-sm,.btn-primary,.btn-success');
+
+    if (btn) {
+      e.preventDefault();
+      btn.click();
+    }
+  });
 
   // EVENT "show" on popups
   document.body.addEventListener('show.bs.modal', (e) => {
@@ -263,13 +259,13 @@ document.addEventListener ("DOMContentLoaded", ()=>
       dialog.dataset.toclean = 1;
       dialog.classList.add('modal-sm', 'shadow');
       dialog.querySelectorAll('button.btn')
-          .forEach ((b) => b.classList.add('btn-sm'));
+          .forEach((b) => b.classList.add('btn-sm'));
     } else {
       const $ps = S.getCurrent('postit');
 
       if (dialog.dataset.toclean) {
         dialog.querySelectorAll('button.btn')
-            .forEach ((b) => b.classList.remove('btn-sm'));
+            .forEach((b) => b.classList.remove('btn-sm'));
         dialog.classList.remove('modal-sm', 'shadow');
         dialog.removeAttribute('data-toclean');
       }
@@ -286,10 +282,10 @@ document.addEventListener ("DOMContentLoaded", ()=>
     const target = e.target;
 
     if (!H.haveMouse()) {
-      if (S.get('mstack').length === 1 &&
+      if (S.get('mstack').length === 1 && !S.get('zoom-level') &&
           (
-            // Exception for sharing wall popup
-            target.id === 'swallPopup' ||
+            // Exception for sharing wall and postit attachments popups
+            target.classList.contains('contains-inputs') ||
             H.getFirstInputFields(e.target.querySelector('.modal-dialog'))
           )) {
         H.fixVKBScrollStart();
@@ -301,7 +297,7 @@ document.addEventListener ("DOMContentLoaded", ()=>
 
   // EVENT "hide.bs.modal" on popups
   //       Blur input/textarea to hide virtual keyboard
-  document.body.addEventListener ('hide.bs.modal', (e) => {
+  document.body.addEventListener('hide.bs.modal', (e) => {
     const el = e.target;
 
     if (!H.haveMouse()) {
@@ -314,179 +310,142 @@ document.addEventListener ("DOMContentLoaded", ()=>
       S.getCurrent('wall').wall('unedit');
     }
 
-    if (S.get('vkbData')) {
+    if (S.get('vkbData') && S.get('mstack').length === 1) {
       H.fixVKBScrollStop();
     }
   });
 
   // EVENT "hidden" on popups
-  document.body.addEventListener ("hidden.bs.modal", (e)=>
-    {
-      const el = e.target,
-            mstack = S.get ("mstack");
+  document.body.addEventListener('hidden.bs.modal', (e) => {
+    const el = e.target;
+    const mstack = S.get('mstack');
 
-      S.set ("still-closing", true, 500);
+    S.set('still-closing', true, 500);
 
-      mstack.shift ();
-      S.set ("mstack", mstack);
+    mstack.shift();
+    S.set('mstack', mstack);
 
-      // Prevent child popups from removing scroll to their parent
-      if (mstack.length)
-        document.body.classList.add ("modal-open");
+    // Prevent child popups from removing scroll to their parent
+    if (mstack.length) {
+      document.body.classList.add('modal-open');
+    }
 
-      switch (el.id)
-      {
-        case "infoPopup":
-
-          switch (el.dataset.popuptype)
-          {
-            // Reload app
-            case "app-upgrade":
-            case "app-reload":
-
-              return location.href = "/r.php?u";
-
-            case "app-logout":
-
-              $("<div/>").login ("logout", {auto: true});
-              break;
-          }
-          break;
-
-        case "postitViewPopup":
-
-          S.getCurrent("postit").postit ("unsetCurrent");
-          break;
-
-        case "postitAttachmentsPopup":
-        case "dpickPopup":
-
-          S.getCurrent("postit").postit ("unedit");
-          break;
-
-        case "confirmPopup":
-
-          S.get("confirmPopup").cb_close ();
-          break;
-
-        case "groupAccessPopup":
-        case "groupPopup":
-
-          var tmp = document.querySelector (".modal li.list-group-item.active");
-
-          if (tmp)
-            tmp.classList.remove ("active");
-
-          break;
-      }
-    });
+    switch (el.id) {
+      case 'infoPopup':
+        switch (el.dataset.popuptype) {
+          // Reload app
+          case 'app-upgrade':
+          case 'app-reload':
+            return location.href = '/r.php?u';
+          case 'app-logout':
+            $('<div/>').login('logout', {auto: true});
+            break;
+        }
+        break;
+      case 'postitViewPopup':
+        S.getCurrent('postit').postit('unsetCurrent');
+        break;
+      case 'postitAttachmentsPopup':
+      case 'dpickPopup':
+        S.getCurrent('postit').postit('unedit');
+        break;
+      case 'confirmPopup':
+        S.get('confirmPopup').cb_close();
+        break;
+      case 'groupAccessPopup':
+      case 'groupPopup':
+        const li = document.querySelector('.modal li.list-group-item.active');
+        if (li) {
+          li.classList.remove('active');
+        }
+        break;
+    }
+  });
 
   // EVENT "click"
-  document.body.addEventListener ("click", (e)=>
-    {
-      const el = e.target;
+  document.body.addEventListener('click', (e) => {
+    const el = e.target;
 
-      // EVENT "click" on popup buttons
-      if (el.matches (".modal .modal-footer .btn,.modal .modal-footer .btn *"))
-      {
-        const btn = (el.tagName=="BUTTON")?el:el.closest("button"),
-              popup = btn.closest (".modal"),
-              $popup = $(popup),
-              closePopup = !!!popup.dataset.noclosure,
-              $postit = S.getCurrent ("postit");
+    // EVENT "click" on popup buttons
+    if (el.matches('.modal .modal-footer .btn,.modal .modal-footer .btn *')) {
+      const btn = (el.tagName === 'BUTTON') ? el : el.closest('button');
+      const popup = btn.closest('.modal');
+      const $popup = $(popup);
+      const closePopup = !Boolean(popup.dataset.noclosure);
+      const $postit = S.getCurrent('postit');
 
-        e.stopImmediatePropagation ();
-  
-        popup.removeAttribute ("data-noclosure");
-  
-        if (btn.classList.contains ("btn-primary"))
-        {
-          switch (popup.id)
-          {
-            case "dpickPopup":
-  
-              $popup.dpick ("save");
-              break;
-  
-            case "postitUpdatePopup":
-  
-              $postit.postit ("save", {
-                content: tinymce.activeEditor.getContent (),
-                progress: $(popup.querySelector(".slider")).slider ("value"),
-                title: $("#postitUpdatePopupTitle").val ()
-              });
-              break;
-  
-            // Upload postit attachment
-            case "postitAttachmentsPopup":
-  
+      e.stopImmediatePropagation();
+
+      popup.removeAttribute('data-noclosure');
+
+      if (btn.classList.contains('btn-primary')) {
+        switch (popup.id) {
+          case 'dpickPopup':
+            $popup.dpick('save');
+            break;
+          case 'postitUpdatePopup':
+            $postit.postit('save', {
+              content: tinymce.activeEditor.getContent(),
+              progress: $(popup.querySelector('.slider')).slider('value'),
+              title: $('#postitUpdatePopupTitle').val(),
+            });
+            break;
+          // Upload postit attachment
+          case 'postitAttachmentsPopup':
+            popup.dataset.noclosure = true;
+            $postit.find('.patt').patt('upload');
+            break;
+          case 'groupAccessPopup':
+            $('#swallPopup').swall('linkGroup');
+            break;
+          case'groupPopup':
+            if (popup.dataset.action === 'update') {
               popup.dataset.noclosure = true;
-              $postit.find(".patt").patt ("upload");
-              break;
-  
-            case "groupAccessPopup":
-  
-              $("#swallPopup").swall ("linkGroup");
-              break;
-  
-            case "groupPopup":
-  
-              if (popup.dataset.action == "update")
-                popup.dataset.noclosure = true;
-              break;
-  
-            // Manage confirmations
-            case "confirmPopup":
-  
-              S.get("confirmPopup").cb_ok ();
-              break;
-  
-            // Create new wall
-            case "createWallPopup":
-  
-              var Form = new Wpt_accountForms (),
-                  $inputs = $popup.find ("input");
-  
-              popup.dataset.noclosure = true;
-  
-              if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
-              {
-                const data = {
-                        name: popup.querySelector("input").value,
-                        grid: popup.querySelector("#w-grid").checked
-                      };
-  
-                if (data.grid)
-                  data.dim = {
-                    colsCount: $popup.find(".cols-rows input:eq(0)").val (),
-                    rowsCount: $popup.find(".cols-rows input:eq(1)").val ()
-                  };
-                else
-                  data.dim = {
-                    width: $popup.find(".width-height input:eq(0)").val (),
-                    height: $popup.find(".width-height input:eq(1)").val ()
-                  };
-  
-                $("<div/>").wall ("addNew", data, $popup);
+            }
+            break;
+          // Manage confirmations
+          case 'confirmPopup':
+            S.get('confirmPopup').cb_ok();
+            break;
+          // Create new wall
+          case 'createWallPopup':
+            const Form = new Wpt_accountForms();
+            const inputs = popup.querySelectorAll('input');
+
+            popup.dataset.noclosure = true;
+
+            if (Form.checkRequired(inputs) && Form.validForm(inputs)) {
+              const data = {
+                name: popup.querySelector('input').value,
+                grid: popup.querySelector('#w-grid').checked,
+              };
+
+              if (data.grid) {
+                const cr = popup.querySelectorAll('.cols-rows input');
+                data.dim = {colsCount: cr[0].value, rowsCount: cr[1].value};
               }
-              break;
-  
-            // Save wall properties
-            case "wpropPopup":
-              S.getCurrent("wall").wall ("saveProperties");
-              return;
-          }
-        }
-  
-        if (closePopup)
-          bootstrap.Modal.getInstance(popup).hide ();
-      }
-      // EVENT "click" on main menu and list items
-      else if (el.matches (".nav-link:not(.dropdown-toggle),"+
-                           ".dropdown-item"))
-      {
-        H.closeMainMenu ();
-      }
-    });
+              else {
+                const wh = popup.querySelectorAll('.width-height input');
+                data.dim = {width: wh[0].value, height: wh[1].value};
+              }
 
+              $('<div/>').wall('addNew', data, $(popup));
+            }
+            break;
+          // Save wall properties
+          case 'wpropPopup':
+            S.getCurrent('wall').wall('saveProperties');
+            return;
+        }
+      }
+
+      if (closePopup) {
+        bootstrap.Modal.getInstance(popup).hide();
+      }
+    // EVENT "click" on main menu and list items
+    } else if (el.matches('.nav-link:not(.dropdown-toggle),'+
+                          '.dropdown-item')) {
+      H.closeMainMenu();
+    }
+  });
 });

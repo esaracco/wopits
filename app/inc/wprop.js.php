@@ -58,10 +58,11 @@
         // success cb
         (d) =>
         {
-          const $popup = this.element,
-                isCreator = (d.user_id == wpt_userData.id);
+          const $popup = this.element;
+          const popup = $popup[0];
+          const isCreator = (d.user_id == wpt_userData.id);
 
-          H.cleanPopupDataAttr ($popup[0]);
+          H.cleanPopupDataAttr (popup);
 
           $popup.find(".description").show ();
 
@@ -112,11 +113,11 @@
           else
           {
             $popup.find(".reject-sharing").show ();
-            $popup[0].dataset.groups = d.groups.join (",");
+            popup.dataset.groups = d.groups.join (",");
           }
 
-          $popup[0].dataset.noclosure = true;
-          H.openModal ({item: $popup});
+          popup.dataset.noclosure = true;
+          H.openModal ({item: popup});
         }
       );
     }

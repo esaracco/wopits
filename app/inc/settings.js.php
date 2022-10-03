@@ -368,7 +368,7 @@
         H.setColorpickerColor ($cp, plugin.get ("wall-background", wallId));
       }
 
-      H.openModal ({item: $settings});
+      H.openModal ({item: $settings[0]});
 
       if (!loaded)
       {

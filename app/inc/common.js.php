@@ -563,7 +563,7 @@ class WSocket
             popup.querySelector('.modal-body').innerHTML = `<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`;
             popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`;
             popup.dataset.popuptype = "app-logout";
-            H.openModal ({item: $(popup), customClass: "zindexmax"});
+            H.openModal ({item: popup, customClass: "zindexmax"});
 
             // Close current popups if any
             setTimeout (()=> (S.get("mstack") || []).forEach(
@@ -656,7 +656,7 @@ class WSocket
             popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`;
 
             popup.dataset.popuptype = 'app-reload';
-            H.openModal ({item: $(popup), customClass: 'zindexmax'});
+            H.openModal ({item: popup, customClass: 'zindexmax'});
             break;
         }
       }
@@ -763,7 +763,7 @@ class WSocket
       return;
     }
 
-    const send = !!msg.msgId;
+    const send = Boolean(msg.msgId);
 
     // Put message in message queue if not already in
     if (!msg.msgId)
@@ -836,16 +836,15 @@ class WHelper
     });
   }
 
-  // METHOD isLoginPage ()
-  static isLoginPage ()
-  {
-    return (document.body && document.body.id == "login-page");
+  // METHOD isLoginPage()
+  static isLoginPage() {
+    // Only the login page has an "id" attr
+    return Boolean(document.body.id);
   }
 
-  // METHOD disabledEvent ()
-  static disabledEvent (cond)
-  {
-    return !!((cond === true) || S.get ("link-from") || S.get ("dragging"));
+  // METHOD disabledEvent()
+  static disabledEvent(cond) {
+    return Boolean((cond === true) || S.get('link-from') || S.get('dragging'));
   }
 
   // METHOD lightenDarkenColor ()
@@ -884,16 +883,16 @@ class WHelper
     return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
   }
 
-  // METHOD rgb2hex ()
-  static rgb2hex (rgb)
-  {
+  // METHOD rgb2hex()
+  static rgb2hex(rgb) {
     // If already in hex
-    if (rgb.charAt(0) == "#")
+    if (rgb.charAt(0) === '#') {
       return rgb;
+    }
 
-    const hex = (x) => ("0" + parseInt(x).toString(16)).slice (-2);
+    const hex = (x) => ('0' + parseInt(x).toString(16)).slice(-2);
 
-    rgb = rgb.match (/^rgba?\((\d+),?\s*(\d+),?\s*(\d+)/);
+    rgb = rgb.match(/^rgba?\((\d+),?\s*(\d+),?\s*(\d+)/);
 
     return `#${hex(rgb[1])}${hex(rgb[2])}${hex(rgb[3])}`;
   }
@@ -904,6 +903,7 @@ class WHelper
         `input[type="text"]:not(:read-only),`+
         `input[type="email"]:not(:read-only),`+
         `input[type="password"]:not(:read-only),`+
+        `input[type="number"]:not(:read-only),`+
         `textarea:not(:read-only)`);
   }
 
@@ -1033,9 +1033,9 @@ class WHelper
   // METHOD cleanPopupDataAttr()
   static cleanPopupDataAttr(popup) {
     // Remove all popup data attributes
-    Array.from(popup.attributes).forEach((a) => {
-      if (a.name.indexOf('data-') === 0) {
-        popup.removeAttribute(a.name);
+    Array.from(popup.attributes).forEach(({name}) => {
+      if (name.indexOf('data-') === 0) {
+        popup.removeAttribute(name);
       }
     });
   
@@ -1066,7 +1066,6 @@ class WHelper
       case 'groupAccessPopup':
         popup.querySelector('.send-msg input[type="checkbox"]').checked = false;
         break;
-      default:
     }
   }
   
@@ -1203,7 +1202,7 @@ class WHelper
         else
           aboutEl.style.display = "none";
 
-        H.openModal ({item: $p});
+        H.openModal ({item: p});
       }
     });
   }
@@ -1247,12 +1246,12 @@ class WHelper
 
     popup.dataset.popuptype = args.type;
 
-    this.openModal ({item: $(popup)});
+    this.openModal ({item: popup});
   }
   
   // METHOD openConfirmPopover()
   static openConfirmPopover(args) {
-    const scroll = !!args.scrollIntoView;
+    const scroll = Boolean(args.scrollIntoView);
     let btn;
     let buttons;
 
@@ -1373,10 +1372,9 @@ class WHelper
   }
   
   // METHOD resizeModal ()
-  static resizeModal ($modal, w)
+  static resizeModal (modal, w)
   {
-    const modal = $modal[0],
-          md = modal.querySelector (".modal-dialog"),
+    const md = modal.querySelector (".modal-dialog"),
           wW = $(window).width (),
           cW = Number (modal.dataset.customwidth)||0,
           oW = w;
@@ -1407,35 +1405,35 @@ class WHelper
     md.style.maxWidth = `${w}px`;
   }
   
-  // METHOD openModal ()
-  static openModal (args)
-  {
-    const m = args.item[0];
+  // METHOD openModal()
+  static openModal(args) {
+    const m = args.item;
 
     // Modals with transition effect
-    if (!args.noeffect)
-      m.classList.add ("fade");
+    if (!args.noeffect) {
+      m.classList.add('fade');
+    }
 
-    m.removeAttribute ("data-customwidth");
+    m.removeAttribute('data-customwidth');
     m.style.top = 0;
     m.style.left = 0;
 
-    m.querySelector(".modal-content").classList.add ("shadow-lg");
+    m.querySelector('.modal-content').classList.add('shadow-lg');
 
-    if (args.customClass)
-      m.classList.add (args.customClass);
+    if (args.customClass) {
+      m.classList.add(args.customClass);
+    }
 
-    bootstrap.Modal.getOrCreateInstance (m, {backdrop: true}).show ();
+    bootstrap.Modal.getOrCreateInstance(m, {backdrop: true}).show();
 
-    if (args.width)
-      this.resizeModal (args.item, args.width);
-    else
-    {
-      const md = m.querySelector (".modal-dialog");
+    if (args.width) {
+      this.resizeModal (m, args.width);
+    } else {
+      const md = m.querySelector('.modal-dialog');
 
-      md.style.width = "";
-      md.style.minWidth = "";
-      md.style.maxWidth = "";
+      md.style.width = '';
+      md.style.minWidth = '';
+      md.style.maxWidth = '';
     }
   }
 
@@ -1448,7 +1446,9 @@ class WHelper
     // INTERNAL FUNCTION __exec ()
     const __exec = ($p)=>
       {
-        H.cleanPopupDataAttr ($p[0]);
+        const p = $p[0];
+
+        H.cleanPopupDataAttr (p);
 
         if (args.cb)
           args.cb ($p);
@@ -1458,8 +1458,8 @@ class WHelper
 
         if (args.open)
           H.openModal ({
-            item: $p,
-            noeffect: !!args.noeffect
+            item: p,
+            noeffect: Boolean(args.noeffect),
           });
       };
 
@@ -1490,24 +1490,23 @@ class WHelper
     }
   }
   
-  // METHOD infoPopup ()
-  static infoPopup (msg, notheme)
-  {
-    const p = document.getElementById ("infoPopup"),
-          $p = $(p);
+  // METHOD infoPopup()
+  static infoPopup(msg, notheme) {
+    const p = document.getElementById('infoPopup');
   
-    if (notheme)
-      p.classList.add ("no-theme");
-    else
-      this.cleanPopupDataAttr (p);
+    if (notheme) {
+      p.classList.add('no-theme');
+    } else {
+      this.cleanPopupDataAttr(p);
+    }
       
-    p.querySelector(".modal-dialog").classList.add ("modal-sm");
+    p.querySelector('.modal-dialog').classList.add('modal-sm');
   
-    p.querySelector(".modal-body").innerHTML = msg;
+    p.querySelector('.modal-body').innerHTML = msg;
   
-    p.querySelector(".modal-title").innerHTML = `<i class="fas fa-bullhorn"></i> <?=_("Information")?>`;
+    p.querySelector('.modal-title').innerHTML = `<i class="fas fa-bullhorn"></i> <?=_("Information")?>`;
   
-    this.openModal ({item: $p});
+    this.openModal({item: p});
   }
   
   // METHOD raiseError ()
@@ -1565,32 +1564,25 @@ class WHelper
           msg, {delay: (t=="danger"||t=="warning")?5000:3000}).show ();
   }
 
-  // METHOD fixMenuHeight ()
-  static fixMenuHeight ()
-  {
-    const menu = document.querySelector (".navbar-collapse"),
-          mbBtn = document.querySelector (".navbar-toggler i");
+  // METHOD fixHeight()
+  static fixHeight() {
+    const menuStyle = document.querySelector('.navbar-collapse').style;
+    const mbBtn = document.querySelector('.navbar-toggler i');
   
     // If menu is in min mode, limit menus height
-    if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0)
-    {
-      menu.style.overflowY = "auto";
-      menu.style.maxHeight = `${window.innerHeight-56}px`;
+    if (mbBtn.offsetWidth > 0 && mbBtn.offsetHeight > 0) {
+      menuStyle.overflowY = 'auto';
+      menuStyle.maxHeight = `${window.innerHeight - 56}px`;
+    } else {
+      menuStyle.overflowY = '';
+      menuStyle.maxHeight = '';
     }
-    else
-    {
-      menu.style.overflowY = "";
-      menu.style.maxHeight = "";
-    }
-  }
-  
-  // METHOD fixMainHeight ()
-  static fixMainHeight ()
-  {
-    document.querySelector("html").style.overflow = "hidden";
 
-    S.getCurrent("walls")[0].style.height =
-      `${window.innerHeight - document.querySelector(".nav-tabs.walls").offsetHeight}px`;
+    document.querySelector('html').style.overflow = 'hidden';
+
+    S.getCurrent('walls')[0].style.height =
+      `${window.innerHeight -
+         document.querySelector(".nav-tabs.walls").offsetHeight}px`;
   }
 
   // METHOD setColorpickerColor ()
@@ -1951,7 +1943,7 @@ class WHelper
           bootstrap.Modal.getInstance(popup).hide ();
         });
 
-        this.openModal ({item: $(popup), noeffect: true});
+        this.openModal ({item: popup, noeffect: true});
     }
 
     <?php } ?>
@@ -1966,6 +1958,7 @@ class WHelper
 
     if (!String(officialVersion).match(/^\d+$/))
     {
+      const popup = $popup[0];
       const userVersion = ST.get('version');
 
       if (userVersion != officialVersion)
@@ -1979,13 +1972,13 @@ class WHelper
           (S.get("mstack")||[])
              .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
   
-          this.cleanPopupDataAttr ($popup[0]);
+          this.cleanPopupDataAttr (popup);
   
           $popup.find(".modal-body").html (`<?=_("A new release of wopits is available.")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>`.replace("%s1", `<b>${userVersion}</b>`).replace("%s2", `<b>${officialVersion}</b>`));
           $popup.find(".modal-title").html (`<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`);
   
-          $popup[0].dataset.popuptype = "app-upgrade";
-          this.openModal ({item: $popup});
+          popup.dataset.popuptype = "app-upgrade";
+          this.openModal ({item: popup});
   
           return true;
         }
@@ -2011,15 +2004,15 @@ class WHelper
             d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
           <?php endif?>
 
-          $popup[0].querySelector(".modal-body").innerHTML = `${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`;
-          $popup[0].querySelector(".modal-body button")
+          popup.querySelector(".modal-body").innerHTML = `${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`;
+          popup.querySelector(".modal-body button")
             .addEventListener ("click", (e)=>
             {
-              bootstrap.Modal.getInstance($popup).hide ();
+              bootstrap.Modal.getInstance(popup).hide ();
               H.loadPopup ("userGuide");
             });
 
-          this.openModal ({item: $popup, noeffect: true});
+          this.openModal ({item: popup, noeffect: true});
         }
       }
       else
@@ -2034,65 +2027,39 @@ class WHelper
   }
 
   // METHOD fixVKBScrollStart()
-  //FIXME
   static fixVKBScrollStart() {
-     const walls = document.getElementById('walls');
+    const walls = document.getElementById('walls');
 
     if (!walls) return;
 
     const body = document.body;
-    const wallsScrollLeft = walls.scrollLeft;
-    const wall = S.getCurrent('wall')[0];
 
     S.set('vkbData', {
-      wallsScrollLeft,
       bodyComputedStyles: window.getComputedStyle(body),
     });
+
+    walls.style.width = `${window.innerWidth}px`;
 
     body.style.overflow = 'hidden';
     body.style.position = 'fixed';
     body.style.top = `${body.scrollTop * -1}px`;
-
-    if (wall && this.navigatorIsEdge()) {
-      wall.style.left = `${wallsScrollLeft * -1}px`;
-    }
-
-    walls.style.width = `${window.innerWidth}px`;
-
-    window.dispatchEvent(new Event('resize'));
+    body.style.left = `${body.scrollLeft * -1}px`;
   }
   
   // METHOD fixVKBScrollStop()
-  //FIXME
   static fixVKBScrollStop() {
-    const data = S.get('vkbData');
-
-    if (!data) return;
-
+    const {bodyComputedStyles} = S.get('vkbData');
     const walls = document.getElementById('walls');
-    const wall = S.getCurrent('wall')[0];
-    const {wallsScrollLeft, bodyComputedStyles} = data;
   
     document.body.style = bodyComputedStyles;
-    walls.style.width = "auto";
-    walls.scrollLeft = wallsScrollLeft;
-    if (wall && this.navigatorIsEdge()) {
-      wall.style.left = '';
-    }
+    walls.style.width = 'auto';
 
     S.unset('vkbData');
-  
-    this.waitForDOMUpdate(() => {
-      this.fixMainHeight();
-      if (wall) {
-        $(wall).wall('repositionPostitsPlugs');
-      }
-    });
   }
 }
 
 // GLOBAL VARS
-const H = WHelper,
-      S = new WSharer (),
-      ST = new WStorage (),
-      WS = new WSocket ();
+const H = WHelper;
+const S = new WSharer()
+const ST = new WStorage()
+const WS = new WSocket();

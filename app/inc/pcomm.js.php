@@ -143,7 +143,7 @@
       if (!args)
         args = {};
 
-      if (!!args.full)
+      if (Boolean(args.full))
       {
         args["field"] = true;
         args["users"] = true;
@@ -152,7 +152,7 @@
       pc.querySelector(".result-container").style.display = "none";
       pc.querySelector(".result").innerHTML = "";
 
-      if (!!args.field)
+      if (Boolean(args.field))
         _textarea.value = "";
 
       _textarea.classList.remove ("autocomplete");

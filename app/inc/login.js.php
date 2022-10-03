@@ -82,23 +82,23 @@
 
               case "create":
 
-                $popup = $("#createAccountPopup");
+                popup = document.getElementById('#createAccountPopup');
 
-                H.cleanPopupDataAttr ($popup[0]);
+                H.cleanPopupDataAttr (popup);
 
                 plugin.resetCreateUserForm ();
-                $popup[0].dataset.noclosure = true;
-                H.openModal ({item: $popup});
+                popup.dataset.noclosure = true;
+                H.openModal ({item: popup});
                 break;
 
               case "forgot":
 
-                $popup = $("#resetPasswordPopup");
+                popup = document.getElementById('resetPasswordPopup');
 
-                H.cleanPopupDataAttr ($popup[0]);
+                H.cleanPopupDataAttr (popup);
 
-                $popup[0].dataset.noclosure = true;
-                H.openModal ({item: $popup});
+                popup.dataset.noclosure = true;
+                H.openModal ({item: popup});
                 break;
             }          
           }

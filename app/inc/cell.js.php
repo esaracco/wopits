@@ -17,204 +17,193 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init ()
-    {
-      const plugin = this,
-            $cell = plugin.element,
-            cell = $cell[0],
-            settings = plugin.settings,
-            cellId = settings.id,
-            usersettings = settings.usersettings,
-            $wall = settings.wall,
-            writeAccess = plugin.canWrite ();
+  Plugin.prototype = {
+    // METHOD init()
+    init() {
+      const plugin = this;
+      const $cell = plugin.element;
+      const cell = $cell[0];
+      const settings = plugin.settings;
+      const cellId = settings.id;
+      const usersettings = settings.usersettings;
+      const $wall = settings.wall;
+      const writeAccess = plugin.canWrite ();
       // Coords of touchstart on touch devices
       let _coords = null;
 
-      cell.classList.add (usersettings.displaymode||
-                          $wall[0].dataset.displaymode);
+      cell.classList.add(
+          usersettings.displaymode || $wall[0].dataset.displaymode);
 
       // Add cell menu
-      cell.insertBefore ($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`)[0], cell.firstChild);
+      cell.insertBefore($(`<div class="cell-menu"><span class="btn btn-sm btn-secondary btn-circle"><i class="fas fa-sticky-note fa-fw"></i></span></div>`)[0], cell.firstChild);
 
-      if (writeAccess)
+      if (writeAccess) {
         $cell
           // Make cell DROPPABLE
-          .droppable ({
-            accept: ".postit",
-            tolerance: "pointer",
-            scope:"dzone",
-            classes: {"ui-droppable-hover" : "droppable-hover"},
-            drop: function (e, ui)
-              {
-                if (S.get("revertData").revert) return;
+          .droppable({
+            accept: '.postit',
+            tolerance: 'pointer',
+            scope: 'dzone',
+            classes: {'ui-droppable-hover': 'droppable-hover'},
+            drop: function(e, ui) {
+              if (S.get('revertData').revert) return;
 
-                const $target = $(this),
-                      $postit = ui.draggable,
-                      ptop = ui.offset.top - $target.offset().top,
-                      pleft = ui.offset.left - $target.offset().left;
+              const $target = $(this);
+              const $postit = ui.draggable;
+              const ptop = ui.offset.top - $target.offset().top;
+              const pleft = ui.offset.left - $target.offset().left;
   
-                $postit.postit ("setPosition", {
-                  cellId: settings.id,
-                  top: (ptop < 0) ? 0 : ptop,
-                  left: (pleft < 0) ? 0 : pleft
-                });
-  
-                $postit.appendTo ($target);
-  
-                $target.cell ("reorganize")
-                  .then(()=> $postit.postit("dropStop"));
-              }
-          });
-
-       $cell
-        // Make cell resizable
-        .resizable ({
-          disabled: !writeAccess,
-          autoHide: false,
-          ghost: true,
-          minWidth: settings.width,
-          minHeight: settings.height,
-          helper: "resizable-helper",
-          resize:function(e, ui)
-            {
-              if (S.get("revertData").revert)
-              {
-                $("body")[0].removeAttribute ("style");
-
-                return false;
-              }
-            },
-          start: function(e, ui)
-            {
-              const $editable = $wall.find (".editable");
-
-              // Cancel all editable (blur event is not triggered on resizing).
-              if ($editable.length)
-                $editable.editable ("cancelAll");
-
-              S.set ("revertData", {
-                revert: false,
-                size: {
-                  width: $cell.outerWidth (),
-                  height: $cell.outerHeight ()
-                }
+              $postit.postit('setPosition', {
+                cellId: settings.id,
+                top: (ptop < 0) ? 0 : ptop,
+                left: (pleft < 0) ? 0 : pleft,
               });
-
-              plugin.edit (()=> S.get("revertData").revert = true);
+  
+              $postit.appendTo($target);
+  
+              $target.cell('reorganize').then(()=> $postit.postit('dropStop'));
             },
-          stop:function(e, ui)
-            {
-              const revertData = S.get ("revertData");
+          });
+      }
 
-              S.unset ("revertData");
-
-              if (revertData.revert)
-                $cell.css ({
-                  width: revertData.size.width,
-                  height: revertData.size.height
+      // Make cell resizable
+      $cell.resizable({
+        disabled: !writeAccess,
+        autoHide: false,
+        ghost: true,
+        minWidth: settings.width,
+        minHeight: settings.height,
+        helper: 'resizable-helper',
+        resize: function(e, ui) {
+          if (S.get('revertData').revert) {
+            $('body')[0].removeAttribute('style');
+ 
+            return false;
+          }
+        },
+        start: function(e, ui) {
+          const $editable = $wall.find('.editable');
+ 
+          // Cancel all editable (blur event is not triggered on resizing).
+          if ($editable.length) {
+            $editable.editable('cancelAll');
+          }
+ 
+          S.set('revertData', {
+            revert: false,
+            size: {
+              width: $cell.outerWidth(),
+              height: $cell.outerHeight(),
+            }
+          });
+ 
+          plugin.edit(() => S.get('revertData').revert = true);
+        },
+        stop:function(e, ui) {
+          const revertData = S.get('revertData');
+ 
+          S.unset('revertData');
+ 
+          if (revertData.revert) {
+            $cell.css({
+              width: revertData.size.width,
+              height: revertData.size.height,
+            });
+          } else {
+            const absH = Math.abs(ui.size.height - ui.originalSize.height);
+            const absW = Math.abs(ui.size.width - ui.originalSize.width);
+ 
+            // Height
+            if (absH < 2 || absH > 2)  {
+              if ($wall[0].dataset.cols === '1' &&
+                  $wall[0].dataset.rows === '1') {
+                plugin.update({
+                  width: ui.size.width + 3,
+                  height: ui.size.height,
                 });
-              else
-              {
-                const absH = Math.abs (ui.size.height - ui.originalSize.height),
-                      absW = Math.abs (ui.size.width - ui.originalSize.width);
-
-                // Height
-                if (absH < 2 || absH > 2)
-                {
-                  if ($wall[0].dataset.cols == 1 && $wall[0].dataset.rows == 1)
-                    plugin.update ({
-                      width: ui.size.width + 3,
-                      height: ui.size.height
-                    });
-                  else
-                  {
-                    $cell.closest("tr.wpt").find("th.wpt:first-child")
-                      .css("height", ui.size.height);
-
-                    plugin.update ({
-                      width: ui.size.width + 2,
-                    });
-
-                    // Set height for all cells of the current row
-                    $wall.find(
-                      `tbody.wpt tr.wpt:eq(${$cell.parent().index()}) td.wpt`)
-                      .each (function ()
-                      {
-                        this.style.height = `${ui.size.height}px`;
-
-                        this.querySelector("div.ui-resizable-e")
-                          .style.height = `${ui.size.height+2}px`;
-                      });
-                  }
-                }
-
-                // Width
-                if (absW < 2 || absW > 2)
-                {
-                  $wall.find("tbody.wpt tr.wpt")
-                    .find(`td.wpt:eq(${$cell.index()-1})`)
-                    .each (function ()
-                    {
-                      this.style.width = `${ui.size.width}px`;
-
-                      this.querySelector("div.ui-resizable-s")
-                        .style.width = `${ui.size.width+2}px`;
-                    });
-
-                  $wall.wall ("fixSize", ui.originalSize.width, ui.size.width);
-                }
-
-                $wall.find("tbody.wpt td.wpt").cell ("reorganize");
-
-                plugin.unedit ();
+              } else {
+                $cell.closest('tr.wpt').find('th.wpt:first-child')
+                    .css('height', ui.size.height);
+ 
+                plugin.update({width: ui.size.width + 2});
+ 
+                // Set height for all cells of the current row
+                $wall.find(
+                  `tbody.wpt tr.wpt:eq(${$cell.parent().index()}) td.wpt`)
+                  .each(function() {
+                    this.style.height = `${ui.size.height}px`;
+                    this.querySelector("div.ui-resizable-e")
+                        .style.height = `${ui.size.height + 2}px`;
+                  });
               }
             }
-        });
+ 
+            // Width
+            if (absW < 2 || absW > 2) {
+              $wall
+                .find('tbody.wpt tr.wpt')
+                .find(`td.wpt:eq(${$cell.index() - 1})`)
+                .each (function() {
+                  this.style.width = `${ui.size.width}px`;
+                  this.querySelector('div.ui-resizable-s')
+                      .style.width = `${ui.size.width+2}px`;
+                });
+ 
+                $wall.wall('fixSize', ui.originalSize.width, ui.size.width);
+            }
+ 
+            $wall.find('tbody.wpt td.wpt').cell('reorganize');
+ 
+            plugin.unedit();
+          }
+        }
+      });
 
-       if (writeAccess)
-       {
-         // INTERNAL FUNCTION __dblclick ()
-         const __dblclick = (e)=>
-           {
-             if (S.get ("zoom-level") || S.get ("postit-creating") ||
-                 ((e.target.tagName != "TD" ||
-                   !e.target.classList.contains("wpt")) &&
-                   !e.target.classList.contains ("cell-list-mode")))
-                  return e.stopImmediatePropagation ();
+      if (writeAccess) {
+        // INTERNAL FUNCTION __dblclick ()
+        const __dblclick = (e) => {
+          if (S.get('zoom-level') || S.get('postit-creating') ||
+              (
+                (
+                  e.target.tagName !== 'TD' ||
+                  !e.target.classList.contains('wpt')
+                ) &&
+                !e.target.classList.contains('cell-list-mode')
+              )) {
+            return e.stopImmediatePropagation ();
+          }
 
-             S.set ("postit-creating", true, 500);
+          S.set('postit-creating', true, 500);
 
-             const cellOffset = $cell.offset (),
-                   pTop = ((_coords && _coords.changedTouches) ?
-                     _coords.changedTouches[0].clientY :
-                     e.pageY) - cellOffset.top,
-                   pLeft = ((_coords && _coords.changedTouches) ?
-                     _coords.changedTouches[0].clientX :
-                     e.pageX) - cellOffset.left;
+          const cellOffset = $cell.offset ();
+          const pTop =
+              ((_coords && _coords.changedTouches) ?
+                _coords.changedTouches[0].clientY : e.pageY) - cellOffset.top;
+          const pLeft =
+              ((_coords && _coords.changedTouches) ?
+                _coords.changedTouches[0].clientX : e.pageX) - cellOffset.left;
 
-             _coords = null;
+           _coords = null;
 
-             $wall.wall ("closeAllMenus");
+           $wall.wall('closeAllMenus');
 
-             const $f = S.getCurrent ("filters");
-             if ($f.is (":visible"))
-               $f.filters ("reset");
+           const $f = S.getCurrent('filters');
+           if ($f.is(':visible')) {
+             $f.filters('reset');
+           }
 
-             plugin.addPostit ({
-               access: settings.access,
-               item_top: pTop,
-               item_left: pLeft - 15
-             });
-           };
+           plugin.addPostit({
+             access: settings.access,
+             item_top: pTop,
+             item_left: pLeft - 15,
+           });
+        };
 
-         // Touch devices
-         if ($.support.touch) {
-           $cell
+        // Touch devices
+        if ($.support.touch) {
+          $cell
             // EVENT touchstart on cell to retrieve touch coords
-            .on("touchstart", (e) => {
+            .on('touchstart', (e) => {
               _coords = e;
               // Fix issue with some touch devices
               $(".navbar-nav,.dropdown-menu").collapse("hide");
@@ -222,59 +211,52 @@
             // EVENT MOUSEDOWN on cell
             .doubletap(__dblclick);
           // No touch device
-          } else {
-            $cell.dblclick(__dblclick);
-          }
+        } else {
+          $cell.dblclick(__dblclick);
         }
+      }
 
-        let w, h;
+      let h;
+      let w;
 
-        if ($cell[0].classList.contains ("size-init"))
-        {
-          w = $cell.outerWidth();
-          h = $cell.outerHeight ();
-        }
-        else
-        {
-          const $trPrev = $cell.parent().prev (),
-                $tdPrev = ($trPrev.length) ?
-                  $trPrev.find(`td.wpt:eq(${$cell.index()-1})`) : undefined;
+      if ($cell[0].classList.contains('size-init')) {
+        w = $cell.outerWidth();
+        h = $cell.outerHeight();
+      } else {
+        const $trPrev = $cell.parent().prev();
+        const $tdPrev = $trPrev.length ?
+                $trPrev.find(`td.wpt:eq(${$cell.index() - 1})`) : undefined;
 
-          w = $tdPrev ? $tdPrev.css ("width") : settings.width;
-          h = $tdPrev ? $tdPrev.css ("height") : settings.height;
-        }
+        w = $tdPrev ? $tdPrev.css('width') : settings.width;
+        h = $tdPrev ? $tdPrev.css('height') : settings.height;
+      }
 
-        plugin.update ({width: w, height: h});
+      plugin.update({width: w, height: h});
     },
 
-    // METHOD showUserWriting ()
-    showUserWriting (user)
-    {
+    // METHOD showUserWriting()
+    showUserWriting(user) {
       const cell = this.element[0];
 
-      setTimeout (()=>
-        {
-          cell.classList.add ("locked");
-          cell.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], cell.firstChild);
-        }, 150);
+      setTimeout(() => {
+        cell.classList.add('locked');
+        cell.insertBefore($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], cell.firstChild);
+      }, 150);
     },
 
     // METHOD setPostitsUserWritingListMode ()
     // See postit::showUserWriting()
-    setPostitsUserWritingListMode ()
-    {
-      this.element[0].querySelectorAll(".user-writing").forEach ((el) =>
-        {
-          const p = el.parentNode,
-                min = p.parentNode.querySelector (
-                  `.postit-min[data-id="${p.dataset.id}"]`);
+    setPostitsUserWritingListMode() {
+      this.element[0].querySelectorAll('.user-writing').forEach((el) => {
+        const p = el.parentNode;
+        const min = p.parentNode.querySelector (
+                        `.postit-min[data-id="${p.dataset.id}"]`);
 
-          if (min)
-          {
-            min.classList.add ("locked");
-            min.insertBefore ($(`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`)[0], min.firstChild);
-          }
-        });
+        if (min) {
+          min.classList.add('locked');
+          min.insertBefore($(`<span class="user-writing-min${el.classList.contains("main")?" main":""}" data-userid="${el.dataset.userid}"><i class="${el.querySelector("i").className} fa-sm"></i></span>`)[0], min.firstChild);
+        }
+      });
     },
 
     // METHOD setPostitsDisplayMode ()
@@ -438,31 +420,28 @@
       }
     },
 
-    // METHOD decCount ()
-    decCount ()
-    {
-      const el = this.element[0].querySelector(".cell-menu .wpt-badge");
+    // METHOD decCount()
+    decCount() {
+      const el = this.element[0].querySelector('.cell-menu .wpt-badge');
 
-      if (el)
-        el.innerText = parseInt (el.innerText) - 1; 
+      if (el) {
+        el.innerText = parseInt(el.innerText) - 1; 
+      }
     },
 
-    // METHOD remove ()
-    remove ()
-    {
-      this.element[0].querySelectorAll(".postit").forEach (p =>
-        $(p).postit ("remove", true));
+    // METHOD remove()
+    remove() {
+      this.element[0].querySelectorAll('.postit').forEach((p) =>
+          $(p).postit('remove', true));
 
-      this.element.remove ();
+      this.element.remove();
     },
 
-    // METHOD reorganize ()
-    async reorganize ()
-    {
-      this.element.each (function ()
-      {
-        this.querySelectorAll(".postit").forEach (p =>
-          $(p).postit ("fixPosition", this.getBoundingClientRect()));
+    // METHOD reorganize()
+    async reorganize() {
+      this.element.each(function() {
+        this.querySelectorAll('.postit').forEach((p) =>
+            $(p).postit('fixPosition', this.getBoundingClientRect()));
       });
     },
 

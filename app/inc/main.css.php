@@ -624,14 +624,14 @@ dd {
 
 #umsg {
   position:absolute;
-  margin-top:-24px;
-  margin-left:20px;
   cursor:pointer;
+  top: 6px;
+  left: 8px;
 }
 
 #umsg .wpt-badge {
-  display:none;
-  background-color:#ff0000;
+  display: none;
+  background-color: #ff0000;
 }
 
 .inline-block {
@@ -1145,8 +1145,8 @@ input::-ms-clear {
 }
 
 .leader-line text {
-  fill-opacity:0 !important;
-  stroke-opacity:0 !important;
+  fill-opacity: 0 !important;
+  stroke-opacity: 0 !important;
 }
 
 #userGuidePopup .latest-dt {
@@ -1228,7 +1228,7 @@ input::-ms-clear {
 }
 
 #plugprop-sample div:first-child {
-  float:left;
+  position: fixed;
 }
 
 #plugprop-sample div:nth-child(2) {
@@ -1993,8 +1993,8 @@ ul#mmenu {
 }
 
 .userscount .wpt-badge {
-  left:20px;
-  top:5px;
+  left: 20px;
+  top: 5px;
 }
 
 .chat .usersviewcounts .wpt-badge {
@@ -2046,8 +2046,8 @@ i.notset {
 }
 
 .wall-menu .wpt-badge {
-  margin-left:-30px;
-  margin-top:11px;
+  margin-left: -30px;
+  margin-top: 11px;
 }
 
 #mmenu li:not(:last-child) i.fa-lg,

@@ -133,6 +133,7 @@
         },
         cb: ($p)=>
         {
+          const p = $p[0];
           const writeAccess = !this.settings.readonly;
           let body = "";
 
@@ -148,35 +149,35 @@
 
           $p.find(".modal-body .list-group").html (body);
 
-          $p[0].dataset.noclosure = true;
-          H.openModal ({item: $p});
+          p.dataset.noclosure = true;
+          H.openModal ({item: p});
 
           // EVENT "click" on popup
           const __click = (e)=> this._eventClick (e);
-          $p[0].addEventListener ("click", __click);
+          p.addEventListener ("click", __click);
 
           // EVENT "hidden.bs.collapse" on attachment row
           const __hiddenCollapse = (e)=> this._eventHiddenCollapse (e);
-          $p[0].addEventListener ("hidden.bs.collapse", __hiddenCollapse);
+          p.addEventListener ("hidden.bs.collapse", __hiddenCollapse);
 
           // EVENT "show.bs.collapse" on attachment row
           const __showCollapse = (e)=> this._eventShowCollapse (e);
-          $p[0].addEventListener ("show.bs.collapse", __showCollapse);
+          p.addEventListener ("show.bs.collapse", __showCollapse);
 
           // EVENT "shown.bs.collapse" on attachment row
           const __shownCollapse = (e)=> this._eventShownCollapse (e);
-          $p[0].addEventListener ("shown.bs.collapse", __shownCollapse);
+          p.addEventListener ("shown.bs.collapse", __shownCollapse);
 
           // Remove event listeners on closing
-          $p[0].addEventListener ("hide.bs.modal", (e)=>
+          p.addEventListener ("hide.bs.modal", (e)=>
             {
-              $p[0].removeEventListener (
+              p.removeEventListener (
                 "shown.bs.collapse", __shownCollapse);
-              $p[0].removeEventListener (
+              p.removeEventListener (
                 "show.bs.collapse", __showCollapse);
-              $p[0].removeEventListener (
+              p.removeEventListener (
                 "hidden.bs.collapse", __hiddenCollapse);
-              $p[0].removeEventListener (
+              p.removeEventListener (
                 "click", __click);
             }, {once: true});
         }

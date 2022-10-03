@@ -90,8 +90,9 @@
                   _editing = true;
                   plugin.disablePlugins (true);
 
-                  if (!H.haveMouse ())
-                    H.fixVKBScrollStart ();
+                  if (!H.haveMouse()) {
+                    H.fixVKBScrollStart();
+                  }
 
                   settings._valueOrig = editable.innerText;
 
@@ -140,8 +141,9 @@
                       _editing = false;
                       plugin.disablePlugins (false);
 
-                      if (!H.haveMouse ())
-                        H.fixVKBScrollStop ();
+                      if (S.get('vkbData')) {
+                        H.fixVKBScrollStop();
+                      }
 
                       S.set ("block-editing", true, 500)
                     });

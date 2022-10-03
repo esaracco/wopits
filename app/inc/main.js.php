@@ -520,18 +520,16 @@
         });
     },
 
-    // METHOD repositionPostitsPlugs ()
-    repositionPostitsPlugs ()
-    {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
-        $(p).postit ("repositionPlugs"));
+    // METHOD repositionPostitsPlugs()
+    repositionPostitsPlugs() {
+      this.element[0].querySelectorAll('.postit.with-plugs').forEach((p) =>
+          $(p).postit('repositionPlugs'));
     },
 
-    // METHOD removePostitsPlugs ()
-    removePostitsPlugs ()
-    {
-      this.element[0].querySelectorAll(".postit.with-plugs").forEach (p =>
-        $(p).postit ("removePlugs", true));
+    // METHOD removePostitsPlugs()
+    removePostitsPlugs() {
+      this.element[0].querySelectorAll('.postit.with-plugs').forEach((p) =>
+          $(p).postit('removePlugs', true));
     },
 
     // METHOD refreshPostitsPlugs ()
@@ -542,7 +540,7 @@
         return;
 
       const wall = this.element[0],
-            applyZoom = !!S.get("zoom-level");
+            applyZoom = Boolean(S.get("zoom-level"));
       let idsNew = {};
 
       (this.settings.plugs||[]).forEach (plug =>
@@ -1218,7 +1216,11 @@
             $tabs = $(tabs),
             method = (args.load) ? "GET" : "PUT",
             service = (args.load) ? `wall/${args.wallId}` : "wall",
-            data = (args.load) ? null : {name: args.name, grid: !!args.grid};
+            data = (args.load) ?
+                null : {
+                  name: args.name,
+                  grid: Boolean(args.grid),
+                };
 
        if (data)
        {
@@ -1579,7 +1581,7 @@
               });
               $p.find(".list-group").html (html);
 
-              H.openModal ({item: $p});
+              H.openModal ({item: $p[0]});
             }
           });
         }
@@ -1708,7 +1710,7 @@
     // METHOD isShared ()
     isShared ()
     {
-      return !!this.element[0].dataset.shared;
+      return Boolean(this.element[0].dataset.shared);
     },
 
     // METHOD setShared ()
@@ -1831,8 +1833,8 @@
             wall = $wall[0],
             from = args.from,
             type = args.type,
-            noalert = !!args.noalert,
-            zoomStep = (!!args.step) ? args.step : 0.2,
+            noalert = Boolean(args.noalert),
+            zoomStep = (Boolean(args.step)) ? args.step : 0.2,
             writeAccess = this.canWrite ();
 
       if (!args.step)
@@ -2300,8 +2302,7 @@
 
           });
 
-        H.fixMenuHeight ();
-        H.fixMainHeight ();
+        H.fixHeight ();
 
         const displayBtn = $(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)[0];
 
@@ -2527,7 +2528,7 @@
         // EVENT CLICK on about button in the login page
         document.querySelectorAll(`[data-action="about"]`).forEach (el=>
           el.addEventListener ("click",
-            (e)=> H.openModal ({item: $("#aboutPopup")})));
+            (e) => H.openModal({item: document.getElementById('aboutPopup')})));
   });
 
 <?php echo $Plugin->getFooter ()?>

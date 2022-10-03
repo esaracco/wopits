@@ -177,12 +177,14 @@
                       "click", (e)=> plugin.onSubmit ($p, e)),
                   cb: ($p)=>
                   {
+                    const p = $p[0];
+
                     $p.find("input").val ("");
   
-                    $p[0].dataset.field = "password";
-                    $p[0].dataset.noclosure = true;
+                    p.dataset.field = "password";
+                    p.dataset.noclosure = true;
   
-                    H.openModal ({item: $p});
+                    H.openModal ({item: p});
                   }
                 });
   
@@ -249,7 +251,7 @@
                     }
                     p.querySelector('.input-group').appendChild(input);
 
-                    H.openModal ({item: $p});
+                    H.openModal ({item: p});
                   }
                 });
                 break;
