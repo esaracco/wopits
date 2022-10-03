@@ -290,9 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
           )) {
         H.fixVKBScrollStart();
       }
-    } else {
-      H.setAutofocus(e.target);
     }
+
+    H.setAutofocus(e.target);
   });
 
   // EVENT "hide.bs.modal" on popups

@@ -909,13 +909,9 @@ class WHelper
 
   // METHOD setAutofocus ()
   static setAutofocus(el) {
-    if (!this.haveMouse()) return;
+    const input = this.haveMouse() ? this.getFirstInputFields(el) : null;
 
-    const input = this.getFirstInputFields(el);
-
-    if (input) {
-      input.focus();
-    }
+    (input || el).focus();
   }
 
   // METHOD testImage ()
