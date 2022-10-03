@@ -56,6 +56,7 @@
       login.addEventListener ("click", (e)=>
         {
           const el = e.target;
+          let popup;
 
           if (el.tagName == "BUTTON" || el.tagName == "A")
           {
@@ -82,7 +83,7 @@
 
               case "create":
 
-                popup = document.getElementById('#createAccountPopup');
+                popup = document.getElementById('createAccountPopup');
 
                 H.cleanPopupDataAttr (popup);
 
