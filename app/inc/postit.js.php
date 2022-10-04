@@ -867,8 +867,8 @@
 
       for (const plug of this.settings.plugs) {
         //FIXME
-        if ((ll.endId && plug.endId === ll.endId) ||
-            (!ll.endId && plug.startId === this.settings.id)) {
+        if ((ll.endId && plug.endId == ll.endId) ||
+            (!ll.endId && plug.startId == this.settings.id)) {
           const customCol = (ll.color && ll.color !== defaultLineColor);
           const lineColor = customCol ? ll.color : defaultLineColor;
           const lineType = (
@@ -1055,7 +1055,7 @@
                     plug.related = plugin.createRelatedPlugs(plug);
                     plug.obj.hide();
                   }
-                  plug.related.forEach ((_r) => _r.hide('none'));
+                  plug.related.forEach ((r) => r.hide('none'));
                 },
                 // error cb
                 ()=> S.get("revertData").revert = true);
@@ -1151,7 +1151,7 @@
     // METHOD plugExists()
     plugExists(plugId) {
       for (const plug of this.settings.plugs) {
-        if (plug.startId === plugId || plug.endId === plugId) {
+        if (plug.startId == plugId || plug.endId == plugId) {
           return true;
         }
       }
@@ -1160,7 +1160,7 @@
     // METHOD getPlugById()
     getPlugById(plugId) {
       for (const plug of this.settings.plugs) {
-        if (plug.endId === plugId) {
+        if (plug.endId == plugId) {
           return plug;
         }
       }
@@ -1216,7 +1216,7 @@
 
       this.settings.plugs.forEach((p) => {
         if (!ignoreDisplayMode) {
-          if (p.startId === postitId) {
+          if (p.startId == postitId) {
             p.startHidden = true;
           } else {
             p.endHidden = true;
@@ -1241,7 +1241,7 @@
 
       this.settings.plugs.forEach((p) => {
         if (!ignoreDisplayMode) {
-          if (p.startId === postitId) {
+          if (p.startId == postitId) {
             delete p.startHidden;
           } else {
             delete p.endHidden;
@@ -2079,7 +2079,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     if (H.isLoginPage ()) return;
 
-    const _walls = S.getCurrent("walls")[0];
+    const walls = document.querySelector('.tab-content.walls');
 
     // Init text editor
     let locale = $("html")[0].dataset.fulllocale;
@@ -2212,7 +2212,7 @@
       });
 
     // EVENT "click"
-    _walls.addEventListener ("click", (e)=>
+    walls.addEventListener ("click", (e)=>
     {
       const el = e.target;
 
@@ -2238,6 +2238,8 @@
         // EVENT "click" on postit for READ-ONLY mode
         else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
         {
+          e.stopImmediatePropagation ();
+
           if (H.disabledEvent ())
           {
             e.preventDefault ();
@@ -2250,6 +2252,8 @@
         // EVENT "click" on postit menu button
         else if (el.matches (".btn-menu,.btn-menu *"))
         {
+          e.stopImmediatePropagation ();
+
           if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
             return;
   
@@ -2300,6 +2304,8 @@
         // EVENT "click" on postit dates
         else if (el.matches (".dates .end,.dates .end *"))
         {
+          e.stopImmediatePropagation ();
+
           if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
           {
             e.preventDefault ();
@@ -2328,6 +2334,8 @@
         // EVENT "click" on postit content links
         else if (el.matches (".postit-edit a[href],.postit-edit a[href] *"))
         {
+          e.stopImmediatePropagation ();
+
           if (e.ctrlKey || H.disabledEvent ())
             return;
   
@@ -2335,7 +2343,6 @@
                 canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
                 $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
   
-          e.stopImmediatePropagation ();
           e.preventDefault ();
   
           // EVENT "click" on content links menu
@@ -2452,7 +2459,7 @@
     });
 
     // EVENT "mousedown"
-    _walls.addEventListener ("mousedown", (e)=>
+    walls.addEventListener ("mousedown", (e)=>
       {
         const el = e.target;
 
@@ -2472,82 +2479,74 @@
         }
       });
 
-    // Add upload for postit pictures
-    document.body.appendChild ($(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload" id="postit-picture">`)[0]);
-
-    // EVENT "change" on postit pictures
-    document.getElementById("postit-picture")
-      .addEventListener("change", (e)=>
-      {
-        const el = e.target,
-              fname = el.files[0].name;
-
+    // Create input to upload postit images
+    H.createUploadElement({
+      attrs: {id: 'postit-picture', accept: '.jpeg,.jpg,.gif,.png'},
+      onChange: (e) => {
+        const el = e.target;
+        const fname = el.files[0].name;
+    
         // INTERNAL FUNCTION __error_cb ()
-        const __error_cb = (d)=>
-          {
-            if (d)
-              H.displayMsg ({
-                title: `<?=_("Note")?>`,
-                type: "warning",
-                msg: d.error||d
-              });
-          };
+        const __error_cb = (d) => {
+          if (d) {
+            H.displayMsg({
+              title: `<?=_("Note")?>`,
+              type: 'warning',
+              msg: d.error || d
+            });
+          }
+        };
+    
+        H.getUploadedFiles(el.files, '\.(jpe?g|gif|png)$', (e, file) => {
+          el.value = '';
 
-        H.getUploadedFiles (el.files, "\.(jpe?g|gif|png)$",
-          (e, file) =>
-            {
-              el.value = "";
+          if (H.checkUploadFileSize({size: e.total, cb_msg: __error_cb}) &&
+              e.target.result) {
+            const wallId = S.getCurrent('wall').wall('getId');
+            const $postit = S.getCurrent('postit');
+            const postitId = $postit.postit('getId');
+            const cellId = $postit.postit('getCellId');
 
-              if (H.checkUploadFileSize ({
-                    size: e.total,
-                    cb_msg: __error_cb
-                  }) && e.target.result)
+            H.fetch (
+              'PUT',
+              `wall/${wallId}/cell/${cellId}/postit/${postitId}/picture`,
               {
-                const wallId = S.getCurrent("wall").wall ("getId"),
-                      $postit = S.getCurrent ("postit"),
-                      postitId = $postit.postit ("getId"),
-                      cellId = $postit.postit ("getCellId");
+                name: file.name,
+                size: file.size,
+                item_type: file.type,
+                content: e.target.result,
+              },
+              // success cb
+              (d) => {
+                const $f = $('.tox-dialog');
 
-                H.fetch (
-                  "PUT",
-                  `wall/${wallId}/cell/${cellId}/postit/`+
-                    `${postitId}/picture`,
-                  {
-                    name: file.name,
-                    size: file.size,
-                    item_type: file.type,
-                    content: e.target.result
-                  },
-                  // success cb
-                  (d) =>
-                    {
-                      const $f = $(".tox-dialog");
+                $postit[0].dataset.hasuploadedpictures = true;
 
-                      $postit[0].dataset.hasuploadedpictures = true;
+                //FIXME
+                // If uploaded img is too large TinyMCE plugin
+                // take too much time to gather informations
+                // about it. If user close popup before that,
+                // img is inserted without width/height
+                $f.find('input:eq(1)').val(d.width);
+                $f.find('input:eq(2)').val(d.height);
 
-                      //FIXME
-                      // If uploaded img is too large TinyMCE plugin
-                      // take too much time to gather informations
-                      // about it. If user close popup before that,
-                      // img is inserted without width/height
-                      $f.find("input:eq(1)").val (d.width);
-                      $f.find("input:eq(2)").val (d.height);
+                S.get('tinymce-callback')(d.link);
 
-                      S.get("tinymce-callback")(d.link);
-
-                      setTimeout(()=>
-                      {
-                        if (!$f.find("input:eq(0)").val ())
-                          __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
-                      }, 0);
-                    },
-                    __error_cb
-                );
-              }
-            },
-            null,
-            __error_cb);
-      });
+                setTimeout(() => {
+                  if (!$f.find("input:eq(0)").val ()) {
+                    __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
+                  }
+                }, 0);
+              },
+              // error cb
+              __error_cb
+            );
+          }
+        },
+        null,
+        __error_cb);
+      },
+    });
 
     // EVENT hide.bs.modal on postit popup
     document.getElementById("postitUpdatePopup")
@@ -2623,10 +2622,10 @@
       });
 
   // EVENT "click" on postit menu
-  document.body.addEventListener ('click', (e) => {
+  walls.addEventListener ('click', (e) => {
     const el = e.target;
 
-    if (!el.matches('.postit-menu, .postit-menu *') ||
+    if (!el.matches('.postit-menu,.postit-menu *') ||
         el.tagName === 'DIV') return;
 
     const postitPlugin = $(el.closest('.postit')).postit('getClass');

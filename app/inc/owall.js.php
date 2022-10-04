@@ -140,13 +140,12 @@
         el.addEventListener ("click", _inputClickEvent));
 
       // EVENT "click"
-      document.body.addEventListener ("click", (e)=>
+      owall.addEventListener ("click", (e)=>
         {
           const el = e.target;
 
           // EVENT "click" on "open wall" popup
-          if (el.matches ("#owallPopup .modal-body li,"+
-                          "#owallPopup .modal-body li *"))
+          if (el.matches ("li,li *"))
           {
             const tag = el.tagName;
 

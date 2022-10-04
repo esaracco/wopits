@@ -360,97 +360,92 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ()) return;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
-      // EVENT "click"
-      document.body.addEventListener ('click', (e) => {
+    // EVENT "click"
+    document.body.addEventListener('click', (e) => {
+      const el = e.target;
+
+      // EVENT "click" on attachment count
+      if (el.matches('.patt,.patt *')) {
+        const $patt = $((el.tagName === 'DIV') ? el : el.parentNode);
+
+        e.stopImmediatePropagation();
+
+        if (H.checkAccess(`<?=WPT_WRIGHTS_RW?>`)) {
+          $patt.patt('open');
+        } else {
+          $patt.closest('.postit').postit('setCurrent');
+          $patt.patt('display');
+        }
+      }
+    });
+
+    // // Create input to upload postit attachments
+    H.createUploadElement({
+      attrs: {id: 'postit-attachment'},
+      onChange: (e) => {
         const el = e.target;
 
-        // EVENT "click" on attachment count
-        if (el.matches ('.patt,.patt *')) {
-          const $patt = $((el.tagName === 'DIV') ? el : el.parentNode);
+        if (!el.files || !el.files.length) return;
 
-          e.stopImmediatePropagation();
+        const plugin = S.getCurrent('postit').postit('getClass');
+        const settings = plugin.settings;
 
-          if (H.checkAccess(`<?=WPT_WRIGHTS_RW?>`)) {
-            $patt.patt('open');
-          } else {
-            $patt.closest('.postit').postit('setCurrent');
-            $patt.patt('display');
+        H.getUploadedFiles(e.target.files, 'all', (e, file) => {
+          el.value = '';
+
+          if ($_mainPopup.find(
+                `.list-group .accordion-item`+
+                   `[data-fname="${H.htmlEscape(file.name)}"]`).length) {
+            return H.displayMsg({
+              title: `<?=_("Attached files")?>`,
+              type: 'warning',
+                msg: `<?=_("The file is already linked to the note")?>`,
+              });
           }
-        }
-      });
 
-      // Add upload for postit attachments
-    document.body.appendChild ($(`<input type="file" class="upload" id="postit-attachment">`)[0]);
-
-    // EVENT "change" on postit attachments
-    document.getElementById("postit-attachment")
-      .addEventListener("change", (e)=>
-        {
-          const el = e.target,
-                plugin = S.getCurrent("postit").postit ("getClass"),
-                settings = plugin.settings;
-
-          if (el.files && el.files.length)
-          {
-            H.getUploadedFiles (e.target.files, "all",
-              (e, file) =>
+          if (H.checkUploadFileSize({size: e.total}) && e.target.result) {
+            H.fetchUpload(
+              `wall/${settings.wallId}/cell/${settings.cellId}/`+
+                `postit/${settings.id}/attachment`,
               {
-                el.value = "";
+                name: file.name,
+                size: file.size,
+                item_type: file.type,
+                content: e.target.result,
+              },
+              // success cb
+              (d) => {
+                const pa = plugin.getPlugin('patt');
+                const $body = $_mainPopup.find('.list-group');
 
-                if ($_mainPopup.find(
-                      `.list-group .accordion-item`+
-                         `[data-fname="${H.htmlEscape(file.name)}"]`).length)
-                  return H.displayMsg ({
+                $_mainPopup.find('.modal-body').scrollTop(0);
+                $_mainPopup.find('div.collapse.show').collapse('hide');
+
+                if (d.error_msg) {
+                  return H.displayMsg({
                     title: `<?=_("Attached files")?>`,
-                    type: "warning",
-                    msg: `<?=_("The file is already linked to the note")?>`
+                    type: 'warning',
+                    msg: d.error_msg,
                   });
+                }
 
-                if (H.checkUploadFileSize ({size: e.total}) &&
-                    e.target.result)
-                {
-                  H.fetchUpload (
-                    `wall/${settings.wallId}/cell/${settings.cellId}/`+
-                      `postit/${settings.id}/attachment`,
-                  {
-                    name: file.name,
-                    size: file.size,
-                    item_type: file.type,
-                    content: e.target.result
-                  },
-                  // success cb
-                  (d) =>
-                  {
-                    const pa = plugin.getPlugin ("patt"),
-                          $body = $_mainPopup.find(".list-group");
+                if (!$body.find('.accordion-item').length) {
+                  $body.html('');
+                }
 
-                    $_mainPopup.find(".modal-body").scrollTop (0);
-                    $_mainPopup.find("div.collapse.show").collapse ("hide");
+                $body.prepend(pa.getTemplate(d));
+                pa.incCount();
 
-                    if (d.error_msg)
-                      return H.displayMsg ({
-                        title: `<?=_("Attached files")?>`,
-                        type: "warning",
-                        msg: d.error_msg
-                      });
-
-                    if (!$body.find(".accordion-item").length)
-                      $body.html ("");
-
-                    $body.prepend (pa.getTemplate (d));
-                    pa.incCount ();
-
-                    H.waitForDOMUpdate (
-                      ()=> $body.find(".accordion-item:eq(0)").click ());
-                  });
-              }
-            });
+                H.waitForDOMUpdate(
+                    () => $body.find('.accordion-item:eq(0)').click());
+              });
           }
         });
-      });
+      },
+    });
+  });
 
 <?php echo $Plugin->getFooter ()?>

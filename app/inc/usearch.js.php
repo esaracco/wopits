@@ -64,13 +64,12 @@
         });
 
       // EVENT "click"
-      document.body.addEventListener ("click", (e)=>
+      ac.addEventListener ("click", (e)=>
         {
           const el = e.target;
 
           // EVENT "click" on users search list item
-          if (el.matches (`#${id} .list-group-item *,`+
-                          `#${id} .list-group-item`))
+          if (el.matches (`.list-group-item, .list-group-item *`))
           {
             const li = el.tagName=="LI"?el:el.closest("li");
 

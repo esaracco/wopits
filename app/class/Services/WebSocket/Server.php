@@ -1105,7 +1105,7 @@ class Server
     $userId = $args['userId'];
     $wallIds = $args['wallIds'];
 
-    $ret = $Group->removeUser (['userId' => $userId]);
+    $ret = $Group->removeUser (['userId' => $userId, 'wallIds' => $wallIds]);
 
     if (isset ($ret['wall']))
     {

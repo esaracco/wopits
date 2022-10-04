@@ -2312,60 +2312,57 @@
 
         document.body.insertBefore (displayBtn, document.body.firstChild);
 
-        const upload = $(`<input type="file" accept=".zip" class="upload import-wall">`)[0];
+        // Create input to upload wall file import
+        H.createUploadElement({
+          attrs: {accept: '.zip', className: 'import-wall'},
+          onChange: (e) => {
+            const el = e.target;
 
-        // EVENT "change" for wall importation upload
-        upload.addEventListener ("change", (e)=>
-            {
-              const el = e.target;
+            if (!el.files || !el.files.length) return;
 
-              if (el.files && el.files.length)
-              {
-                H.getUploadedFiles (el.files, "\.zip$", (e, file) =>
-                  {
-                    el.value = "";
-  
-                    if (H.checkUploadFileSize ({
-                          size: e.total,
-                          maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
-                        }) &&
-                        e.target.result)
+            H.getUploadedFiles(
+              el.files,
+              '\.zip$',
+              (e, file) => {
+                el.value = '';
+
+                if (H.checkUploadFileSize({
+                      size: e.total,
+                      maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
+                    }) && e.target.result) {
+                  H.fetchUpload(
+                    'wall/import',
                     {
-                      H.fetchUpload (
-                        "wall/import",
-                        {
-                          name: file.name,
-                          size: file.size,
-                          item_type: file.type,
-                          content: e.target.result
-                        },
-                        // success cb
-                        (d) =>
-                        {
-                          if (d.error_msg)
-                            return H.displayMsg ({
-                              title: `<?=_("Wall")?>`,
-                              type: "warning",
-                              msg: d.error_msg
-                            });
-  
-                          $("<div/>").wall ("open", {
-                            lastWall: 1,
-                            wallId: d.wallId
-                          });
-  
-                          H.displayMsg ({
-                            title: `<?=_("Wall")?>`,
-                            type: "success",
-                            msg: `<?=_("The wall has been successfully imported")?>`
-                          });
+                      name: file.name,
+                      size: file.size,
+                      item_type: file.type,
+                      content: e.target.result
+                    },
+                    // success cb
+                    (d) => {
+                      if (d.error_msg) {
+                        return H.displayMsg({
+                          title: `<?=_("Wall")?>`,
+                          type: 'warning',
+                          msg: d.error_msg,
                         });
-                    }
-                  });
-              }
-            });
+                      }
 
-        document.body.appendChild (upload);
+                      $('<div/>').wall('open', {
+                        lastWall: 1,
+                        wallId: d.wallId,
+                      });
+
+                      H.displayMsg({
+                        title: `<?=_("Wall")?>`,
+                        type: 'success',
+                        msg: `<?=_("The wall has been successfully imported")?>`
+                      });
+                    });
+                }
+              });
+          },
+        });
 
         // EVENT "click" on main content wopits icon
         document.getElementById("welcome").addEventListener ("click", (e)=>

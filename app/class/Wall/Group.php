@@ -162,6 +162,8 @@ class Group extends Wall
   {
     $ret = [];
     $groupUserId = $args['userId'];
+    // For generic groups
+    $wallIds = $args['wallIds'] ?? null;
 
     if (!$me)
     {
@@ -187,24 +189,16 @@ class Group extends Wall
       if (!$stmt->rowCount ())
         return ['error' => 1];
 
-      if (!$this->wallId)
-      {
-        // Performance helper:
-        // Get wall id.
-        ($stmt = $this->db->prepare ('
-          SELECT walls_id FROM _perf_walls_users
-          WHERE groups_id = ? AND users_id = ?'))
-           ->execute ($params);
-        $this->wallId = $stmt->fetch (\PDO::FETCH_COLUMN, 0);
-      }
-
        // Decrement group users count
       $this
         ->db->prepare('
             UPDATE groups SET userscount = userscount - 1 WHERE id = ?')
         ->execute ([$this->groupId]);
 
-      $this->removeUserDependencies ($groupUserId);
+      $this->removeUserDependencies ([
+        'userId' => $groupUserId,
+        'wallIds' => $wallIds,
+      ]);
 
       $this->db->commit ();
 
@@ -410,93 +404,108 @@ class Group extends Wall
     return $ret;
   }
 
-  private function removeUserDependencies (int $userId = null,
-                                           bool $force = false):array
-  {
-      //TODO SQL optimization
-      // Get all users for the group to unlink
-      ($stmt = $this->db->prepare('
-         SELECT users_id FROM _perf_walls_users
+  private function _RUD_getKey($el) {
+    return $el['users_id'].'-'.$el['walls_id'];
+  }
+
+    // Extract users ids from array keys
+  private function _RUD_extractUserIds($arr) {
+    return array_map(
+      function($k) {return explode('-', $k)[0];},
+      array_keys($arr));
+  }
+
+  private function removeUserDependencies(array $args = []):array {
+    $userId = $args['userId'] ?? null;
+    $argsWallIds = $args['wallIds'] ?? [$this->wallId];
+    $wallIds = implode(',', array_map([$this->db, 'quote'], $argsWallIds));
+    $force = $args['force'] ?? false;
+
+    // Get all users for the group to unlink
+    ($stmt = $this
+       ->db->prepare('
+         SELECT users_id, walls_id FROM _perf_walls_users
          WHERE groups_id IS NOT NULL
            AND groups_id = ?
-           AND walls_id = ? '.($userId?' AND users_id = ?':'')))
-             ->execute (array_merge ([$this->groupId, $this->wallId],
-                                     $userId?[$userId]:[]));
-      $users = $stmt->fetchAll (\PDO::FETCH_GROUP);
-      $usersAlerts = $users;
+           AND walls_id IN ('.$wallIds.') '.
+           ($userId ? ' AND users_id = ?' : '')))
+       ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
+    $users = [];
+    while ($el = $stmt->fetch()) {
+      $users[$this->_RUD_getKey($el)] = $el;
+    }
+    $usersAlerts = $users;
 
-      ($stmt = $this->db->prepare('
-         SELECT users_id, access FROM _perf_walls_users
+    ($stmt = $this
+       ->db->prepare('
+         SELECT users_id, walls_id, access FROM _perf_walls_users
          WHERE groups_id IS NOT NULL
            AND groups_id <> ?
-           AND walls_id = ? '.($userId?' AND users_id = ?':'')))
-             ->execute (array_merge ([$this->groupId, $this->wallId],
-                                   $userId?[$userId]:[]));
-      $tmp = $stmt->fetchAll (\PDO::FETCH_GROUP);
+           AND walls_id IN ('.$wallIds.') '.
+           ($userId ? ' AND users_id = ?' : '')))
+       ->execute (array_merge([$this->groupId], $userId ? [$userId] : []));
+    $tmp = [];
+    while ($el = $stmt->fetch()) {
+      $tmp[$this->_RUD_getKey($el)] = $el;
+    }
 
-       foreach ($users as $id => $dum)
-       {
-         if (isset ($tmp[$id]))
-         {
-           // Do not remove this user from workers if it belongs to other
-           // wall groups
-           unset ($users[$id]);
+    foreach (array_keys($users) as $id) {
+      if (isset($tmp[$id])) {
+        // Do not remove this user from workers if it belongs to other
+        // wall groups
+        unset($users[$id]);
 
-           // Do not remove alerts for user if it belongs to other
-           // RW or ADMIN wall groups
-           foreach ($tmp[$id] as $data)
-             if ($data['access'] != WPT_WRIGHTS_RO)
-             {
-               unset ($usersAlerts[$id]);
-               break;
-             }
-         }
-       }
-
-      // Performance helper:
-      // Unlink group's users from wall
-      $this
-        ->db->prepare('
-            DELETE FROM _perf_walls_users
-            WHERE groups_id = ?
-              AND walls_id = ? '.($userId?' AND users_id = ?':''))
-        ->execute (array_merge ([$this->groupId, $this->wallId],
-                                 $userId?[$userId]:[]));
-
-      // Remove user's postits alerts
-      if (!empty ($usersAlerts))
-        $this
-          ->db->prepare('
-              DELETE FROM postits_alerts
-              WHERE walls_id = ? AND users_id IN ('.implode(
-                ',', array_map ([$this->db,'quote'],
-                  array_keys($usersAlerts))).')')
-          ->execute ([$this->wallId]);
-
-      //TODO SQL optimization
-      // Remove group users from workers
-      $worker = new Worker ([
-        'userId' => $this->userId,
-        'wallId' => $this->wallId]);
-
-      ($stmt = $this->db->prepare('
-         SELECT postits_id, users_id
-         FROM postits_workers
-         WHERE walls_id = ? '.($userId?' AND users_id = ?':'')))
-           ->execute (array_merge ([$this->wallId],
-                                    $userId?[$userId]:[]));
-
-      while ($el = $stmt->fetch ())
-      {
-        // Remove from workers only if user is not in another wall's group
-        if ($force || isset ($users[$el['users_id']]))
-        {
-          $worker->postitId = $el['postits_id'];
-          $worker->delete ($el['users_id'], true);
+        // Do not remove alerts for user if it belongs to other
+        // RW or ADMIN wall groups
+        if ($tmp[$id]['access'] != WPT_WRIGHTS_RO) {
+          unset($usersAlerts[$id]);
         }
       }
+    }
 
-    return $users;
+    // Performance helper:
+    // Unlink group's users from wall
+    $this
+      ->db->prepare('
+        DELETE FROM _perf_walls_users
+        WHERE groups_id = ? AND walls_id IN ('.$wallIds.') '.
+        ($userId ? ' AND users_id = ?' : ''))
+      ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
+
+    // Remove user's postits alerts
+    if (!empty($usersAlerts)) {
+      $this
+        ->db->prepare('
+          DELETE FROM postits_alerts
+          WHERE walls_id IN ('.$wallIds.') AND users_id IN ('.
+          implode(',',
+            array_map([$this->db,'quote'],
+            $this->_RUD_extractUserIds($usersAlerts))).')')
+        ->execute();
+    }
+
+    ($stmt = $this
+       ->db->prepare('
+         SELECT walls_id, postits_id, users_id
+         FROM postits_workers
+         WHERE walls_id IN('.$wallIds.') '.
+         ($userId ? ' AND users_id = ?' : '')))
+       ->execute($userId ? [$userId] : []);
+
+    // Remove group users from workers
+    while ($el = $stmt->fetch()) {
+      // Remove from workers only if user is not in another wall's group
+      if ($force || isset($users[$this->_RUD_getKey($el)])) {
+        $worker = new Worker([
+          'userId' => $el['users_id'],
+          'wallId' => $el['walls_id'],
+        ]);
+        $worker->postitId = $el['postits_id'];
+        $worker->delete($el['users_id'], true);
+      }
+    }
+
+    return $this->_RUD_extractUserIds($users);
   }
 
   public function unlink ():array
@@ -523,8 +532,12 @@ class Group extends Wall
       ($stmt = $this->db
          ->prepare('SELECT 1 FROM walls_groups WHERE walls_id = ?'))
          ->execute ([$this->wallId]);
-      if (!$stmt->rowCount())
-        $this->removeUserDependencies ($this->userId, true);
+      if (!$stmt->rowCount()) {
+        $this->removeUserDependencies ([
+          'userId' => $this->userId,
+          'force' => true,
+        ]);
+      }
 
       if (isset ($users['error']))
         throw \Exception ("Error deleting user's dependencies");

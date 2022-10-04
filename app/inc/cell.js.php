@@ -594,75 +594,63 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ())
-        return;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
-      const _walls = S.getCurrent("walls")[0];
+    // EVENT "click"
+    document.querySelector('.tab-content.walls')
+        .addEventListener('click', (e) => {
+      const el = e.target;
+      const $mm = S.getCurrent('mmenu');
 
-      // EVENT "click"
-      _walls.addEventListener ("click", (e)=>
-        {
-          const el = e.target,
-                $mm = S.getCurrent ("mmenu");
+      if (el.matches('td.wpt *')) {
+        const $cell = $(el.closest('td.wpt'));
 
-          if (el.matches ("td.wpt *"))
-          {
-            const $cell = $(el.closest ("td.wpt"));
+        // EVENT "click" on cell's menu
+        if (el.matches('.cell-menu *')) {
+          e.stopImmediatePropagation();
 
-            // EVENT "click" on cell's menu
-            if (el.matches (".cell-menu *"))
-            {
-              e.stopImmediatePropagation ();
+          if (!H.disabledEvent()) {
+            $cell.cell('toggleDisplayMode');
+          } else {
+            e.preventDefault();
+          }
+        // EVENT "click" on note in stack mode
+        } else if (el.classList.contains('postit-min')) {
+          const $p = $cell.find(`.postit[data-id="${el.dataset.id}"]`);
 
-              if (!H.disabledEvent ())
-                $cell.cell ("toggleDisplayMode");
-              else
-                e.preventDefault ();
+          e.stopImmediatePropagation();
+  
+          if (e.ctrlKey) {
+            e.preventDefault();
+
+            if (el.classList.contains('selected')) {
+              $mm.mmenu('remove', $p.postit('getId'));
+            } else {
+              $mm.mmenu('add', $p.postit('getClass'));
             }
-            // EVENT "click" on note in stack mode
-            else if (el.classList.contains ("postit-min"))
-            {
-              const $p = $cell.find (`.postit[data-id="${el.dataset.id}"]`);
-
-              e.stopImmediatePropagation ();
+          } else {
+            if (e.cancelable) {
+              e.preventDefault();
+            }
   
-              if (e.ctrlKey)
-              {
-                if (el.classList.contains ("selected"))
-                  $mm.mmenu ("remove", $p.postit ("getId"));
-                else
-                  $mm.mmenu ("add", $p.postit ("getClass"));
-  
-                e.stopImmediatePropagation ();
-                e.preventDefault ();
-              }
-              else
-              {
-                if (e.cancelable)
-                  e.preventDefault ();
-  
-                if (!H.disabledEvent ())
-                  $p.postit ("openPostit", $(el).find ("span"));
-              }
+            if (!H.disabledEvent()) {
+              $p.postit('openPostit', $(el).find('span'));
             }
           }
-          // EVENT "click" ctrl+click on cell to paste/cut into
-          else if (el.matches ("td.wpt"))
-          {
-            if ((e.ctrlKey || S.get ("action-mmenu")) &&
-                !$mm.mmenu ("isEmpty"))
-            {
-              e.stopImmediatePropagation ();
+        }
+      // EVENT "click" ctrl+click on cell to paste/cut into
+      } else if (el.matches('td.wpt')) {
+        if ((e.ctrlKey || S.get('action-mmenu')) && !$mm.mmenu('isEmpty')) {
+          e.stopImmediatePropagation();
 
-              $mm.mmenu ("apply", {
-                event: e,
-                cellPlugin: $(el).cell ("getClass")
-              });
-            }
-          }
-        });
+          $mm.mmenu('apply', {
+            event: e,
+            cellPlugin: $(el).cell('getClass'),
+          });
+        }
+      }
     });
+  });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

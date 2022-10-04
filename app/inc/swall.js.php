@@ -66,12 +66,9 @@
         S.getCurrent("wall").wall ("menu", {from: "wall", type:"have-wall"}));
 
       // EVENT "click"
-      document.body.addEventListener ("click", (e)=>
+      plugin.element[0].addEventListener ("click", (e)=>
         {
           const el = e.target;
-
-          if (!el.matches ("#swallPopup *"))
-            return;
 
           // EVENT "click" on group list item buttons
           if (el.matches (".list-group-item [data-action],"+

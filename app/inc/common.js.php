@@ -819,6 +819,28 @@ const entitiesMap = {
 // CLASS WHelper
 class WHelper
 {
+  // METHOD createElement()
+  static createElement(tag, props) {
+    return Object.assign(document.createElement(tag), props);
+  }
+
+  // METHOD createUploadElement()
+  static createUploadElement = ({attrs, onChange, onClick}) => {
+    const el = this.createElement('input', {...attrs, type: 'file'});
+
+    el.classList.add('upload');
+
+    if (onChange) {
+      el.addEventListener('change', onChange);
+    }
+
+    if (onClick) {
+      el.addEventListener('click', onClick);
+    }
+
+    document.body.appendChild(el);
+  }
+
   // METHOD hideUserWriting()
   static hideUserWriting({id}) {
     // Unlock elements
@@ -909,9 +931,11 @@ class WHelper
 
   // METHOD setAutofocus ()
   static setAutofocus(el) {
-    const input = this.haveMouse() ? this.getFirstInputFields(el) : null;
+    const input = this.getFirstInputFields(el);
 
-    (input || el).focus();
+    if (input) {
+      input.focus();
+    }
   }
 
   // METHOD testImage ()

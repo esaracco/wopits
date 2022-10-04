@@ -711,81 +711,67 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (H.isLoginPage ())
-        return;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
-      const upload = $(`<input type="file" accept=".jpeg,.jpg,.gif,.png" class="upload header-picture">`)[0];
+    // Create input to upload header image
+    H.createUploadElement({
+      attrs: {className: 'header-picture', accept: '.jpeg,.jpg,.gif,.png'},
+      onChange: (e) => {
+        const el = e.target;
 
-      // EVENT "click" on header picture
-      upload.addEventListener ("click", (e)=>
-        {
-          const $header = S.getCurrent ("header");
+        if (!el.files || !el.files.length) return;
 
-          //FIXME
-          // we need this to cancel edit if no img is selected by user
-          // (desktop version)
-          if ($header.header ("useFocusTrick"))
-            window.addEventListener ("focus", (e)=>
-              !_realEdit && $header.header ("unedit"), {once: true});
-        });
+        const $header = S.getCurrent('header');
+        const settings = $header.header('getSettings');
 
-      // EVENT "change" on header picture
-      upload.addEventListener ("change", (e)=>
-          {
-            const el = e.target,
-                  $header = S.getCurrent ("header"),
-                  settings = $header.header ("getSettings");
+        _realEdit = true;
 
-            if (el.files && el.files.length)
-            {
-              _realEdit = true;
+        H.getUploadedFiles(e.target.files, '\.(jpe?g|gif|png)$', (e, file) => {
+          el.value = '';
 
-              H.getUploadedFiles (e.target.files, "\.(jpe?g|gif|png)$",
-                (e, file) =>
-                {
-                  el.value = "";
+          if (H.checkUploadFileSize({size: e.total}) && e.target.result) {
+            const oldW = $header.outerWidth();
 
-                  if (H.checkUploadFileSize ({size: e.total}) &&
-                      e.target.result)
-                  {
-                    const oldW = $header.outerWidth ();
-  
-                    H.fetchUpload (
-                      `wall/${settings.wallId}/header/${settings.id}/picture`,
-                      {
-                        name: file.name,
-                        size: file.size,
-                        item_type: file.type,
-                        content: e.target.result
-                      },
-                      // success cb
-                      (d)=>
-                      {
-                        if (d.error_msg)
-                          return $header.header ("unedit", {data: d});
-  
-                        $header.header ("setImg", d.img);
-                        setTimeout(() =>
-                          {
-                            settings.wall.wall (
-                              "fixSize", oldW, $header.outerWidth ());
+            H.fetchUpload(
+              `wall/${settings.wallId}/header/${settings.id}/picture`,
+              {
+                name: file.name,
+                size: file.size,
+                item_type: file.type,
+                content: e.target.result,
+              },
+              // success cb
+              (d) => {
+                if (d.error_msg) {
+                  return $header.header('unedit', {data: d});
+                }
 
-                            $header.header ("unedit");
-
-                          }, 500);
-                      },
-                      // error cb
-                      (d)=> $header.header ("unedit", {data: d}));
-                  }
-                },
-                // error cb
-                ()=> $header.header ("unedit"));
+                $header.header('setImg', d.img);
+                setTimeout(() => {
+                  settings.wall.wall('fixSize', oldW, $header.outerWidth());
+                  $header.header('unedit');
+                }, 500);
+              },
+              // error cb
+              (d) => $header.header('unedit', {data: d}));
             }
-          });
+          },
+          // error cb
+          () => $header.header('unedit'));
+      },
+      onClick: (e) => {
+        const $header = S.getCurrent('header');
 
-       document.body.appendChild (upload);
+        //FIXME
+        // we need this to cancel edit if no img is selected by user
+        // (desktop version)
+        if ($header.header('useFocusTrick')) {
+          window.addEventListener('focus',
+              (e) => !_realEdit && $header.header('unedit'), {once: true});
+        }
+      },
     });
+  });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>
