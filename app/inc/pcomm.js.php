@@ -78,7 +78,7 @@
             el = pc.querySelector (".result-container"),
             {wallId} = this.getIds ();
 
-      // INTERNAL FUNCTION __resize ()
+      // LOCAL FUNCTION __resize ()
       const __resize = ()=>
         {
           const wH = window.innerHeight - 30,
@@ -219,7 +219,7 @@
             {wallId, cellId, postitId} = plugin.getIds ();
       let content = "";
 
-      // INTERNAL FUNCTION __resize ()
+      // LOCAL FUNCTION __resize ()
       const __resize = ()=>
         {
           const $body = $_popup.find (".popover-body");
@@ -424,7 +424,7 @@
             e.preventDefault();
 
             if (e.type === 'keyup') {
-              // INTERNAL FUNCTION __select ()
+              // LOCAL FUNCTION __select ()
               const __select = (i, type) => {
                 // Arrow up.
                 if (i && type === 'up') {

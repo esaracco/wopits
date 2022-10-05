@@ -673,7 +673,7 @@
     {
       const postit = this.element[0];
 
-      // INTERNAL FUNCTION __remove ()
+      // LOCAL FUNCTION __remove ()
       const __remove = ()=>
         {
           const min = this.getMin ();
@@ -796,7 +796,7 @@
 
     // METHOD applyThemeToPlugs()
     applyThemeToPlugs(color) {
-      // INTERNAL FUNCTION __apply ()
+      // LOCAL FUNCTION __apply ()
       const __apply = (r) => r.setOptions({
             color,
             dropShadow: this.getPlugDropShadowTemplate(color),
@@ -1294,120 +1294,113 @@
       return this.settings.cellId;
     },
 
-    // METHOD serializePlugs ()
-    serializePlugs ()
-    {
-      const settings = this.settings,
-            defaultLineColor = S.getCurrent ("plugColor"),
-            // Shift for plugs if headers are hidden
-            hs = this.getWallHeadersShift ();
+    // METHOD serializePlugs()
+    serializePlugs() {
+      const settings = this.settings;
+      const defaultLineColor = S.getCurrent('plugColor');
+      // Shift for plugs if headers are hidden
+      const hs = this.getWallHeadersShift();
       let ret = {};
 
-      settings.plugs.forEach (p =>
-        {
-          // Take in account only plugs from this postit
-          if (p.startId == settings.id)
-          {
-            const pl = p.labelObj[0];
+      settings.plugs.forEach((p) => {
+        // Take in account only plugs from this postit
+        if (p.startId == settings.id) {
+          const pl = p.labelObj[0];
 
-            ret[p.endId] = {
-              label: (p.label == "...") ?
-                       "" : pl.querySelector("div span").innerText,
-              line_type:
+          ret[p.endId] = {
+            label:
+                (p.label == '...') ?
+                   '' : pl.querySelector('div span').innerText,
+            line_type:
                 (p.obj.line_type != `<?=WS_PLUG_DEFAULTS['lineType']?>`) ?
                    p.obj.line_type : undefined,
-              line_size:
+            line_size:
                 (p.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
-                   parseInt (p.obj.line_size) : undefined,
-              line_path:
+                   parseInt(p.obj.line_size) : undefined,
+            line_path:
                 (p.obj.path != `<?=WS_PLUG_DEFAULTS['linePath']?>`) ?
                    p.obj.path : undefined,
-              line_color:
+            line_color:
                 (p.obj.color != defaultLineColor) ?
                    p.obj.color : undefined
-            };
+          };
 
-            if (pl.dataset.pos)
-            {
-              ret[p.endId].top = parseInt (pl.dataset.origtop);
-              ret[p.endId].left = parseInt (pl.dataset.origleft);
+          if (pl.dataset.pos) {
+            ret[p.endId].top = parseInt(pl.dataset.origtop);
+            ret[p.endId].left = parseInt(pl.dataset.origleft);
 
-              // We apply shift only if headers are hidden, plug has a custom
-              // position and has just been modified
-              if (hs && p.customPos && pl.dataset.changed)
-              {
-                pl.removeAttribute ("data-changed");
+            // We apply shift only if headers are hidden, plug has a custom
+            // position and has just been modified
+            if (hs && p.customPos && pl.dataset.changed) {
+              pl.removeAttribute('data-changed');
 
-                ret[p.endId].top += hs.height;
-                ret[p.endId].left += hs.width;
-              }
+              ret[p.endId].top += hs.height;
+              ret[p.endId].left += hs.width;
             }
           }
-        });
+        }
+      });
 
       return ret;
     },
 
-    // METHOD serialize ()
-    serialize (args = {})
-    {
-      const postits = [],
-            displayExternalRef = this.settings.wall.wall ("displayExternalRef"),
-            z = S.get("zoom-level")||1;
+    // METHOD serialize()
+    serialize(args = {}) {
+      const postits = [];
+      const displayExternalRef = this.settings.wall.wall('displayExternalRef');
+      const z = S.get('zoom-level') || 1;
 
-      this.element.each (function ()
-      {
-        const plugin = $(this).postit ("getClass");
+      this.element.each(function() {
+        const plugin = $(this).postit('getClass');
         let data = {};
 
-        if (this.dataset.todelete)
+        if (this.dataset.todelete) {
           data = {id: plugin.settings.id, todelete: true};
-        else
-        {
-          const title = plugin.getTitle (),
-                content = this.querySelector(".postit-edit").innerHTML,
-                classcolor = this.className.match (/(color\-[a-z]+)/),
-                patt = this.querySelector (".patt span"),
-                pwork = this.querySelector (".pwork span"),
-                deadline = (this.dataset.deadlineepoch) ?
+        } else {
+          const title = plugin.getTitle();
+          const content = this.querySelector('.postit-edit').innerHTML;
+          const classcolor = this.className.match(/(color\-[a-z]+)/);
+          const patt = this.querySelector('.patt span');
+          const pwork = this.querySelector('.pwork span');
+          const deadline = this.dataset.deadlineepoch ?
                   this.dataset.deadlineepoch :
-                  this.querySelector(".dates .end span").innerText.trim (),
-                bbox = this.getBoundingClientRect ();
-          let tags = [],
-              top = Math.trunc (this.offsetTop),
-              left = Math.trunc (this.offsetLeft);
+                  this.querySelector('.dates .end span').innerText.trim();
+          const bbox = this.getBoundingClientRect();
+          let tags = [];
+          let top = Math.trunc(this.offsetTop);
+          let left = Math.trunc(this.offsetLeft);
 
-          this.querySelectorAll(".postit-tags i").forEach (item =>
-            tags.push (item.dataset.tag));
+          this.querySelectorAll('.postit-tags i').forEach((item) =>
+              tags.push(item.dataset.tag));
 
           data = {
             id: plugin.settings.id,
-            width: Math.trunc (bbox.width/z),
-            height: Math.trunc (bbox.height/z),
+            width: Math.trunc(bbox.width / z),
+            height: Math.trunc(bbox.height / z),
             item_top: (this.offsetTop < 0) ? 0 : top,
             item_left: (this.offsetLeft < 0) ? 0 : left,
-            item_order: parseInt (this.dataset.order),
-            classcolor: (classcolor) ? classcolor[0] : _defaultClassColor,
-            title: (title == "...") ? "" : title,
+            item_order: parseInt(this.dataset.order),
+            classcolor: classcolor ? classcolor[0] : _defaultClassColor,
+            title: (title === '...') ? '' : title,
             content: args.noPostitContent ? null :
                        displayExternalRef ?
-                         content : plugin.unblockExternalRef (content),
-            tags: (tags.length) ? `,${tags.join(",")},` : null,
-            deadline: (deadline == "...") ? "" : deadline,
+                         content : plugin.unblockExternalRef(content),
+            tags: tags.length ? `,${tags.join(",")},` : null,
+            deadline: (deadline === '...') ? '' : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?
                           this.dataset.deadlinealertshift : null,
-            updatetz: this.dataset.updatetz||null,
-            obsolete: this.classList.contains ("obsolete"),
+            updatetz: this.dataset.updatetz || null,
+            obsolete: this.classList.contains('obsolete'),
             attachmentscount: patt ? patt.innerText : 0,
             workerscount: pwork ? pwork.innerText : 0,
-            plugs: plugin.serializePlugs (),
+            plugs: plugin.serializePlugs(),
             hadpictures: Boolean(this.dataset.hadpictures),
             hasuploadedpictures: Boolean(this.dataset.hasuploadedpictures),
-            progress: parseInt (this.dataset.progress||0)
+            progress: parseInt(this.dataset.progress || 0),
           };
         }
 
-        postits.push (data);
+        postits.push(data);
       });
 
       return postits;
@@ -1421,11 +1414,11 @@
             $cell = this.settings.cell,
             canWrite = this.canWrite ();
 
-      // INTERNAL FUNCTION __lock ()
+      // LOCAL FUNCTION __lock ()
       const __lock = el =>
         el.classList.add ("locked", isRelated?"related":"main");
 
-      // INTERNAL FUNCTION __addMain ()
+      // LOCAL FUNCTION __addMain ()
       const __addMain = ()=>
         postit.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], postit.firstChild);
 
@@ -2392,7 +2385,7 @@
         const defaultLabel =
             H.htmlEscape(label.querySelector("span").innerText);
 
-        // INTERNAL FUNCTION __unedit ()
+        // LOCAL FUNCTION __unedit ()
         const __unedit = ()=>
           {
             const toSave = {};
@@ -2493,7 +2486,7 @@
         const el = e.target;
         const fname = el.files[0].name;
     
-        // INTERNAL FUNCTION __error_cb ()
+        // LOCAL FUNCTION __error_cb ()
         const __error_cb = (d) => {
           if (d) {
             H.displayMsg({
@@ -2572,7 +2565,7 @@
               title = $("#postitUpdatePopupTitle").val (),
               content = tinymce.activeEditor.getContent ();
 
-        // INTERNAL FUNCTION cb_close ()
+        // LOCAL FUNCTION cb_close ()
         const __close = (forceHide = false) =>
           {
             S.set ("postit-data", {closing: true});

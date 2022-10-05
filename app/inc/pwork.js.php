@@ -70,7 +70,7 @@
           {
             if (S.get ("still-closing")) return;
 
-            // INTERNAL FUNCTION __close ()
+            // LOCAL FUNCTION __close ()
             const __close = ()=>
               {
                 $postit.postit (

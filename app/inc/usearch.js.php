@@ -194,7 +194,7 @@
 
               if (e.type == "keyup")
               {
-                // INTERNAL FUNCTION __select ()
+                // LOCAL FUNCTION __select ()
                 const __select = (i, type)=>
                   {
                     // Arrow up.

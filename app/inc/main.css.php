@@ -2513,7 +2513,7 @@ button.ui-datepicker-close {
 #tpick,
 #cpick {
   z-index: 5020;
-  display: none;
+  visibility: hidden;
   position: absolute;
   cursor: pointer;
   background-color: #fff;

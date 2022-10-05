@@ -7,116 +7,112 @@
   Description: Manage notes color
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('cpick');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('cpick');
+  echo $Plugin->getHeader();
 
 ?>
 
-  const _COLOR_PICKER_COLORS = [<?='"color-'.join ('","color-', array_keys (WPT_MODULES['cpick']['items'])).'"'?>];
-  let _width = 0,
-      _height = 0,
-      _cb_close,
-      _cb_click;
+  const _COLOR_PICKER_COLORS = [<?='"color-'.join('","color-', array_keys(WPT_MODULES['cpick']['items'])).'"'?>];
+  let _width = 0;
+  let _height = 0;
+  let _cb_close;
+  let _cb_click;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init ()
-    {
-      const $picker = this.element;
-      let html = "";
+  Plugin.prototype = {
+    // METHOD init()
+    init() {
+      const picker = this.element[0];
+      let html = '';
 
-      _COLOR_PICKER_COLORS.forEach (
-        (cls, i) => html += `<div class="${cls}">&nbsp;</div>`);
+      _COLOR_PICKER_COLORS.forEach(
+          (cls, i) => html += `<div class="${cls}">&nbsp;</div>`);
 
-      $picker.append (html);
+      picker.innerHTML = html;
 
-      H.waitForDOMUpdate (() =>
-        {
-          _width = $picker.outerWidth ();
-          _height = $picker.outerHeight ();
-        }); 
+      H.waitForDOMUpdate(() => {
+        _width = picker.offsetWidth;
+        _height = picker.offsetHeight;
+      }); 
     },
 
-    // METHOD getColorsList ()
-    getColorsList ()
-    {
+    // METHOD getColorsList()
+    getColorsList() {
       return _COLOR_PICKER_COLORS;
     },
 
-    // METHOD open ()
-    open (args)
-    {
-      const $picker = this.element,
-            wW = $(window).outerWidth (),
-            wH = $(window).outerHeight ();
-      let x = args.event.pageX + 5,
-          y = args.event.pageY - 20;
-     
-      if (x + _width > wW)
-        x = wW - _width - 20;
+    // METHOD open()
+    open(args) {
+      const picker = this.element[0];
+      const wW = window.outerWidth;
+      const wH = window.innerHeight;
+      let x = args.event.pageX + 5;
+      let y = args.event.pageY - 20;
 
-      if (y + _height > wH)
+      if (x + _width > wW) {
+        x = wW - _width - 20;
+      }
+
+      if (y + _height > wH) {
         y = wH - _height - 20;
+      }
 
       _cb_close = args.cb_close;
       _cb_click = args.cb_click;
 
       // EVENT "click" on colors
-      const _eventC = (e)=>
-        {
-          e.stopImmediatePropagation ();
+      const _eventC = (e) => {
+        e.stopImmediatePropagation();
 
-          // Update background color
-          _cb_click (e.target);
+        // Update background color
+        _cb_click(e.target);
 
-          // Remove color picker
-          document.getElementById("popup-layer").click ();
+        // Remove color picker
+        document.getElementById('popup-layer').click();
 
-          const $f = S.getCurrent ("filters");
-          if ($f.is (":visible"))
-            $f.filters ("apply", {norefresh: true});
-        };
-      $picker[0].removeEventListener ("click", _eventC);
-      $picker[0].addEventListener ("click", _eventC);
+        const $f = S.getCurrent('filters');
+        if ($f.is(':visible')) {
+          $f.filters('apply', {norefresh: true});
+        }
+      };
+      picker.removeEventListener('click', _eventC);
+      picker.addEventListener('click', _eventC);
 
-      H.openPopupLayer (() =>
-        {
-          this.close ();
+      H.openPopupLayer(() => {
+        const $postit = S.getCurrent('postit');
 
-          if (S.getCurrent ("postit").length)
-            S.getCurrent ("postit").postit ("unedit");
-        });
+        this.close();
 
-      $picker
-        .css({top: y, left: x})
-        .show ();
+        if ($postit.length) {
+          $postit.postit('unedit');
+        }
+      });
+
+      picker.style.top = y + 'px';
+      picker.style.left = x + 'px';
+      picker.style.visibility = 'visible';
     },
 
-    // METHOD close ()
-    close ()
-    { 
-      const $picker = this.element;
+    // METHOD close()
+    close() { 
+      const picker = this.element[0];
 
-      if ($picker.length)
-      {
-        $picker.hide ();
+      if (picker) {
+        picker.style.visibility = 'hidden';
 
-        if (_cb_close)
-          _cb_close ();
+        if (_cb_close) {
+          _cb_close();
+        }
       }
     }
-
   };
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded",
-    ()=> (!H.isLoginPage ()) && setTimeout (()=> $("#cpick").cpick (), 0));
+  document.addEventListener('DOMContentLoaded',
+      () => !H.isLoginPage() && $('#cpick').cpick());
 
-<?php echo $Plugin->getFooter ()?>
-
+<?php echo $Plugin->getFooter()?>

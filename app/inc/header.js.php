@@ -22,16 +22,15 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD serializeOne ()
-  const _serializeOne = (th)=>
-    {
-      const img = th.querySelector ("img");
+  const _serializeOne = (th) => {
+      const img = th.querySelector('img');
 
       return {
-        id: th.dataset.id.substring (7),
-        width: Math.trunc (th.offsetWidth),
-        height: Math.trunc (th.offsetHeight),
-        title: th.querySelector(".title").innerText,
-        picture: img ? img.getAttribute ("src") : null
+        id: th.dataset.id.substring(7),
+        width: Math.trunc(th.offsetWidth),
+        height: Math.trunc(th.offsetHeight),
+        title: th.querySelector('.title').innerText,
+        picture: img ? img.getAttribute('src') : null,
       };
     };
 
@@ -428,21 +427,20 @@
       return $img;
     },
 
-    // METHOD setImg ()
-    setImg (src)
-    {
-      const $header = this.element,
-            $img = $header.find(".img img");
+    // METHOD setImg()
+    setImg(src) {
+      const header = this.element[0];
+      const img = header.querySelector('.img img');
 
-      if (src)
-      {
-        if (!$img.length)
-          $header.append (this.getImgTemplate (src));
-        else if (src != $img.attr("src"))
-          $img.attr ("src", src);
+      if (src) {
+        if (!img) {
+          header.appendChild(this.getImgTemplate(src)[0]);
+        } else if (src !== img.getAttribute('src')) {
+          img.setAttribute('src', src);
+        }
+      }  else if (img) {
+        header.querySelector('.img').remove();
       }
-      else if ($img.length)
-        $header.find(".img").remove ();
     },
 
     // METHOD deleteImg ()

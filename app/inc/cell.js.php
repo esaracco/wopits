@@ -7,11 +7,11 @@
   Description: Wall's cell
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('cell', 'width: 300, height: 200',
-                                     'wallElement');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('cell', 'width: 300, height: 200',
+                                    'wallElement');
+  echo $Plugin->getHeader();
 
 ?>
 
@@ -27,7 +27,7 @@
       const cellId = settings.id;
       const usersettings = settings.usersettings;
       const $wall = settings.wall;
-      const writeAccess = plugin.canWrite ();
+      const writeAccess = plugin.canWrite();
       // Coords of touchstart on touch devices
       let _coords = null;
 
@@ -114,7 +114,7 @@
             const absW = Math.abs(ui.size.width - ui.originalSize.width);
  
             // Height
-            if (absH < 2 || absH > 2)  {
+            if (absH < 2 || absH > 2) {
               if ($wall[0].dataset.cols === '1' &&
                   $wall[0].dataset.rows === '1') {
                 plugin.update({
@@ -160,7 +160,7 @@
       });
 
       if (writeAccess) {
-        // INTERNAL FUNCTION __dblclick ()
+        // LOCAL FUNCTION __dblclick()
         const __dblclick = (e) => {
           if (S.get('zoom-level') || S.get('postit-creating') ||
               (
@@ -170,12 +170,12 @@
                 ) &&
                 !e.target.classList.contains('cell-list-mode')
               )) {
-            return e.stopImmediatePropagation ();
+            return e.stopImmediatePropagation();
           }
 
           S.set('postit-creating', true, 500);
 
-          const cellOffset = $cell.offset ();
+          const cellOffset = $cell.offset();
           const pTop =
               ((_coords && _coords.changedTouches) ?
                 _coords.changedTouches[0].clientY : e.pageY) - cellOffset.top;
@@ -244,12 +244,12 @@
       }, 150);
     },
 
-    // METHOD setPostitsUserWritingListMode ()
+    // METHOD setPostitsUserWritingListMode()
     // See postit::showUserWriting()
     setPostitsUserWritingListMode() {
       this.element[0].querySelectorAll('.user-writing').forEach((el) => {
         const p = el.parentNode;
-        const min = p.parentNode.querySelector (
+        const min = p.parentNode.querySelector(
                         `.postit-min[data-id="${p.dataset.id}"]`);
 
         if (min) {
@@ -259,12 +259,12 @@
       });
     },
 
-    // METHOD setPostitsDisplayMode ()
-    setPostitsDisplayMode (type)
+    // METHOD setPostitsDisplayMode()
+    setPostitsDisplayMode(type)
     {
       const plugin = this,
             $cell = plugin.element,
-            $displayMode = $cell.find (".cell-menu i"),
+            $displayMode = $cell.find(".cell-menu i"),
             writeAccess = plugin.canWrite ();
 
       // If we must display list
@@ -445,25 +445,24 @@
       });
     },
 
-    // METHOD serialize ()
-    serialize (args = {})
-    {
+    // METHOD serialize()
+    serialize(args = {}) {
       const cells = [];
       let postits;
 
-      S.getCurrent("wall")[0].querySelectorAll("tbody.wpt td.wpt")
-        .forEach (cell =>
-          cells.push ({
-            id: cell.dataset.id.substring (5),
-            width: parseInt (cell.style.width),
-            height: parseInt (cell.style.height),
-            item_row: cell.parentNode.rowIndex - 1,
-            item_col: cell.cellIndex - 1,
-            postits: (!args.noPostits &&
-                      (postits = cell.querySelectorAll(".postit")).length) ?
-                         $(postits).postit ("serialize", args) : null
-          })
-        );
+      S.getCurrent('wall')[0].querySelectorAll('tbody.wpt td.wpt')
+          .forEach((cell) => {
+        cells.push({
+          id: cell.dataset.id.substring(5),
+          width: parseInt(cell.style.width),
+          height: parseInt(cell.style.height),
+          item_row: cell.parentNode.rowIndex - 1,
+          item_col: cell.cellIndex - 1,
+          postits: (!args.noPostits &&
+                    (postits = cell.querySelectorAll('.postit')).length) ?
+                       $(postits).postit('serialize', args) : null,
+        });
+      });
 
       return cells;
     },

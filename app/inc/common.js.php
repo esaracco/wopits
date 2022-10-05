@@ -1464,7 +1464,7 @@ class WHelper
     const id = `${args.template||type}Popup`,
           popup = document.getElementById (id);
 
-    // INTERNAL FUNCTION __exec ()
+    // LOCAL FUNCTION __exec ()
     const __exec = ($p)=>
       {
         const p = $p[0];
@@ -1802,7 +1802,7 @@ class WHelper
               {
                 const xhr = new window.XMLHttpRequest ();
       
-                // INTERNAL FUNCTION __progress ()
+                // LOCAL FUNCTION __progress ()
                 const __progress = (e)=>
                   {
                     if (e.lengthComputable)
@@ -2045,6 +2045,12 @@ class WHelper
   static navigatorIsEdge ()
   {
     return navigator.userAgent.match (/edg/i);
+  }
+
+  // METHOD isVisible()
+  static isVisible(el) {
+    return window.getComputedStyle(el, null)
+               .getPropertyValue('display') !== 'none';
   }
 
   // METHOD fixVKBScrollStart()

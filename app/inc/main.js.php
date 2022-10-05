@@ -219,7 +219,7 @@
 
           H.waitForDOMUpdate (()=>
           {
-            // INTERNAL FUNCTION ()
+            // LOCAL FUNCTION ()
             const __postInit = ()=>
               {
                 H.waitForDOMUpdate (() =>
@@ -622,21 +622,19 @@
           });
     },
 
-    // METHOD hidePostitsPlugs ()
-    hidePostitsPlugs ()
-    {
-      this.element[0].querySelectorAll(".postit").forEach (p =>
-        $(p).postit ("hidePlugs", true));
+    // METHOD hidePostitsPlugs()
+    hidePostitsPlugs() {
+      this.element[0].querySelectorAll('.postit').forEach(
+          (p) => $(p).postit('hidePlugs', true));
     },
 
-    // METHOD showPostitsPlugs ()
-    showPostitsPlugs ()
-    {
-      this.repositionPostitsPlugs ();
+    // METHOD showPostitsPlugs()
+    showPostitsPlugs() {
+      this.repositionPostitsPlugs();
 
-      H.waitForDOMUpdate (()=>
-        this.element[0].querySelectorAll(".postit").forEach (p =>
-          $(p).postit ("showPlugs", true)));
+      H.waitForDOMUpdate(() =>
+          this.element[0].querySelectorAll('.postit').forEach(
+              (p) => $(p).postit('showPlugs', true)));
     },
 
     // METHOD showUserWriting ()
@@ -674,7 +672,7 @@
             wall = $wall[0],
             wallIsVisible = $wall.is (":visible");
 
-      // INTERNAL FUNCTION __refreshWallBasicProperties ()
+      // LOCAL FUNCTION __refreshWallBasicProperties ()
       const __refreshWallBasicProperties = (d)=>
         {
           plugin.setShared (d.shared);
@@ -1443,7 +1441,7 @@
       const {wallId, postitId, commentId} = args;
       let type;
 
-      // INTERNAL FUNCTION __displayAlert ()
+      // LOCAL FUNCTION __displayAlert ()
       const __displayAlert = ()=>
         {
           if (postitId)
@@ -1653,7 +1651,7 @@
                 h = Number ($inputs[2].value),
                 cellPlugin = $cell.cell ("getClass");
 
-          // INTERNAL FUNCTION __resize ()
+          // LOCAL FUNCTION __resize ()
           const __resize = (args)=>
             {
               $wall.find("thead.wpt th.wpt:eq(1),td.wpt").css ("width", args.newW);
@@ -2434,7 +2432,7 @@
             if (!li || li.querySelector ("a.disabled"))
               return;
 
-            // INTERNAL FUNCTION __manageCheckbox()
+            // LOCAL FUNCTION __manageCheckbox()
             const __manageCheckbox = (el, li, type)=>
               {
                 if (el.tagName != "INPUT")
