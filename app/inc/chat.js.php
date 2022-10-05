@@ -20,6 +20,7 @@
   Plugin.prototype = Object.create(Wpt_toolbox.prototype);
   Object.assign (Plugin.prototype,
   {
+    closeVKB: false,
     // METHOD init ()
     init ()
     {
@@ -46,8 +47,10 @@
         })
         .append (`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`);
 
+      const input = chat.querySelector('input');
+
       // EVENT "keypress" on main input
-      chat.querySelector("input").addEventListener ("keypress", (e)=>
+      input.addEventListener ("keypress", (e)=>
         {
           if (e.which == 13)
           {
@@ -57,9 +60,22 @@
           }
         });
 
+      input.addEventListener('focus', (e) => {
+        if (!H.haveMouse() && !S.get('vkbData')) {
+          this.closeVKB = H.fixVKBScrollStart();
+        }
+      });
+
+      input.addEventListener('blur', (e) => {
+        if (this.closeVKB && S.get('vkbData')) {
+          H.fixVKBScrollStop();
+          this.closeVKB = false;
+        }
+      });
+
       // EVENT "click" on main input
       // Needed for touch devices
-      chat.querySelector("input").addEventListener ("click",
+      input.addEventListener ("click",
         (e)=> e.target.focus());
 
       // EVENT "click" on close button
@@ -75,14 +91,13 @@
           e.target.closest(".form-control").querySelectorAll("li").forEach (
             (el)=> el.remove ());
 
-          chat.querySelector("input").focus ();
+          input.focus ();
         });
 
       // EVENT "click" on "send" button
       chat.querySelector("button.btn-primary").addEventListener ("click", (e)=>
         {
-          const input = chat.querySelector ("input"),
-                msg = H.noHTML (input.value);
+          const msg = H.noHTML (input.value);
 
           if (!msg)
             return;
@@ -135,10 +150,6 @@
           `wall/${wallId}/chat`);
 
         $chat.hide ();
-
-        if (S.get('vkbData')) {
-          H.fixVKBScrollStop();
-        }
       }
       else
       {
@@ -147,10 +158,6 @@
 
         if (el)
           el.remove ();
-
-        if (!H.haveMouse()) {
-          H.fixVKBScrollStart();
-        }
 
         $chat.css ({bottom: "15px", left: "5px", display: "table"});
 

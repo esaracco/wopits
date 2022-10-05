@@ -35,33 +35,6 @@
       };
     };
 
-  //FIXME
-  // METHOD _simulateClick ()
-  const _simulateClick = (x, y)=>
-    {
-      const el = document.elementFromPoint (x, y);
-      let evtName = (el.tagName.match (/^A|I|DIV|TH|IMG$/))?"click":"mousedown";
-
-      //FIXME
-      // do nothing if element is the previously clicked TH
-      if (el.classList.contains ("_current") || el.closest ("th._current"))
-        return;
-
-      // if cell click (TD) or cell resize, use mousedown
-      if (el.getAttribute ("scope") ||
-          el.className.indexOf ("ui-resizable-handle") != -1)
-        evtName = "mousedown";
-
-      el.dispatchEvent (
-        new MouseEvent (evtName, {
-          view: window,
-          bubbles: true,
-          cancelable: true,
-          clientX: x,
-          clientY: y
-        }));
-    };
-
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype =
@@ -340,11 +313,11 @@
         }, 150);
     },
 
-    // METHOD useFocusTrick ()
-    useFocusTrick ()
-    {
-      return (this.settings.wall.wall("isShared") &&
-              H.haveMouse() && !H.navigatorIsEdge());
+    // METHOD useFocusTrick()
+    useFocusTrick () {
+      return (this.settings.wall.wall('isShared') &&
+              H.haveMouse() &&
+              !H.navigatorIsEdge());
     },
 
     // METHOD saveCurrentWidth ()
@@ -354,22 +327,17 @@
       this.settings.thwidth = this.element.outerWidth ();
     },
 
-    //FIXME still useful?
-    // METHOD addUploadLayer ()
-    addUploadLayer ()
-    {
+    // METHOD addUploadLayer()
+    addUploadLayer() {
       const plugin = this;
 
-      if (!plugin.useFocusTrick ())
-      {
-        const layer = document.getElementById ("upload-layer");
+      if (!plugin.useFocusTrick()) {
+        const layer = document.getElementById('upload-layer');
 
-        ["mousedown", "touchstart"].forEach (type=>
-          layer.addEventListener (type, (e)=>
-            plugin.unedit ({bubble_cb: ()=> _simulateClick (e.pageX, e.pageY)}),
-            {once: true}));
+        ['mousedown', 'touchstart'].forEach((type) =>
+          layer.addEventListener(type, (e) => plugin.unedit(), {once: true}));
 
-        layer.style.display = "block";
+        layer.style.display = 'block';
       }
     },
 

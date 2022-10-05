@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
   const _walls = document.getElementById('walls');
+  let _closeVKB = false;
 
   if (!H.isLoginPage()) {
     // EVENTS resize & orientationchange on window
@@ -282,13 +283,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = e.target;
 
     if (!H.haveMouse()) {
-      if (S.get('mstack').length === 1 && !S.get('zoom-level') &&
+      if (!S.get('vkbData') && S.get('mstack').length === 1 &&
+          !S.get('zoom-level') &&
           (
             // Exception for sharing wall and postit attachments popups
             target.classList.contains('contains-inputs') ||
             H.getFirstInputFields(e.target.querySelector('.modal-dialog'))
           )) {
-        H.fixVKBScrollStart();
+        _closeVKB = H.fixVKBScrollStart();
       }
     } else {
       H.setAutofocus(e.target);
@@ -310,8 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
       S.getCurrent('wall').wall('unedit');
     }
 
-    if (S.get('vkbData') && S.get('mstack').length === 1) {
+    if (_closeVKB && S.get('vkbData') && S.get('mstack').length === 1) {
       H.fixVKBScrollStop();
+      _closeVKB = false;
     }
   });
 

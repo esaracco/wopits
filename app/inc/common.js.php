@@ -825,7 +825,7 @@ class WHelper
   }
 
   // METHOD createUploadElement()
-  static createUploadElement = ({attrs, onChange, onClick}) => {
+  static createUploadElement({attrs, onChange, onClick}) {
     const el = this.createElement('input', {...attrs, type: 'file'});
 
     el.classList.add('upload');
@@ -1272,6 +1272,7 @@ class WHelper
   // METHOD openConfirmPopover()
   static openConfirmPopover(args) {
     const scroll = Boolean(args.scrollIntoView);
+    let closeVKB = false;
     let btn;
     let buttons;
 
@@ -1286,7 +1287,7 @@ class WHelper
         if (document.querySelector('.popover.show')) {
           bp.hide();
           setTimeout(() => {
-            if (S.get('vkbData')) {
+            if (closeVKB && S.get('vkbData')) {
               H.fixVKBScrollStop();
             }
             bp.dispose();
@@ -1335,8 +1336,8 @@ class WHelper
     // If popover contains input fields
     if (input) {
       // Trick for virtual keyboard
-      if (!H.haveMouse()) {
-        H.fixVKBScrollStart();
+      if (!H.haveMouse() && !S.get('vkbData')) {
+        closeVKB = H.fixVKBScrollStart();
       // If no virtual keyboard, focus on the first input
       } else {
         input.focus();
@@ -2064,6 +2065,8 @@ class WHelper
     body.style.position = 'fixed';
     body.style.top = `${body.scrollTop * -1}px`;
     body.style.left = `${body.scrollLeft * -1}px`;
+
+    return true;
   }
   
   // METHOD fixVKBScrollStop()
