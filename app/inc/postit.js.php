@@ -2081,6 +2081,13 @@
 
     const walls = document.querySelector('.tab-content.walls');
 
+    // FIXME polyfill for TinyMCE (old Safari iOS)
+    Promise.allSettled = Promise.allSettled || ((promises) => Promise.all(
+      promises.map((p) => p
+        .then(value => ({status: 'fulfilled', value}))
+        .catch(reason => ({status: 'rejected', reason})))
+    ));
+
     // Init text editor
     let locale = $("html")[0].dataset.fulllocale;
     tinymce.init ({
