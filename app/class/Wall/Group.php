@@ -202,8 +202,9 @@ class Group extends Wall
 
       $this->db->commit ();
 
-      if (!$me && $this->wallId)
-        $ret['wall'] = ['id' => $this->wallId];
+      if (!$me && ($this->wallId || $wallIds)) {
+        $ret['wall'] = [];
+      }
     }
     catch (\Exception $e) 
     {
@@ -547,7 +548,7 @@ class Group extends Wall
       $ret['wall'] = [
         'id' => $this->wallId,
         'unlinked' => $this->getWallName (),
-        'usersIds' => $users ? array_keys ($users) : []
+        'usersIds' => $users,
       ];
     }
     catch (\Exception $e)

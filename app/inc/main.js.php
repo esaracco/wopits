@@ -757,7 +757,7 @@
         }
       }
       // Full wall update
-      else
+      else if (!d.removed)
       {
         const wallId = plugin.settings.id,
               access = plugin.settings.access,

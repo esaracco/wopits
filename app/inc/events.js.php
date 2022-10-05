@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           // Reposition wall menu if it is out of bounds
-          S.getCurrent('wmenu').wmenu('fixPosition');
+          const $wmenu = S.getCurrent('wmenu');
+          Object.keys($wmenu).length && $wmenu.wmenu('fixPosition');
         }
       }, 150);
     });
