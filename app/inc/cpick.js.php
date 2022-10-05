@@ -65,13 +65,18 @@
 
       // EVENT "click" on colors
       const _eventC = (e) => {
+        const el = e.target;
+
         e.stopImmediatePropagation();
 
+        // Do not process if not color div
+        if (el.className.indexOf('color') !== 0) return;
+
         // Update background color
-        _cb_click(e.target);
+        _cb_click(el);
 
         // Remove color picker
-        document.getElementById('popup-layer').click();
+        // document.getElementById('popup-layer').click();
 
         const $f = S.getCurrent('filters');
         if ($f.is(':visible')) {

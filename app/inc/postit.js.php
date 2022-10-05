@@ -2676,10 +2676,11 @@
           cp.open({
             event: e,
             cb_close: () => postitPlugin.element.trigger('mouseleave'),
-            cb_click: (div) =>
-              postitPlugin.element
-                .removeClass(cp.getColorsList().join(' '))
-                .addClass($(div).attr('class')),
+            cb_click: (div) => {
+              const el = postitPlugin.element[0];
+              cp.getColorsList().forEach((c) => el.classList.remove(c));
+              el.classList.add(div.className);
+            },
           });
           break;
 
