@@ -173,6 +173,8 @@
         $currentMenu.parent().postit('closeMenu');
       }
 
+      this.header = postit.querySelector('.postit-header');
+      this.btn = postit.querySelector('.btn-menu i');
       this.postitPlugin = postitPlugin;
       this.$menu = $(_menuTemplate);
 
@@ -194,11 +196,31 @@
 
     // METHOD show()
     show() {
+      const postit = this.postitPlugin.element[0];
+      const coord = this.header.getBoundingClientRect();
+
+      if ((coord.x || coord.left) + this.getWidth() > window.outerWidth) {
+        this.btn.classList.replace(
+            'fa-caret-square-down', 'fa-caret-square-left');
+        this.setPosition('left');
+      } else {
+        this.setPosition('right');
+      }
+  
+      this.header.classList.add('menu');
+      this.btn.classList.replace('far', 'fas');
+
+      // FIXME z-index issue
+      // H.openPopupLayer(()=> this.btn.click());
       this.$menu.show();
     }
 
     // METHOD destroy()
     destroy() {
+      this.header.classList.remove('menu');
+      this.btn.classList.replace(
+          'fa-caret-square-left', 'fa-caret-square-down');
+      this.btn.classList.replace('fas', 'far');
       this.$menu.remove();
     }
 
@@ -1000,7 +1022,7 @@
               svg.querySelector("text").getBoundingClientRect ();
       const $start = $(plug.obj.start);
       const renameItem = H.haveMouse() ? `<li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li>` : '';
-      const menu = `<ul class="dropdown-menu">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
+      const menu = `<ul class="dropdown-menu shadow">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
       const $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
 
         plug.labelObj = $label.appendTo ("body");
@@ -2268,35 +2290,13 @@
           // Create postit menu and show it
           if (!settings.Menu)
           {
-            const coord = $header[0].getBoundingClientRect ();
-  
             $wall.wall ("closeAllMenus");
-  
             settings.Menu = new _Menu ($postit.postit ("getClass"));
-  
-            if ((coord.x||coord.left)+settings.Menu.getWidth() >
-                  $(window).width())
-            {
-              ibtn.classList
-                .replace ("fa-caret-square-down", "fa-caret-square-left");
-              settings.Menu.setPosition ("left");
-            }
-            else
-              settings.Menu.setPosition ("right");
-  
-            $header.addClass ("menu");
-            ibtn.classList.replace ("far", "fas");
-  
             settings.Menu.show ();
           }
           // Destroy postit menu
           else
           {
-            $header.removeClass ("menu");
-            ibtn.classList.replace("fas", "far");
-            ibtn.classList
-              .replace ("fa-caret-square-left", "fa-caret-square-down");
-  
             settings.Menu.destroy ();
             delete settings.Menu;
           }
@@ -2464,7 +2464,7 @@
         const el = e.target;
 
         // EVENT "mousedown" on postit tags
-        if (el.matches (".postit-tags i"))
+        if (el.matches (".postit-tags,.postit-tags *"))
         {
           e.stopImmediatePropagation ();
 

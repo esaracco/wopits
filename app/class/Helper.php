@@ -335,7 +335,7 @@ class Helper
     $menu = '<div class="postit-menu right">';
     foreach ($items as $d)
     {
-      $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas\"></i></span>";
+      $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas fa-fw\"></i></span>";
     }
     $menu .= '</div>';
 

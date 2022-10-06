@@ -89,7 +89,7 @@ img {
 }
 
 #aboutPopup .btn {
-  color: #fff !important;
+  color: #fff;
 }
 
 .project-title {
@@ -97,8 +97,8 @@ img {
   font-style: italic;
 }
 
-.project-title span {
-  font-size: .8rem !important;
+.project-title span a {
+  font-size: .8rem;
 }
 
 .accordion,
@@ -275,10 +275,6 @@ i.settings {
   -moz-user-select: none;
   -ms-user-select: none;
   /*  user-select: none;*/
-}
-
-.dropdown-menu.show {
-  inset: auto !important;
 }
 
 #main-menu ul.dropdown-menu {
@@ -460,7 +456,7 @@ button.close {
 #postitCommentsPopup textarea {
   resize: none;
   height: 80px;
-  font-size: .8rem !important;
+  font-size: .8rem;
   line-height: 1rem;
 }
 
@@ -547,17 +543,6 @@ button.close {
   font-weight: normal;
 }
 
-.msg-username {
-  float: left;
-  font-weight: bold;
-  padding-left: 5px;
-  color: var(--modal-theme-color-dark);
-  text-overflow: ellipsis!important;
-  overflow: hidden!important;
-  white-space: nowrap;
-  max-width: 135px;
-}
-
 #upload-layer {
   background-color: transparent;
 }
@@ -635,27 +620,27 @@ dd {
 }
 
 .inline-block {
-  display:inline-block;
+  display: inline-block;
 }
 
 select.timezone {
   max-width:300px;
 }
 
-.ui-datepicker select {
-  background-color: #fff !important;
-  font-size: .8rem !important;
-  margin-right: 5px !important;
-  opacity: .8 !important;
-  padding: 3px !important;
+.ui-datepicker .ui-datepicker-title select {
+  background-color: #fff;
+  font-size: .8rem;
+  margin-right: 5px;
+  opacity: .8;
+  padding: 3px;
 }
 
 .modal {
-  z-index:5017;
+  z-index: 5017;
 }
 
 .zindexmax {
-  z-index:10000;
+  z-index: 10000;
 }
 
 .modal-body {
@@ -663,19 +648,19 @@ select.timezone {
 }
 
 .modal-body .btn-sm {
-  margin-top:1px;
+  margin-top: 1px;
 }
 
 #msg-container {
-  z-index:6000;
-  margin-top:5px;
+  z-index: 6000;
+  margin-top: 5px;
 }
 
 .toast {
-  width:auto;
-  min-width:280px;
-  max-width:380px;
-  margin-bottom:1px;
+  width: auto;
+  min-width: 280px;
+  max-width: 380px;
+  margin-bottom: 1px;
 }
 
 .toast-header i {
@@ -683,24 +668,23 @@ select.timezone {
 }
 
 .toast-body {
-  background-color:rgb(255, 255, 255, .2);
-  width:100%;
-  border-top-right-radius:.25rem;
-  border-bottom-right-radius:.25rem;
+  background-color: rgb(255, 255, 255, .2);
+  width: 100%;
+  border-top-right-radius: .25rem;
+  border-bottom-right-radius: .25rem;
 }
 
-.wall-size * {
-  font-size: .8rem;
+.wall-size {
   max-width: 250px;
 }
 
 .wall-size .input-group-text {
-  border:none;
+  border: none;
 }
 
 .wall-size input[type="number"]:first-of-type {
-  border-top-left-radius:.2rem!important;
-  border-bottom-left-radius:.2rem!important;
+  border-top-left-radius: .2rem !important;
+  border-bottom-left-radius: .2rem !important;
 }
 
 #postitAttachmentsPopup,
@@ -718,13 +702,8 @@ select.timezone {
 
 .readonly,
 .locked {
-  pointer-events:none !important;
-  opacity:.6 !important;
-}
-
-.invisible {
-  pointer-events:none;
-  opacity:0;
+  pointer-events: none !important;
+  opacity: .6 !important;
 }
 
 .list-group-item {
@@ -741,8 +720,8 @@ select.timezone {
   text-align: center;
   font-weight: bold;
   background-color: var(--wall-border-color);
-  height: 35px !important;
-  padding: 5px !important;
+  height: 35px;
+  padding: 5px;
 }
 
 .list-group-item span.ownername {
@@ -756,12 +735,12 @@ select.timezone {
 }
 
 .list-group-item .item-infos {
-  margin-left:29px;
-  font-size:.8rem;
-  font-style:italic;
-  opacity:.6;
-  text-overflow:ellipsis !important;
-  overflow:hidden !important;
+  margin-left: 29px;
+  font-size: .8rem;
+  font-style: italic;
+  opacity: .6;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 #owallPopup .list-group-item .item-infos {
@@ -769,7 +748,7 @@ select.timezone {
 }
 
 .list-group .list-group-item.first {
-  border-width:1px;
+  border-width: 1px;
   border-top-left-radius: .25rem;
   border-top-right-radius: .25rem;
 }
@@ -781,13 +760,12 @@ select.timezone {
 
 #pworkPopup .list-group-item .item-infos,
 #usearchPopup .list-group-item .item-infos {
-  margin-top:-5px;
-  margin-left:1px;
+  margin-top: -5px;
+  margin-left: 1px;
 }
 
-
 #wallUsersviewPopup .list-group-item .item-infos {
-  margin-top:-5px;
+  margin-top: -5px;
 }
 
 .list-group-item .item-infos span:not(:last-child):after {
@@ -795,7 +773,7 @@ select.timezone {
 }
 
 .list-group .item-infos {
-  max-width:70% !important;
+  max-width: 70%;
 }
 
 #usearchPopup .list-group-item .item-infos,
@@ -841,7 +819,7 @@ select.timezone {
 }
 
 .btn-circle {
-  border-radius: 50% !important;
+  border-radius: 50%;
   text-align: center;
   vertical-align: middle;
   box-shadow: 0 0 3px 1px #989898;
@@ -897,6 +875,9 @@ select.timezone {
 
 .wall thead.wpt th.wpt .title {
   margin: 28px 20px 0 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .wall td.wpt {
@@ -1316,7 +1297,6 @@ kbd,
 .cell-menu .btn-circle {
   width: 23px;
   height: 23px;
-  font-size: .9rem;
 }
 
 .cell-menu .btn-circle i {
@@ -1326,33 +1306,27 @@ kbd,
   font-size: .8rem;
 }
 
-.cell-menu .btn-circle {
-  margin-left: -5px;
-}
-
 .cell-list-mode {
-  width:100%;
-  height:100%;
-  position:absolute;
-  left:0;
-  top:0;
-  font-size:14px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  font-size: 14px;
 }
 
 .cell-list-mode ul {
-  padding:0;
-  overflow-y:auto;
+  padding: 0;
+  overflow-y: auto;
 }
 
 .cell-list-mode li {
-  padding:3px;
-  border:1px solid transparent;
-  border-bottom:1px dashed #a6a6a6;
-  list-style:none;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-bottom: 1px dashed #a6a6a6;
+  list-style: none;
   white-space: nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  cursor:pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }
 
 .cell-list-mode li span {
@@ -1363,17 +1337,27 @@ kbd,
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .cell-list-mode li span,
 .cell-list-mode li:only-of-type span {
-  cursor:pointer;
+  cursor: pointer;
+}
+
+.submenu .dropdown-menu {
+  min-width: 100px;
+  padding: 3px 0;
+  inset: auto !important;
+  border: none;
+}
+
+.submenu .dropdown-menu * {
+  font-size: .8rem !important;
+}
+
+.submenu .dropdown-menu i.fa-edit {
+  margin-left: 2px;
+  margin-right: -2px;
 }
 
 .submenu .dropdown-toggle::after {
   content: none;
-}
-
-.submenu .dropdown-menu {
-  top:-25px !important;
-  left:20px !important;
-  padding:3px 0;
 }
 
 .submenu-link {
@@ -1382,13 +1366,8 @@ kbd,
 }
 
 .submenu-link .dropdown-menu {
-  left:5px !important;
-  min-width:auto;
-}
-
-
-.submenu .dropdown-menu * {
-  font-size: .8rem !important;
+  left: 5px !important;
+  min-width: auto;
 }
 
 .submenu .dropdown-item {
@@ -1400,28 +1379,22 @@ kbd,
 }
 
 .plug-label.submenu {
-  height:auto;
+  height: auto;
 }
 
 .plug-label.submenu:hover {
-  z-index:6000!important;
+  z-index: 5016 !important;
 }
 
 .plug-label.submenu .dropdown-menu {
-  min-width:100px;
-  border:none;
-  box-shadow: 0 0 5px var(--wall-border-color);
-}
-
-.submenu .dropdown-menu i.fa-edit {
-  margin-left:2px;
-  margin-right:-2px;
+  top: -25px !important;
+  left: 20px !important;
 }
 
 th.wpt .submenu .dropdown-menu {
-  top:-28px !important;
-  left:15px !important;
-  z-index:5003!important;
+  top: -28px !important;
+  left: 15px !important;
+  z-index: 5003 !important;
 }
 
 .postit {
@@ -1450,9 +1423,9 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit .btn-menu {
-  position:absolute;
-  padding:0 5px 0 5px;
-  z-index:94;
+  position: absolute;
+  padding: 0 5px 0 5px;
+  z-index: 94;
 }
 
 #mmenu i,
@@ -1507,50 +1480,42 @@ th.wpt .submenu .dropdown-menu {
   display: none;
   position: absolute;
   cursor: pointer;
-  z-index: 5000;
-}
-
-.postit-menu i.fa-bezier-curve {
-  margin-left:-1px;
+  z-index: 94;
 }
 
 .postit-menu.right {
-  max-width:206px;
-  top:20px;
-  left:-3px;
-}
-
-.postit-menu.right .btn-circle {
-  float:left;
-  width:32px;
-  height:32px;
-  margin-top:2px;
-  margin-right:2px;
+  max-width: 206px;
+  top: 26px;
+  left: -4px;
 }
 
 .postit-menu.left {
-  max-width:70px;
-  top:-3px;
-  left:-68px;
+  max-width: 72px;
+  top: -4px;
+  left: -68px;
 }
 
-.postit-menu.left .btn-circle {
-  width:32px;
-  height:32px;
-  margin-bottom:3px;
-  margin-left:3px;
+.postit-menu i {
+  margin-left: -2px;
+}
+
+.postit-menu .btn-circle {
+  width: 32px;
+  height: 32px;
+  margin: 1px;
 }
 
 .postit .postit-tags {
-  display:none;
-  position:absolute;
-  border-radius:0 5px 5px 0;
-  width:15px;
-  top:-9px;
-  right:-12px;
-  cursor:pointer;
-  line-height:20px;
-  z-index:93;
+  display: none;
+  padding: 5px;
+  position: absolute;
+  border-radius: 0 5px 5px 0;
+  width: 25px;
+  top: -9px;
+  right: -13px;
+  cursor: pointer;
+  line-height: 20px;
+  z-index: 93;
 }
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-tags {
@@ -1559,7 +1524,6 @@ th.wpt .submenu .dropdown-menu {
 
 .postit .postit-tags i {
   margin-left: -2px;
-  background: none !important;
   text-shadow: 1px 2px 3px rgba(0, 0, 0, .5);
 }
 
@@ -2042,7 +2006,7 @@ i.set {
 }
 
 i.notset {
-  opacity:.3;
+  opacity: .3;
 }
 
 .wall-menu .wpt-badge {
@@ -2052,7 +2016,7 @@ i.notset {
 
 #mmenu li:not(:last-child) i.fa-lg,
 .wall-menu li:not(:last-child) i.fa-lg {
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 
 .chat .usersviewcounts {
@@ -2062,7 +2026,7 @@ i.notset {
 
 .postit .topicon {
   position: absolute;
-  top: -26px;
+  top: -28px;
   cursor: pointer;
   z-index: 93;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, .5);

@@ -471,13 +471,13 @@
         }
     },
 
-    // METHOD closeAllMenus ()
-    closeAllMenus ()
-    {
-      const menu = this.element[0].querySelector (".postit-menu");
+    // METHOD closeAllMenus()
+    closeAllMenus() {
+      const menu = this.element[0].querySelector('.postit-menu');
 
-      if (menu)
-        $(menu.parentNode).postit ("closeMenu");
+      if (menu) {
+        $(menu.parentNode).postit('closeMenu');
+      }
     },
 
     // METHOD refreshUsersview ()

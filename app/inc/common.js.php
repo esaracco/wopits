@@ -1150,8 +1150,8 @@ class WHelper
     return (wpt_userData.settings && wpt_userData.settings.visible == 1);
   }
   
-  // METHOD loader ()
-  static loader (action, force = false, xhr = null) {
+  // METHOD loader()
+  static loader(action, force = false, xhr = null) {
     const layer = document.getElementById('popup-loader');
     const $layer = $(layer);
   
@@ -1227,12 +1227,22 @@ class WHelper
     });
   }
   
+  // METHOD insertBefore()
+  static insertBefore(n1, n2) {
+    return n1.parentNode.insertBefore(n2, n1.nextSibling);
+  }
+
+  // METHOD insertAfter()
+  static insertAfter(n1, n2) {
+    return n2.parentNode.insertBefore(n1, n2.nextSibling);
+  }
+
   // METHOD openPopupLayer()
   static openPopupLayer(cb) {
-    document.body.appendChild (
-        $(`<div id="popup-layer" class="layer"></div>`)[0]);
-
-    const layer = document.getElementById('popup-layer');
+    const layer = this.createElement('div', {
+        id: 'popup-layer',
+        className: 'layer',
+    });
   
     // EVENT "click" on layer
     layer.addEventListener('click', (e) => {
@@ -1243,6 +1253,8 @@ class WHelper
         cb(e);
       }
     });
+
+    document.body.appendChild(layer);
 
     layer.style.display = 'block';
   }
