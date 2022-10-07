@@ -509,7 +509,7 @@ class WSocket
   // METHOD _connect ()
   _connect (url, onopen_cb, opencb_init)
   {
-    H.loader ("show", true);
+    H.loader ("show", {force: true});
 
     this.cnx = new WebSocket (url);
 
@@ -525,7 +525,7 @@ class WSocket
         if (onopen_cb)
           onopen_cb ();
 
-        H.loader ("hide", true);
+        H.loader ("hide", {force: true});
       };
 
     // EVENT message
@@ -1151,11 +1151,11 @@ class WHelper
   }
   
   // METHOD loader()
-  static loader(action, force = false, xhr = null) {
+  // static loader(action, force = false, xhr = null) {
+  static loader(action, args) {
     const layer = document.getElementById('popup-loader');
-    const $layer = $(layer);
   
-    if (layer && (WS.ready() || force)) {
+    if (layer && (WS.ready() || args?.force)) {
       const progress = layer.querySelector('.progress');
       const button = layer.querySelector('button');
 
@@ -1163,18 +1163,23 @@ class WHelper
   
       if (action === 'show') {
         layer.dataset.timeoutid = setTimeout(() => {
-          if (xhr) {
+          if (args?.xhr) {
             // Abort upload on user request
-            button.addEventListener('click', (e) => xhr.abort(), {once: true});
+            button.addEventListener('click',
+                (e) => args?.xhr.abort(), {once: true});
             button.style.display = 'block';
             progress.style.display = 'block';
           }
   
+          layer.querySelector('i').className =
+              args?.icon || 'fas fa-cog fa-spin fa-lg';
+          layer.querySelector('span').innerHTML =
+              args?.text || `<?=_("Please wait")?>...`;
+
           layer.style.display = 'block';
-        }, 500);
+        }, args?.delay !== undefined ? args.delay : 500);
       } else {
-        $layer.hide();
-  
+        layer.style.display = 'none';
         button.style.display = 'none';
         progress.style.display = 'none';
         progress.style.backgroundColor = '#ea6966';
@@ -1877,9 +1882,9 @@ class WHelper
                   this.manageUnknownError ();
                }
              })
-            .always (()=> this.loader ("hide", true));
+            .always (()=> this.loader ("hide", {force: true}));
 
-    this.loader ("show", true, xhr);
+    this.loader ("show", {force: true, xhr});
   }
   
   // METHOD checkUploadFileSize ()
