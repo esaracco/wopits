@@ -1,18 +1,18 @@
 {
   "license": "GPL-3.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
-    "@popperjs/core": "^2.11.6",
-    "bootstrap": "^5.2",
-    "jquery": "^3.6.1",
-    "jquery-datepicker": "^1.12.3",
-    "jquery-ui-dist": "^1.13.2",
-    "jquery-ui-touch-punch": "^0.2.3",
-    "leader-line": "^1.0.7",
-    "minify": "^9.1.0",
-    "moment": "^2.29.4",
-    "moment-timezone": "^0.5",
-    "tinymce": "^6.2.0",
-    "vanderlee-colorpicker": "^1.2.16"
+    "@fortawesome/fontawesome-free": "^5",
+    "@popperjs/core": "^2",
+    "bootstrap": "^5",
+    "jquery": "^3",
+    "jquery-datepicker": "^1",
+    "jquery-ui-dist": "^1",
+    "jquery-ui-touch-punch": "^0",
+    "leader-line": "^1",
+    "minify": "^9",
+    "moment": "^2",
+    "moment-timezone": "^0",
+    "tinymce": "^6",
+    "vanderlee-colorpicker": "^1"
   }
 }
