@@ -184,7 +184,7 @@
     // METHOD set ()
     set (keyVal, cb)
     {
-      wpt_userData.settings = $.extend (wpt_userData.settings, keyVal);
+      wpt_userData.settings = {...wpt_userData.settings, ...keyVal};
 
       // if registered user (not login page)
       if (!H.isLoginPage ())

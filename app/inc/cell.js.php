@@ -467,39 +467,31 @@
       return cells;
     },
 
-    // METHOD addPostit ()
-    addPostit (args, noinsert)
-    {
-      const $cell = this.element,
-            settings = this.settings,
-            $postit = $("<div/>");
+    // METHOD addPostit()
+    addPostit(args, noinsert) {
+      const cell = this.element[0];
+      const {wall, wallId, id: cellId} = this.settings;
+      const $postit = $('<div/>');
 
       // CREATE postit
-      $postit.postit ($.extend (args, {
-        wall: settings.wall,
-        wallId: settings.wallId,
-        cell: $cell,
-        cellId: settings.id
-      }));
+      $postit.postit({...args, wall, wallId, cell: $(cell), cellId});
 
       // Add postit on cell
-      $cell.append ($postit);
+      cell.appendChild($postit[0]);
 
-      this.reorganize ();
+      this.reorganize();
 
       // If we are refreshing wall and postit has been already created by
       // another user, do not add it again in DB
-      if (!noinsert)
-        $postit.postit ("insert");
-      else if ($cell[0].classList.contains ("postit-mode"))
-      {
-        if (args.init || S.getCurrent("filters").is (":visible"))
-          $postit[0].style.visibility = "visible";
-        else
-        {
-          $postit.hide ();
-          $postit[0].style.visibility = "visible";
-          $postit.show ("fade");
+      if (!noinsert) {
+        $postit.postit('insert');
+      } else if (cell.classList.contains('postit-mode')) {
+        if (args.init || H.isVisible(S.getCurrent('filters')[0])) {
+          $postit[0].style.visibility = 'visible';
+        } else {
+          $postit.hide();
+          $postit[0].style.visibility = 'visible';
+          $postit.show('fade');
         }
       }
 

@@ -6,6 +6,11 @@
   require_once (__DIR__.'/../prepend.php');
 
 ?>
+
+:root {
+  --modal-zindex: 5017;
+}
+
 /* Disable user zoom on safari (meta are not efficient here) */
 body * {
   touch-action: pan-x pan-y;
@@ -394,7 +399,7 @@ button.close {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 5018;
+  z-index: calc(var(--modal-zindex) + 1);
 }
 
 .bs-popover-bottom>.popover-arrow::after,
@@ -414,7 +419,7 @@ button.close {
 }
 
 .popover {
-  z-index: 5019;
+  z-index: calc(var(--modal-zindex) + 2);
 }
 
 .popover p {
@@ -636,7 +641,11 @@ select.timezone {
 }
 
 .modal {
-  z-index: 5017;
+  z-index: var(--modal-zindex);
+}
+
+.modal.modal-sm {
+  z-index: calc(var(--modal-zindex) + 1);
 }
 
 .zindexmax {
@@ -1362,7 +1371,7 @@ kbd,
 
 .submenu-link {
   position: absolute;
-  z-index: 5019;
+  z-index: calc(var(--modal-zindex) + 2);
 }
 
 .submenu-link .dropdown-menu {
@@ -1383,7 +1392,7 @@ kbd,
 }
 
 .plug-label.submenu:hover {
-  z-index: 5016 !important;
+  z-index: calc(var(--modal-zindex) - 1) !important;
 }
 
 .plug-label.submenu .dropdown-menu {
@@ -1461,9 +1470,9 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit-min.selected {
-  font-weight:bold;
-  border-left:1px solid var(--menubar-bg-color);
-  border-right:1px solid var(--menubar-bg-color);
+  font-weight: bold;
+  border-left: 1px solid var(--menubar-bg-color);
+  border-right: 1px solid var(--menubar-bg-color);
   text-shadow: 1px 1px var(--postit-selected-shadow-color);
 }
 
@@ -1519,7 +1528,7 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .wall[data-access="<?=WPT_WRIGHTS_RO?>"] .postit .postit-tags {
-  cursor:auto;
+  cursor: auto;
 }
 
 .postit .postit-tags i {
@@ -1531,18 +1540,18 @@ th.wpt .submenu .dropdown-menu {
   background-color: var(--wall-th-bg-color);
   border: 2px dashed var(--wall-border-color);
   box-shadow: 0 0 10px #c5c5c5;
-  width:50px;
-  height:50px;
+  width: 50px;
+  height: 50px;
 }
 
 .postit-edit i.externalref {
-  margin-left:-35px;
-  opacity:.2;
+  margin-left: -35px;
+  opacity: .2;
 }
 
 .postit-edit tbody, td, tfoot, th, thead, tr {
-  border-style:inherit;
-  border-width:inherit;
+  border-style: inherit;
+  border-width: inherit;
 }
 
 <?php
@@ -1551,7 +1560,7 @@ th.wpt .submenu .dropdown-menu {
 echo <<<EOC
 .postit .postit-tags i.fa-$item,
 #tpick i.fa-$item {
-  color:$color !important;
+  color: $color !important;
 }
 EOC;
   }
@@ -1566,7 +1575,6 @@ EOC;
   left: 5px;
   background: var(--wall-th-bg-color);
   border: 1px solid var(--wall-border-color);
-  box-shadow: 0 0 20px rgba(0, 0, 0, .1);
 }
 
 .toolbox .btn-close {
@@ -1762,7 +1770,7 @@ ul#mmenu {
   background-color: #dc3545;
 }
 
-.modal-dialog.modal-sm .modal-title {
+.modal.modal-sm .modal-title {
   font-size: 1em;
 }
 
@@ -1827,7 +1835,7 @@ ul#mmenu {
   transform: translate(-50%, -50%);
   border-radius: 10px;
   box-shadow: 1px 1px 12px var(--modal-theme-color-dark);
-  z-index: 5018;
+  z-index: calc(var(--modal-zindex) + 1);
 }
 
 #swallPopup .scroll {
@@ -1972,7 +1980,6 @@ ul.wall-menu {
   background: #fff;
   top: 60px;
   left: 5px;
-  box-shadow: 0 0 5px var(--wall-border-color);
   padding: 10px;
   z-index: 5003;
   width: 50px;
@@ -2233,16 +2240,16 @@ i.fa-xs {
   color: var(--modal-1-theme-color);
 }
 
-.modal:not(.no-theme) .modal-dialog.shadow .modal-header,
-.modal:not(.no-theme) .modal-dialog.shadow .modal-title,
-.modal:not(.no-theme) .modal-dialog.shadow .modal-footer {
+.modal.modal-sm:not(.no-theme) .modal-header,
+.modal.modal-sm:not(.no-theme) .modal-title,
+.modal.modal-sm:not(.no-theme) .modal-footer {
   background: var(--modal-2-theme-bg-color) !important;
   color: var(--modal-2-theme-color);
 }
 
-.modal-dialog.shadow .modal-header,
-.modal-dialog.shadow .modal-title,
-.modal-dialog.shadow .modal-footer {
+.modal.modal-sm .modal-header,
+.modal.modal-sm .modal-title,
+.modal.modal-sm .modal-footer {
   background: var(--modal-links-color);
   color:#fff;
 }
@@ -2252,17 +2259,13 @@ i.fa-xs {
   /*border: 2px solid var(--modal-1-theme-bg-color);*/
 }
 
-.modal:not(.no-theme) .modal-dialog.shadow .modal-content {
+.modal.modal-sm:not(.no-theme) .modal-content {
   border: none !important;
   /*border: 2px solid var(--modal-2-theme-bg-color);*/
 }
 
 .modal.no-theme .modal-content {
   border: none !important;
-}
-
-.modal-dialog:not(.modal-sm) .modal-title i.fa-lg {
-  margin-right:20px;
 }
 
 #postitUpdatePopup .modal-body {

@@ -20,9 +20,8 @@
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
   // METHOD _getTagTemplate()
-  const _getTagTemplate = (tag) => {
-    return `<i class="fa-${tag} fa-fw fas" data-tag="${tag}"></i>`;
-  };
+  const _getTagTemplate =
+      (tag) => `<i class="fa-${tag} fa-fw fas" data-tag="${tag}"></i>`;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -41,29 +40,40 @@
       // EVENT "click" on tags
       picker.addEventListener('click', (e) => {
         const el = e.target;
+        let div;
+        let tag;
 
         e.stopImmediatePropagation();
 
+        // Return if click on popup, out I and I div parent
+        if (el.id) return;
+
+        // I tag
         if (el.tagName === 'I') {
-          const div = el.parentNode;
-          const select = !div.classList.contains('selected');
-          const $postit = S.getCurrent('postit');
-          const tag = el.dataset.tag;
+          div = el.parentNode;
+          tag = el.dataset.tag;
+        // I parent DIV tag
+        } else {
+          div = el;
+          tag = div.querySelector('i').dataset.tag;
+        }
 
-          if (!select) {
-            $postit[0].querySelector(`.postit-tags i.fa-${tag}`).remove();
-          } else {
-            $postit.find('.postit-tags').prepend(_getTagTemplate(tag));
-          }
+        const select = !div.classList.contains('selected');
+        const $postit = S.getCurrent('postit');
 
-          div.classList.toggle('selected');
+        if (!select) {
+          $postit[0].querySelector(`.postit-tags i.fa-${tag}`).remove();
+        } else {
+          $postit.find('.postit-tags').prepend(_getTagTemplate(tag));
+        }
 
-          plugin.refreshPostitDataTag();
+        div.classList.toggle('selected');
 
-          const $f = S.getCurrent('filters');
-          if ($f.is(':visible')) {
-            $f.filters('apply', {norefresh: true});
-          }
+        plugin.refreshPostitDataTag();
+
+        const $f = S.getCurrent('filters');
+        if (H.isVisible($f[0])) {
+          $f.filters('apply', {norefresh: true});
         }
       });
 
@@ -75,7 +85,7 @@
 
     // METHOD getTagsList()
     getTagsList() {
-      return [<?='"'.join('","', array_keys(WPT_MODULES['tpick']['items'])).'"'?>];
+      return [`<?=join('`,`', WPT_MODULES['tpick']['items'])?>`];
     },
 
     // METHOD open()

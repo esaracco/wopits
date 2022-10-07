@@ -1314,7 +1314,7 @@
           if ($popup)
             $popup.modal ("hide");
 
-          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu"></ul><div class="toolbox chat"></div><div class="toolbox filters"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
+          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu shadow"></ul><div class="toolbox chat shadow"></div><div class="toolbox filters shadow"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
 
           if (!args.restoring)
             tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);

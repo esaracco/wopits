@@ -1441,6 +1441,7 @@ class WHelper
   // METHOD openModal()
   static openModal(args) {
     const m = args.item;
+    const md = m.querySelector('.modal-dialog');
 
     // Modals with transition effect
     if (!args.noeffect) {
@@ -1451,7 +1452,7 @@ class WHelper
     m.style.top = 0;
     m.style.left = 0;
 
-    m.querySelector('.modal-content').classList.add('shadow-lg');
+    md.classList.add('shadow-lg');
 
     if (args.customClass) {
       m.classList.add(args.customClass);
@@ -1462,8 +1463,6 @@ class WHelper
     if (args.width) {
       this.resizeModal (m, args.width);
     } else {
-      const md = m.querySelector('.modal-dialog');
-
       md.style.width = '';
       md.style.minWidth = '';
       md.style.maxWidth = '';

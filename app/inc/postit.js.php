@@ -9,50 +9,47 @@
   TODO: relations plugin
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
   use Wopits\DbCache;
 
-  $Plugin = new Wopits\jQueryPlugin ('postit', '', 'wallElement');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('postit', '', 'wallElement');
+  echo $Plugin->getHeader();
 
 ?>
 
   let _originalObject;
-  const _defaultClassColor =
-          `color-<?=array_keys(WPT_MODULES['cpick']['items'])[0]?>`;
+  const _defaultClassColor = `color-<?=WPT_POSTIT_COLOR_DEFAULT?>`;
   const _plugRabbit = {
       line: null,
       // EVENT mousedown on destination postit for relation creation
       mousedownEvent: (e) => {
-        const from = S.get('link-from');
-        const $start = from.obj;
-        const $end = $(e.target).closest('.postit');
+        const $end = $(e.target.closest('.postit'));
 
         e.stopImmediatePropagation();
         e.preventDefault();
 
-        if (!$end.length) {
-          return _cancelPlugAction();
-        }
+        if (!$end.length) return _cancelPlugAction();
 
-        const end0 = $end[0];
+        const from = S.get('link-from');
+        const $start = from.obj;
+        const end = $end[0];
         const endPlugin = $end.postit('getClass');
         const endId = endPlugin.settings.id;
 
         if (from.id !== endId && !endPlugin.plugExists(from.id)) {
           endPlugin.edit({plugend: true}, () => {
-            const start0 = $start[0];
+            const start = $start[0];
 
             $start.postit('addPlug', {
-              label: {name: '...'},
+              endId,
               startId: from.id,
-              endId: endId,
+              label: {name: '...'},
               obj: endPlugin.getPlugTemplate({
+                start,
+                end,
                 hide: true,
                 label: '...',
-                start: start0,
-                end: end0,
               }),
             }, Boolean(S.get('zoom-level')));
 
@@ -82,7 +79,7 @@
         if (e.which === 27) {
           _cancelPlugAction();
         }
-      }
+      },
   };
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
@@ -2714,4 +2711,4 @@
   });
 });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

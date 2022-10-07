@@ -259,16 +259,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // If there is already opened modals
     if (modalsCount) {
       dialog.dataset.toclean = 1;
-      dialog.classList.add('modal-sm', 'shadow');
+      el.classList.add('modal-sm');
       dialog.querySelectorAll('button.btn')
           .forEach((b) => b.classList.add('btn-sm'));
     } else {
       const $ps = S.getCurrent('postit');
 
       if (dialog.dataset.toclean) {
+        el.classList.remove('modal-sm');
         dialog.querySelectorAll('button.btn')
             .forEach((b) => b.classList.remove('btn-sm'));
-        dialog.classList.remove('modal-sm', 'shadow');
         dialog.removeAttribute('data-toclean');
       }
 
