@@ -2246,7 +2246,7 @@
         setTimeout (()=>{
 
         WS.connect (
-          `<?=WPT_USE_HTTPS ? 'wss' : 'ws'?>://${location.host}/app/ws?token=${wpt_userData.token}`, ()=>
+          `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/app/ws?token=${wpt_userData.token}`, ()=>
           {
             const $settings = $("#settingsPopup");
 
