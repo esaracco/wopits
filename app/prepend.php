@@ -22,7 +22,7 @@ else
       // Expire at the end of the session
       'lifetime' => 0,
       'path' => '/',
-      'secure' => true,
+      'secure' => boolval(WPT_USE_HTTPS),
       'httponly' => true,
       'samesite' => 'Strict',
     ]);

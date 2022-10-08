@@ -30,6 +30,9 @@ require (
         __DIR__.'/../site-config.php'
 );
 
+// Protocol
+define('WPT_USE_HTTPS', stripos(WPT_URL, 'https') === 0);
+
 // Paths
 define('WPT_ROOT_PATH', realpath(__DIR__.'/..'));
 define('WPT_DATA_SPATH', WPT_ROOT_PATH.'/data');

@@ -148,7 +148,7 @@ class Helper
       // 24 * 3600 == 86400
       'expires' => time() - 86400,
       'path' => '/',
-      'secure' => true,
+      'secure' => boolval(WPT_USE_HTTPS),
       'httponly' => true,
       'samesite' => 'Strict',
     ]);
@@ -158,7 +158,7 @@ class Helper
     setCookie('wopits', $value, [
       'expires' => mktime(0, 0, 0, 1, 1, 2035),
       'path' => '/',
-      'secure' => true,
+      'secure' => boolval(WPT_USE_HTTPS),
       'httponly' => true,
       'samesite' => 'Strict',
     ]);
