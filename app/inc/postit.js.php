@@ -755,7 +755,7 @@
     // METHOD getPlugTemplate()
     getPlugTemplate(args, ignoreZoom) {
       const color = args.line_color || S.getCurrent('plugColor');
-      const size = args.line_size || <?=WS_PLUG_DEFAULTS['lineSize']?>;
+      const size = args.line_size || <?=WPT_PLUG_DEFAULTS['lineSize']?>;
       const ll = new LeaderLine(
         args.start,
         args.end,
@@ -763,7 +763,7 @@
           hide: Boolean(args.hide),
           dropShadow: this.getPlugDropShadowTemplate(color),
           size: ignoreZoom ? size : size * (S.get('zoom-level') || 1),
-          path: args.line_path || `<?=WS_PLUG_DEFAULTS['linePath']?>`,
+          path: args.line_path || `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
           color: color,
           endPlug: args.endPlug || 'arrow1',
           middleLabel: LeaderLine.captionLabel({
@@ -773,7 +773,7 @@
         });
 
       ll.line_size = size;
-      ll.line_type = args.line_type || `<?=WS_PLUG_DEFAULTS['lineType']?>`;
+      ll.line_type = args.line_type || `<?=WPT_PLUG_DEFAULTS['lineType']?>`;
       ll.customCol = args.line_color;
 
       this.applyPlugLineType(ll);
@@ -892,18 +892,18 @@
           const lineColor = customCol ? ll.color : defaultLineColor;
           const lineType = (
             ll.line_type &&
-            ll.line_type !== `<?=WS_PLUG_DEFAULTS['lineType']?>`) ?
-                ll.line_type : `<?=WS_PLUG_DEFAULTS['lineType']?>`;
+            ll.line_type !== `<?=WPT_PLUG_DEFAULTS['lineType']?>`) ?
+                ll.line_type : `<?=WPT_PLUG_DEFAULTS['lineType']?>`;
           const lineSize = (
             ll.size &&
-            ll.size !== <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
-                ll.size : <?=WS_PLUG_DEFAULTS['lineSize']?>;
+            ll.size !== <?=WPT_PLUG_DEFAULTS['lineSize']?>) ?
+                ll.size : <?=WPT_PLUG_DEFAULTS['lineSize']?>;
           const props = {
             size: lineSize * (S.get('zoom-level') || 1),
             path: (
               ll.path &&
-              ll.path !== `<?=WS_PLUG_DEFAULTS['linePath']?>`) ?
-                  ll.path : `<?=WS_PLUG_DEFAULTS['linePath']?>`,
+              ll.path !== `<?=WPT_PLUG_DEFAULTS['linePath']?>`) ?
+                  ll.path : `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
               color: lineColor,
               dropShadow: this.getPlugDropShadowTemplate(lineColor),
             };
@@ -1331,13 +1331,13 @@
                 (p.label == '...') ?
                    '' : pl.querySelector('div span').innerText,
             line_type:
-                (p.obj.line_type != `<?=WS_PLUG_DEFAULTS['lineType']?>`) ?
+                (p.obj.line_type != `<?=WPT_PLUG_DEFAULTS['lineType']?>`) ?
                    p.obj.line_type : undefined,
             line_size:
-                (p.obj.line_size != <?=WS_PLUG_DEFAULTS['lineSize']?>) ?
+                (p.obj.line_size != <?=WPT_PLUG_DEFAULTS['lineSize']?>) ?
                    parseInt(p.obj.line_size) : undefined,
             line_path:
-                (p.obj.path != `<?=WS_PLUG_DEFAULTS['linePath']?>`) ?
+                (p.obj.path != `<?=WPT_PLUG_DEFAULTS['linePath']?>`) ?
                    p.obj.path : undefined,
             line_color:
                 (p.obj.color != defaultLineColor) ?
@@ -2694,7 +2694,7 @@
             postit,
             $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo('body')[0],
             {
-              path: `<?=WS_PLUG_DEFAULTS['linePath']?>`,
+              path: `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
               size: 3,
               color: '#9b9c9c',
               dash: true,

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-07 13:59+0200\n"
+"POT-Creation-Date: 2022-10-08 18:17+0200\n"
 "PO-Revision-Date: 2022-10-07 13:59+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -1649,9 +1649,6 @@ msgstr "Vous êtes connecté avec votre compte LDAP"
 msgid "You are not the creator of this wall"
 msgstr "Vous n'êtes pas le créateur de ce mur"
 
-msgid "You are offline!<br>Please, check your connection."
-msgstr "Vous êtes hors-ligne!<br>Veuillez vérifier votre connexion."
-
 #, php-format
 msgid ""
 "You are receiving this email because you requested the reset of your wopits "
@@ -1814,6 +1811,9 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant des post-its pour les partager et "
 "collaborer simultanément avec d'autres utilisateurs."
+
+#~ msgid "You are offline!<br>Please, check your connection."
+#~ msgstr "Vous êtes hors-ligne!<br>Veuillez vérifier votre connexion."
 
 #~ msgid ""
 #~ "<p><b><i class='fas fa-broom fa-fw'></i>Deploy</b> We now use "

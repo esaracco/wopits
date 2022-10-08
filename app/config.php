@@ -1,6 +1,6 @@
 <?php
 
-define('WPT_VERSION', '0.64-alpha.14');
+define('WPT_VERSION', '0.64-alpha.15');
 define('WPT_LAST_UPDATE', '2022-10-08');
 define('WPT_DISPLAY_LATEST_NEWS', false);
 define('WPT_EXPORT_MIN_VERSION', '0.21');
@@ -97,7 +97,7 @@ define('WS_SERVER_SECTIONS', [
 
 // Relationships lines defaults
 // (the default color will depends on the theme)
-define('WS_PLUG_DEFAULTS', [
+define('WPT_PLUG_DEFAULTS', [
   'lineType' => 'solid',
   'lineSize' => 5,
   'linePath' => 'fluid',
@@ -119,6 +119,7 @@ define('WPT_MAX_CELLS', 400);
 define('WPT_TIMEOUTS', [
   // Edition ("editable" plugin) without activity
   'edit' => 15,
+  'network_connection' => 5,
 ]);
 
 // Popups

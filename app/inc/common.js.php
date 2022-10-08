@@ -492,6 +492,7 @@ class WSocket
   // METHOD constructor ()
   constructor ()
   {
+    this.timeoutId = undefined;
     this.responseQueue = {};
     this._sendQueue = [];
     this._retries = 0;
@@ -513,9 +514,14 @@ class WSocket
 
     this.cnx = new WebSocket (url);
 
+    this.timeoutId = setTimeout(() => this.cnx.close(), <?=WPT_TIMEOUTS['network_connection'] * 1000?>);
+
     // EVENT open
     this.cnx.onopen = (e) =>
       {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = undefined;
+
         this._connected = true
         this._retries = 0;
 
@@ -697,23 +703,23 @@ class WSocket
     };
 
     // EVENT error
-    this.cnx.onerror = (e) =>
-      {
-        H.loader ("hide");
+    this.cnx.onerror = (e) => {
+      H.loader('hide');
 
-        if (this._retries < 30)
-          this.tryToReconnect ({
-            success_cb: () =>
-              {
-                const $wall = S.getCurrent ("wall");
+      if (this._retries < 3) {
+        this.tryToReconnect ({
+          success_cb: () => {
+            const $wall = S.getCurrent('wall');
 
-                if ($wall.length)
-                  $wall.wall ("refresh");
-              }
-          });
-        else
-          this.displayNetworkErrorMsg ();
-      };
+            if ($wall.length) {
+              $wall.wall('refresh');
+            }
+          },
+        });
+      } else {
+        H.displayNetworkErrorMsg();
+      }
+    };
   }
 
   // METHOD tryToReconnect ()
@@ -753,7 +759,7 @@ class WSocket
   {
     if (!this.ready ())
     {
-      if (this._connected && this._retries < 30)
+      if (this._connected && this._retries < 3)
         this.tryToReconnect ({
           msg: msg,
           success_cb: success_cb,
@@ -819,6 +825,10 @@ const entitiesMap = {
 // CLASS WHelper
 class WHelper
 {
+  static displayNetworkErrorMsg() {
+    document.body.innerHTML = `<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`;
+  }
+
   // METHOD preventDefault()
   static preventDefault(e) {
     if (typeof e.cancelable !== 'boolean' || e.cancelable) {
@@ -1781,34 +1791,54 @@ class WHelper
       });
   }
   
+  // METHOD fetchTimeout()
+  static fetchTimeout(url, ms, {signal, ...options} = {}) {
+    const controller = new AbortController();
+    const promise = fetch(url, {signal: controller.signal, ...options});
+
+    if (signal) {
+      signal.addEventListener('abort', () => controller.abort());
+    }
+
+    const timeout = setTimeout(() => controller.abort(), ms);
+
+    return promise.finally(() => clearTimeout(timeout));
+  }
+
   // METHOD fetch ()
-  static async fetch (method, service, args, success_cb, error_cb)
+  // TODO https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout
+  static async fetch(method, service, args, success_cb, error_cb)
   {
-    this.loader ("show");
+    this.loader('show');
 
     //console.log (`FETCH: ${method} ${service}`);
 
-    const r = await fetch (`/api/${service}`, {
-                method: method,
-                cache: "no-cache",
-                headers: {"Content-Type": "application/json;charset=utf-8"},
-                body: args ? encodeURI (JSON.stringify (args)) : null
-              }),
-          d = await r.json ();
+    try {
+      const controller = new AbortController();
+      const r = await this.fetchTimeout(
+        `/api/${service}`, 5000, {
+          signal: controller.signal,
+          method: method,
+          cache: 'no-cache',
+          headers: {'Content-Type': 'application/json;charset=utf-8'},
+          body: args ? encodeURI (JSON.stringify (args)) : null
+        }),
+      d = await r.json();
 
-    this.loader ("hide");
-
-    //console.log (d);
-
-    if (r.ok)
-    {
-      if (!d || d.error)
-        error_cb ? error_cb (d) : this.manageUnknownError (d);
-      else if (success_cb)
-        success_cb (d);
+      if (r.ok) {
+        if (!d || d.error) {
+          error_cb ? error_cb(d) : this.manageUnknownError(d);
+        } else if (success_cb) {
+          success_cb(d);
+        }
+      }  else {
+        this.manageUnknownError();
+      }
+    } catch(e) {
+      H.displayNetworkErrorMsg();
+    } finally {
+      this.loader('hide');
     }
-    else
-      this.manageUnknownError ();
   }
 
   // METHOD fetchUpload ()

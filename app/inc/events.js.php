@@ -201,24 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // EVENT "online"
-  window.addEventListener('online', (e) => {
-    const $wall = S.getCurrent('wall');
-
-    if ($wall.length) {
-      $wall.wall('refresh');
-    }
-
-    H.loader('hide');
-  });
+  window.addEventListener('online', (e) => location.reload());
 
   // EVENT "offline"
-  window.addEventListener('offline', (e) => {
-    H.loader('show', {
-      delay: 0,
-      text: `<?=_('You are offline!<br>Please, check your connection.')?>`,
-      icon: 'fas fa-exclamation-circle fa-lg',
-    });
-  });
+  window.addEventListener('offline', (e) => H.displayNetworkErrorMsg());
 
   // EVENT "keydown"
   document.body.addEventListener('keydown', (e) => {
