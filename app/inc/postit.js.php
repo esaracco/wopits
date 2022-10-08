@@ -1093,7 +1093,8 @@
             {
               S.set ("dragging", true, 500);
 
-              plug.related.forEach ((_r) => _r.position().show());
+              setTimeout(() => plug.related.forEach(
+                  (_r) => _r.position().show()), 150);
 
               if (S.get("revertData").revert)
               {
