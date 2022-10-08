@@ -2006,12 +2006,6 @@ li.divider {
   margin:5px 0 10px 0;
 }
 
-#postitCommentsPopup i:not(.fa-fw),
-.popover-body i,
-i.set {
-  color: var(--btn-secondary-border-color);
-}
-
 i.notset {
   opacity: .3;
 }
