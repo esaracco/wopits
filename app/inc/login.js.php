@@ -110,7 +110,7 @@
         {
           if (e.which == 13 && e.target.tagName == "INPUT")
           {
-            e.preventDefault ();
+            H.preventDefault (e);
 
             login.querySelector(".btn-success").click ();
           }

@@ -378,7 +378,7 @@
             const data = el.closest('.content').dataset;
             const item = el.closest('.msg-item');
 
-            e.preventDefault();
+            H.preventDefault(e);
             e.stopImmediatePropagation();
 
             if (H.haveMouse()) {
@@ -421,7 +421,7 @@
             pcomm.reset();
           } else {
             e.stopImmediatePropagation();
-            e.preventDefault();
+            H.preventDefault(e);
 
             if (e.type === 'keyup') {
               // LOCAL FUNCTION __select ()
@@ -481,7 +481,8 @@
             el.closest(`[class*="-body"]`)
                 .querySelector('.btn-primary').click();
           } else {
-            return e.preventDefault();
+            H.preventDefault(e);
+            return;
           }
         }
 
@@ -508,7 +509,7 @@
           // If enter on selected users search item, select it
           if (e.which === 13 && el.classList.contains('autocomplete')) { 
             e.stopImmediatePropagation();
-            e.preventDefault();
+            H.preventDefault(e);
 
             el.closest(`[class*="-body"]`)
               .querySelector('.result .list-group-item.selected').click();

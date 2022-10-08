@@ -54,7 +54,7 @@
         {
           if (e.which == 13)
           {
-            e.preventDefault ();
+            H.preventDefault (e);
 
             chat.querySelector(".btn-primary").click ();
           }

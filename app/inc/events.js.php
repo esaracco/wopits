@@ -238,8 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENT "show.bs.dropdown" on relation's label menu, to prevent menu from
   //       opening right after dragging
-  document.body.addEventListener('show.bs.dropdown', (e) =>
-    H.disabledEvent() && e.preventDefault());
+  document.body.addEventListener('show.bs.dropdown', (e) => {
+    if (H.disabledEvent()) {
+      H.preventDefault(e);
+    }
+  });
 
   // EVENT "hidden.bs.toast" on alert messages
   document.body.addEventListener('hidden.bs.toast', (e) => {
@@ -261,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '.btn-primary.btn-sm,.btn-primary,.btn-success');
 
     if (btn) {
-      e.preventDefault();
+      H.preventDefault(e);
       btn.click();
     }
   });

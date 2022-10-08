@@ -604,7 +604,7 @@
           if (!H.disabledEvent()) {
             $cell.cell('toggleDisplayMode');
           } else {
-            e.preventDefault();
+            H.preventDefault(e);
           }
         // EVENT "click" on note in stack mode
         } else if (el.classList.contains('postit-min')) {
@@ -613,7 +613,7 @@
           e.stopImmediatePropagation();
   
           if (e.ctrlKey) {
-            e.preventDefault();
+            H.preventDefault(e);
 
             if (el.classList.contains('selected')) {
               $mm.mmenu('remove', $p.postit('getId'));
@@ -621,9 +621,7 @@
               $mm.mmenu('add', $p.postit('getClass'));
             }
           } else {
-            if (e.cancelable) {
-              e.preventDefault();
-            }
+            H.preventDefault(e);
   
             if (!H.disabledEvent()) {
               $p.postit('openPostit', $(el).find('span'));

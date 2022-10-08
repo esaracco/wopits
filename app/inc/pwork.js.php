@@ -85,7 +85,7 @@
 
             if (newUsers.length)
             {
-              e.preventDefault ();
+              H.preventDefault (e);
 
               H.openConfirmPopup ({
                 type: "notify-users",

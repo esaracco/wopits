@@ -47,7 +47,7 @@
           document.getElementById('popup-layer').click();
 
           e.stopImmediatePropagation();
-          e.preventDefault();
+          H.preventDefault(e);
 
           switch (data.type) {
             case 'wall':
@@ -80,7 +80,7 @@
           const item = el.closest('.msg-item');
 
           e.stopImmediatePropagation();
-          e.preventDefault();
+          H.preventDefault(e);
 
           H.fetch (
             'DELETE',

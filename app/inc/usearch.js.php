@@ -162,7 +162,7 @@
           if (e.which == 13 && el.classList.contains ("autocomplete"))
           {
             e.stopImmediatePropagation ();
-            e.preventDefault ();
+            H.preventDefault (e);
 
             el.closest(".modal-body")
               .querySelector(".search .list-group-item.selected").click ();
@@ -190,7 +190,7 @@
           else if (k == 38 || k == 40)
           {
               e.stopImmediatePropagation ();
-              e.preventDefault ();
+              H.preventDefault (e);
 
               if (e.type == "keyup")
               {

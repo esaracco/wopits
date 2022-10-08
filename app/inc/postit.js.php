@@ -27,7 +27,7 @@
         const $end = $(e.target.closest('.postit'));
 
         e.stopImmediatePropagation();
-        e.preventDefault();
+        H.preventDefault(e);
 
         if (!$end.length) return _cancelPlugAction();
 
@@ -2247,7 +2247,7 @@
                 menu = S.getCurrent("mmenu").mmenu ("getClass");
   
           e.stopImmediatePropagation ();
-          e.preventDefault ();
+          H.preventDefault (e);
   
           if (postit.classList.contains ("selected"))
             menu.remove (id);
@@ -2261,7 +2261,7 @@
 
           if (H.disabledEvent ())
           {
-            e.preventDefault ();
+            H.preventDefault (e);
             return;
           }
 
@@ -2305,7 +2305,7 @@
 
           if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
           {
-            e.preventDefault ();
+            H.preventDefault (e);
             return;
           }
   
@@ -2340,7 +2340,7 @@
                 canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
                 $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
   
-          e.preventDefault ();
+          H.preventDefault (e);
   
           // EVENT "click" on content links menu
           $menu[0].addEventListener ("click", (e)=>
@@ -2467,7 +2467,7 @@
 
           if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
           {
-            e.preventDefault ();
+            H.preventDefault (e);
             return;
           }
 
@@ -2594,7 +2594,7 @@
             // Progress change detection
             data.progress != progress))
           {
-            e.preventDefault ();
+            H.preventDefault (e);
 
             H.openConfirmPopup ({
               type: "save-postits-changes",

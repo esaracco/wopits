@@ -819,6 +819,13 @@ const entitiesMap = {
 // CLASS WHelper
 class WHelper
 {
+  // METHOD preventDefault()
+  static preventDefault(e) {
+    if (typeof e.cancelable !== 'boolean' || e.cancelable) {
+      e.preventDefault();
+    }
+  }
+
   // METHOD createElement()
   static createElement(tag, props) {
     return Object.assign(document.createElement(tag), props);
