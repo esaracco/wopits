@@ -803,7 +803,7 @@ class Server
         case 'dump':
 
           $tmp = '';
-          $sections = $msg->section ? [$msg->section] : WS_SERVER_SECTIONS;
+          $sections = $msg->section ? [$msg->section] : WPT_WS_SERVER_SECTIONS;
 
           foreach ($sections as $t)
           {

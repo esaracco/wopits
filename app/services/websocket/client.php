@@ -55,7 +55,7 @@ elseif (isset ($options['s']))
 elseif (isset ($options['d']))
 {
   $section = $options['d'];
-  if (!empty ($section) && !in_array ($section, WS_SERVER_SECTIONS))
+  if (!empty ($section) && !in_array ($section, WPT_WS_SERVER_SECTIONS))
     help ();
   $client->send (json_encode (['action' => 'dump',
                                'section' => $options['d']]));
@@ -72,7 +72,7 @@ function help ()
   exit ("\nUsage: ./".basename($argv[0])." [OPTION]...\n".
         "Communicate with wopits WebSocket server.\n\n".
         "  -d[section]\tDump server data. Section can be:\n".
-        "    \t\t  - ".implode("\n\t\t  - ", WS_SERVER_SECTIONS)."\n".
+        "    \t\t  - ".implode("\n\t\t  - ", WPT_WS_SERVER_SECTIONS)."\n".
         "  -n\t\tAnnounce new release to connected clients\n".
         "  -p\t\tPing Swoole and DB to keep connection alive\n".
         "  -r\t\tReload clients\n".

@@ -88,7 +88,7 @@ define('WPT_POSTIT_COLOR_DEFAULT', 'yellow');
 define('WPT_SWOOLE_TABLE_SIZE', 1024);
 
 // WebSocket server sections
-define('WS_SERVER_SECTIONS', [
+define('WPT_WS_SERVER_SECTIONS', [
   'clients',
   'openedWalls',
   'activeWalls',
