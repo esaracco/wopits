@@ -38,6 +38,10 @@ img {
   padding-right: 20px;
 }
 
+.show {
+  display: block !important;
+}
+
 .form-check-input:checked {
   background-color: var(--modal-1-theme-bg-color);
   border-color: var(--wall-border-color);

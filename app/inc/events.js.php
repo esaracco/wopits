@@ -201,7 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // EVENT "online"
-  window.addEventListener('online', (e) => location.reload());
+  window.addEventListener('online', (e) => {
+    const $wall = S.getCurrent('wall');
+
+    if ($wall.length) {
+      H.loader('hide');
+      $wall.wall('refresh');
+    } else {
+      location.reload();
+    }
+  });
 
   // EVENT "offline"
   window.addEventListener('offline', (e) => H.displayNetworkErrorMsg());
