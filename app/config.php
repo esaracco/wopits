@@ -222,7 +222,7 @@ define('WPT_MODULES', [
 define('WPT_JS_NODE_MODULES', [
   'jquery/dist/jquery.min.js',
   'jquery-ui-dist/jquery-ui.min.js',
-  'jquery-ui-touch-punch/jquery.ui.touch-punch.min.js',
+  '@rwap/jquery-ui-touch-punch/jquery.ui.touch-punch.js',
   'bootstrap/dist/js/bootstrap.bundle.min.js',
   'vanderlee-colorpicker/jquery.colorpicker.js',
   'leader-line/leader-line.min.js',

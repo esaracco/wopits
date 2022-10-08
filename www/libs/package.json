@@ -3,11 +3,11 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5",
     "@popperjs/core": "^2",
+    "@rwap/jquery-ui-touch-punch": "github:RWAP/jquery-ui-touch-punch",
     "bootstrap": "^5",
     "jquery": "^3",
     "jquery-datepicker": "^1",
     "jquery-ui-dist": "^1",
-    "jquery-ui-touch-punch": "^0",
     "leader-line": "^1",
     "minify": "^9",
     "moment": "^2",
