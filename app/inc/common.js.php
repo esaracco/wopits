@@ -742,12 +742,6 @@ class WSocket
       });
   }
 
-  // METHOD displayNetworkErrorMsg ()
-  displayNetworkErrorMsg ()
-  {
-    document.body.innerHTML = `<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`;
-  }
-
   // METHOD ready ()
   ready ()
   {
@@ -825,8 +819,21 @@ const entitiesMap = {
 // CLASS WHelper
 class WHelper
 {
+  // METHOD displayNetworkErrorMsg()
   static displayNetworkErrorMsg() {
-    document.body.innerHTML = `<div class="global-error"><?=_("Either the network is not available or a maintenance operation is in progress. Please reload the page or try again later.")?></div>`;
+    const el = document.getElementById('popup-loader');
+    const text = `<?=_("Network error!<br>Please, check your connection.")?>`;
+
+    if (!el) {
+      document.body.innerHTML = `<div class="global-error">${text}</div>`;
+    } else if (!el.classList.contains('show')) {
+      this.loader('show', {
+        text,
+        force: true,
+        delay: 0,
+        icon: 'fas fa-exclamation-circle fa-lg',
+      });
+    }
   }
 
   // METHOD preventDefault()
@@ -1193,10 +1200,10 @@ class WHelper
           layer.querySelector('span').innerHTML =
               args?.text || `<?=_("Please wait")?>...`;
 
-          layer.style.display = 'block';
+          layer.classList.add('show');
         }, args?.delay !== undefined ? args.delay : 500);
       } else {
-        layer.style.display = 'none';
+        layer.classList.remove('show');
         button.style.display = 'none';
         progress.style.display = 'none';
         progress.style.backgroundColor = '#ea6966';

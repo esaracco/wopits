@@ -1,7 +1,7 @@
 <?php
 
-define('WPT_VERSION', '0.64-alpha.15');
-define('WPT_LAST_UPDATE', '2022-10-08');
+define('WPT_VERSION', '0.64-alpha.16');
+define('WPT_LAST_UPDATE', '2022-10-09');
 define('WPT_DISPLAY_LATEST_NEWS', false);
 define('WPT_EXPORT_MIN_VERSION', '0.21');
 
@@ -29,6 +29,9 @@ require (
   //</WPTPROD-remove>
         __DIR__.'/../site-config.php'
 );
+
+// Protocol
+define('WPT_USE_HTTPS', stripos(WPT_URL, 'https') === 0);
 
 // Paths
 define('WPT_ROOT_PATH', realpath(__DIR__.'/..'));
@@ -88,7 +91,7 @@ define('WPT_POSTIT_COLOR_DEFAULT', 'yellow');
 define('WPT_SWOOLE_TABLE_SIZE', 1024);
 
 // WebSocket server sections
-define('WS_SERVER_SECTIONS', [
+define('WPT_WS_SERVER_SECTIONS', [
   'clients',
   'openedWalls',
   'activeWalls',

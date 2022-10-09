@@ -1093,7 +1093,8 @@
             {
               S.set ("dragging", true, 500);
 
-              plug.related.forEach ((_r) => _r.position().show());
+              setTimeout(() => plug.related.forEach(
+                  (_r) => _r.position().show()), 150);
 
               if (S.get("revertData").revert)
               {
@@ -2338,7 +2339,7 @@
   
           const link = (el.tagName == "A") ? el : el.closest ("a"),
                 canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
-                $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
+                $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
   
           H.preventDefault (e);
   
