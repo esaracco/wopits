@@ -21,6 +21,7 @@
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype = {
+    forceHide: false,
     // METHOD init()
     init() {
       const plugin = this;
@@ -29,6 +30,33 @@
 
       // FIXME
       const _eventSP = (e) => _ll && _ll.position();
+
+      // EVENT "hide.bs.modal" plug's settings popup
+      ra.addEventListener('hide.bs.modal', (e) => {
+        if (this.forceHide || S.get('plugs-to-save')) return;
+
+         const newLabel =
+            ra.querySelector(`input[name="label"]`).value || '...';
+
+         if (newLabel !== _plug.label.name ||
+             _ll.size !== _plug.obj.line_size ||
+             _ll.path !== _plug.obj.path ||
+             _ll.line_type !== _plug.obj.line_type ||
+             _ll.color !== _plug.obj.color) {
+           H.preventDefault (e);
+
+           H.openConfirmPopup ({
+             type: 'save-plugs-changes',
+             icon: 'save',
+             content: `<?=_("Save changes?")?>`,
+             cb_ok: () => ra.querySelector('.btn-primary').click(),
+             cb_close: () => {
+               this.forceHide = true;
+               bootstrap.Modal.getInstance(ra).hide();
+             },
+           });
+         }
+      });
 
       // EVENT "hidden.bs.modal" plug's settings popup
       ra.addEventListener('hidden.bs.modal', (e) => {
@@ -181,6 +209,7 @@
 
       H.openModal({item: ra});
 
+      this.forceHide = false;
       _plug = plug;
       _postitPlugin = postitPlugin;
 
