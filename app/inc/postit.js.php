@@ -2596,20 +2596,11 @@
             data.progress != progress))
           {
             H.preventDefault (e);
-
             H.openConfirmPopup ({
               type: "save-postits-changes",
               icon: "save",
               content: `<?=_("Save changes?")?>`,
-              cb_ok: () =>
-                {
-                  plugin.setProgress (progress);
-                  plugin.setTitle (title);
-                  plugin.setContent (content);
-
-                  plugin.element[0]
-                    .removeAttribute ("data-uploadedpictures");
-                },
+              cb_ok: () => el.querySelector('.btn-primary').click(),
               cb_close: () => __close(true)
             });
 

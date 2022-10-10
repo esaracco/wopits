@@ -7,10 +7,10 @@
   Description: Custom slider
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('slider');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('slider');
+  echo $Plugin->getHeader();
 
 ?>
 
@@ -21,7 +21,6 @@
     el: null,
     // Input field
     input: null,
-
     // METHOD init()
     init(args) {
       this.el = this.element[0];
@@ -45,7 +44,7 @@
 
 /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     if (H.isLoginPage()) return;
 
     const plugin = document.querySelector('#postitUpdatePopup .slider');
@@ -55,4 +54,4 @@
     }
   });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

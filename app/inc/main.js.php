@@ -1608,190 +1608,190 @@
           });
     },
 
-    // METHOD saveProperties ()
-    saveProperties ()
-    {
-      const plugin = this,
-            $wall = plugin.element,
-            $popup = $("#wpropPopup"),
-            Form = new Wpt_accountForms (),
-            $inputs = $popup.find("input:visible"),
-            name = H.noHTML ($popup.find(".name input").val ()),
-            description =
-              H.noHTML ($popup.find(".description textarea").val ());
+    // METHOD saveProperties()
+    saveProperties() {
+      const popup = document.getElementById('wpropPopup');
+      const $popup = $(popup);
+      const $inputs = $popup.find('input:visible');
+      const Form = new Wpt_accountForms();
+      let ret = true;
 
-      $popup[0].dataset.noclosure = true;
+      popup.dataset.noclosure = true;
 
-      if (Form.checkRequired ($inputs) && Form.validForm ($inputs))
-      {
-        const oldName = plugin.getName (),
-              $cell = $wall.find ("td.wpt"),
-              oldW = $cell.outerWidth ();
+      if (Form.checkRequired($inputs) && Form.validForm($inputs)) {
+        const oldName = this.getName();
+        const oldDescription = this.getDescription();
+        const name = H.noHTML(popup.querySelector('.name input').value);
+        const description = H.noHTML(
+                  popup.querySelector('.description textarea').value);
 
-        plugin.setName (name);
-        plugin.setDescription (description);
+        this.setName(name);
+        this.setDescription(description);
 
-        plugin.unedit (
-          () =>
-          {
-            $popup[0].dataset.uneditdone = 1;
-            $popup.modal ("hide");
-          },
-          () =>
-          {
-            plugin.setName (oldName);
+        this.unedit(
+          () => popup.dataset.uneditdone = 1,
+          () => {
+            this.setName(oldName);
+            this.setDescription(oldDescription);
             //FIXME
-            plugin.edit ();
+            this.edit();
           });
 
-        if ($inputs[1] && $inputs[1].value != oldW ||
-            $inputs[2] && $inputs[2].value != $cell.outerHeight ())
-        {
-          const w = Number ($inputs[1].value) + 1,
-                h = Number ($inputs[2].value),
-                cellPlugin = $cell.cell ("getClass");
+        // If wall width & height
+        if ($inputs.length > 1) {
+          const $wall = this.element;
+          const wall = $wall[0];
+          const cell = wall.querySelector('td.wpt');
+          const oldW = cell.offsetWidth;
+          const w = parseInt($inputs[1].value);
+          const h = parseInt($inputs[2].value);
 
-          // LOCAL FUNCTION __resize ()
-          const __resize = (args)=>
-            {
-              $wall.find("thead.wpt th.wpt:eq(1),td.wpt").css ("width", args.newW);
-              $wall[0].querySelector("td.wpt .ui-resizable-s")
-                .style.width = `${args.newW+2}px`;
+          if (w !== oldW || h !== cell.offsetHeight) {
+            const cellPlugin = $(cell).cell('getClass');
 
-              if (args.newH)
-              {
-                $wall.find("tbody.wpt th.wpt,td.wpt").css ("height", args.newH);
-                $wall[0].querySelector("td.wpt .ui-resizable-e")
-                  .style.height = `${args.newH+2}px`;
+            // LOCAL FUNCTION __resize()
+            const __resize = (args) => {
+              $wall.find('thead.wpt th.wpt:eq(1),td.wpt')
+                  .css('width', args.newW);
+              wall.querySelector('td.wpt .ui-resizable-s')
+                  .style.width = `${args.newW + 2}px`;
+
+              if (args.newH) {
+               $wall.find('tbody.wpt th.wpt,td.wpt').css('height', args.newH);
+               wall.querySelector('td.wpt .ui-resizable-e')
+                   .style.height = `${args.newH + 2}px`;
               }
 
-              plugin.fixSize (args.oldW, args.newW);
+              this.fixSize(args.oldW, args.newW);
             };
 
-          __resize ({newW: w, oldW: oldW, newH: h});
-          if ($wall.find("td.wpt").outerWidth () != w)
-            __resize ({newW: $wall.find("td.wpt").outerWidth (), oldW: w});
+            __resize({newW: w, oldW: oldW, newH: h});
 
-          cellPlugin.edit ();
-          cellPlugin.reorganize ();
-          cellPlugin.unedit ();
+            const tmp = wall.querySelector('td.wpt').offsetWidth;
+            if (tmp !== w) {
+              __resize({newW: tmp, oldW: w});
+            }
+
+            cellPlugin.edit();
+            cellPlugin.reorganize();
+            cellPlugin.unedit();
+          }
         }
+      } else {
+        ret = false;
       }
+
+      return ret;
     },
 
-    // METHOD getName ()
-    getName ()
-    {
-      return this.settings.tabLink.find("span.val").text ();
+    // METHOD getName()
+    getName() {
+      return this.settings.tabLink[0].querySelector('span.val').innerText;
     },
 
-    // METHOD setName ()
-    setName (name, noIcon)
-    {
-      const $div = this.settings.tabLink,
-            notOwner = (this.settings.ownerid != wpt_userData.id);
+    // METHOD setName()
+    setName(name, noIcon) {
+      const div = this.settings.tabLink[0];
+      const notOwner = (this.settings.ownerid !== wpt_userData.id);
 
-      let html = (noIcon) ?
-        `<i class="fas fa-cog fa-spin fa-fw"></i>` :
-         H.getAccessIcon (this.settings.access);
+      let html = noIcon ?
+          `<i class="fas fa-cog fa-spin fa-fw"></i>` :
+          H.getAccessIcon(this.settings.access);
 
       if (!noIcon && notOwner)
         html = `<i class="fas fa-user-slash wallname-icon" title="<?=_("You are not the creator of this wall")?>"></i>${html}`;
 
-      $div.find('span.icon').html (html);
-      $div.find('span.val').text (H.noHTML (name));
+      div.querySelector('span.icon').innerHTML = html;
+      div.querySelector('span.val').innerText = H.noHTML(name);
 
-      if (!noIcon)
-        this.refreshSharedIcon ();
+      if (!noIcon) {
+        this.refreshSharedIcon();
+      }
     },
 
-    // METHOD isShared ()
-    isShared ()
-    {
+    // METHOD isShared()
+    isShared() {
       return Boolean(this.element[0].dataset.shared);
     },
 
-    // METHOD setShared ()
-    setShared (isShared)
-    {
+    // METHOD setShared()
+    setShared(isShared) {
       const wall = this.element[0];
 
-      if (isShared)
+      if (isShared) {
         wall.dataset.shared = 1;
-      else
-        wall.removeAttribute ("data-shared");
-
-      this.refreshPostitsWorkersIcon ();
-      this.refreshSharedIcon ();
-    },
-
-    // METHOD refreshPostitsWorkersIcon ()
-    refreshPostitsWorkersIcon ()
-    {
-      const display = this.isShared ();
-
-      this.element[0].querySelectorAll(".postit").forEach (p =>
-        {
-          const pMenu = $(p).postit ("getSettings").Menu;
-
-          p.querySelector(".pwork")
-            .style.display = display?"inline-block":"none";
-
-          if (pMenu)
-            pMenu.$menu[0].querySelector(`[data-action="pwork"]`)
-              .style.display = display?"block":"none";
-        });
-    },
-
-    // METHOD refreshSharedIcon ()
-    refreshSharedIcon ()
-    {
-      const $div = this.settings.tabLink,
-            $span = $div.find ('span.icon');
-
-      if (this.isShared ())
-      {
-        if (!$span.find(".wallname-icon").length)
-          $span.prepend (`<i class="fas fa-share wallname-icon" title="<?=_("The wall is shared")?>"></i>`);
+      } else {
+        wall.removeAttribute('data-shared');
       }
-      else
-        $span.find(".wallname-icon").remove ();
+
+      this.refreshPostitsWorkersIcon();
+      this.refreshSharedIcon();
     },
 
-    // METHOD getDescription ()
-    getDescription ()
-    {
+    // METHOD refreshPostitsWorkersIcon()
+    refreshPostitsWorkersIcon() {
+      const display = this.isShared();
+
+      this.element[0].querySelectorAll('.postit').forEach((p) => {
+        const pMenu = $(p).postit('getSettings').Menu;
+
+        p.querySelector('.pwork').style.display =
+            display ? 'inline-block' : 'none';
+
+        if (pMenu) {
+          pMenu.$menu[0].querySelector(`[data-action="pwork"]`)
+            .style.display = display ? 'block' : 'none';
+        }
+      });
+    },
+
+    // METHOD refreshSharedIcon()
+    refreshSharedIcon() {
+      const span = this.settings.tabLink[0].querySelector('span.icon');
+      const wIcon = span.querySelector('.wallname-icon');
+
+      if (this.isShared ()) {
+        if (!wIcon) {
+          span.prepend(H.createElement('i', {
+            className: 'fas fa-share wallname-icon',
+            title: `<?=_("The wall is shared")?>`,
+          }));
+        }
+      } else if (wIcon) {
+        wIcon.remove();
+      }
+    },
+
+    // METHOD getDescription()
+    getDescription() {
       return this.settings.tabLink[0].dataset.description;
     },
 
-    // METHOD setDescription ()
-    setDescription (description)
-    {
-      this.settings.tabLink[0].dataset.description = H.noHTML (description);
+    // METHOD setDescription()
+    setDescription(description) {
+      this.settings.tabLink[0].dataset.description = H.noHTML(description);
     },
 
-    // METHOD fixSize ()
-    fixSize (oldW, newW)
-    {
-      if (_refreshing)
-        return;
+    // METHOD fixSize()
+    fixSize(oldW, newW) {
+      if (_refreshing) return;
 
-      const $wall = this.element,
-            wall = $wall[0];
+      const wall = this.element[0];
       let w;
 
       // If no header, substract header width from wall width
-      if (!this.settings.displayheaders)
-        w = this.getTDsWidth ();
-      else if (!(w = Number (wall.dataset.oldwidth)))
-        w = $wall.outerWidth ();
+      if (!this.settings.displayheaders) {
+        w = this.getTDsWidth();
+      } else if (!(w = Number(wall.dataset.oldwidth))) {
+        w = wall.offsetWidth;
+      }
 
-      if (newW)
-      {
-        if (newW > oldW)
+      if (newW) {
+        if (newW > oldW) {
           w += (newW - oldW);
-        else if (newW < oldW)
+        } else if (newW < oldW) {
           w -= (oldW - newW);
+        }
       }
 
       wall.dataset.oldwidth = w;
@@ -1799,25 +1799,24 @@
       wall.style.maxWidth = `${w}px`;
     },
 
-    // METHOD setPostitsDisplayMode ()
-    setPostitsDisplayMode (type)
-    {
-      this.menu ({from: "display", type: type});
+    // METHOD setPostitsDisplayMode()
+    setPostitsDisplayMode(type) {
+      this.menu({from: 'display', type: type});
 
       this.element[0].dataset.displaymode = type;
 
-      this.element.find("td.wpt").each (function ()
-        {
-          $(this).cell ("setPostitsDisplayMode", type);
-        });
+      this.element.find('td.wpt').each(function() {
+        $(this).cell('setPostitsDisplayMode', type);
+      });
 
       // Re-apply filters
-      const $f = S.getCurrent("filters");
-      if ($f.is (":visible"))
-        $f.filters ("apply", {norefresh: true});
+      const $f = S.getCurrent('filters');
+      if (H.isVisible($f[0])) {
+        $f.filters('apply', {norefresh: true});
+      }
 
-      H.fetch (
-        "POST",
+      H.fetch(
+        'POST',
         `user/wall/${this.settings.id}/displaymode`,
         {value: type});
     },
@@ -2048,112 +2047,104 @@
       );
     },
 
-    // METHOD serialize ()
-    serialize ()
-    {
+    // METHOD serialize()
+    serialize() {
       return {
-        name: this.getName (),
-        description: this.getDescription ()
+        name: this.getName(),
+        description: this.getDescription(),
       };
     },
 
-    // METHOD unedit ()
-    unedit (success_cb, error_cb)
-    {
+    // METHOD unedit()
+    unedit(success_cb, error_cb) {
       let data = null;
 
-      if (this.element[0].dataset.todelete)
+      if (this.element[0].dataset.todelete) {
         data = {todelete: true};
       // Update wall only if it has changed
-      else
-      {
-        data = this.serialize ();
+      } else {
+        data = this.serialize();
 
-        if (!H.updatedObject (_originalObject, data))
-        {
-          if (!this.isShared ())
-            return success_cb && success_cb ();
-          else
+        if (!H.updatedObject(_originalObject, data)) {
+          if (!this.isShared()) {
+            return success_cb && success_cb();
+          } else {
             data = null;
+          }
         }
       }
 
       H.request_ws (
-        "DELETE",
+        'DELETE',
         `wall/${this.settings.id}/editQueue/wall/${this.settings.id}`,
         data,
         // success cb
-        (d) =>
-        {
-          if (!(data && data.todelete) && d.error_msg)
-          {
-            error_cb && error_cb ();
+        (d) => {
+          if (!(data && data.todelete) && d.error_msg) {
+            error_cb && error_cb();
 
-            H.displayMsg ({
+            H.displayMsg({
               title: `<?=_("Wall")?>`,
-              type: "warning",
-              msg: d.error_msg
+              type: 'warning',
+              msg: d.error_msg,
             });
           }
-          else if (success_cb)
+          else if (success_cb) {
             success_cb ();
+          }
         },
         // error cb
-        error_cb
+        error_cb,
       );
     },
 
-    // METHOD displayExternalRef ()
-    displayExternalRef (v)
-    {
-      const update = (v !== undefined),
-            val = update ? v : this.settings.displayexternalref,
-            type = (val == 1) ? "unblock" : "block";
+    // METHOD displayExternalRef()
+    displayExternalRef(v) {
+      const update = (v !== undefined);
+      const val = update ? v : this.settings.displayexternalref;
+      const type = (val == 1) ? 'unblock' : 'block';
 
-      if (update)
-      {
+      if (update) {
         this.settings.displayexternalref = val;
 
-        this.element[0].querySelectorAll(".postit").forEach (p =>
-          $(p).postit (`${type}ExternalRef`));
+        this.element[0].querySelectorAll('.postit').forEach((p) =>
+          $(p).postit(`${type}ExternalRef`));
 
-        H.fetch (
-          "POST",
+        H.fetch(
+          'POST',
           `user/wall/${this.settings.id}/displayexternalref`,
           {value: val});
       }
 
-      if (this.element.is (":visible"))
-        this.menu ({from: "display", type: `${type}-externalref`});
+      if (this.element.is(':visible')) {
+        this.menu({from: 'display', type: `${type}-externalref`});
+      }
 
       return val;
     },
 
-    // METHOD haveExternalRef ()
-    haveExternalRef ()
-    {
-      return this.element[0].querySelector (".postit[data-haveexternalref]");
+    // METHOD haveExternalRef()
+    haveExternalRef() {
+      return this.element[0].querySelector('.postit[data-haveexternalref]');
     },
 
-    // METHOD getTDsWidth ()
-    getTDsWidth ()
-    {
+    // METHOD getTDsWidth()
+    getTDsWidth() {
       let w = 0;
 
-      this.element[0].querySelector("tbody.wpt tr.wpt").querySelectorAll("td.wpt")
-        .forEach ((td)=> w += parseFloat (td.style.width));
+      this.element[0].querySelector('tbody.wpt tr.wpt')
+          .querySelectorAll('td.wpt').forEach(
+              (td) => w += parseFloat(td.style.width));
 
       return w;
     },
 
-    // METHOD showHeaders ()
-    showHeaders ()
-    {
-      this.element[0].querySelectorAll("th.wpt").forEach (th =>
-        {
-          th.classList.remove ("hide");
-          th.classList.add ("display");
-        });
+    // METHOD showHeaders()
+    showHeaders() {
+      this.element[0].querySelectorAll('th.wpt').forEach((th) => {
+        th.classList.remove('hide');
+        th.classList.add('display');
+      });
     },
 
     // METHOD hideHeaders ()
@@ -2240,290 +2231,282 @@
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (!H.isLoginPage ())
-        setTimeout (()=>{
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!H.isLoginPage()) {
+      WS.connect(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/app/ws?token=${wpt_userData.token}`,
+        () => {
+          const $settings = $('#settingsPopup');
 
-        WS.connect (
-          `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/app/ws?token=${wpt_userData.token}`, ()=>
-          {
-            const $settings = $("#settingsPopup");
-
-            $settings.settings ({locale: $("html").attr ("lang")});
-
-            // if a theme exists from the login page, apply it once the user is
-            // logged
-            const loginTheme = ST.get ("theme");
-            if (loginTheme)
-            {
-              ST.delete ("theme");
-              $settings.settings ("set", {theme: loginTheme});
-            }
-
-            $settings.settings ("applyTheme");
-
-            // Check if wopits has been upgraded
-            H.checkForAppUpgrade ();
-
-            const directURLData = _getDirectURLData (),
-                  loadSpecific = (directURLData && directURLData.type != "u"),
-                  displayAccount = (directURLData && directURLData.type == "u");
-
-            // Load previously opened walls
-            $("<div/>").wall ("restorePreviousSession", loadSpecific);
-
-            // Check if we must display a postit alert or a specific wall
-            // (from direct URL).
-            if (loadSpecific)
-              $("<div/>").wall ("loadSpecific", directURLData);
-            // Display account popup and highlight emails settings field
-            // (from direct URL).
-            else if (displayAccount)
-            {
-              // Remove special alert URL.
-              history.pushState (null, null, "/");
-
-              H.loadPopup ("account", {
-                cb: ($p)=>
-                      $p.find("[name='allow_emails']")
-                        .parent().effect ("highlight", {duration: 5000})
-              });
-            }
-
-            // Websocket heartbeat (every 15mn)
-            setInterval (()=> fetch ("/api/user/ping"), 60*1000*15);
-
-            // Display theme chooser if needed.
-            if (!wpt_userData.settings.theme)
-              setTimeout (()=> $settings.settings ("openThemeChooser"), 1000);
-
+          $settings.settings({
+            locale: document.documentElement.getAttribute('lang'),
           });
 
-        H.fixHeight ();
+          // If a theme exists from the login page, apply it once the user is
+          // logged
+          const loginTheme = ST.get('theme');
+          if (loginTheme) {
+            ST.delete('theme');
+            $settings.settings('set', {theme: loginTheme});
+          }
 
-        const displayBtn = $(`<div id="normal-display-btn"><i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span></div>`)[0];
+          $settings.settings('applyTheme');
 
-        // EVENT "click" on back to standard view button
-        displayBtn.addEventListener ("click",
-          (e)=> S.getCurrent("wall").wall("zoom",{type:"normal"}));
+          // Check if wopits has been upgraded
+          H.checkForAppUpgrade();
 
-        document.body.insertBefore (displayBtn, document.body.firstChild);
+          const directURLData = _getDirectURLData ();
+          const loadSpecific = (directURLData && directURLData.type !== 'u');
+          const displayAccount = (directURLData && directURLData.type === 'u');
+          const $wall = $('<div/>');
 
-        // Create input to upload wall file import
-        H.createUploadElement({
-          attrs: {accept: '.zip', className: 'import-wall'},
-          onChange: (e) => {
-            const el = e.target;
+          // Load previously opened walls
+          $wall.wall('restorePreviousSession', loadSpecific);
 
-            if (!el.files || !el.files.length) return;
+          // Check if we must display a postit alert or a specific wall
+          // (from direct URL).
+          if (loadSpecific) {
+            $wall.wall('loadSpecific', directURLData);
+          // Display account popup and highlight emails settings field
+          // (from direct URL).
+          } else if (displayAccount) {
+            // Remove special alert URL.
+            history.pushState(null, null, '/');
 
-            H.getUploadedFiles(
-              el.files,
-              '\.zip$',
-              (e, file) => {
-                el.value = '';
+            H.loadPopup ('account', {
+              cb: ($p) =>
+                    $p.find("[name='allow_emails']")
+                      .parent().effect("highlight", {duration: 5000})
+            });
+          }
 
-                if (H.checkUploadFileSize({
-                      size: e.total,
-                      maxSize:<?=WPT_IMPORT_UPLOAD_MAX_SIZE?>
-                    }) && e.target.result) {
-                  H.fetchUpload(
-                    'wall/import',
-                    {
-                      name: file.name,
-                      size: file.size,
-                      item_type: file.type,
-                      content: e.target.result
-                    },
-                    // success cb
-                    (d) => {
-                      if (d.error_msg) {
-                        return H.displayMsg({
-                          title: `<?=_("Wall")?>`,
-                          type: 'warning',
-                          msg: d.error_msg,
-                        });
-                      }
+          // Websocket heartbeat (every 15mn)
+          setInterval(() => fetch('/api/user/ping'), 60 * 1000 * 15);
 
-                      $('<div/>').wall('open', {
-                        lastWall: 1,
-                        wallId: d.wallId,
-                      });
-
-                      H.displayMsg({
-                        title: `<?=_("Wall")?>`,
-                        type: 'success',
-                        msg: `<?=_("The wall has been successfully imported")?>`
-                      });
-                    });
-                }
-              });
-          },
+          // Display theme chooser if needed.
+          if (!wpt_userData.settings.theme) {
+            setTimeout(() => $settings.settings('openThemeChooser'), 1000);
+          }
         });
 
-        // EVENT "click" on main content wopits icon
-        document.getElementById("welcome").addEventListener ("click", (e)=>
+      H.fixHeight();
+
+      // Create "back to standard view" button
+      const displayBtn = H.createElement('div', {id: 'normal-display-btn'});
+      displayBtn.innerHTML = `<i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span>`;
+      // EVENT "click" on back to standard view button
+      displayBtn.addEventListener('click',
+        (e) => S.getCurrent('wall').wall('zoom', {type: 'normal'}));
+      document.body.insertBefore(displayBtn, document.body.firstChild);
+
+      // Create input to upload wall file import
+      H.createUploadElement({
+        attrs: {accept: '.zip', className: 'import-wall'},
+        onChange: (e) => {
+          const el = e.target;
+
+          if (!el.files || !el.files.length) return;
+
+          H.getUploadedFiles( el.files, '\.zip$', (e, file) => {
+            el.value = '';
+
+            if (H.checkUploadFileSize({
+                  size: e.total,
+                  maxSize: <?=WPT_IMPORT_UPLOAD_MAX_SIZE?>,
+                }) && e.target.result) {
+              H.fetchUpload('wall/import', {
+                name: file.name,
+                size: file.size,
+                item_type: file.type,
+                content: e.target.result,
+              },
+              // success cb
+              (d) => {
+                if (d.error_msg) {
+                  return H.displayMsg({
+                    title: `<?=_("Wall")?>`,
+                    type: 'warning',
+                    msg: d.error_msg,
+                  });
+                }
+
+                $('<div/>').wall('open', {
+                  lastWall: 1,
+                  wallId: d.wallId,
+                });
+
+                H.displayMsg({
+                  title: `<?=_("Wall")?>`,
+                  type: 'success',
+                  msg: `<?=_("The wall has been successfully imported")?>`,
+                });
+              });
+            }
+          });
+        },
+      });
+
+      // EVENT "click" on main content wopits icon
+      document.getElementById("welcome").addEventListener ("click", (e)=>
+        {
+          H.closeMainMenu ();
+          $("<div/>").wall ("openNamePopup");
+        });
+
+      // EVENT "click" on walls tab
+      document.querySelector(".nav-tabs.walls")
+        .addEventListener ("click", (e)=>
+        {
+          const el = e.target;
+
+          // EVENT "click" on "close wall" tab button
+          if (el.classList.contains ("close"))
+          {
+            e.stopImmediatePropagation ();
+
+            H.openConfirmPopover ({
+              item: $(el.closest(".nav-item").querySelector ("span.val")),
+              placement: "left",
+              title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
+              content: `<?=_("Close this wall?")?>`,
+              cb_ok: ()=> S.getCurrent("wall").wall ("close")
+            });
+          }
+          // EVENT "click" on "new wall" tab button
+          else if (el.parentNode.dataset.action=="new")
           {
             H.closeMainMenu ();
             $("<div/>").wall ("openNamePopup");
-          });
+          }
+        });
 
-        // EVENT "click" on walls tab
-        document.querySelector(".nav-tabs.walls")
-          .addEventListener ("click", (e)=>
+      // EVENT "click"
+      document.body.addEventListener ("click", (e)=>
+        {
+          const el = e.target;
+
+          // "click" on wall users view popup
+          if (el.matches ("#wallUsersviewPopup *"))
           {
-            const el = e.target;
+            e.stopImmediatePropagation ();
 
-            // EVENT "click" on "close wall" tab button
-            if (el.classList.contains ("close"))
+            // EVENT "click" on users list
+            if (el.matches (".list-group-item,.list-group-item *"))
             {
-              e.stopImmediatePropagation ();
+              const li = el.tagName=="LI"?el:el.closest("li");
 
-              H.openConfirmPopover ({
-                item: $(el.closest(".nav-item").querySelector ("span.val")),
-                placement: "left",
-                title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
-                content: `<?=_("Close this wall?")?>`,
-                cb_ok: ()=> S.getCurrent("wall").wall ("close")
+              H.openUserview ({
+                about: li.dataset.about,
+                picture: li.dataset.picture,
+                title: li.dataset.title
               });
             }
-            // EVENT "click" on "new wall" tab button
-            else if (el.parentNode.dataset.action=="new")
+          }
+        });
+
+      // EVENT "click" on main menu items
+      document.getElementById("main-menu").addEventListener ("click", (e)=>
+        {
+          const el = e.target,
+                $wall = S.getCurrent ("wall"),
+                li = el.tagName=="LI"?el:el.closest("li"),
+                action = li?li.dataset.action:null;
+
+          // Nothing if menu item is disabled
+          if (!li || li.querySelector ("a.disabled"))
+            return;
+
+          // LOCAL FUNCTION __manageCheckbox()
+          const __manageCheckbox = (el, li, type)=>
             {
+              if (el.tagName != "INPUT")
+              {
+                const input = li.querySelector ("input");
+                input.checked = !input.checked;
+              }
+
+              S.getCurrent(type)[type] ("toggle");
+            };
+
+          switch (action)
+          {
+            case "zoom+":
+              $wall.wall ("zoom", {type: "+"});
+              $wall.wall ("ctrlMenu", "zoom-screen", "on");
+              break;
+
+            case "zoom-":
+              $wall.wall ("zoom", {type: "-"});
+              $wall.wall ("ctrlMenu", "zoom-screen", "on");
+              break;
+
+            case "zoom-screen":
+              $wall.wall ("zoom", {type:"screen"});
+              break;
+
+            case "zoom-normal":
+              $wall.wall ("zoom", {type: "normal"});
+              break;
+
+            case "chat":
+
+              __manageCheckbox (el, li, "chat");
+
+              break;
+
+            case "filters":
+
+              __manageCheckbox (el, li, "filters");
+
+              break;
+
+            case "settings":
+              $("#settingsPopup").settings ("open");
+              break;
+
+            case "new":
               H.closeMainMenu ();
               $("<div/>").wall ("openNamePopup");
-            }
-          });
+              break;
 
-        // EVENT "click"
-        document.body.addEventListener ("click", (e)=>
-          {
-            const el = e.target;
+            case "about":
+              H.loadPopup ("about");
+              break;
 
-            // "click" on wall users view popup
-            if (el.matches ("#wallUsersviewPopup *"))
-            {
-              e.stopImmediatePropagation ();
+            case "user-guide":
+              H.loadPopup ("userGuide");
+              break;
 
-              // EVENT "click" on users list
-              if (el.matches (".list-group-item,.list-group-item *"))
-              {
-                const li = el.tagName=="LI"?el:el.closest("li");
+            case "open":
+              $("<div/>").wall ("openOpenWallPopup");
+              break;
 
-                H.openUserview ({
-                  about: li.dataset.about,
-                  picture: li.dataset.picture,
-                  title: li.dataset.title
-                });
-              }
-            }
-          });
+            case "close-walls":
+              $("<div/>").wall ("openCloseAllWallsPopup");
+              break;
 
-        // EVENT "click" on main menu items
-        document.getElementById("main-menu").addEventListener ("click", (e)=>
-          {
-            const el = e.target,
-                  $wall = S.getCurrent ("wall"),
-                  li = el.tagName=="LI"?el:el.closest("li"),
-                  action = li?li.dataset.action:null;
+            case "delete":
+              $wall.wall ("openDeletePopup");
+              break;
 
-            // Nothing if menu item is disabled
-            if (!li || li.querySelector ("a.disabled"))
-              return;
+            case "clone":
+              $wall.wall ("clone");
+              break;
 
-            // LOCAL FUNCTION __manageCheckbox()
-            const __manageCheckbox = (el, li, type)=>
-              {
-                if (el.tagName != "INPUT")
-                {
-                  const input = li.querySelector ("input");
-                  input.checked = !input.checked;
-                }
+            case "export":
+              $wall.wall ("export");
+              break;
 
-                S.getCurrent(type)[type] ("toggle");
-              };
-
-            switch (action)
-            {
-              case "zoom+":
-                $wall.wall ("zoom", {type: "+"});
-                $wall.wall ("ctrlMenu", "zoom-screen", "on");
-                break;
-
-              case "zoom-":
-                $wall.wall ("zoom", {type: "-"});
-                $wall.wall ("ctrlMenu", "zoom-screen", "on");
-                break;
-
-              case "zoom-screen":
-                $wall.wall ("zoom", {type:"screen"});
-                break;
-
-              case "zoom-normal":
-                $wall.wall ("zoom", {type: "normal"});
-                break;
-
-              case "chat":
-
-                __manageCheckbox (el, li, "chat");
-
-                break;
-
-              case "filters":
-
-                __manageCheckbox (el, li, "filters");
-
-                break;
-
-              case "settings":
-                $("#settingsPopup").settings ("open");
-                break;
-
-              case "new":
-                H.closeMainMenu ();
-                $("<div/>").wall ("openNamePopup");
-                break;
-
-              case "about":
-                H.loadPopup ("about");
-                break;
-
-              case "user-guide":
-                H.loadPopup ("userGuide");
-                break;
-
-              case "open":
-                $("<div/>").wall ("openOpenWallPopup");
-                break;
-
-              case "close-walls":
-                $("<div/>").wall ("openCloseAllWallsPopup");
-                break;
-
-              case "delete":
-                $wall.wall ("openDeletePopup");
-                break;
-
-              case "clone":
-                $wall.wall ("clone");
-                break;
-
-              case "export":
-                $wall.wall ("export");
-                break;
-
-              case "import":
-                $("<div/>").wall ("import");
-                break;
-            }
-          });
-      }, 0);
-      else
-        // EVENT CLICK on about button in the login page
-        document.querySelectorAll(`[data-action="about"]`).forEach (el=>
-          el.addEventListener ("click",
-            (e) => H.openModal({item: document.getElementById('aboutPopup')})));
+            case "import":
+              $("<div/>").wall ("import");
+              break;
+          }
+        });
+    } else {
+      // EVENT CLICK on about button in the login page
+      document.querySelectorAll(`[data-action="about"]`).forEach (el=>
+        el.addEventListener ("click",
+          (e) => H.openModal({item: document.getElementById('aboutPopup')})));
+    }
   });
 
 <?php echo $Plugin->getFooter ()?>

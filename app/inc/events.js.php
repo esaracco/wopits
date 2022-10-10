@@ -325,12 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
       el.querySelectorAll('input,textarea').forEach((el) => el.blur());
     }
 
-    if (el.id === 'wpropPopup' &&
-        H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`) &&
-        !el.dataset.uneditdone) {
-      S.getCurrent('wall').wall('unedit');
-    }
-
     if (_closeVKB && S.get('vkbData') && S.get('mstack').length === 1) {
       H.fixVKBScrollStop();
       _closeVKB = false;
@@ -454,10 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
               $('<div/>').wall('addNew', data, $(popup));
             }
             break;
-          // Save wall properties
-          case 'wpropPopup':
-            S.getCurrent('wall').wall('saveProperties');
-            return;
         }
       }
 

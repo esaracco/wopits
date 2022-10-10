@@ -489,62 +489,62 @@ class WSharer
 // CLASS WSocket
 class WSocket
 {
-  // METHOD constructor ()
-  constructor ()
-  {
-    this.timeoutId = undefined;
+  // METHOD constructor()
+  constructor() {
+    this.cnx = null;
+    this.cnxTimeoutId = 0;
+    this.waitForMsgId = {};
     this.responseQueue = {};
-    this._sendQueue = [];
-    this._retries = 0;
-    this._msgId = 0;
-    this._send_cb = {};
-    this._connected = false;
+    this.retries = 0;
+    this.msgId = 0;
+    this.send_cb = {};
+    this.connected = false;
   }
 
-  // METHOD connect ()
-  connect (url, opencb_init)
-  {
-    this._connect (url, null, opencb_init);
+  // METHOD connect()
+  connect(url, init) {
+    this._connect(url, {init});
   }
 
-  // METHOD _connect ()
-  _connect (url, onopen_cb, opencb_init)
-  {
-    H.loader ("show", {force: true});
+  // METHOD _connect()
+  _connect(url, {onSuccess, init}) {
+    H.loader('show', {force: true});
 
-    this.cnx = new WebSocket (url);
+    this.cnx = new WebSocket(url);
 
-    this.timeoutId = setTimeout(() => this.cnx.close(), <?=WPT_TIMEOUTS['network_connection'] * 1000?>);
+    this.cnxTimeoutId = setTimeout(
+      () => this.cnx.close(), <?=WPT_TIMEOUTS['network_connection'] * 1000?>);
 
-    // EVENT open
-    this.cnx.onopen = (e) =>
-      {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = undefined;
+    // EVENT "open"
+    this.cnx.onopen = (e) => {
+      clearTimeout(this.cnxTimeoutId);
+      this.cnxTimeoutId = 0;
 
-        this._connected = true
-        this._retries = 0;
+      this.connected = true
+      this.retries = 0;
 
-        if (opencb_init)
-          opencb_init ();
+      init && init();
+      onSuccess && onSuccess();
 
-        if (onopen_cb)
-          onopen_cb ();
+      H.loader('hide', {force: true});
+    };
 
-        H.loader ("hide", {force: true});
-      };
-
-    // EVENT message
+    // EVENT "message"
     this.cnx.onmessage = (e) => {
-      const data = JSON.parse (e.data || '{}');
-      const $wall = (data.wall && data.wall.id) ?
-                $(`[data-id="wall-${data.wall.id}"]`) : [];
-      const isResponse = (this._send_cb[data.msgId] !== undefined);
+      const data = JSON.parse(e.data || '{}');
+      const $wall = data.wall?.id ? $(`[data-id="wall-${data.wall.id}"]`) : [];
+      const isResponse = (this.send_cb[data.msgId] !== undefined);
       let el;
       let popup;
+      let nextMsg = null;
 
-      //console.log (`RECEIVED ${data.msgId}\n`);
-      //console.log (data);
+      //console.log(`RECEIVED ${data.msgId}\n`);
+      //console.log(data);
+
+      if (isResponse) {
+        clearTimeout(this.waitForMsgId[data.msgId]);
+        delete this.waitForMsgId[data.msgId];
+      }
 
       if (data.action) {
         switch (data.action) {
@@ -568,20 +568,21 @@ class WSocket
 
             popup.querySelector('.modal-body').innerHTML = `<?=_("One of your sessions has just been closed. All of your sessions will end. Please log in again.")?>`;
             popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-exclamation-triangle"></i> <?=_("Warning")?>`;
-            popup.dataset.popuptype = "app-logout";
-            H.openModal ({item: popup, customClass: "zindexmax"});
+            popup.dataset.popuptype = 'app-logout';
+            H.openModal({item: popup, customClass: 'zindexmax'});
 
             // Close current popups if any
-            setTimeout (()=> (S.get("mstack") || []).forEach(
+            setTimeout(()=> (S.get('mstack') || []).forEach(
                 (el) => bootstrap.Modal.getInstance(el).hide()), 3000);
             break;
           // refreshpcomm
           case 'refreshpcomm':
             el = document.querySelector(
-                `[data-id="postit-${data.postitId}"] .pcomm`);
+                     `[data-id="postit-${data.postitId}"] .pcomm`);
 
-            if (el)
+            if (el) {
               $(el).pcomm('refresh', data);
+            }
             break;
           // refreshwall
           case 'refreshwall':
@@ -599,7 +600,7 @@ class WSocket
             if ($wall.length) {
               $wall.wall('refreshUsersview', data.count);
             } else {
-              WS.pushResponse (`viewcount-wall-${data.wall.id}`, data.count);
+              WS.pushResponse(`viewcount-wall-${data.wall.id}`, data.count);
             }
             break;
           // chat
@@ -637,7 +638,7 @@ class WSocket
           case 'mainupgrade':
             // Check only when all modals are closed
             const iid = setInterval(() => {
-                if (!(S.get ("mstack") || []).length) {
+                if (!(S.get('mstack') || []).length) {
                   clearInterval(iid);
                   H.checkForAppUpgrade(data.version);
                 }
@@ -655,59 +656,36 @@ class WSocket
             S.set('block-msg', true);
 
             // Close current popups if any
-            (S.get('mstack') || [])
-              .forEach ((el) => bootstrap.Modal.getInstance(el).hide());
+            (S.get('mstack') || []).forEach((el) =>
+                bootstrap.Modal.getInstance(el).hide());
 
             popup.querySelector('.modal-body').innerHTML = `<?=_("We are sorry for the inconvenience, but due to a maintenance operation, the application must be reloaded.")?>`;
             popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-tools"></i> <?=_("Reload needed")?>`;
 
             popup.dataset.popuptype = 'app-reload';
-            H.openModal ({item: popup, customClass: 'zindexmax'});
+            H.openModal({item: popup, customClass: 'zindexmax'});
             break;
         }
       }
-
-      let nextMsg = null;
 
       if (data.msgId) {
-        const msgId = data.msgId;
-        let i = this._sendQueue.length;
+        const {msgId} = data;
 
-        // Remove request from sending queue
-        while (i--) {
-          if (this._sendQueue[i].msg.msgId === msgId)
-          {
-            if (this._sendQueue[i+1]) {
-              nextMsg = this._sendQueue[i+1];
-            }
-
-            this._sendQueue.splice(i, 1);
-            break;
-          }
-        }
-
-        delete(data.msgId);
+        delete data.msgId;
 
         if (isResponse) {
-          this._send_cb[msgId](data);
-          delete this._send_cb[msgId];
+          this.send_cb[msgId](data);
+          delete this.send_cb[msgId];
         }
       }
 
       H.loader('hide');
-
-      // Send next message pending in sending queue
-      if (nextMsg) {
-        this.send(nextMsg.msg, nextMsg.success_cb, nextMsg.error_cb);
-      }
     };
 
-    // EVENT error
+    // EVENT "error"
     this.cnx.onerror = (e) => {
-      H.loader('hide');
-
-      if (this._retries < 3) {
-        this.tryToReconnect ({
+      if (this.retries < 15) {
+        this.tryToReconnect({
           success_cb: () => {
             const $wall = S.getCurrent('wall');
 
@@ -717,94 +695,81 @@ class WSocket
           },
         });
       } else {
-        H.displayNetworkErrorMsg();
+        this.displayNetworkErrorMsg();
       }
     };
   }
 
-  // METHOD tryToReconnect ()
-  tryToReconnect (args)
-  {
-    let ret = true;
+  // METHOD tryToReconnect()
+  tryToReconnect(args) {
+    this.connected = false;
+    ++this.retries;
 
-    this._connected = false;
-    ++this._retries;
-
-    this._connect (this.cnx.url, () =>
-      {
-        if (args)
-        {
-          if (args.msg)
-            this.send (args.msg, args.success_cb, args.error_cb);
-          else if (args.success_cb)
-            args.success_cb ();
+    this._connect(this.cnx.url, {
+      onSuccess: !args ? undefined : () => {
+        if (args.msg) {
+          this.send(args.msg, args.success_cb, args.error_cb);
+        } else if (args.success_cb) {
+          args.success_cb();
+        } else {
+          this.displayNetworkErrorMsg();
         }
-      });
+      },
+    });
   }
 
-  // METHOD ready ()
-  ready ()
-  {
-    return (this.cnx && this.cnx.readyState == this.cnx.OPEN);
+  // METHOD ready()
+  ready() {
+    return (this.cnx?.readyState === WebSocket.OPEN);
   }
 
-  // METHOD send ()
-  send (msg, success_cb, error_cb)
-  {
-    if (!this.ready ())
-    {
-      if (this._connected && this._retries < 3)
-        this.tryToReconnect ({
-          msg: msg,
-          success_cb: success_cb,
-          error_cb: error_cb
-        });
-
+  // METHOD send()
+  send(msg, success_cb, error_cb) {
+    if (!this.ready()) {
+      if (this.connected && this.retries < 15) {
+        this.tryToReconnect({msg, success_cb, error_cb});
+      } else if (error_cb) {
+        error_cb();
+      }
       return;
     }
 
-    const send = Boolean(msg.msgId);
-
     // Put message in message queue if not already in
-    if (!msg.msgId)
-    {
-      msg["msgId"] = ++this._msgId;
-
-      // If some messages have already been sent without response, queued the
-      // new message to send it after the others.
-      this._sendQueue.push ({
-        msg: msg,
-        success_cb: success_cb,
-        error_cb: error_cb
-      });
+    if (!msg.msgId) {
+      msg.msgId = ++this.msgId;
     }
 
-    // If first message or request for sending a message in queue
-    if (send || this._sendQueue.length == 1)
-    {
-      //console.log (`SEND ${msg.msgId}\n`);
-
-      this._send_cb[msg.msgId] = success_cb;
+    this.send_cb[msg.msgId] = success_cb;
  
-      this.cnx.send (JSON.stringify (msg));
+    try {
+      this.waitForMsgId[msg.msgId] = setTimeout(
+          () => this.displayNetworkErrorMsg(),
+          <?=WPT_TIMEOUTS['network_connection'] * 1000?>);
+      this.cnx.send(JSON.stringify(msg));
+    } catch(e) {
+      this.tryToReconnect({msg, success_cb, error_cb});
     }
   }
 
-  // METHOD pushResponse ()
-  pushResponse (type, response)
-  {
-    if (this.responseQueue[type] === undefined)
+  // METHOD pushResponse()
+  pushResponse(type, response) {
+    if (!this.responseQueue[type]) {
       this.responseQueue[type] = [];
+    }
     
-    this.responseQueue[type].push (response);
+    this.responseQueue[type].push(response);
   }
 
-  // METHOD popResponse ()
-  popResponse (type)
-  { 
-    return (this.responseQueue[type] !== undefined &&
-            this.responseQueue[type].length) ?
-              this.responseQueue[type].pop () : undefined;
+  // METHOD popResponse()
+  popResponse(type) {
+    const rq = this.responseQueue[type];
+
+    return rq?.length ? rq.pop() : undefined;
+  }
+
+  displayNetworkErrorMsg() {
+    H.loader('hide', {force: true});
+    H.displayNetworkErrorMsg();
   }
 }
 
@@ -1763,39 +1728,35 @@ class WHelper
       error_cb (d);
   }
   
-  // METHOD request_ws ()
-  static request_ws (method, service, args, success_cb, error_cb)
-  {
-    this.loader ("show");
+  // METHOD request_ws()
+  static request_ws (method, route, args, success_cb, error_cb) {
+    this.loader('show');
   
-    //console.log (`WS: ${method} ${service}`);
+    //console.log (`WS: ${method} ${route}`);
   
     WS.send ({
-      method: method,
-      route: service,
-      data: args ? encodeURI (JSON.stringify (args)) : null  
+      method,
+      route,
+      data: args ? encodeURI(JSON.stringify(args)) : null,
     },
-    (d)=>
-      {
-        this.loader ("hide");
-  
-        if (d.error)
-          this.manageUnknownError (d, error_cb);
-        else if (success_cb)
-          success_cb (d);
-        else if (d.error_msg)
-          H.displayMsg ({
-            title: `<?=_("Warning")?>`,
-            type: "warning",
-            msg: d.error_msg
-          });
-      },
-    ()=>
-      {
-        this.loader ("hide");
-  
-        error_cb && error_cb ();
-      });
+    (d) => {
+      this.loader('hide');
+      if (d.error) {
+        this.manageUnknownError(d, error_cb);
+      } else if (success_cb) {
+        success_cb(d);
+      } else if (d.error_msg) {
+        H.displayMsg({
+          title: `<?=_("Warning")?>`,
+          type: 'warning',
+          msg: d.error_msg,
+        });
+      }
+    },
+    () => {
+      this.loader('hide');
+      error_cb && error_cb();
+    });
   }
   
   // METHOD fetchTimeout()

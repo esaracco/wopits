@@ -1666,7 +1666,7 @@ msgstr ""
 
 #, php-format
 msgid "You can change it at any time in your %sSettings%s"
-msgstr "Vous pouvez le changer à tout moment dans vos %sRéglages%s"
+msgstr "Vous pourrez le changer à tout moment dans vos %sRéglages%s"
 
 msgid "You cannot manage any of the existing groups."
 msgstr "Vous ne pouvez gérer aucun des groupes existants."
