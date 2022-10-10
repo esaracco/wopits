@@ -1,0 +1,2 @@
+*.js.php linguist-language=javascript
+*.css.php linguist-language=css
