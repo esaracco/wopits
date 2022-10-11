@@ -1453,7 +1453,7 @@ th.wpt .submenu .dropdown-menu {
   padding: 0 5px 0 30px;
   white-space: nowrap;
   z-index: 93;
-/*  box-shadow: 0 5px 5px -5px #b3b3b3;*/
+  box-shadow: 0 5px 5px -5px #b3b3b3;*/
   text-overflow: ellipsis;
   overflow: hidden;
   height: 22px;
@@ -1557,18 +1557,6 @@ th.wpt .submenu .dropdown-menu {
   border-style: inherit;
   border-width: inherit;
 }
-
-<?php
-  foreach (WPT_MODULES['tpick']['items'] as $item => $color)
-  {
-echo <<<EOC
-.postit .postit-tags i.fa-$item,
-#tpick i.fa-$item {
-  color: $color !important;
-}
-EOC;
-  }
-?>
 
 .toolbox {
   z-index: 5003;
@@ -1890,12 +1878,12 @@ ul#mmenu {
 
 .clear-textarea {
   position: absolute;
-  top: 49px;
+  top: 50px;
   right: 6px;
 }
 
 #postitCommentsPopup .clear-textarea {
-  top: 6px;
+  top: 7px;
 }
 
 .toolbox.chat .clear-textarea {
@@ -1911,7 +1899,7 @@ ul#mmenu {
 
 .btn.clear-input:hover i,
 .btn.clear-textarea:hover i {
-  color: var(--modal-theme-color-dark);
+  color: var(--modal-theme-color-dark) !important;
 }
 
 .newfeatures code {
@@ -2191,11 +2179,9 @@ a.btn:focus {
   {
 echo <<<EOC
 .color-$name,
-.postit.color-$name .postit-header,
-.postit.color-$name .postit-edit,
-.postit.color-$name .dates {
-  background:$color!important;
-  color:#43474a;
+.postit.color-$name {
+  background: $color;
+  color: #43474a;
 }
 EOC;
   }
@@ -2254,12 +2240,10 @@ i.fa-xs {
 
 .modal:not(.no-theme) .modal-content {
   border: none !important;
-  /*border: 2px solid var(--modal-1-theme-bg-color);*/
 }
 
 .modal.modal-sm:not(.no-theme) .modal-content {
   border: none !important;
-  /*border: 2px solid var(--modal-2-theme-bg-color);*/
 }
 
 .modal.no-theme .modal-content {
@@ -2289,12 +2273,12 @@ i.fa-xs {
 
 .postit .postit-edit {
   position: absolute;
-  font-size: 12px;
-  height: 100%;
+  margin-top: 22px;
   width: 100%;
-  overflow: auto;
-  border-radius: 0 1px 1px 1px;
-  padding: 25px 5px 20px 5px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 5px 0 5px;
+  font-size: 12px;
 }
 
 .postit .postit-progress-container {
@@ -2378,7 +2362,6 @@ i.fa-xs {
   width: 100%;
   font-size: .6rem;
   box-shadow: 0 -5px 5px -5px #b3b3b3;
-  border-radius: 0 0 1px 1px;
   z-index: 92;
 }
 

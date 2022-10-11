@@ -224,9 +224,9 @@
     // METHOD setPosition()
     setPosition(pos) {
       if (pos === 'left') {
-        this.$menu[0].classList.replace ('right', 'left');
+        this.$menu[0].classList.replace('right', 'left');
       } else {
-        this.$menu[0].classList.replace ('left', 'right');
+        this.$menu[0].classList.replace('left', 'right');
       }
     }
 
@@ -282,7 +282,7 @@
           cancel: ".postit-tags",
           containment: $wall.find ("tbody.wpt"),
           scrollSensitivity: 50,
-          opacity: 0.35,
+          opacity: .35,
           scope: "dzone",
           stack: ".postit",
           drag: function(e, ui)
@@ -332,7 +332,7 @@
             // Refresh relations position
             plugin.repositionPlugs ();
 
-            plugin.fixEditHeight (ui.size.height);
+            plugin.fixEditHeight ();
 
             if (S.get("revertData").revert)
               return false;
@@ -448,96 +448,85 @@
         plugin.update (settings);
     },
 
-    // METHOD getPlugin ()
-    getPlugin (type)
-    {
+    // METHOD getPlugin()
+    getPlugin(type) {
       return this.settings.plugins[type];
     },
 
-    // METHOD dropStop ()
-    dropStop ()
-    {
-      if (S.get ("dragging"))
-        return;
+    // METHOD dropStop()
+    dropStop() {
+      if (S.get('dragging')) return;
 
-      const plugin = this,
-            $postit = plugin.element,
-            postitEdit = $postit[0].querySelector (".postit-edit"),
-            $editable = $postit.find (".editable");
+      const plugin = this;
+      const $postit = plugin.element;
+      const postitEdit = $postit[0].querySelector('.postit-edit');
+      const $editable = $postit.find('.editable');
 
       // Cancel editable.
-      if ($editable.length)
-        $editable.editable ("cancel");
-
-      S.set ("dragging", true, 500);
-
-      if (S.get("revertData").revert)
-      {
-        const revertData = S.get ("revertData");
-
-        plugin.setPosition ({
-          top: revertData.top,
-          left: revertData.left
-        });
-
-        plugin.cancelEdit ();
+      if ($editable.length) {
+        $editable.editable('cancel');
       }
-      else
-      {
+
+      S.set('dragging', true, 500);
+
+      if (S.get('revertData').revert) {
+        plugin.setPosition(S.get('revertData'));
+        plugin.cancelEdit ();
+      } else {
         const content = postitEdit.innerHTML;
 
         // If the postit has been dropped into another cell
-        plugin.settings.cell = $postit.parent ();
+        plugin.settings.cell = $postit.parent();
 
         // Update content cells references if any
-        if (content.indexOf ("/cell/") != -1)
-          postitEdit.innerHTML = content.replace (
-                                   /\/cell\/\d+\//g,
-                                   `/cell/${plugin.settings.cellId}/`);
+        if (content.indexOf('/cell/') !== -1) {
+          postitEdit.innerHTML =
+              content.replace(/\/cell\/\d+\//g,
+                              `/cell/${plugin.settings.cellId}/`);
+        }
 
-        S.getCurrent("mmenu")
-          .mmenu ("update", plugin.settings.id, plugin);
+        S.getCurrent('mmenu').mmenu('update', plugin.settings.id, plugin);
 
-        plugin.unedit ();
+        plugin.unedit();
       }
 
       // Refresh relations position
-      plugin.repositionPlugs ();
+      plugin.repositionPlugs();
     },
 
     // METHOD openPlugProperties()
     openPlugProperties(plug) {
-      this.edit ({}, () => H.loadPopup('plugprop', {
-          open: false,
-          cb: ($p) => $p.plugprop('open', this, plug),
+      this.edit({}, () => H.loadPopup('plugprop', {
+        open: false,
+        cb: ($p) => $p.plugprop('open', this, plug),
       }));
     },
 
     // METHOD openDatePicker()
     openDatePicker() {
-      this.edit ({}, () => H.loadPopup('dpick', {
-          open: false,
-          cb: ($p) => $p.dpick('open'),
+      this.edit({}, () => H.loadPopup('dpick', {
+        open: false,
+        cb: ($p) => $p.dpick('open'),
       }));
     },
 
-    // METHOD openPostit ()
-    openPostit (item)
-    {
+    // METHOD openPostit()
+    openPostit(item) {
       // Open modal with read rights only
-      if (!this.canWrite ())
-      {
-        if (!this.openAskForExternalRefPopup ({item: item}))
+      if (!this.canWrite()) {
+        if (!this.openAskForExternalRefPopup({item})) {
           this.open ();
-       }
-       else
-         this.edit ({}, () =>
-           {
-             if (!this.openAskForExternalRefPopup ({
-                    item: item,
-                    cb_close: (btn) => (btn != "yes") && this.unedit ()}))
-               this.open ();
-           });
+        }
+      } else {
+        this.edit({}, () => {
+          if (!this.openAskForExternalRefPopup({
+                 item,
+                 cb_close: (btn) => (btn !== 'yes') && this.unedit(),
+               })) {
+            this.open();
+          }
+        });
+      }
     },
 
     // METHOD open ()
@@ -605,18 +594,16 @@
       }
     },
 
-    // METHOD getMin ()
-    getMin ()
-    {
-      return this.settings.cell[0].querySelector (
-              `.postit-min[data-id="postit-${this.settings.id}"]`);
+    // METHOD getMin()
+    getMin() {
+      return this.settings.cell[0].querySelector(
+                 `.postit-min[data-id="postit-${this.settings.id}"]`);
     },
 
-    // METHOD getNormal ()
-    getNormal ()
-    {
-      return this.settings.cell[0].querySelector (
-              `.postit[data-id="postit-${this.settings.id}"]`);
+    // METHOD getNormal()
+    getNormal() {
+      return this.settings.cell[0].querySelector(
+                 `.postit[data-id="postit-${this.settings.id}"]`);
     },
 
     // METHOD displayAlert ()
@@ -1712,26 +1699,26 @@
       }
     },
 
-    // METHOD setPosition ()
-    setPosition (args)
-    {
+    // METHOD setPosition()
+    setPosition({cellId, top, left}) {
       const postit = this.element[0];
 
-      if (args.cellId)
-        this.settings.cellId = args.cellId;
+      if (cellId) {
+        this.settings.cellId = cellId;
+      }
 
-      postit.style.top = args.top + "px";
-      postit.style.left = args.left + "px";
+      postit.style.top = `${top}px`;
+      postit.style.left = `${left}px`;
     },
 
-    // METHOD fixEditHeight ()
-    fixEditHeight (height)
-    {
-      const postit = this.element[0],
-            h = (height === undefined) ?
-                   parseInt (postit.style.height) : height;
+    // METHOD fixEditHeight()
+    fixEditHeight() {
+      const postit = this.element[0];
+      const headerH = postit.querySelector('.postit-header').offsetHeight;
+      const footerH = postit.querySelector('.dates').offsetHeight;
 
-      postit.querySelector(".postit-edit").style.maxHeight = `${h-15}px`;
+      postit.querySelector('.postit-edit').style.maxHeight =
+          `${postit.offsetHeight - footerH - headerH}px`;
     },
 
     // METHOD fixPosition ()

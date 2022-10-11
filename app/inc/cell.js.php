@@ -48,20 +48,21 @@
             drop: function(e, ui) {
               if (S.get('revertData').revert) return;
 
-              const $target = $(this);
+              const $cell = $(this);
+              const cellPos = this.getBoundingClientRect();
               const $postit = ui.draggable;
-              const ptop = ui.offset.top - $target.offset().top;
-              const pleft = ui.offset.left - $target.offset().left;
-  
+              const ptop = ui.offset.top - cellPos.top;
+              const pleft = ui.offset.left - cellPos.left;
+
               $postit.postit('setPosition', {
-                cellId: settings.id,
+                cellId,
                 top: (ptop < 0) ? 0 : ptop,
                 left: (pleft < 0) ? 0 : pleft,
               });
   
-              $postit.appendTo($target);
+              this.append($postit[0]);
   
-              $target.cell('reorganize').then(()=> $postit.postit('dropStop'));
+              $cell.cell('reorganize').then(()=> $postit.postit('dropStop'));
             },
           });
       }
