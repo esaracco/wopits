@@ -7,338 +7,321 @@
   Description: Walls opening popup
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('owall');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('owall');
+  echo $Plugin->getHeader();
 
 ?>
 
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init (args)
-    {
-      const plugin = this,
-            $owall = plugin.element,
-            owall = $owall[0],
-            input = owall.querySelector (`input[type="text"]`);
+  Plugin.prototype = {
+    // METHOD init()
+    init(args) {
+      const plugin = this;
+      const $owall = plugin.element;
+      const owall = $owall[0];
+      const input = owall.querySelector(`input[type="text"]`);
 
       // EVENT "keyup" on input
-     input.addEventListener ("keyup", (e)=>
-        plugin.search (e.target.value.trim ()));
+     input.addEventListener('keyup',
+         (e) => plugin.search(e.target.value.trim()));
 
       // EVENT "kepress" on input
-      owall.addEventListener ("keypress", (e)=>
-        {
-          if (e.which == 13 &&
-              $owall.find(".list-group-item[data-id]:visible").length == 1)
-            $owall.find(".list-group-item[data-id]:visible").click ();
-        });
+      owall.addEventListener('keypress', (e) => {
+        if (e.which === 13 &&
+            $owall.find('.list-group-item[data-id]:visible').length === 1) {
+          $owall.find('.list-group-item[data-id]:visible').click();
+        }
+      });
 
       // EVENT "click" on "clear input" button
-      owall.querySelector(".clear-input").addEventListener ("click", (e)=>
-        {
-          input.value = "";
-          owall.querySelectorAll(".ow-filters input:checked").forEach (el=>
-            el.dispatchEvent(new CustomEvent("click")));
-        });
+      owall.querySelector('.clear-input').addEventListener('click', (e) => {
+        input.value = '';
+        owall.querySelectorAll('.ow-filters input:checked').forEach(
+            (el) => el.dispatchEvent(new CustomEvent('click')));
+      });
 
       // EVENT "click" on "clear history" button
-      owall.querySelector(".btn-clear").addEventListener ("click", (e)=>
-        {
-          $("#settingsPopup").settings ("set", {recentWalls: []});
-          document.getElementById("ow-all").click ();
-          plugin.controlFiltersButtons ();
-        });
+      owall.querySelector('.btn-clear').addEventListener('click', (e) => {
+        $('#settingsPopup').settings('set', {recentWalls: []});
+        document.getElementById('ow-all').click();
+        plugin.controlFiltersButtons();
+      });
 
       // EVENT "click" on "open" button
-      owall.querySelector(".btn-primary").addEventListener ("click", (e)=>
-        {
-          const checked = plugin.getChecked (),
-                len = checked.length,
-                $el = $("<div/>");
+      owall.querySelector('.btn-primary').addEventListener('click', (e) => {
+        const checked = plugin.getChecked();
+        const len = checked.length;
+        const $el = $('<div/>');
 
-          checked.forEach ((id, i)=>
-            $el.wall ("open", {
-              lastWall: (i == len - 1) ? len : null,
-              wallId: id
-            }));
+        checked.forEach((wallId, i) => {
+          $el.wall('open', {
+            wallId,
+            lastWall: (i === len - 1) ? len : null,
+          });
         });
+      });
 
-      // EVENT "click" on filters
-      const _inputClickEvent = function (e)
-        {
-          const auto = e.detail?e.detail.auto:false;
-          let content = false;
+      // EVENT "change" on filters
+      owall.querySelector('.ow-filters').addEventListener('change', (e) => {
+        const auto = e.detail ? e.detail.auto : false;
+        let content = false;
 
-          $owall.find(".btn-clear").hide ();
+        $owall.find('.btn-clear').hide();
 
-          switch (e.target.id)
-          {
-            case "ow-all":
+        switch (e.target.id) {
+          case 'ow-all':
+            owall.querySelector(
+                '.list-group li.first')?.classList.remove('first');
+            owall.querySelector(
+                '.list-group li.last')?.classList.remove('last');
 
-              $owall.find(".list-group li.first,.list-group li.last")
-                .removeClass ("first last");
-
-              if (!auto)
-                plugin.displayWalls (null, false);
-
-              content = true;
-              break;
-
-            case "ow-recent":
-              const recentWalls = wpt_userData.settings.recentWalls||[],
-                    walls = [];
-
-              $owall.find(".btn-clear").show ();
-
-              recentWalls.forEach ((wallId) =>
-                  wpt_userData.walls.list.forEach ((wall) =>
-                    (wall.id == wallId) && walls.push (wall)));
-
-              if (!auto)
-                plugin.displayWalls (walls, false);
-
-              $owall.find(".list-group li.title").hide ();
-              $owall.find(".list-group li:visible").first().addClass ("first");
-
-              content = walls.length;
-              break;
-
-            case "ow-shared":
-              if (!auto)
-                plugin.displayWalls (null, false);
-
-              $owall[0].querySelectorAll(".list-group li").forEach ((li)=>
-                {
-                  if (li.dataset.shared !== undefined)
-                  {
-                    content = true;
-                    li.style.display = "block";
-                  }
-                  else
-                    li.style.display = "none";
-                });
-
-              $owall.find(".list-group li:visible").first().addClass ("first");
-              $owall.find(".list-group li:visible").last().addClass ("last");
-              break;
-          }
-
-          if (!content)
-            $owall.find (".modal-body .list-group").html (
-              `<span class='text-center'><?=_("No result")?></span>`);
-
-          plugin.controlOpenButton ();
-
-          input.focus ();
-        };
-      owall.querySelectorAll(".ow-filters input").forEach (el=>
-        el.addEventListener ("click", _inputClickEvent));
-
-      // EVENT "click"
-      owall.addEventListener ("click", (e)=>
-        {
-          const el = e.target;
-
-          // EVENT "click" on "open wall" popup
-          if (el.matches ("li,li *"))
-          {
-            const tag = el.tagName;
-
-            if (tag == "INPUT")
-            {
-              owall.querySelector(".btn-primary").style.display =
-                (plugin.getChecked().length) ? "block" : "none";
+            if (!auto) {
+              plugin.displayWalls(null, false);
             }
-            else if (tag != "LABEL")
-            {
-              $("<div/>").wall ("open", {
-                lastWall: 1,
-                wallId: (tag=="LI"?el:el.closest("li")).dataset.id
+
+            content = true;
+            break;
+          case 'ow-recent':
+            const recentWalls = wpt_userData.settings.recentWalls || [];
+            const walls = [];
+
+            owall.querySelector('.btn-clear').style.display = 'block';
+
+            recentWalls.forEach((wallId) => {
+              const id = Number(wallId);
+              wpt_userData.walls.list.forEach(
+                  (wall) => (wall.id === id) && walls.push(wall));
+            });
+
+            if (!auto) {
+              plugin.displayWalls(walls, false);
+            }
+
+            owall.querySelectorAll('.list-group li.title').forEach((el) => {
+              el.style.display = 'none';
+            });
+            $owall.find('.list-group li:visible').first().addClass('first');
+
+            content = walls.length;
+            break;
+          case 'ow-shared':
+            if (!auto) {
+              plugin.displayWalls(null, false);
+            }
+
+            owall.querySelectorAll('.list-group li').forEach((el) => {
+                if (el.dataset.shared !== undefined) {
+                  content = true;
+                  el.style.display = 'block';
+                } else {
+                  el.style.display = 'none';
+                }
               });
 
-              $owall.modal ("hide");
-            }
+            $owall.find('.list-group li:visible').first().addClass('first');
+            $owall.find('.list-group li:visible').last().addClass('last');
+            break;
+        }
+
+        if (!content) {
+          owall.querySelector('.modal-body .list-group').innerHTML =
+              `<span class='text-center'><?=_("No result")?></span>`;
+        }
+
+        plugin.controlOpenButton();
+
+        input.focus();
+      });
+
+      // EVENT "click"
+      owall.addEventListener('click', (e) => {
+        const el = e.target;
+
+        // EVENT "click" on "open wall" popup
+        if (el.matches('li,li *')) {
+          const tag = el.tagName;
+
+          if (tag === 'INPUT') {
+            owall.querySelector('.btn-primary').style.display =
+                plugin.getChecked().length ? 'block' : 'none';
+          } else if (tag !== 'LABEL') {
+            $('<div/>').wall('open', {
+              lastWall: 1,
+              wallId: ((tag === 'LI') ? el : el.closest('li')).dataset.id,
+            });
+
+            bootstrap.Modal.getInstance(owall).hide();
           }
-        });
+        }
+      });
     },
 
-    // METHOD controlFiltersButtons ()
-    controlFiltersButtons ()
-    {
+    // METHOD controlFiltersButtons()
+    controlFiltersButtons() {
       const $owall = this.element;
-      let i, count = 0;
+      let i = 0;
+      let count = 0;
+      let tmp;
 
-      $owall.find("#ow-shared,#ow-recent").parent().hide ();
+      $owall.find('#ow-shared,#ow-recent').parent().hide();
 
-      var tmp = $owall[0].querySelectorAll (".list-group li[data-shared]");
-      if (tmp.length)
-      {
-        let found;
+      tmp = $owall[0].querySelectorAll('.list-group li[data-shared]');
+      if (tmp.length) {
+        let found = false;
 
         i = 0;
         while (
-          i < tmp.length &&
-          !(found =
-              document.querySelector(`[data-id="wall-${tmp[i].dataset.id}"]`)))
-            i++;
+            i < tmp.length &&
+            !(found = document.querySelector(
+                  `[data-id="wall-${tmp[i].dataset.id}"]`))) {
+          i++;
+        }
 
-        if (!found)
-        {
+        if (!found) {
           ++count;
-          $owall.find("#ow-shared").parent().show ();
+          $owall.find('#ow-shared').parent().show();
         }
       }
 
-      var tmp = wpt_userData.settings.recentWalls||[];
-      if (tmp.length)
-      {
+      tmp = wpt_userData.settings.recentWalls || [];
+      if (tmp.length) {
         i = 0;
         while (
-          i < tmp.length &&
-          document.querySelector(`[data-id="wall-${tmp[i]}"]`))
-            i++;
+            i < tmp.length &&
+            document.querySelector(`[data-id="wall-${tmp[i]}"]`)) {
+          i++;
+        }
 
-        if (i != tmp.length)
-        {
+        if (i !== tmp.length) {
           ++count;
-          $owall.find("#ow-recent").parent().show ();
+          $owall.find('#ow-recent').parent().show();
         }
       }
 
-      if (!count)
-        $owall.find(".ow-filters").hide ();
+      if (!count) {
+        $owall[0].querySelector('.ow-filters').style.display = 'none';
+      }
     },
 
-    // METHOD controlOpenButton ()
-    controlOpenButton ()
-    {
-      this.element[0].querySelector (".btn-primary").style.display =
-        this.getChecked().length ? "block" : "none";
+    // METHOD controlOpenButton()
+    controlOpenButton() {
+      this.element[0].querySelector('.btn-primary').style.display =
+          this.getChecked().length ? 'block' : 'none';
     },
 
-    // METHOD getChecked ()
-    getChecked ()
-    {
+    // METHOD getChecked()
+    getChecked() {
       const checked = [];
 
-      this.element[0].querySelectorAll(".list-group input:checked").forEach (
-        el=> checked.push (el.id.substring(1)));
+      this.element[0].querySelectorAll('.list-group input:checked').forEach(
+          (el) => checked.push(el.id.substring(1)));
 
       return checked;
     },
 
-    // METHOD reset ()
-    reset ()
-    {
+    // METHOD reset()
+    reset() {
       const owall = this.element[0];
 
       owall.dataset.noclosure = 1;
 
-      document.getElementById("ow-all").checked = true;
-      owall.querySelector(`input[type="text"]`).value = "";
-      owall.querySelectorAll(".list-group input:checked").forEach (
-        el=> el.checked = false);
+      document.getElementById('ow-all').checked = true;
+      owall.querySelector(`input[type="text"]`).value = '';
+      owall.querySelectorAll(".list-group input:checked").forEach(
+          (el) => el.checked = false);
     },
 
-    // METHOD search ()
-    search (str)
-    {
-      const openedWalls = wpt_userData.settings.openedWalls,
-            userId = wpt_userData.id,
-            walls = [];
+    // METHOD search()
+    search(str) {
+      const openedWalls = wpt_userData.settings.openedWalls;
+      const userId = wpt_userData.id;
+      const walls = [];
+      const $wall = $('<div/>');
 
-      wpt_userData.walls.list.forEach (el=>
-      {
-        const re = new RegExp (H.quoteRegex(str), 'ig');
+      wpt_userData.walls.list.forEach((el) => {
+        const re = new RegExp(H.quoteRegex(str), 'ig');
 
-        if (!$("<div/>").wall("isOpened", el.id) && (
-              el.name.match (re) ||
-              (userId != el.ownerid && el.ownername.match (re))))
-          walls.push (el);
+        if (!$wall.wall('isOpened', el.id) && (
+              el.name.match(re) ||
+              (userId !== el.ownerid && el.ownername.match(re))))
+          walls.push(el);
       });
 
-      this.displayWalls (walls);
+      this.displayWalls(walls);
     },
 
-    // METHOD displayWalls ()
-    displayWalls (walls, recurse = true)
-    {
-      const $owall = this.element,
-            owall = $owall[0],
-            checked = this.getChecked ();
-      let body = "";
+    // METHOD displayWalls()
+    displayWalls(walls, recurse = true) {
+      const $owall = this.element;
+      const owall = $owall[0];
+      const checked = this.getChecked();
+      const _walls = walls || wpt_userData.walls.list;
+      let body = '';
 
-      walls = walls||wpt_userData.walls.list;
+      owall.querySelectorAll('.ow-filters,.input-group,.btn-primary,.btn-clear')
+          .forEach((el) => el.style.display = 'none');
 
-      owall.querySelectorAll(".ow-filters,.input-group,.btn-primary")
-        .forEach (el=> el.style.display = "none");
-
-      if (!wpt_userData.walls.list.length)
+      if (!wpt_userData.walls.list.length) {
         body = `<?=_("No wall available.")?>`;
-      else
-      { 
-        $owall.find(".ow-filters,.input-group").show ();
+      } else { 
+        $owall.find('.ow-filters,.input-group').show();
 
-        if (walls.length)
-        {
-          let dt = "";
+        if (_walls.length) {
+          let dt = '';
 
-          walls.forEach ((item) =>
-          { 
-            if (!document.querySelector (`[data-id="wall-${item.id}"]`))
-            {
-              const shared = (item.ownerid != wpt_userData.id),
-                    owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${item.ownername}</span></div>`:"";
-              let dt1 = H.getUserDate (item.creationdate);
+          _walls.forEach((wall) => { 
+            if (!document.querySelector(`[data-id="wall-${wall.id}"]`)) {
+              const shared = (wall.ownerid !== wpt_userData.id);
+              const owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${wall.ownername}</span></div>` : '';
+              let dt1 = H.getUserDate(wall.creationdate);
 
-              if (dt1 != dt)
-              {
+              if (dt1 !== dt) {
                 dt = dt1;
                 body += `<li class="list-group-item title">${dt1}</li>`;
               }
   
-              body += `<li data-id="${item.id}" ${shared?"data-shared":""} class="list-group-item"><div class="form-check form-check-inline wpt-checkbox"><input type="checkbox" class="form-check-input" id="_${item.id}"><label class="form-check-label" for="_${item.id}"></label></div> ${H.getAccessIcon(item.access)} ${item.name}${owner}</li>`;
+              body += `<li data-id="${wall.id}" ${shared ? 'data-shared' : ''} class="list-group-item"><div class="form-check form-check-inline wpt-checkbox"><input type="checkbox" class="form-check-input" id="_${wall.id}"><label class="form-check-label" for="_${wall.id}"></label></div> ${H.getAccessIcon(wall.access)} ${wall.name}${owner}</li>`;
             }
           });
   
-          if (!body && document.getElementById("ow-all").checked)
-          {
-            owall.querySelectorAll(".ow-filters,.input-group,.btn-primary")
-              .forEach (el=> el.style.display = "none");
+          if (!body && document.getElementById('ow-all').checked) {
+            owall.querySelectorAll('.ow-filters,.input-group,.btn-primary')
+                .forEach((el) => el.style.display = 'none');
 
             body = `<i><?=_("All available walls are opened.")?></i>`;
           }
         }
-        else
+        else {
           body = `<span class='text-center'><?=_("No result")?></span>`;
+        }
       }
 
-      owall.querySelector(".modal-body .list-group").innerHTML = body;
+      owall.querySelector('.modal-body .list-group').innerHTML = body;
 
-      checked.forEach ((id) =>
-        {
-          const el = document.getElementById (`_${id}`);
+      checked.forEach((id) => {
+          const el = document.getElementById(`_${id}`);
 
-          if (el)
+          if (el) {
             el.checked = true;
+          }
         });
 
-      if (recurse)
-        owall.querySelectorAll(".ow-filters input:checked").forEach (el=>
-          el.dispatchEvent(new CustomEvent("click", {
+      if (recurse) {
+        owall.querySelectorAll('.ow-filters input:checked').forEach((el) => {
+          el.dispatchEvent(new CustomEvent('click', {
             bubbles: true,
-            detail: {auto: true}
-          })));
-      else
-        owall.querySelector(`input[type="text"]`).value = "";
+            detail: {auto: true},
+          }));
+        });
+      } else {
+        owall.querySelector(`input[type="text"]`).value = '';
+      }
 
-      this.controlOpenButton ();
+      this.controlOpenButton();
     }
   };
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

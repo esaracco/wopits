@@ -583,7 +583,9 @@ class User extends Base
       WHERE users_id = ? AND walls_id = ?'))
         ->execute ([$this->userId, $wallId]);
 
-    return json_decode ($stmt->fetch (\PDO::FETCH_COLUMN));
+    $r = $stmt->fetch (\PDO::FETCH_COLUMN);
+
+    return json_decode (empty($r) ? '{}' : $r);
   }
 
   public function saveWallSettings (int $wallId, object $settings):array

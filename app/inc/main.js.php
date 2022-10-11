@@ -846,6 +846,7 @@
           rows[irow][cell.item_col] = cell;
         }
 
+        const userSettings = plugin.settings.usersettings || {};
         for (let i = 0, iLen = rows.length; i < iLen; i++)
         {
           const row = rows[i],
@@ -878,10 +879,9 @@
               $cell.cell ({
                 id: cellId,
                 access: access,
-                usersettings:
-                  plugin.settings.usersettings[`cell-${cellId}`]||{},
+                usersettings: userSettings[`cell-${cellId}`] || {},
                 wall: $wall,
-                wallId: wallId
+                wallId: wallId,
               });
             }
             else
@@ -1154,6 +1154,7 @@
       });
 
       // Init cells
+      const userSettings = plugin.settings.usersettings || {};
       $row.find("td.wpt").each (function ()
         {
           const cellId = this.dataset.id.substring (5);
@@ -1161,7 +1162,7 @@
           $(this).cell ({
             id: cellId,
             access: plugin.settings.access,
-            usersettings: plugin.settings.usersettings[`cell-${cellId}`]||{},
+            usersettings: userSettings[`cell-${cellId}`] || {},
             wall: $wall,
             wallId: wallId
           });

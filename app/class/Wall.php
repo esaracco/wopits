@@ -779,10 +779,10 @@ class Wall extends Base
         FROM _perf_walls_users WHERE walls_id = ? AND users_id = ? LIMIT 1'))
          ->execute ([$this->wallId, $this->userId]);
       $row = $stmt->fetch ();
-      $data['displayexternalref'] = $row['displayexternalref'];
-      $data['displaymode'] = $row['displaymode'];
-      $data['displayheaders'] = $row['displayheaders'];
-      $data['usersettings'] = json_decode ($row['settings']);
+      $data['displayexternalref'] = $row['displayexternalref']??0;
+      $data['displaymode'] = $row['displaymode']??'postit-mode';
+      $data['displayheaders'] = $row['displayheaders']??1;
+      $data['usersettings'] = json_decode ($row['settings']??'{}');
 
       // Get headers
       ($stmt = $this->db->prepare ("

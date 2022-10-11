@@ -14,7 +14,7 @@
 
 ?>
 
-  const _COLOR_PICKER_COLORS = [<?='"color-'.join('","color-', array_keys(WPT_MODULES['cpick']['items'])).'"'?>];
+  const _COLOR_PICKER_COLORS = [`color-<?=join('`,`color-', array_keys(WPT_MODULES['cpick']['items']))?>`];
   let _width = 0;
   let _height = 0;
   let _cb_close;
