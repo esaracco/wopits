@@ -16,15 +16,13 @@
 
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
+  Plugin.prototype = {
     wall: {plugin: null, data: null},
     forceHide: false,
     saving: false,
     submitted: false,
-    // METHOD init ()
-    init (args)
-    {
+    // METHOD init()
+    init (args) {
       const popup = this.element[0];
 
       // EVENT "click" on primary button
@@ -36,14 +34,16 @@
         }
       });
 
+      // EVENT "hidden.bs.modal" plug's settings popup
+      popup.addEventListener('hidden.bs.modal', (e) => {
+        if (this.forceHide || this.saving) {
+          this.unedit();
+        }
+      });
+
       // EVENT "hide.bs.modal" plug's settings popup
       popup.addEventListener('hide.bs.modal', (e) => {
-        if (this.forceHide || this.saving) {
-          if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`) &&
-              !popup.dataset.uneditdone) {
-            this.wall.plugin.unedit();
-          }
-        } else {
+        if (!this.forceHide && !this.saving) {
           const {
             name,
             description,
@@ -83,6 +83,8 @@
                  }
                },
              });
+           } else {
+             this.unedit();
            }
         }
       });
@@ -97,6 +99,14 @@
           cb_ok: () => this.removeGroupUser(),
         });
       });
+    },
+
+    // METHOD unedit()
+    unedit() {
+      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`) &&
+          !this.element[0].dataset.uneditdone) {
+        this.wall.plugin.unedit();
+      }
     },
 
     // METHOD removeGroupUser()
