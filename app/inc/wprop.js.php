@@ -34,60 +34,64 @@
         }
       });
 
-      // EVENT "hidden.bs.modal" plug's settings popup
-      popup.addEventListener('hidden.bs.modal', (e) => {
-        if (this.forceHide || this.saving) {
-          this.unedit();
-        }
-      });
+      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`))  {
+        // EVENT "hidden.bs.modal" plug's settings popup
+        popup.addEventListener('hidden.bs.modal', (e) => {
+          if (this.forceHide || this.saving) {
+            this.unedit();
+          }
+        });
 
       // EVENT "hide.bs.modal" plug's settings popup
-      popup.addEventListener('hide.bs.modal', (e) => {
-        if (!this.forceHide && !this.saving) {
-          const {
-            name,
-            description,
-            width = null,
-            height = null,
-          } = this.wall.data;
-          const newName = H.noHTML(
-                    popup.querySelector('.name input').value);
-          const newDescription = H.noHTML(
-                    popup.querySelector('.description textarea').value);
-          let save = (name !== newName ||
-                          (description || '') !== newDescription);
+        popup.addEventListener('hide.bs.modal', (e) => {
+          if (!this.forceHide && !this.saving) {
+            const {
+              name,
+              description,
+              width = null,
+              height = null,
+            } = this.wall.data;
+            const newName = H.noHTML(
+                      popup.querySelector('.name input').value);
+            const newDescription = H.noHTML(
+                      popup.querySelector('.description textarea').value);
+            let save = (name !== newName ||
+                            (description || '') !== newDescription);
 
-          if (width) {
-            const newWidth = popup.querySelector(`[name="wall-width"]`).value;
-            const newHeight = popup.querySelector(`[name="wall-height"]`).value;
+            if (width) {
+              const newWidth =
+                  popup.querySelector(`[name="wall-width"]`).value;
+              const newHeight =
+                  popup.querySelector(`[name="wall-height"]`).value;
 
-            if (width !== parseInt(newWidth) ||
-                height !== parseInt(newHeight)) {
-              save = true;
+              if (width !== parseInt(newWidth) ||
+                  height !== parseInt(newHeight)) {
+                save = true;
+              }
             }
+
+            this.submitted = false;
+
+            if (save) {
+               H.preventDefault (e);
+               H.openConfirmPopup ({
+                 type: 'save-wprops-changes',
+                 icon: 'save',
+                 content: `<?=_("Save changes?")?>`,
+                 cb_ok: () => popup.querySelector('.btn-primary').click(),
+                 cb_close: () => {
+                   if (this.submitted && this.saving || !this.submitted) {
+                     this.forceHide = true;
+                     bootstrap.Modal.getInstance(popup).hide();
+                   }
+                 },
+               });
+             } else {
+               this.unedit();
+             }
           }
-
-          this.submitted = false;
-
-          if (save) {
-             H.preventDefault (e);
-             H.openConfirmPopup ({
-               type: 'save-wprops-changes',
-               icon: 'save',
-               content: `<?=_("Save changes?")?>`,
-               cb_ok: () => popup.querySelector('.btn-primary').click(),
-               cb_close: () => {
-                 if (this.submitted && this.saving || !this.submitted) {
-                   this.forceHide = true;
-                   bootstrap.Modal.getInstance(popup).hide();
-                 }
-               },
-             });
-           } else {
-             this.unedit();
-           }
-        }
-      });
+        });
+      }
 
       // EVENT "click" on reject sharing button
       popup.querySelector('.reject-sharing button')

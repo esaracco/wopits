@@ -7,23 +7,21 @@
   Description: Manage notes comments
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('pcomm', '', 'postitElement');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('pcomm', '', 'postitElement');
+  echo $Plugin->getHeader();
 
 ?>
 
-  let $_popup,
-      _textarea;
+  let $_popup;
+  let _textarea;
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
-  // METHOD _getEventSelector ()
-  const _getEventSelector = (s)=>
-  {
-    return H.haveMouse()?`.pcomm-popover ${s}`:`#postitCommentsPopup ${s}`;
-  };
+  // METHOD _getEventSelector()
+  const _getEventSelector = (s) =>
+    H.haveMouse() ? `.pcomm-popover ${s}` : `#postitCommentsPopup ${s}`;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
@@ -36,10 +34,12 @@
     {
       const settings = this.settings;
 
-      if (settings.readonly && !settings.count)
-        this.element[0].style.display = "none";
+      if (settings.readonly && !settings.count) {
+        this.element[0].classList.add('hidden');
+      }
 
-      $(`<i data-action="pcomm" class="fa-fw fas fa-comments"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
+      // Create postit top comments icon
+      this.addTopIcon('fa-comments', 'pcomm');
 
       this.settings._cache = settings.count ? [] : null;
 
@@ -280,6 +280,9 @@
               c.dataset.postitid = postitId;
 
               c.innerHTML = content;
+
+              $p[0].querySelector('.editing').style.display =
+                  plugin.settings.readonly ? 'none' : 'block';
 
               // EVENT "hidden.bs.modal" on popup 
               $p[0].addEventListener ("hidden.bs.modal", (e)=>

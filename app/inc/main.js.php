@@ -56,7 +56,8 @@
             wallId = settings.id,
             access = settings.access,
             writeAccess = this.canWrite (),
-            rows = [];
+            rows = [],
+            displayHeaders = settings.displayheaders;
 
       settings.tabLink = $(document.querySelector (
                              `.nav-tabs.walls a[href="#wall-${settings.id}"]`));
@@ -73,7 +74,7 @@
         wall.dataset.restoring = 1;
 
       wall.dataset.displaymode = settings.displaymode;
-      wall.dataset.displayheaders = settings.displayheaders;
+      wall.dataset.displayheaders = displayHeaders;
 
       plugin.setName (settings.name, true);
 
@@ -99,7 +100,7 @@
           "background-color":(settings["background-color"]) ?
                                  settings["background-color"] : "auto"
         })
-        .html (`<thead class="wpt"><tr class="wpt"><th class="wpt">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`);
+        .html (`<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`);
 
       if (H.haveMouse ())
         $wall.draggable({
@@ -128,10 +129,11 @@
         {
           // Create wall columns headers
           const hcols = settings.headers.cols;
+
           for (let i = 0, iLen = hcols.length; i < iLen; i++)
           {
             const header = hcols[i],
-                  $th = $(`<th class="wpt"/>`);
+                  $th = $(`<th class="wpt ${displayHeaders ? 'display' : 'hide'}"/>`);
 
             $wall.find("thead.wpt tr.wpt").append ($th);
             $th.header ({
@@ -168,7 +170,7 @@
 
           $("#welcome").hide ();
 
-          $wall.show (settings.displayheaders?"fade":null);
+          $wall.show(displayHeaders ? 'fade' : null);
 
           wall.dataset.cols = hcols.length;
           wall.dataset.rows = hrows.length;
@@ -765,7 +767,7 @@
               colsCount = d.headers.cols.length,
               postitsIds = {},
               rows = [],
-              showHeaders = plugin.settings.displayheaders;
+              displayHeaders = plugin.settings.displayheaders;
 
         _refreshing = true;
 
@@ -785,7 +787,7 @@
           {
             const $th = $(`<th class="wpt"/>`);
 
-            $th[0].classList.add (showHeaders?"display":"hide");
+            $th[0].classList.add (displayHeaders ? 'display' : 'hide');
 
             $wall.find("thead.wpt tr.wpt").append ($th);
             $th.header ({
@@ -1127,23 +1129,23 @@
           S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000));
     },
 
-    // METHOD addRow ()
-    addRow (header, row)
-    {
-      const plugin = this,
-            $wall = plugin.element,
-            wallId = plugin.settings.id,
-            showHeaders = plugin.settings.displayheaders;
-      let tds = "";
+    // METHOD addRow()
+    addRow(header, row) {
+      const plugin = this;
+      const $wall = plugin.element;
+      const wallId = plugin.settings.id;
+      const displayHeaders = plugin.settings.displayheaders;
+      let tds = '';
 
-      for (let i = 0; i < row.length; i++)
-        tds += _getCellTemplate (row[i]);
+      for (let i = 0, iLen = row.length; i < iLen; i++) {
+        tds += _getCellTemplate(row[i]);
+      }
 
-      const $row = $(`<tr class="wpt"><th class="wpt ${showHeaders?"display":"hide"}"></th>${tds}</tr>`);
+      const $row = $(`<tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}"></th>${tds}</tr>`);
 
       // Add row
-      $wall.find("tbody.wpt").append ($row);
-      $row.find("th.wpt:eq(0)").header ({
+      $wall.find('tbody.wpt').append($row);
+      $row.find('th.wpt:eq(0)').header({
         access: plugin.settings.access,
         item_type: "row",
         id: header.id,
@@ -2025,25 +2027,25 @@
       walls.style.overflow = 'hidden';
     },
 
-    // METHOD edit ()
-    edit (success_cb, error_cb, todelete = false)
-    {
-      _originalObject = this.serialize ();
+    // METHOD edit()
+    edit(success_cb, error_cb, todelete = false) {
+      _originalObject = this.serialize();
 
-      if (!this.isShared ())
-        return success_cb && success_cb ();
+      if (!this.isShared()) {
+        return success_cb && success_cb();
+      }
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${this.settings.id}/editQueue/wall/${this.settings.id}`,
-        {todelete: todelete},
+        {todelete},
         // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            H.raiseError (() => error_cb && error_cb (), d.error_msg);
-          else if (success_cb)
-            success_cb (d);
+        (d) => {
+          if (d.error_msg) {
+            H.raiseError(() => error_cb && error_cb(), d.error_msg);
+          } else if (success_cb) {
+            success_cb(d);
+          }
         }
       );
     },
@@ -2083,7 +2085,6 @@
         (d) => {
           if (!(data && data.todelete) && d.error_msg) {
             error_cb && error_cb();
-
             H.displayMsg({
               title: `<?=_("Wall")?>`,
               type: 'warning',
@@ -2142,20 +2143,14 @@
 
     // METHOD showHeaders()
     showHeaders() {
-      this.element[0].querySelectorAll('th.wpt').forEach((th) => {
-        th.classList.remove('hide');
-        th.classList.add('display');
-      });
+      this.element[0].querySelectorAll('th.wpt').forEach(
+          (el) => el.classList.replace('hide', 'display'));
     },
 
-    // METHOD hideHeaders ()
-    hideHeaders ()
-    {
-      this.element[0].querySelectorAll("th.wpt").forEach (th =>
-        {
-          th.classList.remove ("display");
-          th.classList.add ("hide");
-        });
+    // METHOD hideHeaders()
+    hideHeaders() {
+      this.element[0].querySelectorAll('th.wpt').forEach(
+          (el) => el.classList.replace('display', 'hide'));
     },
 
     // METHOD displayHeaders ()

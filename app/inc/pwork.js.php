@@ -28,10 +28,12 @@
     {
       const settings = this.settings;
 
-      if (!args.shared || settings.readonly && !settings.count)
-        this.element[0].style.display = "none";
+      if (!args.shared || settings.readonly && !settings.count) {
+        this.element[0].classList.add('hidden');
+      }
 
-      $(`<i data-action="pwork" class="fa-fw fas fa-users-cog"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count||0}</span></div>`).appendTo (this.element);
+      // Create postit top workers icon
+      this.addTopIcon('fa-users-cog', 'pwork');
 
       return this;
     },

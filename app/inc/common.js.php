@@ -177,51 +177,58 @@ class Wpt_accountForms extends Wpt_forms
   }
 }
 
-class Wpt_postitCountPlugin
-{
-  // METHOD getIds ()
-  getIds ()
-  {
-    const ps = this.postit().settings,
-          {wallId, cellId} = ps;
+// CLASS Wpt_postitCountPlugin
+class Wpt_postitCountPlugin {
+  // METHOD getIds()
+  getIds () {
+    const {wallId, cellId, id: postitId} = this.postit().settings;
 
-    return {wallId, cellId, postitId: ps.id}
+    return {wallId, cellId, postitId}
   }
 
-  // METHOD postit ()
-  postit ()
-  {
+  // METHOD addTopIcon()
+  addTopIcon(className, action) {
+    const count = this.settings.count;
+
+    const el_I = H.createElement('i',
+        {className: `fa-fw fas ${className}`}, {action});
+    const el_SPAN = H.createElement('span',
+      {className: `wpt-badge ${count ? '' : 'hidden'}`});
+    el_SPAN.innerText = count;
+
+    this.element[0].append(el_I, el_SPAN); 
+  }
+
+  // METHOD postit()
+  postit() {
     return this.settings.postitPlugin;
   }
 
-  // METHOD setCount ()
-  setCount (count)
-  {
-    const elC = this.element[0].querySelector ("span");
+  // METHOD setCount()
+  setCount(count) {
+    const elC = this.element[0].querySelector('span');
 
-    elC.style.display = count ? "inline-block": "none";
+    elC.style.display = count ? 'inline-block' : 'none';
     elC.innerText = count;
 
-    if (this.settings.readonly)
-      this.element[0].style.display = count ? "inline-block" : "none";
+    if (this.settings.readonly) {
+      this.element[0].style.display = count ? 'inline-block' : 'none';
+    }
   }
 
-  // METHOD getCount ()
-  getCount ()
-  {
-    return parseInt (this.element[0].querySelector("span").innerText);
+  // METHOD getCount()
+  getCount() {
+    return Number(this.element[0].querySelector('span').innerText);
   }
 
-  // METHOD incCount ()
-  incCount ()
-  {
-    this.setCount (this.getCount() + 1);
+  // METHOD incCount()
+  incCount() {
+    this.setCount(this.getCount() + 1);
   }
 
-  // METHOD decCount ()
-  decCount ()
-  {
-    this.setCount (this.getCount() - 1);
+  // METHOD decCount()
+  decCount() {
+    this.setCount(this.getCount() - 1);
   }
 }
 
@@ -809,8 +816,15 @@ class WHelper
   }
 
   // METHOD createElement()
-  static createElement(tag, props) {
-    return Object.assign(document.createElement(tag), props);
+  static createElement(tag, props, dataSet) {
+    const el = Object.assign(document.createElement(tag), props);
+
+    if (dataSet) {
+      Object.keys(dataSet).forEach(
+          (attr) => el.setAttribute(attr, dataSet[attr]));
+    }
+
+    return el;  
   }
 
   // METHOD createUploadElement()
@@ -1178,45 +1192,38 @@ class WHelper
     }
   }
 
-  // METHOD openUserview ()
-  static openUserview (args)
-  {
-    const {about, picture, title} = args;
-
-    H.loadPopup ("userView", {
+  // METHOD openUserview()
+  static openUserview({about, picture, title}) {
+    H.loadPopup('userView', {
       open: false,
-      cb: ($p)=>
-      {
-        const p = $p[0],
-              div = p.querySelector (".user-picture"),
-              aboutEl = p.querySelector (".about");
+      cb: ($p) => {
+        const p = $p[0];
+        const div = p.querySelector('.user-picture');
+        const aboutEl = p.querySelector('.about');
 
-        p.querySelector(".modal-title span").innerText = title;
-        p.querySelector(".name dd").innerText = title;
+        p.querySelector('.modal-title span').innerText = title;
+        p.querySelector('.name dd').innerText = title;
 
-        div.innerHTML = "";
-        div.style.display = "none";
+        div.innerHTML = '';
+        div.style.display = 'none';
 
-        if (picture)
-        {
-          const img = document.createElement ('img');
+        if (picture) {
+          const img = this.createElement('img', {src: picture});
 
-          img.src = picture;
-          img.addEventListener ("error", (e)=> div.style.display = "none");
-          div.appendChild (img);
+          img.addEventListener('error', (e) => div.style.display = 'none');
+          div.appendChild(img);
 
-          div.style.display = "block";
+          div.style.display = 'block';
         }
 
-        if (about)
-        {
-          aboutEl.querySelector("dd").innerHTML = H.nl2br (about);
-          aboutEl.style.display = "block";
-        }
-        else
+        if (about) {
+          aboutEl.querySelector('dd').innerHTML = H.nl2br(about);
+          aboutEl.style.display = 'block';
+        } else {
           aboutEl.style.display = "none";
+        }
 
-        H.openModal ({item: p});
+        H.openModal({item: p});
       }
     });
   }

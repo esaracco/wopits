@@ -28,10 +28,12 @@
     {
       const settings = this.settings;
 
-      if (settings.readonly && !settings.count)
-        this.element[0].style.display = "none";
+      if (settings.readonly && !settings.count) {
+        this.element[0].classList.add('hidden');
+      }
 
-      $(`<i data-action="patt" class="fa-fw fas fa-paperclip"></i><span ${settings.count?"":`style="display:none"`} class="wpt-badge">${settings.count}</span></div>`).appendTo (this.element);
+      // Create postit top attachments icon
+      this.addTopIcon('fa-paperclip', 'patt');
 
       return this;
     },

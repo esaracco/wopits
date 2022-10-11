@@ -8,10 +8,18 @@
       </div>
       <div class="modal-body">
 
-        <div class="search mb-1">
+        <div class="editing">
+          <div class="search mb-1">
+            <button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button>
+            <textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea>
+            <div class="result-container">
+              <ul class="result autocomplete list-group"></ul>
+            </div>
+          </div>
+          <div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div>
+          <button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>
+        </div>
 
-          <button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button>
-          <textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>
         <div class="content"></div>
 
       </div>

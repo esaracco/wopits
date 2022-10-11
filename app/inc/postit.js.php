@@ -2231,136 +2231,216 @@
         this.classList.add ("hover");
       });
 
-    // EVENT "click"
+    // EVENT "click" on postit
     walls.addEventListener ("click", (e)=>
     {
       const el = e.target;
 
-      // EVENT "click" on postit
-      if (el.matches (".postit *"))
+      if (!el.matches (".postit *")) return;
+
+      const postit = el.closest (".postit");
+
+      // EVENT "click" ctrl+click on postit
+      if (e.ctrlKey)
       {
-        const postit = el.closest (".postit");
+        const id = postit.dataset.id.substring (7),
+              menu = S.getCurrent("mmenu").mmenu ("getClass");
 
-        // EVENT "click" ctrl+click on postit
-        if (e.ctrlKey)
+        e.stopImmediatePropagation ();
+        H.preventDefault (e);
+
+        if (postit.classList.contains ("selected"))
+          menu.remove (id);
+        else
+          menu.add ($(postit).postit ("getClass"));
+      }
+      // EVENT "click" on postit content links
+      else if (el.matches (".postit-edit a[href],.postit-edit a[href] *"))
+      {
+        e.stopImmediatePropagation ();
+
+        if (e.ctrlKey || H.disabledEvent ())
+          return;
+
+        const link = (el.tagName == "A") ? el : el.closest ("a"),
+              canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
+              $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
+
+        H.preventDefault (e);
+
+        // EVENT "click" on content links menu
+        $menu[0].addEventListener ("click", (e)=>
+          {
+            const li = e.target.tagName=="LI"?
+                         e.target:e.target.closest("li");
+
+            document.getElementById("popup-layer").click ();
+
+            if (li.dataset.action == "open-link")
+              window.open (link.href, "_blank");
+            else
+              $(postit).postit ("openPostit");
+          });
+
+        H.openPopupLayer (()=> $menu.remove ());
+        $menu.prependTo ("body");
+        $menu.css ({top: e.clientY, left: e.clientX});
+      }
+      // EVENT "click" on postit for READ-ONLY mode
+      else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+      {
+        if (H.disabledEvent ())
         {
-          const id = postit.dataset.id.substring (7),
-                menu = S.getCurrent("mmenu").mmenu ("getClass");
-  
-          e.stopImmediatePropagation ();
           H.preventDefault (e);
-  
-          if (postit.classList.contains ("selected"))
-            menu.remove (id);
-          else
-            menu.add ($(postit).postit ("getClass"));
+          return;
         }
-        // EVENT "click" on postit for READ-ONLY mode
-        else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+
+        if (!el.closest(".topicon"))
+          $(postit).postit ("openPostit");
+      }
+      // EVENT "click" on postit menu button
+      else if (el.matches (".btn-menu,.btn-menu *"))
+      {
+        e.stopImmediatePropagation ();
+
+        if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+          return;
+
+        const btn = (el.tagName == "DIV")?el:el.closest("div"),
+              ibtn = btn.querySelector ("i"),
+              $postit = $(postit),
+              id = $postit.postit ("getId"),
+              settings = $postit.postit ("getSettings"),
+              $wall = settings.wall,
+              $header = $postit.find (".postit-header");
+
+        // Create postit menu and show it
+        if (!settings.Menu)
         {
-          e.stopImmediatePropagation ();
-
-          if (H.disabledEvent ())
-          {
-            H.preventDefault (e);
-            return;
-          }
-
-          if (!el.closest(".topicon"))
-            $(postit).postit ("openPostit");
+          $wall.wall ("closeAllMenus");
+          settings.Menu = new _Menu ($postit.postit ("getClass"));
+          settings.Menu.show ();
         }
-        // EVENT "click" on postit menu button
-        else if (el.matches (".btn-menu,.btn-menu *"))
+        // Destroy postit menu
+        else
         {
-          e.stopImmediatePropagation ();
-
-          if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-            return;
-  
-          const btn = (el.tagName == "DIV")?el:el.closest("div"),
-                ibtn = btn.querySelector ("i"),
-                $postit = $(postit),
-                id = $postit.postit ("getId"),
-                settings = $postit.postit ("getSettings"),
-                $wall = settings.wall,
-                $header = $postit.find (".postit-header");
-  
-          // Create postit menu and show it
-          if (!settings.Menu)
-          {
-            $wall.wall ("closeAllMenus");
-            settings.Menu = new _Menu ($postit.postit ("getClass"));
-            settings.Menu.show ();
-          }
-          // Destroy postit menu
-          else
-          {
-            settings.Menu.destroy ();
-            delete settings.Menu;
-          }
+          settings.Menu.destroy ();
+          delete settings.Menu;
         }
-        // EVENT "click" on postit dates
-        else if (el.matches (".dates .end,.dates .end *"))
-        {
-          e.stopImmediatePropagation ();
+      // EVENT "click" on postit menu buttons
+      } else if (el.matches('.postit-menu,.postit-menu *')) {
+        const postitPlugin = $(postit).postit('getClass');
+        const action =
+            (el.tagName === 'SPAN'? el : el.closest('span')).dataset.action;
 
-          if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-          {
-            H.preventDefault (e);
-            return;
-          }
-  
-          const $item = $(el.tagName == "DIV"?el:el.closest("div")),
-                plugin = $(postit).postit ("getClass");
-  
-          if (el.classList.contains ("fa-times-circle"))
-          {
-            plugin.edit ({}, () =>
-            {
-              H.openConfirmPopover ({
-                item: $item,
-                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
-                content: `<?=_("Reset deadline?")?>`,
-                cb_close: () => plugin.unedit (),
-                cb_ok: () => plugin.resetDeadline ()
+        e.stopImmediatePropagation();
+
+        // To prevent race condition with draggable & resizable plugins
+        if (H.disabledEvent()) return;
+
+        switch (action) {
+          // OPEN postit edit popup
+          case 'edit': return postitPlugin.openPostit();
+          // OPEN deadline date picker popup
+          case 'dpick': return postitPlugin.openDatePicker();
+          // OPEN popup for attachments, workers or comments
+          case 'patt':
+          case 'pwork':
+          case 'pcomm':
+            return $(postit.querySelector(
+                `.topicon .${action}`))[action]('open');
+        }
+
+        postitPlugin.edit({}, () => {
+          switch (action) {
+            // DELETE postit
+            case 'delete':
+              H.openConfirmPopover({
+                item: $(postit.querySelector('.btn-menu')),
+                placement: 'right',
+                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                content: `<?=_("Delete this note?")?>`,
+                cb_close: () => postitPlugin.unedit(),
+                cb_ok: () => postitPlugin.delete(),
               });
-            });
+              break;
+            // OPEN tags picker
+            case 'tpick':
+              return S.getCurrent('tpick').tpick('open', e);
+            // OPEN color picker
+            case 'cpick':
+              const cp = $('#cpick').cpick('getClass');
+
+              cp.open({
+                event: e,
+                cb_close: () => postitPlugin.element.trigger('mouseleave'),
+                cb_click: (div) => {
+                  const el = postitPlugin.element[0];
+                  cp.getColorsList().forEach((c) => el.classList.remove(c));
+                  el.classList.add(div.className);
+                },
+              });
+              break;
+            // ADD plug
+            case 'add-plug':
+              postitPlugin.closeMenu();
+
+              S.set('link-from', {
+                id: postitPlugin.settings.id,
+                obj: $(postit),
+              });
+
+              _plugRabbit.line = new LeaderLine(
+                postit,
+                $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo('body')[0],
+                {
+                  path: `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
+                  size: 3,
+                  color: '#9b9c9c',
+                  dash: true,
+                  endPlug: 'behind',
+                }
+              );
+
+              document.addEventListener('keydown',
+                  _plugRabbit.escapeEvent);
+              document.addEventListener ('mousedown',
+                  _plugRabbit.mousedownEvent);
+              document.addEventListener ('mousemove',
+                  _plugRabbit.mousemoveEvent);
+              break;
           }
-          else
-            plugin.openDatePicker ();
-        }
-        // EVENT "click" on postit content links
-        else if (el.matches (".postit-edit a[href],.postit-edit a[href] *"))
+        });
+      }
+      // EVENT "click" on postit dates
+      else if (el.matches (".dates .end,.dates .end *"))
+      {
+        e.stopImmediatePropagation ();
+
+        if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
         {
-          e.stopImmediatePropagation ();
-
-          if (e.ctrlKey || H.disabledEvent ())
-            return;
-  
-          const link = (el.tagName == "A") ? el : el.closest ("a"),
-                canWrite = H.checkAccess ("<?=WPT_WRIGHTS_RW?>"),
-                $menu = $(`<div class="dropdown submenu submenu-link"><ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li><li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite?"edit":"eye"}"></i> ${canWrite?"<?=_("Edit note")?>":"<?=_("Open note")?>"}</a></li></ul></div>`);
-  
           H.preventDefault (e);
-  
-          // EVENT "click" on content links menu
-          $menu[0].addEventListener ("click", (e)=>
-            {
-              const li = e.target.tagName=="LI"?
-                           e.target:e.target.closest("li");
-
-              document.getElementById("popup-layer").click ();
-  
-              if (li.dataset.action == "open-link")
-                window.open (link.href, "_blank");
-              else
-                $(postit).postit ("openPostit");
-            });
-  
-          H.openPopupLayer (()=> $menu.remove ());
-          $menu.prependTo ("body");
-          $menu.css ({top: e.clientY, left: e.clientX});
+          return;
         }
+
+        const $item = $(el.tagName == "DIV"?el:el.closest("div")),
+              plugin = $(postit).postit ("getClass");
+
+        if (el.classList.contains ("fa-times-circle"))
+        {
+          plugin.edit ({}, () =>
+          {
+            H.openConfirmPopover ({
+              item: $item,
+              title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
+              content: `<?=_("Reset deadline?")?>`,
+              cb_close: () => plugin.unedit (),
+              cb_ok: () => plugin.resetDeadline ()
+            });
+          });
+        }
+        else
+          plugin.openDatePicker ();
       }
     });
 
@@ -2609,98 +2689,6 @@
           else
             __close ();
       });
-
-  // EVENT "click" on postit menu
-  walls.addEventListener ('click', (e) => {
-    const el = e.target;
-
-    if (!el.matches('.postit-menu,.postit-menu *') ||
-        el.tagName === 'DIV') return;
-
-    const postitPlugin = $(el.closest('.postit')).postit('getClass');
-    const postit = postitPlugin.element[0];
-    const action =
-        (el.tagName === 'SPAN'? el : el.closest('span')).dataset.action;
-
-    e.stopImmediatePropagation();
-
-    // To prevent race condition with draggable & resizable plugins
-    if (H.disabledEvent()) return;
-
-    switch (action) {
-      // OPEN postit edit popup
-      case 'edit': return postitPlugin.openPostit();
-      // OPEN deadline date picker popup
-      case 'dpick': return postitPlugin.openDatePicker();
-      // OPEN popup for attachments, workers or comments
-      case 'patt':
-      case 'pwork':
-      case 'pcomm':
-        return postit.querySelector(`.topicon [data-action="${action}"]`)
-                   .dispatchEvent(new Event('click', {bubbles: true}));
-    }
-
-    postitPlugin.edit({}, () => {
-      switch (action) {
-        // DELETE postit
-        case 'delete':
-          H.openConfirmPopover({
-            item: $(postit.querySelector('.btn-menu')),
-            placement: 'right',
-            title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-            content: `<?=_("Delete this note?")?>`,
-            cb_close: () => postitPlugin.unedit(),
-            cb_ok: () => postitPlugin.delete(),
-          });
-          break;
-
-        // OPEN tags picker
-        case 'tpick':
-          return S.getCurrent('tpick').tpick('open', e);
-
-        // OPEN color picker
-        case 'cpick':
-          const cp = $('#cpick').cpick('getClass');
-
-          cp.open({
-            event: e,
-            cb_close: () => postitPlugin.element.trigger('mouseleave'),
-            cb_click: (div) => {
-              const el = postitPlugin.element[0];
-              cp.getColorsList().forEach((c) => el.classList.remove(c));
-              el.classList.add(div.className);
-            },
-          });
-          break;
-
-        // ADD plug
-        case 'add-plug':
-          postitPlugin.closeMenu();
-
-          S.set('link-from', {
-            id: postitPlugin.settings.id,
-            obj: $(postit),
-          });
-
-          _plugRabbit.line = new LeaderLine(
-            postit,
-            $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo('body')[0],
-            {
-              path: `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
-              size: 3,
-              color: '#9b9c9c',
-              dash: true,
-              endPlug: 'behind'
-            }
-          );
-
-        document.addEventListener('keydown', _plugRabbit.escapeEvent);
-          document.addEventListener ('mousedown', _plugRabbit.mousedownEvent);
-          document.addEventListener ('mousemove', _plugRabbit.mousemoveEvent);
-          break;
-      }
-    });
-  });
 });
 
 <?php echo $Plugin->getFooter()?>

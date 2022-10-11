@@ -192,9 +192,8 @@
                         'click', (e) => plugin.onSubmit($p, e)),
                   cb: ($p) => {
                     const p = $p[0];
-                    const input = document.createElement('input');
-
-                    input.className = 'form-control';
+                    const input = H.createElement('input',
+                                      {className: 'form-control'});
   
                     switch (name) {
                       case 'username':
