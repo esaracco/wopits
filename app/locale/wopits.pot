@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-10-09 00:34+0200\n"
+        "POT-Creation-Date: 2022-10-11 21:38+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1264,9 +1264,6 @@ msgstr  ""
 msgid   "Zoom -"
 msgstr  ""
 
-msgid   "created by"
-msgstr  ""
-
 msgid   "current password"
 msgstr  ""
 
@@ -1307,6 +1304,9 @@ msgid   "password"
 msgstr  ""
 
 msgid   "password confirmation"
+msgstr  ""
+
+msgid   "shared by"
 msgstr  ""
 
 msgid   "the same day"

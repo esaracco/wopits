@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-09 00:34+0200\n"
+"POT-Creation-Date: 2022-10-11 21:38+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -1476,9 +1476,6 @@ msgstr ""
 msgid "Zoom -"
 msgstr ""
 
-msgid "created by"
-msgstr ""
-
 msgid "current password"
 msgstr ""
 
@@ -1521,6 +1518,9 @@ msgid "password"
 msgstr ""
 
 msgid "password confirmation"
+msgstr ""
+
+msgid "shared by"
 msgstr ""
 
 msgid "the same day"

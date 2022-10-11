@@ -275,7 +275,7 @@
           _walls.forEach((wall) => { 
             if (!document.querySelector(`[data-id="wall-${wall.id}"]`)) {
               const shared = (wall.ownerid !== wpt_userData.id);
-              const owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("created by")?></em> ${wall.ownername}</span></div>` : '';
+              const owner = shared ? `<div class="item-infos"><span class="ownername"><em><?=_("shared by")?></em> ${wall.ownername}</span></div>` : '';
               let dt1 = H.getUserDate(wall.creationdate);
 
               if (dt1 !== dt) {
