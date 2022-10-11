@@ -1377,9 +1377,12 @@ class WHelper
       }
     };
 
-    bp.tip.querySelector('.popover-body')
-        .querySelectorAll('button:not(.close)')
-            .forEach((el) => el.addEventListener('click', _eventC));
+    const body = bp.tip.querySelector('.popover-body');
+
+    body.classList.add('justify');
+
+    body.querySelectorAll('button:not(.close)')
+        .forEach((el) => el.addEventListener('click', _eventC));
 
     // Scroll to the popover point
     if (scroll) {

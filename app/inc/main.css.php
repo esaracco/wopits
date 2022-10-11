@@ -2034,9 +2034,7 @@ i.notset {
   padding: 5px 9px 0 0;
 }
 
-.newfeatures.justify,
-.popover-body.justify,
-.modal-body.justify {
+.justify {
   text-align: justify;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -2571,19 +2569,13 @@ button.ui-datepicker-close {
   top: 80px;
   width: 100%;
   z-index: 2;
-  text-align: center;
+  padding: 10px;
 }
 
 #login-page #desc-container .alert {
   display: inline-block;
-  margin: 10px;
+  margin: auto;
   max-width: 600px;
-  text-align: justify;
-  -webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  -ms-hyphens: auto;
-  -o-hyphens: auto;
-   hyphens: auto;
 }
 
 #login-page .user-card {
