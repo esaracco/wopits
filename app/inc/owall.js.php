@@ -17,12 +17,17 @@
 /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype = {
+    btnClear: null,
+    btnPrimary: null,
     // METHOD init()
     init(args) {
       const plugin = this;
       const $owall = plugin.element;
       const owall = $owall[0];
       const input = owall.querySelector(`input[type="text"]`);
+
+      this.btnClear = owall.querySelector('.btn-clear');
+      this.btnPrimary = owall.querySelector('.btn-primary');
 
       // EVENT "keyup" on input
      input.addEventListener('keyup',
@@ -44,7 +49,7 @@
       });
 
       // EVENT "click" on "clear history" button
-      owall.querySelector('.btn-clear').addEventListener('click', (e) => {
+      this.btnClear.addEventListener('click', (e) => {
         $('#settingsPopup').settings('set', {recentWalls: []});
         document.getElementById('ow-all').click();
         plugin.controlFiltersButtons();
@@ -69,7 +74,7 @@
         const auto = e.detail ? e.detail.auto : false;
         let content = false;
 
-        $owall.find('.btn-clear').hide();
+        this.btnClear.classList.add('hidden');
 
         switch (e.target.id) {
           case 'ow-all':
@@ -88,8 +93,6 @@
             const recentWalls = wpt_userData.settings.recentWalls || [];
             const walls = [];
 
-            owall.querySelector('.btn-clear').style.display = 'block';
-
             recentWalls.forEach((wallId) => {
               const id = Number(wallId);
               wpt_userData.walls.list.forEach(
@@ -100,12 +103,13 @@
               plugin.displayWalls(walls, false);
             }
 
-            owall.querySelectorAll('.list-group li.title').forEach((el) => {
-              el.style.display = 'none';
-            });
+            owall.querySelectorAll('.list-group li.title').forEach(
+                (el) => el.classList.add('hidden'));
             $owall.find('.list-group li:visible').first().addClass('first');
 
             content = walls.length;
+
+            this.btnClear.classList.remove('hidden');
             break;
           case 'ow-shared':
             if (!auto) {
@@ -115,9 +119,9 @@
             owall.querySelectorAll('.list-group li').forEach((el) => {
                 if (el.dataset.shared !== undefined) {
                   content = true;
-                  el.style.display = 'block';
+                  el.classList.remove('hidden');
                 } else {
-                  el.style.display = 'none';
+                  el.classList.add('hidden');
                 }
               });
 
@@ -145,8 +149,8 @@
           const tag = el.tagName;
 
           if (tag === 'INPUT') {
-            owall.querySelector('.btn-primary').style.display =
-                plugin.getChecked().length ? 'block' : 'none';
+            this.btnPrimary.classList[
+                plugin.getChecked().length ? 'remove' : 'add']('hidden');
           } else if (tag !== 'LABEL') {
             $('<div/>').wall('open', {
               lastWall: 1,
@@ -202,14 +206,14 @@
       }
 
       if (!count) {
-        $owall[0].querySelector('.ow-filters').style.display = 'none';
+        $owall[0].querySelector('.ow-filters').classList.add('hidden');
       }
     },
 
     // METHOD controlOpenButton()
     controlOpenButton() {
-      this.element[0].querySelector('.btn-primary').style.display =
-          this.getChecked().length ? 'block' : 'none';
+       this.btnPrimary.classList[
+           this.getChecked().length ? 'remove' : 'add']('hidden');
     },
 
     // METHOD getChecked()
@@ -262,12 +266,13 @@
       let body = '';
 
       owall.querySelectorAll('.ow-filters,.input-group,.btn-primary,.btn-clear')
-          .forEach((el) => el.style.display = 'none');
+          .forEach((el) => el.classList.add('hidden'));
 
       if (!wpt_userData.walls.list.length) {
         body = `<?=_("No wall available.")?>`;
       } else { 
-        $owall.find('.ow-filters,.input-group').show();
+        owall.querySelectorAll('.ow-filters,.input-group')
+            .forEach((el) => el.classList.remove('hidden'));
 
         if (_walls.length) {
           let dt = '';
@@ -289,7 +294,7 @@
   
           if (!body && document.getElementById('ow-all').checked) {
             owall.querySelectorAll('.ow-filters,.input-group,.btn-primary')
-                .forEach((el) => el.style.display = 'none');
+                .forEach((el) => el.classList.add('hidden'));
 
             body = `<i><?=_("All available walls are opened.")?></i>`;
           }
