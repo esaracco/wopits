@@ -56,12 +56,14 @@
 
     // METHOD appendTitle()
     appendTitle() {
-      const el = H.createElement('div', {className: 'title'});
       const title = this.settings.title;
 
-      el.innerHTML = (title !== ' ') ? title : '&nbsp;';
-
-      this.element[0].appendChild(el);
+      this.element[0].appendChild(
+        H.createElement('div', 
+          {className: 'title'},
+          null,
+          (title !== ' ') ? title : '&nbsp;',
+      ));
     },
 
     // METHOD appendMenu()
@@ -74,13 +76,13 @@
       const adminAccess =
           H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`, settings.access);
       
-      const menu = H.createElement('ul', {
-        className: 'navbar-nav mr-auto submenu',
-      });
+      const menu = H.createElement('ul',
+        {className: 'navbar-nav mr-auto submenu'},
+        null,
+        adminAccess ? `<li class="nav-item dropdown"><div data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></div><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li>` : null,
+      );
 
       if (adminAccess) {
-        menu.innerHTML = `<li class="nav-item dropdown"><div data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle"><i class="far fa-caret-square-right btn-menu" data-placement="right"></i></div><ul class="dropdown-menu border-0 shadow"><li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li><li data-action="add-picture"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-camera-retro"></i> <?=_("Associate a picture")?></a></li>${isCol?`<li data-action="move-left"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-left"></i> <?=_("Move left")?></a></li><li data-action="move-right"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-right"></i> <?=_("Move right")?></a></li>`:`<li data-action="move-up"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-up"></i> <?=_("Move up")?></a></li><li data-action="move-down"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-chevron-down"></i> <?=_("Move down")?></a></li>`}</li><li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?> <span></span></a></li></ul></li>`;
-
         // EVENT "click" on header menu button
         // To prevent header title editing
 /*FIXME
@@ -299,12 +301,12 @@
     // METHOD showUserWriting()
     showUserWriting(user) {
       const header = this.element[0];
-      const el = H.createElement('div', {className: 'user-writing main'});
 
-      el.dataset.userid = user.id;
-      el.innerHTML = `<i class="fas fa-user-edit blink"></i> ${user.name}`;
-
-      header.prepend(el);
+      header.prepend(H.createElement('div',
+        {className: 'user-writing main'},
+        {userid: user.id},
+        `<i class="fas fa-user-edit blink"></i> ${user.name}`,
+      ));
       header.classList.add('locked');
     },
 
@@ -345,9 +347,11 @@
       const $header = this.element;
       const adminAccess =
           H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`, this.settings.access);
-      const img = H.createElement('div', {className: 'img'});
-
-      img.innerHTML = `<img src="${src}">`;
+      const img = H.createElement('div',
+        {className: 'img'},
+        null,
+        `<img src="${src}">`,
+      );
 
       // EVENT "load" on header picture
       // Refresh postits plugs once picture has been fully loaded

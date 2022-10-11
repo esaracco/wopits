@@ -1255,8 +1255,13 @@
 
       S.reset ();
 
-      if (args.restoring)
-        tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${args.wallId}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);
+      if (args.restoring) {
+        tabs.insertBefore(H.createElement('a',
+          {href: `#wall-${args.wallId}`, className: 'nav-item nav-link'},
+          {'bsToggle': 'tab'},
+          `<span class="icon"></span><span class="val"></span>`,
+        ), tabs.firstChild);
+      }
 
       H.fetch (
         method,
@@ -1317,10 +1322,20 @@
           if ($popup)
             $popup.modal ("hide");
 
-          document.querySelector(".tab-content.walls").appendChild ($(`<div class="tab-pane" id="wall-${d.id}"><ul class="wall-menu shadow"></ul><div class="toolbox chat shadow"></div><div class="toolbox filters shadow"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table></div>`)[0]);
+          // Add main wall container (tab pane)
+          document.querySelector('.tab-content.walls').appendChild(
+            H.createElement('div',
+              {id: `wall-${d.id}`, className: 'tab-pane'},
+              null,
+              `<ul class="wall-menu shadow"></ul><div class="toolbox chat shadow"></div><div class="toolbox filters shadow"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table>`,
+            ));
 
-          if (!args.restoring)
-            tabs.insertBefore ($(`<a class="nav-item nav-link" href="#wall-${d.id}" data-bs-toggle="tab"><span class="icon"></span><span class="val"></span></a>`)[0], tabs.firstChild);
+          if (!args.restoring) {
+            tabs.insertBefore (H.createElement('a',
+              {href: `#wall-${d.id}`, className: 'nav-item nav-link'},
+              {'bsToggle': 'tab'}, `<span class="icon"></span><span class="val"></span>`,
+            ), tabs.firstChild);
+          }
 
           if (args.lastWall)
             d.lastWall = args.lastWall;
@@ -1328,7 +1343,17 @@
           const wallTab = tabs.querySelector (`a[href="#wall-${d.id}"]`);
 
           wallTab.setAttribute ("data-access", d.access);
-          wallTab.insertBefore ($(`<button type="button" class="close" title="<?=_("Close this wall")?>"><span class="close">&times;</span></button>`)[0], wallTab.firstChild);
+
+          // Add close wall button
+          wallTab.insertBefore(H.createElement('button',
+            {
+              type: 'button',
+              className: 'close',
+              title: `<?=_("Close this wall")?>`,
+            },
+            null,
+            `<span class="close">&times;</span>`,
+          ), wallTab.firstChild);
 
           d["background-color"] =
             $("#settingsPopup").settings ("get", "wall-background", d.id);
@@ -2287,8 +2312,8 @@
       H.fixHeight();
 
       // Create "back to standard view" button
-      const displayBtn = H.createElement('div', {id: 'normal-display-btn'});
-      displayBtn.innerHTML = `<i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span>`;
+      const displayBtn = H.createElement('div',
+          {id: 'normal-display-btn'}, null, `<i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span>`);
       // EVENT "click" on back to standard view button
       displayBtn.addEventListener('click',
         (e) => S.getCurrent('wall').wall('zoom', {type: 'normal'}));

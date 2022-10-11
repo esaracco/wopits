@@ -816,12 +816,16 @@ class WHelper
   }
 
   // METHOD createElement()
-  static createElement(tag, props, dataSet) {
+  static createElement(tag, props, dataSet, content) {
     const el = Object.assign(document.createElement(tag), props);
 
     if (dataSet) {
       Object.keys(dataSet).forEach(
-          (attr) => el.setAttribute(attr, dataSet[attr]));
+          (attr) => el.dataset[attr] = dataSet[attr]);
+    }
+
+    if (content) {
+      el.innerHTML = content;
     }
 
     return el;  

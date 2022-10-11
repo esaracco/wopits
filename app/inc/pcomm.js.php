@@ -29,12 +29,15 @@
   Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
   Object.assign (Plugin.prototype,
   {
+    readonly: true,
     // METHOD init ()
     init ()
     {
       const settings = this.settings;
 
-      if (settings.readonly && !settings.count) {
+      this.readonly = settings.readonly;
+
+      if (this.readonly && !settings.count) {
         this.element[0].classList.add('hidden');
       }
 
@@ -248,7 +251,7 @@
       plugin.postit().setCurrent ();
 
       (d || []).forEach((c) => {
-        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${c.ownerid === userId ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${H.getUserDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
+        content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${(!this.readonly && c.ownerid === userId) ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${H.getUserDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
       });
 
       //FIXME
@@ -263,7 +266,7 @@
         if ($_popup[0].classList.contains ("popover"))
           H.waitForDOMUpdate (__resize);
       }
-      else if (content || !plugin.settings.readonly)
+      else if (content || !this.readonly)
       {
         // Device without mouse: open a POPUP
         if (!H.haveMouse ())
@@ -282,7 +285,7 @@
               c.innerHTML = content;
 
               $p[0].querySelector('.editing').style.display =
-                  plugin.settings.readonly ? 'none' : 'block';
+                  this.readonly ? 'none' : 'block';
 
               // EVENT "hidden.bs.modal" on popup 
               $p[0].addEventListener ("hidden.bs.modal", (e)=>
@@ -302,7 +305,7 @@
           H.openConfirmPopover ({
             type: "custom",
             placement:"left",
-            html_header: plugin.settings.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
+            html_header: this.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
             customClass: "msg-popover pcomm-popover",
             noclosure: true,
             item: plugin.element,

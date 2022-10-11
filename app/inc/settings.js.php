@@ -28,13 +28,13 @@
       ["<?=implode('","', WPT_THEMES)?>"].forEach((color) => {
           const id = `theme-${color}`;
 
-          if (!document.getElementById (id)) {
-            const el = document.createElement('link');
-            el.id = id;
-            el.media = 'none';
-            el.rel = 'stylesheet';
-            el.href = `/css/themes/${color}.css?<?=WPT_VERSION?>`;
-            head.appendChild(el);
+          if (!document.getElementById(id)) {
+            head.appendChild(H.createElement('link', {
+              id,
+              media: 'none',
+              rel: 'stylesheet',
+              href: `/css/themes/${color}.css?<?=WPT_VERSION?>`,
+            }));
           }
         });
 
