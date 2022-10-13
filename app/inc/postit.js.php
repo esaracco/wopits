@@ -1714,11 +1714,9 @@
     // METHOD fixEditHeight()
     fixEditHeight() {
       const postit = this.element[0];
-      const headerH = postit.querySelector('.postit-header').offsetHeight;
-      const footerH = postit.querySelector('.dates').offsetHeight;
 
-      postit.querySelector('.postit-edit').style.maxHeight =
-          `${postit.offsetHeight - footerH - headerH}px`;
+      postit.querySelector('.postit-edit')
+          .style.maxHeight = `${postit.offsetHeight - 40}px`;
     },
 
     // METHOD fixPosition ()

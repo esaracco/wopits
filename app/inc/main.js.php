@@ -46,215 +46,197 @@
   Plugin.prototype = Object.create(Wpt_accountForms.prototype);
   Object.assign (Plugin.prototype,
   {
-    // METHOD init ()
-    init (args)
-    {
-      const plugin = this,
-            $wall = plugin.element,
-            wall = $wall[0],
-            settings = plugin.settings,
-            wallId = settings.id,
-            access = settings.access,
-            writeAccess = this.canWrite (),
-            rows = [],
-            displayHeaders = settings.displayheaders;
+    // METHOD init()
+    init (args) {
+      const $wall = this.element;
+      const wall = $wall[0];
+      const settings = this.settings;
+      const wallId = settings.id;
+      const access = settings.access;
+      const writeAccess = this.canWrite ();
+      const rows = [];
+      const displayHeaders = settings.displayheaders;
 
-      settings.tabLink = $(document.querySelector (
-                             `.nav-tabs.walls a[href="#wall-${settings.id}"]`));
+      document.getElementById('welcome').style.display = 'none';
 
-      // Add wall menu
-      $(`#wall-${settings.id}`).find(".wall-menu").wmenu ({
-        wallPlugin:plugin,
-        access: access
-      });
-
+      // Array of wall postits plugs
       settings.plugs = [];
 
-      if (settings.restoring)
-        wall.dataset.restoring = 1;
-
+      // Display mode (list-mode, postit-mode)
       wall.dataset.displaymode = settings.displaymode;
+
+      // If headers are displayed (1) or hidden (0)
       wall.dataset.displayheaders = displayHeaders;
 
-      plugin.setName (settings.name, true);
+      // Wall title tab link
+      settings.tabLink = $(document.querySelector(
+        `.nav-tabs.walls a[href="#wall-${settings.id}"]`));
 
-      // Prepare rows array for display
-      for (let i = 0, iLen = settings.cells.length; i < iLen; i++)
-      {
-        const cell = settings.cells[i],
-              rowIdx = cell.item_row;
-
-        if (!rows[rowIdx])
-          rows[rowIdx] = [];
-
-        rows[rowIdx][cell.item_col] = cell;
+      // If wa are restoring a previous session
+      if (settings.restoring) {
+        wall.dataset.restoring = 1;
       }
 
-      if (settings.shared)
-        plugin.setShared (true);
+      // If wall is shared
+      if (settings.shared) {
+        this.setShared (true);
+      }
 
-      $wall
-        .hide()
-        .css({
-          width: (settings.width) ? settings.width : "",
-          "background-color":(settings["background-color"]) ?
-                                 settings["background-color"] : "auto"
-        })
-        .html (`<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`);
+      // Set wall name (with loading spinner)
+      this.setName(settings.name, true);
 
-      if (H.haveMouse ())
+      // Set wall description
+      this.setDescription (settings.description);
+
+      // Add wall floating menu
+      $(`#wall-${settings.id}`).find('.wall-menu').wmenu ({
+        access,
+        wallPlugin: this,
+      });
+
+      // Prepare rows array
+      settings.cells.forEach((cell) => {
+        const {item_row, item_col} = cell;
+
+        if (!rows[item_row]) {
+          rows[item_row] = [];
+        }
+
+        rows[item_row][item_col] = cell;
+      });
+
+      wall.style.display = 'none';
+      wall.style.width = settings.width ? `${settings.width}px` : 'auto';
+      wall.style.backgroundColor = settings['background-color'] || 'auto';
+      wall.innerHTML = `<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`
+
+      if (H.haveMouse ()) {
         $wall.draggable({
           distance: 10,
-          cursor: "grab",
+          cursor: 'grab',
 //          cancel: (writeAccess) ? "span,.title,.postit-edit" : null,
-          cancel: (writeAccess) ? ".postit-tags" : null,
-          start: function ()
-            {
-              S.set ("wall-dragging", true);
-              plugin.hidePostitsPlugs ();
-            },
-          stop: function ()
-            {
-              S.set ("dragging", true, 500);
-
-              const $f = S.getCurrent ("filters");
-              if (!$f.length || !$f.hasClass ("plugs-hidden"))
-                plugin.showPostitsPlugs ();
-
-              S.unset ("wall-dragging");
+          cancel: writeAccess ? '.postit-tags' : null,
+          start: () => {
+            S.set('wall-dragging', true);
+            this.hidePostitsPlugs();
+          },
+          stop: () => {
+            S.set('dragging', true, 500);
+            const f = S.getCurrent('filters')[0];
+            if (!f || !f.classList.contains('plugs-hidden')) {
+              this.showPostitsPlugs();
             }
-        })
-
-      H.waitForDOMUpdate (() =>
-        {
-          // Create wall columns headers
-          const hcols = settings.headers.cols;
-
-          for (let i = 0, iLen = hcols.length; i < iLen; i++)
-          {
-            const header = hcols[i],
-                  $th = $(`<th class="wpt ${displayHeaders ? 'display' : 'hide'}"/>`);
-
-            $wall.find("thead.wpt tr.wpt").append ($th);
-            $th.header ({
-              access: access,
-              item_type: "col",
-              id: header.id,
-              wall: $wall,
-              wallId: wallId,
-              title: header.title,
-              picture: header.picture
-            });
-          }
-
-          const hrows = settings.headers.rows;
-          for (let i = 0, iLen = rows.length; i < iLen; i++)
-          {
-            const row = rows[i];
-
-            plugin.addRow (hrows[i], row);
-
-            for (let j = 0, jLen = row.length; j < jLen; j++)
-            {
-              const cell = row[j],
-                    $cell = $wall.find (`[data-id="cell-${cell.id}"]`);
-
-              for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
-              {
-                cell.postits[k]["access"] = access;
-                cell.postits[k]["init"] = true;
-                $cell.cell ("addPostit", cell.postits[k], true);
-              }
-            }
-          }
-
-          $("#welcome").hide ();
-
-          $wall.show(displayHeaders ? 'fade' : null);
-
-          wall.dataset.cols = hcols.length;
-          wall.dataset.rows = hrows.length;
-
-          plugin.setName (settings.name);
-          plugin.setDescription (settings.description);
-
-          window.dispatchEvent (new Event("resize"));
-
-          if (settings.restoring)
-          {
-            delete settings.restoring;
-            wall.removeAttribute ("data-restoring");
-          }
-
-          // Set wall users view count if needed
-          const viewcount = WS.popResponse (`viewcount-wall-${wallId}`);
-          if (viewcount !== undefined)
-            plugin.refreshUsersview (viewcount); 
-
-          // If last wall to load.
-          if (settings.lastWall)
-          {
-            setTimeout(()=>
-              $(`[data-id="wall-${wpt_userData.settings.activeWall}"]`)
-                .wall ("refresh"), 0);
-
-            // If we must save opened walls (because user have no longer the
-            // rights to load a previously opened wall for example).
-            if (S.get ("save-opened-walls") ||
-                !(wpt_userData.settings.recentWalls||[]).length)
-            {
-              S.unset ("save-opened-walls");
-
-              plugin.setActive ();
-
-              // Save only when all walls has been loaded.
-              const t = setInterval (()=>
-                {
-                  if (!document.querySelector (".walls i.fa-cog"))
-                  {
-                    $("#settingsPopup").settings ("saveOpenedWalls");
-                    clearInterval (t);
-                  }
-                });
-            }
-          }
-
-          H.waitForDOMUpdate (()=>
-          {
-            // LOCAL FUNCTION ()
-            const __postInit = ()=>
-              {
-                H.waitForDOMUpdate (() =>
-                {
-                  // Apply display header mode
-                  plugin.displayHeaders ();
-                  // Apply display mode
-                  plugin.refreshCellsToggleDisplayMode ();
-
-                  $wall.parent().find(".wall-menu")
-                    .css ("visibility", "visible");
-                });
-              };
-
-            plugin.displayExternalRef ();
-
-            // Display postit dealine alert or specific wall if needed.
-            if (settings.cb_after)
-            {
-              plugin.setActive ();
-              //FIXME To much refresh
-              plugin.refresh ();
-
-              H.waitForDOMUpdate (() =>
-                {
-                  settings.cb_after ();
-                  __postInit ();
-                });
-            }
-            else
-              __postInit ();
-          });
+            S.unset('wall-dragging');
+          },
         });
+      }
+
+      // Create wall columns headers
+      const hcols = settings.headers.cols;
+      const tr = wall.querySelector('thead.wpt tr.wpt');
+      wall.dataset.cols = hcols.length;
+      hcols.forEach((header) => {
+        const th = H.createElement('th', {
+          className: `wpt ${displayHeaders ? 'display' : 'hide'}`,
+        });
+        tr.appendChild(th);
+        $(th).header({
+          access,
+          wallId,
+          item_type: 'col',
+          id: header.id,
+          title: header.title,
+          picture: header.picture,
+          wall: $wall,
+        });
+      });
+
+      // Create wall rows headers
+      const hrows = settings.headers.rows;
+      wall.dataset.rows = hrows.length;
+      rows.forEach((row, rowIdx) => {
+        this.addRow (hrows[rowIdx], row);
+        row.forEach((cell, cellIdx) => {
+          const $cell = $(wall.querySelector(`[data-id="cell-${cell.id}"]`));
+          cell.postits.forEach((postit, postitIdx) =>
+            $cell.cell('addPostit', {...postit, init: true, access}, true));
+        })
+      });
+
+      // Set wall name (remove loading spinner)
+      this.setName(settings.name);
+
+      // FIXME needed? window.dispatchEvent (new Event("resize"));
+
+      if (settings.restoring) {
+        delete settings.restoring;
+        wall.removeAttribute('data-restoring');
+      }
+
+      // Set the number of users currently editing the wall
+      const viewcount = WS.popResponse(`viewcount-wall-${wallId}`);
+      if (viewcount !== undefined) {
+        this.refreshUsersview(viewcount); 
+      }
+
+      $wall.show(displayHeaders ? 'fade' : null);
+      // wall.style.display = 'block';
+
+      H.waitForDOMUpdate(() => {
+        // If this is the last wall to be loaded
+        if (settings.lastWall) {
+          $(`[data-id="wall-${wpt_userData.settings.activeWall}"]`)
+            .wall('refresh');
+
+          // If we must save opened walls (because user have no longer the
+          // rights to load a previously opened wall for example).
+          if (S.get('save-opened-walls') ||
+              !(wpt_userData.settings.recentWalls || []).length) {
+            S.unset ('save-opened-walls');
+
+            this.setActive();
+
+            // Save only when all walls has been loaded.
+            const t = setInterval(()=> {
+              if (!document.querySelector('.walls i.fa-cog')) {
+                $('#settingsPopup').settings('saveOpenedWalls');
+                clearInterval(t);
+              }
+            }, 500);
+          }
+        }
+
+        // LOCAL FUNCTION ()
+        const __postInit = () => {
+          H.waitForDOMUpdate(() => {
+            // Apply display header mode
+            this.displayHeaders();
+
+            // Apply display mode
+            // this.refreshCellsToggleDisplayMode();
+
+            wall.parentNode.querySelector('.wall-menu')
+              .style.visibility = 'visible';
+          });
+        };
+
+        this.displayExternalRef ();
+
+        // Display postit dealine alert or specific wall if needed.
+        if (settings.cb_after) {
+          this.setActive ();
+
+          //FIXME To much refresh
+          this.refresh();
+
+          H.waitForDOMUpdate(() => {
+            settings.cb_after();
+            __postInit ();
+          });
+        } else {
+          __postInit ();
+        }
+      });
     },
 
     // METHOD displayPostitAlert ()
@@ -1108,67 +1090,68 @@
         });
     },
 
-    // METHOD createColRow ()
-    createColRow (type)
-    {
+    // METHOD createColRow()
+    createColRow(type) {
       const wall = this.element[0];
 
-      if (Number (wall.dataset.rows) *
-            Number (wall.dataset.cols) >= <?=WPT_MAX_CELLS?>)
-        return H.displayMsg ({
+      if (Number(wall.dataset.rows) *
+          Number(wall.dataset.cols) >= <?=WPT_MAX_CELLS?>) {
+        return H.displayMsg({
                  title: `<?=_("Wall")?>`,
-                 type: "warning",
-                 msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>)
+                 type: 'warning',
+                 msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace('%s', <?=WPT_MAX_CELLS?>)
                });
+      }
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${this.settings.id}/${type}`,
         null,
-        ()=>
-          S.getCurrent("walls")[(type=="col")?"scrollLeft":"scrollTop"](30000));
+        // TODO Scroll to the exact ending of the new added col or row
+        () => S.getCurrent('walls')[(type=== 'col') ?
+                'scrollLeft' : 'scrollTop'](30000),
+      );
     },
 
     // METHOD addRow()
-    addRow(header, row) {
-      const plugin = this;
-      const $wall = plugin.element;
-      const wallId = plugin.settings.id;
-      const displayHeaders = plugin.settings.displayheaders;
+    addRow(header, cols) {
+      const settings = this.settings;
+      const $wall = this.element;
+      const wallId = settings.id;
+      const displayHeaders = settings.displayheaders;
       let tds = '';
 
-      for (let i = 0, iLen = row.length; i < iLen; i++) {
-        tds += _getCellTemplate(row[i]);
-      }
+      cols.forEach((col) => tds += _getCellTemplate(col));
 
-      const $row = $(`<tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}"></th>${tds}</tr>`);
+      const row = H.createElement('tr',
+        {className: `wpt`},
+        null,
+        `<th class="wpt ${displayHeaders ? 'display' : 'hide'}"></th>${tds}`);
 
       // Add row
-      $wall.find('tbody.wpt').append($row);
-      $row.find('th.wpt:eq(0)').header({
-        access: plugin.settings.access,
-        item_type: "row",
+      $wall[0].querySelector('tbody.wpt').appendChild(row);
+      $(row).find('th.wpt:eq(0)').header({
+        wallId,
+        access: settings.access,
+        item_type: 'row',
         id: header.id,
         wall: $wall,
-        wallId: wallId,
         title: header.title,
         picture: header.picture
       });
 
       // Init cells
-      const userSettings = plugin.settings.usersettings || {};
-      $row.find("td.wpt").each (function ()
-        {
-          const cellId = this.dataset.id.substring (5);
-
-          $(this).cell ({
+      const userSettings = settings.usersettings || {};
+      row.querySelectorAll('td.wpt').forEach((cell) => {
+        const cellId = cell.dataset.id.substring(5);
+        $(cell).cell({
+            wallId,
             id: cellId,
-            access: plugin.settings.access,
+            access: settings.access,
             usersettings: userSettings[`cell-${cellId}`] || {},
             wall: $wall,
-            wallId: wallId
           });
-        });
+      });
     },
 
     // METHOD deleteRow ()
@@ -2178,76 +2161,58 @@
           (el) => el.classList.replace('display', 'hide'));
     },
 
-    // METHOD displayHeaders ()
-    displayHeaders (v)
-    {
-      const wall = this.element[0],
-            update = (v !== undefined),
-            val = update ? v : this.settings.displayheaders,
-            type = (val == 1) ? "show" : "hide";
+    // METHOD displayHeaders()
+    displayHeaders(v) {
+      const wall = this.element[0];
+      const update = (v !== undefined);
+      const val = update ? v : this.settings.displayheaders;
+      const type = (val === 1) ? 'show' : 'hide';
 
-      if (val == 1)
-      {
-        this.showHeaders ();
-
-        wall.removeAttribute ("data-headersshift");
-
-        if (update)
-          H.waitForDOMUpdate (()=>
-            {
-              let w = this.getTDsWidth ();
-
-              w += wall.querySelector("tbody.wpt th.wpt").clientWidth;
-
-              wall.style.width = `${w}px`;
-              wall.dataset.oldwidth = w;
-
-              if (val == 1)
-                this.fixSize ();
-            });
-      }
-      else
-      {
+      if (type === 'show') {
+        this.showHeaders();
+        wall.removeAttribute('data-headersshift');
+        H.waitForDOMUpdate(() => {
+          if (update) {
+            let w = this.getTDsWidth();
+            w += wall.querySelector('tbody.wpt th.wpt').clientWidth;
+            wall.style.width = `${w}px`;
+            wall.dataset.oldwidth = w;
+          }
+          this.fixSize ();
+        });
+      } else {
         // Save plugs shift width & height for absolutely positioned plugs
-        if (!wall.dataset.headersshift)
-        {
+        if (!wall.dataset.headersshift) {
           //FIXME
           // Required to obtain the headers dimensions
           this.showHeaders ();
-
-          const bbox = wall.querySelector("thead.wpt th.wpt").getBoundingClientRect ();
-
-          if (bbox.width)
-            wall.dataset.headersshift =
-              JSON.stringify ({width: parseInt(bbox.width),
-                               height: parseInt(bbox.height)});
+          const bbox =
+            wall.querySelector('thead.wpt th.wpt').getBoundingClientRect();
+          if (bbox.width) {
+            wall.dataset.headersshift = JSON.stringify({
+              width: parseInt(bbox.width),
+              height: parseInt(bbox.height),
+            });
+          }
         }
-
-        this.hideHeaders ();
-
+        this.hideHeaders();
         wall.style.width = `${this.getTDsWidth()}px`;
       }
 
-      if (val == 1)
-        this.fixSize ();
+      if (this.element.is(':visible')) {
+        this.menu ({from: 'display', type: `${type}-headers`});
+      }
 
-      if (this.element.is (":visible"))
-        this.menu ({from: "display", type: `${type}-headers`});
-
-      if (update)
-      {
+      if (update) {
         this.settings.displayheaders = val;
         wall.dataset.displayheaders = val;
-
-        H.waitForDOMUpdate (()=>this.repositionPostitsPlugs ());
-
-        H.fetch (
-          "POST",
+        this.repositionPostitsPlugs();
+        H.fetch(
+          'POST',
           `user/wall/${this.settings.id}/displayheaders`,
           {value: val});
       }
     },
-
   });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////

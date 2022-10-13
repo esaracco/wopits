@@ -983,114 +983,114 @@ span.user-writing-min {
   position: absolute;
   top: 45%;
   left: 50%;
-  transform:translate(-50%,-50%);
+  transform: translate(-50%,-50%);
   text-shadow: 0 0 6px #b2b2b2;
-  padding:10px;
-  width:60px;
-  height:60px;
-  opacity:.4;
-  border-radius:60px;
-  background:white;
-  border:1px solid gray;
+  padding: 10px;
+  width: 60px;
+  height: 60px;
+  opacity: .4;
+  border-radius: 60px;
+  background: #fff;
+  border: 1px solid gray;
 }
 
 .postit.locked.main,
 .postit-min.locked.main {
-  opacity:.8 !important;
+  opacity: .8 !important;
 }
 
 a.active .user-writing {
-  margin-top:30px;
-  top:auto;
-  left:auto;
+  margin-top: 30px;
+  top: auto;
+  left: auto;
 }
 
 .wall th.wpt .user-writing {
-  top:auto;
-  left:auto;
-  border-top-left-radius:0;
-  font-weight:normal;
+  top: auto;
+  left: auto;
+  border-top-left-radius: 0;
+  font-weight: normal;
 }
 
 .wall th.wpt.display {
-  position:auto;
-  visibility:visible;
+  position: auto;
+  visibility: visible;
 }
 
 .wall th.wpt.hide {
-  position:absolute;
-  visibility:hidden;
+  position: absolute;
+  visibility: hidden;
 }
 
 thead.wpt th.wpt .user-writing {
-  margin-top:5px;
-  margin-left:5px;
+  margin-top: 5px;
+  margin-left: 5px;
 }
 
 tbody.wpt th.wpt .user-writing {
-  margin-left:14px;
-  margin-top:15px;
+  margin-left: 14px;
+  margin-top: 15px;
 }
 
 td.wpt > .user-writing {
-  bottom:10px;
-  right:10px;
-  top:auto;
-  left:auto;
-  border-bottom-right-radius:0;
+  bottom: 10px;
+  right: 10px;
+  top: auto;
+  left: auto;
+  border-bottom-right-radius: 0;
 }
 
 .user-writing:after {
   background-color: #fff;
-  box-shadow:-2px 2px 2px 0 rgba( 178, 178, 178, .4 );
-  content:"";
-  display:block;
-  height:10px;
-  left:10px;
-  position:relative;
-  top:5px;
-  transform:rotate(315deg);
-  width:10px;
+  box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
+  content: "";
+  display: block;
+  height: 10px;
+  left: 10px;
+  position: relative;
+  top: 5px;
+  transform: rotate(315deg);
+  width: 10px;
 }
 
 .user-writing:not(.main):after {
-  background:none;
-  box-shadow:none;
+  background: none;
+  box-shadow: none;
 }
 
 a.active .user-writing:after {
-  top:-34px;
-  transform:rotate(135deg);
+  top: -34px;
+  transform: rotate(135deg);
 }
 
 th.wpt .user-writing:after {
-  left:-15px;
-  top:-14px;
-  transform:rotate(45deg);
+  left: -15px;
+  top: -14px;
+  transform: rotate(45deg);
 }
 
 td.wpt > .user-writing:after,
 th.wpt .user-writing:after {
-  visibility:hidden;
+  visibility: hidden;
 }
 
 .editable.editing input {
-  z-index:5001;
-  border-top:none;
-  border-right:4px solid silver;
-  border-bottom:1px dashed gray;
-  border-left:4px solid silver;
-  background:transparent;
-  font-weight:bold;
-  white-space:nowrap;
+  z-index: 5001;
+  border-top: none;
+  border-right: 4px solid silver;
+  border-bottom: 1px dashed gray;
+  border-left: 4px solid silver;
+  background: transparent;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 th.wpt .editable.editing input {
-  position:absolute;
-  text-align:center;
-  transform:translate(-50%);
-  min-width:45px;
-  padding:0 5px 0 5px;
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%);
+  min-width: 45px;
+  padding: 0 5px 0 5px;
 }
 
 .postit .editable.editing input {
