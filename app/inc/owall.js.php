@@ -67,8 +67,8 @@
             $wall = await $el.wall('open', {wallId, noPostProcess: true});
           }));
 
-          if ($wall$) {
-            wall.wall('postProcessLastWall');
+          if ($wall) {
+            $wall.wall('postProcessLastWall');
           }
         })();
       });
