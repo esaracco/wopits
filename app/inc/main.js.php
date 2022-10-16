@@ -965,6 +965,7 @@
 
       // If we are not massively closing all walls
       if (!S.get('closing-all')) {
+        H.fixHeight();
         $('#settingsPopup').settings('saveOpenedWalls');
         S.reset();
       }
