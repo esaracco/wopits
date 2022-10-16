@@ -1282,6 +1282,8 @@
         $('#settingsPopup').settings('saveOpenedWalls');
       }
 
+      H.fixHeight();
+
       // Display postit dealine alert or specific wall if needed.
       args.cb_after && args.cb_after();
     },
