@@ -42,7 +42,11 @@
         // EVENT "click" on user messages
         if (el.matches('.msg-body a')) {
           const data = el.dataset;
-          let infos;
+          // Case "wall" by default
+          const infos = {
+            type: data.type,
+            wallId: Number(data.wallid),
+          };
 
           document.getElementById('popup-layer').click();
 
@@ -50,28 +54,15 @@
           H.preventDefault(e);
 
           switch (data.type) {
-            case 'wall':
-              infos = {
-                wallId: data.wallid,
-              };
-              break;
             case 'postit':
             case 'worker':
-              infos = {
-                wallId: data.wallid,
-                postitId: data.postitid,
-              };
+              infos.postitId = Number(data.postitid);
               break;
             case 'comment':
-              infos = {
-                wallId: data.wallid,
-                postitId: data.postitid,
-                commentId: data.commentid,
-              };
+              infos.postitId = Number(data.postitid);
+              infos.commentId = Number(data.commentid);
               break;
           }
-
-          infos.type = data.type;
 
           $('<div/>').wall('loadSpecific', infos, true);
 

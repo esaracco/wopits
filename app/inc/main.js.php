@@ -14,16 +14,21 @@
 
 ?>
 
-  let _refreshing = false,
-      _originalObject;
+  let _originalObject;
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
-  // METHOD _getCellTemplate ()
-  const _getCellTemplate = (data)=>
-    {
-      return `<td scope="dzone" class="wpt size-init" style="width:${data.width}px;height:${data.height}px" data-id="cell-${data.id}"></td>`;
-    };
+
+  // METHOD _getNextActiveTab()
+  const _getNextActiveTab = (current) =>
+    current.previousElementSibling ?
+      current.previousElementSibling : current.nextElementSibling ?
+        current.nextElementSibling : null;
+
+  // METHOD _getCellTemplate()
+  const _getCellTemplate = ({id, width, height}) => {
+    return `<td scope="dzone" class="wpt size-init" style="width:${width}px;height:${height}px" data-id="cell-${id}"></td>`;
+  };
 
   // METHOD _getDirectURLData ()
   const _getDirectURLData = ()=> {
@@ -33,9 +38,9 @@
         {type: 'u'} :
         {
           type: m[1],
-          wallId: m[2],
-          postitId: m[4],
-          commentId: m[6],
+          wallId: Number(m[2]),
+          postitId: Number(m[4]),
+          commentId: Number(m[6]),
         };
     }
   };
@@ -47,14 +52,13 @@
   Object.assign (Plugin.prototype,
   {
     // METHOD init()
-    init (args) {
+    async init(args) {
       const $wall = this.element;
       const wall = $wall[0];
       const settings = this.settings;
       const wallId = settings.id;
       const access = settings.access;
-      const writeAccess = this.canWrite ();
-      const rows = [];
+      const writeAccess = this.canWrite();
       const displayHeaders = settings.displayheaders;
 
       document.getElementById('welcome').style.display = 'none';
@@ -69,8 +73,8 @@
       wall.dataset.displayheaders = displayHeaders;
 
       // Wall title tab link
-      settings.tabLink = $(document.querySelector(
-        `.nav-tabs.walls a[href="#wall-${settings.id}"]`));
+      settings.tabLink = document.querySelector(
+        `.nav-tabs.walls a[href="#wall-${wallId}"]`);
 
       // If wa are restoring a previous session
       if (settings.restoring) {
@@ -79,33 +83,18 @@
 
       // If wall is shared
       if (settings.shared) {
-        this.setShared (true);
+        this.setShared(true);
       }
 
       // Set wall name (with loading spinner)
       this.setName(settings.name, true);
 
       // Set wall description
-      this.setDescription (settings.description);
+      this.setDescription(settings.description);
 
       // Add wall floating menu
-      $(`#wall-${settings.id}`).find('.wall-menu').wmenu ({
-        access,
-        wallPlugin: this,
-      });
+      $(`#wall-${wallId}`).find('.wall-menu').wmenu({access, wallPlugin: this});
 
-      // Prepare rows array
-      settings.cells.forEach((cell) => {
-        const {item_row, item_col} = cell;
-
-        if (!rows[item_row]) {
-          rows[item_row] = [];
-        }
-
-        rows[item_row][item_col] = cell;
-      });
-
-      wall.style.display = 'none';
       wall.style.width = settings.width ? `${settings.width}px` : 'auto';
       wall.style.backgroundColor = settings['background-color'] || 'auto';
       wall.innerHTML = `<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`
@@ -131,7 +120,7 @@
         });
       }
 
-      // Create wall columns headers
+      // Create columns headers
       const hcols = settings.headers.cols;
       const tr = wall.querySelector('thead.wpt tr.wpt');
       wall.dataset.cols = hcols.length;
@@ -151,92 +140,41 @@
         });
       });
 
-      // Create wall rows headers
+      // Prepare rows array
+      const rows = [];
+      settings.cells.forEach((cell) => {
+        const {item_row, item_col} = cell;
+        if (!rows[item_row]) {
+          rows[item_row] = [];
+        }
+        rows[item_row][item_col] = cell;
+      });
+
+      // Create rows with cells and postits
       const hrows = settings.headers.rows;
       wall.dataset.rows = hrows.length;
       rows.forEach((row, rowIdx) => {
         this.addRow (hrows[rowIdx], row);
-        row.forEach((cell, cellIdx) => {
+        row.forEach((cell) => {
           const $cell = $(wall.querySelector(`[data-id="cell-${cell.id}"]`));
-          cell.postits.forEach((postit, postitIdx) =>
-            $cell.cell('addPostit', {...postit, init: true, access}, true));
+          cell.postits.forEach((postit) => {
+            // No perf killer spread operator here!
+            postit.init = true;
+            postit.access = access;
+            $cell.cell('addPostit', postit, true);
+          });
         })
       });
 
       // Set wall name (remove loading spinner)
       this.setName(settings.name);
 
-      // FIXME needed? window.dispatchEvent (new Event("resize"));
-
       if (settings.restoring) {
         delete settings.restoring;
         wall.removeAttribute('data-restoring');
       }
 
-      // Set the number of users currently editing the wall
-      const viewcount = WS.popResponse(`viewcount-wall-${wallId}`);
-      if (viewcount !== undefined) {
-        this.refreshUsersview(viewcount); 
-      }
-
-      $wall.show(displayHeaders ? 'fade' : null);
-      // wall.style.display = 'block';
-
-      H.waitForDOMUpdate(() => {
-        // If this is the last wall to be loaded
-        if (settings.lastWall) {
-          $(`[data-id="wall-${wpt_userData.settings.activeWall}"]`)
-            .wall('refresh');
-
-          // If we must save opened walls (because user have no longer the
-          // rights to load a previously opened wall for example).
-          if (S.get('save-opened-walls') ||
-              !(wpt_userData.settings.recentWalls || []).length) {
-            S.unset ('save-opened-walls');
-
-            this.setActive();
-
-            // Save only when all walls has been loaded.
-            const t = setInterval(()=> {
-              if (!document.querySelector('.walls i.fa-cog')) {
-                $('#settingsPopup').settings('saveOpenedWalls');
-                clearInterval(t);
-              }
-            }, 500);
-          }
-        }
-
-        // LOCAL FUNCTION ()
-        const __postInit = () => {
-          H.waitForDOMUpdate(() => {
-            // Apply display header mode
-            this.displayHeaders();
-
-            // Apply display mode
-            // this.refreshCellsToggleDisplayMode();
-
-            wall.parentNode.querySelector('.wall-menu')
-              .style.visibility = 'visible';
-          });
-        };
-
-        this.displayExternalRef ();
-
-        // Display postit dealine alert or specific wall if needed.
-        if (settings.cb_after) {
-          this.setActive ();
-
-          //FIXME To much refresh
-          this.refresh();
-
-          H.waitForDOMUpdate(() => {
-            settings.cb_after();
-            __postInit ();
-          });
-        } else {
-          __postInit ();
-        }
-      });
+      return $wall;
     },
 
     // METHOD displayPostitAlert ()
@@ -255,36 +193,33 @@
         });
     },
 
-    // METHOD displayShareAlert ()
-    displayShareAlert (wallId)
-    {
+    // METHOD displayShareAlert()
+    displayShareAlert(wallId) {
       const walls = wpt_userData.walls.list;
       let owner;
 
-      for (const k in walls)
-        if (walls[k].id == wallId)
-        {
+      for (const k in walls) {
+        if (walls[k].id === wallId) {
           owner = walls[k].ownername
           break;
         }
+      }
 
-      H.openConfirmPopover ({
-        type: "info",
-        item: $(".walls a.active span.val"),
+      H.openConfirmPopover({
+        type: 'info',
+        item: $('.walls a.active span.val'),
         title: `<i class="fas fa-share fa-fw"></i> <?=_("Sharing")?>`,
-        content: `<?=_("%s shared this wall with you")?>`.replace("%s", owner)
+        content: owner ? `<?=_("%s shared this wall with you")?>`.replace("%s", owner) : `<?=_("This wall has been shared with you")?>`,
       });
     },
 
-    // METHOD setActive ()
-    setActive ()
-    {
-      S.reset ();
-
-      this.settings.tabLink.click ();
-      $(`#wall-${this.settings.id}`).addClass ("active");
-
-      this.menu ({from: "wall", type: "have-wall"});
+    // METHOD setActive()
+    setActive() {
+      S.reset();
+      bootstrap.Tab.getOrCreateInstance(this.settings.tabLink).show();
+      document.getElementById(`wall-${this.settings.id}`)
+        .classList.add('active');
+      this.menu ({from: 'wall', type: 'have-wall'});
     },
 
     // METHOD ctrlMenu ()
@@ -324,6 +259,10 @@
             {
               case "no-wall":
     
+                document.querySelector('.nav.walls').style.display = 'none';
+                document.getElementById('dropdownView')
+                  .classList.add('disabled');
+                $('#welcome').show(S.get('closing-all') ? null : 'fade');
                 $menu.find(
                   '[data-action="delete"] a,'+
                   '[data-action="close-walls"] a,'+
@@ -336,11 +275,15 @@
     
               case "have-wall":
 
-                if ($wall.length)
-                  this.menu ({
-                    from: "display",
-                    type: $wall[0].dataset.displaymode
+                if ($wall.length) {
+                  document.querySelector('.nav.walls').style.display = 'block';
+                  document.getElementById('dropdownView')
+                    .classList.remove('disabled');
+                  this.menu({
+                    from: 'display',
+                    type: $wall[0].dataset.displaymode,
                   });
+                }
 
                 if ($wall.length && $wall[0].dataset.shared)
                   $menu.find('[data-action="chat"] a')
@@ -516,94 +459,97 @@
           $(p).postit('removePlugs', true));
     },
 
-    // METHOD refreshPostitsPlugs ()
-    refreshPostitsPlugs (partial)
-    {
-      const $f = S.getCurrent ("filters");
-      if ($f.length && $f[0].classList.contains ("plugs-hidden"))
-        return;
+    // METHOD refreshPostitsPlugs()
+    refreshPostitsPlugs(partial) {
+      const wall = this.element[0];
+      const f = S.getCurrent('filters')[0];
 
-      const wall = this.element[0],
-            applyZoom = Boolean(S.get("zoom-level"));
-      let idsNew = {};
+      if (f && f.classList.contains('plugs-hidden')) return;
 
-      (this.settings.plugs||[]).forEach (plug =>
-        {
-          const startId = plug.item_start,
-                start0 = wall.querySelector (
-                           `.postit[data-id="postit-${startId}"]`);
+      const applyZoom = Boolean(S.get('zoom-level'));
+      const idsNew = {};
+      const postits = {};
 
-          if (start0)
-          {
-            const endId = plug.item_end,
-                  $start = $(start0),
-                  startPlugin = $start.postit ("getClass"),
-                  labelName = plug.label||"...";
+      // Retrieve all postits to optimize search
+      wall.querySelectorAll('.postit').forEach((postit) =>
+        postits[postit.dataset.id.split('-')[1]] = postit);
 
-            idsNew[`${startId}${endId}`] = 1;
+      (this.settings.plugs || []).forEach((plug) => {
+        const {
+          item_start,
+          item_end,
+          label: originalLabel,
+          item_top,
+          item_left,
+          line_size,
+          line_path,
+          line_color,
+          line_type,
+        } = plug;
+        const startId = item_start;
+        const start = postits[startId];
 
-            if (!startPlugin.plugExists (endId))
-            {
-              const end = wall.querySelector (
-                            `.postit[data-id="postit-${endId}"]`);
+        if (start) {
+          const endId = item_end;
+          const startPlugin = $(start).postit('getClass');
+          const label = originalLabel || '...';
 
-              if (end)
-              {
-                const newPlug = {
-                        startId: startId,
-                        endId: endId,
-                        label: {
-                           name: labelName,
-                           top: plug.item_top,
-                           left: plug.item_left
-                      },
-                      obj: startPlugin.getPlugTemplate ({
-                             hide: true,
-                             start: start0,
-                             end: end,
-                             label: labelName,
-                             line_size: plug.line_size,
-                             line_path: plug.line_path,
-                             line_color: plug.line_color,
-                             line_type: plug.line_type
-                           })
-                      };
+          idsNew[`${startId}${endId}`] = 1;
 
-                startPlugin.addPlug (newPlug, applyZoom);
-              }
+          if (!startPlugin.plugExists(endId)) {
+            const end = postits[endId];
+
+            if (end) {
+              startPlugin.addPlug ({
+                startId,
+                endId,
+                label: {
+                  name: label,
+                  top: item_top,
+                  left: item_left,
+                },
+                obj: startPlugin.getPlugTemplate({
+                  hide: true,
+                  start,
+                  end,
+                  label,
+                  line_size,
+                  line_path,
+                  line_color,
+                  line_type,
+                }),
+              }, applyZoom);
             }
-            else
-            {
-              startPlugin.updatePlugLabel ({
-                endId: endId,
-                label: labelName,
-                top: plug.item_top,
-                left: plug.item_left
-              });
-
-              startPlugin.updatePlugProperties ({
-                endId: endId,
-                size: plug.line_size,
-                path: plug.line_path,
-                color: plug.line_color,
-                line_type: plug.line_type
-              });
-            }
+          } else {
+            startPlugin.updatePlugLabel({
+              endId,
+              label,
+              top: item_top,
+              left: item_left,
+            });
+            startPlugin.updatePlugProperties({
+              endId,
+              line_type,
+              size: line_size,
+              path: line_path,
+              color: line_color,
+            });
           }
-        });
+        }
+      });
 
       // Remove obsolete plugs
-      if (!partial)
-        wall.querySelectorAll(".postit.with-plugs").forEach (postit =>
-          {
-            $(postit).postit("getSettings").plugs.forEach (plug =>
-              {
-                if (!idsNew[`${plug.startId}${plug.endId}`])
-                  $(wall.querySelector(
-                      `.postit[data-id="postit-${plug.endId}"]`))
-                    .postit ("removePlug", plug, true);
-              });
+      if (partial === false) {
+        wall.querySelectorAll('.postit.with-plugs').forEach((postit) => {
+          $(postit).postit('getSettings').plugs.forEach((plug) => {
+            if (!idsNew[`${plug.startId}${plug.endId}`]) {
+              $(wall.querySelector(
+                `.postit[data-id="postit-${plug.endId}"]`))
+                  .postit('removePlug', plug, true);
+            }
           });
+        });
+      }
     },
 
     // METHOD hidePostitsPlugs()
@@ -615,10 +561,8 @@
     // METHOD showPostitsPlugs()
     showPostitsPlugs() {
       this.repositionPostitsPlugs();
-
-      H.waitForDOMUpdate(() =>
-          this.element[0].querySelectorAll('.postit').forEach(
-              (p) => $(p).postit('showPlugs', true)));
+      this.element[0].querySelectorAll('.postit').forEach(
+        (p) => $(p).postit('showPlugs', true));
     },
 
     // METHOD showUserWriting ()
@@ -634,22 +578,20 @@
         }, 150);
     },
 
-    // METHOD refresh ()
-    refresh (d)
+    // METHOD refresh()
+    async refresh(d)
     {
-      if (d)
-        this._refresh (d);
-      else if (this.settings.id)
-        H.fetch (
-          "GET",
-          `wall/${this.settings.id}`,
-          null,
-          // success cb
-          (d) => this._refresh (d));
+      if (!d && this.settings.id) {
+        d = await H.fetch ('GET', `wall/${this.settings.id}`);
+      }
+
+      if (d) {
+        this._refresh(d);
+      }
     },
 
     // METHOD _refresh ()
-    _refresh (d)
+    async _refresh (d)
     {
       const plugin = this,
             $wall = plugin.element,
@@ -750,8 +692,6 @@
               postitsIds = {},
               rows = [],
               displayHeaders = plugin.settings.displayheaders;
-
-        _refreshing = true;
 
         wall.dataset.cols = colsCount;
         wall.dataset.rows = rowsCount;
@@ -903,191 +843,171 @@
             }
           }
         }
-
-        _refreshing = false;
-        plugin.fixSize ();
       }
 
       // Refresh super menu tool
       S.getCurrent("mmenu").mmenu ("refresh");
 
-      if (wallIsVisible && d.postits_plugs)
-        setTimeout (() =>
-          {
-            // Refresh postits relations
-            plugin.refreshPostitsPlugs (d.partial && d.partial != "plugs");
-          }, 0);
-      else
-        plugin.repositionPostitsPlugs ();
+      // Set wall menu visible
+      S.getCurrent('wmenu')[0].style.visibility = 'visible';
+
+      plugin.fixSize ();
+
+      if (d.reorganize)
+        $wall.find("tbody.wpt td.wpt").cell ("reorganize");
 
       // Apply display mode
-      setTimeout (()=>
-        {
-          plugin.fixSize ();
+      plugin.refreshCellsToggleDisplayMode ();
 
-          if (d.reorganize)
-            $wall.find("tbody.wpt td.wpt").cell ("reorganize");
+      if (!d.isResponse && !d.partial &&
+          S.get ("zoom-level"))
+      {
+        const zoom = document.querySelector (".tab-content.walls");
 
-          plugin.refreshCellsToggleDisplayMode ();
+        if (zoom &&
+            zoom.dataset.zoomlevelorigin &&
+            zoom.dataset.zoomtype == "screen")
+          plugin.zoom ({type: "screen"});
+      }
 
-          // Re-apply filters
-          setTimeout (()=>
-            {
-              const $f = S.getCurrent("filters");
-              if ($f.is (":visible"))
-                $f.filters ("apply", {norefresh: true});
-            }, 0)
-
-          if (!d.isResponse && !d.partial &&
-              S.get ("zoom-level"))
-          {
-            const zoom = document.querySelector (".tab-content.walls");
-
-            if (zoom &&
-                zoom.dataset.zoomlevelorigin &&
-                zoom.dataset.zoomtype == "screen")
-              plugin.zoom ({type: "screen"});
+      // Show locks
+      if (d.locks) {
+        d.locks.forEach(({item, item_id, user_id, user_name}) => {
+          const el = document.querySelector(
+            `${item === 'postit' ? '.postit' : ''}`+
+            `[data-id="${item}-${item_id}"]`);
+          if (el) {
+            $(el)[item]('showUserWriting', {id: user_id, name: user_name});
           }
-
-          // Show locks
-          if (d.locks) {
-            d.locks.forEach(({item, item_id, user_id, user_name}) => {
-              const el = document.querySelector(
-                `${item === 'postit' ? '.postit' : ''}`+
-                `[data-id="${item}-${item_id}"]`);
-              if (el) {
-                $(el)[item]('showUserWriting', {id: user_id, name: user_name});
-              }
-            });
-          }
-        }, 0);
-    },
-
-    // METHOD refreshCellsToggleDisplayMode ()
-    refreshCellsToggleDisplayMode ()
-    {
-      this.element.find("td.list-mode").each (function ()
-        {
-          $(this).cell ("toggleDisplayMode", true);
         });
+      }
 
-      if (S.get ("zoom-level"))
-        this.UIPluginCtrl (".cell-list-mode ul",
-                           "sortable", "disabled", true, true);
+      if (wallIsVisible && d.postits_plugs) {
+        // Refresh postits relations
+        plugin.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
+      } else {
+        plugin.repositionPostitsPlugs ();
+      }
+
+      plugin.refreshCellsToggleDisplayMode();
+
+      // Re-apply filters
+      const $f = S.getCurrent("filters");
+      if ($f.is (":visible"))
+        $f.filters ("apply", {norefresh: true});
     },
 
-    // METHOD openCloseAllWallsPopup ()
-    openCloseAllWallsPopup ()
-    {
-      H.openConfirmPopup ({
-        icon: "times",
+    // METHOD refreshCellsToggleDisplayMode()
+    refreshCellsToggleDisplayMode() {
+      this.element[0].querySelectorAll('td.wpt.list-mode').forEach((cell) => {
+        $(cell).cell('toggleDisplayMode', true);
+      });
+
+      if (S.get('zoom-level')) {
+        this.UIPluginCtrl(
+          '.cell-list-mode ul', 'sortable', 'disabled', true, true);
+      }
+    },
+
+    // METHOD openCloseAllWallsPopup()
+    openCloseAllWallsPopup () {
+      H.openConfirmPopup({
+        icon: 'times',
         content: `<?=_("Close the walls?")?>`,
-        cb_ok: () => this.closeAllWalls ()
+        cb_ok: () => this.closeAllWalls(),
       });
     },
 
-    // METHOD closeAllWalls ()
-    closeAllWalls (saveSession = true)
-    {
+    // METHOD closeAllWalls()
+    closeAllWalls(saveSession = true) {
       // Tell the other methods that we are massively closing the walls
-      S.set ("closing-all", true);
-      document.querySelectorAll("table.wall").forEach (wall =>
-        $(wall).wall ("close"));
-      S.unset ("closing-all");
+      S.set('closing-all', true);
+      document.querySelectorAll('table.wall').forEach((wall) =>
+        $(wall).wall('close'));
+      S.unset('closing-all');
 
-      saveSession &&
-        $("#settingsPopup").settings ("saveOpenedWalls", null, false);
+      if (saveSession) {
+        $('#settingsPopup').settings('saveOpenedWalls', null, false);
+      }
+
+      S.reset();
     },
 
-    // METHOD close ()
-    close ()
-    {
-      const activeTabId = `wall-${this.settings.id}`,
-            activeTab = document.querySelector(`a[href="#${activeTabId}"]`),
-            newActiveTabId =
-              (activeTab.previousElementSibling) ?
-                activeTab.previousElementSibling.getAttribute ("href") :
-                  (activeTab.nextElementSibling) ?
-                    activeTab.nextElementSibling.getAttribute ("href") : null,
-            $chat = S.getCurrent ("chat");
+    // METHOD close()
+    close() {
+      const activeTabId = `wall-${this.settings.id}`;
+      const activeTab = document.querySelector(`a[href="#${activeTabId}"]`);
+      const newActiveTab = _getNextActiveTab(activeTab);
+      const $chat = S.getCurrent('chat');
 
-      if ($chat.is (":visible"))
-        $chat.chat ("leave");
+      if ($chat.is(':visible')) {
+        $chat.chat('leave');
+      }
 
       // If account popup is opened, do not close it: we are dealing with the
       // "invisible mode" option.
-      $(".modal.show:not(#accountPopup)").modal ("hide");
+      document.querySelectorAll('.modal.show:not(#accountPopup)')
+        .forEach((m) => bootstrap.Modal.getInstance(m).hide());
 
-      this.removePostitsPlugs ();
+      this.removePostitsPlugs();
 
-      activeTab.remove ();
-      document.getElementById(activeTabId).remove ();
+      activeTab.remove();
+      document.getElementById(activeTabId).remove();
 
       // No more wall to display
-      if (!document.querySelector (".wall"))
-      {
-        document.querySelector(".nav.walls").style.display = "none";
-
-        this.zoom ({type: "normal", "noalert": true});
-        document.getElementById("dropdownView").classList.add ("disabled");
-  
-        this.menu ({from: "wall", type: "no-wall"});
-
-        $("#welcome").show (S.get ("closing-all") ? null : "fade");
-      }
+      if (!document.querySelector('.wall')) {
+        this.zoom({type: 'normal', noalert: true});
+        this.menu({from: 'wall', type: 'no-wall'});
       // Active another tabs after deletion
-      else
-        bootstrap.Tab.getOrCreateInstance(document.querySelector(
-          `.nav-tabs.walls a[href="${newActiveTabId}"]`)).show ();
+      } else {
+        bootstrap.Tab.getOrCreateInstance(newActiveTab).show();
+      }
 
       // If we are not massively closing all walls
-      if (!S.get ("closing-all"))
-        $("#settingsPopup").settings ("saveOpenedWalls");
-
-      //FIXME
-      setTimeout (()=> S.reset (), 250);
+      if (!S.get('closing-all')) {
+        $('#settingsPopup').settings('saveOpenedWalls');
+        S.reset();
+      }
     },
 
-    // METHOD openDeletePopup ()
-    openDeletePopup ()
-    {
-      this.edit (() =>
-        {
-          // H.openConfirmPopover() does not display the popover on some
-          // devices when button menu is visible.
-          if (H.isMainMenuCollapsed ())
-            H.openConfirmPopup ({
-              icon: "trash",
-              content: `<?=_("Delete this wall?")?>`,
-              cb_ok: () => this.delete (),
-              cb_close: () => this.unedit ()
-            });
-          else
-            H.openConfirmPopover ({
-              item: $(this.settings.tabLink[0].querySelector("span.val")),
-              placement: "left",
-              title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-              content: `<?=_("Delete this wall?")?>`,
-              cb_close: () => this.unedit (),
-              cb_ok: () => this.delete ()
-            });
-        }, null, true);
+    // METHOD openDeletePopup()
+    openDeletePopup() {
+      this.edit(() => {
+        // H.openConfirmPopover() does not display the popover on some
+        // devices when button menu is visible.
+        if (H.isMainMenuCollapsed()) {
+          H.openConfirmPopup({
+            icon: 'trash',
+            content: `<?=_("Delete this wall?")?>`,
+            cb_ok: () => this.delete(),
+            cb_close: () => this.unedit(),
+          });
+        } else {
+          H.openConfirmPopover({
+            item: $(this.settings.tabLink.querySelector('span.val')),
+            placement: 'left',
+            title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+            content: `<?=_("Delete this wall?")?>`,
+            cb_close: () => this.unedit(),
+            cb_ok: () => this.delete(),
+          });
+        }
+      }, null, true);
     },
 
-    // METHOD delete ()
-    delete ()
-    {
+    // METHOD delete()
+    delete() {
       this.element[0].dataset.todelete = true;
 
-      this.unedit (() =>
-        {
-          const sPlugin = $("#settingsPopup").settings ("getClass");
+      this.unedit(() => {
+        const sPlugin = $('#settingsPopup').settings('getClass');
+        const wallId = this.settings.id;
 
-          this.close ();
+        this.close();
 
-          sPlugin.removeWallBackground (this.settings.id);
-          sPlugin.removeRecentWall (this.settings.id);
-        });
+        sPlugin.removeWallBackground(wallId);
+        sPlugin.removeRecentWall(wallId);
+      });
     },
 
     // METHOD createColRow()
@@ -1178,65 +1098,52 @@
         {wall: {width: Math.trunc (this.element.outerWidth ())}});
     },
 
-    // METHOD deleteCol ()
-    deleteCol (idx)
-    {
-      const $wall = this.element;
+    // METHOD deleteCol()
+    deleteCol(idx) {
+      const wall = this.element[0];
 
-      H.request_ws (
-        "DELETE",
+      H.request_ws(
+        'DELETE',
         `wall/${this.settings.id}/col/${idx-1}`,
         {
-          wall: {width: Math.trunc ($wall.outerWidth()-1)},
-          width: Math.trunc ($wall.find(`thead.wpt tr.wpt th.wpt:eq(${idx})`).outerWidth())
+          wall: {width: Math.trunc(wall.clientWidth - 1)},
+          width: Math.trunc(
+            wall.querySelectorAll(`thead.wpt tr.wpt th.wpt`)[idx]
+              .getBoundingClientRect().width),
         });
     },
 
-    // METHOD addNew ()
-    addNew (args, $popup)
-    {
-      const plugin = this,
-            tabs = document.querySelector (".nav-tabs.walls"),
-            $tabs = $(tabs),
-            method = (args.load) ? "GET" : "PUT",
-            service = (args.load) ? `wall/${args.wallId}` : "wall",
-            data = (args.load) ?
-                null : {
-                  name: args.name,
-                  grid: Boolean(args.grid),
-                };
+    // METHOD addNew()
+    async addNew(args) {
+      const tabs = document.querySelector('.nav-tabs.walls');
+      const $tabs = $(tabs);
+      const service = (args.type === 'load') ? `wall/${args.wallId}` : 'wall';
+      const data = (args.type === 'load') ? null : {
+              name: args.name,
+              grid: Boolean(args.grid),
+            };
 
-       if (data)
-       {
-         if (data.grid)
-         {
-           data["colsCount"] = args.dim.colsCount;
-           data["rowsCount"] = args.dim.rowsCount;
-         }
-         else
-         {
-           const w = Number (args.dim.width),
-                 h = Number (args.dim.height);
+      S.reset();
 
-           if (w)
-             data["width"] = w + 52;
-           else
-             data["width"] = $(window).width () - 50;
+      if (data) {
+        if (data.grid) {
+          data.colsCount = args.dim.colsCount;
+          data.rowsCount = args.dim.rowsCount;
+        } else {
+          const w = args.dim.width;
+          const h = args.dim.height;
 
-           if (data.height < 200)
-             data.height = 200;
+          data.width = w ? w + 52 : window.outerWidth - 50
+          if (data.width < 300) {
+            data.width = 300;
+          }
 
-           if (h)
-             data["height"] = h;
-           else
-             data["height"] = $(window).height ();
-
-           if (data.width < 300)
-             data.width = 300;
-         }
-       }
-
-      S.reset ();
+          data.height = h ? h : window.innerHeight;
+          if (data.height < 200) {
+            data.height = 200;
+          }
+        }
+      }
 
       if (args.restoring) {
         tabs.insertBefore(H.createElement('a',
@@ -1246,160 +1153,166 @@
         ), tabs.firstChild);
       }
 
-      H.fetch (
-        method,
-        service,
-        data,
-        // success cb
-        (d) =>
-        {
-          // If we must execute a callback after loading the wall.
-          if (args.cb_after)
-            d.cb_after = args.cb_after;
+      const r = await H.fetch(
+        (args.type === 'load') ? 'GET' : 'PUT', service, data);
 
-          // If we are restoring a wall.
-          if (args.restoring)
-            d.restoring = 1;
-
-          // The wall does not exists anymore.
-          if (d.removed)
-          {
-            var tmp = tabs.querySelector(`a[href="#wall-${args.wallId}"]`);
-            if (tmp)
-              tmp.remove ();
-
-            return H.waitForDOMUpdate (()=>
-              {
-                if (args.restoring && tabs.querySelector(".nav-item"))
-                {
-                  const el = tabs.querySelector (".nav-item:first-child");
-
-                  $(el).trigger ("mousedown");
-                  bootstrap.Tab.getOrCreateInstance(el).show ();
-                }
-
-                // Save opened walls when all walls will be loaded.
-                if (d.restoring)
-                {
-                  if (args.lastWall)
-                    $("#settingsPopup").settings ("saveOpenedWalls");
-                  else
-                    S.set ("save-opened-walls", true);
-                }
-
-                H.displayMsg ({
-                  title: `<?=_("Wall")?>`,
-                  type: "warning",
-                  msg: `<?=_("Some walls are no longer available")?>`
-                });
-            });
-          }
-
-          if (d.error_msg)
-            return H.displayMsg ({
-              title: `<?=_("Wall")?>`,
-              type: "warning",
-              msg: d.error_msg
-            });
-
-          if ($popup)
-            $popup.modal ("hide");
-
-          // Add main wall container (tab pane)
-          document.querySelector('.tab-content.walls').appendChild(
-            H.createElement('div',
-              {id: `wall-${d.id}`, className: 'tab-pane'},
-              null,
-              `<ul class="wall-menu shadow"></ul><div class="toolbox chat shadow"></div><div class="toolbox filters shadow"></div><table class="wall" data-id="wall-${d.id}" data-access="${d.access}"></table>`,
-            ));
-
-          if (!args.restoring) {
-            tabs.insertBefore (H.createElement('a',
-              {href: `#wall-${d.id}`, className: 'nav-item nav-link'},
-              {'bsToggle': 'tab'}, `<span class="icon"></span><span class="val"></span>`,
-            ), tabs.firstChild);
-          }
-
-          if (args.lastWall)
-            d.lastWall = args.lastWall;
-
-          const wallTab = tabs.querySelector (`a[href="#wall-${d.id}"]`);
-
-          wallTab.setAttribute ("data-access", d.access);
-
-          // Add close wall button
-          wallTab.insertBefore(H.createElement('button',
-            {
-              type: 'button',
-              className: 'close',
-              title: `<?=_("Close this wall")?>`,
-            },
-            null,
-            `<span class="close">&times;</span>`,
-          ), wallTab.firstChild);
-
-          d["background-color"] =
-            $("#settingsPopup").settings ("get", "wall-background", d.id);
-
-          const $wallDiv = $(document.getElementById(`wall-${d.id}`));
-
-          $wallDiv.find(".wall").wall (d);
-          $wallDiv.find(".chat").chat ({wallId: d.id});
-          $wallDiv.find(".filters").filters ();
-
-          if (!args.restoring || wpt_userData.settings.activeWall == d.id)
-          {
-            S.set ("newWall", true);
-            bootstrap.Tab.getOrCreateInstance (wallTab).show ();
-            S.unset ("newWall");
-          }
-
-          document.querySelector(".nav.walls").style.display = "block";
-          document.getElementById("dropdownView").classList.remove ("disabled");
-
-          plugin.menu ({from: "wall", type: "have-wall"});
-
-          if (!args.restoring)
-            $("#settingsPopup").settings ("saveOpenedWalls");
-        });
-    },
-
-    // METHOD open ()
-    open (args)
-    {
-      args.load = true;
-
-      this.addNew (args);
-    },
-
-    // METHOD clone ()
-    clone ()
-    {
-      H.fetch (
-      "PUT",
-      `wall/${this.settings.id}/clone`,
-      null,
-      // success cb
-      (d) =>
-        {
-          if (d.error_msg)
-            return H.displayMsg ({
-              title: `<?=_("Wall")?>`,
-              type: "warning",
-              msg: d.error_msg
-            });
-
-          $("<div/>").wall ("open", {
-            lastWall: 1,
-            wallId: d.wallId
+      // Return on error
+      if (!r || r.error_msg) {
+        if (r) {
+          H.displayMsg({
+            title: `<?=_("Wall")?>`,
+            type: 'warning',
+            msg: r.error_msg,
           });
+        }
+        return;
+      }
 
+      // If the wall does not exists anymore remove it and return
+      if (r.removed) {
+        const tmp = tabs.querySelector(`a[href="#wall-${args.wallId}"]`);
+
+        tmp && tmp.remove();
+
+        if (args.restoring &&
+            wpt_userData.settings.activeWall === args.wallId) {
+          const el = tabs.querySelector('.nav-item');
+          if (el) {
+            el.dispatchEvent(new Event('mousedown'));
+            bootstrap.Tab.getOrCreateInstance(el).show();
+          }
+        }
+
+        // Save opened walls when all walls will be loaded
+        if (args.restoring) {
+          S.set('save-opened-walls', true);
+        }
+
+        H.displayMsg({
+          title: `<?=_("Wall")?>`,
+          type: 'warning',
+          msg: `<?=_("Some walls are no longer available")?>`,
+        });
+
+        return;
+      }
+
+      const wallDiv = H.createElement('div',
+        {id: `wall-${r.id}`, className: 'tab-pane'},
+        null,
+        `<ul class="wall-menu shadow"></ul><div class="toolbox chat shadow"></div><div class="toolbox filters shadow"></div><table class="wall" data-id="wall-${r.id}" data-access="${r.access}"></table>`,
+      );
+
+      // Add main wall container (tab pane)
+      document.querySelector('.tab-content.walls').appendChild(wallDiv);
+
+      if (!args.restoring) {
+        tabs.insertBefore (H.createElement('a',
+          {href: `#wall-${r.id}`, className: 'nav-item nav-link'},
+          {'bsToggle': 'tab'}, `<span class="icon"></span><span class="val"></span>`,
+        ), tabs.firstChild);
+      }
+
+      const wallTab = tabs.querySelector(`a[href="#wall-${r.id}"]`);
+
+      wallTab.setAttribute('data-access', r.access);
+
+      // Add close wall button
+      wallTab.insertBefore(H.createElement('button',
+        {
+          type: 'button',
+          className: 'close',
+          title: `<?=_("Close this wall")?>`,
+        },
+        null,
+        `<span class="close">&times;</span>`,
+      ), wallTab.firstChild);
+
+      r['background-color'] =
+        $("#settingsPopup").settings('get', 'wall-background', r.id);
+
+      $(wallDiv.querySelector('.chat')).chat({wallId: r.id});
+      $(wallDiv.querySelector('.filters')).filters();
+
+      return await $(wallDiv.querySelector('.wall')).wall({...args, ...r});
+    },
+
+    // METHOD create()
+    async create(args) {
+      return await this.open({...args, type: 'create', noPostProcess: true});
+    },
+
+    // METHOD open()
+    async open(args) {
+      const options = {
+        ...args,
+        // "load" or "create". "load" by default
+        type: (args.type !== undefined) ? args.type : 'load',
+      };
+      const $wall = await this.addNew(options);
+
+      if ($wall && !args.noPostProcess) {
+        $wall.wall('postProcessLastWall', options);
+      }
+
+      return $wall;
+    },
+
+    // METHOD postProcessLastWall()
+    async postProcessLastWall(args = {}) {
+      const wall = this.element[0];
+      const awSettingsId = Number(wpt_userData.settings.activeWall);
+      let activeWall;
+
+      if (!args.restoring || args.cb_after || S.get('save-opened-walls')) {
+        activeWall = wall;
+      } else {
+        activeWall = document.querySelector(
+          `[data-id="wall-${wpt_userData.settings.activeWall}"]`) || wall;
+      }
+
+      const awPlugin = $(activeWall).wall('getClass');
+      awPlugin.setActive();
+      await awPlugin.refresh();
+      awPlugin.displayExternalRef();
+      awPlugin.displayHeaders();
+
+      if (S.get('save-opened-walls') || awSettingsId !== awPlugin.getId()) {
+        S.unset('save-opened-walls');
+        $('#settingsPopup').settings('saveOpenedWalls');
+      }
+
+      // Display postit dealine alert or specific wall if needed.
+      args.cb_after && args.cb_after();
+    },
+
+    // METHOD clone()
+    async clone() {
+      const r = await H.fetch(
+      'PUT',
+      `wall/${this.settings.id}/clone`);
+
+      if (!r || r.error_msg) {
+        if (r) {
           H.displayMsg ({
             title: `<?=_("Wall")?>`,
-            type: "success",
-            msg: `<?=_("The wall has been successfully cloned")?>`
+            type: 'warning',
+            msg: r.error_msg
           });
-      });
+        }
+        return;
+      }
+
+      // try / catch
+      const $wall = await $('<div/>').wall('open', {wallId: r.wallId});
+
+      if ($wall) {
+        H.displayMsg({
+          title: `<?=_("Wall")?>`,
+          type: 'success',
+          msg: `<?=_("The wall has been successfully cloned")?>`,
+        });
+      }
     },
 
     // METHOD export ()
@@ -1418,127 +1331,97 @@
       document.querySelector(".upload.import-wall").click ();
     },
 
-    // METHOD restorePreviousSession ()
-    restorePreviousSession (args)
-    {
-      const walls = wpt_userData.settings.openedWalls;
+    // METHOD restorePreviousSession()
+    async restorePreviousSession() {
+      const walls = wpt_userData.settings.openedWalls || [];
 
-      if (walls)
-      {
-        const {type, wallId, postitId} = args||{},
-              wallsLen = walls.length;
+      if (walls.length) {
+        let $wall;
 
-        for (let i = wallsLen - 1; i >= 0; i--)
-        {
-          this.open ({
-            lastWall: (i == 0) ? wallsLen : null,
-            wallId: walls[i],
-            restoring: true
+        await Promise.all(walls.reverse().map(async (wallId) => {
+          $wall = await this.open({
+            wallId,
+            restoring: true,
+            noPostProcess: true,
           });
+        }));
+
+        if ($wall) {
+          $wall.wall('postProcessLastWall', {restoring: true});
         }
       }
     },
 
-    // METHOD isOpened ()
-    isOpened (wallId)
-    {
-      return ((wpt_userData.settings.openedWalls||[])
-                 .indexOf (String(wallId)) != -1);
+    // METHOD isOpened()
+    isOpened(wallId) {
+      return (wpt_userData.settings.openedWalls || []).includes(String(wallId));
     },
 
-    // METHOD loadSpecific ()
-    loadSpecific (args, noDelay)
-    {
+    // METHOD loadSpecific()
+    async loadSpecific(args, noDelay) {
       const {wallId, postitId, commentId} = args;
       let type;
 
-      // LOCAL FUNCTION __displayAlert ()
-      const __displayAlert = ()=>
-        {
-          if (postitId)
-          {
-            switch (args.type)
-            {
-              case "a": type = "deadline"; break;
-              case "c": type = "comment"; break;
-              case "w": type = "worker"; break;
-              default:
-                type = args.type;
-            }
-
-            setTimeout (()=>
-              this.displayPostitAlert ({
-                wallId,
-                postitId,
-                type: type
-              }), noDelay ? 0 : 250);
+      // LOCAL FUNCTION __displayAlert()
+      const __displayAlert = () => {
+        if (postitId) {
+          switch (args.type) {
+            case 'a': type = 'deadline'; break;
+            case 'c': type = 'comment'; break;
+            case 'w': type = 'worker'; break;
+            default: type = args.type;
           }
-          else
-            this.displayShareAlert (wallId);
+          this.displayPostitAlert({wallId, postitId, type});
+          } else {
+            this.displayShareAlert(wallId);
+          }
         };
 
-      if (!this.isOpened (wallId))
-        this.open ({
-          lastWall: 1,
-          wallId: wallId,
-          restoring: false,
-          cb_after: __displayAlert
-        });
-      else
-        setTimeout (()=>
-        {
-          // Set wall current if needed
-          if (wallId != S.getCurrent("wall").wall ("getId"))
-          {
-            const el = document.querySelector(`a[href="#wall-${wallId}"]`);
+      if (!this.isOpened(wallId)) {
+        const $wall = await this.open({wallId, noPostProcess: true});
+        if ($wall) {
+          $wall.wall('postProcessLastWall', {cb_after: __displayAlert});
+        }
+      } else {
+        // Set wall current if needed
+        if (wallId !== S.getCurrent('wall').wall('getId')) {
+          const el = document.querySelector(`a[href="#wall-${wallId}"]`);
+          el.dispatchEvent(new Event('mousedown', {bubbles: true}));
+          el.dispatchEvent(new Event('click', {bubbles: true}));
+        }
 
-            $(el).trigger ("mousedown");
-            bootstrap.Tab.getOrCreateInstance(el).show ();
+        __displayAlert();
+      }
+
+      // Remove special alert URL
+      history.pushState(null, null, '/');
+    },
+
+    // METHOD refreshUserWallsData()
+    async refreshUserWallsData(success_cb) {
+      const r = await H.fetch('GET', 'wall');
+      if (r) {
+        wpt_userData.walls = {list: r.list || []};
+        success_cb && success_cb ();
+      }
+    },
+
+    // METHOD openOpenWallPopup()
+    openOpenWallPopup() {
+      this.refreshUserWallsData(() => {
+        H.loadPopup ('owall', {
+          cb: ($p) => {
+            $p.owall('reset');
+            $p.owall('displayWalls');
+            $p.owall('controlFiltersButtons');
           }
-
-          __displayAlert ();
-
-        }, noDelay ? 0 : 500);
-
-      // Remove special alert URL.
-      history.pushState (null, null, "/");
-    },
-
-    // METHOD refreshUserWallsData ()
-    refreshUserWallsData (success_cb)
-    {
-      H.fetch (
-        "GET",
-        "wall",
-        null,
-        // success cb
-        (d) =>
-        {
-          wpt_userData.walls = {list: d.list||[]};
-
-          if (success_cb)
-            success_cb ();
         });
+      });
     },
 
-    // METHOD openOpenWallPopup ()
-    openOpenWallPopup ()
-    {
-      this.refreshUserWallsData (() =>
-        {
-          H.loadPopup ("owall", {
-            cb: ($p)=>
-            {
-              $p.owall ("reset");
-              $p.owall ("displayWalls");
-              $p.owall ("controlFiltersButtons");
-            }
-          });
-        });
-    },
-
-    // METHOD openNamePopup()
-    openNamePopup() {
+    // METHOD openCreatePopup()
+    openCreatePopup() {
+      H.closeMainMenu();
       H.loadPopup('createWall', {
         init: ($p) => {
           const p = $p[0];
@@ -1548,22 +1431,23 @@
             const btn = e.target;
 
             p.querySelectorAll('.cols-rows input').forEach(
-                (el) => el.value = 3);
+              (el) => el.value = 3);
             p.querySelectorAll('.width-height input').forEach(
-                (el) => el.value = '');
+              (el) => el.value = '');
             p.querySelectorAll('.cols-rows,.width-height').forEach(
-                (el) => el.style.display = 'none');
+              (el) => el.style.display = 'none');
 
-            if (btn.checked)
+            if (btn.checked) {
               btn.parentNode.classList.remove('disabled');
-            else
+            } else {
               btn.parentNode.classList.add('disabled');
+            }
 
             p.querySelector(btn.checked ? '.cols-rows' : '.width-height')
-                .style.display = 'flex';
+              .style.display = 'flex';
           });
         },
-        cb: ($p) => $p[0].dataset.noclosure = true
+        cb: ($p) => $p[0].dataset.noclosure = true,
       });
     },
 
@@ -1697,12 +1581,12 @@
 
     // METHOD getName()
     getName() {
-      return this.settings.tabLink[0].querySelector('span.val').innerText;
+      return this.settings.tabLink.querySelector('span.val').innerText;
     },
 
     // METHOD setName()
     setName(name, noIcon) {
-      const div = this.settings.tabLink[0];
+      const div = this.settings.tabLink;
       const notOwner = (this.settings.ownerid !== wpt_userData.id);
 
       let html = noIcon ?
@@ -1758,7 +1642,7 @@
 
     // METHOD refreshSharedIcon()
     refreshSharedIcon() {
-      const span = this.settings.tabLink[0].querySelector('span.icon');
+      const span = this.settings.tabLink.querySelector('span.icon');
       const wIcon = span.querySelector('.wallname-icon');
 
       if (this.isShared ()) {
@@ -1775,18 +1659,16 @@
 
     // METHOD getDescription()
     getDescription() {
-      return this.settings.tabLink[0].dataset.description;
+      return this.settings.tabLink.dataset.description;
     },
 
     // METHOD setDescription()
     setDescription(description) {
-      this.settings.tabLink[0].dataset.description = H.noHTML(description);
+      this.settings.tabLink.dataset.description = H.noHTML(description);
     },
 
     // METHOD fixSize()
     fixSize(oldW, newW) {
-      if (_refreshing) return;
-
       const wall = this.element[0];
       let w;
 
@@ -2171,20 +2053,18 @@
       if (type === 'show') {
         this.showHeaders();
         wall.removeAttribute('data-headersshift');
-        H.waitForDOMUpdate(() => {
-          if (update) {
-            let w = this.getTDsWidth();
-            w += wall.querySelector('tbody.wpt th.wpt').clientWidth;
-            wall.style.width = `${w}px`;
-            wall.dataset.oldwidth = w;
-          }
-          this.fixSize ();
-        });
+        if (update) {
+          let w = this.getTDsWidth();
+          w += wall.querySelector('tbody.wpt th.wpt').clientWidth;
+          wall.style.width = `${w}px`;
+          wall.dataset.oldwidth = w;
+        }
+        this.fixSize ();
       } else {
         // Save plugs shift width & height for absolutely positioned plugs
         if (!wall.dataset.headersshift) {
           //FIXME
-          // Required to obtain the headers dimensions
+          // Required to obtain the headers dimensions?
           this.showHeaders ();
           const bbox =
             wall.querySelector('thead.wpt th.wpt').getBoundingClientRect();
@@ -2223,6 +2103,9 @@
         () => {
           const $settings = $('#settingsPopup');
 
+          // Heartbeat (every 15mn)
+          setInterval(() => fetch('/api/user/ping'), 60 * 1000 * 15);
+
           $settings.settings({
             locale: document.documentElement.getAttribute('lang'),
           });
@@ -2245,33 +2128,32 @@
           const displayAccount = (directURLData && directURLData.type === 'u');
           const $wall = $('<div/>');
 
-          // Load previously opened walls
-          $wall.wall('restorePreviousSession', loadSpecific);
+          (async () => {
+            // Load previously opened walls
+            await $wall.wall('restorePreviousSession');
 
-          // Check if we must display a postit alert or a specific wall
-          // (from direct URL).
-          if (loadSpecific) {
-            $wall.wall('loadSpecific', directURLData);
-          // Display account popup and highlight emails settings field
-          // (from direct URL).
-          } else if (displayAccount) {
-            // Remove special alert URL.
-            history.pushState(null, null, '/');
+            // Check if we must display a postit alert or a specific wall
+            // (from direct URL).
+            if (loadSpecific) {
+              $wall.wall('loadSpecific', directURLData);
+            // Display account popup and highlight emails settings field
+            // (from direct URL).
+            } else if (displayAccount) {
+              // Remove special alert URL.
+              history.pushState(null, null, '/');
 
-            H.loadPopup ('account', {
-              cb: ($p) =>
-                    $p.find("[name='allow_emails']")
-                      .parent().effect("highlight", {duration: 5000})
-            });
-          }
+              H.loadPopup('account', {
+                cb: ($p) =>
+                      $p.find(`[name="allow_emails"]`)
+                        .parent().effect("highlight", {duration: 5000})
+              });
+            }
 
-          // Websocket heartbeat (every 15mn)
-          setInterval(() => fetch('/api/user/ping'), 60 * 1000 * 15);
-
-          // Display theme chooser if needed.
-          if (!wpt_userData.settings.theme) {
-            setTimeout(() => $settings.settings('openThemeChooser'), 1000);
-          }
+            // Display theme chooser if needed.
+            if (!wpt_userData.settings.theme) {
+              $settings.settings('openThemeChooser');
+            }
+          })();
         });
 
       H.fixHeight();
@@ -2315,10 +2197,7 @@
                   });
                 }
 
-                $('<div/>').wall('open', {
-                  lastWall: 1,
-                  wallId: d.wallId,
-                });
+                $('<div/>').wall('open', {wallId: d.wallId});
 
                 H.displayMsg({
                   title: `<?=_("Wall")?>`,
@@ -2332,161 +2211,123 @@
       });
 
       // EVENT "click" on main content wopits icon
-      document.getElementById("welcome").addEventListener ("click", (e)=>
-        {
-          H.closeMainMenu ();
-          $("<div/>").wall ("openNamePopup");
-        });
+      document.getElementById('welcome').addEventListener('click',
+        (e) => $('<div/>').wall('openCreatePopup'));
 
       // EVENT "click" on walls tab
-      document.querySelector(".nav-tabs.walls")
-        .addEventListener ("click", (e)=>
-        {
+      document.querySelector('.nav-tabs.walls').addEventListener('click',
+        (e) => {
           const el = e.target;
 
           // EVENT "click" on "close wall" tab button
-          if (el.classList.contains ("close"))
-          {
-            e.stopImmediatePropagation ();
+          if (el.classList.contains('close')) {
+            e.stopImmediatePropagation();
 
-            H.openConfirmPopover ({
-              item: $(el.closest(".nav-item").querySelector ("span.val")),
-              placement: "left",
+            H.openConfirmPopover({
+              item: $(el.closest('.nav-item').querySelector('span.val')),
+              placement: 'left',
               title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
               content: `<?=_("Close this wall?")?>`,
-              cb_ok: ()=> S.getCurrent("wall").wall ("close")
+              cb_ok: () => S.getCurrent('wall').wall ('close'),
             });
-          }
           // EVENT "click" on "new wall" tab button
-          else if (el.parentNode.dataset.action=="new")
-          {
-            H.closeMainMenu ();
-            $("<div/>").wall ("openNamePopup");
+          } else if (el.parentNode.dataset.action === 'new') {
+            $('<div/>').wall('openCreatePopup');
           }
         });
 
       // EVENT "click"
-      document.body.addEventListener ("click", (e)=>
-        {
-          const el = e.target;
+      document.body.addEventListener('click', (e)=> {
+        const el = e.target;
 
-          // "click" on wall users view popup
-          if (el.matches ("#wallUsersviewPopup *"))
-          {
-            e.stopImmediatePropagation ();
+        // "click" on wall users view popup
+        if (el.matches('#wallUsersviewPopup *')) {
+          e.stopImmediatePropagation();
 
-            // EVENT "click" on users list
-            if (el.matches (".list-group-item,.list-group-item *"))
-            {
-              const li = el.tagName=="LI"?el:el.closest("li");
-
-              H.openUserview ({
-                about: li.dataset.about,
-                picture: li.dataset.picture,
-                title: li.dataset.title
-              });
-            }
+          // EVENT "click" on users list
+          if (el.matches('.list-group-item,.list-group-item *')) {
+            const li = (el.tagName === 'LI') ? el : el.closest('li');
+            H.openUserview({
+              about: li.dataset.about,
+              picture: li.dataset.picture,
+              title: li.dataset.title,
+            });
           }
-        });
+        }
+      });
 
       // EVENT "click" on main menu items
-      document.getElementById("main-menu").addEventListener ("click", (e)=>
-        {
-          const el = e.target,
-                $wall = S.getCurrent ("wall"),
-                li = el.tagName=="LI"?el:el.closest("li"),
-                action = li?li.dataset.action:null;
+      document.getElementById('main-menu').addEventListener('click', (e) => {
+        const el = e.target;
+        const $wall = S.getCurrent('wall');
+        const wallPlugin = $wall.length ?
+          $wall.wall('getClass') : $('<div/>').wall('getClass');
+        const li = (el.tagName === 'LI') ? el : el.closest('li');
+        const action = li ? li.dataset.action : null;
 
-          // Nothing if menu item is disabled
-          if (!li || li.querySelector ("a.disabled"))
-            return;
+        // Nothing if menu item is disabled
+        if (!li || li.querySelector('a.disabled')) return;
 
-          // LOCAL FUNCTION __manageCheckbox()
-          const __manageCheckbox = (el, li, type)=>
-            {
-              if (el.tagName != "INPUT")
-              {
-                const input = li.querySelector ("input");
-                input.checked = !input.checked;
-              }
-
-              S.getCurrent(type)[type] ("toggle");
-            };
-
-          switch (action)
-          {
-            case "zoom+":
-              $wall.wall ("zoom", {type: "+"});
-              $wall.wall ("ctrlMenu", "zoom-screen", "on");
-              break;
-
-            case "zoom-":
-              $wall.wall ("zoom", {type: "-"});
-              $wall.wall ("ctrlMenu", "zoom-screen", "on");
-              break;
-
-            case "zoom-screen":
-              $wall.wall ("zoom", {type:"screen"});
-              break;
-
-            case "zoom-normal":
-              $wall.wall ("zoom", {type: "normal"});
-              break;
-
-            case "chat":
-
-              __manageCheckbox (el, li, "chat");
-
-              break;
-
-            case "filters":
-
-              __manageCheckbox (el, li, "filters");
-
-              break;
-
-            case "settings":
-              $("#settingsPopup").settings ("open");
-              break;
-
-            case "new":
-              H.closeMainMenu ();
-              $("<div/>").wall ("openNamePopup");
-              break;
-
-            case "about":
-              H.loadPopup ("about");
-              break;
-
-            case "user-guide":
-              H.loadPopup ("userGuide");
-              break;
-
-            case "open":
-              $("<div/>").wall ("openOpenWallPopup");
-              break;
-
-            case "close-walls":
-              $("<div/>").wall ("openCloseAllWallsPopup");
-              break;
-
-            case "delete":
-              $wall.wall ("openDeletePopup");
-              break;
-
-            case "clone":
-              $wall.wall ("clone");
-              break;
-
-            case "export":
-              $wall.wall ("export");
-              break;
-
-            case "import":
-              $("<div/>").wall ("import");
-              break;
+        // LOCAL FUNCTION __manageCheckbox()
+        const __manageCheckbox = (el, li, type) => {
+          if (el.tagName !== 'INPUT') {
+            const input = li.querySelector('input');
+            input.checked = !input.checked;
           }
-        });
+          S.getCurrent(type)[type]('toggle');
+        };
+
+        switch (action) {
+          case 'zoom+':
+            wallPlugin.zoom({type: '+'});
+            wallPlugin.ctrlMenu('zoom-screen', 'on');
+            break;
+          case 'zoom-':
+            wallPlugin.zoom({type: '-'});
+            wallPlugin.ctrlMenu('zoom-screen', 'on');
+            break;
+          case 'zoom-screen':
+            wallPlugin.zoom({type: 'screen'});
+            break;
+          case 'zoom-normal':
+            wallPlugin.zoom({type: 'normal'});
+            break;
+          case 'chat':
+          case 'filters':
+            __manageCheckbox(el, li, action);
+            break;
+          case 'settings':
+            $('#settingsPopup').settings('open');
+            break;
+          case 'new':
+            wallPlugin.openCreatePopup();
+            break;
+          case 'about':
+            H.loadPopup('about');
+            break;
+          case "user-guide":
+            H.loadPopup('userGuide');
+            break;
+          case 'open':
+            wallPlugin.openOpenWallPopup();
+            break;
+          case 'close-walls':
+            wallPlugin.openCloseAllWallsPopup();
+            break;
+          case 'delete':
+            wallPlugin.openDeletePopup();
+            break;
+          case 'clone':
+            wallPlugin.clone();
+            break;
+          case 'export':
+            wallPlugin.export();
+            break;
+          case 'import':
+            wallPlugin.import();
+            break;
+        }
+      });
     } else {
       // EVENT CLICK on about button in the login page
       document.querySelectorAll(`[data-action="about"]`).forEach (el=>

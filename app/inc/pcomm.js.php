@@ -30,9 +30,8 @@
   Object.assign (Plugin.prototype,
   {
     readonly: true,
-    // METHOD init ()
-    init ()
-    {
+    // METHOD init()
+    init() {
       const settings = this.settings;
 
       this.readonly = settings.readonly;
@@ -49,234 +48,214 @@
       return this;
     },
 
-    // METHOD refresh ()
-    refresh (d)
-    {
+    // METHOD refresh()
+    refresh(d) {
       this.settings._cache = d.comments;
+      this.setCount(d.comments.length);
 
-      this.setCount (d.comments.length);
-
-      if ($_popup)
-        this.open (true);
+      if ($_popup) {
+        this.open(true);
+      }
     },
 
-    // METHOD injectUserRef ()
-    injectUserRef (s)
-    {
-      const val = _textarea.value,
-            start = _textarea.selectionStart;
-      let prev = val.substring(0, start).replace (/@([^\s]+)?$/, `@${s}`),
-          next = val.substring(start).replace (/^[^\s]+/, "");
+    // METHOD injectUserRef()
+    injectUserRef(s) {
+      const val = _textarea.value;
+      const start = _textarea.selectionStart;
+      let prev = val.substring(0, start).replace(/@([^\s]+)?$/, `@${s}`);
+      let next = val.substring(start).replace(/^[^\s]+/, '');
 
       _textarea.value = prev + next;
 
-      _textarea.focus ();
+      _textarea.focus();
       _textarea.selectionStart = _textarea.selectionEnd = prev.length;
     },
 
-    // METHOD search ()
-    search (args, force)
-    {
-      const pc = $_popup[0],
-            el = pc.querySelector (".result-container"),
-            {wallId} = this.getIds ();
+    // METHOD search()
+    search(args, force) {
+      const pc = $_popup[0];
+      const el = pc.querySelector('.result-container');
+      const {wallId} = this.getIds();
 
-      // LOCAL FUNCTION __resize ()
-      const __resize = ()=>
-        {
-          const wH = window.innerHeight - 30,
-                elB = el.getBoundingClientRect().bottom;
+      // LOCAL FUNCTION __resize()
+      const __resize = () => {
+        const wH = window.innerHeight - 30;
+        const elB = el.getBoundingClientRect().bottom;
+        if (elB > wH) {
+          el.style.height = `${el.offsetHeight - (elB - wH)}px`;
+        }
+      };
 
-          if (elB > wH)
-            el.style.height = `${el.offsetHeight - (elB - wH)}px`;
-        };
+      args.str = args.str.replace(/&/g, '');
 
-      args.str = args.str.replace (/&/, "");
-
-      el.style.height = "auto";
-      el.style.display = "block";
+      el.style.height = 'auto';
+      el.style.display = 'block';
 
       H.fetch (
-        "GET",
+        'GET',
         `wall/${wallId}/searchUsers/${args.str}`,
         null,
         // success cb
-        (d) =>
-        {
-          const users = d.users||[];
-          let html = "";
+        (d) => {
+          const users = d.users || [];
+          let html = '';
 
-          users.forEach ((item, i) => html += `<li class="${!i?"selected":""} list-group-item"><div class="label">${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div></li></li>`);
+          users.forEach((item, i) => html += `<li class="${!i ? 'selected' : ''} list-group-item"><div class="label">${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div></li></li>`);
           
-          if (html)
-          {
-            const rc = pc.querySelector (".result-container");
+          if (html) {
+            const rc = pc.querySelector('.result-container');
 
             rc.style.width = `${_textarea.getBoundingClientRect().width}px`;
-            rc.classList.add ("shadow");
+            rc.classList.add('shadow');
+            pc.querySelector('.search').classList.add('shadow');
+            _textarea.classList.add ('autocomplete');
 
-            pc.querySelector (".search").classList.add ("shadow");
-
-            _textarea.classList.add ("autocomplete");
-
-            setTimeout (__resize, 50);
-          }
-          else
-          {
-            if (!args.str)
-              H.displayMsg ({
+            setTimeout(__resize, 50);
+          } else {
+            if (!args.str) {
+              _textarea.value = _textarea.value.replace(/@/, '');
+              H.displayMsg({
                 title: `<?=_("Comments")?>`,
-                type: "warning",
-                msg: `<?=_("The wall has not yet been shared with other users")?>`
+                type: 'warning',
+                msg: `<?=_("The wall has not yet been shared with other users")?>`,
               });
-
-            this.reset ();
+            }
+            this.reset();
           }
          
-          pc.querySelector(".result").innerHTML = html;
+          pc.querySelector('.result').innerHTML = html;
         }
       );
     },
 
-    // METHOD reset ()
-    reset (args)
-    {
+    // METHOD reset()
+    reset(args = {}) {
       const pc = $_popup[0];
 
-      if (!args)
-        args = {};
-
-      if (Boolean(args.full))
-      {
-        args["field"] = true;
-        args["users"] = true;
+      if (args.full) {
+        args.field = true;
+        args.users = true;
       }
 
-      pc.querySelector(".result-container").style.display = "none";
-      pc.querySelector(".result").innerHTML = "";
+      if (args.field) {
+        _textarea.value = '';
+      }
 
-      if (Boolean(args.field))
-        _textarea.value = "";
+      pc.querySelector('.result-container').style.display = 'none';
+      pc.querySelector('.result').innerHTML = '';
 
-      _textarea.classList.remove ("autocomplete");
+      _textarea.classList.remove('autocomplete');
 
-      pc.querySelectorAll(".shadow").forEach (el=>
-        el.classList.remove ("shadow"));
+      pc.querySelectorAll('.shadow').forEach(
+        (el) => el.classList.remove('shadow'));
     },
 
-    // METHOD add ()
-    add (content)
-    {
-      const {wallId, cellId, postitId} = this.getIds ();
+    // METHOD add()
+    add(content) {
+      const {wallId, cellId, postitId} = this.getIds();
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${wallId}/cell/${cellId}/postit/${postitId}/comment`,
         {
           content,
-          postitTitle: this.postit().getTitle (),
-          userFullname: $("#accountPopup").account ("getProp", "fullname")
+          postitTitle: this.postit().getTitle(),
+          userFullname: $('#accountPopup').account('getProp', 'fullname'),
         },
         // success cb
-        () => H.waitForDOMUpdate (
-                ()=> window.dispatchEvent (new Event ("resize"))));
+        () => H.waitForDOMUpdate(
+          () => window.dispatchEvent(new Event('resize'))));
     },
 
-    // METHOD close ()
-    close ()
-    {
-      if ($_popup)
-      {
-        if (!H.haveMouse ())
-          $_popup.modal ("hide");
-        else
-          document.getElementById("popup-layer").click ();
+    // METHOD close()
+    close() {
+      if ($_popup) {
+        if (!H.haveMouse()) {
+          $_popup.modal('hide');
+        } else {
+          document.getElementById('popup-layer').click();
+        }
       }
     },
 
-    // METHOD open ()
-    open (refresh)
-    {
-      const {wallId, cellId, postitId} = this.getIds ();
+    // METHOD open()
+    open(refresh) {
+      const {wallId, cellId, postitId} = this.getIds();
 
-      if (this.settings._cache === null || this.settings._cache.length)
-        this._open (this.settings._cache, refresh);
-      else
-        H.fetch (
-          "GET",
+      if (this.settings._cache === null || this.settings._cache.length) {
+        this._open(this.settings._cache, refresh);
+      } else {
+        H.fetch(
+          'GET',
           `wall/${wallId}/cell/${cellId}/postit/${postitId}/comment`,
           null,
           // success cb
-          (d)=>
-          {
+          (d) => {
             this.settings._cache = d;
-            this._open (d, refresh);
+            this._open(d, refresh);
           });
+      }
     },
 
-    // METHOD open ()
-    _open (d, refresh)
-    {
-      const plugin = this,
-            userId = wpt_userData.id,
-            {wallId, cellId, postitId} = plugin.getIds ();
-      let content = "";
+    // METHOD open()
+    _open(d, refresh) {
+      const userId = wpt_userData.id;
+      const {wallId, cellId, postitId} = this.getIds();
+      let content = '';
 
-      // LOCAL FUNCTION __resize ()
-      const __resize = ()=>
-        {
-          const $body = $_popup.find (".popover-body");
+      // LOCAL FUNCTION __resize()
+      const __resize = () => {
+        const popup = $_popup[0];
+        const body = popup.querySelector('.popover-body');
 
-          if ($body.height () - 145 > $body.find(".content").height ())
-          {
-            $body.css ("height", "auto");
-            $_popup.removeClass ("have-scroll");
-          }
+        if (body.clientHeight > body.querySelector('.content').clientHeight) {
+          body.style.height = 'auto';
+          popup.classList.remove('have-scroll');
+        }
 
-          if ($_popup.hasClass ("have-scroll")) return;
+        if (popup.classList.contains('have-scroll')) return;
 
-          const wH = window.innerHeight - 30,
-                bb = $_popup[0].getBoundingClientRect ();
+        const wH = window.innerHeight - 30;
+        const bb = popup.getBoundingClientRect();
 
-          if (bb.bottom > wH)
-          {
-            const h = $_popup.height () -
-                        (bb.bottom - window.innerHeight);
+        if (bb.bottom > wH) {
+          const h = popup.clientHeight - (bb.bottom - window.innerHeight);
+          popup.classList.add('have-scroll');
+          body.style.height = `${h-60}px`;
+        }
+      };
 
-            $_popup.addClass ("have-scroll");
-            $body.css ("height", `${h-53}px`);
-          }
-        };
-
-      plugin.postit().setCurrent ();
+      this.postit().setCurrent();
 
       (d || []).forEach((c) => {
         content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${(!this.readonly && c.ownerid === userId) ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${H.getUserDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
       });
 
-      //FIXME
       content = content.replace(
           /(@[^\s\?\.:!,;"<@]+)/g, `<span class="msg-userref">$1</span>`);
 
-      if (refresh)
-      {
-        $_popup.find (".content").html (content);
+      if (refresh) {
+        $_popup[0].querySelector('.content').innerHTML = content;
 
         // Resize only if popover
-        if ($_popup[0].classList.contains ("popover"))
+        if ($_popup[0].classList.contains('popover')) {
           H.waitForDOMUpdate (__resize);
-      }
-      else if (content || !this.readonly)
-      {
+        }
+      } else if (content || !this.readonly) {
+        const editing = this.readonly ? '' : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall')[0].dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<i class="fa fa-exclamation-triangle"></i> <?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
+
         // Device without mouse: open a POPUP
-        if (!H.haveMouse ())
-          H.loadPopup ("postitComments", {
-            cb:($p)=>
-            {
-              const c = $p[0].querySelector (".content");
+        if (!H.haveMouse()) {
+          H.loadPopup('postitComments', {
+            cb: ($p) => {
+              const c = $p[0].querySelector('.content');
 
               $_popup = $p;
-              _textarea = $p[0].querySelector ("textarea");
+
+              if (editing) {
+                $p[0].querySelector('.editing').innerHTML = editing;
+                _textarea = $p[0].querySelector('textarea');
+              }
 
               c.dataset.wallid = wallId;
               c.dataset.cellid = cellId;
@@ -284,124 +263,112 @@
 
               c.innerHTML = content;
 
-              $p[0].querySelector('.editing').style.display =
-                  this.readonly ? 'none' : 'block';
-
               // EVENT "hidden.bs.modal" on popup 
-              $p[0].addEventListener ("hidden.bs.modal", (e)=>
-                {
-                  _textarea.value = "";
-
-                  $_popup.pcomm ("reset");
-                  $_popup = undefined;
-
-                  plugin.postit().unsetCurrent ();
-
-                }, {once: true});
+              $p[0].addEventListener('hidden.bs.modal', (e) => {
+                if (!this.readonly) {
+                  _textarea.value = '';
+                  $_popup.pcomm('reset');
+                }
+                 $_popup = undefined;
+                 this.postit().unsetCurrent();
+              }, {once: true});
             }
           });
         // Device with mouse: open a POPOVER
-        else
-          H.openConfirmPopover ({
-            type: "custom",
-            placement:"left",
-            html_header: this.readonly ? "" : `<button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><div class="search mb-1"><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip"><i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?></div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`,
-            customClass: "msg-popover pcomm-popover",
+        } else {
+          H.openConfirmPopover({
+            type: 'custom',
+            placement: 'left',
+            html_header: editing,
+            customClass: 'msg-popover pcomm-popover',
             noclosure: true,
-            item: plugin.element,
+            item: this.element,
             title: `<i class="fas fa-comments fa-fw"></i> <?=_("Comments")?>`,
             content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
-            cb_ok:($p)=>
-            {
-              const content = H.noHTML (_textarea.value);
-
+            cb_ok: ($p) => {
+              const content = H.noHTML(_textarea.value);
               if (!content) return;
-
-              this.add (content);
-              _textarea.value = "";
-              _textarea.focus ();
+              this.add(content);
+              _textarea.value = '';
+              _textarea.focus();
             },
-            cb_close:()=>
-            {
+            cb_close: () => {
               $_popup = undefined;
-              plugin.postit().unsetCurrent ();
+              this.postit().unsetCurrent();
             },
-            cb_after:($p)=>
-            {
-              const p = $p[0];
-
+            cb_after: ($p) => {
               $_popup = $p;
-              _textarea = p.querySelector ("textarea");
-
-              __resize ();
+              _textarea = $p[0].querySelector('textarea');
+              __resize();
             }
         });
+      }
       }
     }
   });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ('DOMContentLoaded', () => {
-    if (H.isLoginPage ()) return;
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
     // EVENT "click"
-    document.body.addEventListener ('click', (e) => {
-        const el = e.target;
+    document.body.addEventListener('click', (e) => {
+      const el = e.target;
 
-        // EVENT "click" on postit comments button
-        if (el.matches('.pcomm,.pcomm *')) {
-          $((el.tagName == 'DIV') ? el : el.parentNode).pcomm('open');
-        } else if (el.matches(_getEventSelector('*'))) {
-          // EVENT "click" on comments "clear textarea" button
-          if (el.matches('.clear-textarea,.clear-textarea *')) {
-            _textarea.value = '';
-            S.getCurrent('pcomm').pcomm('reset');
+      // EVENT "click" on postit comments button
+      if (el.matches('.pcomm,.pcomm *')) {
+        $((el.tagName == 'DIV') ? el : el.parentNode).pcomm('open');
+      } else if (el.matches(_getEventSelector('*'))) {
+        // EVENT "click" on comments "clear textarea" button
+        if (el.matches('.clear-textarea,.clear-textarea *')) {
+          _textarea.value = '';
+          S.getCurrent('pcomm').pcomm('reset');
+          _textarea.focus();
+
+        // EVENT "click" on comments "submit" button
+        } else if (el.matches('.btn-primary')) {
+          const content = H.noHTML(_textarea.value);
+          if (!content) return;
+          S.getCurrent('pcomm').pcomm('add', content);
+          _textarea.value = '';
+          _textarea.focus();
+
+        // EVENT "click" on comments users list
+        } else if (el.matches('.result .list-group-item,'+
+                              '.result .list-group-item *')) {
+          const pcomm = S.getCurrent('pcomm').pcomm('getClass');
+
+          // Selected the current item in users search list and close the
+          // list
+          pcomm.injectUserRef(
+            (el.tagName === 'LI' ? el : el.closest('li'))
+               .querySelector('span').innerText);
+          pcomm.reset();
+
+        // EVENT "click" on "delete comment" button
+        } else if (el.matches('.msg-item .close,.msg-item .close *')) {
+          const data = el.closest('.content').dataset;
+          const item = el.closest('.msg-item');
+
+          H.preventDefault(e);
+          e.stopImmediatePropagation();
+
+          if (H.haveMouse()) {
             _textarea.focus();
-
-          // EVENT "click" on comments "submit" button
-          } else if (el.matches('.btn-primary')) {
-            const content = H.noHTML(_textarea.value);
-            if (!content) return;
-            S.getCurrent('pcomm').pcomm ('add', content);
-            _textarea.value = '';
-            _textarea.focus ();
-
-          // EVENT "click" on comments users list
-          } else if (el.matches('.result .list-group-item,'+
-                                '.result .list-group-item *')) {
-            const pcomm = S.getCurrent('pcomm').pcomm('getClass');
-
-            // Selected the current item in users search list and close the
-            // list
-            pcomm.injectUserRef(
-              (el.tagName === 'LI' ? el : el.closest('li'))
-                 .querySelector('span').innerText);
-            pcomm.reset();
-
-          // EVENT "click" on "delete comment" button
-          } else if (el.matches('.msg-item .close,.msg-item .close *')) {
-            const data = el.closest('.content').dataset;
-            const item = el.closest('.msg-item');
-
-            H.preventDefault(e);
-            e.stopImmediatePropagation();
-
-            if (H.haveMouse()) {
-              _textarea.focus();
-            }
-
-            H.request_ws (
-              'DELETE',
-              `wall/${data.wallid}/cell/${data.cellid}/postit/`+
-                `${data.postitid}/comment/${item.dataset.id}`,
-              null,
-              // success cb
-              () => H.waitForDOMUpdate(
-                     () => window.dispatchEvent(new Event('resize'))));
           }
+
+          H.request_ws(
+            'DELETE',
+            `wall/${data.wallid}/cell/${data.cellid}/postit/`+
+              `${data.postitid}/comment/${item.dataset.id}`,
+            null,
+            // success cb
+            () => H.waitForDOMUpdate(
+                   () => window.dispatchEvent(new Event('resize'))));
         }
-      });
+      }
+    });
 
     // EVENTS "keyup & keydown"
     const _textareaEventK = (e) => {
@@ -430,7 +397,7 @@
             H.preventDefault(e);
 
             if (e.type === 'keyup') {
-              // LOCAL FUNCTION __select ()
+              // LOCAL FUNCTION __select()
               const __select = (i, type) => {
                 // Arrow up.
                 if (i && type === 'up') {
@@ -456,7 +423,7 @@
                     pcomm.reset();
                     return;
                   } else {
-                    __select (i, k === 38 ? 'up': 'down');
+                    __select(i, (k === 38) ? 'up': 'down');
                     return;
                   }
                 }
@@ -474,7 +441,7 @@
       const el = e.target;
 
       // EVENTS "keyup & click" on comments textarea
-      if (el.matches (_getEventSelector('textarea'))) {
+      if (el.matches(_getEventSelector('textarea'))) {
         const k = e.which;
         const prev = el.value.substring(0, el.selectionStart);
         // Keys to ignore
@@ -493,7 +460,7 @@
         }
 
         // Nothing if we must ignore the key
-        if (!ignore) {
+        if (S.getCurrent('wall')[0].dataset.shared && !ignore) {
           // Display users search list if needed
           if ( (m = prev.match(/(^|\s)@([^\s]+)?$/)) ) {
             S.getCurrent('pcomm').pcomm('search', {str: m[2] || ''});
@@ -507,21 +474,21 @@
     document.body.addEventListener('click', _textareaEventKC);
 
     // EVENT "keypress"
-    document.body.addEventListener ('keypress', (e) => {
-        const el = e.target;
+    document.body.addEventListener('keypress', (e) => {
+      const el = e.target;
 
-        // EVENT "keypress" on comments textarea
-        if (el.matches (_getEventSelector('textarea'))) {
-          // If enter on selected users search item, select it
-          if (e.which === 13 && el.classList.contains('autocomplete')) { 
-            e.stopImmediatePropagation();
-            H.preventDefault(e);
+      // EVENT "keypress" on comments textarea
+      if (el.matches(_getEventSelector('textarea'))) {
+        // If enter on selected users search item, select it
+        if (e.which === 13 && el.classList.contains('autocomplete')) { 
+          e.stopImmediatePropagation();
+          H.preventDefault(e);
 
-            el.closest(`[class*="-body"]`)
-              .querySelector('.result .list-group-item.selected').click();
-          }
+          el.closest(`[class*="-body"]`)
+            .querySelector('.result .list-group-item.selected').click();
         }
+      }
     });
   });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

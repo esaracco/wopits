@@ -331,28 +331,25 @@ class WStorage
 }
 
 // CLASS WSharer
-class WSharer
-{
-  // METHOD constructor ()
-  constructor ()
-  {
+class WSharer {
+  // METHOD constructor()
+  constructor() {
     this.vars = {};
     this.walls = [];
-    this._fullReset ();
+    this._fullReset();
   }
 
-  // METHOD reset ()
-  reset (type)
-  {
-    if (!type)
+  // METHOD reset()
+  reset (type) {
+    if (!type) {
       this._fullReset ();
-    else
-      this[type] = typeof this[type] === "string" ? "" : [];
+    } else {
+      this[type] = typeof this[type] === 'string' ? '' : [];
+    }
   }
 
-  // METHOD _fullReset ()
-  _fullReset ()
-  {
+  // METHOD _fullReset()
+  _fullReset() {
     this.wall = [];
     this.chat = [];
     this.filters = [];
@@ -360,134 +357,105 @@ class WSharer
     this.postit = [];
     this.pcomm = [];
     this.header = [];
-    this.plugColor = "";
+    this.plugColor = '';
   }
 
-  // METHOD set ()
-  set (k, v, t)
-  {
+  // METHOD set()
+  set(k, v, t) {
     this.vars[k] = v;
 
-    if (t)
-      setTimeout (()=> this.unset (k), t);
+    if (t) {
+      setTimeout(() => this.unset(k), t);
+    }
   }
 
-  // METHOD get ()
-  get (k)
-  {
+  // METHOD get()
+  get(k) {
     return this.vars[k];
   }
 
-  // METHOD unset ()
-  unset (k)
-  {
+  // METHOD unset()
+  unset(k) {
     delete this.vars[k];
   }
 
-  // METHOD getCurrent ()
-  getCurrent (item)
-  {
-    if (!this.walls.length)
-    {
-      this.walls = $(document.getElementById("walls"));
-      if (!this.walls.length)
+  // METHOD getCurrent()
+  getCurrent(item) {
+    if (!this.walls.length) {
+      this.walls = $(document.getElementById('walls'));
+      if (!this.walls.length) {
         return $([]);
+      }
     }
 
-    switch (item)
-    {
-      case "wall":
-
-        if (!this.wall.length)
-          this.wall = $(this.walls[0].querySelector(
-                          ".tab-pane.active .wall")||[]);
-
-        return this.wall;
-
-      case "postit":
-
-        if (!this.postit.length)
-          this.postit = $(this.walls[0].querySelector(
-                            ".tab-pane.active .postit.current"));
-
-        return this.postit;
-
-      case "plugColor":
-
-        if (!this.plugColor)
-        {
-          //const el = document.querySelector (".wall th.wpt:first-child");
-          const el = document.querySelector (".cell-menu .btn-secondary");
-
-          this.plugColor = H.rgb2hex (window.getComputedStyle ?
-            window.getComputedStyle(el, null)
-              .getPropertyValue ("background-color") :
-            el.style.backgroundColor);
+    switch (item) {
+      case 'wall':
+        if (!this.wall.length) {
+          this.wall =
+            $(this.walls[0].querySelector('.tab-pane.active .wall') || []);
         }
-
+        return this.wall;
+      case 'postit':
+        if (!this.postit.length) {
+          this.postit =
+            $(this.walls[0].querySelector('.tab-pane.active .postit.current'));
+        }
+        return this.postit;
+      case 'plugColor':
+        if (!this.plugColor) {
+          const el = document.querySelector('.cell-menu .btn-secondary');
+          this.plugColor = H.rgb2hex(
+            window.getComputedStyle ?
+              window.getComputedStyle(el, null)
+                .getPropertyValue('background-color') :
+              el.style.backgroundColor
+            );
+        }
         return this.plugColor;
-
-      case "header":
-
-        if (!this.header.length)
-          this.header = $(this.walls[0].querySelector(
-                            ".tab-pane.active th.wpt.current"));
-
+      case 'header':
+        if (!this.header.length) {
+          this.header =
+            $(this.walls[0].querySelector('.tab-pane.active th.wpt.current'));
+        }
         return this.header;
-
-      case "tpick":
-
-        if (!this.tpick)
-          this.tpick = $(document.getElementById("tpick"));
-
+      case 'tpick':
+        if (!this.tpick) {
+          this.tpick = $(document.getElementById('tpick'));
+        }
         return this.tpick;
-
-      case "walls":
-
+      case 'walls':
         return this.walls;
-
-      case "sandbox":
-
-        if (!this.sandbox)
-          this.sandbox = $(document.getElementById("sandbox"));
-
+      case 'sandbox':
+        if (!this.sandbox) {
+          this.sandbox = $(document.getElementById('sandbox'));
+        }
         return this.sandbox;
-
-      case "chat":
-
-        if (!this.chat.length)
-          this.chat = $(this.walls[0].querySelector(".tab-pane.active .chat"));
-
+      case 'chat':
+        if (!this.chat.length) {
+          this.chat = $(this.walls[0].querySelector('.tab-pane.active .chat'));
+        }
         return this.chat;
-
-      case "filters":
-
-        if (!this.filters.length)
-          this.filters = $(this.walls[0]
-                             .querySelector(".tab-pane.active .filters"));
-
+      case 'filters':
+        if (!this.filters.length) {
+          this.filters =
+            $(this.walls[0].querySelector('.tab-pane.active .filters'));
+        }
         return this.filters;
-
-      case "wmenu":
-
-        if (!this.wmenu.length)
-          this.wmenu = $(this.walls[0]
-                           .querySelector(".tab-pane.active .wall-menu"));
-
+      case 'wmenu':
+        if (!this.wmenu.length) {
+          this.wmenu =
+            $(this.walls[0].querySelector('.tab-pane.active .wall-menu'));
+        }
         return this.wmenu;
-
-      case "mmenu":
-
-        if (!this.mmenu)
-          this.mmenu = $(document.getElementById("mmenu"));
-
+      case 'mmenu':
+        if (!this.mmenu) {
+          this.mmenu = $(document.getElementById('mmenu'));
+        }
         return this.mmenu;
-
-      case "pcomm":
-
-        if (!this.pcomm.length)
-          this.pcomm = $(this.getCurrent("postit")[0].querySelector(".pcomm"));
-
+      case 'pcomm':
+        if (!this.pcomm.length) {
+          this.pcomm = $(this.getCurrent('postit')[0].querySelector('.pcomm'));
+        }
         return this.pcomm;
     }
   }
@@ -1512,7 +1480,7 @@ class WHelper
     else
     {
       const r = await fetch (`/ui/${args.template||type}.php`);
-      if (r.ok)
+      if (r && r.ok)
       {
         $("body").prepend (await r.text ());
 
@@ -1526,8 +1494,9 @@ class WHelper
 
         __exec ($p);
       }
-      else
+      else {
         this.manageUnknownError ();
+      }
     }
   }
   
@@ -1791,6 +1760,7 @@ class WHelper
   // TODO https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout
   static async fetch(method, service, args, success_cb, error_cb)
   {
+    let ret;
     this.loader('show');
 
     //console.log (`FETCH: ${method} ${service}`);
@@ -1804,23 +1774,35 @@ class WHelper
           cache: 'no-cache',
           headers: {'Content-Type': 'application/json;charset=utf-8'},
           body: args ? encodeURI (JSON.stringify (args)) : null
-        }),
-      d = await r.json();
+        });
 
       if (r.ok) {
-        if (!d || d.error) {
-          error_cb ? error_cb(d) : this.manageUnknownError(d);
-        } else if (success_cb) {
-          success_cb(d);
+        ret = await r.json();
+
+        if (!ret || ret.error) {
+          if (error_cb) {
+            this.loader('hide');
+            error_cb(ret);
+          } else {
+            this.manageUnknownError(ret);
+          }
+        } else {
+          this.loader('hide');
+          success_cb && success_cb(ret);
         }
-      }  else {
+      } else {
         this.manageUnknownError();
       }
     } catch(e) {
-      H.displayNetworkErrorMsg();
-    } finally {
-      this.loader('hide');
+      if (e instanceof DOMException || e instanceof TypeError) {
+        H.displayNetworkErrorMsg();
+      } else {
+        this.loader('hide');
+        throw e;
+      }
     }
+
+    return ret;
   }
 
   // METHOD fetchUpload ()
@@ -2048,7 +2030,7 @@ class WHelper
         $popup.find(".modal-title").html (`<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>`);
 
         const r = await fetch ("/whats_new/latest.php");
-        if (r.ok)
+        if (r && r.ok)
         {
           let d = await r.text ();
 
@@ -2070,6 +2052,8 @@ class WHelper
             });
 
           this.openModal ({item: popup, noeffect: true});
+        } else {
+          this.manageUnknownError ();
         }
       }
       else

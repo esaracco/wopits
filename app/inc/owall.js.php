@@ -57,16 +57,20 @@
 
       // EVENT "click" on "open" button
       owall.querySelector('.btn-primary').addEventListener('click', (e) => {
-        const checked = plugin.getChecked();
-        const len = checked.length;
-        const $el = $('<div/>');
+        (async () => {
+          const checked = plugin.getChecked();
+          const len = checked.length;
+          const $el = $('<div/>');
+          let $wall;
 
-        checked.forEach((wallId, i) => {
-          $el.wall('open', {
-            wallId,
-            lastWall: (i === len - 1) ? len : null,
-          });
-        });
+          await Promise.all(checked.map(async (wallId) => {
+            $wall = await $el.wall('open', {wallId, noPostProcess: true});
+          }));
+
+          if ($wall$) {
+            wall.wall('postProcessLastWall');
+          }
+        })();
       });
 
       // EVENT "change" on filters
@@ -153,10 +157,8 @@
                 plugin.getChecked().length ? 'remove' : 'add']('hidden');
           } else if (tag !== 'LABEL') {
             $('<div/>').wall('open', {
-              lastWall: 1,
               wallId: ((tag === 'LI') ? el : el.closest('li')).dataset.id,
             });
-
             bootstrap.Modal.getInstance(owall).hide();
           }
         }
@@ -307,12 +309,11 @@
       owall.querySelector('.modal-body .list-group').innerHTML = body;
 
       checked.forEach((id) => {
-          const el = document.getElementById(`_${id}`);
-
-          if (el) {
-            el.checked = true;
-          }
-        });
+        const el = document.getElementById(`_${id}`);
+        if (el) {
+          el.checked = true;
+        }
+      });
 
       if (recurse) {
         owall.querySelectorAll('.ow-filters input:checked').forEach((el) => {

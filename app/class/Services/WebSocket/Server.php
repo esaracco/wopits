@@ -948,25 +948,29 @@ class Server
     }
   }
 
-  private function _createClient (Request $req):array
-  {
+  private function _createClient(Request $req):array {
     $ret = null;
-    $User = new User ();
-    $ip = $req->header['x-forwarded-for']??'127.0.0.1';
+    $User = new User();
+    $ip = $req->header['x-forwarded-for'] ?? '127.0.0.1';
 
-    if ( ($token = $req->get['token']??null) &&
-         ($r = $User->loadByToken ($token, $ip)) )
-      $ret = (object) [
-        'ip' => $ip,
-        'sessionId' => $req->fd,
-        'id' => $r['users_id'],
-        'username' => $r['username'],
-        'fullname' => $r['fullname'],
-        'slocale' => Helper::getsLocale ($User),
-        'settings' => $User->getSettings(),
-        'openedChats' => '',
-        'final' => 0
-      ];
+    $token = $req->get['token'] ?? null;
+
+    if ($token) {
+      $r = $User->loadByToken($token, $ip);
+      if ($r) {
+        $ret = (object) [
+          'ip' => $ip,
+          'sessionId' => $req->fd,
+          'id' => $r['users_id'],
+          'username' => $r['username'],
+          'fullname' => $r['fullname'],
+          'slocale' => Helper::getsLocale($User),
+          'settings' => $User->getSettings(),
+          'openedChats' => '',
+          'final' => 0,
+        ];
+      }
+    }
 
     return [$ret, $ip];
   }

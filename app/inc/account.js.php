@@ -322,23 +322,19 @@
     },
 
     // METHOD delete()
-    delete() {
-      H.fetch(
-        'DELETE',
-        'user',
-        null,
-        // success cb
-        (d) => {
-          if (d.error_msg) {
-            H.displayMsg({
-              title: `<?=_("Account")?>`,
-              type: 'danger',
-              msg: d.error_msg,
-            });
-          } else {
-            return location.href = '/r.php';
-          }
-        });
+    async delete() {
+      const r = await H.fetch('DELETE', 'user');
+      if (!r || r.error_msg) {
+        if (r) {
+          H.displayMsg({
+            title: `<?=_("Account")?>`,
+            type: 'danger',
+            msg: r.error_msg,
+          });
+        }
+      } else {
+        return location.href = '/r.php';
+      }
     },
 
     // METHOD updateField()

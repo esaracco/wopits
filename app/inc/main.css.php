@@ -854,19 +854,19 @@ select.timezone {
 
 .wall {
   border-collapse: collapse;
-  margin-left:auto;
-  margin-right:auto;
-  margin-top:10px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
 }
 
 .wall th.wpt {
-  vertical-align:top;
-  padding:10px;
+  vertical-align: top;
+  padding: 10px;
   background: var(--wall-th-bg-color);
-  text-align:center;
-  white-space:nowrap;
-  font-size:14px;
-  border-right:1px solid var(--wall-border-color);
+  text-align: center;
+  white-space: nowrap;
+  font-size: 14px;
+  border-right: 1px solid var(--wall-border-color);
 }
 
 .wall th.wpt ul.navbar-nav {

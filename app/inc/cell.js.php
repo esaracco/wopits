@@ -261,163 +261,163 @@
     },
 
     // METHOD setPostitsDisplayMode()
-    setPostitsDisplayMode(type)
-    {
-      const plugin = this,
-            $cell = plugin.element,
-            $displayMode = $cell.find(".cell-menu i"),
-            writeAccess = plugin.canWrite ();
+    setPostitsDisplayMode(type) {
+      const plugin = this;
+      const $cell = plugin.element;
+      const cell = $cell[0];
+      const $displayMode = $cell.find('.cell-menu i');
+      const writeAccess = plugin.canWrite();
 
-      // If we must display list
+      // If we must display list of minified notes
       // list-mode
-      if (type == "list-mode")
-      {
-        const cell = $cell[0],
-              cellWidth = cell.clientWidth,
-              cellHeight = cell.clientHeight,
-              postits = Array.from (cell.querySelectorAll (".postit"));
+      if (type === 'list-mode') {
+        const cellWidth = cell.clientWidth;
+        const cellHeight = cell.clientHeight;
+        // FIXME
+        //const postits = Array.from (cell.querySelectorAll('.postit'));
+        const postits = Array.from(
+          cell.querySelectorAll('.postit:not([data-order="undefined"])'));
 
-        $cell.removeClass("postit-mode").addClass ("list-mode");
+        cell.classList.remove('postit-mode');
+        cell.classList.add('list-mode');
 
-        $cell.resizable ("disable");
+        // Cell can not be resizable in minified moe
+        $cell.resizable('disable');
 
-        $displayMode[0].classList.replace ("fa-sticky-note", "fa-list-ul");
+        // Update cell's menu icon        
+        $displayMode[0].classList.replace('fa-sticky-note', 'fa-list-ul');
 
-        let html = "";
+        // Add notes count to cell's menu
+        cell.querySelector('.cell-menu').append(H.createElement('span',
+          {className: 'wpt-badge'},
+          null,
+          String(postits.length)));
+
+        // Build list of minified notes (html buffer)
+        let html = '';
         postits
           // Sort by postit id DESC
-          .sort((a, b)=>
-          {
-            const aOrder = parseInt (a.dataset.order),
-                  bOrder = parseInt (b.dataset.order);
+          .sort((a, b) => {
+            const aOrder = Number(a.dataset.order);
+            const bOrder = Number(b.dataset.order);
 
-            if (!aOrder && !bOrder)
+            if (!aOrder && !bOrder) {
               return parseInt(b.dataset.id.split(/\-/)[1]) -
                        parseInt(a.dataset.id.split(/\-/)[1]);
-            else
+            } else {
               return aOrder - bOrder;
+            }
           })
-          .forEach (p =>
-          {
-            const color = (p.className.match (/ color\-([a-z]+)/))[1],
-                  postitPlugin = $(p).postit ("getClass"),
-                  title = postitPlugin.element.find(".title").text (),
-                  progress = parseInt (p.dataset.progress||0);
+          .forEach((p) => {
+            const color = (p.className.match(/ color\-([a-z]+)/))[1];
+            const postitPlugin = $(p).postit('getClass');
+            const title = p.querySelector('.title').innerHTML;
+            const progress = Number(p.dataset.progress || 0);
 
-            postitPlugin.closeMenu ();
-            postitPlugin.hidePlugs ();
+            postitPlugin.closeMenu();
+            postitPlugin.hidePlugs();
 
-            p.style.visibility = "hidden";
+            p.style.visibility = 'hidden';
 
-            html += `<li class="color-${color} postit-min${p.classList.contains("selected")?" selected":""}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${progress?`<div class="postit-progress-container"><div class="postit-progress" style="width:${progress}%;background:${H.getProgressbarColor(progress)}"><span>${progress}%</span></div></div>`:""}${writeAccess?`<span>${(postits.length > 1)?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:""}</span>`:""} ${title}</li>`;
+            html += `<li class="color-${color} postit-min${p.classList.contains('selected') ? ' selected' : ''}" data-id="${p.dataset.id}" data-tags="${p.dataset.tags}">${progress?`<div class="postit-progress-container"><div class="postit-progress" style="width:${progress}%;background:${H.getProgressbarColor(progress)}"><span>${progress}%</span></div></div>`:""}${writeAccess?`<span>${(postits.length > 1)?`<i class="fas fa-arrows-alt-v fa-xs"></i>`:""}</span>`:""} ${title}</li>`;
           });
 
-        cell.querySelector(".cell-menu").append ($(`<span class="wpt-badge">${postits.length}</span>`)[0]);
-        cell.insertBefore ($(`<div class="cell-list-mode"><ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul></div>`)[0], cell.firstChild);
+        // Create cell container for list of minified notes
+        cell.insertBefore(H.createElement('div',
+          {className: 'cell-list-mode'},
+          null,
+          `<ul style="max-width:${cellWidth}px;max-height:${cellHeight-1}px">${html}</ul>`), cell.firstChild);
 
-        if (writeAccess)
-          $cell.find(".cell-list-mode ul").sortable ({
+        // Make notes list sortable
+        if (writeAccess) {
+          $cell.find('.cell-list-mode ul').sortable({
             //containment: $cell,
-            handle: ">span",
-            cursor: "move",
-            sort: function ()
-            {
-              if (S.get("revertData").revert)
-              {
-                $("body")[0].removeAttribute ("style");
-                $(this).sortable ("cancel");
-
+            handle: '>span',
+            cursor: 'move',
+            sort: function() {
+              if (S.get('revertData').revert) {
+                $('body')[0].removeAttribute('style');
+                $(this).sortable('cancel');
                 return false;
               }
             },
-            start: function ()
-            {
-              S.set ("revertData", {revert: false});
-              plugin.edit (()=> S.get("revertData").revert = true, true);
+            start: function() {
+              S.set('revertData', {revert: false});
+              plugin.edit(()=> S.get('revertData').revert = true, true);
             },
-            stop: function (e, ui)
-            {
-              const revertData = S.get ("revertData");
+            stop: function(e, ui) {
+              const revertData = S.get('revertData');
 
-              if (revertData.revert)
-              {
-                S.unset ("revertData");
-                plugin.unedit (true);
-              }
-              else
-              {
-                ui.item[0].parentNode.querySelectorAll("li").forEach ((li, i) =>
+              if (revertData.revert) {
+                S.unset('revertData');
+                plugin.unedit(true);
+              } else {
+                ui.item[0].parentNode.querySelectorAll('li').forEach((li, i) =>
                   cell.querySelector(`.postit[data-id="${li.dataset.id}"]`)
-                    .dataset.order = i+1);
-
-                plugin.unedit ();
+                    .dataset.order = i + 1);
+                plugin.unedit();
               }
             }
           });
+        }
 
-        plugin.setPostitsUserWritingListMode ();
-      }
+        plugin.setPostitsUserWritingListMode();
+
       // If we must display full postit
       // postit-mode
-      else
-      {
-        $cell.removeClass("list-mode").addClass ("postit-mode");
+      } else {
+        cell.classList.remove('list-mode');
+        cell.classList.add('postit-mode');
 
-        $cell.find(".cell-list-mode").remove ();
-        $cell.find(".cell-menu .wpt-badge").remove ();
+        // Remove menu count and list of minified notes
+        cell.querySelectorAll('.cell-list-mode,.cell-menu .wpt-badge')
+          .forEach((el) => el.remove());
 
-        $cell[0].querySelectorAll(".postit").forEach (p =>
-          {
-            p.style.visibility = "visible";
+        // Display postits
+        cell.querySelectorAll('.postit').forEach((p) => {
+          p.style.visibility = 'visible';
+          $(p).postit('showPlugs');
+        });
 
-            $(p).postit ("showPlugs");
-          });
+        // Update cell's menu icon        
+        $displayMode[0].classList.replace('fa-list-ul', 'fa-sticky-note');
 
-        $displayMode[0].classList.replace ("fa-list-ul", "fa-sticky-note");
-
-        if (writeAccess && !S.get ("zoom-level"))
-          $cell.resizable ("enable");
+        if (writeAccess && !S.get('zoom-level')) {
+          $cell.resizable('enable');
+        }
       }
     },
 
-    // METHOD toggleDisplayMode ()
-    toggleDisplayMode (refresh = false)
-    {
-      const $cell = this.element,
-            settings = this.settings;
+    // METHOD toggleDisplayMode()
+    toggleDisplayMode(refresh = false) {
+      const cell = this.element[0];
+      const settings = this.settings;
       let type;
 
-      if ($cell[0].classList.contains ("postit-mode") || refresh)
-      {
-        type = "list-mode";
-
-        if (refresh)
-        {
-          $cell.find(".cell-list-mode").remove ();
-          $cell.find(".cell-menu .wpt-badge").remove ();
+      if (cell.classList.contains('postit-mode') || refresh) {
+        type = 'list-mode';
+        if (refresh) {
+          cell.querySelectorAll('.cell-list-mode,.cell-menu .wpt-badge')
+          .forEach((el) => el.remove());
         }
+      } else {
+        type = 'postit-mode';
       }
-      else
-        type = "postit-mode";
 
-      this.setPostitsDisplayMode (type);
+      this.setPostitsDisplayMode(type);
 
       // Re-apply filters
-      const $f = S.getCurrent ("filters");
-      if ($f.is (":visible"))
-        $f.filters ("apply", {norefresh: true});
+      const $f = S.getCurrent('filters');
+      if ($f.is(':visible')) {
+        $f.filters('apply', {norefresh: true});
+      }
 
-      if (!refresh)
-      {
+      if (!refresh) {
         settings.usersettings.displaymode = type;
-
         H.fetch (
-          "POST",
+          'POST',
           `user/wall/${settings.wallId}/settings`,
-          {
-            key: `cell-${settings.id}`,
-            value: settings.usersettings
-          });
+          {key: `cell-${settings.id}`, value: settings.usersettings});
       }
     },
 
@@ -475,7 +475,12 @@
       const $postit = $('<div/>');
 
       // CREATE postit
-      $postit.postit({...args, wall, wallId, cell: $(cell), cellId});
+      // No perf killer spread operator here!
+      args.wall = wall;
+      args.wallId = wallId;
+      args.cell = $(cell);
+      args.cellId = cellId;
+      $postit.postit(args);
 
       // Add postit on cell
       cell.appendChild($postit[0]);

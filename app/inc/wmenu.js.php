@@ -83,6 +83,7 @@
   
             case "postit-mode":
               wallPlugin.setPostitsDisplayMode (action);
+              H.waitForDOMUpdate(() => wallPlugin.refreshPostitsPlugs(true));
               break;
   
             case "list-mode":
@@ -112,6 +113,7 @@
   
             case "show-headers":
               wallPlugin.displayHeaders (1, true);
+              H.waitForDOMUpdate(() => wallPlugin.refreshPostitsPlugs(true));
               break;
   
             case "hide-headers":

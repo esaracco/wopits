@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-11 21:38+0200\n"
+"POT-Creation-Date: 2022-10-16 20:58+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -1008,6 +1008,10 @@ msgstr ""
 msgid "Show wall headers"
 msgstr ""
 
+msgid ""
+"Since the wall is not shared, you are the only one to see these comments."
+msgstr ""
+
 msgid "Size"
 msgstr ""
 
@@ -1237,6 +1241,9 @@ msgid ""
 msgstr ""
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
+msgstr ""
+
+msgid "This wall has been shared with you"
 msgstr ""
 
 msgid "Timezone"

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const $wall = S.getCurrent('wall');
         const mstack = S.get('mstack') || [];
  
-        // FIXME // TODO
+        // FIXME
         if (S.get('zoom-level') && mstack.length > 0) return;
 
         H.fixHeight();
@@ -176,14 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Refresh wall if it has not just been opened
         if (!S.get('newWall')) {
-          $wall.wall('refresh');
-          $wall.wall('displayExternalRef');
-          $wall.wall('displayHeaders');
+          (async () => {
+            await $wall.wall('refresh');
+            $wall.wall('displayExternalRef');
+            $wall.wall('displayHeaders');
+          })();
         }
-    
+
         $wall.wall('menu', {from: 'wall', type: 'have-wall'});
-    
-        window.dispatchEvent(new Event('resize'));
       }
     });
 
@@ -442,10 +442,18 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               else {
                 const wh = popup.querySelectorAll('.width-height input');
-                data.dim = {width: wh[0].value, height: wh[1].value};
+                data.dim = {
+                  width: Number(wh[0].value),
+                  height: Number(wh[1].value,
+                )};
               }
-
-              $('<div/>').wall('addNew', data, $(popup));
+              (async () => {
+                const $wall = await $('<div/>').wall('create', data);
+                if ($wall) {
+                  $wall.wall('postProcessLastWall');
+                  $popup.modal('hide');
+                }
+              })();
             }
             break;
         }

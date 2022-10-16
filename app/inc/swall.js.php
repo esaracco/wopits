@@ -478,96 +478,94 @@
     },
 
     // METHOD displayGroups ()
-    displayGroups ()
+    async displayGroups ()
     {
       const $share = this.element,
             wallPlugin = S.getCurrent("wall").wall ("getClass"),
             isOwner = (wallPlugin.settings.ownerid == wpt_userData.id),
             $body = $share.find (".modal-body");
 
-      H.fetch (
-        "GET",
-        `wall/${wallPlugin.settings.id}/group`,
-        null,
-        // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            return H.raiseError (null, d.error_msg);
+      const r = await H.fetch (
+        'GET',
+        `wall/${wallPlugin.settings.id}/group`);
+
+      if (!r || r.error_msg) {
+        if (r) {
+          H.raiseError (null, r.error_msg);
+        }
+        return;
+      }
         
-          const div = $body.find(".list-group.attr")[0],
-                pClass = div.parentNode.classList,
-                label = div.parentNode.querySelector("span");
-          let html = "";
+      const div = $body.find(".list-group.attr")[0],
+            pClass = div.parentNode.classList,
+            label = div.parentNode.querySelector("span");
+      let html = "";
 
-          if (d.in.length)
+      if (r.in.length)
+      {
+        const active =
+                document.querySelector (".modal li.list-group-item.active");
+
+        if (isOwner)
+          wallPlugin.setShared (true);
+
+        $share.find(".grp-lb").text (`<?=_("Other available groups:")?>`);
+
+        pClass.add ("scroll");
+
+        label.classList.remove ("nogroup");
+        label.innerHTML = `<label class="mb-2"><?=_("The wall is shared with the following groups:")?></label>`;
+
+        r.in.forEach ((item) =>
           {
-            const active =
-                    document.querySelector (".modal li.list-group-item.active");
+            const isDed = (item.item_type == <?=WPT_GTYPES_DED?>),
+                  typeIcon = (r.delegateAdminId) ? "" : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
+                  unlinkBtn = (r.delegateAdminId) ? "" : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
 
-            if (isOwner)
-              wallPlugin.setShared (true);
+            html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-delegateadminid=${r.delegateAdminId||0} class="list-group-item${r.delegateAdminId?"":" is-wall-creator"}${active&&active.dataset.id==item.id?" active":""}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
+          });
 
-            $share.find(".grp-lb").text (`<?=_("Other available groups:")?>`);
+        if (r.in.length === 1)
+          pClass.add ("one");
+        else
+          pClass.remove ("one");
+      }
+      else
+      {
+        if (isOwner)
+          wallPlugin.setShared (false);
 
-            pClass.add ("scroll");
+        $share.find(".grp-lb").text (`<?=_("Available groups:")?>`);
+        wallPlugin.element.find("thead.wpt th.wpt:eq(0)").html ("&nbsp;");
 
-            label.classList.remove ("nogroup");
-            label.innerHTML = `<label class="mb-2"><?=_("The wall is shared with the following groups:")?></label>`;
+        pClass.remove ("scroll");
 
-            d.in.forEach ((item) =>
-              {
-                const isDed = (item.item_type == <?=WPT_GTYPES_DED?>),
-                      typeIcon = (d.delegateAdminId) ? "" : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`,
-                      unlinkBtn = (d.delegateAdminId) ? "" : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
+        label.classList.add ("nogroup");
+        label.innerHTML = (r.delegateAdminId) ?
+          `<?=_("You cannot manage any of the existing groups.")?>` :
+          `<?=_("The wall is not shared with any group.")?>`;
+      }
 
-                html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-delegateadminid=${d.delegateAdminId||0} class="list-group-item${d.delegateAdminId?"":" is-wall-creator"}${active&&active.dataset.id==item.id?" active":""}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description||""}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
-              });
+      div.innerHTML = html;
 
-            if (d.in.length == 1)
-              pClass.add ("one");
-            else
-              pClass.remove ("one");
-          }
-          else
-          {
-            if (isOwner)
-              wallPlugin.setShared (false);
+      if (!r.delegateAdminId)
+      {
+        $body.find(".delegate-admin-only").hide ();
 
-            $share.find(".grp-lb").text (`<?=_("Available groups:")?>`);
-            wallPlugin.element.find("thead.wpt th.wpt:eq(0)").html ("&nbsp;");
+        _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_DED?>.noattr"), <?=WPT_GTYPES_DED?>, r.notin);
 
-            pClass.remove ("scroll");
-
-            label.classList.add ("nogroup");
-            label.innerHTML = (d.delegateAdminId) ?
-              `<?=_("You cannot manage any of the existing groups.")?>` :
-              `<?=_("The wall is not shared with any group.")?>`;
-          }
-
-          div.innerHTML = html;
-
-          if (!d.delegateAdminId)
-          {
-            $body.find(".delegate-admin-only").hide ();
-
-            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_DED?>.noattr"), <?=WPT_GTYPES_DED?>, d.notin);
-
-            _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr"), <?=WPT_GTYPES_GEN?>, d.notin);
+        _displaySection ($body.find (".list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr"), <?=WPT_GTYPES_GEN?>, r.notin);
   
-            $body.find(".creator-only").show ();
-          }
-          else
-          {
-            $body.find(".creator-only").hide ();
-            $body.find(".delegate-admin-only").show ();
-          }
+        $body.find(".creator-only").show ();
+      }
+      else
+      {
+        $body.find(".creator-only").hide ();
+        $body.find(".delegate-admin-only").show ();
+      }
 
-          H.openModal ({item: $share[0]});
-
-        });
+      H.openModal ({item: $share[0]});
     }
-
   });
 
 <?php echo $Plugin->getFooter ()?>

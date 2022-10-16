@@ -38,25 +38,24 @@
       return this;
     },
 
-    // METHOD update ()
-    update (args)
-    {
-      const {wallId, cellId, postitId} = this.getIds ();
+    // METHOD update()
+    async update (args) {
+      const {wallId, cellId, postitId} = this.getIds();
 
-      H.fetch (
-        "POST",
+      const r = await H.fetch (
+        'POST',
         `wall/${wallId}/cell/${cellId}/postit/${postitId}/`+
           `attachment/${args.id}`,
-        {title: args.title, description: args.description},
-        // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            H.raiseError (null, d.error_msg);
-          else
-            this.display ();
+        {title: args.title, description: args.description});
+
+      if (!r || r.error_msg) {
+        if (r) {
+          H.raiseError(null, r.error_msg);
         }
-      );
+      }
+      else {
+        this.display();
+      }
     },
 
     // METHOD delete ()
@@ -106,21 +105,20 @@
       document.getElementById("postit-attachment").click ();
     },
 
-    // METHOD display ()
-    display ()
-    {
-      const {wallId, cellId, postitId} = this.getIds ();
+    // METHOD display()
+    display() {
+      const {wallId, cellId, postitId} = this.getIds();
 
-      if (!this.getCount ())
+      if (!this.getCount()) {
         this._display ();
-      else
-      H.fetch (
-        "GET",
-        `wall/${wallId}/cell/${cellId}/postit/${postitId}/attachment`,
-        null,
-        // success cb
-        (d)=> this._display (d));
-
+      } else {
+        H.fetch (
+          'GET',
+          `wall/${wallId}/cell/${cellId}/postit/${postitId}/attachment`,
+          null,
+          // success cb
+          (d) => this._display(d));
+      }
     },
 
     // METHOD _display ()

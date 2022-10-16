@@ -183,23 +183,19 @@
     },
 
     // METHOD login()
-    login(args) {
-      H.fetch(
-        'POST',
-        'user/login',
-        args,
-        // success cb
-        (d) => {
-          if (d.error_msg) {
-            H.displayMsg ({
-              title: `<?=_("Log in")?>`,
-              type: 'warning',
-              msg: d.error_msg,
-            });
-          } else {
-            return location.href = args.directURL || '/';
-          }
-        });
+    async login(args) {
+      const r = await H.fetch('POST', 'user/login', args);
+      if (!r || r.error_msg) {
+        if (r) {
+          H.displayMsg ({
+            title: `<?=_("Log in")?>`,
+            type: 'warning',
+            msg: r.error_msg,
+          });
+        }
+      } else {
+        return location.href = args.directURL || '/';
+      }
     },
 
     // METHOD logout()
@@ -219,50 +215,41 @@
     },
 
     // METHOD createUser()
-    createUser(args) {
-      H.fetch(
-        'PUT',
-        'user',
-        args,
-        // success cb
-        (d) => {
-          if (d.error_msg) {
-            H.displayMsg({
-              title: `<?=_("Account creation")?>`,
-              type: 'warning',
-              msg: d.error_msg,
-            });
-
-            this.resetCreateUserForm ();
-          } else {
-            return location.href = '/';
-          }
-        });
+    async createUser(args) {
+      const r = await H.fetch('PUT', 'user', args);
+      if (!r || r.error_msg) {
+        if (r) {
+          H.displayMsg({
+            title: `<?=_("Account creation")?>`,
+            type: 'warning',
+            msg: r.error_msg,
+          });
+        }
+        this.resetCreateUserForm ();
+      } else {
+        return location.href = '/';
+      }
     },
 
     // METHOD resetPassword()
-    resetPassword(args) {
-      H.fetch(
-        'POST',
-        'user/resetPassword',
-        args,
-        // success cb
-        (d) => {
-          if (d.error_msg) {
-            H.displayMsg ({
-              title: `<?=_("Password reset")?>`,
-              type: 'warning',
-              msg: d.error_msg
-            });
-          } else {
-            bootstrap.Modal.getInstance('#resetPasswordPopup').hide();
-            H.displayMsg({
-              title: `<?=_("Password reset")?>`,
-              type: 'info',
-              msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>`,
-            });
-          }
+    async resetPassword(args) {
+      const r = await H.fetch('POST', 'user/resetPassword', args);
+      if (!r || r.error_msg) {
+        if (r) {
+          H.displayMsg ({
+            title: `<?=_("Password reset")?>`,
+            type: 'warning',
+            msg: r.error_msg
+          });
+        }
+      } else {
+        bootstrap.Modal.getInstance('#resetPasswordPopup').hide();
+        H.displayMsg({
+          title: `<?=_("Password reset")?>`,
+          type: 'info',
+          msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>`,
         });
+      }
     }
   });
 

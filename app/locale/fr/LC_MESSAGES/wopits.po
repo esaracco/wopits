@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-11 21:38+0200\n"
-"PO-Revision-Date: 2022-10-11 23:39+0200\n"
+"POT-Creation-Date: 2022-10-16 20:58+0200\n"
+"PO-Revision-Date: 2022-10-16 20:59+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -1225,6 +1225,10 @@ msgstr "Afficher les contenus externes"
 msgid "Show wall headers"
 msgstr "Afficher les en-tête du mur"
 
+msgid ""
+"Since the wall is not shared, you are the only one to see these comments."
+msgstr "Le mur n'étant pas partagé, vous êtes le seul à voir ces commentaires."
+
 msgid "Size"
 msgstr "Taille"
 
@@ -1473,6 +1477,9 @@ msgstr ""
 
 msgid "This user will lose their access to the wall.<br>Remove anyway?"
 msgstr "Cet utilisateur perdra l'accès au mur.<br>Retirer quand même?"
+
+msgid "This wall has been shared with you"
+msgstr "Ce mur a été partagé avec vous"
 
 msgid "Timezone"
 msgstr "Fuseau horaire"
