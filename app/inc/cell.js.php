@@ -83,11 +83,11 @@
           }
         },
         start: function(e, ui) {
-          const $editable = $wall.find('.editable');
+          const editable = $wall[0].querySelectorAll('.editable');
  
           // Cancel all editable (blur event is not triggered on resizing).
-          if ($editable.length) {
-            $editable.editable('cancelAll');
+          if (editable.length) {
+            editable.forEach((el) => $(el).editable('cancel'));
           }
  
           S.set('revertData', {

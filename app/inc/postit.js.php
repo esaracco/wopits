@@ -21,65 +21,66 @@
   let _originalObject;
   const _defaultClassColor = `color-<?=WPT_POSTIT_COLOR_DEFAULT?>`;
   const _plugRabbit = {
-      line: null,
-      // EVENT mousedown on destination postit for relation creation
-      mousedownEvent: (e) => {
-        const $end = $(e.target.closest('.postit'));
+    line: null,
+    // EVENT mousedown on destination postit for relation creation
+    mousedownEvent: (e) => {
+      const $end = $(e.target.closest('.postit'));
 
-        e.stopImmediatePropagation();
-        H.preventDefault(e);
+      e.stopImmediatePropagation();
+      H.preventDefault(e);
 
-        if (!$end.length) return _cancelPlugAction();
+      if (!$end.length) return _cancelPlugAction();
 
-        const from = S.get('link-from');
-        const $start = from.obj;
-        const end = $end[0];
-        const endPlugin = $end.postit('getClass');
-        const endId = endPlugin.settings.id;
+      const from = S.get('link-from');
+      const $start = from.obj;
+      const end = $end[0];
+      const endPlugin = $end.postit('getClass');
+      const endId = endPlugin.settings.id;
 
-        if (from.id !== endId && !endPlugin.plugExists(from.id)) {
-          endPlugin.edit({plugend: true}, () => {
-            const start = $start[0];
+      if (from.id !== endId && !endPlugin.plugExists(from.id)) {
+        endPlugin.edit({plugend: true}, () => {
+          const start = $start[0];
 
-            $start.postit('addPlug', {
-              endId,
-              startId: from.id,
-              label: {name: '...'},
-              obj: endPlugin.getPlugTemplate({
-                start,
-                end,
-                hide: true,
-                label: '...',
-              }),
-            }, Boolean(S.get('zoom-level')));
+          $start.postit('addPlug', {
+            endId,
+            startId: from.id,
+            label: {name: '...'},
+            obj: endPlugin.getPlugTemplate({
+              start,
+              end,
+              hide: true,
+              label: '...',
+            }),
+          }, Boolean(S.get('zoom-level')));
 
-            _cancelPlugAction();
-          });
-        } else if (from.id !== endId) {
           _cancelPlugAction();
-          H.displayMsg({
-            title: `<?=_("Note")?>`,
-            type: 'warning',
-            msg: `<?=_("The relation already exists")?>`,
-          });
-        } else {
-          _cancelPlugAction();
-        }
-      },
-      // EVENT mousemouve to track mouse pointer during relation creation
-      mousemoveEvent: (e) => {
-        const rabbit = document.getElementById('plug-rabbit');
+        });
+      } else if (from.id !== endId) {
+        _cancelPlugAction();
 
-        rabbit.style.left = `${e.clientX+5}px`;
-        rabbit.style.top = `${e.clientY-10}px`;
+        H.displayMsg({
+          title: `<?=_("Note")?>`,
+          type: 'warning',
+          msg: `<?=_("The relation already exists")?>`,
+        });
+      } else {
+        _cancelPlugAction();
+      }
+    },
+    // EVENT mousemouve to track mouse pointer during relation creation
+    mousemoveEvent: (e) => {
+      const rabbit = document.getElementById('plug-rabbit');
 
-        _plugRabbit.line.position();
-      },
-      escapeEvent: (e) => {
-        if (e.which === 27) {
-          _cancelPlugAction();
-        }
-      },
+      rabbit.style.left = `${e.clientX + 5}px`;
+      rabbit.style.top = `${e.clientY - 10}px`;
+
+      _plugRabbit.line.position();
+    },
+    escapeEvent: (e) => {
+      if (e.which === 27) {
+        _cancelPlugAction();
+      }
+    },
   };
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
@@ -95,7 +96,7 @@
     let maxW = 0;
     let tmp;
 
-    (content.match(/<[a-z]+\s[^>]+>/g)||[]).forEach((tag) => {
+    (content.match(/<[a-z]+\s[^>]+>/g) || []).forEach((tag) => {
       if ( (tmp = tag.match (/width\s*[=:]\s*"?(\d+)"?/)) ) {
         const w = Number(tmp[1]);
 
@@ -109,54 +110,50 @@
   };
 
   // METHOD _deleteRelatedPlugs ()
-  const _deleteRelatedPlugs = (plug)=>
-    {
-      plug.related.forEach (_r => _r.remove ());
+  const _deleteRelatedPlugs = (plug) => {
+    plug.related.forEach ((r) => r.remove());
+    plug.related = [];
+    plug.customPos = false;
+  };
 
-      plug.related = [];
-      plug.customPos = false;
-    };
+  // METHOD _removePlug()
+  const _removePlug = (plug, toDefrag) => {
+    toDefrag[plug.startId] = plug.obj.start;
+    toDefrag[plug.endId] = plug.obj.end;
 
+    // Remove label
+    plug.labelObj.remove();
+    plug.labelObj = null;
 
-  // METHOD _removePlug ()
-  const _removePlug = (plug, toDefrag)=>
-    {
-      toDefrag[plug.startId] = plug.obj.start;
-      toDefrag[plug.endId] = plug.obj.end;
+    // Remove related lines
+    if (plug.customPos) {
+      _deleteRelatedPlugs(plug);
+    }
 
-      // Remove template line
-      plug.obj.remove ();
-      plug.obj = null;
+    plug.obj.remove();
+    plug.obj = null;
+  };
 
-      // Remove related lines
-      _deleteRelatedPlugs (plug);
+  // METHOD _cancelPlugAction()
+  const _cancelPlugAction = () => {
+    if (_plugRabbit.line) {
+      document.removeEventListener('keydown', _plugRabbit.escapeEvent);
+      document.removeEventListener('mousedown', _plugRabbit.mousedownEvent);
+      document.removeEventListener('mousemove', _plugRabbit.mousemoveEvent);
 
-      // Remove label
-      plug.labelObj.remove ();
-      plug.labelObj = null;
-    };
+      _plugRabbit.line.remove();
+      _plugRabbit.line = null;
 
-  // METHOD _cancelPlugAction ()
-  const _cancelPlugAction = ()=>
-    {
-      const $postit = S.get("link-from").obj;
+      document.getElementById('plug-rabbit').remove();
+    }
 
-      if (_plugRabbit.line)
-      {
-        document.removeEventListener ("keydown", _plugRabbit.escapeEvent);
-        document.removeEventListener ("mousedown", _plugRabbit.mousedownEvent);
-        document.removeEventListener ("mousemove", _plugRabbit.mousemoveEvent);
+    // Unedit postit
+    S.get('link-from').obj.postit ('unedit');
 
-        _plugRabbit.line.remove ();
-        _plugRabbit.line = null;
-
-        document.getElementById("plug-rabbit").remove ();
-      }
-
-      $postit.postit ("unedit");
-
-      S.set ("link-from", true, 500);
-    };
+    // Prevents post-it editing events from being triggered during 500ms
+    // Sort of preventDefault() cross-type events
+    S.set ('link-from', true, 500);
+  };
 
   // METHOD _displayOpenLinkMenu()
   const _displayOpenLinkMenu = (e, args) => {
@@ -177,21 +174,22 @@
       document.getElementById('popup-layer').click();
   
       if (li.dataset.action === 'open-link') {
-        window.open (link.href, '_blank', 'noopener');
+        window.open(link.href, '_blank', 'noopener');
       } else {
         $(el.closest('.postit')).postit('openPostit');
       }
     });
   
-    H.openPopupLayer(()=> menu.remove());
+    H.openPopupLayer(() => menu.remove());
+
     document.body.appendChild(menu);
+
     menu.style.top = `${e.clientY}px`;
     menu.style.left = `${e.clientX}px`;
   };
 
-
   // CLASS _Menu
-  const _menuTemplate = `<?=Wopits\Helper::buildPostitMenu ()?>`;
+  const _$menuTemplate = $(`<?=Wopits\Helper::buildPostitMenu ()?>`);
   class _Menu {
     // METHOD constructor()
     constructor(postitPlugin) {
@@ -205,7 +203,7 @@
       this.header = postit.querySelector('.postit-header');
       this.btn = postit.querySelector('.btn-menu i');
       this.postitPlugin = postitPlugin;
-      this.$menu = $(_menuTemplate);
+      this.$menu = _$menuTemplate;
 
       this.init();
       postit.insertBefore(this.$menu[0], postit.firstChild);
@@ -216,8 +214,7 @@
       const pSettings = this.postitPlugin.settings;
 
       if (!pSettings.wall.wall('isShared') || 
-            !this.postitPlugin.canWrite() &&
-            !pSettings.attachmentscount) {
+          (!this.postitPlugin.canWrite() && !pSettings.attachmentscount)) {
         this.$menu[0].querySelector(`[data-action="pwork"]`)
             .style.display = 'none';
       }
@@ -255,10 +252,11 @@
 
     // METHOD setPosition()
     setPosition(pos) {
+      const menuCls = this.$menu[0].classList;
       if (pos === 'left') {
-        this.$menu[0].classList.replace('right', 'left');
+        menuCls.replace('right', 'left');
       } else {
-        this.$menu[0].classList.replace('left', 'right');
+        menuCls.replace('left', 'right');
       }
     }
 
@@ -270,210 +268,222 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init (args)
-    {
-      const plugin = this,
-            $postit = plugin.element,
-            postit = $postit[0],
-            settings = plugin.settings,
-            $wall = settings.wall,
-            writeAccess = plugin.canWrite ();
+  Plugin.prototype = {
+    // METHOD init()
+    init(args) {
+      const plugin = this;
+      const $postit = plugin.element;
+      const postit = $postit[0];
+      const settings = plugin.settings;
+      const $wall = settings.wall;
+      const writeAccess = plugin.canWrite();
 
       settings.plugs = [];
       settings.plugins = [];
       postit.dataset.id = `postit-${settings.id}`;
       postit.dataset.order = settings.item_order;
-      postit.className = settings.classes||"postit";
-      postit.dataset.tags = settings.tags||"";
+      postit.className = settings.classes || 'postit';
+      postit.dataset.tags = settings.tags || '';
 
-      if (settings.obsolete)
-        postit.classList.add ("obsolete");
+      // if the deadline has passed
+      if (settings.obsolete) {
+        postit.classList.add('obsolete');
+      }
 
-      postit.style.visibility = "hidden";
+      postit.style.visibility = 'hidden';
       postit.style.top = `${settings.item_top}px`;
       postit.style.left = `${settings.item_left}px`;
 
-      $postit
-        // Append menu, header, dates, attachment count and tags
-        .append ((writeAccess?`<div class="btn-menu"><i class="far fa-caret-square-down"></i></div>`:"")+`<div class="postit-header"><span class="title">...</span></div><div class="postit-progress-container"><div><span></span></div><div class="postit-progress"></div></div><div class="postit-edit"></div><div class="dates"><div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div></div><div class="topicon"><div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div></div><div class="postit-tags">${settings.tags?S.getCurrent("tpick").tpick("getHTMLFromString", settings.tags):""}</div>`);
+      // Append if the user have write access
+      if (writeAccess) {
+        postit.appendChild(H.createElement('div',
+          {className: 'btn-menu'}, null,
+          `<i class="far fa-caret-square-down"></i>`));
+      }
+      // Append header, dates, attachment count and tags
+      postit.append(
+        // Header
+        H.createElement('div', {className: 'postit-header'}, null,
+          `<span class="title">...</span>`),
+        // Progress bar
+        H.createElement('div', {className: 'postit-progress-container'}, null,
+          `<div><span></span></div><div class="postit-progress"></div>`),
+        // Edit
+        H.createElement('div', {className: 'postit-edit'}),
+        // Dates (creation and deadline)
+        H.createElement('div', {className: 'dates'}, null,
+          `<div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div>`),
+        // Top icons
+        H.createElement('div', {className: 'topicon'}, null,
+          `<div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div>`),
+        // Tags
+        H.createElement('div', {className: 'postit-tags'}, null,
+          `${settings.tags ? S.getCurrent('tpick').tpick("getHTMLFromString", settings.tags) : ''}`)
+      );
 
       if (writeAccess)
       {
-        const postitEdit = postit.querySelector (".postit-edit");
+        const postitEdit = postit.querySelector('.postit-edit');
 
         $postit  
-        // DRAGGABLE postit
-        .draggable ({
-          distance: 10,
-          appendTo: "parent",
-          revert: "invalid",
-          cursor: "pointer",
-          cancel: ".postit-tags",
-          containment: $wall.find ("tbody.wpt"),
-          scrollSensitivity: 50,
-          opacity: .35,
-          scope: "dzone",
-          stack: ".postit",
-          drag: function(e, ui)
-          {
-            if (S.get("revertData").revert)
-            {
-              $(this).draggable ("cancel");
-              return false;
-            }
-
-            // Refresh relations position
-            // plugin.repositionPlugs ();
-          },
-          start: function(e, ui)
-            {
-              S.set ("revertData", {
+          // DRAGGABLE postit
+          .draggable ({
+            distance: 10,
+            appendTo: 'parent',
+            revert: 'invalid',
+            cursor: 'pointer',
+            cancel: '.postit-tags',
+            containment: $wall.find('tbody.wpt'),
+            scrollSensitivity: 50,
+            opacity: .35,
+            scope: 'dzone',
+            stack: '.postit',
+            drag: function(e, ui) {
+              if (S.get('revertData').revert) {
+                $(this).draggable('cancel');
+                return false;
+              }
+  
+              // Refresh relations position
+              // plugin.repositionPlugs ();
+            },
+            start: function(e, ui) {
+              S.set('revertData', {
                 revert: false,
                 top: postit.offsetTop,
-                left: postit.offsetLeft
+                left: postit.offsetLeft,
               });
-
+  
               this.hideSHowPlugs =
                 !S.getCurrent('filters')[0].classList.contains('plugs-hidden');
-
+  
               if (this.hideSHowPlugs) {
                 plugin.hidePlugs();
               }
-
+  
               plugin.edit ({ignoreResize: true}, null,
-                ()=> S.get("revertData").revert = true);
-            },
-          stop: function(e, ui)
-            {
+                () => S.get('revertData').revert = true);
+              },
+            stop: function(e, ui) {
               if (this.hideSHowPlugs) {
                 plugin.showPlugs();
               }
-              delete(this.hideSHowPlugs);
+              delete this.hideSHowPlugs;
               plugin.dropStop();
             }
-        })
-        // RESIZABLE post-it
-        .resizable ({
-          handles: (H.haveMouse()) ? "all":"n, e, w, ne, se, sw, nw",
-          autoHide: false,
-          resize: function(e, ui)
-          {
-            // Refresh relations position
-            plugin.repositionPlugs ();
-
-            plugin.fixEditHeight ();
-
-            if (S.get("revertData").revert)
-              return false;
-          },
-          start: function(e, ui)
-            {
-              const $editable = $wall.find (".editable");
-
-              // Cancel all editable (blur event is not triggered on resizing).
-              if ($editable.length)
-                $editable.editable ("cancelAll");
+          })
+          // RESIZABLE post-it
+          .resizable({
+            handles: H.haveMouse() ? 'all' : 'n, e, w, ne, se, sw, nw',
+            autoHide: false,
+            resize: function(e, ui) {
+              // Refresh relations position
+              plugin.repositionPlugs();
   
-              S.set ("revertData", {
+              plugin.fixEditHeight();
+  
+              if (S.get('revertData').revert) {
+                return false;
+              }
+            },
+            start: function(e, ui) {
+              const editable = $wall[0].querySelectorAll('.editable');
+  
+              // Cancel all editable
+              // (because blur event is not triggered on resizing)
+              if (editable.length) {
+                editable.forEach((el) => $(el).editable('cancel'));
+              }
+    
+              S.set('revertData', {
                 revert: false,
                 width: postit.clientWidth,
-                height: postit.clientHeight
+                height: postit.clientHeight,
               });
-
+  
               plugin.hidePlugs();
-
+  
               plugin.edit ({ignoreResize: true}, null,
-                ()=> S.get("revertData").revert = true);
+                () => S.get('revertData').revert = true);
             },
-          stop: function(e, ui)
-            {
-              const revertData = S.get ("revertData");
+            stop: function(e, ui) {
+              const revertData = S.get('revertData');
 
-              S.set ("dragging", true, 500);
+              S.set('dragging', true, 500);
 
               plugin.showPlugs();
 
-              if (revertData.revert)
-              {
-                $postit.css ({
-                  width: revertData.width,
-                  height: revertData.height
-                });
+              if (revertData.revert) {
+                postit.style.width = `${revertData.width}px`;
+                postit.style.height = `${revertData.height}px`;
 
-                plugin.cancelEdit ();
+                plugin.cancelEdit();
 
                 // Refresh relations position
-                plugin.repositionPlugs ();
+                plugin.repositionPlugs();
               }
-              else
-                H.waitForDOMUpdate (() =>
-                  {
-                    ui.element.parent().cell ("reorganize");
-
-                    plugin.unedit ();
-                  });
+              else {
+                H.waitForDOMUpdate (() => {
+                  ui.element.parent().cell('reorganize');
+                  plugin.unedit();
+                });
+              }
             }
           });
 
         $(postitEdit)
           // EVENT doubletap on content
-          .doubletap ((e)=>
-          {
-            if (e.target.tagName == "A" || H.disabledEvent (e.ctrlKey))
+          .doubletap((e)=> {
+            if (e.target.tagName === 'A' || H.disabledEvent(e.ctrlKey)) {
               return false;
+            }
 
-            plugin.openPostit ();
+            plugin.openPostit();
           });
   
         // Make postit title editable
-        $postit.find(".title").editable ({
+        $postit.find('.title').editable({
           wall: $wall,
-          container: $postit.find (".postit-header"),
+          container: $postit.find('.postit-header'),
           maxLength: <?=DbCache::getFieldLength('postits', 'title')?>,
-          triggerTags: ["span", "div"],
-          fontSize: "14px",
+          triggerTags: ['span', 'div'],
+          fontSize: '14px',
           callbacks: {
-            before: (ed, v) => v == "..." && ed.setValue (""),
-            edit: (cb) =>
-            {
-              if (H.disabledEvent ())
-                return false;
+            before: (ed, v) => v === '...' && ed.setValue(''),
+            edit: (cb) => {
+              if (H.disabledEvent()) return false;
 
-              plugin.edit ({}, cb);
+              plugin.edit({}, cb);
             },
-            unedit: () => plugin.unedit (),
-            update: (v) =>
-              {
-                plugin.setTitle (v);
-                plugin.unedit ();
-              }
+            unedit: () => plugin.unedit(),
+            update: (v) => {
+              plugin.setTitle(v);
+              plugin.unedit();
+            },
           }
         });
       }
 
+      // Initialize topicons plugins
       const _args = {
         postitPlugin: this,
         readonly: !writeAccess,
-        shared: $wall.wall ("isShared")
+        shared: $wall.wall('isShared'),
       };
-
       // Attachments
       _args.count = settings.attachmentscount;
-      settings.plugins.patt = $postit.find(".patt").patt (_args);
-
+      settings.plugins.patt = $postit.find('.patt').patt(_args);
       // Workers
-      _args.count = settings.workerscount,
-      settings.plugins.pwork = $postit.find(".pwork").pwork (_args);
-
+      _args.count = settings.workerscount;
+      settings.plugins.pwork = $postit.find('.pwork').pwork(_args);
       // Comments
       _args.count = settings.commentscount;
-      settings.plugins.pcomm = $postit.find(".pcomm").pcomm (_args);
+      settings.plugins.pcomm = $postit.find('.pcomm').pcomm(_args);
 
-      if (settings.creationdate)
-        plugin.update (settings);
+      // If we are creating a note, update it with default values
+      if (settings.creationdate) {
+        plugin.update(settings);
+      }
     },
 
     // METHOD getPlugin()
@@ -548,58 +558,57 @@
       } else {
         this.edit({}, () => {
           if (!this.openAskForExternalRefPopup({
-                 item,
-                 cb_close: (btn) => (btn !== 'yes') && this.unedit(),
-               })) {
+                 item, cb_close: (btn) => (btn !== 'yes') && this.unedit()})) {
             this.open();
           }
         });
       }
     },
 
-    // METHOD open ()
-    open ()
-    {
-      const plugin = this,
-            postit = plugin.element[0],
-            progress = parseInt (postit.dataset.progress||0),
-            title = plugin.element.find(".postit-header .title").text (),
-            content = postit.querySelector(".postit-edit").innerHTML||"";
+    // METHOD open()
+    open() {
+      const plugin = this;
+      const postit = plugin.element[0];
+      const progress = Number(postit.dataset.progress || 0);
+      const title = postit.querySelector('.postit-header .title').innerText;
+      const content = postit.querySelector('.postit-edit').innerHTML || '';
 
-      if (plugin.canWrite ())
-      {
-        const $popup = $("#postitUpdatePopup");
+      if (plugin.canWrite()) {
+        const $popup = $('#postitUpdatePopup');
 
-        S.set ("postit-data", {
-          title: (title != "...")?title.replace(/&amp;/g, "&"):"",
-          progress: progress
+        S.set('postit-data', {
+          progress,
+          title: (title !== '...') ? title.replace(/&amp;/g, '&') : '',
         });
 
-        $popup.find(".slider").slider ("value", progress, true);
+        // Set progress slider
+        $popup.find('.slider').slider('value', progress, true);
 
-        $("#postitUpdatePopupTitle").val (S.get("postit-data").title);
+        // Set title
+        document.getElementById('postitUpdatePopupTitle').value =
+          S.get('postit-data').title;
 
         //FIXME
-        $(".tox-toolbar__overflow").show ();
-        $(".tox-mbtn--active").removeClass ("tox-mbtn--active");
+        $('.tox-toolbar__overflow').show();
+        $('.tox-mbtn--active').removeClass('tox-mbtn--active');
 
         // Check if post-it content has pictures
-        if (content.match (/\/postit\/\d+\/picture\/\d+/))
+        if (content.match(/\/postit\/\d+\/picture\/\d+/)) {
           postit.dataset.hadpictures = true;
-        else
-          postit.removeAttribute ("data-hadpictures");
+        } else {
+          postit.removeAttribute('data-hadpictures');
+        }
 
         // Filter the focusin event
-        document.addEventListener ("focusin", _focusinInFilter);
+        document.addEventListener('focusin', _focusinInFilter);
 
-        tinymce.activeEditor.setContent (content);
+        tinymce.activeEditor.setContent(content);
 
-        H.openModal ({
+        H.openModal({
           item: document.getElementById('postitUpdatePopup'),
-          width: _getMaxEditModalWidth (content)
+          width: _getMaxEditModalWidth(content),
         });
-      }
-      else {
+      } else {
         plugin.setCurrent();
 
         H.loadPopup('postitView', {
@@ -607,8 +616,8 @@
           cb: ($p) => {
             const p = $p[0];
 
-            p.querySelector('.modal-body').innerHTML = content ?
-              content : `<i><?=_("No content")?></i>`;
+            p.querySelector('.modal-body').innerHTML =
+              content ? content : `<i><?=_("No content")?></i>`;
 
             p.querySelector('.modal-title').innerHTML =
               `<i class="fas fa-sticky-note"></i> ${title}`;
@@ -631,129 +640,113 @@
                  `.postit[data-id="postit-${this.settings.id}"]`);
     },
 
-    // METHOD displayAlert ()
-    displayAlert (type)
-    {
+    // METHOD displayAlert()
+    displayAlert(type) {
       const data = this.element[0].dataset;
       let content;
 
       // Scroll to the to the post-it if needed.
-      H.setViewToElement (this.element);
+      H.setViewToElement(this.element);
 
-      H.waitForDOMUpdate (()=>
-      {
-        const min = this.getMin ();
-        let title, content;
+      H.waitForDOMUpdate(()=> {
+        let title;
+        let content;
 
-        switch (type)
-        {
+        switch (type) {
           // Worker
-          case "worker":
-
+          case 'worker':
             title = `<i class="fa fa-user-cog fa-fw"></i> <?=_("Note assignation")?>`;
             content = `<?=_("This note has been assigned to you")?>`;
             break;
-
           // Comment
-          case "comment":
-
+          case 'comment':
             title = `<i class="fa fa-comment fa-fw"></i> <?=_("Comment")?>`;
             content = `<?=_("You were mentioned in a comment to this note")?>`;
             break;
-
           // Deadline
-          case "deadline":
-          case "postit":
-
+          case 'deadline':
+          case 'postit':
             title = `<i class="fa fa-exclamation-triangle fa-fw"></i> <?=_("Expiration")?>`;
 
-            if (!data.deadlineepoch)
+            if (!data.deadlineepoch) {
               content =`<?=_("The deadline for this note has been removed")?>`;
-            else if (this.element.hasClass ("obsolete"))
+            } else if (this.element[0].classList.contains('obsolete')) {
               content = `<?=_("This note has expired")?>`;
-            else
-            {
-              const a = moment.unix (data.deadlineepoch),
-                    b = moment (new Date ());
-              let days = moment.duration(a.diff(b)).asDays ();
+            } else {
+              const a = moment.unix(data.deadlineepoch);
+              const b = moment (new Date());
+              let days = moment.duration(a.diff(b)).asDays();
 
-              if (days % 1 > 0)
+              if (days % 1 > 0) {
                 days = Math.trunc(days) + 1;
+              }
 
-              content = (days > 1) ?
-                `<?=_("This note will expire in about %s day(s)")?>`.replace("%s", days) :
-                `<?=_("This note will expire soon")?>`;
+              content = (days > 1) ? `<?=_("This note will expire in about %s day(s)")?>`.replace("%s", days) : `<?=_("This note will expire soon")?>`;
             }
-
             break;
         }
 
-        H.openConfirmPopover ({
-          type: "info",
+        const min = this.getMin();
+
+        H.openConfirmPopover({
+          type: 'info',
           scrollIntoView: true,
           item: min ? $(min) : this.element,
           title, 
-          content
+          content,
         });
-
       });
     },
 
-    // METHOD remove ()
-    remove (noEffect)
-    {
+    // METHOD remove()
+    remove(noEffect) {
       const postit = this.element[0];
 
-      // LOCAL FUNCTION __remove ()
-      const __remove = ()=>
-        {
-          const min = this.getMin ();
+      // LOCAL FUNCTION __remove()
+      const __remove = () => {
+        const min = this.getMin();
 
-          // Remove min postit (stack mode display) if needed
-          if (min)
-          {
-            min.remove ();
-            this.settings.cell.cell ("decCount");
-          }
+        // Remove min postit (stack mode display) if needed
+        if (min) {
+          min.remove();
+          this.settings.cell.cell('decCount');
+        }
 
-          this.removePlugs (true);
-          postit.remove ();
-        };
+        this.removePlugs(true);
+        postit.remove();
+      };
 
-      if (!noEffect)
-      {
+      if (!noEffect) {
         // Empty postit content to prevent effect to reload deleted embedded
         // images
-        postit.querySelector(".postit-edit").innerHTML = "";
-        $(postit).hide ("explode", __remove);
-      }
+        postit.querySelector('.postit-edit').innerHTML = '';
+        $(postit).hide('explode', __remove);
+
       // The explode effect works poorly on mobile devices
-      else
-        __remove ();
+      } else {
+        __remove();
+      }
 
-      S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
+      S.getCurrent('mmenu').mmenu('remove', this.settings.id);
 
-      this.getPlugin("pcomm").close ();
+      this.getPlugin('pcomm').close ();
     },
 
-    // METHOD havePlugs ()
-    havePlugs ()
-    {
+    // METHOD havePlugs()
+    havePlugs() {
       return this.settings.plugs.length;
     },
 
-    // METHOD applyPlugLineType ()
-    applyPlugLineType (ll)
-    {
-      switch (ll.line_type)
-      {
-        case "solid":
+    // METHOD applyPlugLineType()
+    applyPlugLineType(ll) {
+      switch (ll.line_type) {
+        case 'solid':
           ll.dash = false;
           break;
-        case "dashed":
+        case 'dashed':
           ll.dash = true;
           break;
-        case "a-dashed":
+        case 'a-dashed':
           ll.dash = {animation: true};
           break;
       }
@@ -822,16 +815,16 @@
       const z = S.get('zoom-level') || 1;
 
       S.getCurrent('wall')[0].querySelectorAll('.postit.with-plugs')
-          .forEach((p) => $(p).postit('applyZoomToPlugs', z));
+        .forEach((p) => $(p).postit('applyZoomToPlugs', z));
     },
 
     // METHOD applyThemeToPlugs()
     applyThemeToPlugs(color) {
       // LOCAL FUNCTION __apply ()
       const __apply = (r) => r.setOptions({
-            color,
-            dropShadow: this.getPlugDropShadowTemplate(color),
-          });
+              color,
+              dropShadow: this.getPlugDropShadowTemplate(color),
+            });
 
       this.settings.plugs.forEach((p) => {
         if (p.obj.customCol) return;
@@ -851,7 +844,7 @@
       const color = S.getCurrent('plugColor');
 
       S.getCurrent('wall')[0].querySelectorAll('.postit.with-plugs')
-          .forEach((p) => $(p).postit('applyThemeToPlugs', color));
+        .forEach((p) => $(p).postit('applyThemeToPlugs', color));
     },
 
     // METHOD getWallHeadersShift()
@@ -887,7 +880,7 @@
       if (this.canWrite()) {
         label.querySelector('i.fa-thumbtack').style.display = 'none';
         label.querySelector(`li[data-action="position-auto"]`)
-            .style.display = 'none';
+          .style.display = 'none';
       }
     },
 
@@ -928,10 +921,10 @@
           this.applyPlugLineType(plug.obj);
 
           if (plug.customPos) {
-            plug.related.forEach((_r) => {
-              _r.setOptions(props);
-              _r.line_type = lineType;
-              this.applyPlugLineType(_r);
+            plug.related.forEach((r) => {
+              r.setOptions(props);
+              r.line_type = lineType;
+              this.applyPlugLineType(r);
             });
           }
 
@@ -953,9 +946,9 @@
       const pl = p.labelObj[0];
 
       p.label.name = label;
-      p.obj.middleLabel = LeaderLine.captionLabel ({
-          text: label,
-          fontSize: '13px',
+      p.obj.middleLabel = LeaderLine.captionLabel({
+        text: label,
+        fontSize: '13px',
       });
 
       pl.querySelector('div span').innerHTML =
@@ -1017,133 +1010,122 @@
       ];
     },
 
-    // METHOD addPlugLabel ()
-    addPlugLabel (plug, svg, applyZoom)
-    {
-      const plugin = this,
-            wPos = this.settings.wall[0].getBoundingClientRect (),
-            canWrite = this.canWrite ();
+    // METHOD addPlugLabel()
+    addPlugLabel (plug, svg, applyZoom) {
+      const plugin = this;
+      const wPos = this.settings.wall[0].getBoundingClientRect();
+      const canWrite = this.canWrite();
 
-      svg = document.querySelector (`#_${plug.startId}-${plug.endId}`);
+      svg = document.querySelector(`#_${plug.startId}-${plug.endId}`);
 
       const pos = plug.label.top ?
-              {top: plug.label.top+wPos.top, left: plug.label.left+wPos.left} :
-              svg.querySelector("text").getBoundingClientRect ();
+        {
+          top: plug.label.top + wPos.top,
+          left: plug.label.left + wPos.left,
+        } : svg.querySelector('text').getBoundingClientRect();
       const $start = $(plug.obj.start);
       const renameItem = H.haveMouse() ? `<li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li>` : '';
       const menu = `<ul class="dropdown-menu shadow">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
-      const $label = $(`<div ${plug.label.top?"data-pos=1":""} class="plug-label dropdown submenu" style="top:${pos.top}px;left:${pos.left}px">${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}</div>`);
+      const label = H.createElement('div',
+        {className: 'plug-label dropdown submenu', style: `top:${pos.top}px;left:${pos.left}px`},
+        plug.label.top ? {pos: 1} : null,
+        `${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}`);
 
-        plug.labelObj = $label.appendTo ("body");
+      plug.labelObj = $(document.body.appendChild(label));
 
-        const pl = plug.labelObj[0];
+      if (plug.label.top) {
+        label.dataset.origtop = plug.label.top;
+        label.dataset.origleft = plug.label.left;
 
-        if (plug.label.top)
-        {
-          pl.dataset.origtop = plug.label.top;
-          pl.dataset.origleft = plug.label.left;
-
-          if (canWrite)
-            pl.querySelector("i.fa-thumbtack").style.display = "block";
-
-          plug.related = plugin.createRelatedPlugs (plug);
-        }
-        else
-        {
-          if (canWrite)
-            pl.querySelector(`li[data-action="position-auto"]`)
-              .style.display = "none";
-
-          plug.related = [];
-          plug.customPos = false;
-          plug.obj.show ("none");
+        if (canWrite) {
+          label.querySelector('i.fa-thumbtack').style.display = 'block';
         }
 
-        if (applyZoom)
-        {
-          pl.style.transformOrigin = "top left";
-          pl.style.transform = `scale(${S.get("zoom-level")||1})`;
+        plug.related = plugin.createRelatedPlugs(plug);
+      } else {
+        if (canWrite) {
+          label.querySelector(`li[data-action="position-auto"]`)
+            .style.display = 'none';
         }
 
-        if (canWrite)
-          $label.draggable ({
-            distance: 10,
-            containment: S.getCurrent("wall").find ("tbody.wpt"),
-            scroll: false,
-            start: function (e, ui)
-            {
-              S.set ("revertData", {
-                revert: false,
-                top: plug.labelObj[0].offsetTop,
-                left: plug.labelObj[0].offsetLeft
-              });
+        plug.related = [];
+        plug.customPos = false;
+        plug.obj.show('none');
+      }
 
-              $start.postit ("edit", {},
-                // success cb
-                ()=>
-                {
-                  if (!plug.customPos) {
-                    plug.related = plugin.createRelatedPlugs(plug);
-                    plug.obj.hide();
-                  }
-                  plug.related.forEach ((r) => r.hide('none'));
-                },
-                // error cb
-                ()=> S.get("revertData").revert = true);
-            },
-            drag: function ()
-            {
-              if (S.get("revertData").revert)
-              {
-                $(this).draggable ("cancel");
-                return false;
-              }
+      if (applyZoom) {
+        label.style.transformOrigin = 'top left';
+        label.style.transform = `scale(${S.get('zoom-level') || 1})`;
+      }
 
-              // plug.related.forEach (_r => _r.position ());
-            },
-            stop: function (e, ui)
-            {
-              S.set ("dragging", true, 500);
+      if (canWrite)
+        plug.labelObj.draggable ({
+          distance: 10,
+          containment: S.getCurrent('wall').find('tbody.wpt'),
+          scroll: false,
+          start: function(e, ui) {
+            S.set ('revertData', {
+              revert: false,
+              top: plug.labelObj[0].offsetTop,
+              left: plug.labelObj[0].offsetLeft
+            });
 
-              setTimeout(() => plug.related.forEach(
-                  (_r) => _r.position().show()), 150);
-
-              if (S.get("revertData").revert)
-              {
-                const revertData = S.get ("revertData");
-
-                plug.labelObj.css ({
-                  top: revertData.top,
-                  left: revertData.left
-                });
-
-                $start.postit ("cancelEdit");
-              }
-              else
-              {
-                const wPos = S.getCurrent("wall")[0].getBoundingClientRect (),
-                      lbPos = $label[0].getBoundingClientRect (),
-                      z = S.get("zoom-level")||1,
-                      toSave = {};
-
-                $label[0].dataset.changed = 1;
-                $label[0].dataset.pos = 1;
-
-                pl.querySelector("i.fa-thumbtack").style.display = "block";
-                pl.querySelector(`li[data-action="position-auto"]`)
-                  .style.display = "none";
-
-                pl.dataset.origtop = Math.trunc ((lbPos.top-wPos.top)/z);
-                pl.dataset.origleft = Math.trunc ((lbPos.left-wPos.left)/z);
-
-                toSave[plug.startId] = $(plug.obj.start);
-                toSave[plug.endId] = $(plug.obj.end);
-
-                S.set ("plugs-to-save", toSave);
-                $start.postit ("unedit");
-              }
+            $start.postit('edit', {},
+              // success cb
+              () => {
+                if (!plug.customPos) {
+                  plug.related = plugin.createRelatedPlugs(plug);
+                  plug.obj.hide();
+                }
+                plug.related.forEach((r) => r.hide('none'));
+              },
+              // error cb
+              () => S.get('revertData').revert = true);
+          },
+          drag: function() {
+            if (S.get('revertData').revert) {
+              $(this).draggable('cancel');
+              return false;
             }
-          });
+            // plug.related.forEach(r => r.position ());
+          },
+          stop: function(e, ui) {
+            S.set('dragging', true, 500);
+
+            if (S.get('revertData').revert) {
+              const revertData = S.get('revertData');
+
+              plug.labelObj.style.top = `${revertData.top}px`;
+              plug.labelObj.style.left = `${revertData.left}px`;
+
+              $start.postit('cancelEdit');
+            } else {
+              const wPos = S.getCurrent('wall')[0].getBoundingClientRect();
+              const lbPos = label.getBoundingClientRect();
+              const z = S.get('zoom-level') || 1;
+              const toSave = {};
+
+              label.dataset.changed = 1;
+              label.dataset.pos = 1;
+
+              label.querySelector('i.fa-thumbtack').style.display = 'block';
+              label.querySelector(`li[data-action="position-auto"]`)
+                .style.display = 'none';
+
+              label.dataset.origtop = Number((lbPos.top - wPos.top) / z);
+              label.dataset.origleft = Number((lbPos.left - wPos.left) / z);
+
+              toSave[plug.startId] = $(plug.obj.start);
+              toSave[plug.endId] = $(plug.obj.end);
+
+              S.set('plugs-to-save', toSave);
+              $start.postit('unedit');
+            }
+
+            setTimeout(() =>
+              plug.related.forEach((r) => r.position().show()), 150);
+          }
+        });
     },
 
     // METHOD addPlug()
@@ -1183,6 +1165,7 @@
     // METHOD plugExists()
     plugExists(plugId) {
       for (const plug of this.settings.plugs) {
+        // FIXME == ===
         if (plug.startId == plugId || plug.endId == plugId) {
           return true;
         }
@@ -1192,6 +1175,7 @@
     // METHOD getPlugById()
     getPlugById(plugId) {
       for (const plug of this.settings.plugs) {
+        // FIXME == ===
         if (plug.endId == plugId) {
           return plug;
         }
@@ -1209,9 +1193,7 @@
       _removePlug(plug, toDefrag);
 
       for (const id in toDefrag) {
-        if ($(toDefrag[id]).length) {
-          $(toDefrag[id]).postit('defragPlugsArray');
-        }
+        $(toDefrag[id]).postit('defragPlugsArray');
       }
 
       if (!noedit) {
@@ -1320,9 +1302,8 @@
       });
     },
 
-    // METHOD getCellId ()
-    getCellId ()
-    {
+    // METHOD getCellId()
+    getCellId() {
       return this.settings.cellId;
     },
 
@@ -1341,25 +1322,25 @@
 
           ret[p.endId] = {
             label:
-                (p.label == '...') ?
+                (p.label === '...') ?
                    '' : pl.querySelector('div span').innerText,
             line_type:
-                (p.obj.line_type != `<?=WPT_PLUG_DEFAULTS['lineType']?>`) ?
+                (p.obj.line_type !== `<?=WPT_PLUG_DEFAULTS['lineType']?>`) ?
                    p.obj.line_type : undefined,
             line_size:
-                (p.obj.line_size != <?=WPT_PLUG_DEFAULTS['lineSize']?>) ?
-                   parseInt(p.obj.line_size) : undefined,
+                (p.obj.line_size !== <?=WPT_PLUG_DEFAULTS['lineSize']?>) ?
+                   p.obj.line_size : undefined,
             line_path:
-                (p.obj.path != `<?=WPT_PLUG_DEFAULTS['linePath']?>`) ?
+                (p.obj.path !== `<?=WPT_PLUG_DEFAULTS['linePath']?>`) ?
                    p.obj.path : undefined,
             line_color:
-                (p.obj.color != defaultLineColor) ?
+                (p.obj.color !== defaultLineColor) ?
                    p.obj.color : undefined
           };
 
           if (pl.dataset.pos) {
-            ret[p.endId].top = parseInt(pl.dataset.origtop);
-            ret[p.endId].left = parseInt(pl.dataset.origleft);
+            ret[p.endId].top = Number(pl.dataset.origtop);
+            ret[p.endId].left = Number(pl.dataset.origleft);
 
             // We apply shift only if headers are hidden, plug has a custom
             // position and has just been modified
@@ -1417,7 +1398,7 @@
             content: args.noPostitContent ? null :
                        displayExternalRef ?
                          content : plugin.unblockExternalRef(content),
-            tags: tags.length ? `,${tags.join(",")},` : null,
+            tags: tags.length ? `,${tags.join(',')},` : null,
             deadline: (deadline === '...') ? '' : deadline,
             alertshift: (this.dataset.deadlinealertshift !== undefined) ?
                           this.dataset.deadlinealertshift : null,
@@ -1438,43 +1419,57 @@
       return postits;
     },
 
-    // METHOD showUserWriting ()
-    showUserWriting (user, isRelated)
-    {
-      const postit = this.element[0],
-            id = this.settings.id,
-            $cell = this.settings.cell,
-            canWrite = this.canWrite ();
+    // METHOD showUserWriting()
+    showUserWriting(user, isRelated) {
+      const postit = this.element[0];
+      const id = this.settings.id;
+      const $cell = this.settings.cell;
+      const canWrite = this.canWrite();
 
-      // LOCAL FUNCTION __lock ()
-      const __lock = el =>
-        el.classList.add ("locked", isRelated?"related":"main");
+      // LOCAL FUNCTION __lock()
+      const __lock = (el) =>
+        el.classList.add('locked', isRelated ? 'related' : 'main');
 
-      // LOCAL FUNCTION __addMain ()
-      const __addMain = ()=>
-        postit.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], postit.firstChild);
+      // LOCAL FUNCTION __addMain()
+      const __addMain = () =>
+        postit.insertBefore(
+          H.createElement('div',
+            {className: 'user-writing main'},
+            {userid: user.id},
+            `<i class="fas fa-user-edit blink"></i> ${user.name}`),
+          postit.firstChild);
 
-      this.closeMenu ();
+      this.closeMenu();
 
       // See cell::setPostitsUserWritingListMode()
-      if ($cell[0].classList.contains ("list-mode"))
-      {
-        const min = this.getMin ();
+      if ($cell[0].classList.contains('list-mode')) {
+        const min = this.getMin();
 
-        if (canWrite)
-          __lock (min);
+        if (canWrite) {
+          __lock(min);
+        }
 
-        min.insertBefore ($(`<span class="user-writing-min${!isRelated?" main":""}" data-userid="${user.id}"><i class="fas fa-sm fa-${isRelated?"user-lock":"user-edit blink"}"></i></span>`)[0], min.firstChild);
+        min.insertBefore(
+          H.createElement('span',
+            {className: `user-writing-min${isRelated ? '' : ' main'}`},
+            {userid: user.id},
+            `<i class="fas fa-sm fa-${isRelated ? 'user-lock' : 'user-edit blink'}"></i>`),
+          min.firstChild);
       }
 
-      if (canWrite)
-      {
-        __lock (postit);
+      if (canWrite) {
+        __lock(postit);
 
-        if (isRelated)
-          postit.insertBefore ($(`<div class="user-writing" data-userid="${user.id}"><i class="fas fa-user-lock"></i></div>`)[0], postit.firstChild);
-        else
-          __addMain ();
+        if (isRelated) {
+          postit.insertBefore(
+            H.createElement('div',
+              {className: 'user-writing'},
+              {userid: user.id},
+              `<i class="fas fa-user-lock"></i>`),
+            postit.firstChild);
+        } else {
+          __addMain();
+        }
 
         // Show a lock bubble on related items
         this.settings.plugs.forEach((p) => {
@@ -1485,240 +1480,221 @@
           }
         });
       }
-      else if (!isRelated)
+      else if (!isRelated) {
         __addMain ();
+      }
     },
 
-    // METHOD setDeadline ()
-    setDeadline (args)
-    {
-      const postit = this.element[0],
-            date = postit.querySelector (".dates .end"),
-            {deadline, alertshift, timezone} = args,
-            reset = date.querySelector("i.fa-times-circle");
+    // METHOD setDeadline()
+    setDeadline (args) {
+      const postit = this.element[0];
+      const date = postit.querySelector('.dates .end');
+      const {deadline, alertshift, timezone} = args;
+      const reset = date.querySelector('i.fa-times-circle');
       let human;
 
-      if (!deadline || isNaN (deadline))
-        human = deadline||"...";
-      else
-        human = (deadline) ? H.getUserDate(deadline, timezone) : "...";
-
-      date.querySelector("span").innerText = human;
-
-      reset.style.display = "none";
-
-      if (human == "...")
-      {
-        postit.classList.remove ("obsolete");
-
-        postit.removeAttribute ("data-deadline");
-        postit.removeAttribute ("data-deadlinealertshift");
-        postit.removeAttribute ("data-deadlineepoch");
-        postit.removeAttribute ("data-updatetz");
-
-        date.classList.remove ("with-alert");
-        date.classList.remove ("obsolete");
+      if (!deadline || isNaN(deadline)) {
+        human = deadline || '...';
+      } else {
+        human = deadline ? H.getUserDate(deadline, timezone) : '...';
       }
-      else
-      {
+
+      date.querySelector('span').innerText = human;
+
+      reset.style.display = 'none';
+
+      if (human === '...') {
+        postit.classList.remove('obsolete');
+
+        ['deadline', 'deadlinealertshift', 'deadlineepoch', 'updatetz']
+          .forEach((k) => postit.removeAttribute(`data-${k}`));
+
+        date.classList.remove('with-alert');
+        date.classList.remove('obsolete');
+      } else {
         postit.dataset.deadline = human;
         postit.dataset.deadlineepoch = deadline;
 
-        if (alertshift !== undefined)
-        {
-          if (alertshift !== null)
-          {
+        if (alertshift !== undefined) {
+          if (alertshift !== null) {
             postit.dataset.deadlinealertshift = alertshift;
-            date.classList.add ("with-alert");
-          }
-          else
-          {
-            postit.removeAttribute ("data-deadlinealertshift");
-            date.classList.remove ("with-alert");
+            date.classList.add('with-alert');
+          } else {
+            postit.removeAttribute('data-deadlinealertshift');
+            date.classList.remove('with-alert');
           }
         }
 
-        if (this.canWrite ())
-          reset.style.display = "inline-block";
+        if (this.canWrite()) {
+          reset.style.display = 'inline-block';
+        }
       }
     },
 
-    // METHOD resetDeadline ()
-    resetDeadline ()
-    {
-      this.setDeadline ({deadline: "..."});
+    // METHOD resetDeadline()
+    resetDeadline() {
+      this.setDeadline({deadline: '...'});
     },
 
-    // METHOD setCreationDate ()
-    setCreationDate (v)
-    {
-      this.element.find(".dates .creation span").text (v.trim ());
+    // METHOD setCreationDate()
+    setCreationDate(v) {
+      this.element[0].querySelector('.dates .creation span')
+        .innerText = v.trim();
     },
 
-    // METHOD setProgress ()
-    setProgress (v)
-    {
-      const ppc = this.element[0].querySelector (".postit-progress-container");
+    // METHOD setProgress()
+    setProgress (v) {
+      const postit = this.element[0];
+      const container = postit.querySelector('.postit-progress-container');
 
-      if (v == undefined || v == 0)
-      {
-        this.element[0].removeAttribute ("data-progress");
-        ppc.style.display = "none";
-      }
-      else
-      {
-        const p = ppc.querySelector (".postit-progress");
+      v = Number(v);
 
-        this.element[0].dataset.progress = v;
-        ppc.querySelector("span").innerText = `${v}%`;
-        ppc.style.display = "block";
+      if (!v) {
+        postit.removeAttribute('data-progress');
+        container.style.display = 'none';
+      } else {
+        const progress = container.querySelector('.postit-progress');
 
-        p.style.height = `${v}%`;
-        p.style.backgroundColor = H.getProgressbarColor (v);
+        postit.dataset.progress = v;
+
+        container.querySelector('span').innerText = `${v}%`;
+        container.style.display = 'block';
+
+        progress.style.height = `${v}%`;
+        progress.style.backgroundColor = H.getProgressbarColor(v);
       }
     },
 
     // METHOD getTitle()
     getTitle() {
       return this.element[0]
-               .querySelector('.postit-header span.title').innerHTML;
+        .querySelector('.postit-header span.title').innerHTML;
     },
 
     // METHOD setTitle()
-    setTitle (v) {
+    setTitle(v) {
       this.element[0].querySelector('.postit-header span.title')
         .innerText = H.noHTML(v) || '...';
     },
 
-    // METHOD addExternalRefIcon ()
-    addExternalRefIcon (c)
-    {
-      c.querySelectorAll("[external-src]").forEach (img =>
-        {
-          const next = img.nextSibling;
+    // METHOD addExternalRefIcon()
+    addExternalRefIcon(c) {
+      c.querySelectorAll("[external-src]").forEach((img) => {
+        const next = img.nextSibling;
 
-          if (!next || !next.classList ||
-              !next.classList.contains ("externalref"))
-          {
-            img.parentNode.title = `<?=_("This external content is filtered")?>`;
-            $(`<i class="fas fa-umbrella fa-lg externalref"></i>`)
-              .insertAfter ($(img));
-          }
-        });
+        if (!next ||
+            !next.classList || !next.classList.contains('externalref')) {
+          img.parentNode.title = `<?=_("This external content is filtered")?>`;
+          H.insertAfter(
+            H.createElement('i',
+              {className: 'fas fa-umbrella fa-lg externalref'}),
+            img);
+        }
+      });
     },
 
-    // METHOD removeExternalRefIcon ()
-    removeExternalRefIcon (c)
-    {
-      c.querySelectorAll("i.externalref").forEach (el =>
-        {
-          el.parentNode.removeAttribute ("title");
-          el.remove ();
-        });
+    // METHOD removeExternalRefIcon()
+    removeExternalRefIcon(c) {
+      c.querySelectorAll('i.externalref').forEach((el) => {
+        el.parentNode.removeAttribute('title');
+        el.remove ();
+      });
     },
 
-    // METHOD setContent ()
-    setContent (newContent)
-    {
-      const postit = this.element[0],
-            edit = postit.querySelector (".postit-edit");
+    // METHOD setContent()
+    setContent(newContent) {
+      const postit = this.element[0];
+      const edit = postit.querySelector('.postit-edit');
       let setIcon = false;
 
-      if (newContent !== edit.innerHTML)
-      {
-        const externalRef = this.getExternalRef (newContent);
+      if (newContent !== edit.innerHTML) {
+        const externalRef = this.getExternalRef(newContent);
 
-        if (externalRef)
-        {
+        if (externalRef) {
           postit.dataset.haveexternalref = 1;
 
-          if (!this.settings.wall.wall("displayExternalRef"))
-          {
+          if (!this.settings.wall.wall('displayExternalRef')) {
             setIcon = true;
-            newContent = this.blockExternalRef (newContent, externalRef);
+            newContent = this.blockExternalRef(newContent, externalRef);
           }
-        }
-        else
+        } else {
           postit.removeAttribute ("data-haveexternalref");
+        }
 
         edit.innerHTML = newContent;
 
-        if (setIcon)
-          this.addExternalRefIcon (edit);
-        else
-          this.removeExternalRefIcon (edit);
+        if (setIcon) {
+          this.addExternalRefIcon(edit);
+        } else {
+          this.removeExternalRefIcon(edit);
+        }
       }
     },
 
-    // METHOD openAskForExternalRefPopup ()
-    openAskForExternalRefPopup (args = {})
-    {
+    // METHOD openAskForExternalRefPopup()
+    openAskForExternalRefPopup(args = {}) {
       let ask = (this.getExternalRef() &&
-                 this.settings.wall.wall("displayExternalRef") != 1);
+                 !this.settings.wall.wall('displayExternalRef'));
 
-      if (ask)
-        H.openConfirmPopover ({
-          item: args.item||this.element,
+      if (ask) {
+        H.openConfirmPopover({
+          item: args.item || this.element,
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
           content: `<?=_("This note contains external images or videos.")?><br><?=_("Would you like to load all external content for the current wall?")?>`,
           cb_close: args.cb_close,
-          cb_ok: () =>
-          {
-            this.settings.wall.wall ("displayExternalRef", 1);
-            this.open ()
+          cb_ok: () => {
+            this.settings.wall.wall('displayExternalRef', 1);
+            this.open();
           }
         });
+      }
 
       return ask;
     },
 
-    // METHOD getExternalRef ()
-    getExternalRef (content)
-    {
+    // METHOD getExternalRef()
+    getExternalRef(content) {
       return (content !== undefined) ?
-               content.match (/(src\s*=\s*["']?http[^"'\s]+")/ig) :
+               content.match(/(src\s*=\s*["']?http[^"'\s]+")/ig) :
                this.element[0].dataset.haveexternalref;
     },
 
-    // METHOD blockExternalRef ()
-    blockExternalRef (content, externalRef)
-    {
-      const el = this.element.find(".postit-edit")[0];
-      let c = content||el.innerHTML;
+    // METHOD blockExternalRef()
+    blockExternalRef(content, externalRef) {
+      const el = this.element[0].querySelector('.postit-edit');
+      let c = content || el.innerHTML;
 
-      if (!externalRef)
-        externalRef = this.getExternalRef (c);
+      if (!externalRef) {
+        externalRef = this.getExternalRef(c);
+      }
 
-      if (externalRef)
-      {
-        externalRef.forEach (src =>
-          c = c.replace (new RegExp ("[^\-]"+H.escapeRegex(src), "g"),
+      if (externalRef) {
+        externalRef.forEach((src) =>
+          c = c.replace (new RegExp ('[^\-]'+H.escapeRegex(src), 'g'),
                 ` external-${src} `));
 
-        if (content === undefined)
-        {
+        if (content === undefined) {
           el.innerHTML = c;
-          this.addExternalRefIcon (el);
-        }
-        else
+          this.addExternalRefIcon(el);
+        } else {
           return c;
+        }
       }
     },
 
-    // METHOD unblockExternalRef ()
-    unblockExternalRef (content)
-    {
-      if (content !== undefined)
-        return content.replace (/external\-src/g, "src");
-      else
-      {
-        this.element[0].querySelectorAll("[external-src]").forEach (el =>
-          {
-            el.setAttribute ("src", el.getAttribute ("external-src"));
-            el.removeAttribute ("external-src");
-          });
+    // METHOD unblockExternalRef()
+    unblockExternalRef(content) {
+      if (content !== undefined) {
+        return content.replace(/external\-src/g, 'src');
+      } else {
+        const postit = this.element[0];
 
-        this.removeExternalRefIcon (this.element[0]);
+        postit.querySelectorAll('[external-src]').forEach((el) => {
+          el.setAttribute('src', el.getAttribute('external-src'));
+          el.removeAttribute('external-src');
+        });
+
+        this.removeExternalRefIcon(postit);
       }
     },
 
@@ -1739,366 +1715,339 @@
       const postit = this.element[0];
 
       postit.querySelector('.postit-edit')
-          .style.maxHeight = `${postit.offsetHeight - 40}px`;
+        .style.maxHeight = `${postit.offsetHeight - 40}px`;
     },
 
-    // METHOD fixPosition ()
-    fixPosition (cPos)
-    {
-       const postit = this.element[0],
-             phTop = postit.querySelector(".postit-header")
-                       .getBoundingClientRect().top,
-             pW = postit.clientWidth,
-             pH = postit.clientHeight,
-             cH = cPos.height,
-             cW = cPos.width;
-       let pPos = postit.getBoundingClientRect ();
+    // METHOD fixPosition()
+    fixPosition(cPos) {
+      const postit = this.element[0];
+      const phTop =
+        postit.querySelector('.postit-header').getBoundingClientRect().top;
+      const pW = postit.clientWidth;
+      const pH = postit.clientHeight;
+      const cH = cPos.height;
+      const cW = cPos.width;
+      let pPos = postit.getBoundingClientRect();
 
-       // postit is too much high
-       if (phTop < cPos.top)
-         postit.style.top = "20px";
-  
-       // postit is too much left
-       if (pPos.left < cPos.left)
-         postit.style.left = "1px";
-  
-       // postit is too much right
-       if (pPos.left + pW > cPos.left + cW + 1)
-         postit.style.left = (cW - pW - 4) + "px";
+      // Postit is too high
+      if (phTop < cPos.top) {
+        postit.style.top = '20px';
+      }
  
-       // postit is too large
-       if (pW > cW)
-       {
-         postit.style.left = "0";
-         postit.style.width = (cW - 2) + "px";
-       }
-  
-       pPos = postit.getBoundingClientRect ();
-  
-       // postit is too much big
-       if (pPos.top + pH > cPos.top + cH)
-       {
-         if (pH > cH)
-           postit.style.height = (cH - 22) + "px";
-  
-         postit.style.top = (cH - postit.clientHeight - 4) + "px";
-       }
-    },
+      // Postit is too much on left
+      if (pPos.left < cPos.left) {
+        postit.style.left = '1px';
+      }
+ 
+      // Postit is too much on right
+      if (pPos.left + pW > cPos.left + cW + 1) {
+        postit.style.left = `${cW - pW - 4}px`;
+      }
 
-    // METHOD getClassColor ()
-    getClassColor ()
-    {
-      const classe = this.element[0].className.match(/color\-[a-z]+/);
-
-      return (classe && classe.length) ? classe[0] : _defaultClassColor;
+      // Postit is too large
+      if (pW > cW) {
+        postit.style.left = '0';
+        postit.style.width = `${cW - 2}px`;
+      }
+ 
+      pPos = postit.getBoundingClientRect();
+ 
+      // Postit is too big
+      if (pPos.top + pH > cPos.top + cH) {
+        if (pH > cH) {
+          postit.style.height = `${cH - 22}px`;
+        }
+ 
+        postit.style.top = `${cH - postit.clientHeight - 4}px`;
+      }
     },
 
     // METHOD setClassColor()
     setClassColor (newClass, item) {
       if (item !== undefined && item === null) return;
 
-      const el = (item) ? item : this.element[0];
-      const classes = el.className.replace(/color\-[a-z]+/, '');
+      const el = item ? item : this.element[0];
+      const cls = el.className.replace(/color\-[a-z]+/, '');
 
-      el.className = `${classes} ${newClass}`;
+      el.className = `${cls} ${newClass}`;
     },
 
-    // METHOD setPopupColor ()
-    setPopupColor ($popup)
-    {
+    // METHOD setPopupColor()
+    setPopupColor($popup) {
       const popup = $popup[0];
-      const cls = this.getClassColor();
+      const cls = this.element[0].className.match(/color\-[a-z]+/)[0];
 
       this.setClassColor (cls, popup.querySelector('.modal-header'));
       this.setClassColor (cls, popup.querySelector('.modal-title'));
       this.setClassColor (cls, popup.querySelector('.modal-footer'));
     },
 
-    // METHOD setCurrent ()
-    setCurrent ()
-    {
-      S.reset ("postit");
-      this.element[0].classList.add ("current");
+    // METHOD setCurrent()
+    setCurrent() {
+      S.reset('postit');
+      this.element[0].classList.add('current');
     },
 
-    // METHOD unsetCurrent ()
-    unsetCurrent ()
-    {
-      S.reset ("postit");
-      S.reset ("pcomm");
+    // METHOD unsetCurrent()
+    unsetCurrent() {
+      S.reset('postit');
+      S.reset('pcomm');
 
-      this.element[0].classList.remove ("current");
+      this.element[0].classList.remove('current');
     },
 
-    // METHOD insert ()
-    insert ()
-    {
-      const $postit = this.element,
-            data = this.serialize()[0];
+    // METHOD insert()
+    insert() {
+      const postit = this.element[0];
+      const data = this.serialize()[0];
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${this.settings.wallId}/cell/${this.settings.cellId}/postit`,
         data,
         // success cb
-        (d) =>
-        {
-          if (d.error_msg)
-            H.displayMsg ({
+        (d) => {
+          if (d.error_msg) {
+            H.displayMsg({
               title: `<?=_("Note")?>`,
-              type: "warning",
-              msg: d.error_msg
+              type: 'warning',
+              msg: d.error_msg,
             });
-
-          $postit.remove ();
+          }
+          postit.remove();
         },
         // error cb
-        (d) =>
-        {
+        (d) => {
           //FIXME factorisation (cf. H.request_ws ())
-          H.displayMsg ({
+          H.displayMsg({
             title: `<?=_("Note")?>`,
-            type: "danger",
-            msg: (isNaN (d.error)) ?
-              d.error : `<?=_("Unknown error.<br>Please try again later.")?>`
+            type: 'danger',
+            msg: isNaN(d.error) ?
+              d.error : `<?=_("Unknown error.<br>Please try again later.")?>`,
           });
-
-          $postit.remove ();
+          postit.remove();
         });
     },
 
-    // METHOD save ()
-    save (args)
-    {
-      this.setProgress (args.progress);
-      this.setTitle (args.title);
-      this.setContent (args.content);
+    // METHOD save()
+    save({content, progress, title}) {
+      this.setContent(content);
+      this.setProgress(progress);
+      this.setTitle(title);
 
-      this.element[0].removeAttribute ("data-uploadedpictures");
-      S.unset ("postit-data");
+      this.element[0].removeAttribute('data-uploadedpictures');
+
+      S.unset('postit-data');
     },
 
-    // METHOD update ()
-    update (d, cell)
-    {
-      const $postit = this.element,
-            postit = $postit[0],
-            $tpick = S.getCurrent ("tpick"),
-            postitEdit = d.init ? postit.querySelector('.postit-edit') : null;
+    // METHOD update()
+    update(d, cell) {
+      const $postit = this.element;
+      const postit = $postit[0];
+      const $tpick = S.getCurrent('tpick');
+      const postitEdit = d.init ? postit.querySelector('.postit-edit') : null;
 
       if (postitEdit) {
         postitEdit.style.display = 'none';
       }
 
       // Change postit cell
-      if (cell && cell.id != this.settings.cellId)
-      {
-        if (this.settings.cell[0].classList.contains ("list-mode"))
-        {
-          this.settings.cell.cell ("decCount");
-          this.getMin().remove ();
+      if (cell && cell.id !== Number(this.settings.cellId)) {
+        if (this.settings.cell[0].classList.contains('list-mode')) {
+          this.settings.cell.cell('decCount');
+          this.getMin().remove();
         }
 
         this.settings.cell =
-          cell.obj||this.settings.wall.find(`td[data-id="cell-${cell.id}"]`);
+          cell.obj ||  $(this.settings.wall[0]
+                         .querySelector(`td[data-id="cell-${cell.id}"]`));
         this.settings.cellId = cell.id;
 
-        $postit.appendTo (this.settings.cell);
+        this.settings.cell[0].append(postit);
 
-        if (this.settings.cell[0].classList.contains ("postit-mode"))
-          postit.style.visibility = "visible";
+        if (this.settings.cell[0].classList.contains('postit-mode')) {
+          postit.style.visibility = 'visible';
+        }
       }
 
-      if (!d.ignoreResize)
-      {
+      if (!d.ignoreResize) {
         postit.style.top = `${d.item_top}px`;
         postit.style.left = `${d.item_left}px`;
         postit.style.width = `${d.width}px`;
         postit.style.height = `${d.height}px`;
 
-        this.fixEditHeight ();
+        this.fixEditHeight();
       }
 
-      this.setClassColor (d.classcolor);
-
-      this.setProgress (d.progress);
-
-      this.setTitle (d.title);
-
-      this.setContent (d.content);
+      this.setClassColor(d.classcolor);
+      this.setProgress(d.progress);
+      this.setTitle(d.title);
+      this.setContent(d.content);
 
       //FIXME
       let p;
-      if (p = this.getPlugin ("patt"))
-        p.setCount (d.attachmentscount);
-      if (p = this.getPlugin ("pwork"))
-        p.setCount (d.workerscount);
+      if (p = this.getPlugin('patt')) {
+        p.setCount(d.attachmentscount);
+      }
+      if (p = this.getPlugin('pwork')) {
+        p.setCount(d.workerscount);
+      }
 
-      this.setCreationDate (d.creationdate?H.getUserDate (d.creationdate):"");
+      this.setCreationDate(d.creationdate ? H.getUserDate(d.creationdate) : '');
+      this.setDeadline(d);
 
-      this.setDeadline (d);
+      postit.dataset.order = d.item_order || 0;
 
-      postit.dataset.order = d.item_order||0;
+      if (d.obsolete) {
+        postit.classList.add('obsolete');
+      } else {
+        postit.classList.remove('obsolete');
+      }
 
-      if (d.obsolete)
-        postit.classList.add ("obsolete");
-      else
-        postit.classList.remove ("obsolete");
-
-      if (!d.tags)
-        d.tags = "";
-
+      if (!d.tags) {
+        d.tags = '';
+      }
       postit.dataset.tags = d.tags;
 
-      postit.querySelector(".postit-tags").innerHTML =
-        $tpick.tpick ("getHTMLFromString", d.tags);
+      postit.querySelector('.postit-tags').innerHTML =
+        $tpick.tpick('getHTMLFromString', d.tags);
 
-      $tpick.tpick ("refreshPostitDataTag", $postit);
+      $tpick.tpick('refreshPostitDataTag', $postit);
 
+      // FIXME
       if (postitEdit) {
         setTimeout(() => postitEdit.style.display = 'block', 150);
       }
     },
 
-    // METHOD delete ()
-    delete ()
-    {
-      S.reset ();
-
+    // METHOD delete()
+    delete() {
+      S.reset();
       this.element[0].dataset.todelete = true;
     },
 
-    // METHOD edit ()
-    edit (args = {}, success_cb, error_cb)
-    {
+    // METHOD edit()
+    edit(args = {}, success_cb, error_cb) {
       const data = {cellId: this.settings.cellId};
 
-      if (!args.plugend)
-      {
-        this.setCurrent ();
-
+      if (!args.plugend) {
+        this.setCurrent();
         _originalObject = this.serialize()[0];
       }
 
-      if (!this.settings.wall.wall ("isShared"))
-        return success_cb && success_cb ();
+      if (!this.settings.wall.wall('isShared')) {
+        return success_cb && success_cb();
+      }
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
         data,
         // success cb
-        (d) =>
-        {
-          if (args.ignoreResize)
-            d.ignoreResize = true;
-
-          if (d.error_msg)
-          {
-            H.raiseError (() =>
-              {
-                error_cb && error_cb ();
-                this.cancelEdit (args);
-
-              }, d.error_msg);
+        (d) => {
+          if (d.error_msg) {
+            H.raiseError(() => {
+              error_cb && error_cb();
+              this.cancelEdit(args);
+            }, d.error_msg);
+          } else if (success_cb) {
+            success_cb({...d, ...args});
           }
-          else if (success_cb)
-            success_cb (d);
         },
         // error cb
-        (d) => this.cancelEdit  (args)
+        (d) => this.cancelEdit(args),
       );
     },
 
-    // METHOD unedit ()
-    unedit (args = {})
-    {
-      const $postit = this.element,
-            plugsToSave = S.get ("plugs-to-save");
-      let data = null,
-          todelete;
+    // METHOD unedit()
+    unedit(args = {}) {
+      const $postit = this.element;
+      const plugsToSave = S.get('plugs-to-save');
+      let data = null;
 
-      if (!this.settings.id || !this.canWrite ())
-        return this.cancelEdit (args);
+      if (!this.settings.id || !this.canWrite()) {
+        return this.cancelEdit(args);
+      }
 
-      if (!args.plugend)
-      {
+      if (!args.plugend) {
         // Update postits plugs dependencies
-        if (plugsToSave)
-        {
+        if (plugsToSave) {
           data = {updateplugs: true, plugs: []};
 
-          for (const id in plugsToSave)
-            data.plugs.push ($(plugsToSave[id])
-              .postit ("serialize", {"noPostitContent": true})[0]);
+          for (const id in plugsToSave) {
+            data.plugs.push($(plugsToSave[id])
+              .postit('serialize', {noPostitContent: true})[0]);
+          }
 
-          S.unset ("plugs-to-save");
-        }
+          S.unset('plugs-to-save');
+
         // Postit update
-        else
-        {
+        } else {
           data = this.serialize()[0];
-          todelete = Boolean(data.todelete);
 
           // Delete/update postit only if it has changed
-          if (todelete || H.updatedObject (_originalObject,
-                                             data, {hadpictures: 1}))
-            data["cellId"] = this.settings.cellId;
-          else if (!this.settings.wall.wall ("isShared"))
-            return this.cancelEdit ();
-          else
+          if (data?.todelete ||
+              H.updatedObject(_originalObject, data, {hadpictures: 1})) {
+            data.cellId = this.settings.cellId;
+          } else if (!this.settings.wall.wall('isShared')) {
+            return this.cancelEdit();
+          } else {
             data = null;
+          }
         }
       }
 
-      H.request_ws (
-        "DELETE",
+      H.request_ws(
+        'DELETE',
         `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
         data,
         // success cb
-        (d) =>
-        {
-          this.cancelEdit (args);
+        (d) => {
+          const postit = $postit[0];
 
-          if (d.error_msg)
-            H.displayMsg ({
+          this.cancelEdit(args);
+
+          if (d.error_msg) {
+            H.displayMsg({
               title: `<?=_("Note")?>`,
-              type: "warning",
-              msg: d.error_msg
+              type: 'warning',
+              msg: d.error_msg,
             });
-          else if (todelete && $postit[0].classList.contains ("selected"))
-            S.getCurrent("mmenu").mmenu ("remove", this.settings.id);
-          else if (data && data.updatetz)
-            $postit[0].removeAttribute ("data-updatetz");
+          } else if (data?.todelete && postit.classList.contains('selected')) {
+            S.getCurrent('mmenu').mmenu('remove', this.settings.id);
+          } else if (data && data.updatetz) {
+            postit.removeAttribute('data-updatetz');
+          }
         },
         // error cb
-        () => this.cancelEdit (args));
+        () => this.cancelEdit(args));
     },
 
-    // METHOD cancelEdit ()
-    cancelEdit (args = {})
-    {
-      $("body").css ("cursor", "auto");
+    // METHOD cancelEdit()
+    cancelEdit(args = {}) {
+      document.body.style.cursor = 'auto';
 
-      if (!args.plugend)
-      {
-        this.unsetCurrent ();
+      if (!args.plugend) {
+        const postit = this.element[0];
 
-        this.element[0].removeAttribute ("data-hasuploadedpictures");
-        this.element[0].removeAttribute ("data-hadpictures");
+        this.unsetCurrent();
+
+        postit.removeAttribute('data-hasuploadedpictures');
+        postit.removeAttribute('data-hadpictures');
       }
 
-      if (!this.settings.id)
-        setTimeout(()=>H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
+      if (!this.settings.id) {
+        setTimeout(() => H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
+      }
     },
 
-    // METHOD closeMenu ()
-    closeMenu ()
-    {
+    // METHOD closeMenu()
+    closeMenu () {
       const postit = this.element[0];
 
-      if (postit.querySelector (".postit-menu"))
-        postit.querySelector(".btn-menu").click ();
+      if (postit.querySelector('.postit-menu')) {
+        postit.querySelector('.btn-menu').click ();
+      }
     }
   };
 
@@ -2289,10 +2238,9 @@
         // EVENT "click" on postit menu button
         else if (el.matches (".btn-menu,.btn-menu *"))
         {
-          e.stopImmediatePropagation ();
+          e.stopImmediatePropagation();
   
-          if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
-            return;
+          if (!H.checkAccess(`<?=WPT_WRIGHTS_RW?>`)) return;
   
           const btn = (el.tagName == "DIV")?el:el.closest("div"),
                 ibtn = btn.querySelector ("i"),
@@ -2317,11 +2265,13 @@
           }
         // EVENT "click" on postit menu buttons
         } else if (el.matches('.postit-menu,.postit-menu *')) {
+          e.stopImmediatePropagation();
+
+          if (el.tagName === 'DIV') return;
+
           const postitPlugin = $(postit).postit('getClass');
           const action =
-              (el.tagName === 'SPAN'? el : el.closest('span')).dataset.action;
-  
-          e.stopImmediatePropagation();
+              (el.tagName === 'SPAN' ? el : el.closest('span')).dataset.action;
   
           // To prevent race condition with draggable & resizable plugins
           if (H.disabledEvent()) return;
@@ -2399,36 +2349,32 @@
                 break;
             }
           });
-        }
+
         // EVENT "click" on postit dates
-        else if (el.matches (".dates .end,.dates .end *"))
-        {
-          e.stopImmediatePropagation ();
+        } else if (el.matches('.dates .end,.dates .end *')) {
+          e.stopImmediatePropagation();
   
-          if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
-          {
-            H.preventDefault (e);
+          if (H.disabledEvent (!H.checkAccess(`<?=WPT_WRIGHTS_RW?>`))) {
+            H.preventDefault(e);
             return;
           }
   
-          const $item = $(el.tagName == "DIV"?el:el.closest("div")),
-                plugin = $(postit).postit ("getClass");
+          const $item = $(el.tagName === 'DIV' ? el : el.closest('div'));
+          const plugin = $(postit).postit('getClass');
   
-          if (el.classList.contains ("fa-times-circle"))
-          {
-            plugin.edit ({}, () =>
-            {
-              H.openConfirmPopover ({
+          if (el.classList.contains('fa-times-circle')) {
+            plugin.edit({}, () => {
+              H.openConfirmPopover({
                 item: $item,
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
                 content: `<?=_("Reset deadline?")?>`,
-                cb_close: () => plugin.unedit (),
-                cb_ok: () => plugin.resetDeadline ()
+                cb_close: () => plugin.unedit(),
+                cb_ok: () => plugin.resetDeadline(),
               });
             });
+          } else {
+            plugin.openDatePicker();
           }
-          else
-            plugin.openDatePicker ();
         }
       } else if (el.matches('#postitViewPopup .modal-body *')) {
         if (el.tagName === 'A') {

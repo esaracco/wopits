@@ -1453,7 +1453,7 @@ th.wpt .submenu .dropdown-menu {
   padding: 0 5px 0 30px;
   white-space: nowrap;
   z-index: 93;
-  box-shadow: 0 5px 5px -5px #b3b3b3;*/
+  box-shadow: 0 5px 5px -5px #b3b3b3;
   text-overflow: ellipsis;
   overflow: hidden;
   height: 22px;

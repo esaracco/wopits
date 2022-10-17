@@ -181,13 +181,6 @@
       this.settings._input.value = v;
     },
 
-    // METHOD cancelAll()
-    cancelAll() {
-      this.element.each(function() {
-        $(this).editable('cancel');
-      });
-    },
-
     // METHOD cancel()
     cancel() {
       if (this.element[0].classList.contains('editing')) {
