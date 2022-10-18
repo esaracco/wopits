@@ -1112,12 +1112,11 @@ class WHelper
     return `<i class="fas fa-${icon} fa-fw"></i>`;
   }
   
-  // METHOD getUserDate ()
-  static getUserDate (dt, tz, fmt)
-  {
+  // METHOD getUserDate()
+  static getUserDate(dt, tz, fmt) {
     return moment.unix(dt).tz(
-      tz||wpt_userData.settings.timezone||moment.tz.guess())
-        .format(fmt||"Y-MM-DD");
+      tz || wpt_userData.settings.timezone || moment.tz.guess())
+        .format(fmt || 'Y-MM-DD');
   }
 
   static checkUserVisible ()
@@ -1653,7 +1652,7 @@ class WHelper
       const blob = req.response;
       const type = req.getResponseHeader('Content-Type');
 
-      if (type === 404) {
+      if (type === '404') {
         this.displayMsg ({
           title: `<?=_("Download")?>`,
           type: 'warning',

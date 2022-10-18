@@ -1280,10 +1280,14 @@
     },
 
     // METHOD export()
-    export () {
+    // Format: wopits_export-{wall_name}-{ymd}_{hms}.zip
+    export() {
+      const now = H.getUserDate(moment().unix(), null, 'YMMDD_HHmmss');
+      const wallName = this.getName().replace(/\s+/g, '_');
+
       H.download({
         url: `/wall/${this.settings.id}/export`,
-        fname: `wopits-wall-export-${this.settings.id}.zip`,
+        fname: `wopits_export-${wallName}-${now}.zip`,
         msg: `<?=_("An error occurred during the export")?>`,
       });
     },
@@ -1444,26 +1448,20 @@
       );
     },
 
-    // METHOD openPropertiesPopup ()
-    openPropertiesPopup (args = {})
-    {
-      args.wall = this.element;
+    // METHOD openPropertiesPopup()
+    openPropertiesPopup (args = {}) {
+      const __open = () => {
+        H.loadPopup('wprop', {
+          open: false,
+          cb: ($p) => $p.wprop('open', {...args, wall: this.element}),
+        });
+      };
 
-      if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-        this.edit (() =>
-          {
-            H.loadPopup ("wprop",
-              {
-                open: false,
-                cb: ($p)=> $p.wprop ("open", args)
-              });
-          });
-      else
-        H.loadPopup ("wprop",
-          {
-            open: false,
-            cb: ($p)=> $p.wprop ("open", args)
-          });
+      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) {
+        this.edit(__open);
+      } else {
+        __open();
+      }
     },
 
     // METHOD saveProperties()
@@ -1835,47 +1833,40 @@
       }
     },
 
-    // METHOD screen ()
-    screen ()
-    {
-      const step = .005,
-            wall = this.element[0],
-            walls = S.getCurrent("walls")[0];
-      let position = wall.getBoundingClientRect ();
+    // METHOD screen()
+    // TODO optimization
+    screen() {
+      const step = .005;
+      const wall = this.element[0];
+      const walls = S.getCurrent('walls')[0];
+      let position = wall.getBoundingClientRect();
 
-      this.hidePostitsPlugs ();
+      this.hidePostitsPlugs();
 
       $(walls).scrollLeft(0).scrollTop(0);
 
       if (position.bottom - position.top < walls.clientHeight &&
-          position.right < walls.clientWidth)
-      {
-        do
-        { 
-          this.zoom ({from: "screen", type: "+", step: step});
-          position = wall.getBoundingClientRect ();
-        }
-        while (position.bottom - position.top < walls.clientHeight - 20 &&
-               position.right < walls.clientWidth - 5);
-      }
-      else
-      {
-        do
-        { 
-          this.zoom ({from: "screen", type: "-", step: step});
-          position = wall.getBoundingClientRect ();
-        }
-        while (!(position.bottom - position.top < walls.clientHeight - 20 &&
-                 position.right < walls.clientWidth - 5));
+          position.right < walls.clientWidth) {
+        do { 
+          this.zoom({from: 'screen', type: '+', step: step});
+          position = wall.getBoundingClientRect();
+        } while (position.bottom - position.top < walls.clientHeight - 20 &&
+                 position.right < walls.clientWidth - 5);
+      } else {
+        do { 
+          this.zoom ({from: 'screen', type: '-', step: step});
+          position = wall.getBoundingClientRect();
+        } while (!(position.bottom - position.top < walls.clientHeight - 20 &&
+                   position.right < walls.clientWidth - 5));
       }
 
-      $("#normal-display-btn").show ();
-      this.ctrlMenu ("zoom-screen", "off");
+      $('#normal-display-btn').show();
+      this.ctrlMenu('zoom-screen', 'off');
 
-      $("#walls").scrollLeft (
-        ((30000*S.get("zoom-level"))/2-window.innerWidth/2)+20);
+      $('#walls').scrollLeft (
+        ((30000 * S.get('zoom-level')) / 2 - window.innerWidth / 2) + 20);
 
-      $("<div/>").postit ("applyZoom");
+      $('<div/>').postit('applyZoom');
 
       walls.style.overflow = 'hidden';
     },
@@ -1930,7 +1921,7 @@
         }
       }
 
-      H.request_ws (
+      H.request_ws(
         'DELETE',
         `wall/${this.settings.id}/editQueue/wall/${this.settings.id}`,
         data,
@@ -1945,7 +1936,7 @@
             });
           }
           else if (success_cb) {
-            success_cb ();
+            success_cb();
           }
         },
         // error cb

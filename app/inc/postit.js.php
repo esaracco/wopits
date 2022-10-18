@@ -480,7 +480,7 @@
       _args.count = settings.commentscount;
       settings.plugins.pcomm = $postit.find('.pcomm').pcomm(_args);
 
-      // If we are creating a note, update it with default values
+      // If we are updating a note
       if (settings.creationdate) {
         plugin.update(settings);
       }
@@ -2377,7 +2377,7 @@
           }
         }
       } else if (el.matches('#postitViewPopup .modal-body *')) {
-        if (el.tagName === 'A') {
+        if (el.tagName === 'A' || el.closest('A')) {
           e.stopImmediatePropagation();
           _displayOpenLinkMenu(e, {noEditItem: true});
         }

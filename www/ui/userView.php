@@ -17,7 +17,7 @@
           </dd>
         </div>
         <!-- Wall description -->
-        <div class="about">
+        <div class="about justify">
           <dt><?=_("About")?></dt>
           <dd>
           </dd>

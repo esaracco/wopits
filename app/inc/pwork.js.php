@@ -7,25 +7,23 @@
   Description: Manage notes workers
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('pwork', '', 'postitElement');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('pwork', '', 'postitElement');
+  echo $Plugin->getHeader();
 
 ?>
 
-  let $_mainPopup,
-      $_editPopup;
+  let $_mainPopup;
+  let $_editPopup;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   // Inherit from Wpt_postitCountPlugin
   Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
-  Object.assign (Plugin.prototype,
-  {
-    // METHOD init ()
-    init (args)
-    {
+  Object.assign(Plugin.prototype, {
+    // METHOD init()
+    init(args) {
       const settings = this.settings;
 
       if (!args.shared || settings.readonly && !settings.count) {
@@ -38,93 +36,82 @@
       return this;
     },
 
-    // METHOD display ()
-    display ()
-    {
-      const plugin = this,
-            $postit = S.getCurrent  ("postit"),
-            readonly = plugin.settings.readonly;
+    // METHOD display()
+    display() {
+      const $postit = S.getCurrent ('postit');
+      const readonly = this.settings.readonly;
 
-      H.loadPopup ("usearch", {
+      H.loadPopup('usearch', {
         open: false,
-        template: "pwork",
+        template: 'pwork',
         settings: {
-          caller: "pwork",
-          cb_add: ()=> plugin.incCount (),
-          cb_remove: ()=> plugin.decCount ()
+          caller: 'pwork',
+          cb_add: () => this.incCount(),
+          cb_remove: () => this.decCount(),
         },
-        cb: ($p)=>
-        {
-          const _args = $p.usearch ("getIds");
+        cb: ($p) => {
+          $p.usearch('reset', {
+            full: true,
+            readonly: Boolean(this.settings.readonly),
+          });
 
-          $p.usearch ("reset", {full: true,
-                                readonly: Boolean(plugin.settings.readonly)});
+          $p.usearch('displayUsers', {
+            ...$p.usearch('getIds'),
+            // Refresh counter (needed when some users have been deleted)
+            cb_after: (c) => this.setCount(c),
+          });
 
-          // Refresh counter (needed when some users have been deleted)
-          _args.cb_after = (c)=> plugin.setCount(c);
+          H.openModal({item: $p[0]});
 
-          $p.usearch ("displayUsers", _args);
-
-          H.openModal ({item: $p[0]});
-
-        // EVENT "hide.bs.modal" on workers popup
-        $p[0].addEventListener ("hide.bs.modal", (e)=>
-          {
-            if (S.get ("still-closing")) return;
+          // EVENT "hide.bs.modal" on workers popup
+          $p[0].addEventListener('hide.bs.modal', (e) => {
+            if (S.get('still-closing')) return;
 
             // LOCAL FUNCTION __close ()
-            const __close = ()=>
-              {
-                $postit.postit (
-                  H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ?
-                    "unedit" : "unsetCurrent");
-              };
+            const __close = () =>
+              $postit.postit(H.checkAccess(`<?=WPT_WRIGHTS_RW?>`) ?
+                'unedit' : 'unsetCurrent');
 
-            const pwork = $postit.postit("getPlugin", "pwork"),
-                  newUsers = $p.usearch ("getNewUsers");
+            const pwork = $postit.postit('getPlugin', 'pwork');
+            const newUsers = $p.usearch('getNewUsers');
 
-            e.stopImmediatePropagation ();
+            e.stopImmediatePropagation();
 
-            if (newUsers.length)
-            {
-              H.preventDefault (e);
-
-              H.openConfirmPopup ({
-                type: "notify-users",
-                icon: "save",
+            if (newUsers.length) {
+              H.preventDefault(e);
+              H.openConfirmPopup({
+                type: 'notify-users',
+                icon: 'save',
                 content: `<?=_("Notify new users?")?>`,
-                cb_ok: ()=> pwork.notifyNewUsers (newUsers),
-                cb_close: ()=>
-                {
-                  S.set ("still-closing", true, 500);
-                  $p.modal ("hide");
-
-                  __close ();
-                }
+                cb_ok: () => pwork.notifyNewUsers(newUsers),
+                cb_close: () => {
+                  S.set('still-closing', true, 500);
+                  $p.modal('hide');
+                  __close();
+                },
               });
             }
-            else
-              __close ();
+            else {
+              __close();
+            }
           }, {once: true});
         }
       });
     },
 
-    // METHOD notifyNewUsers ()
-    notifyNewUsers (ids)
-    {
-      const {wallId, cellId, postitId} = this.getIds ();
+    // METHOD notifyNewUsers()
+    notifyNewUsers(ids) {
+      const {wallId, cellId, postitId} = this.getIds();
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${wallId}/cell/${cellId}/postit/${postitId}/notifyWorkers`,
         {ids, postitTitle: this.postit().getTitle()});
     },
 
-    // METHOD open ()
-    open (refresh)
-    {
-      this.postit().edit ({}, ()=> this.display ());
+    // METHOD open()
+    open(refresh) {
+      this.postit().edit({}, () => this.display());
     },
   });
 
@@ -153,4 +140,4 @@
     });
   });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

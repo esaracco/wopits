@@ -7,10 +7,10 @@
   Description: Manage wall's properties
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('wprop');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('wprop');
+  echo $Plugin->getHeader();
 
 ?>
 
@@ -22,7 +22,7 @@
     saving: false,
     submitted: false,
     // METHOD init()
-    init (args) {
+    init(args) {
       const popup = this.element[0];
 
       // EVENT "click" on primary button
@@ -34,64 +34,63 @@
         }
       });
 
-      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`))  {
-        // EVENT "hidden.bs.modal" plug's settings popup
-        popup.addEventListener('hidden.bs.modal', (e) => {
-          if (this.forceHide || this.saving) {
-            this.unedit();
-          }
-        });
+      // EVENT "hidden.bs.modal" plug's settings popup
+      popup.addEventListener('hidden.bs.modal', (e) => {
+        if (!H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) return;
+
+        if (this.forceHide || this.saving) {
+          this.unedit();
+        }
+      });
 
       // EVENT "hide.bs.modal" plug's settings popup
-        popup.addEventListener('hide.bs.modal', (e) => {
-          if (!this.forceHide && !this.saving) {
-            const {
-              name,
-              description,
-              width = null,
-              height = null,
-            } = this.wall.data;
-            const newName = H.noHTML(
-                      popup.querySelector('.name input').value);
-            const newDescription = H.noHTML(
-                      popup.querySelector('.description textarea').value);
-            let save = (name !== newName ||
-                            (description || '') !== newDescription);
+      popup.addEventListener('hide.bs.modal', (e) => {
+        if (!H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) return;
 
-            if (width) {
-              const newWidth =
-                  popup.querySelector(`[name="wall-width"]`).value;
-              const newHeight =
-                  popup.querySelector(`[name="wall-height"]`).value;
+        if (!this.forceHide && !this.saving) {
+          const {
+            name,
+            description,
+            width = null,
+            height = null,
+          } = this.wall.data;
+          const newName = H.noHTML( popup.querySelector('.name input').value);
+          const newDescription = H.noHTML(
+                  popup.querySelector('.description textarea').value);
+          let save = (name !== newName ||
+                      (description || '') !== newDescription);
 
-              if (width !== parseInt(newWidth) ||
-                  height !== parseInt(newHeight)) {
-                save = true;
-              }
+          if (width) {
+            const newWidth = popup.querySelector(`[name="wall-width"]`).value;
+            const newHeight = popup.querySelector(`[name="wall-height"]`).value;
+
+            if (width !== parseInt(newWidth) ||
+                height !== parseInt(newHeight)) {
+              save = true;
             }
-
-            this.submitted = false;
-
-            if (save) {
-               H.preventDefault (e);
-               H.openConfirmPopup ({
-                 type: 'save-wprops-changes',
-                 icon: 'save',
-                 content: `<?=_("Save changes?")?>`,
-                 cb_ok: () => popup.querySelector('.btn-primary').click(),
-                 cb_close: () => {
-                   if (this.submitted && this.saving || !this.submitted) {
-                     this.forceHide = true;
-                     bootstrap.Modal.getInstance(popup).hide();
-                   }
-                 },
-               });
-             } else {
-               this.unedit();
-             }
           }
-        });
-      }
+
+          this.submitted = false;
+
+          if (save) {
+             H.preventDefault(e);
+             H.openConfirmPopup ({
+               type: 'save-wprops-changes',
+               icon: 'save',
+               content: `<?=_("Save changes?")?>`,
+               cb_ok: () => popup.querySelector('.btn-primary').click(),
+               cb_close: () => {
+                 if (this.submitted && this.saving || !this.submitted) {
+                   this.forceHide = true;
+                   bootstrap.Modal.getInstance(popup).hide();
+                 }
+               },
+             });
+           } else {
+             this.unedit();
+           }
+        }
+      });
 
       // EVENT "click" on reject sharing button
       popup.querySelector('.reject-sharing button')
@@ -107,8 +106,7 @@
 
     // METHOD unedit()
     unedit() {
-      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`) &&
-          !this.element[0].dataset.uneditdone) {
+      if (!this.element[0].dataset.uneditdone) {
         this.wall.plugin.unedit();
       }
     },
@@ -134,18 +132,16 @@
       };
     },
 
-    // METHOD open ()
-    open (args)
-    {
+    // METHOD open()
+    open(args) {
       this.wall.plugin = args.wall.wall('getClass');
 
-      H.fetch (
-        "GET",
+      H.fetch(
+        'GET',
         `wall/${this.wall.plugin.getId()}/infos`,
         null,
         // success cb
-        (d) =>
-        {
+        (d) => {
           const $popup = this.element;
           const popup = $popup[0];
           const isCreator = (d.user_id == wpt_userData.id);
@@ -155,30 +151,26 @@
           this.saving = false;
           this.submitted = false;
 
-          H.cleanPopupDataAttr (popup);
+          H.cleanPopupDataAttr(popup);
 
-          $popup.find(".description").show ();
-
-          $popup.find(".creator").text (d.user_fullname);
-          $popup.find(".creationdate").text (
-            H.getUserDate (d.creationdate, null, "Y-MM-DD HH:mm"));
-
+          popup.querySelector('.description').style.display = 'block';
+          popup.querySelector('.creator').innerText = d.user_fullname;
+          popup.querySelector('.creationdate').innerText =
+            H.getUserDate(d.creationdate, null, 'Y-MM-DD HH:mm');
           popup.querySelector('.size').style.display = 'none';
 
-          if (H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>"))
-          {
+          if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) {
             const wall = this.wall.plugin.element[0];
-            const $input = $popup.find(".name input");
+            const input = popup.querySelector('.name input');
 
-            $popup.find(".btn-primary").show ();
-            $popup.find(".ro").hide ();
-            $popup.find(".adm").show ();
+            $popup.find('.btn-primary').show();
+            $popup.find('.ro').hide();
+            $popup.find('.adm').show();
 
-            $input.val(d.name);
-            $popup.find(".description textarea").val(d.description);
+            input.value = d.name;
+            popup.querySelector('.description textarea').value = d.description;
 
-            if (wall.dataset.rows === '1' && wall.dataset.cols === '1')
-            {
+            if (wall.dataset.rows === '1' && wall.dataset.cols === '1') {
               const {width, height} = this.getWallSize();
 
               this.wall.data.width = width;
@@ -188,34 +180,30 @@
               popup.querySelector(`[name="wall-height"]`).value = height;
               popup.querySelector('.size').style.display = 'block';
             }
-          }
-          else
-          {
-            $popup.find(".btn-primary").hide ();
-            $popup.find(".adm").hide ();
-            $popup.find(".ro").show ();
+          } else {
+            $popup.find('.btn-primary').hide();
+            $popup.find('.adm').hide ();
+            $popup.find('.ro').show ();
 
-            $popup.find(".name .ro").html(H.nl2br (d.name));
-            if (d.description)
-              $popup.find(".description .ro").html(H.nl2br (d.description));
-            else
-              $popup.find(".description").hide ();
+            $popup.find('.name .ro').html(H.nl2br(d.name));
+            if (d.description) {
+              $popup.find('.description .ro').html(H.nl2br (d.description));
+            } else {
+              $popup.find('.description').hide ();
+            }
           }
 
-          if (isCreator)
-            $popup.find(".reject-sharing").hide ();
-          else
-          {
-            $popup.find(".reject-sharing").show ();
-            popup.dataset.groups = d.groups.join (",");
+          if (isCreator) {
+            $popup.find('.reject-sharing').hide();
+          } else {
+            $popup.find('.reject-sharing').show();
+            popup.dataset.groups = d.groups.join(',');
           }
 
           popup.dataset.noclosure = true;
-          H.openModal ({item: popup});
-        }
-      );
+          H.openModal({item: popup});
+        });
     }
-
   };
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>
