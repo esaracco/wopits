@@ -1628,62 +1628,52 @@ class WHelper
            "#26f700";
   }
 
-  // METHOD download ()
-  static download (args)
-  {
-    const req = new XMLHttpRequest ();
+  // METHOD download()
+  static download({
+    url, fname, msg = `<?=_("An error occurred while downloading")?>`}) {
+    const req = new XMLHttpRequest();
   
-    this.loader ("show");
+    this.loader('show');
   
-    req.onreadystatechange = (e) =>
-      {
-        if (req.readyState == 4)
-        {
-          this.loader ("hide");
+    req.onreadystatechange = (e) => {
+      if (req.readyState === 4) {
+        this.loader ('hide');
   
-          if (req.status != 200)
-            this.displayMsg ({
-              title: `<?=_("Download")?>`,
-              type: "warning",
-              msg: args.msg||`<?=_("An error occurred while downloading")?>`
-            });
+        if (req.status !== 200) {
+          this.displayMsg ({
+            msg,
+            title: `<?=_("Download")?>`,
+            type: 'warning',
+          });
         }
-      };
+      }
+    };
   
-    req.open ("GET", args.url);
-    req.responseType = "blob";
-  
-    req.onload = (e) =>
-    {
-      const blob = req.response,
-            fname = args.fname,
-            contentType = req.getResponseHeader ("Content-Type");
+    req.onload = (e) => {
+      const blob = req.response;
+      const type = req.getResponseHeader('Content-Type');
 
-      if (contentType == 404)
-      {
+      if (type === 404) {
         this.displayMsg ({
           title: `<?=_("Download")?>`,
-          type: "warning",
+          type: 'warning',
           msg: `<?=_("The file is no longer available for download")?>`
         });
-      }
-      else
-      {
-        if (window.navigator.msSaveOrOpenBlob)
-          window.navigator.msSaveOrOpenBlob (
-            new Blob([blob], {type: contentType}), fname);
-        else
-        {
-          const el = document.createElement ("a");
-
-          el.href = window.URL.createObjectURL (blob);
-          el.download = fname;
-          el.click ();
+      } else {
+        if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob (new Blob([blob], {type}), fname);
+        } else {
+          this.createElement('a', {
+            href: window.URL.createObjectURL(blob),
+            download: fname,
+          }).click();
         }
       }
     };
 
-    req.send ();
+    req.open('GET', url);
+    req.responseType = 'blob';
+    req.send();
   }
   
   // METHOD manageUnknownError ()

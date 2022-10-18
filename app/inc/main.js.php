@@ -7,10 +7,10 @@
   Description: Manage main menu & walls
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
   $Plugin = new Wopits\jQueryPlugin ('wall', '', 'wallElement');
-  echo $Plugin->getHeader ();
+  echo $Plugin->getHeader();
 
 ?>
 
@@ -177,20 +177,20 @@
       return $wall;
     },
 
-    // METHOD displayPostitAlert ()
-    displayPostitAlert (args)
-    {
-      const $wall = $(`.wall[data-id="wall-${args.wallId}"]`),
-            $postit = $wall.find (`.postit[data-id="postit-${args.postitId}"]`);
+    // METHOD displayPostitAlert()
+    displayPostitAlert({postitId, type}) {
+      const postit = S.getCurrent('wall')[0].querySelector(
+        `.postit[data-id="postit-${postitId}"]`);
 
-      if ($postit.length)
-        $postit.postit ("displayAlert", args.type);
-      else
-        H.displayMsg ({
+      if (postit) {
+        $(postit).postit('displayAlert', type);
+      } else {
+        H.displayMsg({
           title: `<?=_("Note")?>`,
-          type: "warning",
-          msg: `<?=_("The note has been deleted")?>`
+          type: 'warning',
+          msg: `<?=_("The note has been deleted")?>`,
         });
+      }
     },
 
     // METHOD displayShareAlert()
@@ -222,179 +222,135 @@
       this.menu ({from: 'wall', type: 'have-wall'});
     },
 
-    // METHOD ctrlMenu ()
-    ctrlMenu (action, type)
-    {
-      const m = document.querySelector (
-                  `.dropdown-menu li[data-action="${action}"] a`).classList
+    // METHOD ctrlMenu()
+    ctrlMenu(action, type) {
+      const m = document.querySelector(
+        `.dropdown-menu li[data-action="${action}"] a`).classList;
 
-      if (type == "off")
-        m.add ("disabled");
-      else
-        m.remove ("disabled");
+      if (type === 'off') {
+        m.add('disabled');
+      } else {
+        m.remove('disabled');
+      }
     },
 
-    // METHOD menu ()
-    menu (args)
-    {
-      const $wall = S.getCurrent ("wall"),
-            $wmenu = $wall.parent().find (".wall-menu"),
-            $menu = $("#main-menu"),
-            $menuNormal =
-              $menu.find('.dropdown-menu li[data-action="zoom-normal"] a'),
-            adminAccess = H.checkAccess ("<?=WPT_WRIGHTS_ADMIN?>");
+    // METHOD menu()
+    menu(args) {
+      const $wall = S.getCurrent('wall');
+      const $wmenu = $wall.parent().find('.wall-menu');
+      const $menu = $('#main-menu');
+      const $menuNormal =
+        $menu.find('.dropdown-menu li[data-action="zoom-normal"] a');
+      const adminAccess = H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`);
 
-      switch (args.from)
-        {
-          // WALL menu
-          case "wall":
-    
-            if (!adminAccess)
-            {
-              $menu.find('[data-action="delete"] a').addClass ("disabled");
-              $wmenu.find('[data-action="share"]').hide ();
-            }
-    
-            switch (args.type)
-            {
-              case "no-wall":
-    
-                document.querySelector('.nav.walls').style.display = 'none';
+      switch (args.from) {
+        // WALL menu
+        case 'wall':
+          if (!adminAccess) {
+            $menu.find('[data-action="delete"] a').addClass('disabled');
+            $wmenu.find('[data-action="share"]').hide();
+          }
+  
+          switch (args.type) {
+            case 'no-wall':
+              document.querySelector('.nav.walls').style.display = 'none';
+              document.getElementById('dropdownView')
+                .classList.add('disabled');
+              $('#welcome').show(S.get('closing-all') ? null : 'fade');
+              $menu.find(
+                '[data-action="delete"] a,'+
+                '[data-action="close-walls"] a,'+
+                '[data-action="clone"] a,'+
+                '[data-action="export"] a').addClass('disabled');
+
+                $wmenu.find('[data-action="share"]').hide();
+              break;
+            case 'have-wall':
+              if ($wall.length) {
+                document.querySelector('.nav.walls').style.display = 'block';
                 document.getElementById('dropdownView')
-                  .classList.add('disabled');
-                $('#welcome').show(S.get('closing-all') ? null : 'fade');
-                $menu.find(
-                  '[data-action="delete"] a,'+
-                  '[data-action="close-walls"] a,'+
-                  '[data-action="clone"] a,'+
-                  '[data-action="export"] a').addClass ("disabled");
+                  .classList.remove('disabled');
+                this.menu({
+                  from: 'display',
+                  type: $wall[0].dataset.displaymode,
+                });
+              }
 
-                  $wmenu.find('[data-action="share"]').hide ();
-    
-                break;
-    
-              case "have-wall":
+              if ($wall.length && $wall[0].dataset.shared) {
+                $menu.find('[data-action="chat"] a').removeClass('disabled');
+              } else {
+                const $chat = S.getCurrent('chat');
 
-                if ($wall.length) {
-                  document.querySelector('.nav.walls').style.display = 'block';
-                  document.getElementById('dropdownView')
-                    .classList.remove('disabled');
-                  this.menu({
-                    from: 'display',
-                    type: $wall[0].dataset.displaymode,
-                  });
+                if ($chat.length) {
+                  $chat.chat('hide');
                 }
 
-                if ($wall.length && $wall[0].dataset.shared)
-                  $menu.find('[data-action="chat"] a')
-                    .removeClass ("disabled");
-                else
-                {
-                  const $chat = S.getCurrent ("chat");
+                $menu.find('[data-action="chat"] a').addClass('disabled');
+              }
 
-                  if ($chat.length)
-                    $chat.chat ("hide");
+              $menu.find(
+                '[data-action="clone"] a,'+
+                '[data-action="export"] a,'+
+                '[data-action="close-walls"] a').removeClass('disabled');
 
-                  $menu.find('[data-action="chat"] a')
-                    .addClass ("disabled");
-                }
-
-                $menu.find(
-                  '[data-action="clone"] a,'+
-                  '[data-action="export"] a,'+
-                  '[data-action="close-walls"] a').removeClass ("disabled");
-
-                if (adminAccess)
-                {
-                  $menu.find(
-                    '[data-action="delete"] a').removeClass ("disabled");
-
-                  $wmenu.find('[data-action="share"]').show ();
-                }
-                
-                break;
-            }
-    
-            break;
-    
-          // Display menu
-          case "display":
-
-            switch (args.type)
-            {
-              case "unblock-externalref":
-
-                $wmenu.find("[data-action='block-externalref']").show ();
-                $wmenu.find("[data-action='unblock-externalref']").hide ();
-
-                break;
-
-              case "block-externalref":
-
-                $wmenu.find("[data-action='block-externalref']").hide ();
-                $wmenu.find("[data-action='unblock-externalref']").show ();
-
-                break;
-
-              case "show-headers":
-
-                $wmenu.find("[data-action='show-headers']").hide ();
-                $wmenu.find("[data-action='hide-headers']").show ();
-
-                break;
-
-              case "hide-headers":
-
-                $wmenu.find("[data-action='hide-headers']").hide ();
-                $wmenu.find("[data-action='show-headers']").show ();
-
-                break;
-
-              case "list-mode":
-
-                $wmenu.find("li[data-action='list-mode']").hide ();
-                $wmenu.find("li[data-action='postit-mode']").show ();
-
-                break;
-
-              case "postit-mode":
-
-                $wmenu.find("li[data-action='postit-mode']").hide ();
-                $wmenu.find("li[data-action='list-mode']").show ();
-
-                break;
-
-              // Activate normal view item
-              case "zoom-normal-on":
-
-                $menuNormal.removeClass ("disabled");
-
-                if (adminAccess)
-                  $menu.find('[data-action="chat"] a,'+
-                             '[data-action="filters"] a')
-                    .addClass("disabled");
-                break;
-    
-              // Deactivate normal view item
-              case "zoom-normal-off":
-
-                $menuNormal.addClass("disabled");
-
-                this.ctrlMenu ("zoom-screen", "on");
-
-                if (adminAccess)
-                  $menu.find('[data-action="chat"] a,'+
-                             '[data-action="filters"] a')
-                    .removeClass("disabled");
-
-                break;
-            }
+              if (adminAccess) {
+                $menu.find('[data-action="delete"] a').removeClass('disabled');
+                $wmenu.find('[data-action="share"]').show();
+              }
+              break;
+          }
+          break;
+        // Display menu
+        case 'display':
+          switch (args.type)
+          {
+            case 'unblock-externalref':
+              $wmenu.find("[data-action='block-externalref']").show();
+              $wmenu.find("[data-action='unblock-externalref']").hide();
+              break;
+            case 'block-externalref':
+              $wmenu.find("[data-action='block-externalref']").hide();
+              $wmenu.find("[data-action='unblock-externalref']").show();
+              break;
+            case 'show-headers':
+              $wmenu.find("[data-action='show-headers']").hide();
+              $wmenu.find("[data-action='hide-headers']").show();
+              break;
+            case 'hide-headers':
+              $wmenu.find("[data-action='hide-headers']").hide();
+              $wmenu.find("[data-action='show-headers']").show();
+              break;
+            case 'list-mode':
+              $wmenu.find("li[data-action='list-mode']").hide();
+              $wmenu.find("li[data-action='postit-mode']").show();
+              break;
+            case 'postit-mode':
+              $wmenu.find("li[data-action='postit-mode']").hide();
+              $wmenu.find("li[data-action='list-mode']").show();
+              break;
+            // Activate normal view item
+            case 'zoom-normal-on':
+              $menuNormal.removeClass('disabled');
+              if (adminAccess) {
+                $menu.find('[data-action="chat"] a,'+
+                           '[data-action="filters"] a').addClass('disabled');
+              }
+              break;
+            // Deactivate normal view item
+            case 'zoom-normal-off':
+              $menuNormal.addClass('disabled');
+              this.ctrlMenu ('zoom-screen', 'on');
+              if (adminAccess) {
+                $menu.find('[data-action="chat"] a,'+
+                           '[data-action="filters"] a').removeClass('disabled');
+              }
+              break;
+          }
         } 
 
-        if (!H.checkUserVisible ())
-        {
-          $menu.find('[data-action="chat"] a').addClass ("disabled");
-          $wmenu.find('[data-action="share"]').hide ();
+        if (!H.checkUserVisible()) {
+          $menu.find('[data-action="chat"] a').addClass('disabled');
+          $wmenu.find('[data-action="share"]').hide();
         }
     },
 
@@ -407,25 +363,23 @@
       }
     },
 
-    // METHOD refreshUsersview ()
-    refreshUsersview (count)
-    {
-      const $el = this.element.parent().find (".usersviewcounts:eq(0)"),
-            $divider = $el.prev ();
+    // METHOD refreshUsersview()
+    refreshUsersview(count) {
+      const el =
+        this.element[0].parentNode.querySelectorAll('.usersviewcounts')[0];
+      const divider = el.previousSibling;
 
-      if (count)
-      {
-        $divider.show ();
-        $el.show().find("span").text (count);
+      if (count) {
+        divider.style.display = 'block';
+        el.style.display = 'block';
+        el.querySelector('span').innerText = count;
 
         document.title = `⚡${count} - wopits`;
-      }
-      else
-      {
-        $divider.hide ();
-        $el.hide ();
+      } else {
+        divider.style.display = 'none';
+        el.style.display = 'none';
 
-        document.title = "wopits";
+        document.title = 'wopits';
       }
     },
 
@@ -1273,12 +1227,13 @@
       }
 
       const awPlugin = $(activeWall).wall('getClass');
+      const awId = awPlugin.getId();
       awPlugin.setActive();
       await awPlugin.refresh();
       awPlugin.displayExternalRef();
       awPlugin.displayHeaders();
 
-      if (S.get('save-opened-walls') || awSettingsId !== awPlugin.getId()) {
+      if (S.get('save-opened-walls') || awSettingsId !== awId) {
         S.unset('save-opened-walls');
         $('#settingsPopup').settings('saveOpenedWalls');
       }
@@ -1287,6 +1242,12 @@
 
       // Display postit dealine alert or specific wall if needed.
       args.cb_after && args.cb_after();
+
+      // Set wall users view count if needed
+      const viewcount = WS.popResponse(`viewcount-wall-${awId}`);
+      if (viewcount) {
+        awPlugin.refreshUsersview(viewcount);
+      }
     },
 
     // METHOD clone()
@@ -1318,20 +1279,18 @@
       }
     },
 
-    // METHOD export ()
-    export ()
-    {
-      H.download ({
+    // METHOD export()
+    export () {
+      H.download({
         url: `/wall/${this.settings.id}/export`,
         fname: `wopits-wall-export-${this.settings.id}.zip`,
-        msg: `<?=_("An error occurred during the export")?>`
+        msg: `<?=_("An error occurred during the export")?>`,
       });
     },
 
-    // METHOD import ()
-    import ()
-    {
-      document.querySelector(".upload.import-wall").click ();
+    // METHOD import()
+    import () {
+      document.querySelector('.upload.import-wall').click();
     },
 
     // METHOD restorePreviousSession()
@@ -1374,11 +1333,12 @@
             case 'w': type = 'worker'; break;
             default: type = args.type;
           }
-          this.displayPostitAlert({wallId, postitId, type});
-          } else {
-            this.displayShareAlert(wallId);
-          }
-        };
+
+          this.displayPostitAlert({postitId, type});
+        } else {
+          this.displayShareAlert(wallId);
+        }
+      };
 
       if (!this.isOpened(wallId)) {
         const $wall = await this.open({wallId, noPostProcess: true});
@@ -2101,7 +2061,14 @@
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
   document.addEventListener('DOMContentLoaded', () => {
-    if (!H.isLoginPage()) {
+    if (H.isLoginPage()) {
+      const aboutPopup = document.getElementById('aboutPopup');
+
+      // EVENT CLICK on about button in the login page
+      document.querySelectorAll(`[data-action="about"]`).forEach((el) => {
+        el.addEventListener('click', (e) => H.openModal({item: aboutPopup}));
+      });
+    } else {
       WS.connect(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/app/ws?token=${wpt_userData.token}`,
         () => {
           const $settings = $('#settingsPopup');
@@ -2220,27 +2187,27 @@
       // EVENT "click" on walls tab
       document.querySelector('.nav-tabs.walls').addEventListener('click',
         (e) => {
-          const el = e.target;
+        const el = e.target;
 
-          // EVENT "click" on "close wall" tab button
-          if (el.classList.contains('close')) {
-            e.stopImmediatePropagation();
+        // EVENT "click" on "close wall" tab button
+        if (el.classList.contains('close')) {
+          e.stopImmediatePropagation();
 
-            H.openConfirmPopover({
-              item: $(el.closest('.nav-item').querySelector('span.val')),
-              placement: 'left',
-              title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
-              content: `<?=_("Close this wall?")?>`,
-              cb_ok: () => S.getCurrent('wall').wall ('close'),
-            });
-          // EVENT "click" on "new wall" tab button
-          } else if (el.parentNode.dataset.action === 'new') {
-            $('<div/>').wall('openCreatePopup');
-          }
-        });
+          H.openConfirmPopover({
+            item: $(el.closest('.nav-item').querySelector('span.val')),
+            placement: 'left',
+            title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
+            content: `<?=_("Close this wall?")?>`,
+            cb_ok: () => S.getCurrent('wall').wall ('close'),
+          });
+        // EVENT "click" on "new wall" tab button
+        } else if (el.parentNode.dataset.action === 'new') {
+          $('<div/>').wall('openCreatePopup');
+        }
+      });
 
       // EVENT "click"
-      document.body.addEventListener('click', (e)=> {
+      document.body.addEventListener('click', (e) => {
         const el = e.target;
 
         // "click" on wall users view popup
@@ -2331,12 +2298,7 @@
             break;
         }
       });
-    } else {
-      // EVENT CLICK on about button in the login page
-      document.querySelectorAll(`[data-action="about"]`).forEach (el=>
-        el.addEventListener ("click",
-          (e) => H.openModal({item: document.getElementById('aboutPopup')})));
     }
   });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>
