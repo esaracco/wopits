@@ -19,7 +19,7 @@
   <div id="msg-container" class="position-absolute top-0 start-50 translate-middle-x"></div>
 
   <!-- MENU main -->
-  <nav class="navbar navbar-expand-sm fixed-top navbar-expand-lg">
+  <nav class="navbar navbar-expand-sm fixed-top">
     <div id="umsg"><span class="wpt-badge">0</span></div>
     <a href="#" class="navbar-brand fw-bold"><i class="fas fa-user-circle fa-lg" id="account"></i><i class="fas fa-eye-slash fa-xs invisible-mode" title="<?=_("Invisible mode: sharing is not possible and no one can see you")?>"></i> | <i class="fas fa-power-off fa-xs" id="logout"></i></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-menu" aria-controls="main-menu" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>

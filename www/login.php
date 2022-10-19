@@ -16,7 +16,7 @@
   <!-- MSG CONTAINER -->
   <div id="msg-container" class="position-fixed top-0 start-50 translate-middle-x"></div>
   <!-- MENU -->
-  <nav class="navbar bg-dark navbar-dark fixed-top navbar-expand-lg shadow-sm wopits">
+  <nav class="navbar navbar-expand-lg fixed-top wopits">
     <a href="#" class="navbar-brand fw-bold" data-action="about">wopits</a>
     <div class="themes">
     <?php foreach (WPT_THEMES as $theme) { ?>
