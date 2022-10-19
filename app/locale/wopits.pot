@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-10-16 20:58+0200\n"
+        "POT-Creation-Date: 2022-10-19 23:43+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,6 +380,12 @@ msgid   "Description"
 msgstr  ""
 
 msgid   "Display"
+msgstr  ""
+
+msgid   "Display in stack mode"
+msgstr  ""
+
+msgid   "Display in sticky notes mode"
 msgstr  ""
 
 msgid   "Do you really want to logout from wopits?"
@@ -864,12 +870,6 @@ msgid   "Support"
 msgstr  ""
 
 msgid   "Support us"
-msgstr  ""
-
-msgid   "Switch to stack mode"
-msgstr  ""
-
-msgid   "Switch to sticky notes mode"
 msgstr  ""
 
 msgid   "System"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-16 20:58+0200\n"
-"PO-Revision-Date: 2022-10-16 20:59+0200\n"
+"POT-Creation-Date: 2022-10-19 23:43+0200\n"
+"PO-Revision-Date: 2022-10-19 11:45+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -744,6 +744,12 @@ msgstr "Description"
 msgid "Display"
 msgstr "Affichage"
 
+msgid "Display in stack mode"
+msgstr "Afficher en mode liste"
+
+msgid "Display in sticky notes mode"
+msgstr "Afficher en mode post-it"
+
 msgid "Do you really want to logout from wopits?"
 msgstr "Voulez-vous vraiment vous déconnecter de wopits?"
 
@@ -1274,12 +1280,6 @@ msgstr "Soutenir"
 
 msgid "Support us"
 msgstr "Nous soutenir"
-
-msgid "Switch to stack mode"
-msgstr "Passer en mode liste"
-
-msgid "Switch to sticky notes mode"
-msgstr "Passer en mode post-its"
 
 msgid "System"
 msgstr "Système"

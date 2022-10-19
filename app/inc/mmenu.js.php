@@ -7,10 +7,10 @@
   Description: Manage notes Meta menu
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('mmenu');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('mmenu');
+  echo $Plugin->getHeader();
 
 ?>
 
@@ -21,85 +21,76 @@
 
   // Inherit from Wpt_toolbox
   Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-  Object.assign (Plugin.prototype,
-  {
-    // METHOD init ()
-    init (args)
-    {
-      const plugin = this,
-            $sm = plugin.element;
+  Object.assign(Plugin.prototype, {
+    // METHOD init()
+    init(args) {
+      const plugin = this;
+      const $sm = plugin.element;
 
-      plugin.reset ();
+      plugin.reset();
 
-      $sm.draggable ({
+      $sm.draggable({
         distance: 10,
-        cursor: "move",
-        drag: (e, ui)=> plugin.fixDragPosition (ui),
-        stop: ()=> S.set ("dragging", true, 500)
+        cursor: 'move',
+        drag: (e, ui) => plugin.fixDragPosition(ui),
+        stop: ()=> S.set ('dragging', true, 500),
       });
 
       // EVENT "click" on "close" button
-      $sm[0].querySelector("button.btn-close").addEventListener ("click",
-        (e)=> plugin.close ());
+      $sm[0].querySelector('button.btn-close').addEventListener('click',
+        (e) => plugin.close());
 
       // EVENT "click" on menu
-      $sm[0].addEventListener ("click", (e)=>
-        {
-          const el = e.target,
-                li = el.tagName=="LI"?el:el.closest("li");
+      $sm[0].addEventListener('click', (e) => {
+        const el = e.target;
+        const li = el.tagName === 'LI' ? el : el.closest('li');
 
-          if (!li || H.disabledEvent (
-                !H.checkAccess ("<?=WPT_WRIGHTS_RW?>") ||
-                $sm.find("li:visible").length == 1))
-            return false;
+        if (!li || H.disabledEvent(
+              !H.checkAccess(`<?=WPT_WRIGHTS_RW?>`) ||
+              $sm.find('li:visible').length === 1)) {
+          return false;
+        }
 
-          const icon = li.querySelector ("i"),
-                set = icon.classList.contains ("set");
-          let title, content, cbOK;
+        const icon = li.querySelector('i');
+        const set = icon.classList.contains('set');
+        const args = {};
 
-          $sm[0].querySelectorAll("i").forEach (
-            el=> el.classList.remove ("set"));
+        $sm[0].querySelectorAll('i').forEach(
+          (el) => el.classList.remove('set'));
 
-          if (set)
-            return;
+        if (set) return;
 
-          icon.classList.add ("set");
+        icon.classList.add('set');
 
-          switch (li.dataset.action)
-          {
-            case "delete":
-            case "cpick":
-              return plugin.apply ({event: e});
+        switch (li.dataset.action) {
+          case 'delete':
+          case 'cpick':
+            return plugin.apply({event: e});
+          case 'copy':
+            if (!ST.noDisplay('mmenu-copy-help')) {
+              args.title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
+              args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${_noDisplayBtn}`;
+              args.cb_ok = () => ST.noDisplay('mmenu-copy-help', true);
+            }
+            break;
+          case 'move':
+            if (!ST.noDisplay('mmenu-move-help')) {
+              args.title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
+              args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${_noDisplayBtn}`;
+              args.cb_ok = () => ST.noDisplay('mmenu-move-help', true);
+            }
+            break
+        }
 
-            case "copy":
-              if (!ST.noDisplay ("mmenu-copy-help"))
-              {
-                title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${_noDisplayBtn}`;
-                cbOK = ()=> ST.noDisplay ("mmenu-copy-help", true);
-              }
-              break;
-
-            case "move":
-              if (!ST.noDisplay ("mmenu-move-help"))
-              {
-                title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-                content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${_noDisplayBtn}`;
-                cbOK = ()=> ST.noDisplay ("mmenu-move-help", true);
-              }
-              break
-          }
-
-          if (title)
-            H.openConfirmPopover ({
-              item: $(li),
-              type: "info",
-              title: title,
-              placement: "right",
-              content: content,
-              cb_ok: cbOK
-            });
-        });
+        if (args.title) {
+          H.openConfirmPopover({
+            ...args,
+            item: $(li),
+            type: 'info',
+            placement: 'right',
+          });
+        }
+      });
     },
 
     // METHOD getAction ()
@@ -495,4 +486,4 @@
       }
     });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

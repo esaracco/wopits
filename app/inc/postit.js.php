@@ -567,13 +567,12 @@
 
     // METHOD open()
     open() {
-      const plugin = this;
-      const postit = plugin.element[0];
+      const postit = this.element[0];
       const progress = Number(postit.dataset.progress || 0);
-      const title = postit.querySelector('.postit-header .title').innerText;
+      const title = this.getTitle();
       const content = postit.querySelector('.postit-edit').innerHTML || '';
 
-      if (plugin.canWrite()) {
+      if (this.canWrite()) {
         const $popup = $('#postitUpdatePopup');
 
         S.set('postit-data', {
@@ -609,7 +608,7 @@
           width: _getMaxEditModalWidth(content),
         });
       } else {
-        plugin.setCurrent();
+        this.setCurrent();
 
         H.loadPopup('postitView', {
           open: false,
