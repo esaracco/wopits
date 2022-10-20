@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-19 23:43+0200\n"
+"POT-Creation-Date: 2022-10-20 16:38+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -516,6 +516,9 @@ msgstr ""
 msgid "Delete the file?"
 msgstr ""
 
+msgid "Delete the wall?"
+msgstr ""
+
 msgid "Delete this column?"
 msgstr ""
 
@@ -585,7 +588,7 @@ msgstr ""
 msgid "Emails must match"
 msgstr ""
 
-msgid "Empty file or bad file format."
+msgid "Empty file or bad file format"
 msgstr ""
 
 msgid "Expiration"

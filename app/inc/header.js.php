@@ -74,7 +74,7 @@
       const $wall = settings.wall;
       const isCol = (settings.item_type === 'col');
       const adminAccess =
-          H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`, settings.access);
+          H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, settings.access);
       
       const menu = H.createElement('ul',
         {className: 'navbar-nav mr-auto submenu'},
@@ -346,7 +346,7 @@
     getImgTemplate(src) {
       const $header = this.element;
       const adminAccess =
-          H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`, this.settings.access);
+          H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, this.settings.access);
       const img = H.createElement('div',
         {className: 'img'},
         null,
@@ -632,7 +632,7 @@
       }
 
       // Update header only if it has changed
-      if (H.updatedObject(_originalObject, _serializeOne(this.element[0]))) {
+      if (H.objectHasChanged(_originalObject, _serializeOne(this.element[0]))) {
         data = {
           headers: this.serialize(),
           cells: $('<div/>').cell('serialize', {noPostits: true}),

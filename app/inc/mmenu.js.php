@@ -46,7 +46,7 @@
         const li = el.tagName === 'LI' ? el : el.closest('li');
 
         if (!li || H.disabledEvent(
-              !H.checkAccess(`<?=WPT_WRIGHTS_RW?>`) ||
+              !H.checkAccess(<?=WPT_WRIGHTS_RW?>) ||
               $sm.find('li:visible').length === 1)) {
           return false;
         }
@@ -107,7 +107,7 @@
       let item = args.cellPlugin ? args.cellPlugin.element : null,
           type, title, content, cbClose;
 
-      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+      if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
         return H.displayMsg ({
           title: `<?=_("Rights")?>`,
           type: "warning",
@@ -413,7 +413,7 @@
       this.element.find("li").show ();
 
       for (const id in _data.postits)
-        if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>",
+        if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>,
                _data.postits[id].settings.wall[0].dataset.access))
         {
           //FIXME //TODO trigger on btn copy menu item
@@ -423,7 +423,7 @@
           return;
         }
 
-      if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+      if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
       {
         this.element.find("[data-action='copy'] i.set").removeClass ("set");
         this.element[0].style.opacity = 0.3;
@@ -433,7 +433,7 @@
     // METHOD showHelp ()
     showHelp ()
     {
-      const writeAccess = H.checkAccess ("<?=WPT_WRIGHTS_RW?>");
+      const writeAccess = H.checkAccess (<?=WPT_WRIGHTS_RW?>);
 
       if (ST.noDisplay (`mmenu-help-${writeAccess}`))
         return;

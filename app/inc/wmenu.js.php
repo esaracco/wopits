@@ -26,7 +26,7 @@
       const menu = this.element[0];
       const wallPlugin = this.settings.wallPlugin;
       const adminAccess =
-        H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`, this.settings.access);
+        H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, this.settings.access);
       const menuItems = [
         // Notes display mode (list or sticky)
         {

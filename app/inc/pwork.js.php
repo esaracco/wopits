@@ -69,7 +69,7 @@
 
             // LOCAL FUNCTION __close ()
             const __close = () =>
-              $postit.postit(H.checkAccess(`<?=WPT_WRIGHTS_RW?>`) ?
+              $postit.postit(H.checkAccess(<?=WPT_WRIGHTS_RW?>) ?
                 'unedit' : 'unsetCurrent');
 
             const pwork = $postit.postit('getPlugin', 'pwork');
@@ -130,7 +130,7 @@
 
         e.stopImmediatePropagation();
 
-        if (H.checkAccess (`<?=WPT_WRIGHTS_RW?>`)) {
+        if (H.checkAccess (<?=WPT_WRIGHTS_RW?>)) {
           $pwork.pwork('open');
         } else {
           $pwork.closest('.postit').postit('setCurrent');

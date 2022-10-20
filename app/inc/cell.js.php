@@ -630,7 +630,7 @@
             H.preventDefault(e);
   
             if (!H.disabledEvent()) {
-              $p.postit('openPostit', $(el).find('span'));
+              $p.postit('openPostit', $(el));
             }
           }
         }

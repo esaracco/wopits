@@ -245,14 +245,15 @@ i.set {
 
 .ui-colorpicker-swatch {
   text-align: center;
-  text-shadow: 0 0 1px #fff;
-  color: var(--modal-theme-color-dark);
+  text-shadow: 0 0 4px #fff;
+  color: #000;
   font-size: 19px;
   line-height: 18px;
+  font-weight: bold;
 }
 
 .ui-colorpicker-swatch.cp-selected:before {
-  content: " # ";
+  content: " ✓ ";
 }
 
 #welcome {
@@ -1288,10 +1289,6 @@ kbd,
   margin-top: -1px;
 }
 
-.topicon .wpt-badge {
-  margin-left: -5px;
-}
-
 .cell-menu .btn-circle {
   width: 23px;
   height: 23px;
@@ -1476,13 +1473,13 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit-menu.right {
-  max-width: 206px;
+  max-width: 210px;
   top: 26px;
   left: -4px;
 }
 
 .postit-menu.left {
-  max-width: 72px;
+  max-width: 80px;
   top: -4px;
   left: -68px;
 }
@@ -1857,16 +1854,6 @@ ul#mmenu {
   right: -10px;
 }
 
-#postitCommentsPopup .clear-textarea {
-  top: 7px;
-}
-
-.toolbox.chat .clear-textarea {
-  top: 16px;
-  left: 50%;
-  margin-left: -20px;
-}
-
 .btn.clear-input i,
 .btn.clear-textarea i {
   color: #b9b9b9;
@@ -1874,7 +1861,7 @@ ul#mmenu {
 
 .btn.clear-input:hover i,
 .btn.clear-textarea:hover i {
-  color: var(--modal-theme-color-dark) !important;
+  color: var(--modal-theme-color-dark);
 }
 
 .newfeatures code {
@@ -1995,16 +1982,20 @@ i.notset {
   top: -28px;
   cursor: pointer;
   z-index: 93;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, .5);
 }
 
 .postit .topicon i {
-  opacity: .4;
+  opacity: .6;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, .5);
 }
 
 .postit .topicon > div {
   float: left;
   padding: 5px 9px 0 0;
+}
+
+.postit .topicon .wpt-badge {
+  margin-left: -5px;
 }
 
 .justify {

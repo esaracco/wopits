@@ -36,7 +36,7 @@
 
       // EVENT "hidden.bs.modal" plug's settings popup
       popup.addEventListener('hidden.bs.modal', (e) => {
-        if (!H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) return;
+        if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
 
         if (this.forceHide || this.saving) {
           this.unedit();
@@ -45,7 +45,7 @@
 
       // EVENT "hide.bs.modal" plug's settings popup
       popup.addEventListener('hide.bs.modal', (e) => {
-        if (!H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) return;
+        if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
 
         if (!this.forceHide && !this.saving) {
           const {
@@ -159,7 +159,7 @@
             H.getUserDate(d.creationdate, null, 'Y-MM-DD HH:mm');
           popup.querySelector('.size').style.display = 'none';
 
-          if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) {
+          if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
             const wall = this.wall.plugin.element[0];
             const input = popup.querySelector('.name input');
 

@@ -203,7 +203,7 @@
       popup.querySelector('.file').innerText = fileVal;
       popup.querySelector('.file-infos').innerHTML = fileInfosVal;
 
-      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) {
+      if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
         // Display "Save" button
         popup.querySelector('.btn-primary').style.display = 'inline-block';
         // Display "Delete" button
@@ -340,7 +340,7 @@
 
         e.stopImmediatePropagation();
 
-        if (H.checkAccess(`<?=WPT_WRIGHTS_RW?>`)) {
+        if (H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
           $patt.patt('open');
         } else {
           $patt.closest('.postit').postit('setCurrent');

@@ -241,7 +241,7 @@
       const $menu = $('#main-menu');
       const $menuNormal =
         $menu.find('.dropdown-menu li[data-action="zoom-normal"] a');
-      const adminAccess = H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`);
+      const adminAccess = H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>);
 
       switch (args.from) {
         // WALL menu
@@ -348,7 +348,8 @@
           }
         } 
 
-        if (!H.checkUserVisible()) {
+        // If the user has decided to be invisible
+        if (!wpt_userData.settings?.visible) {
           $menu.find('[data-action="chat"] a').addClass('disabled');
           $wmenu.find('[data-action="share"]').hide();
         }
@@ -928,23 +929,24 @@
     // METHOD openDeletePopup()
     openDeletePopup() {
       this.edit(() => {
+        const args = {
+          cb_close: () => this.unedit(),
+          cb_ok: () => this.delete(),
+        };
+
         // H.openConfirmPopover() does not display the popover on some
         // devices when button menu is visible.
         if (H.isMainMenuCollapsed()) {
-          H.openConfirmPopup({
+          H.openConfirmPopup({...args,
             icon: 'trash',
-            content: `<?=_("Delete this wall?")?>`,
-            cb_ok: () => this.delete(),
-            cb_close: () => this.unedit(),
+            content: `<?=_("Delete the wall?")?>`,
           });
         } else {
-          H.openConfirmPopover({
+          H.openConfirmPopover({...args,
             item: $(this.settings.tabLink.querySelector('span.val')),
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete this wall?")?>`,
-            cb_close: () => this.unedit(),
-            cb_ok: () => this.delete(),
           });
         }
       }, null, true);
@@ -1457,7 +1459,7 @@
         });
       };
 
-      if (H.checkAccess(`<?=WPT_WRIGHTS_ADMIN?>`)) {
+      if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
         this.edit(__open);
       } else {
         __open();
@@ -1912,7 +1914,7 @@
       } else {
         data = this.serialize();
 
-        if (!H.updatedObject(_originalObject, data)) {
+        if (!H.objectHasChanged(_originalObject, data)) {
           if (!this.isShared()) {
             return success_cb && success_cb();
           } else {

@@ -7,55 +7,50 @@
   Description: Manage notes deadline
 */
 
-  require_once (__DIR__.'/../prepend.php');
+  require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin ('dpick');
-  echo $Plugin->getHeader ();
+  $Plugin = new Wopits\jQueryPlugin('dpick');
+  echo $Plugin->getHeader();
 
 ?>
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
-    // METHOD init ()
-    init ()
-    {
-      const $popup = this.element,
-            $picker = $popup.find (".dpick"),
-            $alert = $popup.find (".dpick-notify");
+  Plugin.prototype = {
+    // METHOD init()
+    init () {
+      const $popup = this.element;
+      const $picker = $popup.find('.dpick');
+      const $alert = $popup.find('.dpick-notify');
 
       this.settings.$picker = $picker;
       this.settings.$alert = $alert;
 
-      $picker.datepicker ({
+      $picker.datepicker({
         showWeek: true,
         changeMonth: true,
         changeYear: true,
-        dateFormat: "yy-mm-dd",
-        minDate: moment().tz(wpt_userData.settings.timezone)
-                   .add (1, "days").format ("Y-MM-DD"),
-        onSelect: (dt, $dp)=> $alert.show ()
+        dateFormat: 'yy-mm-dd',
+        minDate:
+          moment().tz(wpt_userData.settings.timezone)
+            .add(1, 'days').format('Y-MM-DD'),
+        onSelect: (dt, $dp)=> $alert.show(),
       });
 
       // EVENT "change" on "alert" checkbox
-      document.getElementById("dp-notify").addEventListener ("change", (e)=>
-        {
-          const el = e.target,
-                $div = $alert.find(">div:eq(1)");
+      document.getElementById('dp-notify').addEventListener('change', (e) => {
+        const el = e.target;
+        const $div = $alert.find('>div:eq(1)');
 
-          if (el.checked)
-          {
-            $div.show ("fade");
-            document.getElementById("_dp-shift1").checked = true;
-            el.parentNode.classList.remove ("disabled");
-          }
-          else
-          {
-            $div.hide ();
-            el.parentNode.classList.add ("disabled");
-           }
-        });
+        if (el.checked) {
+          $div.show('fade');
+          document.getElementById('_dp-shift1').checked = true;
+          el.parentNode.classList.remove('disabled');
+        } else {
+          $div.hide();
+          el.parentNode.classList.add('disabled');
+        }
+      });
 
       // EVENT "click" on
       $alert[0].querySelector(`input[type="number"]`)
@@ -148,4 +143,4 @@
     }
   };
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>

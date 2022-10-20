@@ -12,24 +12,20 @@
 */
 
 // CLASS Wpt_forms
-class Wpt_forms
-{
-  // METHOD checkRequired ()
-  checkRequired (fields, displayMsg = true)
-  {
-    const form = fields[0].closest ("form");
+class Wpt_forms {
+  // METHOD checkRequired()
+  checkRequired(fields, displayMsg = true) {
+    const form = fields[0].closest('form');
 
-    form.querySelectorAll("span.required").forEach (
-      (f)=> f.remove ());
-    form.querySelectorAll(".required").forEach (
-      (f)=> f.classList.remove ("required"));
+    form.querySelectorAll('span.required').forEach(
+      (f) => f.remove());
+    form.querySelectorAll('.required').forEach(
+      (f) => f.classList.remove('required'));
 
-    for (const f of fields)
-    {
-      if (f.hasAttribute("required") && !f.value.trim())
-      {
-        this.focusBadField (f, displayMsg?`<?=_("Required field")?>`:null);
-        f.focus ();
+    for (const f of fields) {
+      if (f.hasAttribute('required') && !f.value.trim()) {
+        this.focusBadField(f, displayMsg ? `<?=_("Required field")?>` : null);
+        f.focus();
 
         return false;
       }
@@ -38,137 +34,115 @@ class Wpt_forms
     return true;
   }
 
-  // METHOD focusBadField ()
-  focusBadField (f, msg)
-  {
-    const group = f.closest (".input-group");
+  // METHOD focusBadField()
+  focusBadField(f, msg) {
+    const group = f.closest('.input-group');
 
-    group.classList.add ("required");
+    group.classList.add('required');
+    f.focus();
 
-    f.focus ();
-
-    if (msg)
-      $(`<span class="required">${msg}:</span>`).insertBefore (group);
+    if (msg) {
+      group.parentNode.insertBefore(H.createElement('span',
+        {className: 'required'}, null, `${msg}`), group);
+    }
         
-    setTimeout (()=> group.classList.remove ("required"), 2000);
+    setTimeout(() => group.classList.remove('required'), 2000);
   }
 }
 
 // CLASS Wpt_accountForms
-class Wpt_accountForms extends Wpt_forms
-{
-  // METHOD _checkPassword ()
-  _checkPassword (password)
-  {
+class Wpt_accountForms extends Wpt_forms {
+  // METHOD _checkPassword()
+  _checkPassword(password) {
     let ret = true;
 
     if (password.length < 6 ||
-        !password.match (/[a-z]/) ||
-        !password.match (/[A-Z]/) ||
-        !password.match (/[0-9]/))
-    {
+        !password.match(/[a-z]/) ||
+        !password.match(/[A-Z]/) ||
+        !password.match(/[0-9]/)) {
       ret = false;
-      H.displayMsg ({
+      H.displayMsg({
         title: `<?=_("Account")?>`,
-        type: "warning",
-        msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>A <b>lower case</b> and a <b>upper case</b> letter</li><li>A <b>digit</b></li></ul>")?>`
+        type: 'warning',
+        msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>A <b>lower case</b> and a <b>upper case</b> letter</li><li>A <b>digit</b></li></ul>")?>`,
       });
     }
 
     return ret;
   }
 
-  // METHOD _checkEmail ()
-  _checkEmail (email)
-  {
-    return email.match (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,6})+$/);
+  // METHOD _checkEmail()
+  _checkEmail(email) {
+    return email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,6})+$/);
   }
 
-  // METHOD validForm ()
-  validForm (fields)
-  {
-    for (const f of fields)
-    {
+  // METHOD validForm()
+  validForm (fields) {
+    for (const f of fields) {
       let val = f.value;
 
-      switch (f.getAttribute ("name"))
-      {
-        case "wall-width":
-        case "wall-height":
+      switch (f.getAttribute('name')) {
+        case 'wall-width':
+        case 'wall-height':
+          val = Number(val);
 
-          val = Number (val);
-
-          if (val > 0)
-          {
-            if (f.getAttribute("name") == "wall-width" && val < 300 ||
-                f.getAttribute("name") == "wall-height" && val < 200)
-              return this.focusBadField (f, `<?=_("The size of a wall cannot be less than %s")?>`.replace("%s", "300x200"));
-            else if (val > 20000)
-              return this.focusBadField (f, `<?=_("The size of a wall cannot be greater than %s")?>`.replace("%s", "20000x20000"));
+          if (val > 0) {
+            if (f.getAttribute('name') === 'wall-width' && val < 300 ||
+                f.getAttribute("name") === 'wall-height' && val < 200) {
+              return this.focusBadField(f, `<?=_("The size of a wall cannot be less than %s")?>`.replace('%s', '300x200'));
+            } else if (val > 20000) {
+              return this.focusBadField(f, `<?=_("The size of a wall cannot be greater than %s")?>`.replace('%s', '20000x20000'));
+            }
           }
           break;
+        case 'wall-cols':
+        case 'wall-rows':
+          const form = f.closest('form');
+          const cols =
+            Number(form.querySelector(`input[name="wall-cols"]`).value) || 3;
+          const rows =
+            Number(form.querySelector(`input[name="wall-rows"]`).value) || 3;
 
-        case "wall-cols":
-        case "wall-rows":
-
-          const form = f.closest ("form"),
-                cols = Number (form.querySelector(
-                                 "input[name='wall-cols']").value)||3,
-                rows = Number (form.querySelector(
-                                 "input[name='wall-rows']").value)||3;
-
-          if (cols * rows > <?=WPT_MAX_CELLS?>)
-            return this.focusBadField (f, `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace("%s", <?=WPT_MAX_CELLS?>));
-          break;
-
-        case "email":
-
-          if (!this._checkEmail (val))
-            return this.focusBadField (f, `<?=_("Bad email address")?>`);
-
-          break;
-
-        case "email2":
-
-          if (val != f.closest("form")
-                       .querySelector("input[name='email']").value)
-            return this.focusBadField (f, `<?=_("Emails must match")?>`);
-
-          break;
-
-        case "username":
-
-          if (val.trim().length < 3 || val.match (/@|&|\\/))
-            return this.focusBadField (f, `<?=_("Login is not valid")?>`);
-
-          break;
-
-        case "password":
-
-          if (!this._checkPassword (val))
-            return this.focusBadField (f, `<?=_("Unsecured password")?>`);
-
-          break;
-
-        case "password2":
-
-          if (!f.closest("form").querySelector("input[name='password3']"))
-          {
-            if (val != f.closest("form")
-                         .querySelector("input[name='password']").value)
-              return this.focusBadField (f, `<?=_("Passwords must match")?>`);
+          if (cols * rows > <?=WPT_MAX_CELLS?>) {
+            return this.focusBadField(f, `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace('%s', <?=WPT_MAX_CELLS?>));
           }
-          else if (!this._checkPassword (val))
-            return this.focusBadField (f, `<?=_("Unsecured password")?>`);
-
           break;
-
-        case "password3":
-
-          if (val != f.closest("form")
-                       .querySelector("input[name='password2']").value)
-            return this.focusBadField (f, `<?=_("New passwords must match")?>`);
-
+        case 'email':
+          if (!this._checkEmail(val)) {
+            return this.focusBadField(f, `<?=_("Bad email address")?>`);
+          }
+          break;
+        case 'email2':
+          if (val !== f.closest('form')
+                        .querySelector(`input[name="email"]`).value) {
+            return this.focusBadField(f, `<?=_("Emails must match")?>`);
+          }
+          break;
+        case 'username':
+          if (val.trim().length < 3 || val.match(/@|&|\\/)) {
+            return this.focusBadField(f, `<?=_("Login is not valid")?>`);
+          }
+          break;
+        case 'password':
+          if (!this._checkPassword(val)) {
+            return this.focusBadField (f, `<?=_("Unsecured password")?>`);
+          }
+          break;
+        case 'password2':
+          if (!f.closest('form').querySelector(`input[name="password3"]`)) {
+            if (val !== f.closest('form')
+                          .querySelector(`input[name="password"]`).value) {
+              return this.focusBadField(f, `<?=_("Passwords must match")?>`);
+            }
+          } else if (!this._checkPassword(val)) {
+            return this.focusBadField(f, `<?=_("Unsecured password")?>`);
+          }
+          break;
+        case 'password3':
+          if (val !== f.closest('form')
+                        .querySelector(`input[name="password2"]`).value) {
+            return this.focusBadField(f, `<?=_("New passwords must match")?>`);
+          }
           break;
       }
     }
@@ -233,100 +207,91 @@ class Wpt_postitCountPlugin {
 }
 
 // CLASS Wpt_toolbox
-class Wpt_toolbox
-{
-  // METHOD fixPosition ()
-  fixPosition ()
-  {
-    const el = this.element[0],
-          //document.getElementsByClassName("fixed-top")[0].clientHeight
-          mH = 56,
-          pos = el.getBoundingClientRect ();
+class Wpt_toolbox {
+  // METHOD fixPosition()
+  fixPosition() {
+    const el = this.element[0];
+    // document.getElementsByClassName("fixed-top")[0].clientHeight
+    const mH = 56;
+    const pos = el.getBoundingClientRect();
 
-    if (pos.top <= mH + 4)
+    if (pos.top <= mH + 4) {
       el.style.top = `${mH+4}px`;
-    else
-    {
+    } else {
       const wH = window.innerHeight - 15;
 
-      if (pos.top + el.clientHeight > wH)
+      if (pos.top + el.clientHeight > wH) {
         el.style.top = `${wH-el.clientHeight-1}px`;
+      }
     }
 
-    if (pos.left <= 0)
-      el.style.left = "5px";
-    else
-    {
+    if (pos.left <= 0) {
+      el.style.left = '5px';
+    } else {
       const wW = window.innerWidth - 20;
 
-      if (pos.left + el.clientWidth > wW)
+      if (pos.left + el.clientWidth > wW) {
         el.style.left = `${wW-el.clientWidth-1}px`;
+      }
     }
   }
 
-  // METHOD fixDragPosition ()
-  fixDragPosition (ui)
-  {
-    const el = this.element[0],
-          //document.getElementsByClassName("fixed-top")[0].clientHeight
-          mH = 56,
-          pos = ui.position;
+  // METHOD fixDragPosition()
+  fixDragPosition(ui) {
+    const el = this.element[0];
+    // document.getElementsByClassName("fixed-top")[0].clientHeight
+    const mH = 56;
+    const pos = ui.position;
 
-    if (pos.top <= mH + 4)
+    if (pos.top <= mH + 4) {
       pos.top = mH + 4;
-    else
-    {
+    } else {
       const wH = window.innerHeight - 15;
 
-      if (pos.top + el.clientHeight > wH)
+      if (pos.top + el.clientHeight > wH) {
         pos.top = wH - el.clientHeight - 1;
+      }
     }
 
-    if (pos.left <= 0)
+    if (pos.left <= 0) {
       pos.left = 5;
-    else
-    {
+    } else {
       const wW = window.innerWidth - 20;
 
-      if (pos.left + el.clientWidth > wW)
+      if (pos.left + el.clientWidth > wW) {
         pos.left = wW - el.clientWidth - 1;
+      }
     }
   }
 }
 
 // CLASS WStorage
-class WStorage
-{
-  // METHOD delete ()
-  delete (name)
-  {
-    localStorage.removeItem (name);
+class WStorage {
+  // METHOD delete()
+  delete(name) {
+    localStorage.removeItem(name);
   }
 
-  // METHOD setNoDisplay ()
-  noDisplay (name, value)
-  {
-    const noDisplay = this.get ("no-display")||{};
+  // METHOD setNoDisplay()
+  noDisplay(name, value) {
+    const noDisplay = this.get('no-display') || {};
 
-    if (value)
-    {
+    if (value) {
       noDisplay[name] = value;
-      this.set ("no-display", noDisplay);
+      this.set('no-display', noDisplay);
+    } else {
+      return (noDisplay[name] === true) || false;
     }
-    else
-      return (noDisplay[name] === true)||false;
   }
 
-  // METHOD set ()
-  set (name, value)
-  {
-    localStorage.setItem (name, JSON.stringify (value));
+  // METHOD set()
+  set(name, value) {
+    localStorage.setItem(name, JSON.stringify(value));
   }
 
-  // METHOD get ()
-  get (name)
-  {
-    return JSON.parse (localStorage.getItem (name));
+  // METHOD get()
+  get(name) {
+    return JSON.parse(localStorage.getItem(name));
   }
 }
 
@@ -462,8 +427,7 @@ class WSharer {
 }
 
 // CLASS WSocket
-class WSocket
-{
+class WSocket {
   // METHOD constructor()
   constructor() {
     this.cnx = null;
@@ -749,16 +713,15 @@ class WSocket
 }
 
 const entitiesMap = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  '\'': '&#39;',
 };
 
 // CLASS WHelper
-class WHelper
-{
+class WHelper {
   // METHOD displayNetworkErrorMsg()
   static displayNetworkErrorMsg() {
     const el = document.getElementById('popup-loader');
@@ -844,40 +807,39 @@ class WHelper
     return Boolean((cond === true) || S.get('link-from') || S.get('dragging'));
   }
 
-  // METHOD lightenDarkenColor ()
-  static lightenDarkenColor (col, amt)
-  {
+  // METHOD lightenDarkenColor()
+  static lightenDarkenColor(col, amt) {
     let usePound = false;
 
-    if (col[0] == "#")
-    {
+    if (col[0] === '#') {
       col = col.slice(1);
       usePound = true;
     }
 
-    let num = parseInt (col, 16),
-        r = (num >> 16) + amt;
+    let num = parseInt(col, 16);
 
-    if (r > 255)
+    let r = (num >> 16) + amt;
+    if (r > 255) {
       r = 255;
-    else if  (r < 0)
+    } else if  (r < 0) {
       r = 50;
+    }
 
     let b = ((num >> 8) & 0x00ff) + amt;
-
-    if (b > 255)
+    if (b > 255) {
       b = 255;
-    else if (b < 0)
+    } else if (b < 0) {
       b = 0;
+    }
 
     let g = (num & 0x0000ff) + amt;
-
-    if (g > 255)
+    if (g > 255) {
       g = 255;
-    else if (g < 0)
+    } else if (g < 0) {
       g = 0;
+    }
 
-    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+    return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16);
   }
 
   // METHOD rgb2hex()
@@ -913,113 +875,71 @@ class WHelper
     }
   }
 
-  // METHOD testImage ()
-  static testImage (url, timeout = 10000)
-  {
-    return new Promise ((resolve, reject) =>
-      {
-        const img = new Image ();
-        let timer;
-  
-        img.onerror = img.onabort = ()=>
-          {
-            clearTimeout (timer);
-            reject ("error");
-          };
-  
-        img.onload = ()=>
-          {
-            clearTimeout (timer);
-            resolve ("success");
-          };
-  
-        timer = setTimeout(()=>
-          {
-            // reset .src to invalid URL so it stops previous
-            // loading, but doesn't trigger new load
-            img.src = "//!!!!/test.jpg";
-            reject ("timeout");
-          }, timeout);
-  
-        img.src = url;
-      });
+  // METHOD haveMouse()
+  static haveMouse() {
+    return (window.matchMedia('(hover: hover)').matches);
   }
 
-  // METHOD haveMouse ()
-  static haveMouse ()
-  {
-    return (window.matchMedia("(hover: hover)").matches);
+  // METHOD isMainMenuCollapsed()
+  static isMainMenuCollapsed() {
+    return this.isVisible(
+      document.querySelector(`button[data-bs-target="#main-menu"]`));
   }
 
-  // METHOD isMainMenuCollapsed ()
-  static isMainMenuCollapsed ()
-  {
-    return $(`button[data-target="#main-menu"]`).is (":visible");
+  // METHOD escapeRegex()
+  static escapeRegex(str) {
+    return (`${str}`).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  // METHOD escapeRegex ()
-  static escapeRegex (str)
-  {
-    return (`${str}`).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-
-  // METHOD quoteRegex ()
-  static quoteRegex (str)
-  {
+  // METHOD quoteRegex()
+  static quoteRegex(str) {
     return (`${str}`).replace (/(\W)/g, '\\$1');
   }
 
-  // METHOD HTMLEscape ()
-  static htmlEscape (str)
-  {
+  // METHOD HTMLEscape()
+  static htmlEscape(str) {
     return (`${str}`).replace (/[&<>"']/g, (c) => entitiesMap[c]);
   }
   
-  // METHOD noHTML ()
-  static noHTML (str)
-  {
-    return (`${str}`).trim().replace (/<[^>]+>|&[^;]+;/g, "");
+  // METHOD noHTML()
+  static noHTML(str) {
+    return (`${str}`).trim().replace (/<[^>]+>|&[^;]+;/g, '');
   }
 
-  // METHOD nl2br ()
-  static nl2br (str)
-  {
-    return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, "$1<br>$2");
+  // METHOD nl2br()
+  static nl2br(str) {
+    return (`${str}`).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
   }
   
-  // METHOD closeMainMenu ()
-  static closeMainMenu ()
-  {
-    if (document.querySelector ("#main-menu.show"))
-      document.querySelector("button.navbar-toggler").click ();
+  // METHOD closeMainMenu()
+  static closeMainMenu() {
+    if (document.querySelector('#main-menu.show')) {
+      document.querySelector('button.navbar-toggler').click();
+    }
   }
   
-  // METHOD trimObject ()
-  static trimObject (obj, exclude = [])
-  {
-    for (const key in obj)
-    {
+  // METHOD trimObject()
+  static trimObject(obj, exclude = []) {
+    for (const key in obj) {
       const v = obj[key];
-
-      if (typeof v === 'string' && exclude.indexOf(key) == -1)
-        obj[key] = v.trim ();
+      if (typeof v === 'string' && !exclude.includes(key)) {
+        obj[key] = v.trim();
+      }
     }
 
     return obj;
   }
 
-  // METHOD updatedObject ()
-  static updatedObject (obj1, obj2, ignore = {})
-  {
-    for (const key in obj2)
-    {
-      if (obj1[key] !== null && typeof obj1[key] === "object")
-      {
-        if (this.updatedObject (obj1[key], obj2[key], ignore))
+  // METHOD objectHasChanged()
+  static objectHasChanged(obj1, obj2, ignore = {}) {
+    for (const key in obj2) {
+      if (obj1[key] !== null && typeof obj1[key] === 'object') {
+        if (this.objectHasChanged(obj1[key], obj2[key], ignore)) {
           return true;
-      }
-      else if (obj1[key] != obj2[key] && !ignore[key])
+        }
+      } else if (obj1[key] != obj2[key] && !ignore[key]) {
         return true;
+      }
     }
   
     return false;
@@ -1064,49 +984,37 @@ class WHelper
     }
   }
   
-  // METHOD getHumanSize ()
-  static getHumanSize (bytes)
-  {
-    const i = Math.floor (Math.log(bytes) / Math.log(1024)),
-          sizes = ['B', 'KB', 'MB'];
+  // METHOD getHumanSize()
+  static getHumanSize(bytes) {
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const sizes = ['B', 'KB', 'MB'];
   
     return (bytes / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + sizes[i];
   }
   
-  // METHOD getAccess ()
-  static getAccess ()
-  {
-    const $wall = S.getCurrent ("wall");
+  // METHOD getAccess()
+  static getAccess() {
+    const $wall = S.getCurrent('wall');
   
-    return ($wall.length) ? $wall[0].dataset.access : "";
+    return $wall.length ? $wall[0].dataset.access : undefined;
   }
   
-  // METHOD checkAccess ()
-  static checkAccess (requiredRights, currentAccess)
-  {
-    if (currentAccess === undefined)
-    {
-      const $wall = S.getCurrent ("wall");
-  
-      if ($wall.length)
-        currentAccess = $wall[0].dataset.access;
-    }
-  
-    return (currentAccess === undefined) ?
-      false : (currentAccess == "<?=WPT_WRIGHTS_ADMIN?>" ||
-               currentAccess == String (requiredRights))
+  // METHOD checkAccess()
+  static checkAccess(requiredRights, currentAccess) {
+    let current = parseInt(currentAccess || this.getAccess());
+
+    return (current === <?=WPT_WRIGHTS_ADMIN?> || current === requiredRights);
   }
   
-  // METHOD getAccessIcon ()
-  static getAccessIcon (access)
-  {
+  // METHOD getAccessIcon()
+  static getAccessIcon(access) {
     let icon;
   
-    switch (String (access||this.getAccess ()))
+    switch (parseInt(access || this.getAccess()))
     {
-      case "<?=WPT_WRIGHTS_ADMIN?>": icon = "shield-alt"; break;
-      case "<?=WPT_WRIGHTS_RW?>": icon = "edit"; break;
-      case "<?=WPT_WRIGHTS_RO?>": icon = "eye"; break;
+      case <?=WPT_WRIGHTS_ADMIN?>: icon = 'shield-alt'; break;
+      case <?=WPT_WRIGHTS_RW?>: icon = 'edit'; break;
+      case <?=WPT_WRIGHTS_RO?>: icon = 'eye'; break;
     }
   
     return `<i class="fas fa-${icon} fa-fw"></i>`;
@@ -1119,11 +1027,6 @@ class WHelper
         .format(fmt || 'Y-MM-DD');
   }
 
-  static checkUserVisible ()
-  {
-    return (wpt_userData.settings && wpt_userData.settings.visible == 1);
-  }
-  
   // METHOD loader()
   // static loader(action, force = false, xhr = null) {
   static loader(action, args) {
@@ -1200,6 +1103,7 @@ class WHelper
   }
   
   // METHOD insertBefore()
+  // FIXME
   static insertBefore(n1, n2) {
     return n1.parentNode.insertBefore(n2, n1.nextSibling);
   }
@@ -1365,52 +1269,55 @@ class WHelper
     }
   }
 
-  // METHOD setViewToElement ()
-  static setViewToElement ($el)
-  {
-    const $view = S.getCurrent ("walls"),
-          posE = $el[0].getBoundingClientRect (),
-          posV = $view[0].getBoundingClientRect ();
+  // METHOD setViewToElement()
+  static setViewToElement ($el) {
+    const $view = S.getCurrent('walls');
+    const posE = $el[0].getBoundingClientRect();
+    const posV = $view[0].getBoundingClientRect();
 
-    if (posE.left > posV.width)
-      $view.scrollLeft (posE.left - posE.width);
+    if (posE.left > posV.width) {
+      $view.scrollLeft(posE.left - posE.width);
+    }
 
-    if (posE.top > posV.height)
-      $view.scrollTop (posE.top - posE.height - 110);
+    if (posE.top > posV.height) {
+      $view.scrollTop(posE.top - posE.height - 110);
+    }
   }
   
-  // METHOD resizeModal ()
-  static resizeModal (modal, w)
-  {
-    const md = modal.querySelector (".modal-dialog"),
-          wW = $(window).width (),
-          cW = Number (modal.dataset.customwidth)||0,
-          oW = w;
-  
-    if (cW)
+  // METHOD resizeModal()
+  static resizeModal(modal, w) {
+    const mds = modal.querySelector('.modal-dialog').style;
+    const wW = $(window).width();
+    const cW = Number(modal.dataset.customwidth) || 0;
+    const oW = w;
+    let fullWidth = false;
+
+    if (cW) {
       w = cW;
-  
-    if (w < 500)
-      w = 500;
-  
-    if (wW <= 800)
-      w = "100%";
-    else
-    {
-      if (w != 500)
-        w += this.checkAccess ("<?=WPT_WRIGHTS_RW?>",
-               S.getCurrent("wall")[0].dataset.access) ? 70 : 30;
-  
-      if (w > wW)
-        w = "100%";
     }
   
-    if (!cW)
-      modal.dataset.customwidth = oW;
+    if (w < 500) {
+      w = 500;
+    }
   
-    md.style.width = `${w}px`;
-    md.style.minWidth = `${w}px`;
-    md.style.maxWidth = `${w}px`;
+    if (wW <= 800) {
+      fullWidth = true;
+    } else {
+      if (w !== 500) {
+        w += this.checkAccess(<?=WPT_WRIGHTS_RW?>,
+               S.getCurrent('wall')[0].dataset.access) ? 70 : 30;
+      }
+  
+      if (w > wW) {
+        fullWidth = true;
+      }
+    }
+  
+    if (!cW) {
+      modal.dataset.customwidth = oW;
+    }
+  
+    mds.width = mds.minWidth = mds.maxWidth = fullWidth ? '100%' : `${w}px`;
   }
   
   // METHOD openModal()
@@ -1445,56 +1352,56 @@ class WHelper
     }
   }
 
-  // METHOD loadPopup ()
-  static async loadPopup (type, args = {open: true})
-  {
-    const id = `${args.template||type}Popup`,
-          popup = document.getElementById (id);
+  // METHOD loadPopup()
+  static async loadPopup(type, args = {open: true}) {
+    const id = `${args.template||type}Popup`;
+    const popup = document.getElementById(id);
 
-    // LOCAL FUNCTION __exec ()
-    const __exec = ($p)=>
-      {
-        const p = $p[0];
+    // LOCAL FUNCTION __exec()
+    const __exec = ($p) => {
+      const p = $p[0];
 
-        H.cleanPopupDataAttr (p);
+      H.cleanPopupDataAttr(p);
 
-        if (args.cb)
-          args.cb ($p);
+      args.cb && args.cb($p);
 
-        if (args.settings)
-          $p[type]("setSettings", args.settings);
+      if (args.settings) {
+        $p[type]('setSettings', args.settings);
+      }
 
-        if (args.open)
-          H.openModal ({
-            item: p,
-            noeffect: Boolean(args.noeffect),
-          });
-      };
+      if (args.open) {
+        H.openModal({
+          item: p,
+          noeffect: Boolean(args.noeffect),
+        });
+      }
+    };
 
-    if (args.open === undefined)
+    if (args.open === undefined) {
       args.open = true;
+    }
 
-    if (popup)
-      __exec ($(popup));
-    else
-    {
-      const r = await fetch (`/ui/${args.template||type}.php`);
-      if (r && r.ok)
-      {
-        $("body").prepend (await r.text ());
+    if (popup) {
+      __exec($(popup));
+    } else {
+      const r = await fetch(`/ui/${args.template || type}.php`);
+
+      if (r && r.ok) {
+        // TODO no jQuery
+        $('body').prepend (await r.text());
 
         const $p = $(`#${id}`);
 
-        if ($p[type] !== undefined)
-          $p[type](args.settings||{});
+        if ($p[type] !== undefined) {
+          $p[type](args.settings || {});
+        }
 
-        if (args.init)
-          args.init ($p);
+        args.init && args.init($p);
 
-        __exec ($p);
+        __exec($p);
       }
       else {
-        this.manageUnknownError ();
+        this.manageUnknownError();
       }
     }
   }
@@ -1531,46 +1438,51 @@ class WHelper
     });
   }
   
-  // METHOD displayMsg ()
-  static displayMsg (args)
-  {
-    if (S.get ("block-msg"))
-      return;
+  // METHOD displayMsg()
+  static displayMsg(args) {
+    if (S.get('block-msg')) return;
 
     // If a TinyMCE plugin is running, display message using the editor window
     // manager.
-    if ($(".tox-dialog").is(":visible"))
-      return tinymce.activeEditor.windowManager.alert (args.msg);
+    if ($(".tox-dialog").is(":visible")) {
+      return tinymce.activeEditor.windowManager.alert(args.msg);
+    }
 
-    const ctn = document.getElementById ("msg-container"),
-          t = args.type;
+    const ctn = document.getElementById('msg-container');
+    const t = args.type;
 
     // Blurs
-    setTimeout (()=>
-    {
-      const $ef = $("#postitUpdatePopupBody_ifr");
+    setTimeout(()=> {
+      const $ef = $('#postitUpdatePopupBody_ifr');
 
       // TinyEditor
-      if ($ef.is (":visible"))
-        $ef.blur ();
+      if ($ef.is(':visible')) {
+        $ef.blur();
+      }
 
       // Forms
-      document.querySelectorAll("input:focus,textarea:focus")
-        .forEach (el=> el.blur ());
-
+      document.querySelectorAll('input:focus,textarea:focus').forEach(
+        (el) => el.blur());
     }, 150);
 
     // Close opened alert with the same content
-    ctn.querySelectorAll(".toast").forEach (el=>
-      el.querySelector(".toast-body").innerHTML == args.msg &&
-        bootstrap.Toast.getInstance(el).hide ());
+    ctn.querySelectorAll('.toast').forEach((el) => {
+      if (el.querySelector('.toast-body').innerHTML === args.msg) {
+        bootstrap.Toast.getInstance(el).hide();
+      }
+    });
 
-    const msg = $(`<div class="toast align-items-center border-0 ${(t=="danger"||t=="success")?"text-white":""} bg-${t} bg-gradient" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><button type="button" class="btn-close m-auto" data-bs-dismiss="toast"></button><div class="toast-body">${args.msg}</div></div></div>`)[0];
+    const msg = H.createElement('div',
+      {className: `toast align-items-center border-0 ${(t === 'danger' || t === 'success') ? 'text-white' : ''} bg-${t} bg-gradient`},
+      null,
+      `<div class="d-flex"><button type="button" class="btn-close m-auto" data-bs-dismiss="toast"></button><div class="toast-body">${args.msg}</div></div>`);
 
-    ctn.insertBefore (msg, ctn.firstChild);
+    ctn.insertBefore(msg, ctn.firstChild);
 
-    new bootstrap.Toast (
-          msg, {delay: (t=="danger"||t=="warning")?5000:3000}).show ();
+    new bootstrap.Toast(
+      msg, 
+      {delay: (t === 'danger' || t === 'warning') ? 5000 : 3000}
+    ).show();
   }
 
   // METHOD fixHeight()
@@ -1594,37 +1506,36 @@ class WHelper
          document.querySelector(".nav-tabs.walls").offsetHeight}px`;
   }
 
-  // METHOD setColorpickerColor ()
-  static setColorpickerColor ($cp, c, apply = true)
-  {
-    const s = $cp[0].querySelectorAll (".ui-colorpicker-swatch"),
-          ss = $cp[0].querySelector (".ui-colorpicker-swatch.cp-selected");
+  // METHOD setColorpickerColor()
+  static setColorpickerColor($cp, c, apply = true) {
+    const s = $cp[0].querySelectorAll('.ui-colorpicker-swatch');
+    const ss = $cp[0].querySelector('.ui-colorpicker-swatch.cp-selected');
 
-    if (ss)
-      ss.classList.remove ("cp-selected");
+    if (ss) {
+      ss.classList.remove('cp-selected');
+    }
 
-    if (apply)
-      $cp.colorpicker ("setColor", c);
+    if (apply) {
+      $cp.colorpicker('setColor', c);
+    }
 
-    for (let i = 0, iLen = s.length; i < iLen; i++)
-    {
-      if (H.rgb2hex ($(s[i]).css("background-color")) == c)
-      {
-        s[i].classList.add ("cp-selected");
+    for (let i = 0, iLen = s.length; i < iLen; i++) {
+      const el = s[i];
+      if (H.rgb2hex(el.style.backgroundColor) === c) {
+        el.classList.add('cp-selected');
         break;
       }
     }
   }
 
-  // METHOD getProgressbarColor ()
-  static getProgressbarColor (v)
-  {
-    return (v < 30) ? "#f60104" :
-           (v < 50) ? "#f57f00" :
-           (v < 75) ? "#f5c900" :
-           (v < 85) ? "#f0f700" :
-           (v < 95) ? "#84f600" :
-           "#26f700";
+  // METHOD getProgressbarColor()
+  static getProgressbarColor(v) {
+    return (v < 30) ? '#f60104' :
+           (v < 50) ? '#f57f00' :
+           (v < 75) ? '#f5c900' :
+           (v < 85) ? '#f0f700' :
+           (v < 95) ? '#84f600' :
+           '#26f700';
   }
 
   // METHOD download()
@@ -1675,60 +1586,58 @@ class WHelper
     req.send();
   }
   
-  // METHOD manageUnknownError ()
-  static manageUnknownError (d = {}, error_cb)
-  {
+  // METHOD manageUnknownError()
+  static manageUnknownError(d = {}, error_cb) {
     let msg;
 
-    if (d.error && isNaN (d.error))
+    if (d.error && isNaN (d.error)) {
       msg = d.error;
-    else if (error_cb)
+    } else if (error_cb) {
       msg = `<?=_("Unknown error.<br>Please try again later.")?>`;
-    else
-    {
+    } else {
       msg = `<?=_("Unknown error.<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
-      setTimeout (()=> $("<div/>").login ("logout", {auto: true}), 3000);
+      setTimeout(() => $("<div/>").login('logout', {auto: true}), 3000);
     }
 
-    this.displayMsg ({
+    this.displayMsg({
+      msg,
       title: `<?=_("System")?>`,
-      type: d.msgtype||"danger",
-      msg: msg
+      type: d.msgtype || 'danger',
     });
 
-    if (error_cb)
-      error_cb (d);
+    error_cb && error_cb(d);
   }
   
   // METHOD request_ws()
-  static request_ws (method, route, args, success_cb, error_cb) {
+  static request_ws(method, route, args, success_cb, error_cb) {
     this.loader('show');
   
     //console.log (`WS: ${method} ${route}`);
   
-    WS.send ({
-      method,
-      route,
-      data: args ? encodeURI(JSON.stringify(args)) : null,
-    },
-    (d) => {
-      this.loader('hide');
-      if (d.error) {
-        this.manageUnknownError(d, error_cb);
-      } else if (success_cb) {
-        success_cb(d);
-      } else if (d.error_msg) {
-        H.displayMsg({
-          title: `<?=_("Warning")?>`,
-          type: 'warning',
-          msg: d.error_msg,
-        });
-      }
-    },
-    () => {
-      this.loader('hide');
-      error_cb && error_cb();
-    });
+    WS.send(
+      {
+        method,
+        route,
+        data: args ? encodeURI(JSON.stringify(args)) : null,
+      },
+      (d) => {
+        this.loader('hide');
+        if (d.error) {
+          this.manageUnknownError(d, error_cb);
+        } else if (success_cb) {
+          success_cb(d);
+        } else if (d.error_msg) {
+          H.displayMsg({
+            title: `<?=_("Warning")?>`,
+            type: 'warning',
+            msg: d.error_msg,
+          });
+        }
+      },
+      () => {
+        this.loader('hide');
+        error_cb && error_cb();
+      });
   }
   
   // METHOD fetchTimeout()
@@ -1797,269 +1706,242 @@ class WHelper
   // METHOD fetchUpload ()
   // Only used for file upload
   //TODO Use fetch() when upload progress will be available!
-  static fetchUpload (service, args, success_cb, error_cb)
-  {
+  static fetchUpload(service, args, success_cb, error_cb) {
     //console.log (`AJAX: PUT ${service}`);
   
-    const pbar = document.querySelector ("#loader .progress"),
-          xhr = $.ajax (
-            {
-              // Progressbar for file upload
-              xhr: ()=>
-              {
-                const xhr = new window.XMLHttpRequest ();
-      
-                // LOCAL FUNCTION __progress ()
-                const __progress = (e)=>
-                  {
-                    if (e.lengthComputable)
-                    {
-                      const display = Math.trunc(e.loaded/e.total*100);
-      
-                      pbar.innerText = display+"%";
-                      pbar.style.width = display+"%";
-      
-                      //FIXME Use classes
-                      if (display < 50)
-                        pbar.style.backgroundColor = "#ea6966";
-                      else if (display < 90)
-                        pbar.style.backgroundColor = "#f5b240";
-                      else if (display < 100)
-                        pbar.style.backgroundColor = "#6ece4b";
-                      else
-                        pbar.innerText = `<?=_("Upload completed")?>`;
-                    }
-                  };
-      
-                  xhr.upload.addEventListener ("progress", __progress, false);
-//FIXME useful?
-//                  xhr.addEventListener ("progress", __progress, false);
-      
-                return xhr;
-              },
-              type: "PUT",
-              // No timeout for file uploading
-              timeout: 0,
-              async: true,
-              cache: false,
-              url: `/api/${service}`,
-              data: args ? encodeURI (JSON.stringify (args)) : null,
-              dataType: "json",
-              contentType: "application/json;charset=utf-8"
-            })
-            .done ((d)=>
-             {
-               if (!d||d.error)
-               {
-                 if (error_cb)
-                   error_cb (d);
-                 else
-                   this.manageUnknownError (d);
-               }
-               else if (success_cb)
-                 success_cb (d);
-             })
-            .fail ((jqXHR, textStatus, errorThrown)=>
-             {
-               switch (textStatus)
-               {
-                 case "abort":
-                   this.manageUnknownError ({
-                     msgtype: "warning",
-                     error: `<?=_("Upload has been canceled")?>`});
-                   break;
-        
-                 default:
-                  this.manageUnknownError ();
-               }
-             })
-            .always (()=> this.loader ("hide", {force: true}));
+    const pbar = document.querySelector('#loader .progress');
+    const xhr = $.ajax(
+      {
+        // Progressbar for file upload
+        xhr: () => {
+          const xhr = new window.XMLHttpRequest();
 
-    this.loader ("show", {force: true, xhr});
+          xhr.upload.addEventListener('progress', (e) => {
+            if (!e.lengthComputable) return;
+
+            const display = Math.trunc(e.loaded / e.total * 100);
+
+            pbar.innerText = `${display}%`;
+            pbar.style.width = `${display}%`;
+
+            //FIXME Use classes
+            if (display < 50) {
+              pbar.style.backgroundColor = '#ea6966';
+            } else if (display < 90) {
+              pbar.style.backgroundColor = '#f5b240';
+            } else if (display < 100) {
+              pbar.style.backgroundColor = '#6ece4b';
+            } else {
+              pbar.innerText = `<?=_("Upload completed")?>`;
+            }
+          }, false);
+
+          return xhr;
+        },
+        type: 'PUT',
+        // No timeout for file uploading
+        timeout: 0,
+        async: true,
+        cache: false,
+        url: `/api/${service}`,
+        data: args ? encodeURI(JSON.stringify(args)) : null,
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8'
+      })
+      .done((d) => {
+        if (!d || d.error) {
+          if (error_cb) {
+            error_cb(d);
+          } else {
+            this.manageUnknownError (d);
+          }
+        } else if (success_cb) {
+           success_cb(d);
+        }
+      })
+      .fail((jqXHR, textStatus, errorThrown) => {
+        if (textStatus === 'abort') {
+          this.manageUnknownError({
+            msgtype: 'warning',
+            error: `<?=_("Upload has been canceled")?>`},
+          );
+        } else {
+          this.manageUnknownError();
+        }
+      })
+      .always(() => this.loader('hide', {force: true}));
+
+    this.loader('show', {force: true, xhr});
   }
   
-  // METHOD checkUploadFileSize ()
-  static checkUploadFileSize (args)
-  {
-    const msg = `<?=_("File size is too large (%sM max)")?>`.replace("%s", <?=WPT_UPLOAD_MAX_SIZE?>),
-          maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
+  // METHOD checkUploadFileSize()
+  static checkUploadFileSize(args) {
+    const msg = `<?=_("File size is too large (%sM max)")?>`.replace('%s', <?=WPT_UPLOAD_MAX_SIZE?>);
+    const maxSize = args.maxSize || <?=WPT_UPLOAD_MAX_SIZE?>;
     let ret = true;
   
-    if (args.size / 1024000 > maxSize)
-    {
+    if (args.size / 1024000 > maxSize) {
       ret = false;
   
-      if (args.cb_msg)
-        args.cb_msg (msg);
-      else
+      if (args.cb_msg) {
+        args.cb_msg(msg);
+      } else {
         this.displayMsg ({
+          msg,
           title: `<?=_("File upload")?>`,
-          type: "warning",
-          msg: msg
+          type: 'warning',
         });
+      }
     }
   
     return ret;
   }
   
-  // METHOD getUploadedFiles ()
-  static getUploadedFiles (files, type, success_cb, error_cb, cb_msg)
-  {
-    const _H = this,
-          reader = new FileReader (),
-          file = files[0];
+  // METHOD getUploadedFiles()
+  static getUploadedFiles(files, type, success_cb, error_cb, cb_msg) {
+    const reader = new FileReader ();
+    const file = files[0];
 
-    if (type != "all" && !file.name.match (new RegExp (type, 'i')))
-      return _H.displayMsg ({
+    if (type !== 'all' && !file.name.match(new RegExp (type, 'i'))) {
+      return this.displayMsg({
         title: `<?=_("File upload")?>`,
-        type: "warning",
-        msg: `<?=_("Wrong file type for %s")?>`.replace("%s", file.name)
+        type: 'warning',
+        msg: `<?=_("Wrong file type for %s")?>`.replace('%s', file.name)
       });
+    }
   
-    reader.readAsDataURL (file);
+    reader.readAsDataURL(file);
   
-    reader.onprogress = (e) =>
-      {
-        if (!_H.checkUploadFileSize (e.total, cb_msg))
-          reader.abort ();
+    reader.onprogress = (e) => {
+      if (!this.checkUploadFileSize(e.total, cb_msg)) {
+        reader.abort();
       }
+    };
   
-    reader.onerror = (e) =>
-      {
-        const msg = `<?=_("Can not read file")?> (${e.target.error.code})`;
+    reader.onerror = (e) => {
+      const msg = `<?=_("Can not read file")?> (${e.target.error.code})`;
   
-        if (cb_msg)
-          cb_msg (msg);
-        else
-          _H.displayMsg ({
-            title: `<?=_("File upload")?>`,
-            type: "danger",
-            msg: msg
-          });
+      if (cb_msg) {
+        cb_msg(msg);
+      } else {
+        this.displayMsg ({
+          msg,
+          title: `<?=_("File upload")?>`,
+          type: 'danger',
+        });
       }
+    };
   
-    reader.onloadend = ((f) => (evt) => success_cb (evt, f))(file);
+    reader.onloadend = ((f) => (evt) => success_cb(evt, f))(file);
   }
   
-  // METHOD waitForDOMUpdate ()
-  static waitForDOMUpdate (cb)
-  {
-    window.requestAnimationFrame (() => window.requestAnimationFrame (cb));
+  // METHOD waitForDOMUpdate()
+  static waitForDOMUpdate(cb) {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(cb));
   }
   
-  // METHOD supportUs ()
-  static supportUs ()
-  {
+  // METHOD supportUs()
+  static supportUs() {
     <?php if (WPT_SUPPORT_CAMPAIGN) {?>
 
     if (wpt_userData.settings.theme &&
-        !ST.noDisplay ("support-msg") &&
-        !document.querySelector(".modal.show,.popover.show"))
-    {
-      const popup = document.getElementById ("infoPopup");
+        !ST.noDisplay('support-msg') &&
+        !document.querySelector('.modal.show,.popover.show')) {
+      const popup = document.getElementById('infoPopup');
 
-      popup.querySelector(".modal-dialog").classList.remove ("modal-sm");
-      popup.querySelector(".modal-title").innerHTML = `<i class="fas fa-heart fa-lg fa-fw"></i> <?=_("Support us")?>`;
+      popup.querySelector('.modal-dialog').classList.remove('modal-sm');
+      popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-heart fa-lg fa-fw"></i> <?=_("Support us")?>`;
 
-      popup.querySelector(".modal-body").classList.add ("justify");
-      popup.querySelector(".modal-body").innerHTML = `<?=_("As you probably already know, wopits is a free tool, and your data is not shared with any third party.<div class='mt-2 mb-2'>To offer you this service, we nevertheless have fixed costs for hosting and domain name.</div><div>This is why we invite you to participate in the project by making a PayPal donation:</div><div class='mt-3 mb-3 text-center'>%s1</div><div>It will not change the way you access wopits or the features available, but it would be nice to help and it will encourage us to maintain the project and the service for a few more years&nbsp;:-)</div>")?></div><div class='mt-3'><button type='button' class='btn btn-sm btn-primary support'><?=_("I get it !")?></button></div>`.replace("%s1", `<a target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=N3FW372J2NG4E" class="btn btn-secondary btn-xs"><i class="fas fa-heart fa-fw"></i> <?=_("Yes, I support wopits!")?></a>`);
+      popup.querySelector('.modal-body').classList.add('justify');
+      popup.querySelector('.modal-body').innerHTML = `<?=_("As you probably already know, wopits is a free tool, and your data is not shared with any third party.<div class='mt-2 mb-2'>To offer you this service, we nevertheless have fixed costs for hosting and domain name.</div><div>This is why we invite you to participate in the project by making a PayPal donation:</div><div class='mt-3 mb-3 text-center'>%s1</div><div>It will not change the way you access wopits or the features available, but it would be nice to help and it will encourage us to maintain the project and the service for a few more years&nbsp;:-)</div>")?></div><div class='mt-3'><button type='button' class='btn btn-sm btn-primary support'><?=_("I get it !")?></button></div>`.replace('%s1', `<a target="_blank" href="https://www.paypal.com/donate/?hosted_button_id=N3FW372J2NG4E" class="btn btn-secondary btn-xs"><i class="fas fa-heart fa-fw"></i> <?=_("Yes, I support wopits!")?></a>`);
 
       // EVENT "click" on "I get it!" button"
-      popup.querySelector("button.support").addEventListener ("click", (e)=>
-        {
-          ST.noDisplay ("support-msg", true);
-          bootstrap.Modal.getInstance(popup).hide ();
-        });
+      popup.querySelector('button.support').addEventListener('click', (e) => {
+        ST.noDisplay('support-msg', true);
+        bootstrap.Modal.getInstance(popup).hide();
+      });
 
-        this.openModal ({item: popup, noeffect: true});
+      this.openModal({item: popup, noeffect: true});
     }
 
     <?php } ?>
   }
 
-  // METHOD checkForAppUpgrade ()
-  static async checkForAppUpgrade (version)
-  {
-    const html = $("html")[0],
-          $popup = $("#infoPopup"),
-          officialVersion = (version) ? version : html.dataset.version;
+  // METHOD checkForAppUpgrade()
+  static async checkForAppUpgrade(version) {
+    const html = document.querySelector('html');
+    const $popup = $("#infoPopup");
+    const officialVersion = version ? version : html.dataset.version;
 
-    if (!String(officialVersion).match(/^\d+$/))
-    {
+    if (!String(officialVersion).match(/^\d+$/)) {
       const popup = $popup[0];
       const userVersion = ST.get('version');
 
-      if (userVersion != officialVersion)
-      {
+      if (userVersion !== officialVersion) {
         ST.set('version', officialVersion);
-        $("#settingsPopup").settings ("set", {version: officialVersion});
+        $("#settingsPopup").settings('set', {version: officialVersion});
   
-        if (userVersion)
-        {
+        if (userVersion) {
           // Close current popups if any
-          (S.get("mstack")||[])
-             .forEach (el=> bootstrap.Modal.getInstance(el).hide ());
+          (S.get('mstack') || []).forEach((el) =>
+            bootstrap.Modal.getInstance(el).hide());
   
-          this.cleanPopupDataAttr (popup);
+          this.cleanPopupDataAttr(popup);
   
-          $popup.find(".modal-body").html (`<?=_("A new release of wopits is available.")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>`.replace("%s1", `<b>${userVersion}</b>`).replace("%s2", `<b>${officialVersion}</b>`));
-          $popup.find(".modal-title").html (`<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`);
+          popup.querySelector('.modal-body').innerHTML = `<?=_("A new release of wopits is available.")?><br><?=_("The application will be upgraded from v%s1 to v%s2.")?>`.replace("%s1", `<b>${userVersion}</b>`).replace("%s2", `<b>${officialVersion}</b>`);
+          popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-fw fa-glass-cheers"></i> <?=_("New release")?>`;
   
-          popup.dataset.popuptype = "app-upgrade";
-          this.openModal ({item: popup});
+          popup.dataset.popuptype = 'app-upgrade';
+          this.openModal({item: popup});
   
           return true;
         }
-      }
-      else if (html.dataset.upgradedone)
-      {
-        html.removeAttribute ("data-upgradedone");
+      } else if (html.dataset.upgradedone) {
+        html.removeAttribute('data-upgradedone');
   
-        $popup.find(".modal-dialog").removeClass ("modal-sm");
-        $popup.find(".modal-title").html (`<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>`);
+        popup.querySelector('.modal-dialog').classList.remove('modal-sm');
+        popup.querySelector('.modal-title').innerHTML = `<i class="fas fa-glass-cheers"></i> <?=_("Upgrade done")?>`;
 
-        const r = await fetch ("/whats_new/latest.php");
-        if (r && r.ok)
-        {
-          let d = await r.text ();
+        const r = await fetch('/whats_new/latest.php');
+        if (r && r.ok) {
+          let d = await r.text();
 
           <?php if (WPT_DISPLAY_LATEST_NEWS):?>
-          if (d)
+          if (d) {
             d = `<h5 class="mb-3 text-center"><i class="fas fa-bullhorn fa-fw"></i> <?=_("What's new in v%s?")?></h5>`.replace("%s", "<?=WPT_VERSION?>")+d;
-          else
+          } else {
             d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
+          }
           <?php else:?>
             d = `<?=_("Upgrade done. Thank you for using wopits!")?>`;
           <?php endif?>
 
-          popup.querySelector(".modal-body").innerHTML = `${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`;
-          popup.querySelector(".modal-body button")
-            .addEventListener ("click", (e)=>
-            {
-              bootstrap.Modal.getInstance(popup).hide ();
-              H.loadPopup ("userGuide");
-            });
+          popup.querySelector('.modal-body').innerHTML = `${d}<div class="mt-2"><button type="button" class="btn btn-secondary btn-xs"><i class="fas fa-scroll"></i> <?=_("See more...")?></button></div>`;
+          popup.querySelector('.modal-body button')
+            .addEventListener('click', (e) => {
+            bootstrap.Modal.getInstance(popup).hide();
+            H.loadPopup('userGuide');
+          });
 
-          this.openModal ({item: popup, noeffect: true});
+          this.openModal({item: popup, noeffect: true});
         } else {
           this.manageUnknownError ();
         }
+      } else {
+        setTimeout(() => this.supportUs(), 1000);
       }
-      else
-        setTimeout (()=> this.supportUs (), 1000);
     }
   }
   
-  // METHOD navigatorIsEdge ()
-  static navigatorIsEdge ()
-  {
-    return navigator.userAgent.match (/edg/i);
+  // METHOD navigatorIsEdge()
+  static navigatorIsEdge() {
+    return navigator.userAgent.match(/edg/i);
   }
 
   // METHOD isVisible()
   static isVisible(el) {
     return window.getComputedStyle(el, null)
-               .getPropertyValue('display') !== 'none';
+             .getPropertyValue('display') !== 'none';
   }
 
   // METHOD fixVKBScrollStart()

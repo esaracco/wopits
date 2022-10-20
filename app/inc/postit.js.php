@@ -85,6 +85,33 @@
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
+  // METHOD testImage()
+  const _testImage = (url, timeout = 10000) => {
+    return new Promise ((resolve, reject) => {
+      const img = new Image();
+      let timer;
+
+      img.onerror = img.onabort = () => {
+        clearTimeout(timer);
+        reject('error');
+      };
+
+      img.onload = () => {
+        clearTimeout(timer);
+        resolve('success');
+      };
+
+      timer = setTimeout(() => {
+        // reset .src to invalid URL so it stops previous
+        // loading, but doesn't trigger new load
+        img.src = '//!!!!/test.jpg';
+        reject('timeout');
+      }, timeout);
+
+      img.src = url;
+    });
+  };
+
   // EVENT focusin
   // To fix tinymce dialogs compatibility with bootstrap popups
   const _focusinInFilter = (e) =>
@@ -159,7 +186,7 @@
   const _displayOpenLinkMenu = (e, args) => {
     const el = e.target;
     const link = (el.tagName === 'A') ? el : el.closest ('a');
-    const canWrite = H.checkAccess(`<?=WPT_WRIGHTS_RW?>`);
+    const canWrite = H.checkAccess(<?=WPT_WRIGHTS_RW?>);
     const menu = H.createElement('div',
       {className: 'dropdown submenu submenu-link'}, null,
       `<ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li>${args?.noEditItem ? '' : `<li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite ? 'edit' : 'eye'}"></i> ${canWrite ? `<?=_("Edit note")?>` : `<?=_("Open note")?>`}</a></li>`}</ul>`);
@@ -1986,7 +2013,7 @@
 
           // Delete/update postit only if it has changed
           if (data?.todelete ||
-              H.updatedObject(_originalObject, data, {hadpictures: 1})) {
+              H.objectHasChanged(_originalObject, data, {hadpictures: 1})) {
             data.cellId = this.settings.cellId;
           } else if (!this.settings.wall.wall('isShared')) {
             return this.cancelEdit();
@@ -2122,7 +2149,7 @@
                     const src = tmp[1];
 
                     H.loader ("show");
-                    H.testImage(src)
+                    _testImage(src)
                       .then (
                       // Needed for some Safari on iOS that do not support
                       // Promise finally() callback.
@@ -2223,7 +2250,7 @@
           _displayOpenLinkMenu(e);
          }
         // EVENT "click" on postit for READ-ONLY mode
-        else if (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>"))
+        else if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
         {
           if (H.disabledEvent ())
           {
@@ -2239,7 +2266,7 @@
         {
           e.stopImmediatePropagation();
   
-          if (!H.checkAccess(`<?=WPT_WRIGHTS_RW?>`)) return;
+          if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) return;
   
           const btn = (el.tagName == "DIV")?el:el.closest("div"),
                 ibtn = btn.querySelector ("i"),
@@ -2353,7 +2380,7 @@
         } else if (el.matches('.dates .end,.dates .end *')) {
           e.stopImmediatePropagation();
   
-          if (H.disabledEvent (!H.checkAccess(`<?=WPT_WRIGHTS_RW?>`))) {
+          if (H.disabledEvent (!H.checkAccess(<?=WPT_WRIGHTS_RW?>))) {
             H.preventDefault(e);
             return;
           }
@@ -2485,7 +2512,7 @@
         {
           e.stopImmediatePropagation ();
 
-          if (H.disabledEvent (!H.checkAccess ("<?=WPT_WRIGHTS_RW?>")))
+          if (H.disabledEvent (!H.checkAccess (<?=WPT_WRIGHTS_RW?>)))
           {
             H.preventDefault (e);
             return;
