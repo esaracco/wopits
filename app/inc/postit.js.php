@@ -1338,8 +1338,8 @@
           };
 
           if (pl.dataset.pos) {
-            ret[p.endId].top = Number(pl.dataset.origtop);
-            ret[p.endId].left = Number(pl.dataset.origleft);
+            ret[p.endId].top = parseInt(pl.dataset.origtop);
+            ret[p.endId].left = parseInt(pl.dataset.origleft);
 
             // We apply shift only if headers are hidden, plug has a custom
             // position and has just been modified
