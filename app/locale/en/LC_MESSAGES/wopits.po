@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 16:38+0200\n"
+"POT-Creation-Date: 2022-10-21 17:06+0200\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -801,7 +801,7 @@ msgstr ""
 
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
-"before logging in again on wopits."
+"before logging in again on wopits"
 msgstr ""
 
 msgid "No result"
@@ -1090,7 +1090,7 @@ msgid "The default theme may not suit your mood today!"
 msgstr ""
 
 #, php-format
-msgid "The email `%s` already exists"
+msgid "The email `%s` is already in use"
 msgstr ""
 
 msgid "The entire column/row was deleted while you were editing the note"
@@ -1135,7 +1135,7 @@ msgid ""
 msgstr ""
 
 #, php-format
-msgid "The login `%s` already exists"
+msgid "The login `%s` is already in use"
 msgstr ""
 
 msgid "The minimum zoom has been reached"

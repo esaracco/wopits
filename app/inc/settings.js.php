@@ -306,11 +306,11 @@
         $cp[0].querySelector('.ui-colorpicker-swatches').style.width = 
           `${swatchesWidth}px`;
       } else {
+        const userTz = wpt_userData.settings.timezone;
         // Load timezones
         const r = await H.fetch('GET', 'common/timezones');
-
-        const userTz = wpt_userData.settings.timezone;
         let html = '';
+
         r.forEach((tz) => html += `<option name="${tz}"${(tz === userTz) ? ' selected="selected"' : ''}>${tz}</option>`);
         settings.querySelector('.timezone').innerHTML = html;
 

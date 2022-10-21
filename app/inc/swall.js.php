@@ -489,8 +489,8 @@
         'GET',
         `wall/${wallPlugin.settings.id}/group`);
 
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.raiseError (null, r.error_msg);
         }
         return;

@@ -185,8 +185,8 @@
     // METHOD login()
     async login(args) {
       const r = await H.fetch('POST', 'user/login', args);
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.displayMsg ({
             title: `<?=_("Log in")?>`,
             type: 'warning',
@@ -217,15 +217,15 @@
     // METHOD createUser()
     async createUser(args) {
       const r = await H.fetch('PUT', 'user', args);
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        this.resetCreateUserForm ();
+        if (r.error_msg) {
           H.displayMsg({
             title: `<?=_("Account creation")?>`,
             type: 'warning',
             msg: r.error_msg,
           });
         }
-        this.resetCreateUserForm ();
       } else {
         return location.href = '/';
       }
@@ -234,12 +234,12 @@
     // METHOD resetPassword()
     async resetPassword(args) {
       const r = await H.fetch('POST', 'user/resetPassword', args);
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.displayMsg ({
             title: `<?=_("Password reset")?>`,
             type: 'warning',
-            msg: r.error_msg
+            msg: r.error_msg,
           });
         }
       } else {

@@ -427,9 +427,9 @@ class Group extends Wall
        ->db->prepare('
          SELECT users_id, walls_id FROM _perf_walls_users
          WHERE groups_id IS NOT NULL
-           AND groups_id = ?
-           AND walls_id IN ('.$wallIds.') '.
-           ($userId ? ' AND users_id = ?' : '')))
+           AND groups_id = ? '.
+           ($wallIds ? ' AND walls_id IN ('.$wallIds.') ' : '').
+           ($userId ? ' AND users_id = ? ' : '')))
        ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
     $users = [];
     while ($el = $stmt->fetch()) {
@@ -437,72 +437,74 @@ class Group extends Wall
     }
     $usersAlerts = $users;
 
-    ($stmt = $this
-       ->db->prepare('
-         SELECT users_id, walls_id, access FROM _perf_walls_users
-         WHERE groups_id IS NOT NULL
-           AND groups_id <> ?
-           AND walls_id IN ('.$wallIds.') '.
-           ($userId ? ' AND users_id = ?' : '')))
-       ->execute (array_merge([$this->groupId], $userId ? [$userId] : []));
-    $tmp = [];
-    while ($el = $stmt->fetch()) {
-      $tmp[$this->_RUD_getKey($el)] = $el;
-    }
+    if ($wallIds) {
+      ($stmt = $this
+         ->db->prepare('
+           SELECT users_id, walls_id, access FROM _perf_walls_users
+           WHERE groups_id IS NOT NULL
+             AND groups_id <> ?
+             AND walls_id IN ('.$wallIds.') '.
+             ($userId ? ' AND users_id = ?' : '')))
+         ->execute (array_merge([$this->groupId], $userId ? [$userId] : []));
+      $tmp = [];
+      while ($el = $stmt->fetch()) {
+        $tmp[$this->_RUD_getKey($el)] = $el;
+      }
 
-    foreach (array_keys($users) as $id) {
-      if (isset($tmp[$id])) {
-        // Do not remove this user from workers if it belongs to other
-        // wall groups
-        unset($users[$id]);
-
-        // Do not remove alerts for user if it belongs to other
-        // RW or ADMIN wall groups
-        if ($tmp[$id]['access'] != WPT_WRIGHTS_RO) {
-          unset($usersAlerts[$id]);
+      foreach (array_keys($users) as $id) {
+        if (isset($tmp[$id])) {
+          // Do not remove this user from workers if it belongs to other
+          // wall groups
+          unset($users[$id]);
+  
+          // Do not remove alerts for user if it belongs to other
+          // RW or ADMIN wall groups
+          if ($tmp[$id]['access'] != WPT_WRIGHTS_RO) {
+            unset($usersAlerts[$id]);
+          }
         }
       }
-    }
 
-    // Performance helper:
-    // Unlink group's users from wall
-    $this
-      ->db->prepare('
-        DELETE FROM _perf_walls_users
-        WHERE groups_id = ? AND walls_id IN ('.$wallIds.') '.
-        ($userId ? ' AND users_id = ?' : ''))
-      ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
-
-    // Remove user's postits alerts
-    if (!empty($usersAlerts)) {
+      // Performance helper:
+      // Unlink group's users from wall
       $this
         ->db->prepare('
-          DELETE FROM postits_alerts
-          WHERE walls_id IN ('.$wallIds.') AND users_id IN ('.
-          implode(',',
-            array_map([$this->db,'quote'],
-            $this->_RUD_extractUserIds($usersAlerts))).')')
-        ->execute();
-    }
+          DELETE FROM _perf_walls_users
+          WHERE groups_id = ? AND walls_id IN ('.$wallIds.') '.
+          ($userId ? ' AND users_id = ?' : ''))
+        ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
 
-    ($stmt = $this
-       ->db->prepare('
-         SELECT walls_id, postits_id, users_id
-         FROM postits_workers
-         WHERE walls_id IN('.$wallIds.') '.
-         ($userId ? ' AND users_id = ?' : '')))
-       ->execute($userId ? [$userId] : []);
+      // Remove user's postits alerts
+      if (!empty($usersAlerts)) {
+        $this
+          ->db->prepare('
+            DELETE FROM postits_alerts
+            WHERE walls_id IN ('.$wallIds.') AND users_id IN ('.
+            implode(',',
+              array_map([$this->db,'quote'],
+              $this->_RUD_extractUserIds($usersAlerts))).')')
+          ->execute();
+      }
+  
+      ($stmt = $this
+         ->db->prepare('
+           SELECT walls_id, postits_id, users_id
+           FROM postits_workers
+           WHERE walls_id IN('.$wallIds.') '.
+           ($userId ? ' AND users_id = ?' : '')))
+         ->execute($userId ? [$userId] : []);
 
-    // Remove group users from workers
-    while ($el = $stmt->fetch()) {
-      // Remove from workers only if user is not in another wall's group
-      if ($force || isset($users[$this->_RUD_getKey($el)])) {
-        $worker = new Worker([
-          'userId' => $el['users_id'],
-          'wallId' => $el['walls_id'],
-        ]);
-        $worker->postitId = $el['postits_id'];
-        $worker->delete($el['users_id'], true);
+      // Remove group users from workers
+      while ($el = $stmt->fetch()) {
+        // Remove from workers only if user is not in another wall's group
+        if ($force || isset($users[$this->_RUD_getKey($el)])) {
+          $worker = new Worker([
+            'userId' => $el['users_id'],
+            'wallId' => $el['walls_id'],
+          ]);
+          $worker->postitId = $el['postits_id'];
+          $worker->delete($el['users_id'], true);
+        }
       }
     }
 

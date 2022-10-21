@@ -174,7 +174,7 @@
                   cb: ($p) => {
                     const p = $p[0];
 
-                    $p.find('input').val('');
+                    p.querySelectorAll('input').forEach((el) => el.value = '');
                     p.dataset.field = 'password';
                     p.dataset.noclosure = true;
   
@@ -193,7 +193,7 @@
                   cb: ($p) => {
                     const p = $p[0];
                     const input = H.createElement('input',
-                                      {className: 'form-control'});
+                                    {className: 'form-control', type: 'text'});
   
                     switch (name) {
                       case 'username':
@@ -215,6 +215,7 @@
                         break;
                       case 'email':
                         title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
+                        input.setAttribute('type', 'email');
                         input.setAttribute('maxlength',
                             <?=DbCache::getFieldLength('users', 'email')?>);
                         input.setAttribute('placeholder', `<?=_("email")?>`);

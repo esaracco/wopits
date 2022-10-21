@@ -1114,8 +1114,8 @@
         (args.type === 'load') ? 'GET' : 'PUT', service, data);
 
       // Return on error
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.displayMsg({
             title: `<?=_("Wall")?>`,
             type: 'warning',
@@ -1258,12 +1258,12 @@
       'PUT',
       `wall/${this.settings.id}/clone`);
 
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.displayMsg ({
             title: `<?=_("Wall")?>`,
             type: 'warning',
-            msg: r.error_msg
+            msg: r.error_msg,
           });
         }
         return;
@@ -1369,7 +1369,7 @@
     // METHOD refreshUserWallsData()
     async refreshUserWallsData(success_cb) {
       const r = await H.fetch('GET', 'wall');
-      if (r) {
+      if (r && !r.error) {
         wpt_userData.walls = {list: r.list || []};
         success_cb && success_cb ();
       }

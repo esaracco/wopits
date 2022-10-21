@@ -45,8 +45,8 @@
         `wall/${wallId}/cell/${cellId}/postit/${postitId}/attachment/${id}`,
         {description, title});
 
-      if (!r || r.error_msg) {
-        if (r) {
+      if (r.error) {
+        if (r.error_msg) {
           H.raiseError(null, r.error_msg);
         }
       }

@@ -2562,7 +2562,7 @@
                   content: e.target.result,
                 });
 
-              if (!r || r.error) {
+              if (r.error) {
                 __error_cb(r);
               } else {
                 const $f = $('.tox-dialog');

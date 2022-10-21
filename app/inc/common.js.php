@@ -1658,7 +1658,8 @@ class WHelper {
   // TODO https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout
   static async fetch(method, service, args, success_cb, error_cb)
   {
-    let ret;
+    let ok = false;
+    let ret = {};
     this.loader('show');
 
     //console.log (`FETCH: ${method} ${service}`);
@@ -1677,18 +1678,20 @@ class WHelper {
       if (r.ok) {
         ret = await r.json();
 
+        this.loader('hide');
+
         if (!ret || ret.error) {
-          if (error_cb) {
-            this.loader('hide');
-            error_cb(ret);
-          } else {
-            this.manageUnknownError(ret);
-          }
+          this.manageUnknownError(ret);
         } else {
-          this.loader('hide');
-          success_cb && success_cb(ret);
+          if (ret.error_msg) {
+            error_cb && error_cb(ret);
+          } else {
+            ok = true;
+            success_cb && success_cb(ret)
+          }
         }
       } else {
+        this.loader('hide');
         this.manageUnknownError();
       }
     } catch(e) {
@@ -1697,6 +1700,14 @@ class WHelper {
       } else {
         this.loader('hide');
         throw e;
+      }
+    }
+
+    if (!ok) {
+      if (typeof ret === 'object') {
+        ret.error = true;
+      } else {
+        ret = {error: true};
       }
     }
 

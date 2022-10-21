@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 16:38+0200\n"
-"PO-Revision-Date: 2022-10-20 16:39+0200\n"
+"POT-Creation-Date: 2022-10-21 17:06+0200\n"
+"PO-Revision-Date: 2022-10-21 17:06+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
 "Language: fr_FR\n"
@@ -1006,10 +1006,10 @@ msgstr "Aucun contenu"
 
 msgid ""
 "No email address is configured in your LDAP account. Please fix the problem "
-"before logging in again on wopits."
+"before logging in again on wopits"
 msgstr ""
 "Aucune adresse email n'est configurée dans votre compte LDAP. Veuillez "
-"corriger ce problème avant d'essayer de vous identifier à nouveau sur wopits."
+"corriger le problème avant d'essayer de vous identifier à nouveau sur wopits"
 
 msgid "No result"
 msgstr "Aucun résultat"
@@ -1316,8 +1316,8 @@ msgstr ""
 "Le thème par défaut ne correspond peut-être pas à votre humeur du jour!"
 
 #, php-format
-msgid "The email `%s` already exists"
-msgstr "L'email `%s` existe déjà"
+msgid "The email `%s` is already in use"
+msgstr "L'email `%s` est déjà utilisée"
 
 msgid "The entire column/row was deleted while you were editing the note"
 msgstr "La colonne/ligne a été supprimée pendant que vous éditiez la note"
@@ -1348,13 +1348,13 @@ msgid "The following users are viewing this wall:"
 msgstr "Les utilisateurs suivants consultent ce mur:"
 
 msgid "The group already exists"
-msgstr "Ce groupe existe déjà"
+msgstr "Le groupe existe déjà"
 
 msgid "The group will also be available for all your other walls."
-msgstr "Ce groupe sera également disponible pour tous vos autres murs."
+msgstr "Le groupe sera également disponible pour tous vos autres murs."
 
 msgid "The group will be available only for the current wall."
-msgstr "Ce groupe ne sera disponible que pour le mur courant."
+msgstr "Le groupe ne sera disponible que pour le mur courant."
 
 #, php-format
 msgid ""
@@ -1363,8 +1363,8 @@ msgstr ""
 "L'image %s n'était pas disponible! Elle a été retirée du contenu de la note."
 
 #, php-format
-msgid "The login `%s` already exists"
-msgstr "Cet identifiant `%s` existe déjà"
+msgid "The login `%s` is already in use"
+msgstr "L'identifiant `%s` est déjà utilisé"
 
 msgid "The minimum zoom has been reached"
 msgstr "Le zoom minimum a été atteint"
@@ -1376,7 +1376,7 @@ msgid "The note has been deleted"
 msgstr "La note a été supprimée"
 
 msgid "The note has no attached file."
-msgstr "Cette note n'a pas de fichier attaché."
+msgstr "La note n'a pas de fichier attaché."
 
 msgid "The note has no user involved."
 msgstr "La note n'a pas d'intervenant."
@@ -1432,7 +1432,7 @@ msgid "The wall is shared"
 msgstr "Le mur est partagé"
 
 msgid "The wall is shared with the following groups:"
-msgstr "Ce mur est partagé avec les groupes suivants:"
+msgstr "Le mur est partagé avec les groupes suivants:"
 
 msgid "Theme"
 msgstr "Thème"

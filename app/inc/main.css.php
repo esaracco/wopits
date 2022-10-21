@@ -2081,7 +2081,7 @@ i.notset {
 
 .list-group-item.active {
   color: inherit;
-  background: var(--wall-th-bg-color);
+  background: var(--wall-border-color);
   border: 1px solid rgba(0,0,0,.125);
 }
 
