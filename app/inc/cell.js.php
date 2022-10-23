@@ -100,7 +100,7 @@
  
           plugin.edit(() => S.get('revertData').revert = true);
         },
-        stop:function(e, ui) {
+        stop: function(e, ui) {
           const revertData = S.get('revertData');
  
           S.unset('revertData');
@@ -504,80 +504,77 @@
       return $postit;
     },
 
-    // METHOD update ()
-    update (d)
-    {
-      const $cell = this.element,
-            cell = $cell[0],
-            bbox = cell.getBoundingClientRect (),
-            idx = $cell.index () - 1,
-            W = parseInt (d.width),
-            H = parseInt (d.height);
+    // METHOD update()
+    update (d) {
+      const cell = this.element[0];
+      const bbox = cell.getBoundingClientRect();
+      const idx = cell.cellIndex - 1;
+      const W = parseInt(d.width);
+      const H = parseInt(d.height);
 
       // If width has changed
-      if (parseInt (bbox.width) != W)
-        this.settings.wall[0].querySelectorAll("tbody.wpt tr.wpt").forEach (tr =>
-          {
-            const td = tr.querySelectorAll("td.wpt")[idx];
+      if (parseInt(bbox.width) !== W) {
+        this.settings.wall[0].querySelectorAll('tbody.wpt tr.wpt')
+            .forEach((tr) => {
+          const td = tr.querySelectorAll('td.wpt')[idx];
 
-            td.style.width = `${W}px`;
-            $(td).find(">div.ui-resizable-s").css ("width", W);
-          });
+          td.style.width = `${W}px`;
+          td.querySelector('div.ui-resizable-s').style.width = `${W}px`;
+        });
+      }
 
       // If height has changed
-      if (parseInt (bbox.height) != H)
-      {
-         const tr = cell.parentNode;
+      if (parseInt(bbox.height) !== H) {
+        const tr = cell.parentNode;
 
-        tr.querySelectorAll("td.wpt").forEach (td =>
-          {
-            tr.querySelector("th.wpt").style.height = `${H}px`;
+        tr.querySelectorAll('th.wpt').forEach((el) =>
+          el.style.height = `${H}px`);
 
-            td.style.height = `${H}px`;
-            $(td).find(">div.ui-resizable-e").css ("height", H);
-         });
-       }
+        let div;
+        tr.querySelectorAll('td.wpt').forEach((td) => {
+          td.style.height = `${H}px`;
+          if ( (div = td.querySelector('div.ui-resizable-e')) ) {
+            div.style.height = `${H}px`;
+          }
+        });
+      }
     },
 
-    // METHOD edit ()
-    edit (error_cb, nopush)
-    {
-      if (nopush || !this.settings.wall.wall ("isShared"))
-        return;
+    // METHOD edit()
+    edit(error_cb, nopush) {
+      if (nopush || !this.settings.wall.wall('isShared')) return;
 
-      H.request_ws (
-        "PUT",
+      H.request_ws(
+        'PUT',
         `wall/${this.settings.wallId}/editQueue/cell/${this.settings.id}`,
         null,
         // success cb
-        (d) => d.error_msg &&
-                 H.raiseError (() => error_cb && error_cb (), d.error_msg)
-      );
+        (d) => {
+          if (d.error_msg) {
+            H.raiseError(() => error_cb && error_cb(), d.error_msg);
+          }
+        });
     },
 
-    // METHOD unedit ()
-    unedit (noupdate = false, move)
-    {
-      const wall = this.settings.wall[0],
-            data = noupdate ?
-              null :
-              {
-                cells: this.serialize ({noPostitContent: true}),
-                wall: {
-                  width: Math.trunc (wall.dataset.displayheaders == "0" ?
-                    this.settings.wall.wall ("getTDsWidth") +
-                      wall.querySelector("tbody.wpt th.wpt").clientWidth
-                    :
-                    wall.clientWidth
-                  )
-                }
-              };
+    // METHOD unedit()
+    unedit(noupdate = false, move) {
+      const wall = this.settings.wall[0];
+      const data = noupdate ?
+        null :
+        {
+          cells: this.serialize({noPostitContent: true}),
+          wall: {
+            width: Math.trunc(wall.dataset.displayheaders === '0' ?
+                     this.settings.wall.wall('getTDsWidth') +
+                       wall.querySelector('tbody.wpt th.wpt').clientWidth :
+                      wall.clientWidth),
+          },
+        };
 
       // If we are moving col/row
-      if (data && move)
-      {
+      if (data && move) {
         move.headers =
-          this.element.closest("tr.wpt").find("th.wpt").header ("serialize");
+          this.element.closest('tr.wpt').find('th.wpt').header ("serialize");
         data.move = move;
       }
 

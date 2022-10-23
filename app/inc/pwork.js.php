@@ -50,6 +50,8 @@
           cb_remove: () => this.decCount(),
         },
         cb: ($p) => {
+          const p = $p[0];
+
           $p.usearch('reset', {
             full: true,
             readonly: Boolean(this.settings.readonly),
@@ -61,10 +63,10 @@
             cb_after: (c) => this.setCount(c),
           });
 
-          H.openModal({item: $p[0]});
+          H.openModal({item: p});
 
           // EVENT "hide.bs.modal" on workers popup
-          $p[0].addEventListener('hide.bs.modal', (e) => {
+          p.addEventListener('hide.bs.modal', (e) => {
             if (S.get('still-closing')) return;
 
             // LOCAL FUNCTION __close ()
@@ -86,7 +88,7 @@
                 cb_ok: () => pwork.notifyNewUsers(newUsers),
                 cb_close: () => {
                   S.set('still-closing', true, 500);
-                  $p.modal('hide');
+                  bootstrap.Modal.getInstance(p).hide();
                   __close();
                 },
               });

@@ -171,7 +171,7 @@
     close() {
       if ($_popup) {
         if (!H.haveMouse()) {
-          $_popup.modal('hide');
+          bootstrap.Modal.getInstance($_popup[0]).hide();
         } else {
           document.getElementById('popup-layer').click();
         }

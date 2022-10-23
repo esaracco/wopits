@@ -386,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el.matches('.modal .modal-footer .btn,.modal .modal-footer .btn *')) {
       const btn = (el.tagName === 'BUTTON') ? el : el.closest('button');
       const popup = btn.closest('.modal');
-      const $popup = $(popup);
       const closePopup = !Boolean(popup.dataset.noclosure);
       const $postit = S.getCurrent('postit');
 
@@ -397,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btn.classList.contains('btn-primary')) {
         switch (popup.id) {
           case 'dpickPopup':
-            $popup.dpick('save');
+            $(popup).dpick('save');
             break;
           case 'postitUpdatePopup':
             $postit.postit('save', {
@@ -451,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const $wall = await $('<div/>').wall('create', data);
                 if ($wall) {
                   $wall.wall('postProcessLastWall');
-                  $popup.modal('hide');
+                  bootstrap.Modal.getInstance(popup).hide();
                 }
               })();
             }

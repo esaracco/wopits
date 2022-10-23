@@ -120,12 +120,12 @@
       {
         case "copy":
           title =  `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-          content = `<?=_("Do you want to copy the selected notes in this cell?")?>`;
+          content = `<?=_("Do you want to copy the selected notes in this cell (comments and workers will be reset)?")?>`;
           break;
 
         case "move":
           title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-          content = `<?=_("Do you want to move the selected notes in this cell?")?>`;
+          content = `<?=_("Do you want to move the selected notes in this cell (comments and workers will be reset)?")?>`;
           break;
 
         case "delete":

@@ -18,7 +18,7 @@
 
   Plugin.prototype = {
     // METHOD init()
-    init () {
+    init() {
       const $popup = this.element;
       const $picker = $popup.find('.dpick');
       const $alert = $popup.find('.dpick-notify');

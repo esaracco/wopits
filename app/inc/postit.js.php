@@ -20,6 +20,7 @@
 
   let _originalObject;
   const _defaultClassColor = `color-<?=WPT_POSTIT_COLOR_DEFAULT?>`;
+  // TODO Class
   const _plugRabbit = {
     line: null,
     // EVENT mousedown on destination postit for relation creation
@@ -33,21 +34,18 @@
 
       const from = S.get('link-from');
       const $start = from.obj;
-      const end = $end[0];
       const endPlugin = $end.postit('getClass');
       const endId = endPlugin.settings.id;
 
       if (from.id !== endId && !endPlugin.plugExists(from.id)) {
         endPlugin.edit({plugend: true}, () => {
-          const start = $start[0];
-
           $start.postit('addPlug', {
             endId,
             startId: from.id,
             label: {name: '...'},
             obj: endPlugin.getPlugTemplate({
-              start,
-              end,
+              start: $start[0],
+              end: $end[0],
               hide: true,
               label: '...',
             }),
@@ -87,7 +85,7 @@
 
   // METHOD testImage()
   const _testImage = (url, timeout = 10000) => {
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       let timer;
 
@@ -118,13 +116,13 @@
       e.target.closest('.tox-dialog,.tox-tiered-menu') &&
         e.stopImmediatePropagation();
 
-  // METHOD _getMaxEditModalWidth ()
+  // METHOD _getMaxEditModalWidth()
   const _getMaxEditModalWidth = (content) => {
     let maxW = 0;
     let tmp;
 
     (content.match(/<[a-z]+\s[^>]+>/g) || []).forEach((tag) => {
-      if ( (tmp = tag.match (/width\s*[=:]\s*"?(\d+)"?/)) ) {
+      if ( (tmp = tag.match(/width\s*[=:]\s*"?(\d+)"?/)) ) {
         const w = Number(tmp[1]);
 
         if (w > maxW) {
@@ -136,9 +134,9 @@
     return maxW ? maxW + 5 : 0;
   };
 
-  // METHOD _deleteRelatedPlugs ()
+  // METHOD _deleteRelatedPlugs()
   const _deleteRelatedPlugs = (plug) => {
-    plug.related.forEach ((r) => r.remove());
+    plug.related.forEach((r) => r.remove());
     plug.related = [];
     plug.customPos = false;
   };
@@ -175,17 +173,17 @@
     }
 
     // Unedit postit
-    S.get('link-from').obj.postit ('unedit');
+    S.get('link-from').obj.postit('unedit');
 
     // Prevents post-it editing events from being triggered during 500ms
     // Sort of preventDefault() cross-type events
-    S.set ('link-from', true, 500);
+    S.set('link-from', true, 500);
   };
 
   // METHOD _displayOpenLinkMenu()
   const _displayOpenLinkMenu = (e, args) => {
     const el = e.target;
-    const link = (el.tagName === 'A') ? el : el.closest ('a');
+    const link = (el.tagName === 'A') ? el : el.closest('a');
     const canWrite = H.checkAccess(<?=WPT_WRIGHTS_RW?>);
     const menu = H.createElement('div',
       {className: 'dropdown submenu submenu-link'}, null,
@@ -216,7 +214,7 @@
   };
 
   // CLASS _Menu
-  const _$menuTemplate = $(`<?=Wopits\Helper::buildPostitMenu ()?>`);
+  const _$menuTemplate = $(`<?=Wopits\Helper::buildPostitMenu()?>`);
   class _Menu {
     // METHOD constructor()
     constructor(postitPlugin) {
@@ -348,13 +346,12 @@
           `${settings.tags ? S.getCurrent('tpick').tpick("getHTMLFromString", settings.tags) : ''}`)
       );
 
-      if (writeAccess)
-      {
+      if (writeAccess) {
         const postitEdit = postit.querySelector('.postit-edit');
 
         $postit  
           // DRAGGABLE postit
-          .draggable ({
+          .draggable({
             distance: 10,
             appendTo: 'parent',
             revert: 'invalid',
@@ -372,7 +369,7 @@
               }
   
               // Refresh relations position
-              // plugin.repositionPlugs ();
+              // plugin.repositionPlugs();
             },
             start: function(e, ui) {
               S.set('revertData', {
@@ -388,7 +385,7 @@
                 plugin.hidePlugs();
               }
   
-              plugin.edit ({ignoreResize: true}, null,
+              plugin.edit({ignoreResize: true}, null,
                 () => S.get('revertData').revert = true);
               },
             stop: function(e, ui) {
@@ -430,7 +427,7 @@
   
               plugin.hidePlugs();
   
-              plugin.edit ({ignoreResize: true}, null,
+              plugin.edit({ignoreResize: true}, null,
                 () => S.get('revertData').revert = true);
             },
             stop: function(e, ui) {
@@ -450,7 +447,7 @@
                 plugin.repositionPlugs();
               }
               else {
-                H.waitForDOMUpdate (() => {
+                H.waitForDOMUpdate(() => {
                   ui.element.parent().cell('reorganize');
                   plugin.unedit();
                 });
@@ -536,7 +533,7 @@
 
       if (S.get('revertData').revert) {
         plugin.setPosition(S.get('revertData'));
-        plugin.cancelEdit ();
+        plugin.cancelEdit();
       } else {
         const content = postitEdit.innerHTML;
 
@@ -580,7 +577,7 @@
       // Open modal with read rights only
       if (!this.canWrite()) {
         if (!this.openAskForExternalRefPopup({item})) {
-          this.open ();
+          this.open();
         }
       } else {
         this.edit({}, () => {
@@ -700,7 +697,7 @@
               content = `<?=_("This note has expired")?>`;
             } else {
               const a = moment.unix(data.deadlineepoch);
-              const b = moment (new Date());
+              const b = moment(new Date());
               let days = moment.duration(a.diff(b)).asDays();
 
               if (days % 1 > 0) {
@@ -755,7 +752,7 @@
 
       S.getCurrent('mmenu').mmenu('remove', this.settings.id);
 
-      this.getPlugin('pcomm').close ();
+      this.getPlugin('pcomm').close();
     },
 
     // METHOD havePlugs()
@@ -846,7 +843,7 @@
 
     // METHOD applyThemeToPlugs()
     applyThemeToPlugs(color) {
-      // LOCAL FUNCTION __apply ()
+      // LOCAL FUNCTION __apply()
       const __apply = (r) => r.setOptions({
               color,
               dropShadow: this.getPlugDropShadowTemplate(color),
@@ -916,7 +913,7 @@
       const defaultLineColor = S.getCurrent('plugColor');
 
       for (const plug of this.settings.plugs) {
-        //FIXME
+        //FIXME == ===
         if ((ll.endId && plug.endId == ll.endId) ||
             (!ll.endId && plug.startId == this.settings.id)) {
           const customCol = (ll.color && ll.color !== defaultLineColor);
@@ -963,7 +960,7 @@
       }
     },
 
-    // METHOD updatePlugLabel ()
+    // METHOD updatePlugLabel()
     updatePlugLabel(args) {
       const label = H.noHTML(args.label);
       const wPos = this.settings.wall[0].getBoundingClientRect();
@@ -978,8 +975,8 @@
       });
 
       pl.querySelector('div span').innerHTML =
-          (label === '' || label === '...') ?
-            `<i class="fas fa-ellipsis-h"></i>` : label;
+        (label === '' || label === '...') ?
+          `<i class="fas fa-ellipsis-h"></i>` : label;
 
       if (args.top !== undefined) {
         if (args.top) {
@@ -1037,7 +1034,7 @@
     },
 
     // METHOD addPlugLabel()
-    addPlugLabel (plug, svg, applyZoom) {
+    addPlugLabel(plug, svg, applyZoom) {
       const plugin = this;
       const wPos = this.settings.wall[0].getBoundingClientRect();
       const canWrite = this.canWrite();
@@ -1055,7 +1052,7 @@
       const label = H.createElement('div',
         {className: 'plug-label dropdown submenu', style: `top:${pos.top}px;left:${pos.left}px`},
         plug.label.top ? {pos: 1} : null,
-        `${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite?'data-bs-toggle="dropdown"':""} class="dropdown-toggle"><span>${plug.label.name != "..." ? H.noHTML (plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite?menu:""}`);
+        `${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite ? 'data-bs-toggle="dropdown"' : ''} class="dropdown-toggle"><span>${plug.label.name !== '...' ? H.noHTML(plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite ? menu : ''}`);
 
       plug.labelObj = $(document.body.appendChild(label));
 
@@ -1085,12 +1082,12 @@
       }
 
       if (canWrite)
-        plug.labelObj.draggable ({
+        plug.labelObj.draggable({
           distance: 10,
           containment: S.getCurrent('wall').find('tbody.wpt'),
           scroll: false,
           start: function(e, ui) {
-            S.set ('revertData', {
+            S.set('revertData', {
               revert: false,
               top: plug.labelObj[0].offsetTop,
               left: plug.labelObj[0].offsetLeft
@@ -1113,7 +1110,7 @@
               $(this).draggable('cancel');
               return false;
             }
-            // plug.related.forEach(r => r.position ());
+            // plug.related.forEach(r => r.position());
           },
           stop: function(e, ui) {
             S.set('dragging', true, 500);
@@ -1254,6 +1251,7 @@
 
       const postitId = this.settings.id;
 
+      /// FIXME == ===
       this.settings.plugs.forEach((p) => {
         if (!ignoreDisplayMode) {
           if (p.startId == postitId) {
@@ -1279,6 +1277,7 @@
       const postitId = this.settings.id;
       const wPos = this.settings.wall[0].getBoundingClientRect();
 
+      // FIXME == ===
       this.settings.plugs.forEach((p) => {
         if (!ignoreDisplayMode) {
           if (p.startId == postitId) {
@@ -1298,7 +1297,7 @@
             this.repositionPlugLabel(
                 pl, pl.dataset.origtop, pl.dataset.origleft, wPos);
 
-            p.related.forEach ((r) => r.show('none').position());
+            p.related.forEach((r) => r.show('none').position());
           }
         }
       });
@@ -1317,7 +1316,7 @@
 
           p.related.forEach((r) => r.position());
         } else {
-          p.obj.position ();
+          p.obj.position();
 
           const pos = document.querySelector(`#_${p.startId}-${p.endId} text`)
                           .getBoundingClientRect();
@@ -1341,6 +1340,7 @@
       const hs = this.getWallHeadersShift();
       let ret = {};
 
+      // FIXME == ===
       settings.plugs.forEach((p) => {
         // Take in account only plugs from this postit
         if (p.startId == settings.id) {
@@ -1507,12 +1507,12 @@
         });
       }
       else if (!isRelated) {
-        __addMain ();
+        __addMain();
       }
     },
 
     // METHOD setDeadline()
-    setDeadline (args) {
+    setDeadline(args) {
       const postit = this.element[0];
       const date = postit.querySelector('.dates .end');
       const {deadline, alertshift, timezone} = args;
@@ -1569,7 +1569,7 @@
     },
 
     // METHOD setProgress()
-    setProgress (v) {
+    setProgress(v) {
       const postit = this.element[0];
       const container = postit.querySelector('.postit-progress-container');
 
@@ -1623,7 +1623,7 @@
     removeExternalRefIcon(c) {
       c.querySelectorAll('i.externalref').forEach((el) => {
         el.parentNode.removeAttribute('title');
-        el.remove ();
+        el.remove();
       });
     },
 
@@ -1644,7 +1644,7 @@
             newContent = this.blockExternalRef(newContent, externalRef);
           }
         } else {
-          postit.removeAttribute ("data-haveexternalref");
+          postit.removeAttribute('data-haveexternalref');
         }
 
         edit.innerHTML = newContent;
@@ -1696,7 +1696,7 @@
 
       if (externalRef) {
         externalRef.forEach((src) =>
-          c = c.replace (new RegExp ('[^\-]'+H.escapeRegex(src), 'g'),
+          c = c.replace(new RegExp('[^\-]'+H.escapeRegex(src), 'g'),
                 ` external-${src} `));
 
         if (content === undefined) {
@@ -1789,7 +1789,7 @@
     },
 
     // METHOD setClassColor()
-    setClassColor (newClass, item) {
+    setClassColor(newClass, item) {
       if (item !== undefined && item === null) return;
 
       const el = item ? item : this.element[0];
@@ -1803,9 +1803,9 @@
       const popup = $popup[0];
       const cls = this.element[0].className.match(/color\-[a-z]+/)[0];
 
-      this.setClassColor (cls, popup.querySelector('.modal-header'));
-      this.setClassColor (cls, popup.querySelector('.modal-title'));
-      this.setClassColor (cls, popup.querySelector('.modal-footer'));
+      this.setClassColor(cls, popup.querySelector('.modal-header'));
+      this.setClassColor(cls, popup.querySelector('.modal-title'));
+      this.setClassColor(cls, popup.querySelector('.modal-footer'));
     },
 
     // METHOD setCurrent()
@@ -2063,16 +2063,16 @@
       }
 
       if (!this.settings.id) {
-        setTimeout(() => H.raiseError (null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
+        setTimeout(() => H.raiseError(null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
       }
     },
 
     // METHOD closeMenu()
-    closeMenu () {
+    closeMenu() {
       const postit = this.element[0];
 
       if (postit.querySelector('.postit-menu')) {
-        postit.querySelector('.btn-menu').click ();
+        postit.querySelector('.btn-menu').click();
       }
     }
   };
@@ -2080,9 +2080,10 @@
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
   document.addEventListener('DOMContentLoaded', () => {
-    if (H.isLoginPage ()) return;
+    if (H.isLoginPage()) return;
 
     const walls = document.querySelector('.tab-content.walls');
+    const wallsId = document.getElementById('walls');
 
     // FIXME polyfill for TinyMCE (old Safari iOS)
     Promise.allSettled = Promise.allSettled || ((promises) => Promise.all(
@@ -2092,92 +2093,84 @@
     ));
 
     // Init text editor
-    let locale = $("html")[0].dataset.fulllocale;
-    tinymce.init ({
-      selector: "#postitUpdatePopupBody",
+    let locale = document.querySelector('html').dataset.fulllocale;
+    tinymce.init({
+      selector: '#postitUpdatePopupBody',
       promotion: false,
-      content_style: "p {margin: 0}",
-      language: (locale != "en_US")?locale:null,
-      language_url: (locale != "en_US")?`/libs/tinymce-${locale}.js`:null,
+      content_style: 'p {margin: 0}',
+      language: (locale !== 'en_US') ? locale : null,
+      language_url: (locale !== 'en_US') ? `/libs/tinymce-${locale}.js` : null,
       branding: false,
       plugins: [
-        "autoresize",
-        "link",
-        "image",
-        "media",
-        "charmap",
-        "searchreplace",
-        "visualchars",
-        "fullscreen",
-        "insertdatetime",
-        "lists",
-        "table",
+        'autoresize',
+        'link',
+        'image',
+        'media',
+        'charmap',
+        'searchreplace',
+        'visualchars',
+        'fullscreen',
+        'insertdatetime',
+        'lists',
+        'table',
       ],
-      setup: function (editor)
-      {
+      setup: function(editor) {
         // "change" event can be triggered twice, we use this var to
         // avoir that
         let _current = false;
 
         // Trick to catch 404 not found error on just added images
         // -> Is there a TinyMCE callback for that?
-        editor.on("change", function (e)
-          {
-            if (_current)
-              return;
+        editor.on('change', function(e) {
+          if (_current) return;
 
-            _current = true;
+          _current = true;
 
-            let c = editor.getContent ();
+          let c = editor.getContent();
 
-            // Remove unwanted images attributes
-            if (c.match (/\s(srcset|alt)\s*=/i))
-            {
-              //FIXME
-              c = c.replace (/\s(srcset|alt)\s*=/ig, "none=");
-              editor.setContent (c);
-            }
+          // Remove unwanted images attributes
+          if (c.match(/\s(srcset|alt)\s*=/i)) {
+            //FIXME
+            c = c.replace(/\s(srcset|alt)\s*=/ig, 'none=');
+            editor.setContent(c);
+          }
 
-            // Check for img only if the TinyMCE dialog is open
-            if ($(".tox-dialog").is(":visible"))
-            {
-              (c.match(/<img\s[^>]+>/g)||[]).forEach (img =>
-                {
-                  var tmp = img.match (/src="([^\"]+)"/);
-                  if (tmp)
-                  {
-                    const src = tmp[1];
+          // Check for img only if the TinyMCE dialog is open
+          if ($('.tox-dialog').is(':visible')) {
+            (c.match(/<img\s[^>]+>/g)||[]).forEach((img) => {
+              const tmp = img.match(/src="([^\"]+)"/);
+              if (tmp) {
+                const src = tmp[1];
 
-                    H.loader ("show");
-                    _testImage(src)
-                      .then (
-                      // Needed for some Safari on iOS that do not support
-                      // Promise finally() callback.
-                      ()=> H.loader("hide"),
-                      ()=>
-                      {
-                        H.loader("hide");
+                H.loader('show');
+                _testImage(src)
+                  .then(
+                    // Needed for some Safari on iOS that do not support
+                    // Promise finally() callback.
+                    () => H.loader('hide'),
+                    () => {
+                      H.loader('hide');
+                      editor.setContent(
+                        c.replace(new RegExp(H.quoteRegex(img)), ''));
 
-                        editor.setContent (
-                          c.replace(new RegExp (H.quoteRegex(img)), ""));
+                      // Return to the top of the modal if mobile device
+                      if (!H.haveMouse()) {
+                        $('#postitUpdatePopup').scrollTop(0);
+                      }
 
-                        // Return to the top of the modal if mobile device
-                        if (!H.haveMouse ())
-                          $("#postitUpdatePopup").scrollTop (0);
-
-                        H.displayMsg ({
-                          title: `<?=_("Note")?>`,
-                          type: "warning",
-                          msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
-                        });
-                      })
-                      .finally (()=> _current = false);
-                  }
-                });
-            }
-            else
-              _current = false;
-          });
+                      H.displayMsg({
+                        title: `<?=_("Note")?>`,
+                        type: 'warning',
+                        msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                      });
+                    })
+                    .finally(()=> _current = false);
+                }
+              });
+          } else {
+            _current = false;
+          }
+        });
       },
 
       // "media" plugin options.
@@ -2187,106 +2180,106 @@
       // "image" plugin options
       image_description: false,
       automatic_uploads: true,
-      file_picker_types: "image",
-      file_picker_callback: function (callback, value, meta)
-      {
-        S.set ("tinymce-callback", callback);
-        document.getElementById("postit-picture").click ();
+      file_picker_types: 'image',
+      file_picker_callback: function(callback, value, meta) {
+        S.set('tinymce-callback', callback);
+        document.getElementById('postit-picture').click();
       },
 
       // "link" plugin options
-      default_link_target: "_blank",
+      default_link_target: '_blank',
       link_assume_external_targets: true,
-      link_default_protocol: "https",
+      link_default_protocol: 'https',
       link_title: false,
       target_list: false,
 
       visual: false,
-      mobile: {menubar: "edit view format insert"},
-      menubar: "edit view format insert",
-      menu:{view:{title:`<?=_("View")?>`, items:"fullscreen"}},
-      toolbar: "undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image | table",
-      statusbar: false
+      mobile: {menubar: 'edit view format insert'},
+      menubar: 'edit view format insert',
+      menu: {view: {title: `<?=_("View")?>`, items: 'fullscreen'}},
+      toolbar: 'undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright alignjustify | link image | table',
+      statusbar: false,
     });
 
-    // EVENTS mouseenter touchstart on postit
-    // Sort of ":hover" simulation with z-index persistence
-    $(document).on("mouseenter touchstart", ".postit", function ()
-      {
-        const el = S.getCurrent("wall")[0].querySelector (".postit.hover");
+    // EVENTS "mouseover" &  "touchstart" on postit
+    // Sort of CSS ":hover", but with z-index persistence
+    const __eventMOTS = (e) => {
+      const el = e.target;
 
-        if (el)
-          el.classList.remove ("hover");
+      if (!el.matches('.postit *') ||
+          el.closest('.postit').classList.contains('hover')) {
+        return;
+      }
 
-        this.classList.add ("hover");
-      });
+      const current = S.getCurrent('wall')[0].querySelector('.postit.hover');
+  
+      if (current) {
+        current.classList.remove('hover');
+      }   
+  
+      el.closest('.postit').classList.add('hover');
+    };
+    wallsId.addEventListener('mouseover', __eventMOTS);
+    wallsId.addEventListener('touchstart', __eventMOTS);
 
     // EVENT "click" on postit
-    document.addEventListener ("click", (e)=>
-    {
+    wallsId.addEventListener('click', (e) => {
       const el = e.target;
       
       if (el.matches('.postit *')) {
-        const postit = el.closest (".postit");
+        const postit = el.closest('.postit');
+        const $postit = $(postit);
+        const plugin = $postit.postit('getClass');
   
         // EVENT "click" ctrl+click on postit
-        if (e.ctrlKey)
-        {
-          const id = postit.dataset.id.substring (7),
-                menu = S.getCurrent("mmenu").mmenu ("getClass");
+        if (e.ctrlKey) {
+          const menu = S.getCurrent('mmenu').mmenu('getClass');
   
-          e.stopImmediatePropagation ();
-          H.preventDefault (e);
+          e.stopImmediatePropagation();
+          H.preventDefault(e);
+
   
-          if (postit.classList.contains ("selected"))
-            menu.remove (id);
-          else
-            menu.add ($(postit).postit ("getClass"));
-        }
+          if (postit.classList.contains('selected')) {
+            menu.remove(plugin.settings.id);
+          } else {
+            menu.add(plugin);
+          }
+
         // EVENT "click" on postit content links
-        else if (el.matches('.postit-edit a[href],.postit-edit a[href] *')) {
+        } else if (el.matches('.postit-edit a[href],.postit-edit a[href] *')) {
           e.stopImmediatePropagation();
           if (e.ctrlKey || H.disabledEvent()) return;
           _displayOpenLinkMenu(e);
-         }
+
         // EVENT "click" on postit for READ-ONLY mode
-        else if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
-        {
-          if (H.disabledEvent ())
-          {
-            H.preventDefault (e);
+        } else if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
+          if (H.disabledEvent()) {
+            H.preventDefault(e);
             return;
           }
   
-          if (!el.closest(".topicon"))
-            $(postit).postit ("openPostit");
-        }
+          if (!el.closest('.topicon')) {
+            plugin.openPostit();
+          }
+
         // EVENT "click" on postit menu button
-        else if (el.matches (".btn-menu,.btn-menu *"))
-        {
+        } else if (el.matches('.btn-menu,.btn-menu *')) {
           e.stopImmediatePropagation();
   
           if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) return;
   
-          const btn = (el.tagName == "DIV")?el:el.closest("div"),
-                ibtn = btn.querySelector ("i"),
-                $postit = $(postit),
-                id = $postit.postit ("getId"),
-                settings = $postit.postit ("getSettings"),
-                $wall = settings.wall,
-                $header = $postit.find (".postit-header");
-  
+          const btn = (el.tagName === 'DIV') ? el : el.closest('div');
+          const ibtn = btn.querySelector('i');
+          const settings = plugin.settings;
+
           // Create postit menu and show it
-          if (!settings.Menu)
-          {
-            $wall.wall ("closeAllMenus");
-            settings.Menu = new _Menu ($postit.postit ("getClass"));
+          if (!settings.Menu) {
+            settings.wall.wall('closeAllMenus');
+            settings.Menu = new _Menu(plugin);
             settings.Menu.show ();
-          }
           // Destroy postit menu
-          else
-          {
-            settings.Menu.destroy ();
+          } else {
+            settings.Menu.destroy();
             delete settings.Menu;
           }
         // EVENT "click" on postit menu buttons
@@ -2295,7 +2288,6 @@
 
           if (el.tagName === 'DIV') return;
 
-          const postitPlugin = $(postit).postit('getClass');
           const action =
               (el.tagName === 'SPAN' ? el : el.closest('span')).dataset.action;
   
@@ -2304,9 +2296,9 @@
   
           switch (action) {
             // OPEN postit edit popup
-            case 'edit': return postitPlugin.openPostit();
+            case 'edit': return plugin.openPostit();
             // OPEN deadline date picker popup
-            case 'dpick': return postitPlugin.openDatePicker();
+            case 'dpick': return plugin.openDatePicker();
             // OPEN popup for attachments, workers or comments
             case 'patt':
             case 'pwork':
@@ -2315,7 +2307,7 @@
                   `.topicon .${action}`))[action]('open');
           }
   
-          postitPlugin.edit({}, () => {
+          plugin.edit({}, () => {
             switch (action) {
               // DELETE postit
               case 'delete':
@@ -2324,8 +2316,8 @@
                   placement: 'right',
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: `<?=_("Delete this note?")?>`,
-                  cb_close: () => postitPlugin.unedit(),
-                  cb_ok: () => postitPlugin.delete(),
+                  cb_close: () => plugin.unedit(),
+                  cb_ok: () => plugin.delete(),
                 });
                 break;
               // OPEN tags picker
@@ -2337,9 +2329,9 @@
   
                 cp.open({
                   event: e,
-                  cb_close: () => postitPlugin.element.trigger('mouseleave'),
+                  cb_close: () => plugin.element.trigger('mouseleave'),
                   cb_click: (div) => {
-                    const el = postitPlugin.element[0];
+                    const el = plugin.element[0];
                     cp.getColorsList().forEach((c) => el.classList.remove(c));
                     el.classList.add(div.className);
                   },
@@ -2347,16 +2339,26 @@
                 break;
               // ADD plug
               case 'add-plug':
-                postitPlugin.closeMenu();
+                plugin.closeMenu();
   
                 S.set('link-from', {
-                  id: postitPlugin.settings.id,
-                  obj: $(postit),
+                  id: plugin.settings.id,
+                  obj: $postit,
                 });
+
+                const rabbit = H.createElement('div',
+                  {
+                    id: 'plug-rabbit',
+                    style: `top:${e.clientY - 10}px;left:${e.clientX + 5}px`,
+                  },
+                  null,
+                  `<i class="fas fa-anchor fa-lg set"></i>`);
+
+                document.body.prepend(rabbit);
   
                 _plugRabbit.line = new LeaderLine(
                   postit,
-                  $(`<div id="plug-rabbit" style="left:${e.clientX+5}px;top:${e.clientY-10}px"> <i class="fas fa-anchor fa-lg set"></i></div>`).prependTo('body')[0],
+                  rabbit,
                   {
                     path: `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
                     size: 3,
@@ -2368,9 +2370,9 @@
   
                 document.addEventListener('keydown',
                     _plugRabbit.escapeEvent);
-                document.addEventListener ('mousedown',
+                document.addEventListener('mousedown',
                     _plugRabbit.mousedownEvent);
-                document.addEventListener ('mousemove',
+                document.addEventListener('mousemove',
                     _plugRabbit.mousemoveEvent);
                 break;
             }
@@ -2385,13 +2387,10 @@
             return;
           }
   
-          const $item = $(el.tagName === 'DIV' ? el : el.closest('div'));
-          const plugin = $(postit).postit('getClass');
-  
           if (el.classList.contains('fa-times-circle')) {
             plugin.edit({}, () => {
               H.openConfirmPopover({
-                item: $item,
+                item: $(el.tagName === 'DIV' ? el : el.closest('div')),
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
                 content: `<?=_("Reset deadline?")?>`,
                 cb_close: () => plugin.unedit(),
@@ -2411,117 +2410,100 @@
     });
 
   // EVENT "click"
-  document.body.addEventListener ("click", (e)=>
-    {
+  document.body.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on plugs menu
-      if (el.matches (".plug-label li,.plug-label li *"))
-      {
-        const item = el.tagName=="li"?el:el.closest("li");
-        const label = item.closest ("div");
-        const $wall = S.getCurrent ("wall");
+      if (el.matches('.plug-label li,.plug-label li *')) {
+        const item = (el.tagName === 'li') ? el : el.closest('li');
+        const label = item.closest('div');
+        const $wall = S.getCurrent('wall');
         const ids = label.previousSibling.id.match(/^_(\d+)\-(\d+)$/);
         const startId = parseInt(ids[1]);
         const endId = parseInt(ids[2]);
-        const startPlugin = $wall.find(`.postit[data-id="postit-${startId}"]`)
-            .postit("getClass");
+        const startPlugin = $wall.find(
+          `.postit[data-id="postit-${startId}"]`).postit('getClass');
         const defaultLabel =
-            H.htmlEscape(label.querySelector("span").innerText);
+          H.htmlEscape(label.querySelector('span').innerText);
 
-        // LOCAL FUNCTION __unedit ()
-        const __unedit = ()=>
-          {
-            const toSave = {};
+        // LOCAL FUNCTION __unedit()
+        const __unedit = () => {
+          const toSave = {};
 
-            toSave[startId] = startPlugin.element;
-            toSave[endId] =
-              $wall.find (`.postit[data-id="postit-${endId}"]`);
+          toSave[startId] = startPlugin.element;
+          toSave[endId] = $wall.find(`.postit[data-id="postit-${endId}"]`);
 
-            S.set ("plugs-to-save", toSave);
-            startPlugin.unedit ();
-          };
+          S.set('plugs-to-save', toSave);
+          startPlugin.unedit();
+        };
 
-        switch (item.dataset.action)
-        {
-          case "rename":
-            startPlugin.edit ({}, () => {
-              H.openConfirmPopover ({
+        switch (item.dataset.action) {
+          case 'rename':
+            startPlugin.edit({}, () => {
+              H.openConfirmPopover({
                 type: 'update',
                 item: $(label),
                 title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
                 content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
                 cb_close: __unedit,
                 cb_ok: ($p) => {
-                  const label = $p.find('input').val().trim();
+                  const label = $p[0].querySelector('input').value.trim();
 
                   if (label !== defaultLabel) {
-                    startPlugin.updatePlugLabel ({label, endId});
+                    startPlugin.updatePlugLabel({label, endId});
                   }
-                }
+                },
               });
             });
             break;
-
-          case "delete":
-
-            startPlugin.edit ({}, ()=>
-              {
-                H.openConfirmPopover ({
-                  item: $(label),
-                  placement: "left",
-                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
-                  content: `<?=_("Delete this relation?")?>`,
-                  cb_close: __unedit,
-                  cb_ok: () => startPlugin.removePlug (endId)
-                });
+          case 'delete':
+            startPlugin.edit({}, () => {
+              H.openConfirmPopover ({
+                item: $(label),
+                placement: 'left',
+                title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
+                content: `<?=_("Delete this relation?")?>`,
+                cb_close: __unedit,
+                cb_ok: () => startPlugin.removePlug(endId),
               });
-
+            });
             break;
+          case 'position-auto':
+            startPlugin.edit({}, () => {
+                const p = startPlugin.getPlugById(endId);
 
-          case "position-auto":
+                _deleteRelatedPlugs(p);
+                p.obj.show();
 
-            startPlugin.edit ({}, ()=>
-              {
-                const p = startPlugin.getPlugById (endId);
-
-                _deleteRelatedPlugs (p);
-                p.obj.show ();
-
-                startPlugin.resetPlugLabelPosition (label);
-                startPlugin.repositionPlugs ();
+                startPlugin.resetPlugLabelPosition(label);
+                startPlugin.repositionPlugs();
                 __unedit ();
               });
             break;
-
-          case "properties":
-
-            startPlugin.openPlugProperties (startPlugin.getPlugById(endId));
+          case 'properties':
+            startPlugin.openPlugProperties(startPlugin.getPlugById(endId));
             break;
         }
       }
     });
 
     // EVENT "mousedown"
-    walls.addEventListener ("mousedown", (e)=>
-      {
-        const el = e.target;
+    walls.addEventListener('mousedown', (e) => {
+      const el = e.target;
 
-        // EVENT "mousedown" on postit tags
-        if (el.matches (".postit-tags,.postit-tags *"))
-        {
-          e.stopImmediatePropagation ();
+      // EVENT "mousedown" on postit tags
+      if (el.matches('.postit-tags,.postit-tags *')) {
+        e.stopImmediatePropagation();
 
-          if (H.disabledEvent (!H.checkAccess (<?=WPT_WRIGHTS_RW?>)))
-          {
-            H.preventDefault (e);
-            return;
-          }
-
-          $(el.closest(".postit")).postit ("edit", {},
-            () => S.getCurrent("tpick").tpick ("open", e));
+        if (H.disabledEvent(!H.checkAccess(<?=WPT_WRIGHTS_RW?>))) {
+          H.preventDefault (e);
+          return;
         }
-      });
+
+        $(el.closest(".postit")).postit('edit', {},
+          () => S.getCurrent('tpick').tpick('open', e));
+      }
+    });
 
     // Create input to upload postit images
     H.createUploadElement({
@@ -2565,7 +2547,8 @@
               if (r.error) {
                 __error_cb(r);
               } else {
-                const $f = $('.tox-dialog');
+                const inputs = document.querySelector('.tox-dialog')
+                  .querySelectorAll('input');
 
                 $postit[0].dataset.hasuploadedpictures = true;
 
@@ -2574,13 +2557,13 @@
                 // take too much time to gather informations
                 // about it. If user close popup before that,
                 // img is inserted without width/height
-                $f.find('input:eq(1)').val(r.width);
-                $f.find('input:eq(2)').val(r.height);
+                inputs[1].value = r.width;
+                inputs[2].value = r.height;
 
                 S.get('tinymce-callback')(r.link);
 
                 setTimeout(() => {
-                  if (!$f.find("input:eq(0)").val ()) {
+                  if (!inputs[0].value) {
                     __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
                   }
                 }, 0);
@@ -2593,69 +2576,69 @@
       },
     });
 
-    // EVENT hide.bs.modal on postit popup
-    document.getElementById("postitUpdatePopup")
-      .addEventListener("hide.bs.modal", (e)=>
-      {
-        const el = e.target,
-              data = S.get ("postit-data");
+    // EVENT "hide.bs.modal" on postit popup
+    document.getElementById('postitUpdatePopup')
+        .addEventListener('hide.bs.modal', (e) => {
+      const el = e.target;
+      const data = S.get('postit-data');
 
-        // Return if we are closing the postit modal from the confirmation
-        // popup
-        if (data && data.closing) return;
+      // Return if we are closing the postit modal from the confirmation
+      // popup
+      if (data && data.closing) return;
 
-        const $popup = $(el),
-              plugin = S.getCurrent("postit").postit ("getClass"),
-              progress = $popup.find(".slider").slider ("value"),
-              title = $("#postitUpdatePopupTitle").val (),
-              content = tinymce.activeEditor.getContent ();
+      const popup = el;
+      const plugin = S.getCurrent('postit').postit('getClass');
+      const progress = Number($(popup).find('.slider').slider('value'));
+      const title = document.getElementById('postitUpdatePopupTitle').value;
+      const content = tinymce.activeEditor.getContent();
 
-        // LOCAL FUNCTION cb_close ()
-        const __close = (forceHide = false) =>
-          {
-            S.set ("postit-data", {closing: true});
+      // LOCAL FUNCTION cb_close()
+      const __close = (forceHide = false) => {
+        S.set('postit-data', {closing: true});
 
-            //FIXME
-            $(".tox-toolbar__overflow").hide ();
-            $(".tox-menu").hide ();
+        //FIXME
+        document.querySelectorAll('.tox-toolbar__overflow').forEach((el) =>
+          el.style.display = 'none');
+        //$('.tox-menu').hide();
 
-            $popup.find("input").val ("");
-            plugin.unedit ();
+        popup.querySelectorAll('input').forEach((el) => el.value = '');
+        plugin.unedit();
 
-            if (forceHide)
-              $popup.modal ("hide");
+        if (forceHide) {
+          bootstrap.Modal.getInstance(popup).hide();
+        }
 
-            S.unset ("postit-data");
+        S.unset('postit-data');
 
-            tinymce.activeEditor.resetContent ();
+        tinymce.activeEditor.resetContent();
 
-            // Stop focusin event filtering
-            document.removeEventListener ("focusin", _focusinInFilter);
-          };
+        // Stop focusin event filtering
+        document.removeEventListener('focusin', _focusinInFilter);
+      };
 
-          // If there is pending changes, ask confirmation to user
-          if (data && (
-            // Content change detection
-            tinymce.activeEditor.isDirty () ||
-            // Title change detection
-            H.htmlEscape(data.title) != H.htmlEscape(title) ||
-            // Progress change detection
-            data.progress != progress))
-          {
-            H.preventDefault (e);
-            H.openConfirmPopup ({
-              type: "save-postits-changes",
-              icon: "save",
-              content: `<?=_("Save changes?")?>`,
-              cb_ok: () => el.querySelector('.btn-primary').click(),
-              cb_close: () => __close(true)
-            });
+      // If there is pending changes, ask confirmation to user
+      if (data && (
+          // Content change detection
+          tinymce.activeEditor.isDirty() ||
+          // Title change detection
+          H.htmlEscape(data.title) !== H.htmlEscape(title) ||
+          // Progress change detection
+          data.progress !== progress)) {
 
-            S.set ("postit-data", data);
-          }
-          else
-            __close ();
-      });
+        H.preventDefault(e);
+        H.openConfirmPopup({
+          type: 'save-postits-changes',
+          icon: 'save',
+          content: `<?=_("Save changes?")?>`,
+          cb_ok: () => el.querySelector('.btn-primary').click(),
+          cb_close: () => __close(true),
+        });
+
+        S.set('postit-data', data);
+      } else {
+        __close();
+      }
+    });
 });
 
 <?php echo $Plugin->getFooter()?>

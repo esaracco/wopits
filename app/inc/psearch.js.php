@@ -73,7 +73,7 @@
 
     // METHOD close()
     close() {
-      this.element.modal('hide');
+      bootstrap.Modal.getInstance(this.element[0]).hide();
     },
 
     // METHOD restore()
