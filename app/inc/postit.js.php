@@ -1050,7 +1050,7 @@
       const renameItem = H.haveMouse() ? `<li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li>` : '';
       const menu = `<ul class="dropdown-menu shadow">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
       const label = H.createElement('div',
-        {className: 'plug-label dropdown submenu', style: `top:${pos.top}px;left:${pos.left}px`},
+        {className: 'plug-label dropdown submenu inset', style: `top:${pos.top}px;left:${pos.left}px`},
         plug.label.top ? {pos: 1} : null,
         `${canWrite?`<i class="fas fa-thumbtack fa-xs"></i>`:""}<div ${canWrite ? 'data-bs-toggle="dropdown"' : ''} class="dropdown-toggle"><span>${plug.label.name !== '...' ? H.noHTML(plug.label.name) : '<i class="fas fa-ellipsis-h"></i>'}</span></div>${canWrite ? menu : ''}`);
 
@@ -2410,7 +2410,7 @@
     });
 
   // EVENT "click"
-  document.body.addEventListener('click', (e) => {
+  document.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on plugs menu

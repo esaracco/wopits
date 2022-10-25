@@ -385,21 +385,18 @@
     },
 
     // METHOD UIPluginCtrl()
-    UIPluginCtrl (selector, plugin, option, value, forceHandle = false)
-    {
-      const isDisabled = (option == "disabled");
+    UIPluginCtrl(selector, plugin, option, value, forceHandle = false) {
+      const isDisabled = (option === 'disabled');
 
-      this.element.find(selector).each (function ()
-        {
-          if (this.classList.contains (`ui-${plugin}`))
-          {
-            if (forceHandle && isDisabled)
-              $(this).find(`.ui-${plugin}-handle`)
-                .css ("visibility", value?"hidden":"visible");
+      this.element[0].querySelectorAll(selector).forEach((el) => {
+        if (!el.classList.contains(`ui-${plugin}`)) return;
 
-            $(this)[plugin] ("option", option, value);
-          }
-        });
+        if (forceHandle && isDisabled) {
+          el.querySelectorAll(`.ui-${plugin}-handle`).forEach((el1) =>
+            el1.style.visibility = value ? 'hidden' : 'visible');
+        }
+        $(el)[plugin]('option', option, value);
+      });
     },
 
     // METHOD repositionPostitsPlugs()
@@ -520,17 +517,18 @@
         (p) => $(p).postit('showPlugs', true));
     },
 
-    // METHOD showUserWriting ()
-    showUserWriting (user)
-    {
-      setTimeout (()=>
-        {
-          const tab = document.querySelector (
-                        `.walls a[href="#wall-${this.settings.id}"]`);
+    // METHOD showUserWriting()
+    // FIXME
+    showUserWriting(user) {
+      const tab = document.querySelector(
+        `.walls a[href="#wall-${this.settings.id}"]`);
 
-          tab.classList.add ("locked");
-          tab.insertBefore ($(`<div class="user-writing main" data-userid="${user.id}"><i class="fas fa-user-edit blink"></i> ${user.name}</div>`)[0], tab.firstChild);
-        }, 150);
+      tab.classList.add('locked');
+      tab.insertBefore(H.createElement('div',
+        {className: 'user-writing main'},
+        {userid: user.id},
+        `<i class="fas fa-user-edit blink"></i> ${user.name}`),
+        tab.firstChild);
     },
 
     // METHOD refresh()
@@ -545,284 +543,227 @@
       }
     },
 
-    // METHOD _refresh ()
-    async _refresh (d)
-    {
-      const plugin = this,
-            $wall = plugin.element,
-            wall = $wall[0],
-            wallIsVisible = $wall.is (":visible");
+    // METHOD _refresh()
+    async _refresh(d) {
+      const $wall = this.element;
+      const wall = $wall[0];
+      const wallIsVisible = $wall.is(':visible');
 
-      // LOCAL FUNCTION __refreshWallBasicProperties ()
-      const __refreshWallBasicProperties = (d)=>
-        {
-          plugin.setShared (d.shared);
-          plugin.setName (d.name);
-          plugin.setDescription (d.description);
-        };
+      // LOCAL FUNCTION __refreshWallBasicProperties()
+      const __refreshWallBasicProperties = (d) => {
+        this.setShared(d.shared);
+        this.setName(d.name);
+        this.setDescription(d.description);
+      };
 
       this.settings.plugs = d.postits_plugs;
 
       // Partial wall update
-      if (d.partial)
-      {
-        switch (d.partial)
-        {
+      if (d.partial) {
+        switch (d.partial) {
           // Postits
-          case "postit":
-            const $postit = $(wall.querySelector (
-                     `.postit[data-id="postit-${d.postit.id}"]`)),
-                  cell = wall.querySelector (
+          case 'postit':
+            const $postit = $(wall.querySelector(
+                    `.postit[data-id="postit-${d.postit.id}"]`));
+            const cell = wall.querySelector(
                     `td[data-id="cell-${d.postit.cells_id}"]`);
 
             // Rare case, when user have multiple sessions opened
-            if (d.action != "insert" && !$postit.length)
+            if (d.action !== 'insert' && !$postit.length)
               return;
 
-            switch (d.action)
-            {
+            switch (d.action) {
               // Insert postit
-              case "insert":
-
-                $(cell).cell ("addPostit", d.postit, true);
+              case 'insert':
+                $(cell).cell('addPostit', d.postit, true);
                 break;
-
               // Update postit
-              case "update":
-
+              case 'update':
                 if (d.isResponse ||
-                    cell.classList.contains ("list-mode") ||
-                    S.getCurrent("filters").is (":visible"))
-                  $postit.postit ("update", d.postit, {id: d.postit.cells_id});
-                else
-                  $postit.hide ("fade", 250, ()=>
-                  {
-                    $postit.postit ("update", d.postit, {id:d.postit.cells_id});
-                    $postit.show ("fade", 250,
-                      ()=> $postit.postit ("repositionPlugs"));
+                    cell.classList.contains('list-mode') ||
+                    S.getCurrent('filters').is(':visible')) {
+                  $postit.postit('update', d.postit, {id: d.postit.cells_id});
+                } else {
+                  $postit.hide('fade', 250, () => {
+                    $postit.postit('update', d.postit, {id: d.postit.cells_id});
+                    $postit.show('fade', 250,
+                      ()=> $postit.postit('repositionPlugs'));
                   });
+                }
                 break;
-
               // Remove postit
-              case "delete":
-
-                $postit.postit ("remove");
+              case 'delete':
+                $postit.postit('remove');
                 break;
             }
-
             break;
-
           // Wall
-          case "wall":
-
-            switch (d.action)
-            {
-              // Col/row has been moved
-              case "movecolrow":
-                if (!d.isResponse)
-                  $wall.find (`th[data-id="header-${d.header.id}"]`)
-                    .header ("moveColRow", d.move, true);
-                break;
-
-              default:
-                __refreshWallBasicProperties (d.wall);
+          case 'wall':
+            // Col/row has been moved
+            if (d.action === 'movecolrow') {
+              if (!d.isResponse) {
+                $wall.find (`th[data-id="header-${d.header.id}"]`)
+                  .header ("moveColRow", d.move, true);
+              }
+            } else {
+              __refreshWallBasicProperties (d.wall);
             }
-
             break;
-
           //FIXME
           // plugs
-          case "plugs": break;
+          case 'plugs': break;
         }
-      }
-      // Full wall update
-      else if (!d.removed)
-      {
-        const wallId = plugin.settings.id,
-              access = plugin.settings.access,
-              rowsHeadersIds = {},
-              colsHeadersIds = {},
-              rowsCount = d.headers.rows.length,
-              colsCount = d.headers.cols.length,
-              postitsIds = {},
-              rows = [],
-              displayHeaders = plugin.settings.displayheaders;
 
-        wall.dataset.cols = colsCount;
-        wall.dataset.rows = rowsCount;
+      // Full wall update
+      } else if (!d.removed) {
+        const wallId = this.settings.id;
+        const access = this.settings.access;
+        const postitsIds = [];
+        const rows = [];
+        const displayHeaders = this.settings.displayheaders;
+
+        wall.dataset.cols = d.headers.cols.length;
+        wall.dataset.rows = d.headers.rows.length;
         wall.dataset.oldwidth = d.width;
 
-        __refreshWallBasicProperties (d);
+        __refreshWallBasicProperties(d);
 
         // Refresh headers
-        for (let i = 0; i < colsCount; i++)
-        {
-          const header = d.headers.cols[i],
-                $header = $wall.find(`thead.wpt th.wpt[data-id="header-${header.id}"]`);
+        d.headers.cols.forEach((header) => {
+          let th = wall.querySelector(
+            `thead.wpt th.wpt[data-id="header-${header.id}"]`);
 
-          if (!$header.length)
-          {
-            const $th = $(`<th class="wpt"/>`);
+          if (!th) {
+            th = H.createElement('th',
+              {className: `wpt ${displayHeaders ? 'display' : 'hide'}`});
 
-            $th[0].classList.add (displayHeaders ? 'display' : 'hide');
+            wall.querySelectorAll('thead.wpt tr.wpt').forEach(
+              (el) => el.appendChild(th));
 
-            $wall.find("thead.wpt tr.wpt").append ($th);
-            $th.header ({
-              item_type: "col",
+            $(th).header({
+              item_type: 'col',
               id: header.id,
               wall: $wall,
               wallId: wallId,
               title: header.title,
               picture: header.picture
             });
+          } else {
+            $(th).header('update', header);
           }
-          else
-            $header.header ("update", header);
-        }
+        });
 
         // Remove deleted rows
-        for (let i = 0; i < rowsCount; i++)
-          rowsHeadersIds[d.headers.rows[i].id] = true;
-
-        wall.querySelectorAll("tbody.wpt th.wpt").forEach (th =>
-          {
-            const $header = $(th);
-
-            if (!rowsHeadersIds[$header.header ("getId")])
-              $wall.find(`tbody.wpt tr.wpt:eq(${$header.parent().index()})`)
-                .cell ("remove");
-          });
+        const rowsHeadersIds = d.headers.rows.map((el) => el.id);
+        wall.querySelectorAll('tbody.wpt th.wpt').forEach((th) => {
+          if (!rowsHeadersIds.includes($(th).header('getId'))) {
+            $(wall.querySelectorAll(
+              `tbody.wpt tr.wpt`)[th.parentNode.rowIndex - 1]).cell('remove');
+          }
+        });
 
         // Remove deleted columns
-        for (let i = 0; i < colsCount; i++)
-          colsHeadersIds[d.headers.cols[i].id] = true;
+        const colsHeadersIds = d.headers.cols.map((el) => el.id);
+        wall.querySelectorAll('thead.wpt th.wpt').forEach((th) => {
+          const idx = th.cellIndex;
 
-        wall.querySelectorAll("thead.wpt th.wpt").forEach (th =>
-          {
-            const $header = $(th),
-                  idx = $header.index ();
+          if (idx > 0 && !colsHeadersIds.includes($(th).header('getId'))) {
+            wall.querySelectorAll('thead.wpt th.wpt')[idx].remove();
+            wall.querySelectorAll('tbody.wpt tr.wpt').forEach((tr) =>
+              $(tr).find(`td.wpt:eq(${idx - 1})`).cell('remove'));
+          }
+        });
 
-            if (idx > 0 && !colsHeadersIds[$header.header ("getId")])
-            {
-              wall.querySelectorAll("thead.wpt th.wpt")[idx].remove ();
-              wall.querySelectorAll("tbody.wpt tr.wpt").forEach (tr =>
-                $(tr).find (`td.wpt:eq(${idx-1})`).cell ("remove"));
-            }
-          });
-
-        for (let i = 0, iLen = d.cells.length; i < iLen; i++)
-        {
-          const cell = d.cells[i],
-                irow = cell.item_row;
+        d.cells.forEach((cell) => {
+          const irow = cell.item_row;
 
           // Get all postits ids for this cell
-          for (let j = 0, jLen = cell.postits.length; j < jLen; j++)
-            postitsIds[cell.postits[j].id] = true;
+          cell.postits.forEach(({id}) => postitsIds.push(id));
 
-          if (rows[irow] === undefined)
+          if (rows[irow] === undefined) {
             rows[irow] = [];
+          }
 
           rows[irow][cell.item_col] = cell;
-        }
+        });
 
-        const userSettings = plugin.settings.usersettings || {};
-        for (let i = 0, iLen = rows.length; i < iLen; i++)
-        {
-          const row = rows[i],
-                header = d.headers.rows[i];
+        const userSettings = this.settings.usersettings || {};
+        rows.forEach((row, i) => {
+          const header = d.headers.rows[i];
 
-          if (!$wall.find(`td.wpt[data-id="cell-${row[0].id}"]`).length)
-            plugin.addRow (header, row);
-          else
+          if (!wall.querySelector(`td.wpt[data-id="cell-${row[0].id}"]`)) {
+            this.addRow(header, row);
+          } else {
             $wall.find(`tbody.wpt th.wpt[data-id="header-${header.id}"]`)
-              .header ("update", header);
+              .header('update', header);
+          }
 
-          for (let j = 0, jLen = row.length; j < jLen; j++)
-          {
-            const cell = row[j];
-            let $cell = $wall.find(`td.wpt[data-id="cell-${cell.id}"]`),
-                isNewCell = false;
+          row.forEach((cell) => {
+            let $cell = $wall.find(`td.wpt[data-id="cell-${cell.id}"]`);
 
             // If new cell, add it
-            if (!$cell.length)
-            {
+            if (!$cell.length) {
               const cellId = cell.id;
 
-              isNewCell = true;
-
-              $cell = $(_getCellTemplate (cell));
-
-              $wall.find(`tbody.wpt tr.wpt:eq(${cell.item_row})`).append ($cell);
+              $cell = $(_getCellTemplate(cell));
+              wall.querySelectorAll(
+                `tbody.wpt tr.wpt`)[cell.item_row].appendChild($cell[0]);
 
               // Init cell
-              $cell.cell ({
+              $cell.cell({
+                wallId,
                 id: cellId,
                 access: access,
                 usersettings: userSettings[`cell-${cellId}`] || {},
                 wall: $wall,
-                wallId: wallId,
               });
-            }
-            else
-            {
-              $cell.cell ("update", cell);
+
+            // else update cell
+            } else {
+              $cell.cell('update', cell);
 
               // Remove deleted post-its
-              $cell[0].querySelectorAll(".postit").forEach (p =>
-                {
-                  if (!postitsIds[$(p).postit("getId")])
-                    $(p).postit ("remove");
-                });
+              $cell[0].querySelectorAll('.postit').forEach((p) => {
+                if (!postitsIds.includes($(p).postit('getId'))) {
+                  $(p).postit('remove');
+                }
+              });
             }
 
-            for (let k = 0, kLen = cell.postits.length; k < kLen; k++)
-            {
-              const postit = cell.postits[k],
-                    $postit = $wall.find (
-                      `.postit[data-id="postit-${cell.postits[k].id}"]`);
-
-              // If new postit, add it
-              if (!$postit.length)
-              {
-                postit.isNewCell = isNewCell;
-                $cell.cell ("addPostit", postit, true);
+            cell.postits.forEach((postit) => {
+              if (d.ignoreResize) {
+                postit.ignoreResize = true;
               }
-              // else update it
-              else
-              {
-                if (d.ignoreResize)
-                  postit.ignoreResize = true;
-
-                $postit.postit ("update", postit, {id: cell.id, obj: $cell});
-              }
-            }
-          }
-        }
+              $(wall.querySelector(`.postit[data-id="postit-${postit.id}"]`))
+                .postit('update', postit, {id: cell.id, obj: $cell});
+            });
+          });
+        });
       }
 
       // Refresh super menu tool
-      S.getCurrent("mmenu").mmenu ("refresh");
+      S.getCurrent('mmenu').mmenu('refresh');
 
       // Set wall menu visible
       S.getCurrent('wmenu')[0].style.visibility = 'visible';
 
-      plugin.fixSize ();
+      this.fixSize();
 
-      if (d.reorganize)
-        $wall.find("tbody.wpt td.wpt").cell ("reorganize");
+      if (d.reorganize) {
+        $wall.find('tbody.wpt td.wpt').cell('reorganize');
+      }
 
       // Apply display mode
-      plugin.refreshCellsToggleDisplayMode ();
+      this.refreshCellsToggleDisplayMode();
 
-      if (!d.isResponse && !d.partial &&
-          S.get ("zoom-level"))
-      {
-        const zoom = document.querySelector (".tab-content.walls");
+      if (!d.isResponse && !d.partial && S.get('zoom-level')) {
+        const zoom = document.querySelector('.tab-content.walls');
 
         if (zoom &&
             zoom.dataset.zoomlevelorigin &&
-            zoom.dataset.zoomtype == "screen")
-          plugin.zoom ({type: "screen"});
+            zoom.dataset.zoomtype === 'screen') {
+          this.zoom({type: 'screen'});
+        }
       }
 
       // Show locks
@@ -839,17 +780,18 @@
 
       if (wallIsVisible && d.postits_plugs) {
         // Refresh postits relations
-        plugin.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
+        this.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
       } else {
-        plugin.repositionPostitsPlugs ();
+        this.repositionPostitsPlugs();
       }
 
-      plugin.refreshCellsToggleDisplayMode();
+      this.refreshCellsToggleDisplayMode();
 
       // Re-apply filters
-      const $f = S.getCurrent("filters");
-      if ($f.is (":visible"))
-        $f.filters ("apply", {norefresh: true});
+      const $f = S.getCurrent('filters');
+      if (H.isVisible($f[0])) {
+        $f.filters('apply', {norefresh: true});
+      }
     },
 
     // METHOD refreshCellsToggleDisplayMode()
@@ -894,6 +836,10 @@
       const activeTab = document.querySelector(`a[href="#${activeTabId}"]`);
       const newActiveTab = _getNextActiveTab(activeTab);
       const $chat = S.getCurrent('chat');
+
+      if (S.get('zoom-level')) {
+        this.zoom({type: 'normal'});
+      }
 
       if ($chat.is(':visible')) {
         $chat.chat('leave');
@@ -1598,7 +1544,7 @@
 
         if (pMenu) {
           pMenu.$menu[0].querySelector(`[data-action="pwork"]`)
-            .style.display = display ? 'block' : 'none';
+            .style.display = display ? 'inline-block' : 'none';
         }
       });
     },
@@ -2200,7 +2146,7 @@
       });
 
       // EVENT "click"
-      document.body.addEventListener('click', (e) => {
+      document.addEventListener('click', (e) => {
         const el = e.target;
 
         // "click" on wall users view popup

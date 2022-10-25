@@ -62,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     _walls.addEventListener('scroll', () => {
       const $wall = S.getCurrent('wall');
       const mstack = S.get('mstack') || [];
+
+      if (!$wall.length) return;
   
       if (!S.get('wall-dragging') && !S.get('still-closing') &&
           !mstack.length) {
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // EVENT "mousedown"
-    document.body.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousedown', (e) => {
       const el = e.target;
 
       // EVENT "mousedown" on walls tabs
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // EVENT "hide.bs.tab"
-    document.body.addEventListener('hide.bs.tab', (e) => {
+    document.addEventListener('hide.bs.tab', (e) => {
       const el = e.target;
   
       // EVENT "hide.bs.tab" on walls tabs
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   
     // EVENT "shown.bs.tab"
-    document.body.addEventListener('shown.bs.tab', (e) => {
+    document.addEventListener('shown.bs.tab', (e) => {
       // If we are massively closing or restoring all walls, do nothing here
       if (S.get('closing-all') ||
           _walls.querySelector('.wall[data-restoring]')) {
@@ -216,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('offline', (e) => H.displayNetworkErrorMsg());
 
   // EVENT "keydown"
-  document.body.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', (e) => {
       // If "ESC" while popup layer is opened, close it
       if (e.which === 27) {
         let tmp;
@@ -233,14 +235,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENT "show.bs.dropdown" on relation's label menu, to prevent menu from
   //       opening right after dragging
-  document.body.addEventListener('show.bs.dropdown', (e) => {
+  document.addEventListener('show.bs.dropdown', (e) => {
     if (H.disabledEvent()) {
       H.preventDefault(e);
     }
   });
 
   // EVENT "hidden.bs.toast" on alert messages
-  document.body.addEventListener('hidden.bs.toast', (e) => {
+  document.addEventListener('hidden.bs.toast', (e) => {
     const el = e.target;
 
     bootstrap.Toast.getInstance(el).dispose();
@@ -248,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "keypress" on popups and popovers to catch <enter> key
-  document.body.addEventListener('keypress', (e) => {
+  document.addEventListener('keypress', (e) => {
     if (e.which !== 13 || e.target.tagName !== 'INPUT') return;
 
     const popup = e.target.closest('.popover,.modal');
@@ -265,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "show" on popups
-  document.body.addEventListener('show.bs.modal', (e) => {
+  document.addEventListener('show.bs.modal', (e) => {
     const el = e.target;
     const dialog = el.querySelector('.modal-dialog');
     const mstack = S.get('mstack') || [];
@@ -298,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "shown" on popups
-  document.body.addEventListener('shown.bs.modal', (e) => {
+  document.addEventListener('shown.bs.modal', (e) => {
     const target = e.target;
 
     if (!H.haveMouse()) {
@@ -318,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENT "hide.bs.modal" on popups
   //       Blur input/textarea to hide virtual keyboard
-  document.body.addEventListener('hide.bs.modal', (e) => {
+  document.addEventListener('hide.bs.modal', (e) => {
     const el = e.target;
 
     if (!H.haveMouse()) {
@@ -332,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "hidden" on popups
-  document.body.addEventListener('hidden.bs.modal', (e) => {
+  document.addEventListener('hidden.bs.modal', (e) => {
     const el = e.target;
     const mstack = S.get('mstack');
 
@@ -379,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "click"
-  document.body.addEventListener('click', (e) => {
+  document.addEventListener('click', (e) => {
     const el = e.target;
 
     // EVENT "click" on popup buttons

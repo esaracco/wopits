@@ -22,11 +22,10 @@ let _body;
 
   // Inherit from Wpt_toolbox
   Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-  Object.assign (Plugin.prototype, {
+  Object.assign(Plugin.prototype, {
     // METHOD init()
     init() {
-      const plugin = this;
-      const filters = plugin.element[0];
+      const filters = this.element[0];
 
       if (!_body) {
         let tags = '';
@@ -46,7 +45,7 @@ let _body;
         .draggable({
           distance: 10,
           cursor: 'move',
-          drag: (e, ui) => plugin.fixDragPosition(ui),
+          drag: (e, ui) => this.fixDragPosition(ui),
           stop: () => S.set('dragging', true, 500),
         })
         .resizable({
@@ -56,8 +55,8 @@ let _body;
         .append(_body);
 
       // EVENT "click" on close button
-      filters.querySelector('.btn-close').addEventListener('click', (e) =>
-          plugin.hide());
+      filters.querySelector('.btn-close').addEventListener('click',
+        (e) => this.hide());
 
       // EVENT "click" on tags
       filters.querySelector('.tags').addEventListener('click', (e) => {
@@ -68,7 +67,7 @@ let _body;
 
           el.parentNode.classList.toggle('selected');
 
-          plugin.apply();
+          this.apply();
         }
       });
 
@@ -81,13 +80,13 @@ let _body;
 
           el.classList.toggle('selected');
 
-          plugin.apply();
+          this.apply();
         }
       });
     },
 
     // METHOD hide()
-    hide () {
+    hide() {
       if (H.isVisible(this.element[0])) {
         document.querySelector(`#main-menu li[data-action="filters"]`).click();
       }
@@ -142,9 +141,8 @@ let _body;
     },
 
     // METHOD apply()
-    apply (args = {}) {
-      const plugin = this;
-      const filters = plugin.element[0];
+    apply(args = {}) {
+      const filters = this.element[0];
       const wall = S.getCurrent('wall')[0];
       const tags = filters.querySelectorAll('.tags .selected');
       const colors = filters.querySelectorAll('.colors .selected');
@@ -163,7 +161,7 @@ let _body;
       };
 
       if (tags.length || colors.length) {
-        plugin.hidePlugs();
+        this.hidePlugs();
         S.getCurrent('mmenu').mmenu('reset');
 
         wall.querySelectorAll('td.wpt').forEach((cell) => {
@@ -189,7 +187,7 @@ let _body;
         wall.querySelectorAll('td.wpt').forEach(__setVisible);
 
         if (!args.norefresh) {
-          plugin.showPlugs();
+          this.showPlugs();
         }
       }
     }

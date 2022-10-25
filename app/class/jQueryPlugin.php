@@ -42,7 +42,7 @@ EOC;
 
       $js .= <<<EOC
   // METHOD getId()
-  this.getId = () => this.settings.id;
+  this.getId = () => Number(this.settings.id);
 
   // METHOD canWrite()
   this.canWrite = () => {

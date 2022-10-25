@@ -167,7 +167,7 @@ class Wpt_postitCountPlugin {
     const el_I = H.createElement('i',
         {className: `fa-fw fas ${className}`}, {action});
     const el_SPAN = H.createElement('span',
-      {className: `wpt-badge ${count ? '' : 'hidden'}`});
+      {className: `wpt-badge inset ${count ? '' : 'hidden'}`});
     el_SPAN.innerText = count;
 
     this.element[0].append(el_I, el_SPAN); 

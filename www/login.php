@@ -83,7 +83,7 @@
         </div>
         <?php if (!WPT_USE_LDAP):?>
           <div>
-            <div class="d-flex justify-content-center links mb-3">
+            <div class="d-flex justify-content-center links mb-2">
               <a data-type="forgot" href="#"><?=_("Forgot your password?")?></a>
             </div>
           </div>

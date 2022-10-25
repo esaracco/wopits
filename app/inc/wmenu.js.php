@@ -100,7 +100,7 @@
           title: `<?=_("Users viewing this wall")?>`,
           icon: 'user-friends',
           className: 'usersviewcounts',
-          content: `<span class="wpt-badge"></span>`,
+          content: `<span class="wpt-badge inset"></span>`,
         },
       ];
 
@@ -114,9 +114,9 @@
           H.createElement('li',
             {title, className},
             {action},
-            `<i class="fa-fw fas fa-${icon} fa-lg ${cls}"></i> ${content ? content : ''}`) :
+            `<i class="fa-fw fas fa-${icon} fa-lg ${cls || ''}"></i> ${content ? content : ''}`) :
           // Divider
-          H.createElement('li', {className: `divider ${cls}`})); 
+          H.createElement('li', {className: `divider ${cls || ''}`})); 
       });
 
       $(menu).draggable({

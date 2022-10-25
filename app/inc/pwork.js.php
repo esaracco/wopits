@@ -123,7 +123,7 @@
     if (H.isLoginPage ()) return;
 
     // EVENT "click"
-    document.body.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on workers count

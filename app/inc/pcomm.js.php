@@ -27,8 +27,7 @@
 
   // Inherit from Wpt_postitCountPlugin
   Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
-  Object.assign (Plugin.prototype,
-  {
+  Object.assign(Plugin.prototype, {
     readonly: true,
     // METHOD init()
     init() {
@@ -91,7 +90,7 @@
       el.style.height = 'auto';
       el.style.display = 'block';
 
-      H.fetch (
+      H.fetch(
         'GET',
         `wall/${wallId}/searchUsers/${args.str}`,
         null,
@@ -108,7 +107,7 @@
             rc.style.width = `${_textarea.getBoundingClientRect().width}px`;
             rc.classList.add('shadow');
             pc.querySelector('.search').classList.add('shadow');
-            _textarea.classList.add ('autocomplete');
+            _textarea.classList.add('autocomplete');
 
             setTimeout(__resize, 50);
           } else {
@@ -239,7 +238,7 @@
 
         // Resize only if popover
         if ($_popup[0].classList.contains('popover')) {
-          H.waitForDOMUpdate (__resize);
+          H.waitForDOMUpdate(__resize);
         }
       } else if (content || !this.readonly) {
         const editing = this.readonly ? '' : `<div class="search mb-1"><button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall')[0].dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<i class="fa fa-exclamation-triangle"></i> <?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
@@ -287,10 +286,11 @@
             content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
             cb_ok: ($p) => {
               const content = H.noHTML(_textarea.value);
-              if (!content) return;
-              this.add(content);
-              _textarea.value = '';
-              _textarea.focus();
+              if (content) {
+                this.add(content);
+                _textarea.value = '';
+                _textarea.focus();
+              }
             },
             cb_close: () => {
               $_popup = undefined;
@@ -313,7 +313,7 @@
     if (H.isLoginPage()) return;
 
     // EVENT "click"
-    document.body.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on postit comments button
@@ -329,10 +329,11 @@
         // EVENT "click" on comments "submit" button
         } else if (el.matches('.btn-primary')) {
           const content = H.noHTML(_textarea.value);
-          if (!content) return;
-          S.getCurrent('pcomm').pcomm('add', content);
-          _textarea.value = '';
-          _textarea.focus();
+          if (content) {
+            S.getCurrent('pcomm').pcomm('add', content);
+            _textarea.value = '';
+            _textarea.focus();
+          }
 
         // EVENT "click" on comments users list
         } else if (el.matches('.result .list-group-item,'+
@@ -373,6 +374,8 @@
     // EVENTS "keyup & keydown"
     const _textareaEventK = (e) => {
       const el = e.target;
+
+      if (!$_popup) return;
 
       // EVENTS "keyup & keydown" on comments textarea
       if (el.matches(_getEventSelector('textarea'))) {
@@ -433,8 +436,8 @@
         }
       }
     };
-    document.body.addEventListener('keyup', _textareaEventK);
-    document.body.addEventListener('keydown', _textareaEventK);
+    document.addEventListener('keyup', _textareaEventK);
+    document.addEventListener('keydown', _textareaEventK);
 
     // EVENTS "keyup & click"
     const _textareaEventKC = (e) => {
@@ -470,11 +473,11 @@
         }
       }
     };
-    document.body.addEventListener('keyup', _textareaEventKC);
-    document.body.addEventListener('click', _textareaEventKC);
+    document.addEventListener('keyup', _textareaEventKC);
+    document.addEventListener('click', _textareaEventKC);
 
     // EVENT "keypress"
-    document.body.addEventListener('keypress', (e) => {
+    document.addEventListener('keypress', (e) => {
       const el = e.target;
 
       // EVENT "keypress" on comments textarea

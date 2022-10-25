@@ -453,6 +453,8 @@ button.close {
   padding: 0;
   z-index: 1;
   margin-top: -1px;
+  position: fixed;
+  width: inherit;
 }
 
 .pcomm-popover textarea,
@@ -619,7 +621,7 @@ dd {
 
 #umsg .wpt-badge {
   display: none;
-  background-color: #ff0000;
+  background-color: var(--bs-danger);
 }
 
 .inline-block {
@@ -1172,7 +1174,6 @@ input::-ms-clear {
   z-index: 1000;
   position: absolute;
   cursor: pointer;
-  box-shadow: rgba(50, 50, 93, 0.25) 0 50px 100px -20px, rgba(0, 0, 0, 0.3) 0 30px 60px -30px, rgba(10, 37, 64, 0.35) 0 -2px 6px 0 inset;
   background: #fff;
   border-radius: 5px;
   white-space: nowrap;
@@ -1284,9 +1285,7 @@ kbd,
 }
 
 .cell-menu .wpt-badge {
-  font-size: .6rem;
-  margin-left: -10px;
-  margin-top: -1px;
+  transform: translate(-79%, -10%);
 }
 
 .cell-menu .btn-circle {
@@ -1670,8 +1669,7 @@ ul#mmenu {
 }
 
 #mmenu .wpt-badge {
-  top: 2px;
-  left: 4px;
+  transform: translate(-105%, -50%);
 }
 
 #mmenu button.close {
@@ -1732,6 +1730,12 @@ ul#mmenu {
 
 .btn-theme-red {
   background-color: #dc3545;
+}
+
+.modal-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .modal.modal-sm .modal-title {
@@ -1908,24 +1912,21 @@ ul#mmenu {
   background-color: var(--menubar-bg-color);
   color: #fff;
   position: absolute;
-  border-radius: 50%;
+  border-radius: 25%;
   font-size: .6rem;
-  height: 1.5em;
-  line-height: 1.5em;
   min-width: 1.5em;
-  padding: 0;
   text-align: center;
-  margin-left: -2px;
+  font-weight: bold;
+  padding: 0 2px 0 2px;
 }
 
 .userscount .wpt-badge {
-  left: 20px;
-  top: 5px;
+  top: 4px;
+  right: -1px;
 }
 
-.chat .usersviewcounts .wpt-badge {
-  font-size: .5rem;
-  margin-left: 0;
+.inset {
+  box-shadow: rgba(50, 50, 93, 0.25) 0 50px 100px -20px, rgba(0, 0, 0, 0.3) 0 30px 60px -30px, rgba(10, 37, 64, 0.35) 0 -2px 6px 0 inset;
 }
 
 ul.wall-menu {
@@ -1963,8 +1964,7 @@ i.notset {
 }
 
 .wall-menu .wpt-badge {
-  margin-left: -30px;
-  margin-top: 11px;
+  transform: translate(-35%, -5%);
 }
 
 #mmenu li:not(:last-child) i.fa-lg,
@@ -1995,7 +1995,7 @@ i.notset {
 }
 
 .postit .topicon .wpt-badge {
-  margin-left: -5px;
+  transform: translate(-45%, 25%);
 }
 
 .justify {

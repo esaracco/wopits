@@ -289,7 +289,7 @@
 
         // Add notes count to cell's menu
         cell.querySelector('.cell-menu').append(H.createElement('span',
-          {className: 'wpt-badge'},
+          {className: 'wpt-badge inset'},
           null,
           String(postits.length)));
 
@@ -485,11 +485,10 @@
       // Add postit on cell
       cell.appendChild($postit[0]);
 
-      this.reorganize();
-
       // If we are refreshing wall and postit has been already created by
       // another user, do not add it again in DB
       if (!noinsert) {
+        this.reorganize();
         $postit.postit('insert');
       } else if (cell.classList.contains('postit-mode')) {
         if (args.init || H.isVisible(S.getCurrent('filters')[0])) {

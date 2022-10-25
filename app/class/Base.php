@@ -135,7 +135,7 @@ class Base {
     }
     //</WPTPROD-remove>
 
-    // Obly nullables can be null
+    // Only nullables can be null
     if (is_null($value)) {
       if ($f['nullable']) {
         return;

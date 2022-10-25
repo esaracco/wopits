@@ -19,8 +19,7 @@
   Plugin.prototype = {
     // METHOD init()
     init() {
-      const plugin = this;
-      const $umsg = plugin.element;
+      const $umsg = this.element;
 
       // Init counter
       H.fetch(
@@ -31,10 +30,10 @@
       );
 
       // EVENT "click" on messages count
-      $umsg[0].addEventListener('click', (e) => plugin.open());
+      $umsg[0].addEventListener('click', (e) => this.open());
 
       // EVENT "click"
-      document.body.addEventListener('click', (e) => {
+      document.addEventListener('click', (e) => {
         const el = e.target;
 
         if (!el.matches('.umsg-popover *')) return;
@@ -73,11 +72,11 @@
           e.stopImmediatePropagation();
           H.preventDefault(e);
 
-          H.fetch (
+          H.fetch(
             'DELETE',
             'user/messages',
             {id: item.getAttribute('data-id')},
-            (d) => plugin.removeMsg(item)
+            (d) => this.removeMsg(item)
           );
         }
       });
@@ -93,7 +92,7 @@
 
         // Refresh popover content if currently opened.
         if (document.querySelector('.msg-popover')) {
-          this.open (true);
+          this.open(true);
         }
 
         // Refresh wall if needed and if opened.
@@ -112,7 +111,7 @@
       const $badge = this.element.find('.wpt-badge');
       const count = parseInt($badge.text()) - 1;
 
-      item.remove ();
+      item.remove();
       $badge.text(count);
 
       if (!count) {
@@ -129,7 +128,7 @@
         null,
         (d) => {
           let body = '';
-          d.forEach (({content, creationdate, id, title}) => {
+          d.forEach(({content, creationdate, id, title}) => {
             body += `<div class="msg-item" data-id="${id}"><div class="msg-title">${title}<button type="button" class="close" title="<?=_("Delete this message")?>"><span><i class="fas fa-trash fa-xs"></i></span></button></div><div class="msg-date">${H.getUserDate(creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${content.replace(/\n+/g, "<br>")}</div></div>`;
           });
 
@@ -165,4 +164,4 @@
     }
   });
 
-<?php echo $Plugin->getFooter ()?>
+<?php echo $Plugin->getFooter()?>
