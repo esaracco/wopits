@@ -135,7 +135,7 @@
                        'gtype-<?=WPT_GTYPES_DED?>')) ?
                      `<?=_("Delete this group?")?>`:
                      `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`,
-                 cb_close: () => __close,
+                 cb_close: __close,
                  cb_ok: () => plugin.deleteGroup(),
                });
               break;
