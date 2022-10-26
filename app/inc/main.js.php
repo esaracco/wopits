@@ -731,11 +731,17 @@
             }
 
             cell.postits.forEach((postit) => {
-              if (d.ignoreResize) {
-                postit.ignoreResize = true;
+              const p = wall.querySelector(
+                `.postit[data-id="postit-${postit.id}"]`);
+
+              if (!p) {
+                $cell.cell('addPostit', postit, true);
+              } else {
+                if (d.ignoreResize) {
+                  postit.ignoreResize = true;
+                }
+                $(p).postit('update', postit, {id: cell.id, obj: $cell});
               }
-              $(wall.querySelector(`.postit[data-id="postit-${postit.id}"]`))
-                .postit('update', postit, {id: cell.id, obj: $cell});
             });
           });
         });
