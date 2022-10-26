@@ -762,6 +762,11 @@ class WHelper {
     return el;  
   }
 
+  // METHOD setAttributes()
+  static setAttributes(el, attrs) {
+    Object.keys(attrs).forEach((attr) => el.setAttribute(attr, attrs[attr]));
+  }
+
   // METHOD createUploadElement()
   static createUploadElement({attrs, onChange, onClick}) {
     const el = this.createElement('input', {...attrs, type: 'file'});
@@ -1124,10 +1129,7 @@ class WHelper {
     layer.addEventListener('click', (e) => {
       // Remove the layer
       e.target.remove();
-  
-      if (cb) {
-        cb(e);
-      }
+      cb && cb(e);
     });
 
     document.body.appendChild(layer);
@@ -1142,9 +1144,7 @@ class WHelper {
     S.set('confirmPopup', {
       cb_ok: args.cb_ok,
       cb_close: () => {
-        if (args.cb_close) {
-          args.cb_close();
-        }
+        args.cb_close && args.cb_close();
         S.unset('confirmPopup');
       },
     });
@@ -1168,9 +1168,7 @@ class WHelper {
       const bp = bootstrap.Popover.getInstance(args.item[0]);
 
       if (bp) {
-        if (args.cb_close) {
-          args.cb_close(bp.tip.dataset.btnclicked);
-        }
+        args.cb_close && args.cb_close(bp.tip.dataset.btnclicked);
 
         if (document.querySelector('.popover.show')) {
           bp.hide();
@@ -1236,9 +1234,7 @@ class WHelper {
     const _eventC = (e) => {
       if (e.target.classList.contains('btn-primary')) {
         bp.tip.dataset.btnclicked = btn.primary;
-        if (args.cb_ok) {
-          args.cb_ok($(bp.tip));
-        }
+        args.cb_ok && args.cb_ok($(bp.tip));
       } else {
         bp.tip.dataset.btnclicked = btn.secondary;
       }
@@ -1260,9 +1256,7 @@ class WHelper {
       args.item[0].scrollIntoView(false);
     }
 
-    if (args.cb_after) {
-      args.cb_after($(bp.tip));
-    }
+    args.cb_after && args.cb_after($(bp.tip));
 
     if (scroll) {
       window.dispatchEvent(new Event('resize'));

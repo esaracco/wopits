@@ -107,10 +107,7 @@
 
       if (picker) {
         picker.style.visibility = 'hidden';
-
-        if (_cb_close) {
-          _cb_close();
-        }
+        _cb_close && _cb_close();
       }
     }
   };

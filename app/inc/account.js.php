@@ -29,8 +29,7 @@
   Object.assign(Plugin.prototype, {
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const $account = plugin.element;
+      const $account = this.element;
       const account = $account[0];
       const deleteBtn = account.querySelector(`[data-action="delete-account"]`);
 
@@ -40,7 +39,7 @@
           H.openConfirmPopup({
             icon: 'sad-tear',
             content: `<?=_("Do you really want to permanently delete your wopits account?")?>`,
-            cb_ok: () => plugin.delete(),
+            cb_ok: () => this.delete(),
           });
         });
       }
@@ -90,7 +89,7 @@
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete your profile picture?")?>`,
-            cb_ok: () => plugin.deletePicture(),
+            cb_ok: () => this.deletePicture(),
           });
         } else {
           document.getElementById('account-picture').click();
@@ -103,7 +102,7 @@
         const val = H.noHTML(about.value);
 
         if (val !== about.dataset.oldvalue) {
-          plugin.updateField({about: val}, $account.find('.modal-body'));
+          this.updateField({about: val}, $account.find('.modal-body'));
         }
       });
 
@@ -141,10 +140,10 @@
                       field.checked = false;
                     }
                   },
-                  cb_ok: () => plugin.updateField({visible: 0}, true),
+                  cb_ok: () => this.updateField({visible: 0}, true),
                 });
               } else {
-                plugin.updateField({visible: 1}, true);
+                this.updateField({visible: 1}, true);
               }
               break;
             case 'allow_emails':
@@ -159,10 +158,10 @@
                       field.checked = true;
                     }
                   },
-                  cb_ok: () => plugin.updateField({allow_emails: 0}, true),
+                  cb_ok: () => this.updateField({allow_emails: 0}, true),
                 });
               } else {
-                plugin.updateField({allow_emails: 1}, true);
+                this.updateField({allow_emails: 1}, true);
               }
               break;
               case 'password':
@@ -170,7 +169,7 @@
                   open: false,
                   init: ($p) =>
                     $p[0].querySelector('.btn-primary').addEventListener(
-                        'click', (e) => plugin.onSubmit($p, e)),
+                        'click', (e) => this.onSubmit($p, e)),
                   cb: ($p) => {
                     const p = $p[0];
 
@@ -189,7 +188,7 @@
                   open: false,
                   init: ($p) =>
                     $p[0].querySelector('.btn-primary').addEventListener(
-                        'click', (e) => plugin.onSubmit($p, e)),
+                        'click', (e) => this.onSubmit($p, e)),
                   cb: ($p) => {
                     const p = $p[0];
                     const input = H.createElement('input',
@@ -198,30 +197,32 @@
                     switch (name) {
                       case 'username':
                         title = `<i class="fas fa-user"></i> <?=_("Login")?>`;
-                        input.setAttribute('maxlength',
-                            <?=DbCache::getFieldLength('users', 'username')?>);
-                        input.setAttribute('placeholder', `<?=_("username")?>`);
-                        input.setAttribute('autocorrect', 'off');
-                        input.setAttribute('autocapitalize', 'off');
-                        input.setAttribute('autocomplete', 'on');
+                        H.setAttributes(input, {
+                          autocapitalize: 'off',
+                          autocomplete: 'on',
+                          autocorrect: 'off',
+                          maxlength: <?=DbCache::getFieldLength('users', 'username')?>,
+                          placeholder: `<?=_("username")?>`,
+                        });
                         break;
                       case 'fullname':
                         title = `<i class="fas fa-signature"></i> <?=_("Full name")?>`;
-                        input.setAttribute('maxlength',
-                            <?=DbCache::getFieldLength('users', 'fullname')?>);
-                        input.setAttribute('placeholder',
-                            `<?=_("full name")?>`);
-                        input.setAttribute('autocomplete', 'off');
+                        H.setAttributes(input, {
+                          autocomplete: 'off',
+                          maxlength: <?=DbCache::getFieldLength('users', 'fullname')?>,
+                          placeholder: `<?=_("full name")?>`,
+                        });
                         break;
                       case 'email':
                         title = `<i class="fas fa-envelope"></i> <?=_("Email")?>`;
-                        input.setAttribute('type', 'email');
-                        input.setAttribute('maxlength',
-                            <?=DbCache::getFieldLength('users', 'email')?>);
-                        input.setAttribute('placeholder', `<?=_("email")?>`);
-                        input.setAttribute('autocorrect', 'off');
-                        input.setAttribute('autocapitalize', 'off');
-                        input.setAttribute('autocomplete', 'off');
+                        H.setAttributes(input, {
+                          autocapitalize: 'off',
+                          autocomplete: 'off',
+                          autocorrect: 'off',
+                          maxlength: <?=DbCache::getFieldLength('users', 'email')?>,
+                          placeholder: `<?=_("email")?>`,
+                          type: 'email',
+                        });
                         break;
                     }
   
@@ -248,11 +249,12 @@
             }
           }
         });
+
+      this.updateMainMenu();
     },
 
     // METHOD onSubmit()
     onSubmit($popup, e) {
-      const plugin = this;
       const field = $popup[0].dataset.field;
 
       e.stopImmediatePropagation();
@@ -266,19 +268,19 @@
           const $input = $popup.find('input');
           const value = $input.val().trim();
 
-          if (value == $popup[0].dataset.oldvalue) {
+          if (value === $popup[0].dataset.oldvalue) {
             return bootstrap.Modal.getInstance($popup).hide();
           }
 
-          if (plugin.checkRequired($input) && plugin.validForm($input)) {
-            plugin.updateField({[field]: value});
+          if (this.checkRequired($input) && this.validForm($input)) {
+            this.updateField({[field]: value});
           }
           break;
         case 'password':
           const $inputs = $popup.find('input');
 
-          if (plugin.checkRequired($inputs) && plugin.validForm($inputs)) {
-            plugin.updateField({
+          if (this.checkRequired($inputs) && this.validForm($inputs)) {
+            this.updateField({
               password: {
                 current: $inputs[0].value,
                 new: $inputs[1].value,
@@ -294,7 +296,7 @@
     updateMainMenu() {
       // Update "invisible mode" icon in main menu.
       document.querySelector('.invisible-mode').style.display =
-          (wpt_userData.settings.visible == 1) ? 'none' : 'inline-block';
+          (wpt_userData.settings.visible === 1) ? 'none' : 'inline-block';
     },
 
     // METHOD getProp()
@@ -359,12 +361,13 @@
               const field = $account.find(`[name="${k}"]`)[0];
       
               if (field) {
-                if (k == 'visible' && wpt_userData.settings.visible != d[k]) {
+                if (k === 'visible' &&
+                    wpt_userData.settings.visible !== d[k]) {
                   const $wall = S.getCurrent('wall');
 
                   wpt_userData.settings.visible = d[k];
 
-                  if (d[k] != 1) {
+                  if (d[k] !== 1) {
                     // Close all current opened walls and reload session.
                     if ($wall.length) {
                       S.getCurrent('chat').chat('hide');
@@ -406,16 +409,13 @@
   document.addEventListener('DOMContentLoaded', () => {
     if (H.isLoginPage()) return;
 
-    const $popup = $('#accountPopup');
-
     // EVENT "click" on main menu account button
     document.getElementById('account').addEventListener('click', (e) => {
       H.closeMainMenu();
       H.loadPopup('account');
     });
 
-    $popup.account();
-    $popup.account('updateMainMenu');
+    $('#accountPopup').account();
   });
 
 <?php echo $Plugin->getFooter()?>

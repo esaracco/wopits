@@ -93,172 +93,157 @@
       });
     },
 
-    // METHOD getAction ()
-    getAction ()
-    {
-      const el = this.element[0].querySelector (".set");
+    // METHOD getAction()
+    getAction() {
+      const el = this.element[0].querySelector('.set');
 
       return el ? el.parentNode.dataset.action : null;
     },
 
-    // METHOD apply ()
-    apply (args = {})
-    {
-      let item = args.cellPlugin ? args.cellPlugin.element : null,
-          type, title, content, cbClose;
+    // METHOD apply()
+    apply(args = {}) {
+      let item = args.cellPlugin ?
+        args.cellPlugin.element.find('.cell-menu') : null;
+      let type;
+      let title;
+      let content;
+      let cbClose;
 
-      if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
-        return H.displayMsg ({
+      if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
+        return H.displayMsg({
           title: `<?=_("Rights")?>`,
-          type: "warning",
-          msg: `<?=_("You need write access to perform this action")?>`
+          type: 'warning',
+          msg: `<?=_("You need write access to perform this action")?>`,
         });
+      }
 
       _data.dest = args.cellPlugin;
 
-      switch (this.getAction ())
-      {
-        case "copy":
+      switch (this.getAction()) {
+        case 'copy':
           title =  `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
           content = `<?=_("Do you want to copy the selected notes in this cell (comments and workers will be reset)?")?>`;
           break;
-
-        case "move":
+        case 'move':
           title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
           content = `<?=_("Do you want to move the selected notes in this cell (comments and workers will be reset)?")?>`;
           break;
-
-        case "delete":
+        case 'delete':
           item = this.element.find ("[data-action='delete']");
           title = `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`;
           content = `<?=_("Delete selected notes?")?>`;
           break;
-
-        case "cpick":
-          return this.send (args);
-
+        case 'cpick':
+          return this.send(args);
         default:
-          type = "info";
-          item = this.element.find ("li:eq(0)");
+          type = 'info';
+          item = this.element[0].querySelector('li');
           title = `<?=_("Copy/Move")?>`;
           content = `<?=_("Please, select the type of action first")?>`;
       }
 
-      if (title)
-      {
-        if (_data.dest)
-          _data.dest.element.addClass ("selected");
+      if (title) {
+        if (_data.dest) {
+          _data.dest.element[0].classList.add('selected');
+        }
 
-        H.openConfirmPopover ({
-          item: item,
-          type: type,
-          title: title,
-          content: content,
-          cb_close: ()=>
-          {
-            (args.event.target.querySelector("i")||args.event.target)
-              .classList.remove ("set");
+        H.openConfirmPopover({
+          item,
+          type,
+          title,
+          content,
+          cb_close: () => {
+            (args.event.target.querySelector('i') || args.event.target)
+              .classList.remove('set');
 
-            if (cbClose)
-              cbClose ();
+            cbClose && cbClose();
 
-            if (_data.dest)
-            {
-              _data.dest.element.removeClass ("selected");
+            if (_data.dest) {
+              _data.dest.element[0].classList.remove('selected');
               _data.dest = null;
             }
           },
-          cb_ok: ()=> this.send (args)
+          cb_ok: () => this.send(args),
         });
       }
     },
 
-    // METHOD send ()
-    send (args = {})
-    {
-      const action = this.getAction ();
+    // METHOD send()
+    send (args = {}) {
+      const action = this.getAction();
 
       // Color picker
-      switch (action)
-      {
-        case "cpick":
-
-          $("#cpick").cpick ("open", {
+      switch (action) {
+        case 'cpick':
+          $('#cpick').cpick('open', {
             event: args.event,
-            cb_close: ()=> args.event.target.classList.remove ("set"),
-            cb_click: (c)=>
-            {
-              H.request_ws (
-                "POST",
-                "postits/color",
+            cb_close: () => args.event.target.classList.remove('set'),
+            cb_click: (c) => {
+              H.request_ws(
+                'POST',
+                'postits/color',
                 {
                   color: c.className,
-                  postits: Object.keys (_data.postits)
+                  postits: Object.keys(_data.postits),
                 }
               );
             }
           });
         break;
-
         // Delete
-        case "delete":
-
-          for (const id in _data.postits)
-          {
+        case 'delete':
+          for (const id in _data.postits) {
             const p = _data.postits[id];
 
-            p.edit ({}, ()=>
-              {
-                p.delete ();
-                p.unedit ();
-              });
+            p.edit ({}, () => {
+              p.delete();
+              p.unedit();
+            });
           }
           break;
-
         // Copy
-        case "copy":
+        case 'copy':
         // Move
-        case "move":
-
+        case 'move':
           const cellSettings = _data.dest.settings;
 
-          H.request_ws (
-            "PUT",
+          H.request_ws(
+            'PUT',
             `wall/${cellSettings.wallId}/cell/${cellSettings.id}`+
               `/postits/${action}`,
-            {postits: Object.keys (_data.postits)},
+            {postits: Object.keys(_data.postits)},
             // success cb
-            ()=> this.close ());
+            () => this.close());
           break;
       }
     },
 
-    // METHOD isEmpty ()
-    isEmpty ()
-    {
-      return !this.itemsCount ();
+    // METHOD isEmpty()
+    isEmpty() {
+      return !this.itemsCount();
     },
 
-    // METHOD reset ()
-    reset ()
-    {
-      this.removeAll ();
-      this.element.find(".set").removeClass ("set");
+    // METHOD reset()
+    reset () {
+      this.removeAll();
+      this.element[0].querySelectorAll('.set').forEach(
+        (el) => el.classList.remove('set'));
 
       _data = {postits: {}, dest: null};
     },
 
-    // METHOD refresh ()
-    refresh ()
-    {
-      for (const id in _data.postits)
-        if (!document.querySelector(`.postit.selected[data-id="postit-${id}"]`))
-          this.remove (id);
+    // METHOD refresh()
+    refresh() {
+      for (const id in _data.postits) {
+        if (!document.querySelector(
+            `.postit.selected[data-id="postit-${id}"]`)) {
+          this.remove(id);
+        }
+      }
     },
 
-    // METHOD add ()
-    add (p)
-    {
+    // METHOD add()
+    add(p) {
       if (this.isEmpty ())
         this.open ();
 
