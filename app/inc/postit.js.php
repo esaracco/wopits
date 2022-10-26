@@ -240,8 +240,7 @@
 
       if (!pSettings.wall.wall('isShared') || 
           (!this.postitPlugin.canWrite() && !pSettings.attachmentscount)) {
-        this.$menu[0].querySelector(`[data-action="pwork"]`)
-            .style.display = 'none';
+        H.hide(this.$menu[0].querySelector(`[data-action="pwork"]`));
       }
     }
 
@@ -714,7 +713,7 @@
         H.openConfirmPopover({
           type: 'info',
           scrollIntoView: true,
-          item: min ? $(min) : this.element,
+          item: min || this.element[0],
           title, 
           content,
         });
@@ -901,9 +900,8 @@
       label.removeAttribute('data-origleft');
 
       if (this.canWrite()) {
-        label.querySelector('i.fa-thumbtack').style.display = 'none';
-        label.querySelector(`li[data-action="position-auto"]`)
-          .style.display = 'none';
+        H.hide(label.querySelector('i.fa-thumbtack'));
+        H.hide(label.querySelector(`li[data-action="position-auto"]`));
       }
     },
 
@@ -985,9 +983,8 @@
           pl.dataset.origleft = args.left;
 
           if (canWrite) {
-            pl.querySelector('i.fa-thumbtack').style.display = 'block';
-            pl.querySelector(`li[data-action="position-auto"]`)
-                .style.display = 'block';
+            H.show(pl.querySelector('i.fa-thumbtack'));
+            H.show(pl.querySelector(`li[data-action="position-auto"]`));
           }
 
           if (!p.customPos) {
@@ -1061,14 +1058,13 @@
         label.dataset.origleft = plug.label.left;
 
         if (canWrite) {
-          label.querySelector('i.fa-thumbtack').style.display = 'block';
+          H.show(label.querySelector('i.fa-thumbtack'));
         }
 
         plug.related = plugin.createRelatedPlugs(plug);
       } else {
         if (canWrite) {
-          label.querySelector(`li[data-action="position-auto"]`)
-            .style.display = 'none';
+          H.hide(label.querySelector(`li[data-action="position-auto"]`));
         }
 
         plug.related = [];
@@ -1131,9 +1127,8 @@
               label.dataset.changed = 1;
               label.dataset.pos = 1;
 
-              label.querySelector('i.fa-thumbtack').style.display = 'block';
-              label.querySelector(`li[data-action="position-auto"]`)
-                .style.display = 'none';
+              H.show(label.querySelector('i.fa-thumbtack'));
+              H.hide(label.querySelector(`li[data-action="position-auto"]`));
 
               label.dataset.origtop = Number((lbPos.top - wPos.top) / z);
               label.dataset.origleft = Number((lbPos.left - wPos.left) / z);
@@ -1527,7 +1522,7 @@
 
       date.querySelector('span').innerText = human;
 
-      reset.style.display = 'none';
+      H.hide(reset);
 
       if (human === '...') {
         postit.classList.remove('obsolete');
@@ -1552,7 +1547,7 @@
         }
 
         if (this.canWrite()) {
-          reset.style.display = 'inline-block';
+          H.show(reset, 'inline-block');
         }
       }
     },
@@ -1577,14 +1572,14 @@
 
       if (!v) {
         postit.removeAttribute('data-progress');
-        container.style.display = 'none';
+        H.hide(container);
       } else {
         const progress = container.querySelector('.postit-progress');
 
         postit.dataset.progress = v;
 
         container.querySelector('span').innerText = `${v}%`;
-        container.style.display = 'block';
+        H.show(container);
 
         progress.style.height = `${v}%`;
         progress.style.backgroundColor = H.getProgressbarColor(v);
@@ -1664,7 +1659,7 @@
 
       if (ask) {
         H.openConfirmPopover({
-          item: args.item || this.element,
+          item: args.item ? args.item[0] : this.element[0],
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
           content: `<?=_("This note contains external images or videos.")?><br><?=_("Would you like to load all external content for the current wall?")?>`,
           cb_close: args.cb_close,
@@ -1874,7 +1869,7 @@
       const postitEdit = d.init ? postit.querySelector('.postit-edit') : null;
 
       if (postitEdit) {
-        postitEdit.style.display = 'none';
+        H.hide(postitEdit);
       }
 
       // Change postit cell
@@ -1942,7 +1937,7 @@
 
       // FIXME
       if (postitEdit) {
-        setTimeout(() => postitEdit.style.display = 'block', 150);
+        setTimeout(() => H.show(postitEdit), 150);
       }
     },
 
@@ -2312,7 +2307,7 @@
               // DELETE postit
               case 'delete':
                 H.openConfirmPopover({
-                  item: $(postit.querySelector('.btn-menu')),
+                  item: postit.querySelector('.btn-menu'),
                   placement: 'right',
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: `<?=_("Delete this note?")?>`,
@@ -2390,7 +2385,7 @@
           if (el.classList.contains('fa-times-circle')) {
             plugin.edit({}, () => {
               H.openConfirmPopover({
-                item: $(el.tagName === 'DIV' ? el : el.closest('div')),
+                item: (el.tagName === 'DIV') ? el : el.closest('div'),
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
                 content: `<?=_("Reset deadline?")?>`,
                 cb_close: () => plugin.unedit(),
@@ -2442,7 +2437,7 @@
             startPlugin.edit({}, () => {
               H.openConfirmPopover({
                 type: 'update',
-                item: $(label),
+                item: label,
                 title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
                 content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
                 cb_close: __unedit,
@@ -2459,7 +2454,7 @@
           case 'delete':
             startPlugin.edit({}, () => {
               H.openConfirmPopover ({
-                item: $(label),
+                item: label,
                 placement: 'left',
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                 content: `<?=_("Delete this relation?")?>`,
@@ -2500,7 +2495,7 @@
           return;
         }
 
-        $(el.closest(".postit")).postit('edit', {},
+        $(el.closest('.postit')).postit('edit', {},
           () => S.getCurrent('tpick').tpick('open', e));
       }
     });
@@ -2597,8 +2592,8 @@
         S.set('postit-data', {closing: true});
 
         //FIXME
-        document.querySelectorAll('.tox-toolbar__overflow').forEach((el) =>
-          el.style.display = 'none');
+        document.querySelectorAll('.tox-toolbar__overflow').forEach(
+          (el) => H.hide(el));
         //$('.tox-menu').hide();
 
         popup.querySelectorAll('input').forEach((el) => el.value = '');

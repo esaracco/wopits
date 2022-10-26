@@ -96,7 +96,7 @@
       popup.querySelector('.reject-sharing button')
         .addEventListener('click', (e) => {
         H.openConfirmPopover ({
-          item: $(e.target),
+          item: e.target,
           title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
           content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
           cb_ok: () => this.removeGroupUser(),
@@ -153,11 +153,11 @@
 
           H.cleanPopupDataAttr(popup);
 
-          popup.querySelector('.description').style.display = 'block';
+          H.show(popup.querySelector('.description'));
           popup.querySelector('.creator').innerText = d.user_fullname;
           popup.querySelector('.creationdate').innerText =
             H.getUserDate(d.creationdate, null, 'Y-MM-DD HH:mm');
-          popup.querySelector('.size').style.display = 'none';
+          H.hide(popup.querySelector('.size'));
 
           if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
             const wall = this.wall.plugin.element[0];
@@ -178,7 +178,7 @@
 
               popup.querySelector(`[name="wall-width"]`).value = width;
               popup.querySelector(`[name="wall-height"]`).value = height;
-              popup.querySelector('.size').style.display = 'block';
+              H.show(popup.querySelector('.size'));
             }
           } else {
             $popup.find('.btn-primary').hide();

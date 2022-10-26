@@ -85,7 +85,7 @@
         if (args.title) {
           H.openConfirmPopover({
             ...args,
-            item: $(li),
+            item: li,
             type: 'info',
             placement: 'right',
           });
@@ -411,7 +411,7 @@
       if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
       {
         this.element.find("[data-action='copy'] i.set").removeClass ("set");
-        this.element[0].style.opacity = 0.3;
+        this.element[0].style.opacity = .3;
       }
     },
 
@@ -430,12 +430,12 @@
       else
         content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?></li></ul>`;
 
-      H.openConfirmPopover ({
-        item: this.element,
+      H.openConfirmPopover({
+        item: this.element[0],
         type: "info",
         title: `<i class="fas fa-bolt fa-fw"></i> <?=_("Meta menu")?>`,
-        placement: "right",
-        content: content+_noDisplayBtn,
+        placement: 'right',
+        content: content + _noDisplayBtn,
         cb_ok: ()=> ST.noDisplay (`mmenu-help-${writeAccess}`, true)
       });
     },

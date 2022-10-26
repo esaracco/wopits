@@ -99,6 +99,7 @@
 
     // METHOD reset()
     reset(full) {
+      const $wall = S.getCurrent('wall');
       const search = this.element[0];
 
       if (full) {
@@ -106,7 +107,9 @@
       }
 
       _smPlugin.reset();
-      S.getCurrent('wall')[0].removeAttribute('data-searchstring');
+      if ($wall.length) {
+        $wall[0].removeAttribute('data-searchstring');
+      }
       search.querySelector('.result').innerHTML = '';
     },
 

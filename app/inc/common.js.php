@@ -746,6 +746,16 @@ class WHelper {
     }
   }
 
+  // METHOD show()
+  static show(el, type) {
+    el.style.display = type || 'block';
+  }
+
+  // METHOD hide()
+  static hide(el) {
+    el.style.display = 'none';
+  }
+
   // METHOD createElement()
   static createElement(tag, props, dataSet, content) {
     const el = Object.assign(document.createElement(tag), props);
@@ -872,10 +882,16 @@ class WHelper {
   }
 
   // METHOD setAutofocus ()
-  static setAutofocus(el) {
-    const input = this.getFirstInputFields(el);
+  static setAutofocus(el, input) {
+    if (!input) {
+      input = this.getFirstInputFields(el);
+    }
 
     if (input) {
+      const end = input.value.length; 
+
+      // Set cursor at the end of the value
+      try {input.setSelectionRange(end, end)} catch(e) {}
       input.focus();
     }
   }
@@ -972,8 +988,8 @@ class WHelper {
         popup.querySelectorAll('.cols-rows input').forEach(
             (el) => el.value = 3);
         popup.querySelectorAll('.cols-rows,.width-height')
-            .forEach((el) => el.style.display = 'none');
-        popup.querySelector('.cols-rows').style.display = 'flex';
+            .forEach((el) => this.hide(el));
+        this.show(popup.querySelector('.cols-rows'), 'flex');
         wGrid.checked = true;
         wGrid.parentNode.classList.remove('disabled');
         break;
@@ -1049,8 +1065,8 @@ class WHelper {
             // Abort upload on user request
             button.addEventListener('click',
                 (e) => args?.xhr.abort(), {once: true});
-            button.style.display = 'block';
-            progress.style.display = 'block';
+            this.show(button);
+            this.show(progress);
           }
   
           layer.querySelector('i').className =
@@ -1062,8 +1078,8 @@ class WHelper {
         }, args?.delay !== undefined ? args.delay : 500);
       } else {
         layer.classList.remove('show');
-        button.style.display = 'none';
-        progress.style.display = 'none';
+        this.hide(button);
+        this.hide(progress);
         progress.style.backgroundColor = '#ea6966';
 
         layer.removeAttribute('data-timeoutid');
@@ -1084,22 +1100,22 @@ class WHelper {
         p.querySelector('.name dd').innerText = title;
 
         div.innerHTML = '';
-        div.style.display = 'none';
+        this.hide(div);
 
         if (picture) {
           const img = this.createElement('img', {src: picture});
 
-          img.addEventListener('error', (e) => div.style.display = 'none');
+          img.addEventListener('error', (e) => this.hide(div));
           div.appendChild(img);
 
-          div.style.display = 'block';
+          this.show(div);
         }
 
         if (about) {
           aboutEl.querySelector('dd').innerHTML = H.nl2br(about);
-          aboutEl.style.display = 'block';
+          this.show(aboutEl);
         } else {
-          aboutEl.style.display = "none";
+          this.hide(aboutEl);
         }
 
         H.openModal({item: p});
@@ -1134,7 +1150,9 @@ class WHelper {
 
     document.body.appendChild(layer);
 
-    layer.style.display = 'block';
+    this.show(layer);
+
+    return layer;
   }
   
   // METHOD openConfirmPopup()
@@ -1164,8 +1182,8 @@ class WHelper {
     let btn;
     let buttons;
 
-    this.openPopupLayer((e) => {
-      const bp = bootstrap.Popover.getInstance(args.item[0]);
+    const layer = this.openPopupLayer((e) => {
+      const bp = bootstrap.Popover.getInstance(args.item);
 
       if (bp) {
         args.cb_close && args.cb_close(bp.tip.dataset.btnclicked);
@@ -1206,7 +1224,7 @@ class WHelper {
         buttons = `<button type="button" class="btn btn-xs btn-primary"><?=_("Yes")?></button> <button type="button" class="btn btn-xs btn-secondary"><?=_("No")?></button>`;
     }
   
-    const bp = new bootstrap.Popover(args.item[0], {
+    const bp = new bootstrap.Popover(args.item, {
       html: true,
       sanitize: false,
       title: args.title,
@@ -1226,7 +1244,7 @@ class WHelper {
         closeVKB = H.fixVKBScrollStart();
       // If no virtual keyboard, focus on the first input
       } else {
-        input.focus();
+        this.setAutofocus(null, input);
       }
     }
 
@@ -1240,20 +1258,26 @@ class WHelper {
       }
 
       if (!args.noclosure) {
-        document.getElementById("popup-layer").click ();
+        layer.click();
       }
     };
 
+    // Header
+    const header = bp.tip.querySelector('.popover-header');
+    const close = H.createElement('span',
+      {className: 'btn-close', style: 'float: right'}, null, `&nbsp;`);
+    close.addEventListener('click', () => layer.click());
+    header.appendChild(close);
+
+    // Body
     const body = bp.tip.querySelector('.popover-body');
-
     body.classList.add('justify');
-
     body.querySelectorAll('button:not(.close)')
         .forEach((el) => el.addEventListener('click', _eventC));
 
     // Scroll to the popover point
     if (scroll) {
-      args.item[0].scrollIntoView(false);
+      args.item.scrollIntoView(false);
     }
 
     args.cb_after && args.cb_after($(bp.tip));

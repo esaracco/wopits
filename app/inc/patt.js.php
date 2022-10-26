@@ -195,23 +195,21 @@
 
       popup.dataset.id = li.dataset.id;
 
-      popup.querySelector('.title').style.display = 'block';
-      popup.querySelector('.description').style.display = 'block';
+      H.show(popup.querySelector('.title'));
+      H.show(popup.querySelector('.description'));
       img.querySelector('img').setAttribute('src', '');
-      img.style.display = 'none';
+      H.hide(img);
 
       popup.querySelector('.file').innerText = fileVal;
       popup.querySelector('.file-infos').innerHTML = fileInfosVal;
 
       if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
         // Display "Save" button
-        popup.querySelector('.btn-primary').style.display = 'inline-block';
+        H.show(popup.querySelector('.btn-primary'), 'inline-block');
         // Display "Delete" button
-        popup.querySelector('.btn-secondary').style.display = 'inline-block';
-        popup.querySelectorAll('.ro').forEach((el) =>
-          el.style.display = 'none');
-        popup.querySelectorAll('.adm').forEach((el) =>
-          el.style.display = 'block');
+        H.show(popup.querySelector('.btn-secondary'), 'inline-block');
+        popup.querySelectorAll('.ro').forEach((el) => H.hide(el));
+        popup.querySelectorAll('.adm').forEach((el) => H.show(el));
 
         popup.querySelector('.title input').value = titleVal;
         popup.querySelector('.description textarea').value = descVal;
@@ -219,30 +217,28 @@
         H.setAutofocus(popup);
       } else {
         // Hide "Save" button
-        popup.querySelector('.btn-primary').style.display = 'none';
+        H.hide(popup.querySelector('.btn-primary'));
         // Hide "Delete" button
-        popup.querySelector('.btn-secondary').style.display = 'none';
-        popup.querySelectorAll('.ro').forEach ((el) =>
-          el.style.display = 'block');
-        popup.querySelectorAll('.adm').forEach((el) =>
-          el.style.display = 'none');
+        H.hide(popup.querySelector('.btn-secondary'));
+        popup.querySelectorAll('.ro').forEach ((el) => H.show(el));
+        popup.querySelectorAll('.adm').forEach((el) => H.hide(el));
 
         if (titleVal) {
           popup.querySelector('.title .ro').innerText = titleVal;
         } else {
-          popup.querySelector('.title').style.display = 'none';
+          H.hide(popup.querySelector('.title'));
         }
 
         if (descVal) {
           popup.querySelector('.description .ro').innerHTML = H.nl2br(descVal);
         } else {
-          popup.querySelector('.description').style.display = 'none';
+          H.hide(popup.querySelector('.description'));
         }
       }
 
       if (isImg) {
         img.querySelector('img').setAttribute('src', li.dataset.url);
-        img.style.display = 'block';
+        H.show(img);
       }
 
       $(body.appendChild(popup)).show('fade');
@@ -287,7 +283,7 @@
   
             item.classList.add('active');
             H.openConfirmPopover({
-              item: $(btn),
+              item: btn,
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
               content: `<?=_("Delete the file?")?>`,
               cb_close: () => {

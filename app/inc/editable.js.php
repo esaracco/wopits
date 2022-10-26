@@ -168,7 +168,7 @@
                   plugin.resize((e.clipboardData || window.clipboardData)
                       .getData('text')));
 
-                settings._input.focus();
+                H.setAutofocus(null, settings._input);
               });
             }
           }, 250);

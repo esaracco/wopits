@@ -119,7 +119,7 @@ let _body;
       const filters = this.element[0];
 
       if (H.isVisible(filters)) {
-        filters.style.display = 'none';
+        H.hide(filters);
         filters.querySelectorAll(
             '.tags div.selected,.colors div.selected').forEach(
                 (el) => el.classList.remove('selected'));
@@ -127,7 +127,7 @@ let _body;
       } else {
         filters.style.top = '60px';
         filters.style.left = '5px';
-        filters.style.display = 'table';
+        H.show(filters, 'table');
         this.apply({norefresh: true});
       }
     },

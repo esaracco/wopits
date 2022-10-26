@@ -129,7 +129,7 @@
 
       if ($chat.is(':visible')) {
         H.request_ws('DELETE', `wall/${wallId}/chat`);
-        chat.style.display = 'none';
+        H.hide(chat);
       } else {
         const el =
           document.querySelector(`#wall-${wallId} .wall-menu .chat-alert`);
@@ -138,7 +138,7 @@
 
         chat.style.bottom = '15px';
         chat.style.left = '5px';
-        chat.style.display = 'table';
+        H.show(chat, 'table');
 
         this.setFocus();
 

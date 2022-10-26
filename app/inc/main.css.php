@@ -1285,7 +1285,7 @@ kbd,
 }
 
 .cell-menu .wpt-badge {
-  transform: translate(-79%, -10%);
+  transform: translate(-65%, -5%);
 }
 
 .cell-menu .btn-circle {
@@ -2176,6 +2176,13 @@ i.fa-xs {
 
 .modal-footer {
   padding: .5rem;
+}
+
+.popover-header .btn-close {
+  float: right;
+  margin-right: -10px;
+  margin-top: -2px;
+  cursor: pointer;
 }
 
 .popover-header,

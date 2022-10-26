@@ -139,7 +139,7 @@
               type: 'info',
               customClass: 'msg-popover umsg-popover',
               placement: 'bottom',
-              item: this.element.find('.wpt-badge'),
+              item: this.element[0].querySelector('.wpt-badge'),
               title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Messages")?>`,
               content: body,
               cb_after: ($p) => {

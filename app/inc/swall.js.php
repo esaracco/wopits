@@ -128,7 +128,7 @@
             // Delete group
             case 'delete-group':
               H.openConfirmPopover({
-                 item: $(btn.closest('li').querySelector('.name')),
+                 item: btn.closest('li').querySelector('.name'),
                  title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                  content:
                    (row.parentNode.classList.contains(
@@ -148,7 +148,7 @@
                 plugin.unlinkGroup({id}, groupType);
               } else {
                 H.openConfirmPopover({
-                   item: $(btn.closest('li').querySelector('.name')),
+                   item: btn.closest('li').querySelector('.name'),
                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
                    content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
                    cb_close: __close,
@@ -504,22 +504,21 @@
       div.innerHTML = html;
 
       if (!r.delegateAdminId) {
-        body.querySelectorAll('.delegate-admin-only').forEach((el) =>
-          el.style.display = 'none');
+        body.querySelectorAll('.delegate-admin-only').forEach(
+          (el) => H.hide(el));
 
         _displaySection(body.querySelector('.list-group.gtype-<?=WPT_GTYPES_DED?>.noattr'), <?=WPT_GTYPES_DED?>, r.notin);
 
         _displaySection(body.querySelector('.list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr'), <?=WPT_GTYPES_GEN?>, r.notin);
   
-        body.querySelectorAll('.creator-only').forEach((el) =>
-          el.style.display = 'block');
+        body.querySelectorAll('.creator-only').forEach((el) => H.show(el));
       }
       else
       {
-        body.querySelectorAll('.creator-only').forEach((el) =>
-          el.style.display = 'none');
-        body.querySelectorAll('.delegate-admin-only').forEach((el) =>
-          el.style.display = 'block');
+        body.querySelectorAll('.creator-only').forEach(
+          (el) => H.hide(el));
+        body.querySelectorAll('.delegate-admin-only').forEach(
+          (el) => H.show(el));
       }
 
       H.openModal({item: $share[0]});

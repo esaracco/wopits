@@ -99,7 +99,7 @@
                 this.removeUser(args);
               } else {
                 H.openConfirmPopover({
-                  item: $(li.querySelector('span')),
+                  item: li.querySelector('span'),
                   title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
                   content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
                   cb_ok: () => {
@@ -260,17 +260,17 @@
 
       input.classList.remove('autocomplete');
       ac.querySelector('.result .content').innerHTML = '';
-      ac.querySelector('.result button.closemenu').style.display = 'none';
+      H.hide(ac.querySelector('.result button.closemenu'));
       search.classList.remove('shadow');
 
       if (args.readonly !== undefined && args.readonly) {
         _readonly = true;
-        search.style.display = 'none';
-        ac.querySelector('.desc').style.display = 'none';
+        H.hide(search);
+        H.hide(ac.querySelector('.desc'));
       } else {
         _readonly = false;
-        search.style.display = 'block';
-        ac.querySelector('.desc').style.display = 'block';
+        H.show(search);
+        H.show(ac.querySelector('.desc'));
       }
     },
 
@@ -374,8 +374,8 @@
           }
 
           if (d.length) {
-            ac.querySelector('.users-title').style.display = 'block';
-            ac.querySelector('.nousers-title').style.display = 'none';
+            H.show(ac.querySelector('.users-title'));
+            H.hide(ac.querySelector('.nousers-title'));
 
             d.forEach((u) => _readonly ?
               html += `<li class="list-group-item" data-id="${u.id}" data-title="${H.htmlEscape(u.fullname)}" data-picture="${u.picture || ''}" data-about="${H.htmlEscape(u.about || '')}"><div class="label">${u.fullname}</div><div class="item-infos"><span>${u.username}</span></div></li>` :
@@ -391,8 +391,8 @@
           }
           else
           {
-            ac.querySelector('.users-title').style.display = 'none';
-            ac.querySelector('.nousers-title').style.display = 'block';
+            H.hide(ac.querySelector('.users-title'));
+            H.show(ac.querySelector('.nousers-title'));
             divParent.classList.remove('scroll');
             div.innerHTML = '';
           }

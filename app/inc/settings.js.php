@@ -291,7 +291,7 @@
       const swatchesWidth = ww < 435 ? ww - 90 : 435;
 
       if (!loaded) {
-        settings.querySelector('.modal-body').style.display = 'none';
+        H.hide(settings.querySelector('.modal-body'));
       }
 
       if ($wall.length) {

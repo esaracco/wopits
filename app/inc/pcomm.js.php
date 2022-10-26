@@ -88,7 +88,7 @@
       args.str = args.str.replace(/&/g, '');
 
       el.style.height = 'auto';
-      el.style.display = 'block';
+      H.show(el);
 
       H.fetch(
         'GET',
@@ -140,7 +140,7 @@
         _textarea.value = '';
       }
 
-      pc.querySelector('.result-container').style.display = 'none';
+      H.hide(pc.querySelector('.result-container'));
       pc.querySelector('.result').innerHTML = '';
 
       _textarea.classList.remove('autocomplete');
@@ -281,7 +281,7 @@
             html_header: editing,
             customClass: 'msg-popover pcomm-popover',
             noclosure: true,
-            item: this.element,
+            item: this.element[0],
             title: `<i class="fas fa-comments fa-fw"></i> <?=_("Comments")?>`,
             content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
             cb_ok: ($p) => {

@@ -16,8 +16,8 @@
 
 ?>
 
-  let _realEdit = false,
-      _originalObject;
+  let _realEdit = false;
+  let _originalObject;
 
   /////////////////////////// PRIVATE METHODS ///////////////////////////
 
@@ -36,8 +36,7 @@
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
-  Plugin.prototype =
-  {
+  Plugin.prototype = {
     // METHOD init()
     init(args) {
       const header = this.element[0];
@@ -83,20 +82,13 @@
       );
 
       if (adminAccess) {
-        // EVENT "click" on header menu button
-        // To prevent header title editing
-/*FIXME
-        menu.querySelector('.dropdown-toggle')
-            .addEventListener('click', (e) => e.stopPropagation());
-*/
-
         // EVENT "show.bs.dropdown" on header menu
         menu.addEventListener('show.bs.dropdown', (e) => {
           const el = e.target;
-          const $menu = $(el.closest("ul"));
+          const $menu = $(el.closest('ul'));
           const menu = $menu[0];
           const wall = $wall[0];
-          const tr = $header.closest("tr.wpt")[0];
+          const tr = header.closest('tr.wpt');
           const deleteItem =
               menu.querySelector(`[data-action="delete"] a`);
           const moveUpItem =
@@ -111,49 +103,48 @@
           el.querySelector('.nav-link i.far').classList.replace('far', 'fas');
 
           // Display all items by default
-          menu.querySelectorAll('a').forEach((el) =>
-              el.style.display = 'block');
+          menu.querySelectorAll('a').forEach((el) => H.show(el));
 
           // If column menu
           if (isCol) {
             const thIdx = header.cellIndex;
 
             if (wall.querySelectorAll('thead.wpt th.wpt').length <= 2) {
-              deleteItem.style.display = 'none';
+              H.hide(deleteItem);
             }
 
             if (thIdx === 1) {
-              moveLeftItem.style.display = 'none';
+              H.hide(moveLeftItem);
             }
 
-            if (thIdx == tr.querySelectorAll('th.wpt').length - 1) {
-              moveRightItem.style.display = "none";
+            if (thIdx === tr.querySelectorAll('th.wpt').length - 1) {
+              H.hide(moveRightItem);
             }
           // If row menu
           } else {
             const trIdx = tr.rowIndex - 1;
 
             if (wall.querySelectorAll('tbody.wpt th.wpt').length === 1) {
-              deleteItem.style.display = 'none';
+              H.hide(deleteItem);
             }
 
             if (trIdx === 0) {
-              moveUpItem.style.display = 'none';
+              H.hide(moveUpItem);
             }
 
             if (trIdx === wall.querySelectorAll('tr.wpt').length - 2) {
-              moveDownItem.style.display = 'none';
+              H.hide(moveDownItem);
             }
           }
 
-          if (isCol && wall.dataset.cols == '1') {
-            moveLeftItem.style.display = 'none';
-            moveRightItem.style.display = 'none';
+          if (isCol && wall.dataset.cols === '1') {
+            H.hide(moveLeftItem);
+            H.hide(moveRightItem);
           }
 
-          if (!isCol && wall.dataset.rows == '1') {
-            moveUpItem.style.display = 'none';
-            moveDownItem.style.display = 'none';
+          if (!isCol && wall.dataset.rows === '1') {
+            H.hide(moveUpItem);
+            H.hide(moveDownItem);
           }
         });
 
@@ -185,7 +176,7 @@
             case 'delete':
               this.edit(() => {
                 H.openConfirmPopover({
-                  item: $cell.find('i.btn-menu'),
+                  item: $cell[0].querySelector('i.btn-menu'),
                   placement: isCol ? 'left' : 'right',
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: isCol ?
@@ -193,12 +184,15 @@
                       `<?=_("Delete this row?")?>`,
                   cb_close: () => this.unedit(),
                   cb_ok: () => {
-                    if (isCol) {
-                      $wall.wall('deleteCol', header.cellIndex);
-                    } else {
-                      $wall.wall('deleteRow',
-                          header.closest('tr.wpt').rowIndex - 1);
-                    }
+                    // Wait for the popover to be closed
+                    setTimeout(() => {
+                      if (isCol) {
+                        $wall.wall('deleteCol', header.cellIndex);
+                      } else {
+                        $wall.wall('deleteRow',
+                            header.closest('tr.wpt').rowIndex - 1);
+                      }
+                    }, 250);
                   },
                 });
               });
@@ -209,10 +203,9 @@
                 H.openConfirmPopover({
                   type: 'update',
                   scrollIntoView: isCol,
-                  item: $(li.parentNode.parentNode
-                            .querySelector(".btn-menu")),
-                  title: `<i class="fas fa-grip-lines${isCol?"-vertical":""} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
-                  content: `<input type="text" class="form-control form-control-sm" value="${$header.find(".title").text()}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
+                  item: li.parentNode.parentNode.querySelector('.btn-menu'),
+                  title: `<i class="fas fa-grip-lines${isCol ? '-vertical' : ''} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
+                  content: `<input type="text" class="form-control form-control-sm" value="${header.querySelector('.title').innerText}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
                   cb_close: () => {
                     if (!S.get('no-unedit')) {
                       this.unedit();
@@ -221,7 +214,7 @@
                   },
                   cb_ok: ($p) => {
                     S.set('no-unedit', true);
-                    this.setTitle ($p.find('input').val(), true);
+                    this.setTitle($p[0].querySelector('input').value, true);
                   }
                 });
               });
@@ -333,13 +326,13 @@
         ['mousedown', 'touchstart'].forEach((type) =>
           layer.addEventListener(type, (e) => this.unedit(), {once: true}));
 
-        layer.style.display = 'block';
+        H.show(layer);
       }
     },
 
     // METHOD removeUploadLayer()
     removeUploadLayer() {
-      document.getElementById('upload-layer').style.display = 'none';
+      H.hide(document.getElementById('upload-layer'));
     },
 
     // METHOD getImgTemplate()
@@ -392,7 +385,7 @@
 
         this.edit(() => {
           H.openConfirmPopover ({
-            item: $(e.target),
+            item: e.target,
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete this picture?")?>`,
@@ -493,14 +486,14 @@
 
       title = H.noHTML(title);
 
-      this.settings.title = title || '&nbsp;'
+      this.settings.title = title || '&nbsp;';
 
       header.querySelector('.title').innerHTML = this.settings.title;
 
       if (resize) {
         const $wall = this.settings.wall;
         const oldW = this.settings.thwidth;
-        const isRow = (this.settings.item_type == 'row');
+        const isRow = (this.settings.item_type === 'row');
 
         if (isRow) {
           $wall[0].style.width = 'auto';

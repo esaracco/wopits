@@ -85,7 +85,7 @@
         // If delete img
         if (e.target.classList.contains('img-delete')) {
           H.openConfirmPopover({
-            item: $(e.target),
+            item: e.target,
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete your profile picture?")?>`,
@@ -131,7 +131,7 @@
             case 'visible':
               if (field.checked) {
                 H.openConfirmPopover({
-                  item: $(field),
+                  item: field,
                   placement: 'top',
                   title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
                   content: `<?=_("By checking this option, sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
@@ -149,7 +149,7 @@
             case 'allow_emails':
               if (!field.checked) {
                 H.openConfirmPopover({
-                  item: $(field),
+                  item: field,
                   placement: 'top',
                   title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Notify me by email")?>`,
                   content: `<?=_("By unchecking this option, you will no longer receive email notifications.<br>Disable notifications anyway?")?>`,
