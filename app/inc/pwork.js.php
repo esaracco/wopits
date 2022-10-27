@@ -9,7 +9,7 @@
 
   require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin('pwork', '', 'postitElement');
+  $Plugin = new Wopits\jQueryPlugin('pwork');
   echo $Plugin->getHeader();
 
 ?>

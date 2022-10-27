@@ -27,13 +27,16 @@
       const plugin = this;
       const $sm = plugin.element;
 
+      this.boundMousemoveEventHandler = this.mousemoveEventHandler.bind(this);
+      this.boundKeydownEventHandler = this.keydownEventHandler.bind(this);
+
       plugin.reset();
 
       $sm.draggable({
         distance: 10,
         cursor: 'move',
         drag: (e, ui) => plugin.fixDragPosition(ui),
-        stop: ()=> S.set ('dragging', true, 500),
+        stop: ()=> S.set('dragging', true, 500),
       });
 
       // EVENT "click" on "close" button
@@ -43,7 +46,7 @@
       // EVENT "click" on menu
       $sm[0].addEventListener('click', (e) => {
         const el = e.target;
-        const li = el.tagName === 'LI' ? el : el.closest('li');
+        const li = (el.tagName === 'LI') ? el : el.closest('li');
 
         if (!li || H.disabledEvent(
               !H.checkAccess(<?=WPT_WRIGHTS_RW?>) ||
@@ -129,7 +132,7 @@
           content = `<?=_("Do you want to move the selected notes in this cell (comments and workers will be reset)?")?>`;
           break;
         case 'delete':
-          item = this.element.find ("[data-action='delete']");
+          item = this.element[0].querySelector(`[data-action='delete']`);
           title = `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`;
           content = `<?=_("Delete selected notes?")?>`;
           break;
@@ -147,12 +150,16 @@
           _data.dest.element[0].classList.add('selected');
         }
 
+        S.set('noDefaultEscape', true);
+
         H.openConfirmPopover({
           item,
           type,
           title,
           content,
           cb_close: () => {
+            S.unset('noDefaultEscape');
+
             (args.event.target.querySelector('i') || args.event.target)
               .classList.remove('set');
 
@@ -169,7 +176,7 @@
     },
 
     // METHOD send()
-    send (args = {}) {
+    send(args = {}) {
       const action = this.getAction();
 
       // Color picker
@@ -192,14 +199,14 @@
         break;
         // Delete
         case 'delete':
-          for (const id in _data.postits) {
+          Object.keys(_data.postits).forEach((id) => {
             const p = _data.postits[id];
 
             p.edit ({}, () => {
               p.delete();
               p.unedit();
             });
-          }
+          });
           break;
         // Copy
         case 'copy':
@@ -224,7 +231,7 @@
     },
 
     // METHOD reset()
-    reset () {
+    reset() {
       this.removeAll();
       this.element[0].querySelectorAll('.set').forEach(
         (el) => el.classList.remove('set'));
@@ -233,14 +240,16 @@
     },
 
     // METHOD refresh()
+/* FIXME Useful?
     refresh() {
-      for (const id in _data.postits) {
+      Object.keys(_data.postits).forEach((id) => {
         if (!document.querySelector(
             `.postit.selected[data-id="postit-${id}"]`)) {
           this.remove(id);
         }
-      }
+      });
     },
+*/
 
     // METHOD add()
     add(p) {
@@ -257,218 +266,227 @@
       this.checkAllowedActions ();
     },
 
-    // METHOD update ()
-    update (id, p)
-    {
-      if (_data.postits[id])
+    // METHOD update()
+    update(id, p) {
+      if (_data.postits[id]) {
         _data.postits[id] = p;
+      }
     },
 
-    // METHOD remove ()
-    remove (id)
-    {
+    // METHOD remove()
+    remove(id) {
       const p = _data.postits[id];
 
-      if (p)
+      if (p) {
         p.settings.cell[0].querySelectorAll(
           `.selected[data-id="${p.element[0].dataset.id}"]`)
-             .forEach ((_p)=> _p.classList.remove ("selected"));
+             .forEach((el)=> el.classList.remove('selected'));
+      }
 
       delete _data.postits[id];
 
-      this.refreshItemsCount ();
+      this.refreshItemsCount();
 
-      if (this.isEmpty ())
-        this.close ();
-      else
-        this.checkAllowedActions ();
+      if (this.isEmpty()) {
+        this.close();
+      } else {
+        this.checkAllowedActions();
+      }
     },
 
-    // METHOD removeAll ()
-    removeAll ()
-    {
-      for (const id in _data.postits)
-        this.remove (id);
+    // METHOD removeAll()
+    removeAll() {
+      Object.keys(_data.postits).forEach((id) => this.remove(id));
     },
 
-    // METHOD itemsCount ()
-    itemsCount ()
-    {
+    // METHOD itemsCount()
+    itemsCount() {
       return Object.keys(_data.postits).length;
     },
 
-    // METHOD refreshItemsCount ()
-    refreshItemsCount ()
-    {
-      this.element[0].querySelector(".wpt-badge")
-        .innerText = this.itemsCount ();
+    // METHOD refreshItemsCount()
+    refreshItemsCount() {
+      this.element[0].querySelector('.wpt-badge').innerText = this.itemsCount();
     },
 
-    // METHOD open ()
-    open ()
-    {
-      const plugin = this,
-            $sm = plugin.element;
+    // METHOD mousemoveEventHandler()
+    mousemoveEventHandler(e) {
+      S.set('mousepos', {x: e.pageX, y: e.pageY});
+    },
 
-      if (!H.haveMouse () || plugin.element.is (":visible"))
+    // METHOD keydownEventHandler()
+    keydownEventHandler(e) {
+      const menu = this.element[0];
+
+      // Nothing if modal was opened and is closing
+      if (S.get('still-closing') || S.get('zoom-level')) return;
+
+      // Nothing if modal/popover is opened or editable field is active
+      if (!S.get('noDefaultEscape') && document.querySelector([
+           '#popup-layer',
+           '.modal.show',
+           '.popover.show',
+           '.editable.editing',
+          ])) {
         return;
+      }
 
-      this.element.show ();
+      switch (e.which) {
+        // ESC
+        case 27:
+          return S.get('noDefaultEscape') ?
+            document.getElementById('popup-layer').click() : this.close();
+        // DEL
+        case 46:
+          return menu.querySelector(`li[data-action="delete"]`).click();
+        // CTRL+C
+        case 67:
+          if (e.ctrlKey) {
+            return menu.querySelector(`li[data-action="copy"]`).click();
+          }
+          break;
+        // CTRL+V
+        case 86:
+          const mpos = S.get('mousepos');
+          let el = document.elementFromPoint(mpos.x, mpos.y);
+
+          if (el.tagName !== 'TD') {
+            el = el.closest('td.wpt');
+          }
+
+          // Simulate click on cell
+          if (el) {
+            S.set('action-mmenu', true, 500);
+
+            el.dispatchEvent(
+              new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: mpos.x,
+                clientY: mpos.y,
+              }));
+          }
+          break;
+        // CTRL+X
+        case 88:
+          if (e.ctrlKey) {
+            return menu.querySelector(`li[data-action="move"]`).click();
+          }
+          break;
+      }
+    },
+
+    // METHOD open()
+    open() {
+      if (this.element.is(':visible')) return;
+
+      this.element.show();
 
       // EVENT mousemove
-      $(document).on("mousemove.mmenu",
-         (e)=> S.set ("mousepos", {x: e.pageX, y: e.pageY}));
-
-      // EVENT keydown
-      $(document).on("keydown.mmenu", function (e)
-        {
-          // Nothing if modal was opened and is closing
-          if (S.get("still-closing"))
-            return;
-
-          // Nothing if modal/popover is opened or editable field is active
-          if (document.querySelector ([
-                "#popup-layer", ".modal.show", ".popover.show",
-                ".editable.editing"]))
-            return;
-
-          switch (e.which)
-          {
-            // ESC
-            case 27:
-
-              // Nothing if menu is postit menu opened
-              if (document.querySelector ([".postit-header.menu"]))
-                return;
-
-              return plugin.close ();
-
-            // DEL
-            case 46:
-
-              return $sm.find(`li[data-action="delete"]`).click ();
-            // CTRL+C
-            case 67:
-
-              if (e.ctrlKey)
-                return $sm.find(`li[data-action="copy"]`).click ();
-              break;
-
-            // CTRL+V
-            case 86:
-
-              const mpos = S.get ("mousepos");
-              let el = document.elementFromPoint (mpos.x, mpos.y);
-
-              if (el.tagName != "TD")
-                el = el.closest ("td.wpt");
-
-              // Simulate click on cell
-              if (el)
-              {
-                S.set ("action-mmenu", true, 500);
-
-                el.dispatchEvent (
-                  new MouseEvent ("click", {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                    clientX: mpos.x,
-                    clientY: mpos.y
-                  }));
-              }
-              break;
-
-            // CTRL+X
-            case 88:
-
-              if (e.ctrlKey)
-                return $sm.find(`li[data-action="move"]`).click ();
-          }
-        });
+      S.getCurrent('walls')[0]
+        .addEventListener('mousemove', this.boundMousemoveEventHandler);
+      document.addEventListener('keydown', this.boundKeydownEventHandler);
 
       if (!S.get ("mstack"))
         this.showHelp ();
     },
 
-    // METHOD checkAllowedActions ()
-    checkAllowedActions ()
-    {
-      this.element[0].style.opacity = 1;
-      this.element.find("li").show ();
+    // METHOD checkAllowedActions()
+    checkAllowedActions() {
+      const menu = this.element[0];
 
-      for (const id in _data.postits)
-        if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>,
-               _data.postits[id].settings.wall[0].dataset.access))
-        {
-          //FIXME //TODO trigger on btn copy menu item
-          this.element.find("[data-action='copy'] i").addClass ("set");
-          this.element.find("li:not([data-action='copy'])").hide ();
+      // No meta menu if full view and readonly wall
+      if (S.get('zoom-level') && !H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
+        this.close();
+      }
+
+      menu.style.opacity = 1;
+      menu.querySelectorAll('li').forEach((el) => H.show(el));
+
+      //FIXME No copy or cut with full view
+      if (S.get('zoom-level') || !H.haveMouse()) {
+        menu.querySelectorAll(`[data-action="copy"] i,[data-action="move"] i`)
+          .forEach((el) => el.classList.remove('set'));
+        menu.querySelectorAll(
+            `[data-action="copy"],[data-action="move"], .divider`).forEach(
+          (el) => H.hide(el));
+      }
+
+      for (const id in _data.postits) {
+        if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>,
+               _data.postits[id].settings.wall[0].dataset.access)) {
+
+          //TODO Trigger on btn copy menu item
+          menu.querySelector(`[data-action="copy"] i`).classList.add('set');
+          menu.querySelectorAll(`li:not([data-action="copy"])`).forEach(
+            (el) => H.hide(el));
 
           return;
         }
+      };
 
-      if (!H.checkAccess (<?=WPT_WRIGHTS_RW?>))
-      {
-        this.element.find("[data-action='copy'] i.set").removeClass ("set");
-        this.element[0].style.opacity = .3;
+      if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>))  {
+        menu.querySelectorAll(`[data-action="copy"] i.set`).forEach(
+          (el) => el.classList.remove('set'));
+        menu.style.opacity = .3;
       }
     },
 
-    // METHOD showHelp ()
-    showHelp ()
-    {
+    // METHOD showHelp()
+    showHelp() {
       const writeAccess = H.checkAccess (<?=WPT_WRIGHTS_RW?>);
 
-      if (ST.noDisplay (`mmenu-help-${writeAccess}`))
-        return;
+      if (ST.noDisplay (`mmenu-help-${writeAccess}`)) return;
 
       let content;
 
-      if (writeAccess)
-        content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl+click</kbd> on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>`.replace("%s1", `<i class="fas fa-paste fa-sm"></i>`).replace("%s2", `<i class="fas fa-cut fa-sm"></i>`).replace("%s3", `<i class="fas fa-palette fa-sm"></i>`).replace("%s4", `<i class="fas fa-trash fa-sm"></i>`);
-      else
+      if (writeAccess) {
+        content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("To <b>copy</b> %s1 or <b>move</b> %s2, choose the appropriate icon and <kbd>ctrl+click</kbd> on the destination cell.")?></li><li><?=_("To <b>change color</b>, click on %s3")?></li><li><?=_("To <b>delete</b>, click on %s4")?></li></ul>`.replace('%s1', `<i class="fas fa-paste fa-sm"></i>`).replace('%s2', `<i class="fas fa-cut fa-sm"></i>`).replace('%s3', `<i class="fas fa-palette fa-sm"></i>`).replace('%s4', `<i class="fas fa-trash fa-sm"></i>`);
+      } else {
         content = `<?=_("Use this menu to execute actions on multiple notes")?>:<ul><li><?=_("To select / unselect, <kbd>ctrl+click</kbd> on the note.")?></li><li><?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes.")?></li></ul>`;
+      }
 
       H.openConfirmPopover({
         item: this.element[0],
-        type: "info",
+        type: 'info',
         title: `<i class="fas fa-bolt fa-fw"></i> <?=_("Meta menu")?>`,
         placement: 'right',
         content: content + _noDisplayBtn,
-        cb_ok: ()=> ST.noDisplay (`mmenu-help-${writeAccess}`, true)
+        cb_ok: () => ST.noDisplay(`mmenu-help-${writeAccess}`, true),
       });
     },
 
-    // METHOD close ()
-    close ()
-    {
-      const $ps = $("#psearchPopup");
+    // METHOD close()
+    close() {
+      const $ps = $('#psearchPopup');
 
-      $(document).off ("keydown.mmenu");
-      $(document).off ("mousemove.mmenu");
-      S.unset ("mousepos");
+      document.removeEventListener('keydown', this.boundKeydownEventHandler);
+      S.getCurrent('walls')[0]
+        .removeEventListener('mousemove', this.boundMousemoveEventHandler);
+      S.unset('mousepos');
 
-      document.querySelectorAll(".postit.selected").forEach (
-        (p)=> p.classList.remove ("selected"));
+      document.querySelectorAll('.postit.selected').forEach(
+        (el) => el.classList.remove('selected'));
 
-      setTimeout (()=> $ps.is (":hidden") && $ps.psearch ("reset", true), 250);
+      setTimeout(() => $ps.is(':hidden') && $ps.psearch('reset', true), 250);
 
-      this.reset ();
-      this.element.hide ();
+      this.reset();
+      this.element.hide();
     }
   });
 
   /////////////////////////// AT LOAD INIT //////////////////////////////
 
-  document.addEventListener ("DOMContentLoaded", ()=>
-    {
-      if (!H.isLoginPage ())
-      {
-        $("body").prepend (`<ul class="toolbox shadow" id="mmenu"><button type="button" class="btn-close"></button><span class="wpt-badge inset">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li></ul`);
+  document.addEventListener('DOMContentLoaded', () => {
+    if (H.isLoginPage()) return;
 
-        S.getCurrent("mmenu").mmenu ();
-      }
-    });
+    document.body.prepend(H.createElement('ul',
+      {className: `toolbox shadow`, id: 'mmenu'},
+      null,
+      `<button type="button" class="btn-close"></button><span class="wpt-badge inset">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li>`));
+
+    S.getCurrent('mmenu').mmenu();
+  });
 
 <?php echo $Plugin->getFooter()?>

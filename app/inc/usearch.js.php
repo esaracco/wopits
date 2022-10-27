@@ -163,8 +163,9 @@
 
         // If ESC, close the users search
         if (k === 27) {
-          e.stopImmediatePropagation();
-          this.reset();
+          if (!document.querySelector('.popover.show')) {
+            this.reset();
+          }
         // Arrow up or arrow down.
         } else if (k === 38 || k === 40) {
             e.stopImmediatePropagation();

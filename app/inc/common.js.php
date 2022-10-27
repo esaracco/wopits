@@ -814,7 +814,7 @@ class WHelper {
   // METHOD isLoginPage()
   static isLoginPage() {
     // Only the login page has an "id" attr
-    return Boolean(document.body.id);
+    return Boolean(document.body?.id);
   }
 
   // METHOD disabledEvent()
@@ -968,9 +968,9 @@ class WHelper {
   
   // METHOD cleanPopupDataAttr()
   static cleanPopupDataAttr(popup) {
-    // Remove all popup data attributes
+    // Remove all popup data custom attributes
     Array.from(popup.attributes).forEach(({name}) => {
-      if (name.indexOf('data-') === 0) {
+      if (name.indexOf('data-') === 0 && !name.includes('-bs-')) {
         popup.removeAttribute(name);
       }
     });
@@ -1342,22 +1342,26 @@ class WHelper {
   static openModal(args) {
     const m = args.item;
 
-    // Modals with transition effect
+    // Add transition effect
     if (!args.noeffect) {
       m.classList.add('fade');
     }
 
-    m.removeAttribute('data-customwidth');
-    m.style.top = 0;
-    m.style.left = 0;
-
+    // Add shadow
     m.querySelector('.modal-content').classList.add('shadow-lg');
 
+    // Add caller custom class
     if (args.customClass) {
       m.classList.add(args.customClass);
     }
 
-    bootstrap.Modal.getOrCreateInstance(m, {backdrop: true}).show();
+    // Clean up
+    m.removeAttribute('data-customwidth');
+    m.style.top = 0;
+    m.style.left = 0;
+
+    // Instanciate & show modal
+    bootstrap.Modal.getOrCreateInstance(m, {keyboard: false}).show();
 
     if (args.width) {
       this.resizeModal (m, args.width);

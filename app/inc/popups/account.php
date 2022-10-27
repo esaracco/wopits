@@ -1,11 +1,16 @@
 <?php
   $user = $User->getUser ();
 ?>
-<div class="modal m-fullscreen" id="accountPopup" role="dialog" tabindex="-1">
+<div
+  class="modal m-fullscreen"
+  id="accountPopup"
+  role="dialog"
+  tabindex="-1"
+>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-user-circle fa-lg fa-fw"></i><?=_("Account")?></h5>
+        <h5 class="modal-title"><i class="fas fa-user-circle fa-lg fa-fw"></i> <?=_("Account")?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -80,4 +85,4 @@
       </div>
     </div>
   </div>
-  </div>
+</div>

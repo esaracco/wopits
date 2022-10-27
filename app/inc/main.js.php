@@ -355,11 +355,12 @@
               menuNormal.classList.add('disabled');
               this.ctrlMenu('zoom-screen', 'on');
               if (adminAccess) {
-                menu.querySelectorAll(
-                    '[data-action="chat"] a,'+
-                    '[data-action="filters"] a').forEach(
-                  (el) => el.classList.remove('disabled'));
-
+                if ($wall[0].dataset.shared) {
+                  menu.querySelector(`[data-action="chat"] a`)
+                    .classList.remove('disabled');
+                }
+                menu.querySelector(`[data-action="filters"] a`)
+                  .classList.remove('disabled');
               }
               break;
           }
@@ -765,7 +766,8 @@
       }
 
       // Refresh super menu tool
-      S.getCurrent('mmenu').mmenu('refresh');
+      // FIXME Useful?
+      // S.getCurrent('mmenu').mmenu('refresh');
 
       // Set wall menu visible
       S.getCurrent('wmenu')[0].style.visibility = 'visible';
@@ -1746,7 +1748,10 @@
 
         this.hidePostitsPlugs();
 
-        setTimeout(() => $('#normal-display-btn').hide(), 150);
+        setTimeout(() => {
+          $('#normal-display-btn').hide();
+          S.getCurrent('mmenu').mmenu('checkAllowedActions');
+        }, 150);
 
         zoom0.removeAttribute('data-zoomtype');
         zoom0.removeAttribute('data-zoomlevelorigin');
@@ -1794,6 +1799,7 @@
 
           $('<div/>').postit('applyZoom');
           $('#normal-display-btn').show();
+          S.getCurrent('mmenu').mmenu('checkAllowedActions');
         }
 
         zoom0.style.transformOrigin = 'top left';
@@ -1833,6 +1839,7 @@
 
       $('#normal-display-btn').show();
       this.ctrlMenu('zoom-screen', 'off');
+      S.getCurrent('mmenu').mmenu('checkAllowedActions');
 
       $('#walls').scrollLeft (
         ((30000 * S.get('zoom-level')) / 2 - window.innerWidth / 2) + 20);

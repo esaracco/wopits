@@ -219,19 +219,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENT "keydown"
   document.addEventListener('keydown', (e) => {
-      // If "ESC" while popup layer is opened, close it
-      if (e.which === 27) {
-        let tmp;
+    // If "ESC" while popup layer is opened, close it
+    if (e.which === 27 && !S.get('noDefaultEscape')) {
+      const mstack = S.get('mstack') || [];
+      let tmp;
 
-        // If popup layer, click on it to close popup
-        if ( tmp = document.getElementById('popup-layer') ) {
-          tmp.click();
-        // If postit menu, click on menu button to close it
-        } else if ( tmp = document.querySelector('.postit-menu') ) {
-          tmp.nextElementSibling.click();
-        }
+      if ( (tmp = document.querySelector('.dropdown-toggle.show')) ) {
+        e.stopImmediatePropagation();
+        bootstrap.Dropdown.getInstance(tmp).hide();
+      // If popup layer, click on it to close popup
+      } else if ( tmp = document.getElementById('popup-layer') ) {
+        e.stopImmediatePropagation();
+        H.preventDefault(e);
+        tmp.click();
+      // If postit menu, click on menu button to close it
+      } else if ( tmp = document.querySelector('.postit-menu') ) {
+        e.stopImmediatePropagation();
+        tmp.nextElementSibling.click();
+        // Close current opened modal
+      } else if (mstack.length &&
+                 !mstack[0].querySelector('.tox-mbtn--active')) {
+        e.stopImmediatePropagation();
+        H.preventDefault(e);
+        bootstrap.Modal.getInstance(mstack[0]).hide();
+      } else if (S.get('zoom-level')) {
+        S.getCurrent('wall').wall('zoom', {type: 'normal'});
       }
-    });
+    }
+  });
 
   // EVENT "show.bs.dropdown" on relation's label menu, to prevent menu from
   //       opening right after dragging

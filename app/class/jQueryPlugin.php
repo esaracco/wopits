@@ -29,13 +29,6 @@ const Plugin = function(element) {
   this.getSettings = () => this.settings;
 EOC;
 
-    if ($this->type === 'postitElement') {
-      $js .= <<<EOC
-  // METHOD getName()
-  this.getName = () => `{$this->name}`;
-EOC;
-    }
-
     if ($this->type === 'wallElement') {
       $rw = WPT_WRIGHTS_RW;
       $adm = WPT_WRIGHTS_ADMIN;

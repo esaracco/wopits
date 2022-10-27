@@ -3,7 +3,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fas fa-search fa-lg fa-fw"></i><span><?=_("Search")?></span></h5>
+        <h5 class="modal-title"><i class="fas fa-search fa-lg fa-fw"></i> <span><?=_("Search")?></span></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">

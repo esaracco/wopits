@@ -9,7 +9,7 @@
 
   require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin('pcomm', '', 'postitElement');
+  $Plugin = new Wopits\jQueryPlugin('pcomm');
   echo $Plugin->getHeader();
 
 ?>
@@ -241,7 +241,7 @@
           H.waitForDOMUpdate(__resize);
         }
       } else if (content || !this.readonly) {
-        const editing = this.readonly ? '' : `<div class="search mb-1"><button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall')[0].dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<i class="fa fa-exclamation-triangle"></i> <?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
+        const editing = this.readonly ? '' : `<div class="search mb-1"><button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall')[0].dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
 
         // Device without mouse: open a POPUP
         if (!H.haveMouse()) {

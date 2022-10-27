@@ -632,13 +632,12 @@
         }
       // EVENT "click" ctrl+click on cell to paste/cut into
       } else if (el.matches('td.wpt')) {
-        if ((e.ctrlKey || S.get('action-mmenu')) && !$mm.mmenu('isEmpty')) {
+        if (!S.get('zoom-level') &&
+            (e.ctrlKey || S.get('action-mmenu')) &&
+            !$mm.mmenu('isEmpty')) {
           e.stopImmediatePropagation();
 
-          $mm.mmenu('apply', {
-            event: e,
-            cellPlugin: $(el).cell('getClass'),
-          });
+          $mm.mmenu('apply', {event: e, cellPlugin: $(el).cell('getClass')});
         }
       }
     });

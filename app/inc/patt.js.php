@@ -9,7 +9,7 @@
 
   require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin('patt', '', 'postitElement');
+  $Plugin = new Wopits\jQueryPlugin('patt');
   echo $Plugin->getHeader();
 
 ?>

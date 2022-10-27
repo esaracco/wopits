@@ -295,12 +295,11 @@
   Plugin.prototype = {
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const $postit = plugin.element;
+      const $postit = this.element;
       const postit = $postit[0];
-      const settings = plugin.settings;
+      const settings = this.settings;
       const $wall = settings.wall;
-      const writeAccess = plugin.canWrite();
+      const writeAccess = this.canWrite();
 
       settings.plugs = [];
       settings.plugins = [];
@@ -361,16 +360,16 @@
             opacity: .35,
             scope: 'dzone',
             stack: '.postit',
-            drag: function(e, ui) {
+            drag: (e, ui) => {
               if (S.get('revertData').revert) {
-                $(this).draggable('cancel');
+                $(e.target).draggable('cancel');
                 return false;
               }
   
               // Refresh relations position
-              // plugin.repositionPlugs();
+              // this.repositionPlugs();
             },
-            start: function(e, ui) {
+            start: (e, ui) => {
               S.set('revertData', {
                 revert: false,
                 top: postit.offsetTop,
@@ -381,35 +380,35 @@
                 !S.getCurrent('filters')[0].classList.contains('plugs-hidden');
   
               if (this.hideSHowPlugs) {
-                plugin.hidePlugs();
+                this.hidePlugs();
               }
   
-              plugin.edit({ignoreResize: true}, null,
+              this.edit({ignoreResize: true}, null,
                 () => S.get('revertData').revert = true);
               },
-            stop: function(e, ui) {
+            stop: (e, ui) => {
               if (this.hideSHowPlugs) {
-                plugin.showPlugs();
+                this.showPlugs();
               }
               delete this.hideSHowPlugs;
-              plugin.dropStop();
+              this.dropStop();
             }
           })
           // RESIZABLE post-it
           .resizable({
             handles: H.haveMouse() ? 'all' : 'n, e, w, ne, se, sw, nw',
             autoHide: false,
-            resize: function(e, ui) {
+            resize: (e, ui) => {
               // Refresh relations position
-              plugin.repositionPlugs();
+              this.repositionPlugs();
   
-              plugin.fixEditHeight();
+              this.fixEditHeight();
   
               if (S.get('revertData').revert) {
                 return false;
               }
             },
-            start: function(e, ui) {
+            start: (e, ui) => {
               const editable = $wall[0].querySelectorAll('.editable');
   
               // Cancel all editable
@@ -424,31 +423,31 @@
                 height: postit.clientHeight,
               });
   
-              plugin.hidePlugs();
+              this.hidePlugs();
   
-              plugin.edit({ignoreResize: true}, null,
+              this.edit({ignoreResize: true}, null,
                 () => S.get('revertData').revert = true);
             },
-            stop: function(e, ui) {
+            stop: (e, ui) => {
               const revertData = S.get('revertData');
 
               S.set('dragging', true, 500);
 
-              plugin.showPlugs();
+              this.showPlugs();
 
               if (revertData.revert) {
                 postit.style.width = `${revertData.width}px`;
                 postit.style.height = `${revertData.height}px`;
 
-                plugin.cancelEdit();
+                this.cancelEdit();
 
                 // Refresh relations position
-                plugin.repositionPlugs();
+                this.repositionPlugs();
               }
               else {
                 H.waitForDOMUpdate(() => {
                   ui.element.parent().cell('reorganize');
-                  plugin.unedit();
+                  this.unedit();
                 });
               }
             }
@@ -461,7 +460,7 @@
               return false;
             }
 
-            plugin.openPostit();
+            this.openPostit();
           });
   
         // Make postit title editable
@@ -476,12 +475,12 @@
             edit: (cb) => {
               if (H.disabledEvent()) return false;
 
-              plugin.edit({}, cb);
+              this.edit({}, cb);
             },
-            unedit: () => plugin.unedit(),
+            unedit: () => this.unedit(),
             update: (v) => {
-              plugin.setTitle(v);
-              plugin.unedit();
+              this.setTitle(v);
+              this.unedit();
             },
           }
         });
@@ -505,7 +504,7 @@
 
       // If we are updating a note
       if (settings.creationdate) {
-        plugin.update(settings);
+        this.update(settings);
       }
     },
 
@@ -518,41 +517,36 @@
     dropStop() {
       if (S.get('dragging')) return;
 
-      const plugin = this;
-      const $postit = plugin.element;
-      const postitEdit = $postit[0].querySelector('.postit-edit');
-      const $editable = $postit.find('.editable');
-
-      // Cancel editable.
-      if ($editable.length) {
-        $editable.editable('cancel');
-      }
-
       S.set('dragging', true, 500);
 
       if (S.get('revertData').revert) {
-        plugin.setPosition(S.get('revertData'));
-        plugin.cancelEdit();
+        this.setPosition(S.get('revertData'));
+        this.cancelEdit();
       } else {
-        const content = postitEdit.innerHTML;
+        const settings = this.settings;
+        const postit = this.element[0];
 
-        // If the postit has been dropped into another cell
-        plugin.settings.cell = $postit.parent();
+        if (settings.cell[0].dataset.id !== postit.parentNode.dataset.id) {
+          const postitEdit = postit.querySelector('.postit-edit');
+          const content = postitEdit.innerHTML;
 
-        // Update content cells references if any
-        if (content.indexOf('/cell/') !== -1) {
-          postitEdit.innerHTML =
-              content.replace(/\/cell\/\d+\//g,
-                              `/cell/${plugin.settings.cellId}/`);
+          // If the postit has been dropped into another cell
+          settings.cell = $(postit.parentNode);
+
+          // Update content cells references if any (i.e. pictures)
+          if (content.includes('/cell/')) {
+            postitEdit.innerHTML =
+                content.replace(/\/cell\/\d+\//g, `/cell/${settings.cellId}/`);
+          }
         }
 
-        S.getCurrent('mmenu').mmenu('update', plugin.settings.id, plugin);
+        S.getCurrent('mmenu').mmenu('update', settings.id, this);
 
-        plugin.unedit();
+        this.unedit();
       }
 
       // Refresh relations position
-      plugin.repositionPlugs();
+      this.repositionPlugs();
     },
 
     // METHOD openPlugProperties()
@@ -2218,9 +2212,9 @@
     wallsId.addEventListener('touchstart', __eventMOTS);
 
     // EVENT "click" on postit
-    wallsId.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
       const el = e.target;
-      
+
       if (el.matches('.postit *')) {
         const postit = el.closest('.postit');
         const $postit = $(postit);
@@ -2232,7 +2226,6 @@
   
           e.stopImmediatePropagation();
           H.preventDefault(e);
-
   
           if (postit.classList.contains('selected')) {
             menu.remove(plugin.settings.id);
