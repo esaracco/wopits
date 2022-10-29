@@ -50,9 +50,8 @@
   Plugin.prototype = {
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const editable = plugin.element[0];
-      const settings = plugin.settings;
+      const editable = this.element[0];
+      const settings = this.settings;
       const cb = settings.callbacks;
 
       editable.classList.add('editable');
@@ -76,7 +75,7 @@
 
               cb.edit(() => {
                 _editing = true;
-                plugin.disablePlugins(true);
+                this.disablePlugins(true);
 
                 if (!H.haveMouse()) {
                   H.fixVKBScrollStart();
@@ -95,9 +94,9 @@
 
                 settings._input = editable.querySelector('input');
 
-                cb.before && cb.before(plugin, settings._input.value);
+                cb.before && cb.before(this, settings._input.value);
 
-                plugin.resize();
+                this.resize();
 
                 // EVENT "blur" on editable element
                 settings._input.addEventListener('blur', (e) => {
@@ -124,7 +123,7 @@
 
                   clearTimeout(settings._timeoutEditing);
                   _editing = false;
-                  plugin.disablePlugins(false);
+                  this.disablePlugins(false);
 
                   if (S.get('vkbData')) {
                     H.fixVKBScrollStop();
@@ -159,14 +158,14 @@
                       // CTRL+V (managed by "paste" event)
                       !(e.ctrlKey && k === 86) &&
                       (k < 144 || k > 145)) {
-                    plugin.resize();
+                    this.resize();
                   }
                 });
 
                 // EVENT "paste" on editable element
                 settings._input.addEventListener('paste', (e) =>
-                  plugin.resize((e.clipboardData || window.clipboardData)
-                      .getData('text')));
+                  this.resize((e.clipboardData || window.clipboardData)
+                    .getData('text')));
 
                 H.setAutofocus(null, settings._input);
               });

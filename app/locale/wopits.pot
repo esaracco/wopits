@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: PACKAGE VERSION\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2022-10-27 14:25+0200\n"
+        "POT-Creation-Date: 2022-10-29 22:43+0200\n"
         "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
         "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
         "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -397,10 +397,10 @@ msgstr  ""
 msgid   "Do you really want to permanently delete your wopits account?"
 msgstr  ""
 
-msgid   "Do you want to copy the selected notes in this cell (comments and workers will be reset)?"
+msgid   "Do you want to copy the selected notes here (comments and workers will be reset)?"
 msgstr  ""
 
-msgid   "Do you want to move the selected notes in this cell (comments and workers will be reset)?"
+msgid   "Do you want to move the selected notes here (comments and workers will be reset)?"
 msgstr  ""
 
 msgid   "Download"

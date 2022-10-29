@@ -1,24 +1,20 @@
 <?php
 
-require_once (__DIR__.'/prepend.php');
+require_once(__DIR__.'/prepend.php');
 
-$version = \Wopits\Helper::getWopitsVersion ();
+$version = \Wopits\Helper::getWopitsVersion();
 $theme = 'theme-default';
 
-if (!empty ($_SESSION['userId']))
-{
+if (!empty($_SESSION['userId'])) {
   $User->userId = $_SESSION['userId'];
-  $theme = $User->getSettings(false)->theme??'theme-default';
+  $theme = $User->getSettings(false)->theme ?? 'theme-default';
 }
 
 //<WPTPROD-remove>
-if (WPT_DEV_MODE)
-{
+if (WPT_DEV_MODE) {
   $css = '/css/main.css.php';
   $js = '/js/all.js.php';
-}
-else
-{
+} else {
 //</WPTPROD-remove>
   $css = '/css/main.css';
   $js = "/js/all-$slocale.js";
@@ -27,11 +23,9 @@ else
 $css .= "?$version";
 $js .= "?$version";
 
-if (!empty($_SESSION['upgradeDone']))
-{
+if (!empty($_SESSION['upgradeDone'])) {
   $upgradeDone = true;
-
-  unset ($_SESSION['upgradeDone']);
+  unset($_SESSION['upgradeDone']);
 }
 
 ?>

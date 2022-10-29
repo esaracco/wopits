@@ -316,6 +316,8 @@
       postit.style.visibility = 'hidden';
       postit.style.top = `${settings.item_top}px`;
       postit.style.left = `${settings.item_left}px`;
+      postit.style.width = `${settings.width}px`;
+      postit.style.height = `${settings.height}px`;
 
       // Append if the user have write access
       if (writeAccess) {
@@ -323,6 +325,7 @@
           {className: 'btn-menu'}, null,
           `<i class="far fa-caret-square-down"></i>`));
       }
+
       // Append header, dates, attachment count and tags
       postit.append(
         // Header
@@ -343,6 +346,9 @@
         H.createElement('div', {className: 'postit-tags'}, null,
           `${settings.tags ? S.getCurrent('tpick').tpick("getHTMLFromString", settings.tags) : ''}`)
       );
+
+      postit.querySelector('.postit-edit')
+        .style.maxHeight = `${settings.height - 40}px`;
 
       if (writeAccess) {
         const postitEdit = postit.querySelector('.postit-edit');
@@ -1026,7 +1032,6 @@
 
     // METHOD addPlugLabel()
     addPlugLabel(plug, svg, applyZoom) {
-      const plugin = this;
       const wPos = this.settings.wall[0].getBoundingClientRect();
       const canWrite = this.canWrite();
 
@@ -1055,7 +1060,7 @@
           H.show(label.querySelector('i.fa-thumbtack'));
         }
 
-        plug.related = plugin.createRelatedPlugs(plug);
+        plug.related = this.createRelatedPlugs(plug);
       } else {
         if (canWrite) {
           H.hide(label.querySelector(`li[data-action="position-auto"]`));
@@ -1076,7 +1081,7 @@
           distance: 10,
           containment: S.getCurrent('wall').find('tbody.wpt'),
           scroll: false,
-          start: function(e, ui) {
+          start: (e, ui) => {
             S.set('revertData', {
               revert: false,
               top: plug.labelObj[0].offsetTop,
@@ -1087,7 +1092,7 @@
               // success cb
               () => {
                 if (!plug.customPos) {
-                  plug.related = plugin.createRelatedPlugs(plug);
+                  plug.related = this.createRelatedPlugs(plug);
                   plug.obj.hide();
                 }
                 plug.related.forEach((r) => r.hide('none'));
@@ -1102,7 +1107,7 @@
             }
             // plug.related.forEach(r => r.position());
           },
-          stop: function(e, ui) {
+          stop: (e, ui) => {
             S.set('dragging', true, 500);
 
             if (S.get('revertData').revert) {
@@ -1860,11 +1865,6 @@
       const $postit = this.element;
       const postit = $postit[0];
       const $tpick = S.getCurrent('tpick');
-      const postitEdit = d.init ? postit.querySelector('.postit-edit') : null;
-
-      if (postitEdit) {
-        H.hide(postitEdit);
-      }
 
       // Change postit cell
       if (cell && cell.id !== Number(this.settings.cellId)) {
@@ -1928,11 +1928,6 @@
         $tpick.tpick('getHTMLFromString', d.tags);
 
       $tpick.tpick('refreshPostitDataTag', $postit);
-
-      // FIXME
-      if (postitEdit) {
-        setTimeout(() => H.show(postitEdit), 150);
-      }
     },
 
     // METHOD delete()

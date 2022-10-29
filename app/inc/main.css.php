@@ -885,6 +885,15 @@ select.timezone {
   overflow: hidden;
 }
 
+#copy-paste-target {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+  background-color: var(--menubar-bg-color);
+  z-index: 1;
+}
+
 .wall td.wpt {
   min-height: 200px;
   height: 200px;

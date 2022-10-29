@@ -1,7 +1,7 @@
 <?php
 
-define('WPT_VERSION', '0.65-alpha.15');
-define('WPT_LAST_UPDATE', '2022-10-27');
+define('WPT_VERSION', '0.65-alpha.16');
+define('WPT_LAST_UPDATE', '2022-10-29');
 define('WPT_DISPLAY_LATEST_NEWS', false);
 define('WPT_EXPORT_MIN_VERSION', '0.21');
 
@@ -120,7 +120,7 @@ define('WPT_MAX_CELLS', 400);
 define('WPT_TIMEOUTS', [
   // Edition ("editable" plugin) without activity
   'edit' => 15,
-  'network_connection' => 5,
+  'network_connection' => 30,
 ]);
 
 // Popups

@@ -19,24 +19,25 @@ class Postit extends Wall
     $this->postitId = $args['postitId']??null;
   }
 
-  public function create (array $data = null):array
-  {
+  public function create(array $data = null):array {
     $ret = [];
-    $dir = $this->getWallDir ();
+    $dir = $this->getWallDir();
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
+    if (!$r['ok']) {
       return
         ['error_msg' => _("You must have write access to perform this action")];
+    }
 
     // Check for the col/row (it could have been removed while user was
     // creating the new post-it.
-    ($stmt = $this->db->prepare ('SELECT 1 FROM cells WHERE id = ?'))
-      ->execute ([$this->cellId]);
-    if (!$stmt->fetch ())
+    ($stmt = $this->db->prepare('SELECT 1 FROM cells WHERE id = ?'))
+      ->execute([$this->cellId]);
+    if (!$stmt->fetch()) {
       return ['error_msg' => _("The row/column has been deleted")];
+    }
 
-    $_data = $data??[
+    $_data = $data ?? [
       'cells_id' => $this->cellId,
       'width' => $this->data->width,
       'height' => $this->data->height,
@@ -46,30 +47,26 @@ class Postit extends Wall
       'classcolor' => $this->data->classcolor,
       'title' => $this->data->title,
       'content' => $this->data->content,
-      'creationdate' => time ()
+      'creationdate' => time(),
     ];
 
-    try
-    {
-      $this->executeQuery ('INSERT INTO postits', $_data);
-      $this->postitId = $this->db->lastInsertId ();
+    try {
+      $this->executeQuery('INSERT INTO postits', $_data);
+      $this->postitId = $this->db->lastInsertId();
 
-      mkdir ("$dir/postit/".$this->postitId);
+      mkdir("$dir/postit/".$this->postitId);
 
-      if (!$data)
-      {
+      if (!$data) {
         $_data['id'] = $this->postitId;
         $ret = ['wall' => [
           'id' => $this->wallId,
           'partial' => 'postit',
           'action' => 'insert',
-          'postit' => $_data
+          'postit' => $_data,
         ]];
       }
-    }
-    catch (\Exception $e)
-    {
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+    } catch(\Exception $e) {
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 
@@ -118,8 +115,7 @@ class Postit extends Wall
     return $ret;
   }
 
-  public function copyPostits ($move = false):array
-  {
+  public function copyPostits ($move = false):array  {
     // Notes properties that are specific to the src wall and will be
     // duplicated only if the note is moving in the same wall
     $SPECIFIC_DATA = ['comments', 'workers'];
@@ -128,37 +124,39 @@ class Postit extends Wall
     $wallId = $this->wallId;
     $cellId = $this->cellId;
     $wallsIds = [$wallId];
+    $dims = $this->data->dims;
 
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
+    $r = $this->checkWallAccess(WPT_WRIGHTS_RW);
+    if (!$r['ok']) {
       return ['error' => _("Access forbidden")];
+    }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
-      $i = 5;
-      foreach ($this->db->query ('
+      foreach ($this->db->query('
         SELECT postits.*, cells.walls_id
         FROM postits
           INNER JOIN cells ON cells.id = postits.cells_id
         WHERE postits.id IN ('.
           implode(',', array_map ([$this->db, 'quote'],
                     $this->data->postits)).')')
-            as $p)
-      {
+            as $p) {
         $srcPostitId = $p['id'];
         $srcCellId = $p['cells_id'];
         $srcWallId = $p['walls_id'];
         $copySpecific = ($move && $srcWallId == $wallId);
-        unset ($p['id']);
-        unset ($p['walls_id']);
+        unset($p['id']);
+        unset($p['walls_id']);
 
         // Copy postit
-        $p['item_top'] = $i + 20;
-        $p['item_left'] = $i + 5;
+        $newDim = $dims->$srcPostitId;
+        $p['item_top'] = $newDim->top;
+        $p['item_left'] = $newDim->left;
+        $p['width'] = $newDim->width;
+        $p['height'] = $newDim->height;
         $p['cells_id'] = $this->cellId;
-        $this->create ($p);
+        $this->create($p);
         $postitId = $this->postitId;
 
         $havePictures = false;
@@ -167,32 +165,30 @@ class Postit extends Wall
         // -> plugs are not copied
         $items = ['attachments', 'pictures'];
         // Copy specific data if needed
-        if ($copySpecific)
-          $items = array_merge ($items, $SPECIFIC_DATA);
+        if ($copySpecific) {
+          $items = array_merge($items, $SPECIFIC_DATA);
+        }
 
-        foreach ($items as $item)
-        {
-          ($stmt = $this->db->prepare ("
+        foreach ($items as $item) {
+          ($stmt = $this->db->prepare("
             SELECT * FROM postits_$item WHERE postits_id = ?"))
               ->execute ([$srcPostitId]);
 
-          foreach ($stmt->fetchAll () as $a)
-          {
+          foreach ($stmt->fetchAll() as $a) {
             $a['walls_id'] = $wallId;
             $a['postits_id'] = $postitId;
 
             $srcDir = null;
             $srcItemId = $a['id'];
-            unset ($a['id']);
+            unset($a['id']);
 
             // If data has file properties
-            $hasLink = isset ($a['link']);
+            $hasLink = isset($a['link']);
 
             // If file (attachment, picture...) update ids in link
-            if ($hasLink)
-            {
+            if ($hasLink) {
               $srcDir = $a['link'];
-              $a['link'] = str_replace (
+              $a['link'] = str_replace(
                 [
                   "/{$srcWallId}/",
                   "/{$srcPostitId}/"
@@ -204,35 +200,32 @@ class Postit extends Wall
             }
 
             // Move item
-            if ($move)
-            {
-              if ($hasLink)
-                rename (WPT_ROOT_PATH."/$srcDir",
-                        WPT_ROOT_PATH."/{$a['link']}");
+            if ($move) {
+              if ($hasLink) {
+                rename(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              }
 
-              $this->executeQuery ("UPDATE postits_$item",
+              $this->executeQuery("UPDATE postits_$item",
                 $a, ['id' => $srcItemId]);
 
               $itemId = $srcItemId;
-            }
+
             // Copy item
-            else
-            {
-              if ($hasLink)
-                copy (WPT_ROOT_PATH."/$srcDir",
-                      WPT_ROOT_PATH."/{$a['link']}");
+            } else {
+              if ($hasLink) {
+                copy(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              }
 
-              $this->executeQuery ("INSERT INTO postits_$item", $a);
+              $this->executeQuery("INSERT INTO postits_$item", $a);
 
-              $itemId = $this->db->lastInsertId ();
+              $itemId = $this->db->lastInsertId();
             }
 
             // Change postit body internal img links if needed
-            if ($item == 'pictures')
-            {
+            if ($item === 'pictures') {
               $havePictures = true;
 
-              $p['content'] = preg_replace (
+              $p['content'] = preg_replace(
                 "#wall/\d+/cell/\d+/postit/\d+/".
                   "picture/{$srcItemId}#",
                 "wall/{$wallId}/cell/{$cellId}/postit/{$postitId}/".
@@ -243,39 +236,39 @@ class Postit extends Wall
         }
 
         // Delete src postit if needed
-        if ($move)
-        {
+        if ($move) {
           $wallsIds[] = $srcWallId;
           $this->wallId = $srcWallId;
-          $this->deletePostit ($srcPostitId);
+          $this->deletePostit($srcPostitId);
           $this->wallId = $wallId;
         }
 
         // Update dest postit data if needed
         $sqlData = [];
+
         // Update postit body internal img links if needed
-        if ($havePictures)
+        if ($havePictures) {
           $sqlData['content'] = $p['content'];
+        }
         // Reset specific data if needed
-        if (!$copySpecific)
-          foreach ($SPECIFIC_DATA as $sp)
+        if (!$copySpecific) {
+          foreach ($SPECIFIC_DATA as $sp) {
             $sqlData["{$sp}count"] = 0;
+          }
+        }
 
-        if ($sqlData)
-          $this->executeQuery ('UPDATE postits', $sqlData, ['id' => $postitId]);
-
-        $i += 10;
+        if ($sqlData) {
+          $this->executeQuery('UPDATE postits', $sqlData, ['id' => $postitId]);
+        }
       }
 
-      $this->db->commit ();
+      $this->db->commit();
 
-      $ret['walls'] = $this->getWallsById ($wallsIds);
-    }
-    catch (\Exception $e)
-    {
-      $this->db->rollBack ();
+      $ret['walls'] = $this->getWallsById($wallsIds);
+    } catch(\Exception $e) {
+      $this->db->rollBack();
 
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 

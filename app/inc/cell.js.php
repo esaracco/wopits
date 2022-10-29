@@ -20,14 +20,13 @@
   Plugin.prototype = {
     // METHOD init()
     init() {
-      const plugin = this;
-      const $cell = plugin.element;
+      const $cell = this.element;
       const cell = $cell[0];
-      const settings = plugin.settings;
+      const settings = this.settings;
       const cellId = settings.id;
       const usersettings = settings.usersettings;
       const $wall = settings.wall;
-      const writeAccess = plugin.canWrite();
+      const writeAccess = this.canWrite();
       // Coords of touchstart on touch devices
       let _coords = null;
 
@@ -45,11 +44,10 @@
             tolerance: 'pointer',
             scope: 'dzone',
             classes: {'ui-droppable-hover': 'droppable-hover'},
-            drop: function(e, ui) {
+            drop: (e, ui) => {
               if (S.get('revertData').revert) return;
 
-              const $cell = $(this);
-              const cellPos = this.getBoundingClientRect();
+              const cellPos = cell.getBoundingClientRect();
               const $postit = ui.draggable;
               const ptop = ui.offset.top - cellPos.top;
               const pleft = ui.offset.left - cellPos.left;
@@ -60,7 +58,7 @@
                 left: (pleft < 0) ? 0 : pleft,
               });
   
-              this.append($postit[0]);
+              cell.append($postit[0]);
   
               $cell.cell('reorganize').then(()=> $postit.postit('dropStop'));
             },
@@ -75,14 +73,14 @@
         minWidth: settings.width,
         minHeight: settings.height,
         helper: 'resizable-helper',
-        resize: function(e, ui) {
+        resize: (e, ui) => {
           if (S.get('revertData').revert) {
             $('body')[0].removeAttribute('style');
  
             return false;
           }
         },
-        start: function(e, ui) {
+        start: (e, ui) => {
           const editable = $wall[0].querySelectorAll('.editable');
  
           // Cancel all editable (blur event is not triggered on resizing).
@@ -98,9 +96,9 @@
             }
           });
  
-          plugin.edit(() => S.get('revertData').revert = true);
+          this.edit(() => S.get('revertData').revert = true);
         },
-        stop: function(e, ui) {
+        stop: (e, ui) => {
           const revertData = S.get('revertData');
  
           S.unset('revertData');
@@ -118,7 +116,7 @@
             if (absH < 2 || absH > 2) {
               if ($wall[0].dataset.cols === '1' &&
                   $wall[0].dataset.rows === '1') {
-                plugin.update({
+                this.update({
                   width: ui.size.width + 3,
                   height: ui.size.height,
                 });
@@ -126,36 +124,37 @@
                 $cell.closest('tr.wpt').find('th.wpt:first-child')
                     .css('height', ui.size.height);
  
-                plugin.update({width: ui.size.width + 2});
+                this.update({width: ui.size.width + 2});
  
                 // Set height for all cells of the current row
-                $wall.find(
-                  `tbody.wpt tr.wpt:eq(${$cell.parent().index()}) td.wpt`)
-                  .each(function() {
-                    this.style.height = `${ui.size.height}px`;
-                    this.querySelector("div.ui-resizable-e")
-                        .style.height = `${ui.size.height + 2}px`;
-                  });
+                $wall[0].querySelectorAll(`tbody.wpt tr.wpt`)[
+                    cell.parentNode.rowIndex - 1].querySelectorAll(`td.wpt`)
+                        .forEach((el) => {
+                  el.style.height = `${ui.size.height}px`;
+                  el.querySelector(`div.ui-resizable-e`)
+                    .style.height = `${ui.size.height + 2}px`;
+                });
               }
             }
  
             // Width
             if (absW < 2 || absW > 2) {
-              $wall
-                .find('tbody.wpt tr.wpt')
-                .find(`td.wpt:eq(${$cell.index() - 1})`)
-                .each (function() {
-                  this.style.width = `${ui.size.width}px`;
-                  this.querySelector('div.ui-resizable-s')
-                      .style.width = `${ui.size.width+2}px`;
-                });
+              const cellIndex = cell.cellIndex - 1;
+
+              $wall[0].querySelectorAll(`tbody.wpt tr.wpt`).forEach((tr) => {
+                const td = tr.querySelectorAll(`td.wpt`)[cellIndex];
+
+                td.style.width = `${ui.size.width}px`;
+                td.querySelector(`div.ui-resizable-s`)
+                  .style.width = `${ui.size.width+2}px`;
+              });
  
-                $wall.wall('fixSize', ui.originalSize.width, ui.size.width);
+              $wall.wall('fixSize', ui.originalSize.width, ui.size.width);
             }
  
             $wall.find('tbody.wpt td.wpt').cell('reorganize');
  
-            plugin.unedit();
+            this.unedit();
           }
         }
       });
@@ -163,7 +162,9 @@
       if (writeAccess) {
         // LOCAL FUNCTION __dblclick()
         const __dblclick = (e) => {
-          if (S.get('zoom-level') || S.get('postit-creating') ||
+          if (S.get('action-mmenu')) return;
+          if (S.get('zoom-level') ||
+              S.get('postit-creating') ||
               (
                 (
                   e.target.tagName !== 'TD' ||
@@ -193,7 +194,7 @@
              $f.filters('reset');
            }
 
-           plugin.addPostit({
+           this.addPostit({
              access: settings.access,
              item_top: pTop,
              item_left: pLeft - 15,
@@ -232,7 +233,7 @@
         h = $tdPrev ? $tdPrev.css('height') : settings.height;
       }
 
-      plugin.update({width: w, height: h});
+      this.update({width: w, height: h});
     },
 
     // METHOD showUserWriting()
@@ -262,11 +263,10 @@
 
     // METHOD setPostitsDisplayMode()
     setPostitsDisplayMode(type) {
-      const plugin = this;
-      const $cell = plugin.element;
+      const $cell = this.element;
       const cell = $cell[0];
       const $displayMode = $cell.find('.cell-menu i');
-      const writeAccess = plugin.canWrite();
+      const writeAccess = this.canWrite();
 
       // If we must display list of minified notes
       // list-mode
@@ -334,34 +334,34 @@
             //containment: $cell,
             handle: '>span',
             cursor: 'move',
-            sort: function() {
+            sort: () => {
               if (S.get('revertData').revert) {
                 $('body')[0].removeAttribute('style');
-                $(this).sortable('cancel');
+                $cell.sortable('cancel');
                 return false;
               }
             },
-            start: function() {
+            start: () => {
               S.set('revertData', {revert: false});
-              plugin.edit(()=> S.get('revertData').revert = true, true);
+              this.edit(()=> S.get('revertData').revert = true, true);
             },
-            stop: function(e, ui) {
+            stop: (e, ui) => {
               const revertData = S.get('revertData');
 
               if (revertData.revert) {
                 S.unset('revertData');
-                plugin.unedit(true);
+                this.unedit(true);
               } else {
                 ui.item[0].parentNode.querySelectorAll('li').forEach((li, i) =>
                   cell.querySelector(`.postit[data-id="${li.dataset.id}"]`)
                     .dataset.order = i + 1);
-                plugin.unedit();
+                this.unedit();
               }
             }
           });
         }
 
-        plugin.setPostitsUserWritingListMode();
+        this.setPostitsUserWritingListMode();
 
       // If we must display full postit
       // postit-mode

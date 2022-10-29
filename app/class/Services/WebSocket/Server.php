@@ -482,26 +482,26 @@ class Server
                    ->updatePostitsColor ();
       }
       // ROUTE Postit creation, postits copy/paste
-      elseif (preg_match ('#^wall/(\d+)/cell/(\d+)/(postit|postits)/'.
-                          '?(copy|move)?$#', $msg->route, $m))
-      {
-        @list (,$wallId, $cellId, $item, $type) = $m;
+      elseif (preg_match('#^wall/(\d+)/cell/(\d+)/(postit|postits)/'.
+                         '?(copy|move)?$#', $msg->route, $m)) {
+        @list(,$wallId, $cellId, $item, $type) = $m;
 
         $push = true;
         $action = 'refreshwall';
 
-        $Postit = new Postit ([
+        $Postit = new Postit([
           'wallId' => $wallId,
           'data' => $data,
-          'cellId' => $cellId
+          'cellId' => $cellId,
         ], $client);
 
         // Create a postit
-        if ($item == 'postit')
-          $ret = $Postit->create ();
+        if ($item === 'postit') {
+          $ret = $Postit->create();
         // Copy/cut postits
-        elseif ($item == 'postits')
-          $ret = $Postit->copyPostits (($type == 'move'));
+        } elseif ($item === 'postits') {
+          $ret = $Postit->copyPostits(($type === 'move'));
+        }
       }
       // ROUTE Col/row creation/deletion
       elseif (preg_match ('#^wall/(\d+)/(col|row)/?(\d+)?$#', $msg->route, $m))
@@ -695,7 +695,6 @@ class Server
               if ($isSActionResult)
               {
                 $ret['wall'] = $walls[$_wallId];
-                $ret['wall']['reorganize'] = true;
               }
               $json = json_encode ($ret);
 

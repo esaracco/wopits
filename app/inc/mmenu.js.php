@@ -24,24 +24,23 @@
   Object.assign(Plugin.prototype, {
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const $sm = plugin.element;
+      const $sm = this.element;
 
       this.boundMousemoveEventHandler = this.mousemoveEventHandler.bind(this);
       this.boundKeydownEventHandler = this.keydownEventHandler.bind(this);
 
-      plugin.reset();
+      this.reset();
 
       $sm.draggable({
         distance: 10,
         cursor: 'move',
-        drag: (e, ui) => plugin.fixDragPosition(ui),
+        drag: (e, ui) => this.fixDragPosition(ui),
         stop: ()=> S.set('dragging', true, 500),
       });
 
       // EVENT "click" on "close" button
       $sm[0].querySelector('button.btn-close').addEventListener('click',
-        (e) => plugin.close());
+        (e) => this.close());
 
       // EVENT "click" on menu
       $sm[0].addEventListener('click', (e) => {
@@ -68,7 +67,7 @@
         switch (li.dataset.action) {
           case 'delete':
           case 'cpick':
-            return plugin.apply({event: e});
+            return this.apply({event: e});
           case 'copy':
             if (!ST.noDisplay('mmenu-copy-help')) {
               args.title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
@@ -105,13 +104,6 @@
 
     // METHOD apply()
     apply(args = {}) {
-      let item = args.cellPlugin ?
-        args.cellPlugin.element.find('.cell-menu') : null;
-      let type;
-      let title;
-      let content;
-      let cbClose;
-
       if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
         return H.displayMsg({
           title: `<?=_("Rights")?>`,
@@ -120,16 +112,24 @@
         });
       }
 
+      const wall = S.getCurrent('wall')[0];
+      let ok = true;
+      let item;
+      let type;
+      let title;
+      let content;
+      let placement = 'left';
+
       _data.dest = args.cellPlugin;
 
       switch (this.getAction()) {
         case 'copy':
           title =  `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-          content = `<?=_("Do you want to copy the selected notes in this cell (comments and workers will be reset)?")?>`;
+          content = `<?=_("Do you want to copy the selected notes here (comments and workers will be reset)?")?>`;
           break;
         case 'move':
           title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-          content = `<?=_("Do you want to move the selected notes in this cell (comments and workers will be reset)?")?>`;
+          content = `<?=_("Do you want to move the selected notes here (comments and workers will be reset)?")?>`;
           break;
         case 'delete':
           item = this.element[0].querySelector(`[data-action='delete']`);
@@ -139,6 +139,7 @@
         case 'cpick':
           return this.send(args);
         default:
+          ok = false;
           type = 'info';
           item = this.element[0].querySelector('li');
           title = `<?=_("Copy/Move")?>`;
@@ -146,31 +147,54 @@
       }
 
       if (title) {
-        if (_data.dest) {
-          _data.dest.element[0].classList.add('selected');
-        }
+        const e = args.event;
+        let tmpDiv;
 
         S.set('noDefaultEscape', true);
 
+        if (ok && _data.dest) {
+          _data.dest.element[0].classList.add('selected');
+
+          tmpDiv = H.createElement('div', {
+            id: `copy-paste-target`,
+            style: `top: ${e.clientY}px; left: ${e.clientX}px;`,
+          });
+          document.body.prepend(tmpDiv);
+        }
+
         H.openConfirmPopover({
-          item,
+          content,
+          item: item || tmpDiv,
+          placement,
           type,
           title,
-          content,
           cb_close: () => {
             S.unset('noDefaultEscape');
 
-            (args.event.target.querySelector('i') || args.event.target)
-              .classList.remove('set');
+            // Remove tmp div if any
+            tmpDiv && tmpDiv.remove();
 
-            cbClose && cbClose();
+            (e.target.querySelector('i') || e.target).classList.remove('set');
 
             if (_data.dest) {
               _data.dest.element[0].classList.remove('selected');
               _data.dest = null;
             }
           },
-          cb_ok: () => this.send(args),
+          cb_ok: () => {
+            let position;
+
+            if (_data.dest) {
+              const cellPos = _data.dest.element[0].getBoundingClientRect();
+
+              position = {
+                top: e.clientY - cellPos.top,
+                left: e.clientX - cellPos.left,
+              }
+            }
+
+            this.send({...args, position});
+          },
         });
       }
     },
@@ -199,10 +223,10 @@
         break;
         // Delete
         case 'delete':
+          // FIXME race condition with edit/unedit
           Object.keys(_data.postits).forEach((id) => {
             const p = _data.postits[id];
-
-            p.edit ({}, () => {
+            p.edit({}, () => {
               p.delete();
               p.unedit();
             });
@@ -213,14 +237,61 @@
         // Move
         case 'move':
           const cellSettings = _data.dest.settings;
+          const cellPos = _data.dest.element[0].getBoundingClientRect();
+          const postits = Object.keys(_data.postits);
+          const dims = {};
+          const tmp = [];
 
-          H.request_ws(
-            'PUT',
-            `wall/${cellSettings.wallId}/cell/${cellSettings.id}`+
-              `/postits/${action}`,
-            {postits: Object.keys(_data.postits)},
-            // success cb
-            () => this.close());
+          // First, create each note (dum) to fix its position and dimensions
+          // before inserting it in database
+          let lastPos;
+          postits.forEach((id) => {
+            const pPlugin = _data.postits[id];
+            const postit = pPlugin.element[0];
+
+            if (!lastPos) {
+              lastPos = args.position;
+            } else {
+              lastPos.top += 20;
+              lastPos.left += 10;
+            }
+
+            const $newP = _data.dest.addPostit({
+              width: parseInt(postit.style.width),
+              height: parseInt(postit.style.height),
+              item_top: lastPos.top,
+              item_left: lastPos.left,
+            }, true);
+
+            tmp.push($newP[0]);
+
+            H.waitForDOMUpdate(() => {
+              $newP.postit('fixPosition', cellPos);
+
+              const newPos = $newP[0].getBoundingClientRect();
+
+              lastPos = dims[id] = {
+                top: Math.trunc(newPos.top - cellPos.top),
+                left: Math.trunc(newPos.left - cellPos.left),
+                width: newPos.width,
+                height: newPos.height,
+              };
+            });
+          });
+
+          H.waitForDOMUpdate(() => {
+            // Remove temporary notes
+            tmp.forEach((el) => el.remove());
+
+            // Create real note in database with fixed dimensions
+            H.request_ws(
+              'PUT',
+              `wall/${cellSettings.wallId}/cell/${cellSettings.id}`+
+                `/postits/${action}`,
+              {postits, dims},
+              // success cb
+              () => this.close());
+          });
           break;
       }
     },
@@ -239,31 +310,20 @@
       _data = {postits: {}, dest: null};
     },
 
-    // METHOD refresh()
-/* FIXME Useful?
-    refresh() {
-      Object.keys(_data.postits).forEach((id) => {
-        if (!document.querySelector(
-            `.postit.selected[data-id="postit-${id}"]`)) {
-          this.remove(id);
-        }
-      });
-    },
-*/
-
     // METHOD add()
     add(p) {
-      if (this.isEmpty ())
-        this.open ();
+      if (this.isEmpty()) {
+        this.open();
+      }
 
       p.settings.cell[0].querySelectorAll(
         `[data-id="${p.element[0].dataset.id}"]`)
-           .forEach ((_p)=> _p.classList.add ("selected"));
+           .forEach((el)=> el.classList.add('selected'));
 
       _data.postits[p.settings.id] = p;
 
-      this.refreshItemsCount ();
-      this.checkAllowedActions ();
+      this.refreshItemsCount();
+      this.checkAllowedActions();
     },
 
     // METHOD update()
@@ -347,25 +407,26 @@
           break;
         // CTRL+V
         case 86:
-          const mpos = S.get('mousepos');
-          let el = document.elementFromPoint(mpos.x, mpos.y);
+          if (e.ctrlKey) {
+            const mpos = S.get('mousepos');
+            let el = document.elementFromPoint(mpos.x, mpos.y);
 
-          if (el.tagName !== 'TD') {
-            el = el.closest('td.wpt');
-          }
+            if (el.tagName !== 'TD') {
+              el = el.closest('td.wpt');
+            }
 
-          // Simulate click on cell
-          if (el) {
-            S.set('action-mmenu', true, 500);
+            // Simulate click on cell
+            if (el) {
+              S.set('action-mmenu', true, 500);
 
-            el.dispatchEvent(
-              new MouseEvent('click', {
+              el.dispatchEvent(new MouseEvent('click', {
                 view: window,
                 bubbles: true,
                 cancelable: true,
                 clientX: mpos.x,
                 clientY: mpos.y,
               }));
+            }
           }
           break;
         // CTRL+X
@@ -384,12 +445,14 @@
       this.element.show();
 
       // EVENT mousemove
-      S.getCurrent('walls')[0]
-        .addEventListener('mousemove', this.boundMousemoveEventHandler);
+      S.getCurrent('walls')[0].addEventListener('mousemove',
+        this.boundMousemoveEventHandler);
+      // EVENT keydown
       document.addEventListener('keydown', this.boundKeydownEventHandler);
 
-      if (!S.get ("mstack"))
-        this.showHelp ();
+      if (!S.get('mstack')) {
+        this.showHelp();
+      }
     },
 
     // METHOD checkAllowedActions()
@@ -435,9 +498,9 @@
 
     // METHOD showHelp()
     showHelp() {
-      const writeAccess = H.checkAccess (<?=WPT_WRIGHTS_RW?>);
+      const writeAccess = H.checkAccess(<?=WPT_WRIGHTS_RW?>);
 
-      if (ST.noDisplay (`mmenu-help-${writeAccess}`)) return;
+      if (ST.noDisplay(`mmenu-help-${writeAccess}`)) return;
 
       let content;
 

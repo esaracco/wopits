@@ -21,8 +21,7 @@
     btnPrimary: null,
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const $owall = plugin.element;
+      const $owall = this.element;
       const owall = $owall[0];
       const input = owall.querySelector(`input[type="text"]`);
 
@@ -30,8 +29,7 @@
       this.btnPrimary = owall.querySelector('.btn-primary');
 
       // EVENT "keyup" on input
-     input.addEventListener('keyup',
-         (e) => plugin.search(e.target.value.trim()));
+     input.addEventListener('keyup', (e) => this.search(e.target.value.trim()));
 
       // EVENT "kepress" on input
       owall.addEventListener('keypress', (e) => {
@@ -52,13 +50,13 @@
       this.btnClear.addEventListener('click', (e) => {
         $('#settingsPopup').settings('set', {recentWalls: []});
         document.getElementById('ow-all').click();
-        plugin.controlFiltersButtons();
+        this.controlFiltersButtons();
       });
 
       // EVENT "click" on "open" button
       owall.querySelector('.btn-primary').addEventListener('click', (e) => {
         (async () => {
-          const checked = plugin.getChecked();
+          const checked = this.getChecked();
           const len = checked.length;
           const $el = $('<div/>');
           let $wall;
@@ -88,7 +86,7 @@
                 '.list-group li.last')?.classList.remove('last');
 
             if (!auto) {
-              plugin.displayWalls(null, false);
+              this.displayWalls(null, false);
             }
 
             content = true;
@@ -104,7 +102,7 @@
             });
 
             if (!auto) {
-              plugin.displayWalls(walls, false);
+              this.displayWalls(walls, false);
             }
 
             owall.querySelectorAll('.list-group li.title').forEach(
@@ -117,7 +115,7 @@
             break;
           case 'ow-shared':
             if (!auto) {
-              plugin.displayWalls(null, false);
+              this.displayWalls(null, false);
             }
 
             owall.querySelectorAll('.list-group li').forEach((el) => {
@@ -139,7 +137,7 @@
               `<span class='text-center'><?=_("No result")?></span>`;
         }
 
-        plugin.controlOpenButton();
+        this.controlOpenButton();
 
         input.focus();
       });
@@ -154,7 +152,7 @@
 
           if (tag === 'INPUT') {
             this.btnPrimary.classList[
-                plugin.getChecked().length ? 'remove' : 'add']('hidden');
+              this.getChecked().length ? 'remove' : 'add']('hidden');
           } else if (tag !== 'LABEL') {
             $('<div/>').wall('open', {
               wallId: ((tag === 'LI') ? el : el.closest('li')).dataset.id,

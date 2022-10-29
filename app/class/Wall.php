@@ -21,11 +21,11 @@ class Wall extends Base {
   }
 
   public function checkWallAccess(int $requiredRole):array {
-    ($stmt = $this->db->prepare("
+    ($stmt = $this->db->prepare('
       SELECT 1 FROM _perf_walls_users
       WHERE users_id = ? AND walls_id = ?
-        AND access IN(".$this->buildAccessRightsSQL($requiredRole).")
-      LIMIT 1"))->execute([$this->userId, $this->wallId]);
+        AND access IN('.$this->buildAccessRightsSQL($requiredRole).')
+      LIMIT 1'))->execute([$this->userId, $this->wallId]);
 
     return ['ok' => !empty($stmt->fetch())];
   }

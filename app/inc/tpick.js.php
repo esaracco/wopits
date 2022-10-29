@@ -28,12 +28,11 @@
   Plugin.prototype = {
     // METHOD init()
     init(args) {
-      const plugin = this;
-      const picker = plugin.element[0];
+      const picker = this.element[0];
       let html = '';
 
-      plugin.getTagsList().forEach(
-          (el) => html += `<div>${_getTagTemplate(el)}</div>`);
+      this.getTagsList().forEach(
+        (el) => html += `<div>${_getTagTemplate(el)}</div>`);
 
       picker.innerHTML = html;
 
@@ -69,7 +68,7 @@
 
         div.classList.toggle('selected');
 
-        plugin.refreshPostitDataTag();
+        this.refreshPostitDataTag();
 
         const $f = S.getCurrent('filters');
         if (H.isVisible($f[0])) {
@@ -90,8 +89,7 @@
 
     // METHOD open()
     open({pageX, pageY}) {
-      const plugin = this;
-      const picker = plugin.element[0];
+      const picker = this.element[0];
       const $postit = S.getCurrent('postit');
       const wW = window.outerWidth;
       const wH = window.innerHeight;
@@ -114,7 +112,7 @@
       }
 
       H.openPopupLayer(() => {
-        plugin.close();
+        this.close();
         S.getCurrent('postit').postit('unedit');
       });
 

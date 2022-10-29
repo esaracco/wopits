@@ -556,7 +556,7 @@
         d = await H.fetch('GET', `wall/${this.settings.id}`);
       }
 
-      if (d) {
+      if (d && !d.error) {
         this._refresh(d);
       }
     },
@@ -773,10 +773,6 @@
       S.getCurrent('wmenu')[0].style.visibility = 'visible';
 
       this.fixSize();
-
-      if (d.reorganize) {
-        $wall.find('tbody.wpt td.wpt').cell('reorganize');
-      }
 
       // Apply display mode
       this.refreshCellsToggleDisplayMode();

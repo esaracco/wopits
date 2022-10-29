@@ -14,321 +14,236 @@
 
   $ret = [];
 
-  $class = getParam ('class');
-  $data = json_decode (urldecode (file_get_contents ("php://input")));
+  $class = getParam('class');
+  $data = json_decode(urldecode(file_get_contents('php://input')));
 
-  switch ($_SERVER['REQUEST_METHOD'])
-  {
+  switch ($_SERVER['REQUEST_METHOD']) {
     // PUT
     case 'PUT':
-
-      switch ($class)
-      {
+      switch ($class) {
         case 'user':
-
           $User = new User(['data' => $data]);
 
-          switch (getParam ('action'))
-          {
+          switch (getParam('action')) {
             case 'picture':
-
-              $ret = $User->updatePicture ();
+              $ret = $User->updatePicture();
               break;
-
             default:
-
-              $ret = $User->create ();
+              $ret = $User->create();
           }
           break;
-
         case 'wall':
-
-          $Wall = new Wall ([
-            'wallId' => getParam ('wallId'),
-            'data' => $data
+          $Wall = new Wall([
+            'wallId' => getParam('wallId'),
+            'data' => $data,
           ]);
 
-          if (getParam ('item') == 'header')
-            $ret = $Wall->addHeaderPicture ([
-              'headerId' => getParam ('itemId')]);
-          else
-          {
-            switch (getParam ('action'))
-            {
+          if (getParam('item') === 'header') {
+            $ret = $Wall->addHeaderPicture(['headerId' => getParam('itemId')]);
+          } else {
+            switch (getParam('action')) {
               case 'import':
-
-                $ret = $Wall->import ();
+                $ret = $Wall->import();
                 break;
-
               case 'clone':
-
-                $ret = $Wall->clone ();
+                $ret = $Wall->clone();
                 break;
-
               default:
-
-                $ret = $Wall->createWall ();
+                $ret = $Wall->createWall();
             }
           }
           break;
-
         case 'attachment':
-
-          $ret = (new Attachment ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId'),
-            'data' => $data
-          ]))->add ();
+          $ret = (new Attachment([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
+            'data' => $data,
+          ]))->add();
           break;
-
         case 'worker':
-
-          $ret = (new Worker ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId'),
-            'data' => $data
-          ]))->add ();
+          $ret = (new Worker([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
+            'data' => $data,
+          ]))->add();
           break;
-
         case 'postit':
-
-          if (getParam ('item') == 'picture')
-            $ret = (new Postit ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId'),
-            'data' => $data
-          ]))->addPicture ();
+          if (getParam('item') === 'picture') {
+            $ret = (new Postit([
+              'wallId' => getParam('wallId'),
+              'cellId' => getParam('cellId'),
+              'postitId' => getParam('postitId'),
+              'data' => $data,
+            ]))->addPicture();
+          }
           break;
       }
       break;
-
     // GET
     case 'GET':
-
-      switch ($class)
-      {
+      switch ($class) {
         case 'common':
-
-          if (getParam ('item') == 'timezones')
+          if (getParam ('item') === 'timezones') {
             $ret = timezone_identifiers_list ();
+          }
           break;
-
         case 'postit':
-
-          if (getParam ('item') == 'picture')
+          if (getParam('item') === 'picture') {
             $ret = (new Postit ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId')
-          ]))->getPicture (['pictureId' => getParam ('itemId')]);
+              'wallId' => getParam('wallId'),
+              'cellId' => getParam('cellId'),
+              'postitId' => getParam('postitId'),
+            ]))->getPicture (['pictureId' => getParam('itemId')]);
+          }
           break;
-
         case 'attachment':
-
-          $ret = (new Attachment ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId')
+          $ret = (new Attachment([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
 //FIXME
-          ]))->get (intval (getParam ('itemId')));
+          ]))->get(intval(getParam('itemId')));
           break;
-
         case 'comment':
-
-          $ret = (new Comment ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId')
-          ]))->get ();
+          $ret = (new Comment([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
+          ]))->get();
           break;
-
         case 'worker':
-
-          $Worker = new Worker ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId')
+          $Worker = new Worker([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
           ]);
-
-          if (getParam ('action') == 'search')
-            $ret = $Worker->search (['search' => getParam ('search')]);
-          else
-            $ret = $Worker->get ();
-
+          if (getParam('action') === 'search') {
+            $ret = $Worker->search(['search' => getParam('search')]);
+          } else {
+            $ret = $Worker->get();
+          }
           break;
-
         case 'user':
+          $User = new User();
 
-          $User = new User ();
-
-          switch (getParam ('action'))
-          {
+          switch (getParam('action')) {
             case 'ping':
-
-              $ret = $User->refreshUpdateDate ();
+              $ret = $User->refreshUpdateDate();
               break;
-
             case 'getFile':
-
-              $ret = $User->getPicture (['userId' => getParam ('userId')]);
+              $ret = $User->getPicture(['userId' => getParam('userId')]);
               break;
-
             case 'messages':
-
-              $ret = $User->getMessages (['userId' => getParam ('userId')]);
+              $ret = $User->getMessages(['userId' => getParam('userId')]);
               break;
           }
           break;
-
         case 'wall':
+          $Wall = new Wall(['wallId' => getParam('wallId')]);
 
-          $Wall = new Wall (['wallId' => getParam ('wallId')]);
-
-          switch (getParam ('action'))
-          {
+          switch (getParam ('action')) {
             case 'infos':
-
-              $ret = $Wall->getWallInfos ();
+              $ret = $Wall->getWallInfos();
               break;
-
             case 'searchUsers':
-
-              $ret = $Wall->searchUser (['search' => getParam ('search')]);
+              $ret = $Wall->searchUser(['search' => getParam('search')]);
               break;
-
             case 'getFile':
-
-              $ret = $Wall->getHeaderPicture ([
-                'headerId' => getParam ('headerId')]);
+              $ret = $Wall->getHeaderPicture([
+                'headerId' => getParam('headerId')]);
               break;
-
             case 'export':
-
-              $ret = $Wall->export ();
+              $ret = $Wall->export();
               break;
-
             default:
-
               // Get wall with user postits alerts
-              $ret = $Wall->getWall (true);
+              $ret = $Wall->getWall(true);
           }
           break;
-
         case 'group':
-
-          $Group = new Group ([
-            'wallId' => getParam ('wallId'),
-            'groupId' => getParam ('groupId')
+          $Group = new Group([
+            'wallId' => getParam('wallId'),
+            'groupId' => getParam('groupId'),
           ]);
 
-          switch (getParam ('action'))
-          {
+          switch (getParam('action')) {
             case 'searchUsers':
-
-              $ret = $Group->searchUser (['search' => getParam ('search')]);
+              $ret = $Group->searchUser(['search' => getParam('search')]);
               break;
-
             case 'getUsers':
-
-              $ret = $Group->getUsers ();
+              $ret = $Group->getUsers();
               break;
-
             default:
-
-              $ret = $Group->getGroup ();
+              $ret = $Group->getGroup();
           }
           break;
       }
       break;
-
     // POST
     case 'POST':
-
-      switch ($class)
-      {
+      switch ($class) {
         case 'user':
+          $action = getParam('action');
+          $User = new User(['data' => $data]);
 
-          $action = getParam ('action');
-          $User = new User (['data' => $data]);
+          if (getParam('item') === 'wall') {
+            $wallId = getParam('wallId');
 
-          if (getParam ('item') == 'wall')
-          {
-            $wallId = getParam ('wallId');
-
-            switch ($action)
-            {
+            switch ($action) {
               case 'settings':
-
-                $ret = $User->setWallSettings ($wallId);
+                $ret = $User->setWallSettings($wallId);
                 break;
-
               case 'displaymode':
               case 'displayexternalref':
               case 'displayheaders':
-
-                $ret = $User->setWallOption ($wallId, $action);
+                $ret = $User->setWallOption($wallId, $action);
                 break;
             }
-          }
-          else
+          } else {
             switch ($action)
             {
               case 'login':
-
-                $ret = $User->login ($data->remember);
+                $ret = $User->login($data->remember);
                 break;
-
               case 'logout':
-
-                $ret = $User->logout ();
+                $ret = $User->logout();
                 break;
-
               case 'resetPassword':
-
-                $ret = $User->resetPassword ();
+                $ret = $User->resetPassword();
                 break;
             }
-
+          }
           break;
-
         case 'attachment':
-
-          $ret = (new Attachment ([
-            'wallId' => getParam ('wallId'),
-            'cellId' => getParam ('cellId'),
-            'postitId' => getParam ('postitId'),
-            'data' => $data
-          ]))->update (intval (getParam ('itemId')));
+          $ret = (new Attachment([
+            'wallId' => getParam('wallId'),
+            'cellId' => getParam('cellId'),
+            'postitId' => getParam('postitId'),
+            'data' => $data,
+          ]))->update(intval(getParam('itemId')));
           break;
       }
-
       break;
-
     // DELETE
     case 'DELETE':
+      $User = new User(['data' => $data]);
 
-      $User = new User (['data' => $data]);
-
-      if ($class == 'user')
-      {
-        if (getParam ('action') == 'messages')
-          $ret = $User->deleteMessage ();
-        else
-          $ret = $User->delete ();
+      if ($class === 'user') {
+        if (getParam('action') === 'messages') {
+          $ret = $User->deleteMessage();
+        } else {
+          $ret = $User->delete();
+        }
       }
       break;
   }
 
-  echo json_encode ($ret);
+  echo json_encode($ret);
 
   //////////////////////////////////////// Local functions
 
-  function getParam ($param)
-  {
-    return trim ($_GET[$param]??'');
+  function getParam($param) {
+    return trim($_GET[$param] ?? '');
   }
-
-?>

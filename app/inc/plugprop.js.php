@@ -24,8 +24,7 @@
     forceHide: false,
     // METHOD init()
     init() {
-      const plugin = this;
-      const ra = plugin.element[0];
+      const ra = this.element[0];
       const ww = $(window).width();
 
       // FIXME
@@ -64,7 +63,7 @@
         ra.removeEventListener('scroll', _eventSP);
 
         // Remove leader line sample
-        plugin.removeSample();
+        this.removeSample();
         _postitPlugin.unedit();
       });
 
@@ -80,8 +79,8 @@
 
       // EVENT "click" on plug's settings reset button
       ra.querySelector('button.reset').addEventListener('click', (e) => {
-        plugin.removeSample();
-        plugin.createSample(true);
+        this.removeSample();
+        this.createSample(true);
 
         ra.querySelector(`input[name="size"]`).value = _ll.size;
         ra.querySelector(`input[value="${_ll.path}"]`).checked = true;
@@ -147,7 +146,7 @@
           line_type: _ll.line_type,
         });
 
-        plugin.removeSample();
+        this.removeSample();
       });
 
       /// EVENTS "keyup & change" on plug's settings "line size" option

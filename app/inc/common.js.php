@@ -1689,7 +1689,7 @@ class WHelper {
     try {
       const controller = new AbortController();
       const r = await this.fetchTimeout(
-        `/api/${service}`, 5000, {
+        `/api/${service}`, <?=WPT_TIMEOUTS['network_connection'] * 1000?>, {
           signal: controller.signal,
           method: method,
           cache: 'no-cache',
@@ -1717,19 +1717,24 @@ class WHelper {
         this.manageUnknownError();
       }
     } catch(e) {
-      if (e instanceof DOMException || e instanceof TypeError) {
-        H.displayNetworkErrorMsg();
-      } else {
-        this.loader('hide');
+      if (!(e instanceof DOMException) && !(e instanceof TypeError)) {
         throw e;
       }
     }
 
     if (!ok) {
+      this.loader('hide');
+
       if (typeof ret === 'object') {
         ret.error = true;
       } else {
         ret = {error: true};
+      }
+
+      if (error_cb) {
+        error_cb(ret);
+      } else {
+        H.displayNetworkErrorMsg(); 
       }
     }
 
