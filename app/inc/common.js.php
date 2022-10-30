@@ -1731,11 +1731,13 @@ class WHelper {
         ret = {error: true};
       }
 
+/* FIXME Temporary fix
       if (error_cb) {
         error_cb(ret);
       } else {
         H.displayNetworkErrorMsg(); 
       }
+*/
     }
 
     return ret;
