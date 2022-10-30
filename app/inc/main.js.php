@@ -558,6 +558,8 @@
 
       if (d && !d.error) {
         this._refresh(d);
+      } else {
+        H.displayNetworkErrorMsg();
       }
     },
 
