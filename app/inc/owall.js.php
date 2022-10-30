@@ -43,7 +43,7 @@
       owall.querySelector('.clear-input').addEventListener('click', (e) => {
         input.value = '';
         owall.querySelectorAll('.ow-filters input:checked').forEach(
-            (el) => el.dispatchEvent(new CustomEvent('click')));
+          (el) => el.click());
       });
 
       // EVENT "click" on "clear history" button
@@ -72,7 +72,7 @@
       });
 
       // EVENT "change" on filters
-      owall.querySelector('.ow-filters').addEventListener('change', (e) => {
+      owall.querySelector('.ow-filters').addEventListener('click', (e) => {
         const auto = e.detail ? e.detail.auto : false;
         let content = false;
 
