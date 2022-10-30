@@ -376,7 +376,7 @@
 
     // METHOD closeAllMenus()
     closeAllMenus() {
-      const menu = this.element[0].querySelector('.postit-menu');
+      const menu = S.getCurrent('walls')[0].querySelector('.postit-menu');
 
       if (menu) {
         $(menu.parentNode).postit('closeMenu');
