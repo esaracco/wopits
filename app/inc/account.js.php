@@ -372,7 +372,11 @@
                     if ($wall.length) {
                       S.getCurrent('chat').chat('hide');
                       $wall.wall('closeAllWalls', false);
-                      $wall.wall('restorePreviousSession');
+                      (async () => {
+                        await $wall.wall('restorePreviousSession');
+                        $('#settingsPopup')
+                          .settings('saveOpenedWalls', null, false);
+                      })();
                     }
                   } else if ($wall.length) {
                     $wall.wall('menu', {from: 'wall', type: 'have-wall'});
