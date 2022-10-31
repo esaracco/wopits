@@ -1360,6 +1360,10 @@ class WHelper {
     m.style.top = 0;
     m.style.left = 0;
 
+    if (args.noautofocus) {
+      m.dataset.noautofocus = 1;
+    }
+
     // Instanciate & show modal
     bootstrap.Modal.getOrCreateInstance(m, {keyboard: false}).show();
 

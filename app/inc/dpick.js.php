@@ -19,12 +19,12 @@
   Plugin.prototype = {
     // METHOD init()
     init() {
-      const $popup = this.element;
-      const $picker = $popup.find('.dpick');
-      const $alert = $popup.find('.dpick-notify');
+      const popup = this.element[0];
+      const $picker = $(popup.querySelector('.dpick'));
+      const elAlert = popup.querySelector('.dpick-notify');
 
       this.settings.$picker = $picker;
-      this.settings.$alert = $alert;
+      this.settings.alert = elAlert;
 
       $picker.datepicker({
         showWeek: true,
@@ -34,112 +34,99 @@
         minDate:
           moment().tz(wpt_userData.settings.timezone)
             .add(1, 'days').format('Y-MM-DD'),
-        onSelect: (dt, $dp)=> $alert.show(),
+        onSelect: (dt, $dp) => H.show(elAlert),
       });
 
       // EVENT "change" on "alert" checkbox
       document.getElementById('dp-notify').addEventListener('change', (e) => {
         const el = e.target;
-        const $div = $alert.find('>div:eq(1)');
+        const div = elAlert.querySelectorAll('div')[1];
 
         if (el.checked) {
-          $div.show('fade');
+          H.show(div);
           document.getElementById('_dp-shift1').checked = true;
           el.parentNode.classList.remove('disabled');
         } else {
-          $div.hide();
+          H.hide(div);
           el.parentNode.classList.add('disabled');
         }
       });
 
       // EVENT "click" on
-      $alert[0].querySelector(`input[type="number"]`)
-        .addEventListener ("focus", (e)=>
-          document.getElementById("_dp-shift2").checked = true);
+      elAlert.querySelector(`input[type="number"]`)
+        .addEventListener('change',
+          (e) => document.getElementById('_dp-shift2').checked = true);
     },
 
-    // METHOD open ()
-    open ()
-    {
-      const $picker = this.settings.$picker,
-            $alert = this.settings.$alert,
-            $postit = S.getCurrent ("postit"),
-            days = $postit[0].dataset.deadlinealertshift;
+    // METHOD open()
+    open() {
+      const $picker = this.settings.$picker;
+      const elAlert = this.settings.alert;
+      const $postit = S.getCurrent('postit');
+      const shift  = $postit[0].dataset.deadlinealertshift;
+      const days = Number(shift);
+      const dpNotify = document.getElementById('dp-notify');
 
-      if ($postit[0].dataset.deadline)
-      {
-        $picker.datepicker ("setDate", $postit[0].dataset.deadline);
-      }
-      else
-      {
-        $picker.datepicker ("setDate", null);
-        $picker.find(".ui-state-active").removeClass("ui-state-active");
-        $alert.hide ();
+      if ($postit[0].dataset.deadline) {
+        $picker.datepicker('setDate', $postit[0].dataset.deadline);
+      } else {
+        $picker.datepicker('setDate', null);
+        $picker[0].querySelector('.ui-state-active')
+          .classList.remove('ui-state-active');
+        H.hide(elAlert);
       }
 
-      if (days !== undefined)
-      {
-        $alert.find("#dp-notify")[0].checked = true;
-        $alert.find("#dp-notify").parent().removeClass ("disabled");
+      if (shift !== undefined) {
+        dpNotify.checked = true;
+        dpNotify.parentNode.classList.remove('disabled');
+      } else {
+        dpNotify.checked = false;
+        dpNotify.parentNode.classList.add('disabled');
       }
-      else
-      {
-        $alert.find("#dp-notify")[0].checked = false;
-        $alert.find("#dp-notify").parent().addClass ("disabled");
+      document.getElementById('_dp-shift1').checked = (days === 0);
+      document.getElementById('_dp-shift2').checked = (days > 0);
+      elAlert.querySelector(`input[type="number"]`).value =
+        (shift === undefined || days === 0) ? 1 : days;
+
+      if (shift === undefined) {
+        H.hide(elAlert.querySelectorAll('div')[1]);
+      } else {
+        H.show(elAlert.querySelectorAll('div')[1]);
       }
-      $alert.find("#_dp-shift1")[0].checked = (days == 0);
-      $alert.find("#_dp-shift2")[0].checked = (days > 0);
-      $alert.find("input[type='number']").val (
-        (days === undefined || days == 0) ? 1 : days);
 
-      if (days === undefined)
-        $alert.find(">div:eq(1)").hide ();
-      else
-        $alert.find(">div:eq(1)").show ();
-
-      H.openModal ({item: this.element[0]});
+      H.openModal({item: this.element[0], noautofocus: true});
     },
 
-    // METHOD save ()
-    save ()
-    {
-      const $popup = this.element,
-            $picker = this.settings.$picker,
-            $alert = this.settings.$alert,
-            $postit = S.getCurrent ("postit"),
-            v = $picker.val ();
+    // METHOD save()
+    save() {
+      const $picker = this.settings.$picker;
+      const postit = S.getCurrent('postit')[0];
+      const v = $picker[0].value;
 
-        if (v != $postit[0].dataset.deadline)
-        {
-          $postit[0].dataset.updatetz = true;
-          $postit.removeClass ("obsolete");
+      if (v !== postit.dataset.deadline) {
+        postit.dataset.updatetz = true;
+        postit.classList.remove('obsolete');
+      }
+
+      postit.dataset.deadline = v;
+      $(postit).postit('setDeadline', {deadline: v || '...'});
+
+      if (v) {
+        const elAlert = this.settings.alert;
+
+        postit.removeAttribute('data-deadlineepoch');
+
+        if (document.getElementById('dp-notify').checked) {
+          const shift = document.getElementById('_dp-shift1').checked ?
+           0 : elAlert.querySelector(`input[type="number"]`).value;
+
+          postit.dataset.deadlinealertshift = shift;
+          postit.querySelector('.dates .end').classList.add('with-alert');
+        } else {
+          postit.removeAttribute('data-deadlinealertshift');
+          postit.querySelector('.dates .end').classList.remove('with-alert');
         }
-
-        $postit[0].dataset.deadline = v;
-        $postit.postit ("setDeadline", {deadline: v||"..."});
-
-        if (v)
-        {
-          $postit[0].removeAttribute ("data-deadlineepoch");
-
-          if ($alert.find("#dp-notify")[0].checked)
-          {
-            const shift = ($alert.find("#_dp-shift1")[0].checked) ?
-             0 : $alert.find("input[type='number']").val ();
-
-            if (shift == 0)
-              $postit[0].dataset.deadlinealertshift = 0;
-            else
-              $postit[0].dataset.deadlinealertshift = shift;
-
-            $postit.find(".dates .end").addClass ("with-alert");
-          }
-          else
-          {
-            $postit[0].removeAttribute ("data-deadlinealertshift");
-            $postit.find(".dates .end").removeClass ("with-alert");
-          }
-        }
+      }
     }
   };
 

@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
           )) {
         _closeVKB = H.fixVKBScrollStart();
       }
-    } else {
+    } else if (!target.dataset.noautofocus) {
       H.setAutofocus(e.target);
     }
   });

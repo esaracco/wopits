@@ -29,7 +29,7 @@
       let html = '';
 
       _COLOR_PICKER_COLORS.forEach(
-          (cls, i) => html += `<div class="${cls}">&nbsp;</div>`);
+        (cls) => html += `<div class="${cls}">&nbsp;</div>`);
 
       picker.innerHTML = html;
 
@@ -96,8 +96,8 @@
         }
       });
 
-      picker.style.top = y + 'px';
-      picker.style.left = x + 'px';
+      picker.style.top = `${y}px`;
+      picker.style.left = `${x}px`;
       picker.style.visibility = 'visible';
     },
 
