@@ -163,11 +163,11 @@ class Wpt_postitCountPlugin {
   // METHOD addTopIcon()
   addTopIcon(className, action) {
     const count = this.settings.count;
-
     const el_I = H.createElement('i',
         {className: `fa-fw fas ${className}`}, {action});
     const el_SPAN = H.createElement('span',
       {className: `wpt-badge inset ${count ? '' : 'hidden'}`});
+
     el_SPAN.innerText = count;
 
     this.element[0].append(el_I, el_SPAN); 
@@ -1031,8 +1031,7 @@ class WHelper {
   static getAccessIcon(access) {
     let icon;
   
-    switch (parseInt(access || this.getAccess()))
-    {
+    switch (parseInt(access || this.getAccess())) {
       case <?=WPT_WRIGHTS_ADMIN?>: icon = 'shield-alt'; break;
       case <?=WPT_WRIGHTS_RW?>: icon = 'edit'; break;
       case <?=WPT_WRIGHTS_RO?>: icon = 'eye'; break;
@@ -1137,8 +1136,8 @@ class WHelper {
   // METHOD openPopupLayer()
   static openPopupLayer(cb) {
     const layer = this.createElement('div', {
-        id: 'popup-layer',
-        className: 'layer',
+      id: 'popup-layer',
+      className: 'layer',
     });
   
     // EVENT "click" on layer
@@ -1451,16 +1450,14 @@ class WHelper {
     this.openModal({item: p});
   }
   
-  // METHOD raiseError ()
-  static raiseError (error_cb, msg)
-  {
-    if (error_cb)
-      error_cb ();
+  // METHOD raiseError()
+  static raiseError(error_cb, msg) {
+    error_cb && error_cb ();
   
-    this.displayMsg ({
+    this.displayMsg({
       title: `<?=_("System")?>`,
-      type: msg?"warning" : "danger",
-      msg: msg?msg:`<?=_("System error. Please report it to the administrator")?>`
+      type: msg ? 'warning' : 'danger',
+      msg: msg ? msg :`<?=_("System error. Please report it to the administrator")?>`,
     });
   }
   
@@ -1682,8 +1679,7 @@ class WHelper {
 
   // METHOD fetch ()
   // TODO https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout
-  static async fetch(method, service, args, success_cb, error_cb)
-  {
+  static async fetch(method, service, args, success_cb, error_cb) {
     let ok = false;
     let ret = {};
     this.loader('show');

@@ -17,16 +17,18 @@
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype = {
+    $picker: null,
+    alert: null,
+    notify: null,
     // METHOD init()
     init() {
       const popup = this.element[0];
-      const $picker = $(popup.querySelector('.dpick'));
-      const elAlert = popup.querySelector('.dpick-notify');
 
-      this.settings.$picker = $picker;
-      this.settings.alert = elAlert;
+      this.$picker = $(popup.querySelector('.dpick'));
+      this.alert = popup.querySelector('.dpick-notify');
+      this.notify = document.getElementById('dp-notify');
 
-      $picker.datepicker({
+      this.$picker.datepicker({
         showWeek: true,
         changeMonth: true,
         changeYear: true,
@@ -34,13 +36,13 @@
         minDate:
           moment().tz(wpt_userData.settings.timezone)
             .add(1, 'days').format('Y-MM-DD'),
-        onSelect: (dt, $dp) => H.show(elAlert),
+        onSelect: (dt, $dp) => H.show(this.alert),
       });
 
       // EVENT "change" on "alert" checkbox
-      document.getElementById('dp-notify').addEventListener('change', (e) => {
+      this.notify.addEventListener('change', (e) => {
         const el = e.target;
-        const div = elAlert.querySelectorAll('div')[1];
+        const div = this.alert.querySelectorAll('div')[1];
 
         if (el.checked) {
           H.show(div);
@@ -53,19 +55,19 @@
       });
 
       // EVENT "click" on
-      elAlert.querySelector(`input[type="number"]`)
+      this.alert.querySelector(`input[type="number"]`)
         .addEventListener('change',
           (e) => document.getElementById('_dp-shift2').checked = true);
     },
 
     // METHOD open()
     open() {
-      const $picker = this.settings.$picker;
-      const elAlert = this.settings.alert;
+      const $picker = this.$picker;
+      const elAlert = this.alert;
       const $postit = S.getCurrent('postit');
       const shift  = $postit[0].dataset.deadlinealertshift;
       const days = Number(shift);
-      const dpNotify = document.getElementById('dp-notify');
+      const dpNotify = this.notify;
 
       if ($postit[0].dataset.deadline) {
         $picker.datepicker('setDate', $postit[0].dataset.deadline);
@@ -99,7 +101,7 @@
 
     // METHOD save()
     save() {
-      const $picker = this.settings.$picker;
+      const $picker = this.$picker;
       const postit = S.getCurrent('postit')[0];
       const v = $picker[0].value;
 
@@ -112,11 +114,11 @@
       $(postit).postit('setDeadline', {deadline: v || '...'});
 
       if (v) {
-        const elAlert = this.settings.alert;
+        const elAlert = this.alert;
 
         postit.removeAttribute('data-deadlineepoch');
 
-        if (document.getElementById('dp-notify').checked) {
+        if (this.notify.checked) {
           const shift = document.getElementById('_dp-shift1').checked ?
            0 : elAlert.querySelector(`input[type="number"]`).value;
 

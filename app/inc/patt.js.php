@@ -330,6 +330,8 @@
     document.addEventListener('click', (e) => {
       const el = e.target;
 
+      if (S.get('postit-creating')) return;
+
       // EVENT "click" on attachment count
       if (el.matches('.patt,.patt *')) {
         const $patt = $((el.tagName === 'DIV') ? el : el.parentNode);

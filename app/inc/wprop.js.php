@@ -144,7 +144,7 @@
         (d) => {
           const $popup = this.element;
           const popup = $popup[0];
-          const isCreator = (d.user_id == wpt_userData.id);
+          const isCreator = (d.user_id === wpt_userData.id);
 
           this.wall.data = d;
           this.forceHide = false;

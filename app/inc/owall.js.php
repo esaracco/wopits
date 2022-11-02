@@ -71,14 +71,20 @@
         })();
       });
 
-      // EVENT "change" on filters
+      // EVENT "click" on filters
       owall.querySelector('.ow-filters').addEventListener('click', (e) => {
-        const auto = e.detail ? e.detail.auto : false;
+        if (e.target.classList.contains('ow-filters')) return;
+
+        const auto = e.detail?.auto;
+        const el = e.target.classList.contains('form-check') ?
+          e.target.querySelector('input') : e.target;
         let content = false;
 
         this.btnClear.classList.add('hidden');
 
-        switch (e.target.id) {
+        el.checked = true;
+
+        switch (el.id) {
           case 'ow-all':
             owall.querySelector(
                 '.list-group li.first')?.classList.remove('first');
@@ -165,14 +171,15 @@
 
     // METHOD controlFiltersButtons()
     controlFiltersButtons() {
-      const $owall = this.element;
+      const owall = this.element[0];
       let i = 0;
       let count = 0;
       let tmp;
 
-      $owall.find('#ow-shared,#ow-recent').parent().hide();
+      owall.querySelectorAll('#ow-shared,#ow-recent').forEach(
+        (el) => H.hide(el.parentNode));
 
-      tmp = $owall[0].querySelectorAll('.list-group li[data-shared]');
+      tmp = owall.querySelectorAll('.list-group li[data-shared]');
       if (tmp.length) {
         let found = false;
 
@@ -186,7 +193,8 @@
 
         if (!found) {
           ++count;
-          $owall.find('#ow-shared').parent().show();
+          H.show(document.getElementById('ow-shared').parentNode,
+            'inline-block');
         }
       }
 
@@ -201,12 +209,13 @@
 
         if (i !== tmp.length) {
           ++count;
-          $owall.find('#ow-recent').parent().show();
+          H.show(document.getElementById('ow-recent').parentNode,
+            'inline-block');
         }
       }
 
       if (!count) {
-        $owall[0].querySelector('.ow-filters').classList.add('hidden');
+        owall.querySelector('.ow-filters').classList.add('hidden');
       }
     },
 

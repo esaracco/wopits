@@ -316,9 +316,11 @@
     document.addEventListener('click', (e) => {
       const el = e.target;
 
+      if (S.get('postit-creating')) return;
+
       // EVENT "click" on postit comments button
       if (el.matches('.pcomm,.pcomm *')) {
-        $((el.tagName == 'DIV') ? el : el.parentNode).pcomm('open');
+        $((el.tagName === 'DIV') ? el : el.parentNode).pcomm('open');
       } else if (el.matches(_getEventSelector('*'))) {
         // EVENT "click" on comments "clear textarea" button
         if (el.matches('.clear-textarea,.clear-textarea *')) {

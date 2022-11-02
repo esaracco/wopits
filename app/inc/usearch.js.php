@@ -352,8 +352,9 @@
                       `cell/${args.cellId}/postit/${args.postitId}/worker` :
                       `group/${args.groupId}/getUsers`;
 
-      if (isWorkers || args.groupType == <?=WPT_GTYPES_DED?>)
+      if (isWorkers || Number(args.groupType) === <?=WPT_GTYPES_DED?>) {
         service = `wall/${args.wallId}/${service}`;
+      }
 
       H.fetch(
         'GET',

@@ -126,6 +126,8 @@
     document.addEventListener('click', (e) => {
       const el = e.target;
 
+      if (S.get('postit-creating')) return;
+
       // EVENT "click" on workers count
       if (el.matches('.pwork,.pwork *')) {
         const $pwork = $((el.tagName === 'DIV') ? el : el.parentNode);
