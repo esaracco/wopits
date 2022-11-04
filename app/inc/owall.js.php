@@ -140,7 +140,7 @@
 
         if (!content) {
           owall.querySelector('.modal-body .list-group').innerHTML =
-              `<span class='text-center'><?=_("No result")?></span>`;
+            `<span class='text-center'><?=_("No result")?></span>`;
         }
 
         this.controlOpenButton();
@@ -243,8 +243,8 @@
 
       document.getElementById('ow-all').checked = true;
       owall.querySelector(`input[type="text"]`).value = '';
-      owall.querySelectorAll(".list-group input:checked").forEach(
-          (el) => el.checked = false);
+      owall.querySelectorAll('.list-group input:checked').forEach(
+        (el) => el.checked = false);
     },
 
     // METHOD search()

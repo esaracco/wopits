@@ -757,9 +757,6 @@
               if (!p) {
                 $cell.cell('addPostit', postit, true);
               } else {
-                if (d.ignoreResize) {
-                  postit.ignoreResize = true;
-                }
                 $(p).postit('update', postit, {id: cell.id, obj: $cell});
               }
             });

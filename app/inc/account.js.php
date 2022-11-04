@@ -191,8 +191,11 @@
                         'click', (e) => this.onSubmit($p, e)),
                   cb: ($p) => {
                     const p = $p[0];
-                    const input = H.createElement('input',
-                                    {className: 'form-control', type: 'text'});
+                    const input = H.createElement('input', {
+                      className: 'form-control',
+                      type: 'text',
+                      required: true,
+                    });
   
                     switch (name) {
                       case 'username':

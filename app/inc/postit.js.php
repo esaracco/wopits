@@ -389,8 +389,7 @@
                 this.hidePlugs();
               }
   
-              this.edit({ignoreResize: true}, null,
-                () => S.get('revertData').revert = true);
+              this.edit({}, null, () => S.get('revertData').revert = true);
               },
             stop: (e, ui) => {
               if (this.hideSHowPlugs) {
@@ -430,9 +429,7 @@
               });
   
               this.hidePlugs();
-  
-              this.edit({ignoreResize: true}, null,
-                () => S.get('revertData').revert = true);
+              this.edit({}, null, () => S.get('revertData').revert = true);
             },
             stop: (e, ui) => {
               const revertData = S.get('revertData');
@@ -446,8 +443,6 @@
                 postit.style.height = `${revertData.height}px`;
 
                 this.cancelEdit();
-
-                // Refresh relations position
                 this.repositionPlugs();
               }
               else {
@@ -1399,19 +1394,17 @@
                   this.dataset.deadlineepoch :
                   this.querySelector('.dates .end span').innerText.trim();
           const bbox = this.getBoundingClientRect();
-          let tags = [];
-          let top = Math.trunc(this.offsetTop);
-          let left = Math.trunc(this.offsetLeft);
+          const tags = [];
 
-          this.querySelectorAll('.postit-tags i').forEach((item) =>
-              tags.push(item.dataset.tag));
+          this.querySelectorAll('.postit-tags i').forEach(
+            (el) => tags.push(el.dataset.tag));
 
           data = {
             id: plugin.settings.id,
             width: Math.trunc(bbox.width / z),
             height: Math.trunc(bbox.height / z),
-            item_top: (this.offsetTop < 0) ? 0 : top,
-            item_left: (this.offsetLeft < 0) ? 0 : left,
+            item_top: Math.trunc(this.offsetTop),
+            item_left: Math.trunc(this.offsetLeft),
             item_order: parseInt(this.dataset.order),
             classcolor: classcolor ? classcolor[0] : _defaultClassColor,
             title: (title === '...') ? '' : title,
@@ -1885,14 +1878,12 @@
         }
       }
 
-      if (!d.ignoreResize) {
-        postit.style.top = `${d.item_top}px`;
-        postit.style.left = `${d.item_left}px`;
-        postit.style.width = `${d.width}px`;
-        postit.style.height = `${d.height}px`;
+      postit.style.top = `${d.item_top}px`;
+      postit.style.left = `${d.item_left}px`;
+      postit.style.width = `${d.width}px`;
+      postit.style.height = `${d.height}px`;
 
-        this.fixEditHeight();
-      }
+      this.fixEditHeight();
 
       this.setClassColor(d.classcolor);
       this.setProgress(d.progress);
@@ -1965,7 +1956,10 @@
           }
         },
         // error cb
-        (d) => this.cancelEdit(args),
+        (d) => {
+          error_cb && error_cb();
+          this.cancelEdit(args);
+        },
       );
     },
 

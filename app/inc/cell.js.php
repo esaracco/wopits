@@ -552,7 +552,9 @@
           if (d.error_msg) {
             H.raiseError(() => error_cb && error_cb(), d.error_msg);
           }
-        });
+        },
+        // error cb
+        error_cb);
     },
 
     // METHOD unedit()

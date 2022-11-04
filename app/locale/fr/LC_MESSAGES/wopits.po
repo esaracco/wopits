@@ -763,7 +763,7 @@ msgid ""
 "Do you want to copy the selected notes here (comments and workers will be "
 "reset)?"
 msgstr ""
-"Voulez-vous déplacer les notes sélectionnées ici (les commentaires et les "
+"Voulez-vous copier les notes sélectionnées ici (les commentaires et les "
 "intervenants seront réinitialisés)?"
 
 msgid ""

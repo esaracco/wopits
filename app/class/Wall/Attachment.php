@@ -2,150 +2,143 @@
 
 namespace Wopits\Wall;
 
-require_once (__DIR__.'/../../config.php');
+require_once(__DIR__.'/../../config.php');
 
 use Wopits\{Helper, User, Wall};
 
-class Attachment extends Wall
-{
+class Attachment extends Wall {
   private $cellId;
   private $postitId;
 
-  public function __construct (array $args = [], object $ws = null)
-  {
-    parent::__construct ($args, $ws);
+  public function __construct(array $args = [], object $ws = null) {
+    parent::__construct($args, $ws);
 
-    $this->cellId = $args['cellId']??null;
-    $this->postitId = $args['postitId']??null;
+    $this->cellId = $args['cellId'] ?? null;
+    $this->postitId = $args['postitId'] ?? null;
   }
 
-  public function delete (int $id):array
-  {
+  public function delete(int $id):array {
     $ret = [];
 
-    if (!$id)
+    if (!$id) {
       return ['error' => 'id is needed'];
+    }
 
     $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
+    if (!$r['ok']) {
       return ['error' => _("Access forbidden")];
+    }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
-      ($stmt = $this->db->prepare ('
-          SELECT link FROM postits_attachments WHERE id = ?'))->execute ([$id]);
-      $attach = $stmt->fetch ();
+      ($stmt = $this->db->prepare('
+          SELECT link FROM postits_attachments WHERE id = ?'))->execute([$id]);
+      $attach = $stmt->fetch();
 
-      $stmt = $this->db->prepare ('DELETE FROM postits_attachments WHERE id = ?');
-      $stmt->execute ([$id]);
+      $stmt = $this->db->prepare('
+        DELETE FROM postits_attachments WHERE id = ?');
+      $stmt->execute([$id]);
 
-      if ($stmt->rowCount ())
+      if ($stmt->rowCount()) {
         $this
           ->db->prepare('
             UPDATE postits SET attachmentscount = attachmentscount - 1
             WHERE id = ?')
-          ->execute ([$this->postitId]);
+          ->execute([$this->postitId]);
+      }
     
-      $this->db->commit ();
+      $this->db->commit();
 
       Helper::rm (WPT_ROOT_PATH.$attach['link']);
-    }
-    catch (\Exception $e)
-    {
-      $this->db->rollBack ();
-
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+    } catch(\Exception $e) {
+      $this->db->rollBack();
       $ret['error'] = 1;
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage ());
     }
 
     return $ret;
   }
  
-  public function update (int $id):array
-  {
+  public function update(int $id):array {
     $ret = [];
 
-    if (!$id)
+    if (!$id) {
       return ['error' => 'id is needed'];
-
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
-      return ['error' => _("Access forbidden")];
-
-    if (!empty ($this->data->title))
-    {
-      ($stmt = $this->db->prepare ('
-        SELECT 1 FROM postits_attachments
-        WHERE postits_id = ? AND title = ? AND id <> ?'))
-         ->execute ([$this->postitId, $this->data->title, $id]);
-      if ($stmt->fetch ())
-        return ['error_msg' => _("The title already exists")];
     }
 
-    try
-    {
-      $this->executeQuery ('UPDATE postits_attachments', [
+    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
+    if (!$r['ok']) {
+      return ['error' => _("Access forbidden")];
+    }
+
+    if (!empty($this->data->title)) {
+      ($stmt = $this->db->prepare('
+        SELECT 1 FROM postits_attachments
+        WHERE postits_id = ? AND title = ? AND id <> ?'))
+         ->execute([$this->postitId, $this->data->title, $id]);
+
+      if ($stmt->fetch()) {
+        return ['error_msg' => _("The title already exists")];
+      }
+    }
+
+    try {
+      $this->executeQuery('UPDATE postits_attachments', [
         'title' => $this->data->title,
         'description' => $this->data->description,
       ],
       ['id' => $id]);
-    }
-    catch (\Exception $e)
-    {
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+    } catch(\Exception $e) {
       $ret['error'] = 1;
+      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
     }
 
     return $ret;
   }
 
-  public function add ():array
-  {
+  public function add():array {
     $ret = [];
-    $dir = $this->getWallDir ();
-    $wdir = $this->getWallDir ('web');
-    $currentDate = time ();
+    $dir = $this->getWallDir();
+    $wdir = $this->getWallDir('web');
+    $currentDate = time();
 
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RW);
-    if (!$r['ok'])
+    $r = $this->checkWallAccess(WPT_WRIGHTS_RW);
+    if (!$r['ok']) {
       return ['error' => _("Access forbidden")];
+    }
 
-    list ($ext, $content, $error) = $this->getUploadedFileInfos ($this->data);
+    list($ext, $content, $error) = $this->getUploadedFileInfos($this->data);
 
-    if ($error)
+    if ($error) {
       $ret['error'] = $error;
-    else
-    {
+    } else {
       $rdir = 'postit/'.$this->postitId;
-      $file = Helper::getSecureSystemName (
+      $file = Helper::getSecureSystemName(
         "$dir/$rdir/attachment-".hash('sha1', $this->data->content).
            ($ext?".$ext":''));
-      $fname = basename ($file);
+      $fname = basename($file);
 
-      if (($p = strrpos($fname, '.')) !== false)
-        $fname = substr ($fname, 0, $p);
+      if ( ($p = strrpos($fname, '.') ) !== false) {
+        $fname = substr($fname, 0, $p);
+      }
 
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT 1 FROM postits_attachments
         WHERE postits_id = ? AND link LIKE ?'))
-         ->execute ([
-           $this->postitId,
-           "%$fname%"
-        ]);
+         ->execute([$this->postitId, "%$fname%"]);
 
-      if ($stmt->fetch ())
+      if ($stmt->fetch()) {
         $ret['error_msg'] = _("The file is already linked to the note");
-      else
-      {
-        file_put_contents (
+      } else {
+        file_put_contents(
           $file, base64_decode(str_replace(' ', '+', $content)));
 
         // Fix wrong MIME type for images
-        if ($ext && preg_match ('/(jpe?g|gif|png)/i', $ext))
-          list ($file, $this->data->item_type, $this->data->name) =
-            Helper::checkRealFileType ($file, $this->data->name);
+        if ($ext && preg_match('/(jpe?g|gif|png)/i', $ext)) {
+          list($file, $this->data->item_type, $this->data->name) =
+            Helper::checkRealFileType($file, $this->data->name);
+        }
 
         $ret = [
           'postits_id' => $this->postitId,
@@ -155,37 +148,33 @@ class Attachment extends Wall
           'name' => $this->data->name,
           'size' => $this->data->size,
           'item_type' => empty($this->data->item_type) ? 
-                           'text/plain':$this->data->item_type,
-          'link' => "$wdir/$rdir/".basename($file)
+                           'text/plain' : $this->data->item_type,
+          'link' => "$wdir/$rdir/".basename($file),
         ];
 
-        try
-        {
-          $this->db->beginTransaction ();
+        try {
+          $this->db->beginTransaction();
 
-          $this->executeQuery ('INSERT INTO postits_attachments', $ret);
+          $this->executeQuery('INSERT INTO postits_attachments', $ret);
 
-          $ret['id'] = $this->db->lastInsertId ();
+          $ret['id'] = $this->db->lastInsertId();
 
           $this
             ->db->prepare('
               UPDATE postits SET attachmentscount = attachmentscount + 1
               WHERE id = ?')
-            ->execute ([$this->postitId]);
+            ->execute([$this->postitId]);
           
-          $ret['icon'] = Helper::getImgFromMime ($this->data->item_type);
+          $ret['icon'] = Helper::getImgFromMime($this->data->item_type);
           $ret['link'] =
             "/api/wall/{$this->wallId}/cell/{$this->cellId}".
             "/postit/{$this->postitId}/attachment/{$ret['id']}";
 
-          $this->db->commit ();
-        }
-        catch (\Exception $e)
-        {
-          $this->db->rollBack ();
-
-          error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+          $this->db->commit();
+        } catch(\Exception $e) {
+          $this->db->rollBack();
           $ret['error'] = 1;
+          error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage ());
         }
       }
     }
@@ -193,20 +182,19 @@ class Attachment extends Wall
     return $ret;
   }
 
-  public function get (int $id = null):array
-  {
+  public function get(int $id = null):array {
     $ret = [];
 
-    $r = $this->checkWallAccess (WPT_WRIGHTS_RO);
-    if (!$r['ok'])
+    $r = $this->checkWallAccess(WPT_WRIGHTS_RO);
+    if (!$r['ok']) {
       return ['error' => _("Access forbidden")];
+    }
 
     // Return all postit attachments
-    if (!$id)
-    {
+    if (!$id) {
       $data = [];
 
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT
            postits_attachments.id
           ,postits_attachments.link
@@ -223,11 +211,10 @@ class Attachment extends Wall
             ON postits_attachments.users_id = users.id
         WHERE postits_id = ?
         ORDER BY postits_attachments.creationdate DESC, name ASC'))
-         ->execute ([$this->postitId]);
+         ->execute([$this->postitId]);
 
-      while ($row = $stmt->fetch ())
-      {
-        $row['icon'] = Helper::getImgFromMime ($row['item_type']);
+      while ( ($row = $stmt->fetch()) ) {
+        $row['icon'] = Helper::getImgFromMime($row['item_type']);
         $row['link'] =
           "/api/wall/{$this->wallId}/cell/{$this->cellId}/postit/".
           "{$this->postitId}/attachment/{$row['id']}";
@@ -235,20 +222,20 @@ class Attachment extends Wall
       }
 
       $ret = ['files' => $data];
-    }
-    else
-    {
-      ($stmt = $this->db->prepare ('
-        SELECT * FROM postits_attachments WHERE id = ?'))->execute ([$id]);
+    } else {
+      ($stmt = $this->db->prepare('
+        SELECT * FROM postits_attachments WHERE id = ?'))->execute([$id]);
+      $data = $stmt->fetch();
 
       // If the file has been deleted by admin while a user with readonly
-      // access was taking a look at the attachments list.
-      if ( !($data = $stmt->fetch ()) )
+      // access was taking a look at the attachments list
+      if (!$data) {
         $data = ['item_type' => 404];
-      else
+      } else {
         $data['path'] = WPT_ROOT_PATH.$data['link'];
+      }
 
-      Helper::download ($data);
+      Helper::download($data);
     }
 
     return $ret;
