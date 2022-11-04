@@ -831,7 +831,7 @@
       H.openConfirmPopup({
         icon: 'times',
         content: `<?=_("Close the walls?")?>`,
-        cb_ok: () => this.closeAllWalls(),
+        onConfirm: () => this.closeAllWalls(),
       });
     },
 
@@ -898,8 +898,8 @@
     openDeletePopup() {
       this.edit(() => {
         const args = {
-          cb_close: () => this.unedit(),
-          cb_ok: () => this.delete(),
+          onClose: () => this.unedit(),
+          onConfirm: () => this.delete(),
         };
 
         // H.openConfirmPopover() does not display the popover on some
@@ -1183,7 +1183,7 @@
       const awSettingsId = Number(wpt_userData.settings.activeWall);
       let activeWall;
 
-      if (!args.restoring || args.cb_after || S.get('save-opened-walls')) {
+      if (!args.restoring || args.then || S.get('save-opened-walls')) {
         activeWall = wall;
       } else {
         activeWall = document.querySelector(
@@ -1205,7 +1205,7 @@
       H.fixHeight();
 
       // Display postit dealine alert or specific wall if needed.
-      args.cb_after && args.cb_after();
+      args.then && args.then();
 
       // Set wall users view count if needed
       const viewcount = WS.popResponse(`viewcount-wall-${awId}`);
@@ -1311,7 +1311,7 @@
       if (!this.isOpened(wallId)) {
         const $wall = await this.open({wallId, noPostProcess: true});
         if ($wall) {
-          $wall.wall('postProcessLastWall', {cb_after: __displayAlert});
+          $wall.wall('postProcessLastWall', {then: __displayAlert});
         }
       } else {
         // Set wall current if needed
@@ -1329,11 +1329,11 @@
     },
 
     // METHOD refreshUserWallsData()
-    async refreshUserWallsData(success_cb) {
+    async refreshUserWallsData(then) {
       const r = await H.fetch('GET', 'wall');
       if (r && !r.error) {
         wpt_userData.walls = {list: r.list || []};
-        success_cb && success_cb ();
+        then && then();
       }
     },
 
@@ -1430,6 +1430,7 @@
     },
 
     // METHOD saveProperties()
+    // FIXME Issues with walls having 1 row and 1 col
     saveProperties() {
       const popup = document.getElementById('wpropPopup');
       const $popup = $(popup);
@@ -1845,11 +1846,12 @@
     },
 
     // METHOD edit()
-    edit(success_cb, error_cb, todelete = false) {
+    edit(then, onError, todelete = false) {
       _originalObject = this.serialize();
 
       if (!this.isShared()) {
-        return success_cb && success_cb();
+        then && then();
+        return;
       }
 
       H.request_ws(
@@ -1859,9 +1861,9 @@
         // success cb
         (d) => {
           if (d.error_msg) {
-            H.raiseError(() => error_cb && error_cb(), d.error_msg);
-          } else if (success_cb) {
-            success_cb(d);
+            H.raiseError(() => onError && onError(), d.error_msg);
+          } else if (then) {
+            then(d);
           }
         }
       );
@@ -1876,7 +1878,7 @@
     },
 
     // METHOD unedit()
-    unedit(success_cb, error_cb) {
+    unedit(then, onError) {
       let data = null;
 
       if (this.element[0].dataset.todelete) {
@@ -1887,7 +1889,8 @@
 
         if (!H.objectHasChanged(_originalObject, data)) {
           if (!this.isShared()) {
-            return success_cb && success_cb();
+            then && then();
+            return;
           } else {
             data = null;
           }
@@ -1901,19 +1904,19 @@
         // success cb
         (d) => {
           if (!(data && data.todelete) && d.error_msg) {
-            error_cb && error_cb();
+            onError && onError();
             H.displayMsg({
               title: `<?=_("Wall")?>`,
               type: 'warning',
               msg: d.error_msg,
             });
           }
-          else if (success_cb) {
-            success_cb();
+          else if (then) {
+            then();
           }
         },
         // error cb
-        error_cb,
+        onError,
       );
     },
 
@@ -2163,7 +2166,7 @@
             placement: 'left',
             title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
             content: `<?=_("Close this wall?")?>`,
-            cb_ok: () => S.getCurrent('wall').wall ('close'),
+            onConfirm: () => S.getCurrent('wall').wall ('close'),
           });
         // EVENT "click" on "new wall" tab button
         } else if (el.parentNode.dataset.action === 'new') {

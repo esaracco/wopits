@@ -94,9 +94,9 @@
                 open: false,
                 settings: {
                   caller: 'swall',
-                  cb_add: () => plugin.displayGroups(),
-                  cb_remove: () => plugin.displayGroups(),
-                  cb_close: __close,
+                  onAdd: () => plugin.displayGroups(),
+                  onRemove: () => plugin.displayGroups(),
+                  onClose: __close,
                 },
                 cb: ($p) => {
                   const p = $p[0];
@@ -135,8 +135,8 @@
                        'gtype-<?=WPT_GTYPES_DED?>')) ?
                      `<?=_("Delete this group?")?>`:
                      `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`,
-                 cb_close: __close,
-                 cb_ok: () => plugin.deleteGroup(),
+                 onClose: __close,
+                 onConfirm: () => plugin.deleteGroup(),
                });
               break;
             // unlink group
@@ -151,8 +151,8 @@
                    item: btn.closest('li').querySelector('.name'),
                    title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
                    content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
-                   cb_close: __close,
-                   cb_ok: () => plugin.unlinkGroup({id}, groupType)
+                   onClose: __close,
+                   onConfirm: () => plugin.unlinkGroup({id}, groupType)
                  });
               }
               break;

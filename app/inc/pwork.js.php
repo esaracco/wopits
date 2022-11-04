@@ -46,8 +46,8 @@
         template: 'pwork',
         settings: {
           caller: 'pwork',
-          cb_add: () => this.incCount(),
-          cb_remove: () => this.decCount(),
+          onAdd: () => this.incCount(),
+          onRemove: () => this.decCount(),
         },
         cb: ($p) => {
           const p = $p[0];
@@ -60,7 +60,7 @@
           $p.usearch('displayUsers', {
             ...$p.usearch('getIds'),
             // Refresh counter (needed when some users have been deleted)
-            cb_after: (c) => this.setCount(c),
+            then: (c) => this.setCount(c),
           });
 
           H.openModal({item: p});
@@ -85,8 +85,8 @@
                 type: 'notify-users',
                 icon: 'save',
                 content: `<?=_("Notify new users?")?>`,
-                cb_ok: () => pwork.notifyNewUsers(newUsers),
-                cb_close: () => {
+                onConfirm: () => pwork.notifyNewUsers(newUsers),
+                onClose: () => {
                   S.set('still-closing', true, 500);
                   bootstrap.Modal.getInstance(p).hide();
                   __close();

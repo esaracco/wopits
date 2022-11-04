@@ -74,13 +74,13 @@
 
           if (save) {
              H.preventDefault(e);
-             H.openConfirmPopup ({
+             H.openConfirmPopup({
                type: 'save-wprops-changes',
                icon: 'save',
                content: `<?=_("Save changes?")?>`,
-               cb_ok: () => popup.querySelector('.btn-primary').click(),
-               cb_close: () => {
-                 if (this.submitted && this.saving || !this.submitted) {
+               onConfirm: () => popup.querySelector('.btn-primary').click(),
+               onClose: () => {
+                 if (!this.submitted || (this.submitted && this.saving)) {
                    this.forceHide = true;
                    bootstrap.Modal.getInstance(popup).hide();
                  }
@@ -95,11 +95,11 @@
       // EVENT "click" on reject sharing button
       popup.querySelector('.reject-sharing button')
         .addEventListener('click', (e) => {
-        H.openConfirmPopover ({
+        H.openConfirmPopover({
           item: e.target,
           title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
           content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
-          cb_ok: () => this.removeGroupUser(),
+          onConfirm: () => this.removeGroupUser(),
         });
       });
     },
@@ -163,9 +163,9 @@
             const wall = this.wall.plugin.element[0];
             const input = popup.querySelector('.name input');
 
-            $popup.find('.btn-primary').show();
-            $popup.find('.ro').hide();
-            $popup.find('.adm').show();
+            H.show(popup.querySelector('.btn-primary'));
+            popup.querySelectorAll('.ro').forEach((el) => H.hide(el));
+            popup.querySelectorAll('.adm').forEach((el) => H.show(el));
 
             input.value = d.name;
             popup.querySelector('.description textarea').value = d.description;
@@ -181,22 +181,23 @@
               H.show(popup.querySelector('.size'));
             }
           } else {
-            $popup.find('.btn-primary').hide();
-            $popup.find('.adm').hide ();
-            $popup.find('.ro').show ();
+            H.hide(popup.querySelector('.btn-primary'));
+            popup.querySelectorAll('.adm').forEach((el) => H.hide(el));
+            popup.querySelectorAll('.ro').forEach((el) => H.show(el));
 
-            $popup.find('.name .ro').html(H.nl2br(d.name));
+            popup.querySelector('.name .ro').innerHTML = H.nl2br(d.name);
             if (d.description) {
-              $popup.find('.description .ro').html(H.nl2br (d.description));
+              popup.querySelector('.description .ro').innerHTML =
+                H.nl2br(d.description);
             } else {
-              $popup.find('.description').hide ();
+              H.hide(popup.querySelector('.description'));
             }
           }
 
           if (isCreator) {
-            $popup.find('.reject-sharing').hide();
+            H.hide(popup.querySelector('.reject-sharing'));
           } else {
-            $popup.find('.reject-sharing').show();
+            H.show(popup.querySelector('.reject-sharing'));
             popup.dataset.groups = d.groups.join(',');
           }
 

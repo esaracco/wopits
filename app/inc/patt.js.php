@@ -286,7 +286,7 @@
               item: btn,
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
               content: `<?=_("Delete the file?")?>`,
-              cb_close: () => {
+              onClose: () => {
                 const active =
                   document.querySelector('.modal .accordion-item.active');
   
@@ -294,7 +294,7 @@
                   active.classList.remove('active');
                 }
               },
-              cb_ok: () => $postit.find('.patt').patt('delete', id),
+              onConfirm: () => $postit.find('.patt').patt('delete', id),
             });
             break;
           // "Download" button

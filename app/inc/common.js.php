@@ -436,7 +436,7 @@ class WSocket {
     this.responseQueue = {};
     this.retries = 0;
     this.msgId = 0;
-    this.send_cb = {};
+    this.onSendCache = {};
     this.connected = false;
   }
 
@@ -472,7 +472,7 @@ class WSocket {
     this.cnx.onmessage = (e) => {
       const data = JSON.parse(e.data || '{}');
       const $wall = data.wall?.id ? $(`[data-id="wall-${data.wall.id}"]`) : [];
-      const isResponse = (this.send_cb[data.msgId] !== undefined);
+      const isResponse = (this.onSendCache[data.msgId] !== undefined);
       let el;
       let popup;
       let nextMsg = null;
@@ -530,7 +530,9 @@ class WSocket {
               $wall.wall('refresh', data.wall);
 
               if (data.userstoppedwriting) {
-                H.hideUserWriting(data.userstoppedwriting.user);
+                // FIXME setTimeout() needed for walls having 1 row and 1 col
+                setTimeout(() =>
+                  H.hideUserWriting(data.userstoppedwriting.user), 500);
               }
             }
             break;
@@ -613,8 +615,8 @@ class WSocket {
         delete data.msgId;
 
         if (isResponse) {
-          this.send_cb[msgId](data);
-          delete this.send_cb[msgId];
+          this.onSendCache[msgId](data);
+          delete this.onSendCache[msgId];
         }
       }
 
@@ -625,7 +627,7 @@ class WSocket {
     this.cnx.onerror = (e) => {
       if (this.retries < 15) {
         this.tryToReconnect({
-          success_cb: () => {
+          then: () => {
             const $wall = S.getCurrent('wall');
 
             if ($wall.length) {
@@ -647,9 +649,9 @@ class WSocket {
     this._connect(this.cnx.url, {
       onSuccess: !args ? undefined : () => {
         if (args.msg) {
-          this.send(args.msg, args.success_cb, args.error_cb);
-        } else if (args.success_cb) {
-          args.success_cb();
+          this.send(args.msg, args.then, args.onError);
+        } else if (args.then) {
+          args.then();
         } else {
           this.displayNetworkErrorMsg();
         }
@@ -663,12 +665,12 @@ class WSocket {
   }
 
   // METHOD send()
-  send(msg, success_cb, error_cb) {
+  send(msg, then, onError) {
     if (!this.ready()) {
       if (this.connected && this.retries < 15) {
-        this.tryToReconnect({msg, success_cb, error_cb});
-      } else if (error_cb) {
-        error_cb();
+        this.tryToReconnect({msg, then, onError});
+      } else if (onError) {
+        onError();
       }
       return;
     }
@@ -678,7 +680,7 @@ class WSocket {
       msg.msgId = ++this.msgId;
     }
 
-    this.send_cb[msg.msgId] = success_cb;
+    this.onSendCache[msg.msgId] = then;
  
     try {
       this.waitForMsgId[msg.msgId] = setTimeout(
@@ -686,7 +688,7 @@ class WSocket {
           <?=WPT_TIMEOUTS['network_connection'] * 1000?>);
       this.cnx.send(JSON.stringify(msg));
     } catch(e) {
-      this.tryToReconnect({msg, success_cb, error_cb});
+      this.tryToReconnect({msg, then, onError});
     }
   }
 
@@ -1159,9 +1161,9 @@ class WHelper {
     const popup = document.getElementById('confirmPopup');
   
     S.set('confirmPopup', {
-      cb_ok: args.cb_ok,
-      cb_close: () => {
-        args.cb_close && args.cb_close();
+      onConfirm: args.onConfirm,
+      onClose: () => {
+        args.onClose && args.onClose();
         S.unset('confirmPopup');
       },
     });
@@ -1185,7 +1187,7 @@ class WHelper {
       const bp = bootstrap.Popover.getInstance(args.item);
 
       if (bp) {
-        args.cb_close && args.cb_close(bp.tip.dataset.btnclicked);
+        args.onClose && args.onClose(bp.tip.dataset.btnclicked);
 
         if (document.querySelector('.popover.show')) {
           bp.hide();
@@ -1251,7 +1253,7 @@ class WHelper {
     const _eventC = (e) => {
       if (e.target.classList.contains('btn-primary')) {
         bp.tip.dataset.btnclicked = btn.primary;
-        args.cb_ok && args.cb_ok($(bp.tip));
+        args.onConfirm && args.onConfirm($(bp.tip));
       } else {
         bp.tip.dataset.btnclicked = btn.secondary;
       }
@@ -1279,7 +1281,7 @@ class WHelper {
       args.item.scrollIntoView(false);
     }
 
-    args.cb_after && args.cb_after($(bp.tip));
+    args.then && args.then($(bp.tip));
 
     if (scroll) {
       window.dispatchEvent(new Event('resize'));
@@ -1451,8 +1453,8 @@ class WHelper {
   }
   
   // METHOD raiseError()
-  static raiseError(error_cb, msg) {
-    error_cb && error_cb ();
+  static raiseError(onError, msg) {
+    onError && onError();
   
     this.displayMsg({
       title: `<?=_("System")?>`,
@@ -1610,12 +1612,12 @@ class WHelper {
   }
   
   // METHOD manageUnknownError()
-  static manageUnknownError(d = {}, error_cb) {
+  static manageUnknownError(d = {}, onError) {
     let msg;
 
-    if (d.error && isNaN (d.error)) {
+    if (d.error && isNaN(d.error)) {
       msg = d.error;
-    } else if (error_cb) {
+    } else if (onError) {
       msg = `<?=_("Unknown error.<br>Please try again later.")?>`;
     } else {
       msg = `<?=_("Unknown error.<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
@@ -1628,11 +1630,11 @@ class WHelper {
       type: d.msgtype || 'danger',
     });
 
-    error_cb && error_cb(d);
+    onError && onError(d);
   }
   
   // METHOD request_ws()
-  static request_ws(method, route, args, success_cb, error_cb) {
+  static request_ws(method, route, args, then, onError) {
     this.loader('show');
   
     //console.log (`WS: ${method} ${route}`);
@@ -1646,9 +1648,9 @@ class WHelper {
       (d) => {
         this.loader('hide');
         if (d.error) {
-          this.manageUnknownError(d, error_cb);
-        } else if (success_cb) {
-          success_cb(d);
+          this.manageUnknownError(d, onError);
+        } else if (then) {
+          then(d);
         } else if (d.error_msg) {
           H.displayMsg({
             title: `<?=_("Warning")?>`,
@@ -1659,7 +1661,7 @@ class WHelper {
       },
       () => {
         this.loader('hide');
-        error_cb && error_cb();
+        onError && onError();
       });
   }
   
@@ -1679,7 +1681,7 @@ class WHelper {
 
   // METHOD fetch ()
   // TODO https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout
-  static async fetch(method, service, args, success_cb, error_cb) {
+  static async fetch(method, service, args, then, onError) {
     let ok = false;
     let ret = {};
     this.loader('show');
@@ -1706,10 +1708,10 @@ class WHelper {
           this.manageUnknownError(ret);
         } else {
           if (ret.error_msg) {
-            error_cb && error_cb(ret);
+            onError && onError(ret);
           } else {
             ok = true;
-            success_cb && success_cb(ret)
+            then && then(ret)
           }
         }
       } else {
@@ -1732,8 +1734,8 @@ class WHelper {
       }
 
 /* FIXME Temporary fix
-      if (error_cb) {
-        error_cb(ret);
+      if (onError) {
+        onError(ret);
       } else {
         H.displayNetworkErrorMsg(); 
       }
@@ -1746,7 +1748,7 @@ class WHelper {
   // METHOD fetchUpload ()
   // Only used for file upload
   //TODO Use fetch() when upload progress will be available!
-  static fetchUpload(service, args, success_cb, error_cb) {
+  static fetchUpload(service, args, then, onError) {
     //console.log (`AJAX: PUT ${service}`);
   
     const pbar = document.querySelector('#loader .progress');
@@ -1790,13 +1792,13 @@ class WHelper {
       })
       .done((d) => {
         if (!d || d.error) {
-          if (error_cb) {
-            error_cb(d);
+          if (onError) {
+            onError(d);
           } else {
             this.manageUnknownError (d);
           }
-        } else if (success_cb) {
-           success_cb(d);
+        } else if (then) {
+           then(d);
         }
       })
       .fail((jqXHR, textStatus, errorThrown) => {
@@ -1823,8 +1825,8 @@ class WHelper {
     if (args.size / 1024000 > maxSize) {
       ret = false;
   
-      if (args.cb_msg) {
-        args.cb_msg(msg);
+      if (args.onErrorMsg) {
+        args.onErrorMsg(msg);
       } else {
         this.displayMsg ({
           msg,
@@ -1838,11 +1840,13 @@ class WHelper {
   }
   
   // METHOD getUploadedFiles()
-  static getUploadedFiles(files, type, success_cb, error_cb, cb_msg) {
+  static getUploadedFiles(files, type, then, onError, onErrorMsg) {
     const reader = new FileReader ();
     const file = files[0];
 
     if (type !== 'all' && !file.name.match(new RegExp (type, 'i'))) {
+      onError && onError();
+
       return this.displayMsg({
         title: `<?=_("File upload")?>`,
         type: 'warning',
@@ -1853,16 +1857,18 @@ class WHelper {
     reader.readAsDataURL(file);
   
     reader.onprogress = (e) => {
-      if (!this.checkUploadFileSize(e.total, cb_msg)) {
+      if (!this.checkUploadFileSize(e.total, onErrorMsg)) {
         reader.abort();
       }
     };
   
     reader.onerror = (e) => {
       const msg = `<?=_("Can not read file")?> (${e.target.error.code})`;
+
+      onError && onError();
   
-      if (cb_msg) {
-        cb_msg(msg);
+      if (onErrorMsg) {
+        onErrorMsg(msg);
       } else {
         this.displayMsg ({
           msg,
@@ -1872,7 +1878,7 @@ class WHelper {
       }
     };
   
-    reader.onloadend = ((f) => (evt) => success_cb(evt, f))(file);
+    reader.onloadend = ((f) => (evt) => then(evt, f))(file);
   }
   
   // METHOD waitForDOMUpdate()

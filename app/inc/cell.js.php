@@ -540,7 +540,7 @@
     },
 
     // METHOD edit()
-    edit(error_cb, nopush) {
+    edit(onError, nopush) {
       if (nopush || !this.settings.wall.wall('isShared')) return;
 
       H.request_ws(
@@ -550,11 +550,11 @@
         // success cb
         (d) => {
           if (d.error_msg) {
-            H.raiseError(() => error_cb && error_cb(), d.error_msg);
+            H.raiseError(() => onError && onError(), d.error_msg);
           }
         },
         // error cb
-        error_cb);
+        onError);
     },
 
     // METHOD unedit()

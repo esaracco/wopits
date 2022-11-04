@@ -39,7 +39,7 @@
           H.openConfirmPopup({
             icon: 'sad-tear',
             content: `<?=_("Do you really want to permanently delete your wopits account?")?>`,
-            cb_ok: () => this.delete(),
+            onConfirm: () => this.delete(),
           });
         });
       }
@@ -89,7 +89,7 @@
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete your profile picture?")?>`,
-            cb_ok: () => this.deletePicture(),
+            onConfirm: () => this.deletePicture(),
           });
         } else {
           document.getElementById('account-picture').click();
@@ -135,12 +135,12 @@
                   placement: 'top',
                   title: `<i class="fas fa-eye-slash fa-fw"></i> <?=_("Invisible mode")?>`,
                   content: `<?=_("By checking this option, sharing will be impossible, and you will be removed from all groups.<br>Become invisible anyway?")?>`,
-                  cb_close: (btn) => {
+                  onClose: (btn) => {
                     if (btn !== 'yes') {
                       field.checked = false;
                     }
                   },
-                  cb_ok: () => this.updateField({visible: 0}, true),
+                  onConfirm: () => this.updateField({visible: 0}, true),
                 });
               } else {
                 this.updateField({visible: 1}, true);
@@ -153,12 +153,12 @@
                   placement: 'top',
                   title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Notify me by email")?>`,
                   content: `<?=_("By unchecking this option, you will no longer receive email notifications.<br>Disable notifications anyway?")?>`,
-                  cb_close: (btn) => {
+                  onClose: (btn) => {
                     if (btn !== 'yes') {
                       field.checked = true;
                     }
                   },
-                  cb_ok: () => this.updateField({allow_emails: 0}, true),
+                  onConfirm: () => this.updateField({allow_emails: 0}, true),
                 });
               } else {
                 this.updateField({allow_emails: 1}, true);

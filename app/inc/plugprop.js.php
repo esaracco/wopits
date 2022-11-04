@@ -48,8 +48,8 @@
              type: 'save-plugs-changes',
              icon: 'save',
              content: `<?=_("Save changes?")?>`,
-             cb_ok: () => ra.querySelector('.btn-primary').click(),
-             cb_close: () => {
+             onConfirm: () => ra.querySelector('.btn-primary').click(),
+             onClose: () => {
                this.forceHide = true;
                bootstrap.Modal.getInstance(ra).hide();
              },

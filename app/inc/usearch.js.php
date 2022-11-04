@@ -40,7 +40,7 @@
 
       // EVENT "hidden.bs.modal"
       ac.addEventListener('hidden.bs.modal', (e) => {
-        args.cb_close && args.cb_close();
+        args.onClose && args.onClose();
         e.target.querySelector('.list-group.attr').innerHTML = '';
         _oldIds = undefined;
       });
@@ -102,7 +102,7 @@
                   item: li.querySelector('span'),
                   title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Remove")?>`,
                   content: isDed ? `<?=_("This user will lose their access to the wall.<br>Remove anyway?")?>` : `<?=_("This user will lose their access for all walls shared with this group.<br>Remove anyway?")?>`,
-                  cb_ok: () => {
+                  onConfirm: () => {
                     this.removeUser(args);
                     input.focus();
                   }
@@ -302,7 +302,7 @@
             ...args,
             str: this.element[0].querySelector('input').value,
           }, true);
-          this.settings.cb_remove && this.settings.cb_remove();
+          this.settings.onRemove && this.settings.onRemove();
         });
     },
 
@@ -339,7 +339,7 @@
             ...args,
             str: this.element[0].querySelector('input').value,
           }, true);
-          this.settings.cb_add && this.settings.cb_add();
+          this.settings.onAdd && this.settings.onAdd();
         });
     },
 
@@ -399,7 +399,7 @@
             div.innerHTML = '';
           }
 
-          args.cb_after && args.cb_after(d.length);
+          args.then && args.then(d.length);
         });
     },
 

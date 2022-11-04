@@ -53,8 +53,8 @@
             type: 'reload-app',
             icon: 'sync-alt',
             content: `<?=_("Reload wopits to apply the new timezone?")?>`,
-            cb_ok: () => this.applyTimezone(el.value),
-            cb_close: () => {
+            onConfirm: () => this.applyTimezone(el.value),
+            onClose: () => {
               const tz = el.dataset.timezone;
               if (tz !== undefined) {
                 el.value = tz;
@@ -73,7 +73,7 @@
             type: 'reload-app',
             icon: 'sync-alt',
             content: `<?=_("Reload wopits to apply the new language?")?>`,
-            cb_ok: () => this.applyLocale(div.dataset.locale),
+            onConfirm: () => this.applyLocale(div.dataset.locale),
           });
         }
       };

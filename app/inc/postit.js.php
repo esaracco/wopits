@@ -576,7 +576,7 @@
       } else {
         this.edit({}, () => {
           if (!this.openAskForExternalRefPopup({
-                 item, cb_close: (btn) => (btn !== 'yes') && this.unedit()})) {
+                 item, onClose: (btn) => (btn !== 'yes') && this.unedit()})) {
             this.open();
           }
         });
@@ -1654,8 +1654,8 @@
           item: args.item ? args.item[0] : this.element[0],
           title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
           content: `<?=_("This note contains external images or videos.")?><br><?=_("Would you like to load all external content for the current wall?")?>`,
-          cb_close: args.cb_close,
-          cb_ok: () => {
+          onClose: args.onClose,
+          onConfirm: () => {
             this.settings.wall.wall('displayExternalRef', 1);
             this.open();
           }
@@ -1928,7 +1928,7 @@
     },
 
     // METHOD edit()
-    edit(args = {}, success_cb, error_cb) {
+    edit(args = {}, then, onError) {
       const data = {cellId: this.settings.cellId};
 
       if (!args.plugend) {
@@ -1937,7 +1937,8 @@
       }
 
       if (!this.settings.wall.wall('isShared')) {
-        return success_cb && success_cb();
+        then && then();
+        return;
       }
 
       H.request_ws(
@@ -1948,16 +1949,16 @@
         (d) => {
           if (d.error_msg) {
             H.raiseError(() => {
-              error_cb && error_cb();
+              onError && onError();
               this.cancelEdit(args);
             }, d.error_msg);
-          } else if (success_cb) {
-            success_cb({...d, ...args});
+          } else if (then) {
+            then({...d, ...args});
           }
         },
         // error cb
         (d) => {
-          error_cb && error_cb();
+          onError && onError();
           this.cancelEdit(args);
         },
       );
@@ -2293,8 +2294,8 @@
                   placement: 'right',
                   title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                   content: `<?=_("Delete this note?")?>`,
-                  cb_close: () => plugin.unedit(),
-                  cb_ok: () => plugin.delete(),
+                  onClose: () => plugin.unedit(),
+                  onConfirm: () => plugin.delete(),
                 });
                 break;
               // OPEN tags picker
@@ -2306,8 +2307,8 @@
   
                 cp.open({
                   event: e,
-                  cb_close: () => plugin.element.trigger('mouseleave'),
-                  cb_click: (div) => {
+                  onClose: () => plugin.element.trigger('mouseleave'),
+                  onSelect: (div) => {
                     const el = plugin.element[0];
                     cp.getColorsList().forEach((c) => el.classList.remove(c));
                     el.classList.add(div.className);
@@ -2370,8 +2371,8 @@
                 item: (el.tagName === 'DIV') ? el : el.closest('div'),
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
                 content: `<?=_("Reset deadline?")?>`,
-                cb_close: () => plugin.unedit(),
-                cb_ok: () => plugin.resetDeadline(),
+                onClose: () => plugin.unedit(),
+                onConfirm: () => plugin.resetDeadline(),
               });
             });
           } else {
@@ -2422,8 +2423,8 @@
                 item: label,
                 title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
                 content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
-                cb_close: __unedit,
-                cb_ok: ($p) => {
+                onClose: __unedit,
+                onConfirm: ($p) => {
                   const label = $p[0].querySelector('input').value.trim();
 
                   if (label !== defaultLabel) {
@@ -2440,8 +2441,8 @@
                 placement: 'left',
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                 content: `<?=_("Delete this relation?")?>`,
-                cb_close: __unedit,
-                cb_ok: () => startPlugin.removePlug(endId),
+                onClose: __unedit,
+                onConfirm: () => startPlugin.removePlug(endId),
               });
             });
             break;
@@ -2489,13 +2490,13 @@
         const el = e.target;
         const fname = el.files[0].name;
     
-        // LOCAL FUNCTION __error_cb ()
-        const __error_cb = (r) => {
+        // LOCAL FUNCTION __displayError()
+        const __displayError = (r) => {
           if (r) {
             H.displayMsg({
               title: `<?=_("Note")?>`,
               type: 'warning',
-              msg: r.error || r
+              msg: r.error || r,
             });
           }
         };
@@ -2503,8 +2504,10 @@
         H.getUploadedFiles(el.files, '\.(jpe?g|gif|png)$', (e, file) => {
           el.value = '';
 
-          if (H.checkUploadFileSize({size: e.total, cb_msg: __error_cb}) &&
-              e.target.result) {
+          if (H.checkUploadFileSize({
+                size: e.total,
+                onErrorMsg: __displayError,
+              }) && e.target.result) {
             const wallId = S.getCurrent('wall').wall('getId');
             const $postit = S.getCurrent('postit');
             const postitId = $postit.postit('getId');
@@ -2522,7 +2525,7 @@
                 });
 
               if (r.error) {
-                __error_cb(r);
+                __displayError(r);
               } else {
                 const inputs = document.querySelector('.tox-dialog')
                   .querySelectorAll('input');
@@ -2541,7 +2544,7 @@
 
                 setTimeout(() => {
                   if (!inputs[0].value) {
-                    __error_cb (`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
+                    __displayError(`<?=_("Sorry, there is a compatibility issue with your browser when it comes to uploading notes images...")?>`);
                   }
                 }, 0);
               }
@@ -2549,7 +2552,7 @@
           }
         },
         null,
-        __error_cb);
+        __displayError);
       },
     });
 
@@ -2569,7 +2572,7 @@
       const title = document.getElementById('postitUpdatePopupTitle').value;
       const content = tinymce.activeEditor.getContent();
 
-      // LOCAL FUNCTION cb_close()
+      // LOCAL FUNCTION __close()
       const __close = (forceHide = false) => {
         S.set('postit-data', {closing: true});
 
@@ -2607,8 +2610,8 @@
           type: 'save-postits-changes',
           icon: 'save',
           content: `<?=_("Save changes?")?>`,
-          cb_ok: () => el.querySelector('.btn-primary').click(),
-          cb_close: () => __close(true),
+          onConfirm: () => el.querySelector('.btn-primary').click(),
+          onClose: () => __close(true),
         });
 
         S.set('postit-data', data);

@@ -142,7 +142,7 @@
               item: this.element[0].querySelector('.wpt-badge'),
               title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Messages")?>`,
               content: body,
-              cb_after: ($p) => {
+              then: ($p) => {
                 const wH = window.innerHeight - 95;
                 const bH = $p.find('.popover-body').height();
 

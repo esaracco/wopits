@@ -284,7 +284,7 @@
             item: this.element[0],
             title: `<i class="fas fa-comments fa-fw"></i> <?=_("Comments")?>`,
             content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
-            cb_ok: ($p) => {
+            onConfirm: ($p) => {
               const content = H.noHTML(_textarea.value);
               if (content) {
                 this.add(content);
@@ -292,11 +292,11 @@
                 _textarea.focus();
               }
             },
-            cb_close: () => {
+            onClose: () => {
               $_popup = undefined;
               this.postit().unsetCurrent();
             },
-            cb_after: ($p) => {
+            then: ($p) => {
               $_popup = $p;
               _textarea = $p[0].querySelector('textarea');
               __resize();

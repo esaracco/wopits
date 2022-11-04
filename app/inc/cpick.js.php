@@ -15,14 +15,14 @@
 ?>
 
   const _COLOR_PICKER_COLORS = [`color-<?=join('`,`color-', array_keys(WPT_MODULES['cpick']['items']))?>`];
-  let _width = 0;
-  let _height = 0;
-  let _cb_close;
-  let _cb_click;
 
   /////////////////////////// PUBLIC METHODS ////////////////////////////
 
   Plugin.prototype = {
+    width: null,
+    height: null,
+    onClose: null,
+    onSelect: null,
     // METHOD init()
     init() {
       const picker = this.element[0];
@@ -34,8 +34,8 @@
       picker.innerHTML = html;
 
       H.waitForDOMUpdate(() => {
-        _width = picker.offsetWidth;
-        _height = picker.offsetHeight;
+        this.width = picker.offsetWidth;
+        this.height = picker.offsetHeight;
       }); 
     },
 
@@ -52,16 +52,16 @@
       let x = args.event.pageX + 5;
       let y = args.event.pageY - 20;
 
-      if (x + _width > wW) {
-        x = wW - _width - 20;
+      if (x + this.width > wW) {
+        x = wW - this.width - 20;
       }
 
-      if (y + _height > wH) {
-        y = wH - _height - 20;
+      if (y + this.height > wH) {
+        y = wH - this.height - 20;
       }
 
-      _cb_close = args.cb_close;
-      _cb_click = args.cb_click;
+      this.onClose = args.onClose;
+      this.onSelect = args.onSelect;
 
       // EVENT "click" on colors
       const _eventC = (e) => {
@@ -73,7 +73,7 @@
         if (el.className.indexOf('color') !== 0) return;
 
         // Update background color
-        _cb_click(el);
+        this.onSelect(el);
 
         // Remove color picker
         // document.getElementById('popup-layer').click();
@@ -107,7 +107,7 @@
 
       if (picker) {
         picker.style.visibility = 'hidden';
-        _cb_close && _cb_close();
+        this.onClose && this.onClose();
       }
     }
   };

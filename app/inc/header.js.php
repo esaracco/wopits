@@ -182,8 +182,8 @@
                   content: isCol ?
                       `<?=_("Delete this column?")?>` :
                       `<?=_("Delete this row?")?>`,
-                  cb_close: () => this.unedit(),
-                  cb_ok: () => {
+                  onClose: () => this.unedit(),
+                  onConfirm: () => {
                     // Wait for the popover to be closed
                     setTimeout(() => {
                       if (isCol) {
@@ -206,13 +206,13 @@
                   item: li.parentNode.parentNode.querySelector('.btn-menu'),
                   title: `<i class="fas fa-grip-lines${isCol ? '-vertical' : ''} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
                   content: `<input type="text" class="form-control form-control-sm" value="${header.querySelector('.title').innerText}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
-                  cb_close: () => {
+                  onClose: () => {
                     if (!S.get('no-unedit')) {
                       this.unedit();
                     }
                     S.unset('no-unedit');
                   },
-                  cb_ok: ($p) => {
+                  onConfirm: ($p) => {
                     S.set('no-unedit', true);
                     this.setTitle($p[0].querySelector('input').value, true);
                   }
@@ -389,14 +389,14 @@
             placement: 'left',
             title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
             content: `<?=_("Delete this picture?")?>`,
-            cb_close: () => {
+            onClose: () => {
               if (!S.get('unedit-done')) {
                 this.unedit();
               } else {
                 S.unset('unedit-done');
               }
             },
-            cb_ok: () => {
+            onConfirm: () => {
               S.set('unedit-done', true);
               this.deleteImg();
             },
@@ -525,15 +525,13 @@
     },
 
     // METHOD edit()
-    edit(success_cb, error_cb) {
+    edit(then, onError) {
       this.setCurrent();
 
       _originalObject = _serializeOne(this.element[0]);
 
       if (!this.settings.wall.wall('isShared')) {
-        if (success_cb) {
-          success_cb();
-        }
+        then && then();
         return;
       }
 
@@ -546,13 +544,11 @@
           // If header does not exists anymore (row/col has been deleted)
           if (d.error_msg) {
             H.raiseError(() => {
-              if (error_cb) {
-                error_cb();
-              }
+              onError && onError();
               this.cancelEdit();
             }, d.error_msg);
-          } else if (success_cb) {
-            success_cb(d);
+          } else if (then) {
+            then(d);
           }
         },
         // error cb
@@ -572,18 +568,9 @@
     },
 
     // METHOD cancelEdit()
-    cancelEdit(bubble_event_cb) {
-      const header = this.element[0];
-
+    cancelEdit() {
       _realEdit = false;
-
       this.unsetCurrent();
-
-      if (bubble_event_cb) {
-        header.classList.add('_current')
-        bubble_event_cb();
-        header.classList.remove('_current')
-      }
     },
 
     // METHOD serialize()
@@ -597,8 +584,8 @@
         };
       });
 
-      wall.querySelectorAll('tbody.wpt th.wpt').forEach((th) =>
-          headers.rows.push(_serializeOne(th)));
+      wall.querySelectorAll('tbody.wpt th.wpt').forEach(
+        (th) => headers.rows.push(_serializeOne(th)));
 
       return headers;
     },
@@ -633,7 +620,7 @@
         };
         $wall.find('tbody.wpt td.wpt').cell('reorganize');
       } else if (!$wall.wall('isShared')) {
-        return this.cancelEdit(args.bubble_cb);
+        return this.cancelEdit();
       }
 
       H.request_ws(
@@ -641,9 +628,9 @@
         `wall/${this.settings.wallId}/editQueue/header/${this.settings.id}`,
         data,
         // success cb
-        (d) => this.cancelEdit(args.bubble_cb),
+        (d) => this.cancelEdit(),
         // error cb
-        () => this.cancelEdit(args.bubble_cb),
+        () => this.cancelEdit(),
       );
     }
   };

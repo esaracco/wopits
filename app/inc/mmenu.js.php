@@ -72,14 +72,14 @@
             if (!ST.noDisplay('mmenu-copy-help')) {
               args.title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
               args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${_noDisplayBtn}`;
-              args.cb_ok = () => ST.noDisplay('mmenu-copy-help', true);
+              args.onConfirm = () => ST.noDisplay('mmenu-copy-help', true);
             }
             break;
           case 'move':
             if (!ST.noDisplay('mmenu-move-help')) {
               args.title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
               args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${_noDisplayBtn}`;
-              args.cb_ok = () => ST.noDisplay('mmenu-move-help', true);
+              args.onConfirm = () => ST.noDisplay('mmenu-move-help', true);
             }
             break
         }
@@ -168,7 +168,7 @@
           placement,
           type,
           title,
-          cb_close: () => {
+          onClose: () => {
             S.unset('noDefaultEscape');
 
             // Remove tmp div if any
@@ -181,7 +181,7 @@
               _data.dest = null;
             }
           },
-          cb_ok: () => {
+          onConfirm: () => {
             let position;
 
             if (_data.dest) {
@@ -208,8 +208,8 @@
         case 'cpick':
           $('#cpick').cpick('open', {
             event: args.event,
-            cb_close: () => args.event.target.classList.remove('set'),
-            cb_click: (c) => {
+            onClose: () => args.event.target.classList.remove('set'),
+            onSelect: (c) => {
               H.request_ws(
                 'POST',
                 'postits/color',
@@ -516,7 +516,7 @@
         title: `<i class="fas fa-bolt fa-fw"></i> <?=_("Meta menu")?>`,
         placement: 'right',
         content: content + _noDisplayBtn,
-        cb_ok: () => ST.noDisplay(`mmenu-help-${writeAccess}`, true),
+        onConfirm: () => ST.noDisplay(`mmenu-help-${writeAccess}`, true),
       });
     },
 

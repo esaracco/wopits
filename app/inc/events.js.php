@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'logout',
         icon: 'power-off',
         content: `<?=_("Do you really want to logout from wopits?")?>`,
-        cb_ok: () => $("<div/>").login('logout'),
+        onConfirm: () => $("<div/>").login('logout'),
       });
     });
   }
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
         S.getCurrent('postit').postit('unedit');
         break;
       case 'confirmPopup':
-        S.get('confirmPopup').cb_close();
+        S.get('confirmPopup').onClose();
         break;
       case 'groupAccessPopup':
       case 'groupPopup':
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
           // Manage confirmations
           case 'confirmPopup':
-            S.get('confirmPopup').cb_ok();
+            S.get('confirmPopup').onConfirm();
             break;
           // Create new wall
           case 'createWallPopup':
