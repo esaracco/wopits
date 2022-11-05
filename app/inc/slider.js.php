@@ -14,35 +14,40 @@
 
 ?>
 
-  /////////////////////////// PUBLIC METHODS ////////////////////////////
+/////////////////////////////////// PRIVATE //////////////////////////////////
+
+// DOM element
+let _el = null;
+// Input field
+let _input =  null;
+
+/////////////////////////////////// PUBLIC ///////////////////////////////////
+
+<?=$Plugin->getPublicSection()?>
 
   Plugin.prototype = {
-    // DOM element
-    el: null,
-    // Input field
-    input: null,
     // METHOD init()
     init(args) {
-      this.el = this.element[0];
-      this.input = this.el.querySelector('input');
+      _el = this.element[0];
+      _input = _el.querySelector('input');
 
-      this.input.addEventListener('input', (e) => this.value(e.target.value));
+      _input.addEventListener('input', (e) => this.value(e.target.value));
     },
 
     // METHOD value()
     value(v, setcomp) {
       if (v === undefined) {
-        return this.input.value;
+        return _input.value;
       } else {
-        this.el.querySelector('label span').innerHTML = v + '%';
+        _el.querySelector('label span').innerHTML = v + '%';
         if (setcomp) {
-          this.input.value = v;
+          _input.value = v;
         }
       }
     }
   };
 
-/////////////////////////// AT LOAD INIT //////////////////////////////
+//////////////////////////////////// INIT ////////////////////////////////////
 
   document.addEventListener('DOMContentLoaded', () => {
     if (H.isLoginPage()) return;
@@ -54,4 +59,4 @@
     }
   });
 
-<?php echo $Plugin->getFooter()?>
+<?=$Plugin->getFooter()?>

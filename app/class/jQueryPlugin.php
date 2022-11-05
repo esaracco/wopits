@@ -15,10 +15,11 @@ class jQueryPlugin {
   }
 
   public function getHeader():string {
-    $js = <<<EOC
-;(function($, window, document, undefined) {
-'use strict';
+    return ";(function($) {'use strict';";
+  }
 
+  public function getPublicSection():string {
+$js = <<<EOC
 const Plugin = function(element) {
   this.settings = {{$this->defaultSettings}};
 
@@ -63,14 +64,14 @@ $.fn['$this->name'] = function(arg) {
   if (!arg || typeof arg === 'object') {
     $.extend(plugin.settings, arg);
     return plugin.init(arg);
-  } else if (typeof arg === 'string' && typeof plugin[arg] === 'function') {
+  } else if (typeof plugin[arg] === 'function') {
     return plugin[arg].apply(plugin, Array.prototype.slice.call(arguments, 1));
   } else {
     $.error("[$this->name] Method `"+arg+"` does not exist.");
   }
 };
 
-})(jQuery, window, document);
+})(jQuery);
 EOC;
   }
 }

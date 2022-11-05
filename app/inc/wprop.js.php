@@ -1,210 +1,219 @@
 <?php
 /**
-  Javascript plugin - Wall properties
+Javascript plugin - Wall properties
 
-  Scope: Wall
-  Elements: #wpropPopup
-  Description: Manage wall's properties
+Scope: Wall
+Elements: #wpropPopup
+Description: Manage wall's properties
 */
 
-  require_once(__DIR__.'/../prepend.php');
+require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin('wprop');
-  echo $Plugin->getHeader();
+$Plugin = new Wopits\jQueryPlugin('wprop');
+echo $Plugin->getHeader();
 
 ?>
 
-/////////////////////////// PUBLIC METHODS ////////////////////////////
+/////////////////////////////////// PRIVATE //////////////////////////////////
 
-  Plugin.prototype = {
-    wall: {plugin: null, data: null},
-    forceHide: false,
-    saving: false,
-    submitted: false,
-    // METHOD init()
-    init(args) {
-      const popup = this.element[0];
+  const _wall = {plugin: null, data: null};
+  let _forceHide = false;
+  let _saving = false;
+  let _submitted = false;
 
-      // EVENT "click" on primary button
-      popup.querySelector('.btn-primary').addEventListener('click', (e) => {
-        this.submitted = true;
-        this.saving = this.wall.plugin.saveProperties();
-        if (this.saving) {
-          bootstrap.Modal.getInstance(popup).hide();
-        }
-      });
+/////////////////////////////////// PUBLIC ///////////////////////////////////
 
-      // EVENT "hidden.bs.modal" plug's settings popup
-      popup.addEventListener('hidden.bs.modal', (e) => {
-        if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
+<?=$Plugin->getPublicSection()?>
 
-        if (this.forceHide || this.saving) {
-          this.unedit();
-        }
-      });
+Plugin.prototype = {
+  // METHOD init()
+  init(args) {
+    const popup = this.element[0];
 
-      // EVENT "hide.bs.modal" plug's settings popup
-      popup.addEventListener('hide.bs.modal', (e) => {
-        if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
-
-        if (!this.forceHide && !this.saving) {
-          const {
-            name,
-            description,
-            width = null,
-            height = null,
-          } = this.wall.data;
-          const newName = H.noHTML( popup.querySelector('.name input').value);
-          const newDescription = H.noHTML(
-                  popup.querySelector('.description textarea').value);
-          let save = (name !== newName ||
-                      (description || '') !== newDescription);
-
-          if (width) {
-            const newWidth = popup.querySelector(`[name="wall-width"]`).value;
-            const newHeight = popup.querySelector(`[name="wall-height"]`).value;
-
-            if (width !== parseInt(newWidth) ||
-                height !== parseInt(newHeight)) {
-              save = true;
-            }
-          }
-
-          this.submitted = false;
-
-          if (save) {
-             H.preventDefault(e);
-             H.openConfirmPopup({
-               type: 'save-wprops-changes',
-               icon: 'save',
-               content: `<?=_("Save changes?")?>`,
-               onConfirm: () => popup.querySelector('.btn-primary').click(),
-               onClose: () => {
-                 if (!this.submitted || (this.submitted && this.saving)) {
-                   this.forceHide = true;
-                   bootstrap.Modal.getInstance(popup).hide();
-                 }
-               },
-             });
-           } else {
-             this.unedit();
-           }
-        }
-      });
-
-      // EVENT "click" on reject sharing button
-      popup.querySelector('.reject-sharing button')
-        .addEventListener('click', (e) => {
-        H.openConfirmPopover({
-          item: e.target,
-          title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
-          content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
-          onConfirm: () => this.removeGroupUser(),
-        });
-      });
-    },
-
-    // METHOD unedit()
-    unedit() {
-      if (!this.element[0].dataset.uneditdone) {
-        this.wall.plugin.unedit();
+    // EVENT "click" on primary button
+    popup.querySelector('.btn-primary').addEventListener('click', (e) => {
+      _submitted = true;
+      _saving = _wall.plugin.saveProperties();
+      if (_saving) {
+        bootstrap.Modal.getInstance(popup).hide();
       }
-    },
+    });
 
-    // METHOD removeGroupUser()
-    removeGroupUser(args) {
-      this.wall.plugin.close();
+    // EVENT "hidden.bs.modal" plug's settings popup
+    popup.addEventListener('hidden.bs.modal', (e) => {
+      if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
 
-      H.request_ws(
-        'DELETE',
-        `wall/${this.wall.plugin.getId()}/group/`+
-            `${this.element[0].dataset.groups}/removeMe`,
-      );
-    },
+      if (_forceHide || _saving) {
+        this.unedit();
+      }
+    });
 
-    // METHOD getWallSize()
-    getWallSize() {
-      const cell = this.wall.plugin.element[0].querySelector('td.wpt');
+    // EVENT "hide.bs.modal" plug's settings popup
+    popup.addEventListener('hide.bs.modal', (e) => {
+      if (!H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) return;
 
-      return {
-        width: Math.floor(cell.offsetWidth),
-        height: Math.floor(cell.offsetHeight),
-      };
-    },
+      if (!_forceHide && !_saving) {
+        const {
+          name,
+          description,
+          width = null,
+          height = null,
+        } = _wall.data;
+        const newName = H.noHTML( popup.querySelector('.name input').value);
+        const newDescription = H.noHTML(
+                popup.querySelector('.description textarea').value);
+        let save = (name !== newName ||
+                    (description || '') !== newDescription);
 
-    // METHOD open()
-    open(args) {
-      this.wall.plugin = args.wall.wall('getClass');
+        if (width) {
+          const newWidth = popup.querySelector(`[name="wall-width"]`).value;
+          const newHeight = popup.querySelector(`[name="wall-height"]`).value;
 
-      H.fetch(
-        'GET',
-        `wall/${this.wall.plugin.getId()}/infos`,
-        null,
-        // success cb
-        (d) => {
-          const $popup = this.element;
-          const popup = $popup[0];
-          const isCreator = (d.user_id === wpt_userData.id);
-
-          this.wall.data = d;
-          this.forceHide = false;
-          this.saving = false;
-          this.submitted = false;
-
-          H.cleanPopupDataAttr(popup);
-
-          H.show(popup.querySelector('.description'));
-          popup.querySelector('.creator').innerText = d.user_fullname;
-          popup.querySelector('.creationdate').innerText =
-            H.getUserDate(d.creationdate, null, 'Y-MM-DD HH:mm');
-          H.hide(popup.querySelector('.size'));
-
-          if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
-            const wall = this.wall.plugin.element[0];
-            const input = popup.querySelector('.name input');
-
-            H.show(popup.querySelector('.btn-primary'));
-            popup.querySelectorAll('.ro').forEach((el) => H.hide(el));
-            popup.querySelectorAll('.adm').forEach((el) => H.show(el));
-
-            input.value = d.name;
-            popup.querySelector('.description textarea').value = d.description;
-
-            if (wall.dataset.rows === '1' && wall.dataset.cols === '1') {
-              const {width, height} = this.getWallSize();
-
-              this.wall.data.width = width;
-              this.wall.data.height = height;
-
-              popup.querySelector(`[name="wall-width"]`).value = width;
-              popup.querySelector(`[name="wall-height"]`).value = height;
-              H.show(popup.querySelector('.size'));
-            }
-          } else {
-            H.hide(popup.querySelector('.btn-primary'));
-            popup.querySelectorAll('.adm').forEach((el) => H.hide(el));
-            popup.querySelectorAll('.ro').forEach((el) => H.show(el));
-
-            popup.querySelector('.name .ro').innerHTML = H.nl2br(d.name);
-            if (d.description) {
-              popup.querySelector('.description .ro').innerHTML =
-                H.nl2br(d.description);
-            } else {
-              H.hide(popup.querySelector('.description'));
-            }
+          if (width !== parseInt(newWidth) ||
+              height !== parseInt(newHeight)) {
+            save = true;
           }
+        }
 
-          if (isCreator) {
-            H.hide(popup.querySelector('.reject-sharing'));
-          } else {
-            H.show(popup.querySelector('.reject-sharing'));
-            popup.dataset.groups = d.groups.join(',');
-          }
+        _submitted = false;
 
-          popup.dataset.noclosure = true;
-          H.openModal({item: popup});
-        });
+        if (save) {
+           H.preventDefault(e);
+           H.openConfirmPopup({
+             type: 'save-wprops-changes',
+             icon: 'save',
+             content: `<?=_("Save changes?")?>`,
+             onConfirm: () => popup.querySelector('.btn-primary').click(),
+             onClose: () => {
+               if (!_submitted || (_submitted && _saving)) {
+                 _forceHide = true;
+                 bootstrap.Modal.getInstance(popup).hide();
+               }
+             },
+           });
+         } else {
+           this.unedit();
+         }
+      }
+    });
+
+    // EVENT "click" on reject sharing button
+    popup.querySelector('.reject-sharing button')
+      .addEventListener('click', (e) => {
+      H.openConfirmPopover({
+        item: e.target,
+        title: `<i class="fas fa-heart-broken fa-fw"></i> <?=_("Reject sharing")?>`,
+        content: `<?=_("You will lose your access to the wall.<br>Reject anyway?")?>`,
+        onConfirm: () => this.removeGroupUser(),
+      });
+    });
+  },
+
+  // METHOD unedit()
+  unedit() {
+    if (!this.element[0].dataset.uneditdone) {
+      _wall.plugin.unedit();
     }
-  };
+  },
 
-<?php echo $Plugin->getFooter()?>
+  // METHOD removeGroupUser()
+  removeGroupUser(args) {
+    _wall.plugin.close();
+
+    H.request_ws(
+      'DELETE',
+      `wall/${_wall.plugin.getId()}/group/`+
+          `${this.element[0].dataset.groups}/removeMe`,
+    );
+  },
+
+  // METHOD getWallSize()
+  getWallSize() {
+    const cell = _wall.plugin.element[0].querySelector('td.wpt');
+
+    return {
+      width: Math.floor(cell.offsetWidth),
+      height: Math.floor(cell.offsetHeight),
+    };
+  },
+
+  // METHOD open()
+  open(args) {
+    _wall.plugin = args.wall.wall('getClass');
+
+    H.fetch(
+      'GET',
+      `wall/${_wall.plugin.getId()}/infos`,
+      null,
+      // success cb
+      (d) => {
+        const $popup = this.element;
+        const popup = $popup[0];
+        const isCreator = (d.user_id === wpt_userData.id);
+
+        _wall.data = d;
+        _forceHide = false;
+        _saving = false;
+        _submitted = false;
+
+        H.cleanPopupDataAttr(popup);
+
+        H.show(popup.querySelector('.description'));
+        popup.querySelector('.creator').innerText = d.user_fullname;
+        popup.querySelector('.creationdate').innerText =
+          H.getUserDate(d.creationdate, null, 'Y-MM-DD HH:mm');
+        H.hide(popup.querySelector('.size'));
+
+        if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
+          const wall = _wall.plugin.element[0];
+          const input = popup.querySelector('.name input');
+
+          H.show(popup.querySelector('.btn-primary'));
+          popup.querySelectorAll('.ro').forEach((el) => H.hide(el));
+          popup.querySelectorAll('.adm').forEach((el) => H.show(el));
+
+          input.value = d.name;
+          popup.querySelector('.description textarea').value = d.description;
+
+          if (wall.dataset.rows === '1' && wall.dataset.cols === '1') {
+            const {width, height} = this.getWallSize();
+
+            _wall.data.width = width;
+            _wall.data.height = height;
+
+            popup.querySelector(`[name="wall-width"]`).value = width;
+            popup.querySelector(`[name="wall-height"]`).value = height;
+            H.show(popup.querySelector('.size'));
+          }
+        } else {
+          H.hide(popup.querySelector('.btn-primary'));
+          popup.querySelectorAll('.adm').forEach((el) => H.hide(el));
+          popup.querySelectorAll('.ro').forEach((el) => H.show(el));
+
+          popup.querySelector('.name .ro').innerHTML = H.nl2br(d.name);
+          if (d.description) {
+            popup.querySelector('.description .ro').innerHTML =
+              H.nl2br(d.description);
+          } else {
+            H.hide(popup.querySelector('.description'));
+          }
+        }
+
+        if (isCreator) {
+          H.hide(popup.querySelector('.reject-sharing'));
+        } else {
+          H.show(popup.querySelector('.reject-sharing'));
+          popup.dataset.groups = d.groups.join(',');
+        }
+
+        // FIXME Reject sharing button is temporarily deactivated because of
+        //       a bug
+        H.hide(popup.querySelector('.reject-sharing'));
+
+        popup.dataset.noclosure = true;
+        H.openModal({item: popup});
+      });
+  }
+};
+
+<?=$Plugin->getFooter()?>

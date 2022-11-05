@@ -109,7 +109,9 @@ class EditQueue extends Wall {
 
     if (!isset($ret['error_msg'])) {
       try {
-        $this->db->beginTransaction();
+        if (!$this->db->inTransaction()) {
+          $this->db->beginTransaction();
+        }
 
         switch ($item) {
           case 'wall':

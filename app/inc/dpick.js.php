@@ -14,7 +14,9 @@
 
 ?>
 
-  /////////////////////////// PUBLIC METHODS ////////////////////////////
+/////////////////////////////////// PUBLIC ///////////////////////////////////
+
+<?=$Plugin->getPublicSection()?>
 
   Plugin.prototype = {
     $picker: null,
@@ -132,4 +134,4 @@
     }
   };
 
-<?php echo $Plugin->getFooter()?>
+<?=$Plugin->getFooter()?>
