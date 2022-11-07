@@ -29,7 +29,7 @@ const _displaySection = (div, type, items) => {
   let html = '';
   items.forEach((item) => {
     if (item.item_type === type) {
-      html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" class="list-group-item is-wall-creator${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="delete-group" type="button" class="close" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></div></li>`;
+      html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-creator="1" class="list-group-item ${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="delete-group" type="button" class="close" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></div></li>`;
     }
   });
 
@@ -186,7 +186,7 @@ Object.assign(Plugin.prototype,
 
         e.stopImmediatePropagation();
 
-        if (li.classList.contains('is-wall-creator')) {
+        if (li.dataset.creator) {
           li.classList.add('active');
 
           plugin.openUpdateGroup({
@@ -476,7 +476,7 @@ Object.assign(Plugin.prototype,
         const typeIcon = r.delegateAdminId ? '' : `<i class="${isDed ? "fas fa-asterisk":"far fa-circle"} fa-xs"></i>`;
         const unlinkBtn = r.delegateAdminId ? '' : `<button data-action="unlink-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Cancel sharing for this group")?>"><i class="fas fa-minus-circle"></i><?=_("Unshare")?></button>`;
 
-          html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-delegateadminid=${r.delegateAdminId || 0} class="list-group-item${r.delegateAdminId?"":" is-wall-creator"}${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
+          html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" ${r.delegateAdminId ? '' : ` data-creator="1"`} data-delegateadminid=${r.delegateAdminId || 0} class="list-group-item${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
       });
 
       if (r.in.length === 1) {
@@ -490,10 +490,6 @@ Object.assign(Plugin.prototype,
       }
 
       $share[0].querySelector('.grp-lb').innerText = `<?=_("Available groups:")?>`;
-/*
-      wallPlugin.element[0].querySelector('thead.wpt th.wpt')
-        .innerHTML = '&nbsp;';
-*/
 
       pClass.remove('scroll');
 
@@ -506,21 +502,22 @@ Object.assign(Plugin.prototype,
     div.innerHTML = html;
 
     if (!r.delegateAdminId) {
-      body.querySelectorAll('.delegate-admin-only').forEach(
-        (el) => H.hide(el));
+      body.querySelectorAll('.delegate-admin-only').forEach((el) => H.hide(el));
 
-      _displaySection(body.querySelector('.list-group.gtype-<?=WPT_GTYPES_DED?>.noattr'), <?=WPT_GTYPES_DED?>, r.notin);
+      _displaySection(
+        body.querySelector('.list-group.gtype-<?=WPT_GTYPES_DED?>.noattr'),
+        <?=WPT_GTYPES_DED?>, r.notin);
 
-      _displaySection(body.querySelector('.list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr'), <?=WPT_GTYPES_GEN?>, r.notin);
+      _displaySection(
+        body.querySelector('.list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr'),
+        <?=WPT_GTYPES_GEN?>, r.notin);
 
       body.querySelectorAll('.creator-only').forEach((el) => H.show(el));
     }
     else
     {
-      body.querySelectorAll('.creator-only').forEach(
-        (el) => H.hide(el));
-      body.querySelectorAll('.delegate-admin-only').forEach(
-        (el) => H.show(el));
+      body.querySelectorAll('.creator-only').forEach((el) => H.hide(el));
+      body.querySelectorAll('.delegate-admin-only').forEach((el) => H.show(el));
     }
 
     H.openModal({item: $share[0]});

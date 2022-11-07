@@ -93,10 +93,12 @@ class Wall extends Base {
 
     if ( ($ret = $stmt->fetch()) ) {
       ($stmt = $this->db->prepare('
-        SELECT groups_id FROM _perf_walls_users
-        WHERE walls_id = ? AND users_id = ?'))
+        SELECT pwu.groups_id, g.item_type
+        FROM _perf_walls_users AS pwu
+          INNER JOIN groups AS g ON g.id = pwu.groups_id
+        WHERE pwu.walls_id = ? AND pwu.users_id = ?'))
          ->execute([$this->wallId, $this->userId]);
-      $ret['groups'] = $stmt->fetchAll(\PDO::FETCH_COLUMN, 0);
+      $ret['groups'] = $stmt->fetchAll();
     }
 
     return $ret;
@@ -779,24 +781,21 @@ class Wall extends Base {
          WHERE cells_id = ?');
       $data['cells'] = [];
       while ($row = $stmt->fetch()) {
-        $stmt1->execute($withAlerts ? [$this->userId, $row['id']] :
-                                      [$row['id']]);
-        $row['postits'] = [];
-        while ($row1 = $stmt1->fetch()) {
-          $row['postits'][] = $row1;
-        }
+        $stmt1->execute($withAlerts ?
+          [$this->userId, $row['id']] : [$row['id']]);
+        $row['postits'] = $stmt1->fetchAll();
 
         $data['cells'][] = $row;
       }
 
-      // Get postits plugs
+      // Retrieve note plugs
       ($stmt = $this->db->prepare('
        SELECT * FROM postits_plugs WHERE walls_id = ?'))
          ->execute([$this->wallId]);
       $data['postits_plugs'] = $stmt->fetchAll();
     }
 
-    // Check if the wall is shared with other users
+    // Retrieve share type if wall is shared
     ($stmt = $this->db->prepare('
       SELECT 1 FROM walls_groups WHERE walls_id = ? LIMIT 1'))
        ->execute([$this->wallId]);
@@ -805,9 +804,8 @@ class Wall extends Base {
     // Get locks
     ($stmt = $this->db->prepare('
       SELECT item, item_id, u.id AS user_id, u.fullname AS user_name
-      FROM edit_queue AS eq INNER JOIN users AS u
-        ON eq.users_id = u.id
-      WHERE walls_id = ? AND users_id <> ? AND is_end = 0'))
+      FROM edit_queue AS eq INNER JOIN users AS u ON eq.users_id = u.id
+      WHERE walls_id = ? AND is_end = 0 AND users_id <> ?'))
        ->execute([$this->wallId, $this->userId]);
     $data['locks'] = $stmt->fetchAll();
 

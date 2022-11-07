@@ -939,6 +939,7 @@ select.timezone {
   font-size: .8rem;
   top: -50px;
   left: -25px;
+  white-space: nowrap;
 }
 
 .user-writing-min {

@@ -26,6 +26,7 @@ echo $Plugin->getHeader();
 <?=$Plugin->getPublicSection()?>
 
 Plugin.prototype = {
+  sharedGroups: null,
   // METHOD init()
   init(args) {
     const popup = this.element[0];
@@ -122,8 +123,8 @@ Plugin.prototype = {
 
     H.request_ws(
       'DELETE',
-      `wall/${_wall.plugin.getId()}/group/`+
-          `${this.element[0].dataset.groups}/removeMe`,
+      `wall/${_wall.plugin.getId()}/`+
+      `group/${this.sharedGroups.join(',')}/removeMe`,
     );
   },
 
@@ -199,16 +200,18 @@ Plugin.prototype = {
           }
         }
 
-        if (isCreator) {
-          H.hide(popup.querySelector('.reject-sharing'));
-        } else {
-          H.show(popup.querySelector('.reject-sharing'));
-          popup.dataset.groups = d.groups.join(',');
-        }
-
-        // FIXME Reject sharing button is temporarily deactivated because of
-        //       a bug
         H.hide(popup.querySelector('.reject-sharing'));
+
+        if (!isCreator) {
+          // Rejecting shared is only possible with dedicated groups
+          this.sharedGroups = d.groups
+            .filter((g) => g.item_type === <?=WPT_GTYPES_DED?>)
+            .map((g) => g.groups_id);
+
+          if (this.sharedGroups.length) {
+            H.show(popup.querySelector('.reject-sharing'));
+          }
+        }
 
         popup.dataset.noclosure = true;
         H.openModal({item: popup});
