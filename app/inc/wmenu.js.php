@@ -166,7 +166,6 @@ Object.assign(Plugin.prototype, {
           case 'unblock-externalref':
             wallPlugin.displayExternalRef(1, true);
             H.displayMsg({
-              title: `<?=_("Wall")?>`,
               type: 'info',
               msg: `<?=_("External contents are no longer filtered")?>`,
             });
@@ -174,7 +173,6 @@ Object.assign(Plugin.prototype, {
           case 'block-externalref':
             wallPlugin.displayExternalRef(0, true);
             H.displayMsg({
-              title: `<?=_("Wall")?>`,
               type: 'info',
               msg: `<?=_("External contents are now filtered")?>`,
             });

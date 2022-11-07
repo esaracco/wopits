@@ -588,11 +588,11 @@ class Server {
       }
       // ROUTE debug
       // Debug
-      //<WPTPROD-remove>
+//<WPTPROD-remove>
       elseif ($msg->route === 'debug') {
         $this->_debug ($data);
       }
-      //</WPTPROD-remove>
+//</WPTPROD-remove>
 
       // If current user has just activated its invisibility mode, close its
       // walls for all current users.
@@ -1174,9 +1174,9 @@ class Server {
     }
   }
 
-  //<WPTPROD-remove>
+//<WPTPROD-remove>
   private function _debug($data):void {
     error_log(print_r($data, true));
   }
-  //</WPTPROD-remove>
+//</WPTPROD-remove>
 }

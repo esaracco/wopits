@@ -400,11 +400,7 @@ Object.assign(Plugin.prototype,
       // success cb
       (d) => {
         if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Sharing")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           this.displayGroups();
           bootstrap.Modal.getInstance(_$groupPopup[0]).hide();
@@ -421,11 +417,7 @@ Object.assign(Plugin.prototype,
       // success cb
       (d) => {
         if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Sharing")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           this.displayGroups();
           bootstrap.Modal.getInstance(_$groupPopup[0]).hide();

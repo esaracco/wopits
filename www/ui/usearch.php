@@ -1,10 +1,5 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
-<div
-  class="modal"
-  id="usearchPopup"
-  role="dialog"
-  tabindex="-1"
->
+<?php require(__DIR__.'/../../app/prepend.php')?>
+<div class="modal" id="usearchPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -12,12 +7,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-
         <div class="mb-3 desc"></div>
-
         <div class="search mb-3">
         </div>
-
         <div>
           <label class="users-title"><?=_("Users in this group:")?></label>
           <label class="nousers-title"><?=_("No user in this group.")?></label>
@@ -25,7 +17,6 @@
             <ul class="list-group attr"></ul>
           </div>
         </div>
-
       </div>
     </div>
   </div>

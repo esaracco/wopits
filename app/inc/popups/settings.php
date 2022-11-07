@@ -1,9 +1,4 @@
-<div
-  class="modal m-fullscreen"
-  id="settingsPopup"
-  role="dialog"
-  tabindex="-1"
->
+<div class="modal m-fullscreen" id="settingsPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -23,7 +18,7 @@
           <div class="mb-3">
             <label><?=_("Language")?>:</label>
             <div class="locale-picker mt-2">
-            <?php foreach (array_keys (WPT_LOCALES) as $k):?>
+            <?php foreach (array_keys(WPT_LOCALES) as $k):?>
               <div data-locale="<?=$k?>"></div>
             <?php endforeach?>
             </div>

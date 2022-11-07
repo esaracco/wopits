@@ -242,11 +242,11 @@ class Message {
   }
 
   private function _send(array $args, bool $noUnsub = false):void {
-    //<WPTPROD-remove>
+//<WPTPROD-remove>
     if (WPT_DEV_MODE) {
       $args['email'] = WPT_EMAIL_CONTACT;
     }
-    //</WPTPROD-remove>
+//</WPTPROD-remove>
 
     try {
       $unsub = WPT_URL.'/?/unsubscribe';

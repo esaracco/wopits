@@ -113,11 +113,11 @@ class Helper {
 
 
   public static function getWopitsVersion():string {
-    //<WPTPROD-remove>
+//<WPTPROD-remove>
     if (WPT_DEV_MODE)
       return date('U');
     else
-    //</WPTPROD-remove>
+//</WPTPROD-remove>
       return WPT_VERSION;
   }
 
@@ -295,7 +295,7 @@ class Helper {
       sprintf(_("Please, use another email! We have blacklisted the following domains: %s."), str_replace('|', ', ', WPT_BLACKLISTED_DOMAINS)) : null;
   }
 
-  //<WPTPROD-remove>
+//<WPTPROD-remove>
   public static function buildPostitMenu() {
     // Post-it menu definition
     $items = [
@@ -318,5 +318,5 @@ class Helper {
 
     return $menu;
   }
-  //</WPTPROD-remove>
+//</WPTPROD-remove>
 }

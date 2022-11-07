@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-29 22:43+0200\n"
+"POT-Creation-Date: 2022-11-07 16:57+0100\n"
 "PO-Revision-Date: 2019-12-08 10:28+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: English <contact@wopits.com>\n"
@@ -263,9 +263,6 @@ msgid "Access forbidden"
 msgstr ""
 
 msgid "Account"
-msgstr ""
-
-msgid "Account creation"
 msgstr ""
 
 msgid "Add"
@@ -614,9 +611,6 @@ msgstr ""
 msgid "File size is too large (%sM max)"
 msgstr ""
 
-msgid "File upload"
-msgstr ""
-
 msgid "Filters"
 msgstr ""
 
@@ -820,9 +814,6 @@ msgstr ""
 msgid "No wall available."
 msgstr ""
 
-msgid "Note"
-msgstr ""
-
 msgid "Note assignation"
 msgstr ""
 
@@ -874,9 +865,6 @@ msgid "Other available groups:"
 msgstr ""
 
 msgid "Password"
-msgstr ""
-
-msgid "Password reset"
 msgstr ""
 
 msgid "Passwords must match"
@@ -965,9 +953,6 @@ msgid "Reset"
 msgstr ""
 
 msgid "Reset deadline?"
-msgstr ""
-
-msgid "Rights"
 msgstr ""
 
 msgid "Row name"
@@ -1066,9 +1051,6 @@ msgstr ""
 msgid "Support us"
 msgstr ""
 
-msgid "System"
-msgstr ""
-
 msgid "System error. Please report it to the administrator"
 msgstr ""
 
@@ -1091,6 +1073,9 @@ msgid "The deadline for this note has been removed"
 msgstr ""
 
 msgid "The default theme may not suit your mood today!"
+msgstr ""
+
+msgid "The destination cell has been deleted"
 msgstr ""
 
 #, php-format
@@ -1479,9 +1464,6 @@ msgid "Your wopits account"
 msgstr ""
 
 msgid "Your wopits account has been deleted"
-msgstr ""
-
-msgid "Zoom"
 msgstr ""
 
 msgid "Zoom +"

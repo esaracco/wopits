@@ -171,7 +171,6 @@ Object.assign(Plugin.prototype, {
       $(postit).postit('displayAlert', type);
     } else {
       H.displayMsg({
-        title: `<?=_("Note")?>`,
         type: 'warning',
         msg: `<?=_("The note has been deleted")?>`,
       });
@@ -750,10 +749,6 @@ Object.assign(Plugin.prototype, {
       });
     }
 
-    // Refresh super menu tool
-    // FIXME Useful?
-    // S.getCurrent('mmenu').mmenu('refresh');
-
     // Set wall menu visible
     S.getCurrent('wmenu')[0].style.visibility = 'visible';
 
@@ -927,11 +922,11 @@ Object.assign(Plugin.prototype, {
 
     if (Number(wall.dataset.rows) *
         Number(wall.dataset.cols) >= <?=WPT_MAX_CELLS?>) {
-      return H.displayMsg({
-               title: `<?=_("Wall")?>`,
-               type: 'warning',
-               msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace('%s', <?=WPT_MAX_CELLS?>)
-             });
+      H.displayMsg({
+        type: 'warning',
+        msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace('%s', <?=WPT_MAX_CELLS?>),
+      });
+      return;
     }
 
     H.request_ws(
@@ -1063,11 +1058,7 @@ Object.assign(Plugin.prototype, {
     // Return on error
     if (r.error) {
       if (r.error_msg) {
-        H.displayMsg({
-          title: `<?=_("Wall")?>`,
-          type: 'warning',
-          msg: r.error_msg,
-        });
+        H.displayMsg({type: 'warning', msg: r.error_msg});
       }
       return;
     }
@@ -1094,7 +1085,6 @@ Object.assign(Plugin.prototype, {
       }
 
       H.displayMsg({
-        title: `<?=_("Wall")?>`,
         type: 'warning',
         msg: `<?=_("Some walls are no longer available")?>`,
       });
@@ -1208,11 +1198,7 @@ Object.assign(Plugin.prototype, {
 
     if (r.error) {
       if (r.error_msg) {
-        H.displayMsg ({
-          title: `<?=_("Wall")?>`,
-          type: 'warning',
-          msg: r.error_msg,
-        });
+        H.displayMsg ({type: 'warning', msg: r.error_msg});
       }
       return;
     }
@@ -1222,7 +1208,6 @@ Object.assign(Plugin.prototype, {
 
     if ($wall) {
       H.displayMsg({
-        title: `<?=_("Wall")?>`,
         type: 'success',
         msg: `<?=_("The wall has been successfully cloned")?>`,
       });
@@ -1416,7 +1401,7 @@ Object.assign(Plugin.prototype, {
   },
 
   // METHOD saveProperties()
-  // FIXME Issues with walls having 1 row and 1 col
+  // FIXME Issues with walls having one cell
   saveProperties() {
     const popup = document.getElementById('wpropPopup');
     const $popup = $(popup);
@@ -1572,12 +1557,12 @@ Object.assign(Plugin.prototype, {
 
   // METHOD getDescription()
   getDescription() {
-    return this.settings.tabLink.dataset.description;
+    return this.settings.tabLink.getAttribute('title');
   },
 
   // METHOD setDescription()
   setDescription(description) {
-    this.settings.tabLink.dataset.description = H.noHTML(description);
+    this.settings.tabLink.setAttribute('title', H.noHTML(description || ''));
   },
 
   // METHOD fixSize()
@@ -1663,7 +1648,6 @@ Object.assign(Plugin.prototype, {
 
       if (writeAccess && !noalert) {
         H.displayMsg({
-          title: `<?=_("Zoom")?>`,
           type: 'info',
           msg: `<?=_("Some features are not available when zoom is enabled")?>`,
         });
@@ -1712,7 +1696,6 @@ Object.assign(Plugin.prototype, {
 
     if (level <= 0) {
       return H.displayMsg({
-        title: `<?=_("Zoom")?>`,
         type: 'warning',
         msg: `<?=_("The minimum zoom has been reached")?>`,
       });
@@ -1742,7 +1725,6 @@ Object.assign(Plugin.prototype, {
 
       if (writeAccess && !noalert) {
         H.displayMsg({
-          title: `<?=_("Zoom")?>`,
           type: 'info',
           msg: `<?=_("All features are available again")?>`,
         });
@@ -1891,11 +1873,7 @@ Object.assign(Plugin.prototype, {
       (d) => {
         if (!(data && data.todelete) && d.error_msg) {
           onError && onError();
-          H.displayMsg({
-            title: `<?=_("Wall")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         }
         else if (then) {
           then();
@@ -2129,17 +2107,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // success cb
             (d) => {
               if (d.error_msg) {
-                return H.displayMsg({
-                  title: `<?=_("Wall")?>`,
-                  type: 'warning',
-                  msg: d.error_msg,
-                });
+                H.displayMsg({type: 'warning', msg: d.error_msg});
+                return;
               }
 
               $('<div/>').wall('open', {wallId: d.wallId});
 
               H.displayMsg({
-                title: `<?=_("Wall")?>`,
                 type: 'success',
                 msg: `<?=_("The wall has been successfully imported")?>`,
               });

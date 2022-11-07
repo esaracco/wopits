@@ -151,8 +151,8 @@ class Postit extends Wall
 
         // Copy postit
         $newDim = $dims->$srcPostitId;
-        $p['item_top'] = $newDim->top;
-        $p['item_left'] = $newDim->left;
+        $p['item_top'] = $newDim->item_top;
+        $p['item_left'] = $newDim->item_left;
         $p['width'] = $newDim->width;
         $p['height'] = $newDim->height;
         $p['cells_id'] = $this->cellId;
@@ -201,24 +201,24 @@ class Postit extends Wall
 
             // Move item
             if ($move) {
-              if ($hasLink) {
-                rename(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
-              }
-
               $this->executeQuery("UPDATE postits_$item",
                 $a, ['id' => $srcItemId]);
 
               $itemId = $srcItemId;
 
-            // Copy item
-            } else {
               if ($hasLink) {
-                copy(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+                rename(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
               }
 
+            // Copy item
+            } else {
               $this->executeQuery("INSERT INTO postits_$item", $a);
 
               $itemId = $this->db->lastInsertId();
+
+              if ($hasLink) {
+                copy(WPT_ROOT_PATH."/$srcDir", WPT_ROOT_PATH."/{$a['link']}");
+              }
             }
 
             // Change postit body internal img links if needed

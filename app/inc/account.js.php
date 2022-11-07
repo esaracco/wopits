@@ -334,11 +334,7 @@ Object.assign(Plugin.prototype, {
     const r = await H.fetch('DELETE', 'user');
     if (!r || r.error_msg) {
       if (r) {
-        H.displayMsg({
-          title: `<?=_("Account")?>`,
-          type: 'danger',
-          msg: r.error_msg,
-        });
+        H.displayMsg({type: 'danger', msg: r.error_msg});
       }
     } else {
       return location.href = '/r.php';
@@ -356,11 +352,7 @@ Object.assign(Plugin.prototype, {
       // success cb
       (d) => {
         if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Account")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           for (const k in d) {
             const field = $account.find(`[name="${k}"]`)[0];
@@ -398,7 +390,6 @@ Object.assign(Plugin.prototype, {
 
           if (!args.about) {
             H.displayMsg({
-              title: `<?=_("Account")?>`,
               type: 'success',
               msg: `<?=_("Your profile has been updated")?>`,
             });

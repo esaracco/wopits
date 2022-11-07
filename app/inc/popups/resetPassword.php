@@ -6,16 +6,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-
         <div class="mb-3"><?=_("Your new password will be sent to the address below:")?></div>
-
         <form>
-        <div class="input-group mb-1">
-          <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-          <input class="form-control" name="email" type="email" value="" required placeholder="<?=_("email")?>">
-        </div>
+          <div class="input-group mb-1">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input class="form-control" name="email" type="email" value="" required placeholder="<?=_("email")?>">
+          </div>
         </form>
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary"><?=_("Send")?></button>

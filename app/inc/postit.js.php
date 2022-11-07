@@ -59,7 +59,6 @@ const _plugRabbit = {
       _cancelPlugAction();
 
       H.displayMsg({
-        title: `<?=_("Note")?>`,
         type: 'warning',
         msg: `<?=_("The relation already exists")?>`,
       });
@@ -1414,8 +1413,8 @@ Plugin.prototype = {
           id: plugin.settings.id,
           width: Math.trunc(bbox.width / z),
           height: Math.trunc(bbox.height / z),
-          item_top: Math.trunc(this.offsetTop),
-          item_left: Math.trunc(this.offsetLeft),
+          item_top: this.offsetTop < 0 ? 0 : Math.trunc(this.offsetTop),
+          item_left: this.offsetLeft < 0 ? 0 : Math.trunc(this.offsetLeft),
           item_order: parseInt(this.dataset.order),
           classcolor: classcolor ? classcolor[0] : _defaultClassColor,
           title: (title === '...') ? '' : title,
@@ -1832,11 +1831,7 @@ Plugin.prototype = {
       // success cb
       (d) => {
         if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Note")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         }
         postit.remove();
       },
@@ -1844,7 +1839,6 @@ Plugin.prototype = {
       (d) => {
         //FIXME factorisation (cf. H.request_ws ())
         H.displayMsg({
-          title: `<?=_("Note")?>`,
           type: 'danger',
           msg: isNaN(d.error) ?
             d.error : `<?=_("Unknown error.<br>Please try again later.")?>`,
@@ -2024,11 +2018,7 @@ Plugin.prototype = {
         this.cancelEdit(args);
 
         if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Note")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         } else if (data?.todelete && postit.classList.contains('selected')) {
           S.getCurrent('mmenu').mmenu('remove', this.settings.id);
         } else if (data && data.updatetz) {
@@ -2149,9 +2139,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     H.displayMsg({
-                      title: `<?=_("Note")?>`,
                       type: 'warning',
-                      msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`)
+                      msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`),
                     });
                   })
                   .finally(()=> _current = false);
@@ -2504,11 +2493,7 @@ document.addEventListener('click', (e) => {
       // LOCAL FUNCTION __displayError()
       const __displayError = (r) => {
         if (r) {
-          H.displayMsg({
-            title: `<?=_("Note")?>`,
-            type: 'warning',
-            msg: r.error || r,
-          });
+          H.displayMsg({type: 'warning', msg: r.error || r});
         }
       };
   

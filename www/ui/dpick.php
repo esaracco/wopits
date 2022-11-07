@@ -1,4 +1,4 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
+<?php require(__DIR__.'/../../app/prepend.php')?>
 <div class="modal no-theme m-fullscreen" id="dpickPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -33,4 +33,4 @@
       </div>
     </div>
   </div>
-  </div>
+</div>

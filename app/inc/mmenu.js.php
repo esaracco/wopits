@@ -110,7 +110,6 @@ Object.assign(Plugin.prototype, {
   apply(args = {}) {
     if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
       return H.displayMsg({
-        title: `<?=_("Rights")?>`,
         type: 'warning',
         msg: `<?=_("You need write access to perform this action")?>`,
       });
@@ -191,9 +190,18 @@ Object.assign(Plugin.prototype, {
           if (_data.dest) {
             const cellPos = _data.dest.element[0].getBoundingClientRect();
 
-            position = {
-              top: e.clientY - cellPos.top,
-              left: e.clientX - cellPos.left,
+            if (cellPos.top && cellPos.left) {
+              position = {
+                top: e.clientY - cellPos.top,
+                left: e.clientX - cellPos.left,
+              }
+            } else {
+              this.reset();
+              H.displayMsg({
+                type: 'warning',
+                msg: `<?=_("The destination cell has been deleted")?>`,
+              }); 
+              return;
             }
           }
 
@@ -273,10 +281,12 @@ Object.assign(Plugin.prototype, {
             $newP.postit('fixPosition', cellPos);
 
             const newPos = $newP[0].getBoundingClientRect();
+            const item_top = newPos.top - cellPos.top;
+            const item_left = newPos.left - cellPos.left;
 
             lastPos = dims[id] = {
-              top: Math.trunc(newPos.top - cellPos.top),
-              left: Math.trunc(newPos.left - cellPos.left),
+              item_top: item_top < 0 ? 0 : Math.trunc(item_top),
+              item_left: item_left < 0 ? 0 : Math.trunc(item_left),
               width: newPos.width,
               height: newPos.height,
             };

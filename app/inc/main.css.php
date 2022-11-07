@@ -234,16 +234,13 @@ i.set {
   overflow: hidden;
 }
 
-.ui-colorpicker-swatch {
-  height: 20px;
-  width: 20px;
-}
-
 .ui-colorpicker-border {
   border-color: #ced4da;
 }
 
 .ui-colorpicker-swatch {
+  height: 20px;
+  width: 20px;
   text-align: center;
   text-shadow: 0 0 4px #fff;
   color: #000;
@@ -697,10 +694,6 @@ select.timezone {
   z-index: 5015;
 }
 
-.modal-backdrop {
-  z-index: 5003;
-}
-
 .tox {
   z-index: 5018 !important;
 }
@@ -711,8 +704,13 @@ select.timezone {
   opacity: .6;
 }
 
+.nav-link.locked {
+  pointer-events: auto;
+}
+
 .list-group-item {
   cursor: pointer;
+  background: var(--wall-th-bg-color);
   color: var(--modal-theme-color-dark);
 }
 
@@ -750,6 +748,7 @@ select.timezone {
 
 #owallPopup .list-group-item .item-infos {
   left: 50px;
+  margin-left: 70px;
 }
 
 .list-group .list-group-item.first {
@@ -795,10 +794,6 @@ select.timezone {
   padding-left: 40px; 
 }
 
-#owallPopup .list-group-item .item-infos {
-  margin-left: 70px;
-}
-
 #owallPopup .list-group-item .wpt-checkbox {
   margin: 0;
 }
@@ -825,8 +820,6 @@ select.timezone {
 
 .btn-circle {
   border-radius: 50%;
-  text-align: center;
-  vertical-align: middle;
   box-shadow: 0 0 3px 1px #989898;
 }
 
@@ -1069,10 +1062,10 @@ th.wpt .user-writing:after {
   left: -15px;
   top: -14px;
   transform: rotate(45deg);
+  visibility: hidden;
 }
 
-td.wpt > .user-writing:after,
-th.wpt .user-writing:after {
+td.wpt > .user-writing:after {
   visibility: hidden;
 }
 
@@ -1287,7 +1280,7 @@ kbd,
 
 .cell-menu {
   position: absolute;
-  right: -1px;
+  right: -2px;
   top: -4px;
   color: var(--menubar-bg-color);
   cursor: pointer;
@@ -1352,9 +1345,6 @@ kbd,
   min-width: 100px;
   padding: 3px 0;
   inset: auto !important;
-}
-
-.submenu .dropdown-menu {
   font-size: .8rem;
 }
 
@@ -1405,10 +1395,10 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit {
+  position: absolute !important;
   border: 1px solid #ccc;
   box-shadow: 6px 6px 7px -6px rgba(0,0,0,.8);
   z-index: 1010;
-  position: absolute !important;
   min-height: 50px;
   min-width: 160px;
   height: 120px;
@@ -1422,7 +1412,7 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit.hover {
-  z-index: 5000 !important;
+  z-index: 5000;
 }
 
 .postit .btn-menu {
@@ -1601,11 +1591,11 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .chat .textarea .internal.join i {
-  color: green !important;
+  color: green;
 }
 
 .chat .textarea ul li.internal.leave i {
-  color: red !important;
+  color: red;
 }
 
 .chat .btn-primary {
@@ -1754,6 +1744,7 @@ ul#mmenu {
 
 .modal-backdrop {
   background-color: transparent;
+  z-index: 5003;
 }
 
 .modal.fade .modal-dialog {
@@ -1901,7 +1892,7 @@ ul#mmenu {
 }
 
 .newfeatures p.warning {
-  border: 2px dashed var(--modal-theme-color-dark) !important;
+  border: 2px dashed var(--modal-theme-color-dark);
 }
 
 .hidden {
@@ -1989,7 +1980,7 @@ i.notset {
 
 .postit .topicon {
   position: absolute;
-  top: -28px;
+  top: -26px;
   cursor: pointer;
   z-index: 93;
 }
@@ -2021,8 +2012,8 @@ i.notset {
   display: inline-block;
   white-space: nowrap;
   max-width: 85%;
-  text-overflow: ellipsis !important;
-  overflow: hidden !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .modal-body .list-group span.name {
@@ -2054,10 +2045,6 @@ i.notset {
 
 .nav-item .icon i.fa-share.wallname-icon {
   margin-left:-10px;
-}
-
-.list-group-item {
-  background: var(--wall-th-bg-color);
 }
 
 .accordion-button:hover,
@@ -2555,7 +2542,7 @@ button.ui-datepicker-close {
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid #fff;
 }
 
 #login-page .form-container {

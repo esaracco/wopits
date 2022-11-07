@@ -1,4 +1,4 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
+<?php require(__DIR__.'/../../app/prepend.php')?>
 <div class="modal" id="userViewPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -7,24 +7,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-
       <div class="content-centered"><div class="user-picture mb-3"></div></div>
-
       <dl>
         <div class="name">
           <dt><?=_("Name")?></dt>
-          <dd>
-          </dd>
+          <dd></dd>
         </div>
         <!-- Wall description -->
         <div class="about justify">
           <dt><?=_("About")?></dt>
-          <dd>
-          </dd>
+          <dd></dd>
         </div>
       </dl>
-
       </div>
     </div>
   </div>
-  </div>
+</div>

@@ -332,9 +332,8 @@ Plugin.prototype = {
           return;
         } else if (d.notfound) {
           H.displayMsg({
-            title: `<?=_("Users involved")?>`,
             type: 'warning',
-            msg: `<?=_("The user is no longer available")?>`
+            msg: `<?=_("The user is no longer available")?>`,
           });
         }
 

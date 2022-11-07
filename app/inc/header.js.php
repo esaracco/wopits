@@ -151,9 +151,9 @@ Plugin.prototype = {
       });
 
       // EVENT "hide.bs.dropdown" on header menu
-      menu.addEventListener('hide.bs.dropdown', (e) => 
-          e.target.querySelector('.nav-link i.fas')
-            .classList.replace('fas', 'far'));
+      menu.addEventListener('hide.bs.dropdown',
+        (e) => e.target.querySelector('.nav-link i.fas')
+                 .classList.replace('fas', 'far'));
 
       // EVENT "click" on header menu items
       menu.querySelector('.dropdown-menu').addEventListener('click', (e) => {
@@ -252,7 +252,7 @@ Plugin.prototype = {
   },
 
   // METHOD moveRow()
-  moveColRow (move, noSynchro) {
+  moveColRow(move, noSynchro) {
     const th = this.element[0];
     const tr = th.closest('tr.wpt');
     const wall = this.settings.wall[0];
@@ -306,7 +306,7 @@ Plugin.prototype = {
   },
 
   // METHOD useFocusTrick()
-  useFocusTrick () {
+  useFocusTrick() {
     return (
       this.settings.wall.wall('isShared') &&
       H.haveMouse() &&
@@ -350,8 +350,8 @@ Plugin.prototype = {
 
     // EVENT "load" on header picture
     // Refresh postits plugs once picture has been fully loaded
-    img.querySelector("img").addEventListener("load",
-      (e)=> this.settings.wall.wall ("repositionPostitsPlugs"));
+    img.querySelector('img').addEventListener('load',
+      (e) => this.settings.wall.wall('repositionPostitsPlugs'));
 
     if (!adminAccess) {
       return img;
@@ -361,7 +361,7 @@ Plugin.prototype = {
     img.addEventListener('click', (e) => {
       const upload = document.querySelector('.upload.header-picture');
 
-      e.stopImmediatePropagation ();
+      e.stopImmediatePropagation();
 
       if (this.settings.wall.wall('isShared')) {
         //FIXME
@@ -369,7 +369,7 @@ Plugin.prototype = {
         // (touch device version)
         this.addUploadLayer();
         this.edit();
-        upload.click ();
+        upload.click();
       } else {
         this.edit(() => upload.click());
       }
@@ -386,7 +386,7 @@ Plugin.prototype = {
       e.stopImmediatePropagation();
 
       this.edit(() => {
-        H.openConfirmPopover ({
+        H.openConfirmPopover({
           item: e.target,
           placement: 'left',
           title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
@@ -406,7 +406,7 @@ Plugin.prototype = {
       });
     });
 
-    img.prepend (deleteBtn);
+    img.prepend(deleteBtn);
 
     return img;
   },
@@ -438,7 +438,7 @@ Plugin.prototype = {
       // success cb
       (d) => {
         if (d.error_msg) {
-          H.raiseError (null, d.error_msg);
+          H.raiseError(null, d.error_msg);
         } else {
           const header = this.element[0];
           const oldW = header.getBoundingClientRect().width;
@@ -605,11 +605,7 @@ Plugin.prototype = {
           args.data.error_msg : null;
 
       if (msg) {
-        H.displayMsg ({
-          title: `<?=_("Wall")?>`,
-          type: args.data.error ? 'danger' : 'warning',
-          msg: msg,
-        });
+        H.displayMsg({msg, type: args.data.error ? 'danger' : 'warning'});
       }
     }
 
@@ -696,7 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // (desktop version)
       if ($header.header('useFocusTrick')) {
         window.addEventListener('focus',
-            (e) => !_realEdit && $header.header('unedit'), {once: true});
+          (e) => !_realEdit && $header.header('unedit'), {once: true});
       }
     },
   });

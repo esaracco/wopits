@@ -1,4 +1,4 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
+<?php require(__DIR__.'/../../app/prepend.php')?>
 <div class="modal m-fullscreen" id="createWallPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -13,21 +13,18 @@
             <input type="checkbox" checked="checked" class="form-check-input" id="w-grid">
             <label class="form-check-label" for="w-grid"><?=_("With grid")?></label>
           </div>
-
           <div class="wall-size">
             <div class="input-group input-group-sm cols-rows">
               <span class="input-group-text"><?=_("Columns/Rows")?>:</span>
               <input type="number" name="wall-cols" step="1" min="1" class="form-control">
               <input type="number" name="wall-rows" step="1" min="1" class="form-control">
             </div>
-          
             <div class="input-group input-group-sm width-height">
               <span class="input-group-text"><?=_("Width/Height")?>:</span>
               <input type="number" name="wall-width" step="50" min="300" max="20000" class="form-control">
               <input type="number" name="wall-height" step="50" min="300" max="20000" class="form-control">
             </div>
           </div>
-
         </form>
       </div>
       <div class="modal-footer">
@@ -36,4 +33,4 @@
       </div>
     </div>
   </div>
-  </div>
+</div>

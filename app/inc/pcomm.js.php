@@ -116,7 +116,6 @@ Object.assign(Plugin.prototype, {
           if (!args.str) {
             _textarea.value = _textarea.value.replace(/@/, '');
             H.displayMsg({
-              title: `<?=_("Comments")?>`,
               type: 'warning',
               msg: `<?=_("The wall has not yet been shared with other users")?>`,
             });

@@ -189,11 +189,7 @@ Object.assign (Plugin.prototype, {
     const r = await H.fetch('POST', 'user/login', args);
     if (r.error) {
       if (r.error_msg) {
-        H.displayMsg ({
-          title: `<?=_("Log in")?>`,
-          type: 'warning',
-          msg: r.error_msg,
-        });
+        H.displayMsg ({type: 'warning', msg: r.error_msg});
       }
     } else {
       return location.href = args.directURL || '/';
@@ -222,11 +218,7 @@ Object.assign (Plugin.prototype, {
     if (r.error) {
       this.resetCreateUserForm ();
       if (r.error_msg) {
-        H.displayMsg({
-          title: `<?=_("Account creation")?>`,
-          type: 'warning',
-          msg: r.error_msg,
-        });
+        H.displayMsg({type: 'warning', msg: r.error_msg});
       }
     } else {
       return location.href = '/';
@@ -238,16 +230,11 @@ Object.assign (Plugin.prototype, {
     const r = await H.fetch('POST', 'user/resetPassword', args);
     if (r.error) {
       if (r.error_msg) {
-        H.displayMsg ({
-          title: `<?=_("Password reset")?>`,
-          type: 'warning',
-          msg: r.error_msg,
-        });
+        H.displayMsg ({type: 'warning', msg: r.error_msg});
       }
     } else {
       bootstrap.Modal.getInstance('#resetPasswordPopup').hide();
       H.displayMsg({
-        title: `<?=_("Password reset")?>`,
         type: 'info',
         msg: `<?=_("Your new password has been sent. Please, check your spam box if you don't receive it.")?>`,
       });

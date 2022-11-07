@@ -1,10 +1,5 @@
-<?php require (__DIR__.'/../../app/prepend.php')?>
-<div
-  class="modal m-fullscreen no-theme contains-inputs"
-  id="postitAttachmentsPopup"
-  role="dialog"
-  tabindex="-1"
->
+<?php require(__DIR__.'/../../app/prepend.php')?>
+<div class="modal m-fullscreen no-theme contains-inputs" id="postitAttachmentsPopup" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -23,7 +18,6 @@
       </div>
     </div>
   </div>
-
   <div class="edit-popup modal-collapse">
     <div class="modal-body justify">
       <dd class="file"></dd>
@@ -48,4 +42,4 @@
       </div>
     </div>
   </div>
- </div>
+</div>

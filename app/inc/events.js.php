@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      '.nav-tabs.walls a.nav-link *')) {
         const a = (el.tagName === 'A') ? el : el.closest('a.nav-link');
         const isActive = a.classList.contains('active');
+        const isLocked = a.classList.contains('locked');
         const close = el.classList.contains('close');
         const share = (isActive && el.classList.contains('fa-share'));
         const rename = (isActive && !share && !close);
@@ -104,10 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
 
-        // Open the popup for renaming a wall
+        // Open the wall popup properties
         if (rename) {
-          return S.getCurrent('wall')
-                     .wall('openPropertiesPopup', {renaming: true});
+          if (!isLocked) {
+            S.getCurrent('wall').wall('openPropertiesPopup', {renaming: true});
+          }
+          return;
         }
 
         // Save new current wall ID

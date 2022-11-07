@@ -62,7 +62,6 @@ class Wpt_accountForms extends Wpt_forms {
         !password.match(/[0-9]/)) {
       ret = false;
       H.displayMsg({
-        title: `<?=_("Account")?>`,
         type: 'warning',
         msg: `<?=_("Your password must contain at least:<ul><li><b>6</b> characters</li><li>A <b>lower case</b> and a <b>upper case</b> letter</li><li>A <b>digit</b></li></ul>")?>`,
       });
@@ -530,7 +529,7 @@ class WSocket {
               $wall.wall('refresh', data.wall);
 
               if (data.userstoppedwriting) {
-                // FIXME setTimeout() needed for walls having 1 row and 1 col
+                // FIXME setTimeout() needed for walls having one cell
                 setTimeout(() =>
                   H.hideUserWriting(data.userstoppedwriting.user), 500);
               }
@@ -567,7 +566,6 @@ class WSocket {
           case 'unlinked':
             if (!isResponse) {
               H.displayMsg({
-                title: `<?=_("Walls")?>`,
                 type: 'warning',
                 msg: `<?=_("Some walls are no longer available")?>`,
               });
@@ -1306,7 +1304,7 @@ class WHelper {
   // METHOD resizeModal()
   static resizeModal(modal, w) {
     const mds = modal.querySelector('.modal-dialog').style;
-    const wW = $(window).width();
+    const wW = window.outerWidth;
     const cW = Number(modal.dataset.customwidth) || 0;
     const oW = w;
     let fullWidth = false;
@@ -1457,9 +1455,8 @@ class WHelper {
     onError && onError();
   
     this.displayMsg({
-      title: `<?=_("System")?>`,
       type: msg ? 'warning' : 'danger',
-      msg: msg ? msg :`<?=_("System error. Please report it to the administrator")?>`,
+      msg: msg ? msg : `<?=_("System error. Please report it to the administrator")?>`,
     });
   }
   
@@ -1575,11 +1572,7 @@ class WHelper {
         this.loader ('hide');
   
         if (req.status !== 200) {
-          this.displayMsg ({
-            msg,
-            title: `<?=_("Download")?>`,
-            type: 'warning',
-          });
+          this.displayMsg({msg, type: 'warning'});
         }
       }
     };
@@ -1590,9 +1583,8 @@ class WHelper {
 
       if (type === '404') {
         this.displayMsg ({
-          title: `<?=_("Download")?>`,
           type: 'warning',
-          msg: `<?=_("The file is no longer available for download")?>`
+          msg: `<?=_("The file is no longer available for download")?>`,
         });
       } else {
         if (window.navigator.msSaveOrOpenBlob) {
@@ -1624,11 +1616,7 @@ class WHelper {
       setTimeout(() => $("<div/>").login('logout', {auto: true}), 3000);
     }
 
-    this.displayMsg({
-      msg,
-      title: `<?=_("System")?>`,
-      type: d.msgtype || 'danger',
-    });
+    this.displayMsg({msg, type: d.msgtype || 'danger'});
 
     onError && onError(d);
   }
@@ -1652,11 +1640,7 @@ class WHelper {
         } else if (then) {
           then(d);
         } else if (d.error_msg) {
-          H.displayMsg({
-            title: `<?=_("Warning")?>`,
-            type: 'warning',
-            msg: d.error_msg,
-          });
+          H.displayMsg({type: 'warning', msg: d.error_msg});
         }
       },
       () => {
@@ -1732,14 +1716,6 @@ class WHelper {
       } else {
         ret = {error: true};
       }
-
-/* FIXME Temporary fix
-      if (onError) {
-        onError(ret);
-      } else {
-        H.displayNetworkErrorMsg(); 
-      }
-*/
     }
 
     return ret;
@@ -1828,11 +1804,7 @@ class WHelper {
       if (args.onErrorMsg) {
         args.onErrorMsg(msg);
       } else {
-        this.displayMsg ({
-          msg,
-          title: `<?=_("File upload")?>`,
-          type: 'warning',
-        });
+        this.displayMsg({msg, type: 'warning'});
       }
     }
   
@@ -1848,9 +1820,8 @@ class WHelper {
       onError && onError();
 
       return this.displayMsg({
-        title: `<?=_("File upload")?>`,
         type: 'warning',
-        msg: `<?=_("Wrong file type for %s")?>`.replace('%s', file.name)
+        msg: `<?=_("Wrong file type for %s")?>`.replace('%s', file.name),
       });
     }
   
@@ -1870,11 +1841,7 @@ class WHelper {
       if (onErrorMsg) {
         onErrorMsg(msg);
       } else {
-        this.displayMsg ({
-          msg,
-          title: `<?=_("File upload")?>`,
-          type: 'danger',
-        });
+        this.displayMsg ({msg, type: 'danger'});
       }
     };
   

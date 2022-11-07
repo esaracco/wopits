@@ -29,7 +29,7 @@ Plugin.prototype = {
   // METHOD init()
   init() {
     const ra = this.element[0];
-    const ww = $(window).width();
+    const ww = window.outerWidth;
 
     // FIXME
     const _eventSP = (e) => _ll && _ll.position();

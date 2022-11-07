@@ -129,11 +129,11 @@ class Base {
   protected function checkDBValue(string $table, string $field, &$value):void {
     $f = self::$_dbDescription[$table][$field] ?? null;
 
-    //<WPTPROD-remove>
+//<WPTPROD-remove>
     if (is_null($f)) {
       throw new \Exception("Unknown DB field $table::$field");
     }
-    //</WPTPROD-remove>
+//</WPTPROD-remove>
 
     // Only nullables can be null
     if (is_null($value)) {
@@ -186,11 +186,11 @@ class Base {
             "Bad DB field value `$value` for $table::$field");
         }
         break;
-      //<WPTPROD-remove>
+//<WPTPROD-remove>
       default:
         throw new \Exception(
           "Unknown DB field type `{$f['type']}` for $table::$field");
-      //</WPTPROD-remove>
+//</WPTPROD-remove>
     }
 
     // `email` must be a simple valid email

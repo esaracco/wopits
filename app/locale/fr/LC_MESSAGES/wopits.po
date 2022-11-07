@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-29 22:43+0200\n"
+"POT-Creation-Date: 2022-11-07 16:57+0100\n"
 "PO-Revision-Date: 2022-10-28 16:37+0200\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -437,9 +437,6 @@ msgstr "Accès interdit"
 msgid "Account"
 msgstr "Compte"
 
-msgid "Account creation"
-msgstr "Création de compte"
-
 msgid "Add"
 msgstr "Ajouter"
 
@@ -810,9 +807,6 @@ msgstr "Les contenus externes sont désormais filtrés"
 msgid "File size is too large (%sM max)"
 msgstr "Le fichier est trop volumineux (%sM max)"
 
-msgid "File upload"
-msgstr "Dépôt de fichier"
-
 msgid "Filters"
 msgstr "Filtres"
 
@@ -1031,9 +1025,6 @@ msgstr "Aucun utilisateur dans ce groupe."
 msgid "No wall available."
 msgstr "Aucun mur disponible."
 
-msgid "Note"
-msgstr "Note"
-
 msgid "Note assignation"
 msgstr "Assignation de note"
 
@@ -1092,9 +1083,6 @@ msgstr "Autres groupes disponibles:"
 
 msgid "Password"
 msgstr "Mot de passe"
-
-msgid "Password reset"
-msgstr "Réinitialisation du mot de passe"
 
 msgid "Passwords must match"
 msgstr "Les mots de passe doivent correspondre"
@@ -1187,9 +1175,6 @@ msgstr "Réinitialisation"
 
 msgid "Reset deadline?"
 msgstr "Réinitialiser la date butoir?"
-
-msgid "Rights"
-msgstr "Droits"
 
 msgid "Row name"
 msgstr "Nom de la ligne"
@@ -1292,9 +1277,6 @@ msgstr "Soutenir"
 msgid "Support us"
 msgstr "Nous soutenir"
 
-msgid "System"
-msgstr "Système"
-
 msgid "System error. Please report it to the administrator"
 msgstr "Erreur système. Veuillez signaler le problème à l'administrateur"
 
@@ -1322,6 +1304,10 @@ msgstr "La date butoir de cette note a été réinitialisée"
 msgid "The default theme may not suit your mood today!"
 msgstr ""
 "Le thème par défaut ne correspond peut-être pas à votre humeur du jour!"
+
+#, fuzzy
+msgid "The destination cell has been deleted"
+msgstr "La note a été supprimée"
 
 #, php-format
 msgid "The email `%s` is already in use"
@@ -1745,9 +1731,6 @@ msgstr "Votre compte wopits"
 msgid "Your wopits account has been deleted"
 msgstr "Votre compte wopits a été supprimé"
 
-msgid "Zoom"
-msgstr "Zoom"
-
 msgid "Zoom +"
 msgstr "Zoom +"
 
@@ -1825,45 +1808,3 @@ msgstr ""
 "wopits est une application multilingue avec laquelle vous pouvez gérer "
 "toutes sortes de projets en utilisant des post-its pour les partager et "
 "collaborer simultanément avec d'autres utilisateurs."
-
-#, fuzzy
-#~ msgid ""
-#~ "Do you want to copy the selected notes in this cell (comments and workers "
-#~ "will not be copied)?"
-#~ msgstr ""
-#~ "Voulez-vous copier les notes sélectionnées dans cette cellule (les "
-#~ "commentaires ne seront pas copiés)?"
-
-#~ msgid ""
-#~ "Either the network is not available or a maintenance operation is in "
-#~ "progress. Please reload the page or try again later."
-#~ msgstr ""
-#~ "Soit le réseau n'est pas disponible, soit une opération de maintenance "
-#~ "est en cours. Veuillez recharger la page ou réessayer plus tard."
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>Deploy</b> We now use "
-#~ "<code>minify</code> for JavaScript and CSS compression.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-broom fa-fw'></i>Déploiement</b> Nous utilisons à "
-#~ "présent <code>minify</code> pour la compression JavaScript et CSS.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Accounts</b> Fixed issue with "
-#~ "account creation.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-bug fa-fw'></i>Comptes</b> Correction d'un "
-#~ "problème avec la création des comptes.</p>"
-
-#~ msgid ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Themes</b> Big rewrite of "
-#~ "theme management.</p>"
-#~ msgstr ""
-#~ "<p><b><i class='fas fa-smile-beam fa-fw'></i>Thèmes</b> Grosse réécriture "
-#~ "de la gestion des thèmes.</p>"
-
-#~ msgid "OK"
-#~ msgstr "OK"
-
-#~ msgid "Users involved in this note:"
-#~ msgstr "Intervenants sur cette note:"

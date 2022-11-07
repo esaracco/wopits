@@ -208,7 +208,7 @@ Object.assign(Plugin.prototype, {
     popup.querySelector('.file').innerText = fileVal;
     popup.querySelector('.file-infos').innerHTML = fileInfosVal;
 
-    if (H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>)) {
+    if (H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
       // Display "Save" button
       H.show(popup.querySelector('.btn-primary'), 'inline-block');
       // Display "Delete" button
@@ -369,11 +369,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (_$mainPopup.find(
               `.list-group .accordion-item`+
                  `[data-fname="${H.htmlEscape(file.name)}"]`).length) {
-          return H.displayMsg({
-            title: `<?=_("Attached files")?>`,
+          H.displayMsg({
             type: 'warning',
-              msg: `<?=_("The file is already linked to the note")?>`,
-            });
+            msg: `<?=_("The file is already linked to the note")?>`,
+          });
+          return;
         }
 
         if (H.checkUploadFileSize({size: e.total}) && e.target.result) {
@@ -395,11 +395,8 @@ document.addEventListener('DOMContentLoaded', () => {
               _$mainPopup.find('div.collapse.show').collapse('hide');
 
               if (d.error_msg) {
-                return H.displayMsg({
-                  title: `<?=_("Attached files")?>`,
-                  type: 'warning',
-                  msg: d.error_msg,
-                });
+                H.displayMsg({type: 'warning', msg: d.error_msg});
+                return;
               }
 
               if (!body.querySelector('.accordion-item')) {
