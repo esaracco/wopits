@@ -103,7 +103,7 @@ Object.assign(Plugin.prototype, {
 
   // METHOD hide()
   hide() {
-    if (this.element.is(":visible")) {
+    if (H.isVisible(this.element[0])) {
       document.querySelector(`#main-menu li[data-action="chat"]`).click();
     }
   },
@@ -129,7 +129,7 @@ Object.assign(Plugin.prototype, {
     const chat = $chat[0];
     const wallId = this.settings.wallId;
 
-    if ($chat.is(':visible')) {
+    if (H.isVisible(chat)) {
       H.request_ws('DELETE', `wall/${wallId}/chat`);
       H.hide(chat);
     } else {

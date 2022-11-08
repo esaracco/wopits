@@ -178,11 +178,11 @@ Object.assign(Plugin.prototype, {
             });
             break;
           case 'show-headers':
-            wallPlugin.displayHeaders(1, true);
+            wallPlugin.displayHeaders(1);
             H.waitForDOMUpdate(() => wallPlugin.refreshPostitsPlugs(true));
             break;
           case 'hide-headers':
-            wallPlugin.displayHeaders(0, true);
+            wallPlugin.displayHeaders(0);
             break;
           case 'show-users':
             wallPlugin.displayWallUsersview();

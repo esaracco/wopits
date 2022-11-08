@@ -2106,6 +2106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         _current = true;
 
+        const tox = document.querySelector('.tox-dialog');
         let c = editor.getContent();
 
         // Remove unwanted images attributes
@@ -2116,7 +2117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Check for img only if the TinyMCE dialog is open
-        if ($('.tox-dialog').is(':visible')) {
+        if (tox && H.isVisible(tox)) {
           (c.match(/<img\s[^>]+>/g)||[]).forEach((img) => {
             const tmp = img.match(/src="([^\"]+)"/);
             if (tmp) {

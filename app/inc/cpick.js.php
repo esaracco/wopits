@@ -84,7 +84,7 @@ Plugin.prototype = {
       // document.getElementById('popup-layer').click();
 
       const $f = S.getCurrent('filters');
-      if ($f.is(':visible')) {
+      if (H.isVisible($f[0])) {
         $f.filters('apply', {norefresh: true});
       }
     };

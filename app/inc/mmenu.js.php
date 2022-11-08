@@ -53,7 +53,8 @@ Object.assign(Plugin.prototype, {
 
       if (!li || H.disabledEvent(
             !H.checkAccess(<?=WPT_WRIGHTS_RW?>) ||
-            $sm.find('li:visible').length === 1)) {
+            Array.from($sm[0].querySelectorAll('li'))
+              .filter((el) => H.isVisible(el)).length === 1)) {
         return false;
       }
 
@@ -454,7 +455,7 @@ Object.assign(Plugin.prototype, {
 
   // METHOD open()
   open() {
-    if (this.element.is(':visible')) return;
+    if (H.isVisible(this.element[0])) return;
 
     this.element.show();
 

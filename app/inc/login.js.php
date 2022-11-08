@@ -56,17 +56,15 @@ Object.assign (Plugin.prototype, {
       if (el.tagName === 'BUTTON' || el.tagName === 'A') {
         switch (el.dataset.type) {
           case 'login':
-            if (this.checkRequired($login.find('input'), false)) {
-              const du = login.querySelector(
-                             `input[name="_directURL"]`).value;
+            if (this.checkRequired(login.querySelectorAll('input'), false)) {
+              const du = login.querySelector(`input[name="_directURL"]`).value;
 
               this.login(H.trimObject({
                 directURL:
-                    du?.match(<?=WPT_DIRECTURL_REGEXP?>) ? `/?${du}` : null,
+                  du?.match(<?=WPT_DIRECTURL_REGEXP?>) ? `/?${du}` : null,
                 remember: document.getElementById('remember').checked,
                 username: login.querySelector(`input[type="text"]`).value,
-                password:
-                    login.querySelector(`input[type="password"]`).value,
+                password: login.querySelector(`input[type="password"]`).value,
               }, ['password']));
             }
             break;
@@ -104,13 +102,12 @@ Object.assign (Plugin.prototype, {
         .addEventListener('click', (e) => {
       const popup = e.target.closest('.modal');
       const input = popup.querySelector('input');
-      const $input = $(input);
 
       e.stopImmediatePropagation();
 
       popup.dataset.noclosure = true;
 
-      if (this.checkRequired($input) && this.validForm($input)) {
+      if (this.checkRequired(input) && this.validForm(input)) {
         this.resetPassword({email: input.value.trim()});
         input.value = '';
       }
@@ -121,15 +118,15 @@ Object.assign (Plugin.prototype, {
         .addEventListener('click', (e) => {
       const popup = e.target.closest('.modal');
       const form = popup.querySelector('form');
-      const $inputs = $(popup).find('input');
+      const inputs = popup.querySelectorAll('input');
 
       e.stopImmediatePropagation();
 
       popup.dataset.noclosure = true;
 
       if (popup.querySelector('.confirm')) {
-        if (this.checkRequired($inputs.slice(0, 2)) &&
-            this.validForm($inputs)) {
+        if (this.checkRequired(Array.from(inputs).slice(0, 2)) &&
+            this.validForm(inputs)) {
           this.createUser(H.trimObject({
             _check: document.querySelector(
                         `.main-login form input[name="_check"]`).value,
@@ -139,7 +136,7 @@ Object.assign (Plugin.prototype, {
             email: form.querySelector(`input[name="email"]`).value,
           }, ['password']));
         }
-      } else if (this.checkRequired($inputs) && this.validForm($inputs)) {
+      } else if (this.checkRequired(inputs) && this.validForm(inputs)) {
         const main = popup.querySelector('.main');
         const footer = popup.querySelector('.modal-footer');
 

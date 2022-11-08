@@ -34,12 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           // Reposition chat popup if it is out of bounds
-          if ( (tmp = S.getCurrent('chat')) && tmp.is(':visible')) {
+          tmp = S.getCurrent('chat');
+          if (H.isVisible(tmp[0])) {
             tmp.chat('fixPosition');
           }
 
           // Reposition filters popup if it is out of bounds
-          if ( (tmp = S.getCurrent('filters')) && tmp.is(':visible')) {
+          tmp = S.getCurrent('filters');
+          if (H.isVisible(tmp[0])) {
             tmp.filters('fixPosition');
           }
 
@@ -170,14 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Manage chat checkbox menu
         if ( (menu.querySelector(`li[data-action="chat"] input`)
-                 .checked = $chat.is(':visible')) ) {
+                 .checked = H.isVisible($chat[0])) ) {
           $chat.chat('removeAlert');
           $chat.chat('setCursorToEnd');
         }
     
         // Manage filters checkbox menu
         menu.querySelector(`li[data-action="filters"] input`)
-            .checked = $filters.is(':visible');
+            .checked = H.isVisible($filters[0]);
     
         // Refresh wall if it has not just been opened
         if (!S.get('newWall')) {

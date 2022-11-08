@@ -58,7 +58,7 @@ Plugin.prototype = {
 
     // EVENT "hidden.bs.modal" on popup
     search.addEventListener('hidden.bs.modal', (e) => {
-      if (_smPlugin.element.is(':visible')) {
+      if (H.isVisible(_smPlugin.element[0])) {
         _smPlugin.showHelp();
       }
     });

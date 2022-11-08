@@ -104,7 +104,7 @@ Object.assign(Plugin.prototype, {
       const val = H.noHTML(about.value);
 
       if (val !== about.dataset.oldvalue) {
-        this.updateField({about: val}, $account.find('.modal-body'));
+        this.updateField({about: val}, account.querySelector('.modal-body'));
       }
     });
 
@@ -260,36 +260,37 @@ Object.assign(Plugin.prototype, {
 
   // METHOD onSubmit()
   onSubmit($popup, e) {
-    const field = $popup[0].dataset.field;
+    const popup = $popup[0];
+    const field = popup.dataset.field;
 
     e.stopImmediatePropagation();
 
-    $popup[0].dataset.noclosure = true;
+    popup.dataset.noclosure = true;
 
     switch (field) {
       case 'username':
       case 'fullname':
       case 'email':
-        const $input = $popup.find('input');
-        const value = $input.val().trim();
+        const input = popup.querySelector('input');
+        const value = input.value.trim();
 
-        if (value === $popup[0].dataset.oldvalue) {
+        if (value === popup.dataset.oldvalue) {
           return bootstrap.Modal.getInstance($popup).hide();
         }
 
-        if (this.checkRequired($input) && this.validForm($input)) {
+        if (this.checkRequired(input) && this.validForm(input)) {
           this.updateField({[field]: value});
         }
         break;
       case 'password':
-        const $inputs = $popup.find('input');
+        const inputs = popup.querySelectorAll('input');
 
-        if (this.checkRequired($inputs) && this.validForm($inputs)) {
+        if (this.checkRequired(inputs) && this.validForm(inputs)) {
           this.updateField({
             password: {
-              current: $inputs[0].value,
-              new: $inputs[1].value,
-              confirm: $inputs[2].value,
+              current: inputs[0].value,
+              new: inputs[1].value,
+              confirm: inputs[2].value,
             }
           });
         }
@@ -355,8 +356,8 @@ Object.assign(Plugin.prototype, {
           H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           for (const k in d) {
-            const field = $account.find(`[name="${k}"]`)[0];
-    
+            const field = $account[0].querySelector(`[name="${k}"]`);
+
             if (field) {
               if (k === 'visible' &&
                   wpt_userData.settings.visible !== d[k]) {

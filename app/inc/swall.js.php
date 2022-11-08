@@ -223,12 +223,12 @@ Object.assign(Plugin.prototype,
     if (!groupId) {
       p.dataset.noclosure = true;
 
-      if (this.checkRequired($(inputs)))
+      if (this.checkRequired(inputs))
         this.createGroup(type, {
           name: H.noHTML(inputs[0].value),
           description: H.noHTML(inputs[1].value),
         });
-    } else if (this.checkRequired($(inputs))) {
+    } else if (this.checkRequired(inputs)) {
       this.updateGroup({
         groupId,
         name: H.noHTML(inputs[0].value),

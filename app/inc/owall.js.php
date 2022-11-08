@@ -26,8 +26,7 @@ let _btnPrimary = null;
 Plugin.prototype = {
   // METHOD init()
   init(args) {
-    const $owall = this.element;
-    const owall = $owall[0];
+    const owall = this.element[0];
     const input = owall.querySelector(`input[type="text"]`);
 
     _btnClear = owall.querySelector('.btn-clear');
@@ -38,9 +37,13 @@ Plugin.prototype = {
 
     // EVENT "kepress" on input
     owall.addEventListener('keypress', (e) => {
-      if (e.which === 13 &&
-          $owall.find('.list-group-item[data-id]:visible').length === 1) {
-        $owall.find('.list-group-item[data-id]:visible').click();
+      if (e.which !== 13) return;
+
+      const list = Array.from(owall.querySelectorAll(
+        '.list-group-item[data-id]')).filter((el) => H.isVisible(el));
+
+      if (list.length === 1) {
+        list[0].click();
       }
     });
 
@@ -118,7 +121,8 @@ Plugin.prototype = {
 
           owall.querySelectorAll('.list-group li.title').forEach(
               (el) => el.classList.add('hidden'));
-          $owall.find('.list-group li:visible').first().addClass('first');
+          Array.from(owall.querySelectorAll('.list-group li'))
+            .filter((el) => H.isVisible(el))[0].classList.add('first');
 
           content = walls.length;
 
@@ -130,16 +134,19 @@ Plugin.prototype = {
           }
 
           owall.querySelectorAll('.list-group li').forEach((el) => {
-              if (el.dataset.shared !== undefined) {
-                content = true;
-                el.classList.remove('hidden');
-              } else {
-                el.classList.add('hidden');
-              }
-            });
+            if (el.dataset.shared !== undefined) {
+              content = true;
+              el.classList.remove('hidden');
+            } else {
+              el.classList.add('hidden');
+            }
+          });
 
-          $owall.find('.list-group li:visible').first().addClass('first');
-          $owall.find('.list-group li:visible').last().addClass('last');
+          const liVisible = Array.from(owall.querySelectorAll(
+            '.list-group li')).filter((el) => H.isVisible(el));
+
+          liVisible[0].classList.add('first');
+          liVisible[liVisible.length - 1].classList.add('last');
           break;
       }
 
@@ -273,8 +280,7 @@ Plugin.prototype = {
 
   // METHOD displayWalls()
   displayWalls(walls, recurse = true) {
-    const $owall = this.element;
-    const owall = $owall[0];
+    const owall = this.element[0];
     const checked = this.getChecked();
     const _walls = walls || wpt_userData.walls.list;
     let body = '';

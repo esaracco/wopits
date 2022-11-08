@@ -15,6 +15,10 @@
 class Wpt_forms {
   // METHOD checkRequired()
   checkRequired(fields, displayMsg = true) {
+    if (fields.length === undefined) {
+      fields = [fields];
+    }
+
     const form = fields[0].closest('form');
 
     form.querySelectorAll('span.required').forEach(
@@ -76,7 +80,11 @@ class Wpt_accountForms extends Wpt_forms {
   }
 
   // METHOD validForm()
-  validForm (fields) {
+  validForm(fields) {
+    if (fields.length === undefined) {
+      fields = [fields];
+    }
+
     for (const f of fields) {
       let val = f.value;
 
@@ -1466,7 +1474,8 @@ class WHelper {
 
     // If a TinyMCE plugin is running, display message using the editor window
     // manager.
-    if ($(".tox-dialog").is(":visible")) {
+    const tox = document.querySelector('.tox-dialog');
+    if (tox && this.isVisible(tox)) {
       return tinymce.activeEditor.windowManager.alert(args.msg);
     }
 
@@ -1475,11 +1484,10 @@ class WHelper {
 
     // Blurs
     setTimeout(()=> {
-      const $ef = $('#postitUpdatePopupBody_ifr');
-
       // TinyEditor
-      if ($ef.is(':visible')) {
-        $ef.blur();
+      const ef = document.getElementById('postitUpdatePopupBody_ifr');
+      if (ef && H.isVisible(ef)) {
+        ef.blur();
       }
 
       // Forms
@@ -1953,8 +1961,10 @@ class WHelper {
 
   // METHOD isVisible()
   static isVisible(el) {
-    return window.getComputedStyle(el, null)
-             .getPropertyValue('display') !== 'none';
+    return !(
+      (el.offsetWidth === 0 && el.offsetHeight === 0) ||
+      window.getComputedStyle(el, null).getPropertyValue('display') === 'none'
+    );
   }
 
   // METHOD fixVKBScrollStart()

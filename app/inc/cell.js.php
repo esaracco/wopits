@@ -123,8 +123,8 @@ Plugin.prototype = {
                 height: ui.size.height,
               });
             } else {
-              $cell.closest('tr.wpt').find('th.wpt:first-child')
-                  .css('height', ui.size.height);
+              cell.closest('tr.wpt').querySelector('th.wpt')
+                .style.height = `${ui.size.height}px`;
  
               this.update({width: ui.size.width + 2});
  
@@ -192,7 +192,7 @@ Plugin.prototype = {
          $wall.wall('closeAllMenus');
 
          const $f = S.getCurrent('filters');
-         if ($f.is(':visible')) {
+         if (H.isVisible($f[0])) {
            $f.filters('reset');
          }
 
@@ -219,23 +219,6 @@ Plugin.prototype = {
         $cell.dblclick(__dblclick);
       }
     }
-
-    let h;
-    let w;
-
-    if ($cell[0].classList.contains('size-init')) {
-      w = $cell.outerWidth();
-      h = $cell.outerHeight();
-    } else {
-      const $trPrev = $cell.parent().prev();
-      const $tdPrev = $trPrev.length ?
-              $trPrev.find(`td.wpt:eq(${$cell.index() - 1})`) : undefined;
-
-      w = $tdPrev ? $tdPrev.css('width') : settings.width;
-      h = $tdPrev ? $tdPrev.css('height') : settings.height;
-    }
-
-    this.update({width: w, height: h});
   },
 
   // METHOD showUserWriting()
@@ -410,7 +393,7 @@ Plugin.prototype = {
 
     // Re-apply filters
     const $f = S.getCurrent('filters');
-    if ($f.is(':visible')) {
+    if (H.isVisible($f[0])) {
       $f.filters('apply', {norefresh: true});
     }
 
@@ -506,7 +489,7 @@ Plugin.prototype = {
   },
 
   // METHOD update()
-  update (d) {
+  update(d) {
     const cell = this.element[0];
     const bbox = cell.getBoundingClientRect();
     const idx = cell.cellIndex - 1;

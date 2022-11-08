@@ -26,7 +26,7 @@ const _getNextActiveTab = (current) =>
 
 // METHOD _getCellTemplate()
 const _getCellTemplate = ({id, width, height}) => {
-  return `<td scope="dzone" class="wpt size-init" style="width:${width}px;height:${height}px" data-id="cell-${id}"></td>`;
+  return `<td scope="dzone" class="wpt" style="width:${width}px;height:${height}px" data-id="cell-${id}"></td>`;
 };
 
 /////////////////////////////////// PUBLIC ///////////////////////////////////
@@ -552,7 +552,7 @@ Object.assign(Plugin.prototype, {
   async _refresh(d) {
     const $wall = this.element;
     const wall = $wall[0];
-    const wallIsVisible = $wall.is(':visible');
+    const wallIsVisible = H.isVisible(wall);
 
     // LOCAL FUNCTION __refreshWallBasicProperties()
     const __refreshWallBasicProperties = (d) => {
@@ -586,7 +586,7 @@ Object.assign(Plugin.prototype, {
             case 'update':
               if (d.isResponse ||
                   cell.classList.contains('list-mode') ||
-                  S.getCurrent('filters').is(':visible')) {
+                  H.isVisible(S.getCurrent('filters')[0])) {
                 $postit.postit('update', d.postit, {id: d.postit.cells_id});
               } else {
                 $postit.hide('fade', 250, () => {
@@ -844,7 +844,7 @@ Object.assign(Plugin.prototype, {
 
     S.getCurrent('mmenu').mmenu('close');
 
-    if ($chat.is(':visible')) {
+    if (H.isVisible($chat[0])) {
       $chat.chat('leave');
     }
 
@@ -1405,13 +1405,14 @@ Object.assign(Plugin.prototype, {
   saveProperties() {
     const popup = document.getElementById('wpropPopup');
     const $popup = $(popup);
-    const $inputs = $popup.find('input:visible');
+    const inputs = Array.from(popup.querySelectorAll('input'))
+      .filter((el) => H.isVisible(el));
     const Form = new Wpt_accountForms();
     let ret = true;
 
     popup.dataset.noclosure = true;
 
-    if (Form.checkRequired($inputs) && Form.validForm($inputs)) {
+    if (Form.checkRequired(inputs) && Form.validForm(inputs)) {
       const oldName = this.getName();
       const oldDescription = this.getDescription();
       const name = H.noHTML(popup.querySelector('.name input').value);
@@ -1431,13 +1432,13 @@ Object.assign(Plugin.prototype, {
         });
 
       // If wall width & height
-      if ($inputs.length > 1) {
+      if (inputs.length > 1) {
         const $wall = this.element;
         const wall = $wall[0];
         const cell = wall.querySelector('td.wpt');
         const oldW = cell.offsetWidth;
-        const w = parseInt($inputs[1].value);
-        const h = parseInt($inputs[2].value);
+        const w = parseInt(inputs[1].value);
+        const h = parseInt(inputs[2].value);
 
         if (w !== oldW || h !== cell.offsetHeight) {
           const cellPlugin = $(cell).cell('getClass');
@@ -1902,7 +1903,7 @@ Object.assign(Plugin.prototype, {
         {value: val});
     }
 
-    if (this.element.is(':visible')) {
+    if (H.isVisible(this.element[0])) {
       this.menu({from: 'display', type: `${type}-externalref`});
     }
 
@@ -1945,36 +1946,31 @@ Object.assign(Plugin.prototype, {
     const type = (val === 1) ? 'show' : 'hide';
 
     if (type === 'show') {
-      this.showHeaders();
-      wall.removeAttribute('data-headersshift');
-      if (update) {
-        let w = this.getTDsWidth();
-        w += wall.querySelector('tbody.wpt th.wpt').clientWidth;
-        wall.style.width = `${w}px`;
-        wall.dataset.oldwidth = w;
+      if(wall.dataset.headersshift) {
+        const hshift = JSON.parse(wall.dataset.headersshift);
+        wall.removeAttribute('data-headersshift');
+        this.showHeaders();
+        this.fixSize (0, hshift.width);
       }
-      this.fixSize ();
     } else {
       // Save plugs shift width & height for absolutely positioned plugs
-      if (!wall.dataset.headersshift) {
-        //FIXME
-        // Required to obtain the headers dimensions?
-        this.showHeaders ();
-        const bbox =
-          wall.querySelector('thead.wpt th.wpt').getBoundingClientRect();
-        if (bbox.width) {
-          wall.dataset.headersshift = JSON.stringify({
-            width: parseInt(bbox.width),
-            height: parseInt(bbox.height),
-          });
-        }
+      //FIXME
+      // Required to obtain the headers dimensions?
+      this.showHeaders ();
+      const bbox =
+        wall.querySelector('thead.wpt th.wpt').getBoundingClientRect();
+      if (bbox.width) {
+        wall.dataset.headersshift = JSON.stringify({
+          width: parseInt(bbox.width),
+          height: parseInt(bbox.height),
+        });
       }
       this.hideHeaders();
       wall.style.width = `${this.getTDsWidth()}px`;
     }
 
-    if (this.element.is(':visible')) {
-      this.menu ({from: 'display', type: `${type}-headers`});
+    if (H.isVisible(this.element[0])) {
+      this.menu({from: 'display', type: `${type}-headers`});
     }
 
     if (update) {

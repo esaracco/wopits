@@ -282,7 +282,7 @@ Object.assign(Plugin.prototype, {
           html_header: editing,
           customClass: 'msg-popover pcomm-popover',
           noclosure: true,
-          item: this.element[0],
+          item: this.element[0].querySelector('i'),
           title: `<i class="fas fa-comments fa-fw"></i> <?=_("Comments")?>`,
           content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
           onConfirm: ($p) => {
