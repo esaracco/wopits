@@ -37,7 +37,7 @@ const _getCellTemplate = ({id, width, height}) => {
 Plugin.prototype = Object.create(Wpt_accountForms.prototype);
 Object.assign(Plugin.prototype, {
   // METHOD init()
-  async init(args) {
+  async init() {
     const $wall = this.element;
     const wall = $wall[0];
     const settings = this.settings;

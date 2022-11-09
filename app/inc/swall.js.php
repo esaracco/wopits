@@ -55,7 +55,7 @@ Plugin.prototype = Object.create(Wpt_forms.prototype);
 Object.assign(Plugin.prototype,
 {
   // METHOD init()
-  init(args) {
+  init() {
     const plugin = this;
     const $share = plugin.element;
     const share = $share[0];

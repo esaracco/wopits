@@ -28,7 +28,7 @@ echo $Plugin->getHeader();
 Plugin.prototype = {
   sharedGroups: null,
   // METHOD init()
-  init(args) {
+  init() {
     const popup = this.element[0];
 
     // EVENT "click" on primary button

@@ -30,7 +30,7 @@ const _getUserPictureTemplate = (src) => {
 Plugin.prototype = Object.create(Wpt_accountForms.prototype);
 Object.assign(Plugin.prototype, {
   // METHOD init()
-  init(args) {
+  init() {
     const $account = this.element;
     const account = $account[0];
     const deleteBtn = account.querySelector(`[data-action="delete-account"]`);

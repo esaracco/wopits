@@ -27,7 +27,7 @@ let _data = {postits: {}, dest: null};
 Plugin.prototype = Object.create(Wpt_toolbox.prototype);
 Object.assign(Plugin.prototype, {
   // METHOD init()
-  init(args) {
+  init() {
     const $sm = this.element;
 
     this.boundMousemoveEventHandler = this.mousemoveEventHandler.bind(this);

@@ -22,7 +22,7 @@ echo $Plugin->getHeader();
 Plugin.prototype = Object.create(Wpt_accountForms.prototype);
 Object.assign (Plugin.prototype, {
   // METHOD init()
-  init(args) {
+  init() {
     const $login = this.element;
     const login = $login[0];
 

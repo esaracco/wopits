@@ -25,7 +25,7 @@ let _btnPrimary = null;
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const owall = this.element[0];
     const input = owall.querySelector(`input[type="text"]`);
 

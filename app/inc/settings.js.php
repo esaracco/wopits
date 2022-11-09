@@ -20,7 +20,7 @@ echo $Plugin->getHeader();
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const $settings = this.element;
     const head = document.head;
 

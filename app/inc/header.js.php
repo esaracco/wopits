@@ -40,7 +40,7 @@ const _serializeOne = (th) => {
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const header = this.element[0];
     const settings = this.settings;
 

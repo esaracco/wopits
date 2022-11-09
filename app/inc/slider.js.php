@@ -27,7 +27,7 @@ let _input =  null;
 
   Plugin.prototype = {
     // METHOD init()
-    init(args) {
+    init() {
       _el = this.element[0];
       _input = _el.querySelector('input');
 

@@ -29,7 +29,7 @@ const _getTagTemplate =
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const picker = this.element[0];
     let html = '';
 

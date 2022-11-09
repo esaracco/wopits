@@ -50,7 +50,7 @@ const _getTextWidth = (str, fontSize) => {
 Plugin.prototype = {
   editing: false,
   // METHOD init()
-  init(args) {
+  init() {
     const editable = this.element[0];
     const settings = this.settings;
     const cb = settings.callbacks;

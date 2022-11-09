@@ -24,7 +24,7 @@ let _smPlugin;
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const search = this.element[0];
     const input = search.querySelector('input');
 

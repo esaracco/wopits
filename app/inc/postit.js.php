@@ -295,7 +295,7 @@ class _Menu {
 
 Plugin.prototype = {
   // METHOD init()
-  init(args) {
+  init() {
     const $postit = this.element;
     const postit = $postit[0];
     const settings = this.settings;
