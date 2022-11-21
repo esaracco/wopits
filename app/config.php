@@ -1,7 +1,7 @@
 <?php
 
-define('WPT_VERSION', '0.65-alpha.27');
-define('WPT_LAST_UPDATE', '2022-11-08');
+define('WPT_VERSION', '0.66-alpha.0');
+define('WPT_LAST_UPDATE', '2022-11-19');
 define('WPT_DISPLAY_LATEST_NEWS', false);
 define('WPT_EXPORT_MIN_VERSION', '0.21');
 
@@ -228,11 +228,6 @@ define('WPT_JS_NODE_MODULES', [
   'bootstrap/dist/js/bootstrap.bundle.min.js',
   'vanderlee-colorpicker/jquery.colorpicker.js',
   'leader-line/leader-line.min.js',
-]);
-
-// JS local modules
-define ('WPT_JS_LOCAL_MODULES', [
-  'jquery.double-tap-wopits.js',
 ]);
 
 //</WPTPROD-remove>

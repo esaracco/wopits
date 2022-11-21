@@ -6,10 +6,91 @@
   Wpt_toolbox -> parent for toolbox utilities (filters, mmenu, chat...)
 
   WHelper -> alias H (helper methods)
+  WPlugin -> alias P (plugins manager)
   WSharer -> alias S (tool for sharing values between javascript elements)
   WStorage -> alias ST (localStorage facilities)
   WSocket -> alias WS (WebSocket management)
+  WUserData -> alias U (current user data)
 */
+
+// CLASS Wpt_pluginBase
+class Wpt_pluginBase {
+  constructor(settings) {
+    this.settings = settings;
+    this.tag = settings.tag;
+  }
+}
+
+// CLASS Wpt_pluginWallElement
+class Wpt_pluginWallElement extends Wpt_pluginBase {
+  // METHOD getId()
+  getId(fromData) {
+    return fromData ? this.tag.dataset.id : Number(this.settings.id);
+  }
+
+  // METHOD canWrite()
+  canWrite() {
+    const a = parseInt(
+      this.settings.access || S.getCurrent('wall').tag.dataset.access);
+
+    return (a === <?=WPT_WRIGHTS_RW?> || a === <?=WPT_WRIGHTS_ADMIN?>);
+  }
+}
+
+// CLASS Wpt_postitCountPlugin
+class Wpt_postitCountPlugin extends Wpt_pluginBase {
+  // METHOD getIds()
+  getIds() {
+    const {wallId, cellId, id: postitId} = this.postit().settings;
+
+    return {wallId, cellId, postitId};
+  }
+
+  // METHOD addTopIcon()
+  addTopIcon(className, action) {
+    const count = this.settings.count;
+    const el_I = H.createElement('i',
+        {className: `fa-fw fas ${className}`}, {action});
+    const el_SPAN = H.createElement('span',
+      {className: `wpt-badge inset ${count ? '' : 'hidden'}`});
+
+    el_SPAN.innerText = count;
+
+    this.tag.append(el_I, el_SPAN); 
+  }
+
+  // METHOD postit()
+  postit() {
+    return this.settings.postit;
+  }
+
+  // METHOD setCount()
+  setCount(count) {
+    const elC = this.tag.querySelector('span');
+
+    elC.style.display = count ? 'inline-block' : 'none';
+    elC.innerText = count;
+
+    if (this.settings.readonly) {
+      this.tag.style.display = count ? 'inline-block' : 'none';
+    }
+  }
+
+  // METHOD getCount()
+  getCount() {
+    return Number(this.tag.querySelector('span').innerText);
+  }
+
+  // METHOD incCount()
+  incCount() {
+    this.setCount(this.getCount() + 1);
+  }
+
+  // METHOD decCount()
+  decCount() {
+    this.setCount(this.getCount() - 1);
+  }
+}
 
 // CLASS Wpt_forms
 class Wpt_forms {
@@ -158,94 +239,44 @@ class Wpt_accountForms extends Wpt_forms {
   }
 }
 
-// CLASS Wpt_postitCountPlugin
-class Wpt_postitCountPlugin {
-  // METHOD getIds()
-  getIds () {
-    const {wallId, cellId, id: postitId} = this.postit().settings;
-
-    return {wallId, cellId, postitId}
-  }
-
-  // METHOD addTopIcon()
-  addTopIcon(className, action) {
-    const count = this.settings.count;
-    const el_I = H.createElement('i',
-        {className: `fa-fw fas ${className}`}, {action});
-    const el_SPAN = H.createElement('span',
-      {className: `wpt-badge inset ${count ? '' : 'hidden'}`});
-
-    el_SPAN.innerText = count;
-
-    this.element[0].append(el_I, el_SPAN); 
-  }
-
-  // METHOD postit()
-  postit() {
-    return this.settings.postitPlugin;
-  }
-
-  // METHOD setCount()
-  setCount(count) {
-    const elC = this.element[0].querySelector('span');
-
-    elC.style.display = count ? 'inline-block' : 'none';
-    elC.innerText = count;
-
-    if (this.settings.readonly) {
-      this.element[0].style.display = count ? 'inline-block' : 'none';
-    }
-  }
-
-  // METHOD getCount()
-  getCount() {
-    return Number(this.element[0].querySelector('span').innerText);
-  }
-
-  // METHOD incCount()
-  incCount() {
-    this.setCount(this.getCount() + 1);
-  }
-
-  // METHOD decCount()
-  decCount() {
-    this.setCount(this.getCount() - 1);
-  }
-}
-
 // CLASS Wpt_toolbox
 class Wpt_toolbox {
+  // METHOD isVisible()
+  isVisible() {
+    return H.isVisible(this.tag);
+  }
+
   // METHOD fixPosition()
   fixPosition() {
-    const el = this.element[0];
+    const tag = this.tag;
     // document.getElementsByClassName("fixed-top")[0].clientHeight
     const mH = 56;
-    const pos = el.getBoundingClientRect();
+    const pos = tag.getBoundingClientRect();
 
     if (pos.top <= mH + 4) {
-      el.style.top = `${mH+4}px`;
+      tag.style.top = `${mH+4}px`;
     } else {
       const wH = window.innerHeight - 15;
 
-      if (pos.top + el.clientHeight > wH) {
-        el.style.top = `${wH-el.clientHeight-1}px`;
+      if (pos.top + tag.clientHeight > wH) {
+        tag.style.top = `${wH - tag.clientHeight-1}px`;
       }
     }
 
     if (pos.left <= 0) {
-      el.style.left = '5px';
+      tag.style.left = '5px';
     } else {
       const wW = window.innerWidth - 20;
 
-      if (pos.left + el.clientWidth > wW) {
-        el.style.left = `${wW-el.clientWidth-1}px`;
+      if (pos.left + tag.clientWidth > wW) {
+        tag.style.left = `${wW - tag.clientWidth - 1}px`;
       }
     }
   }
 
   // METHOD fixDragPosition()
   fixDragPosition(ui) {
-    const el = this.element[0];
+    const tag = this.tag;
     // document.getElementsByClassName("fixed-top")[0].clientHeight
     const mH = 56;
     const pos = ui.position;
@@ -255,8 +286,8 @@ class Wpt_toolbox {
     } else {
       const wH = window.innerHeight - 15;
 
-      if (pos.top + el.clientHeight > wH) {
-        pos.top = wH - el.clientHeight - 1;
+      if (pos.top + tag.clientHeight > wH) {
+        pos.top = wH - tag.clientHeight - 1;
       }
     }
 
@@ -265,22 +296,87 @@ class Wpt_toolbox {
     } else {
       const wW = window.innerWidth - 20;
 
-      if (pos.left + el.clientWidth > wW) {
-        pos.left = wW - el.clientWidth - 1;
+      if (pos.left + tag.clientWidth > wW) {
+        pos.left = wW - tag.clientWidth - 1;
       }
     }
   }
 }
 
+const _pluginMap = new Map();
+const _elementMap = new Map();
+
+// CLASS WPlugin
+class WPlugin {
+  // METHOD register()
+  static register(key, instance) {
+    if (!_pluginMap.has(key)) {
+      _pluginMap.set(key, instance);
+    }
+  }
+
+  // METHOD create()
+  static create(tag, key, settings = {}) {
+    if (!_elementMap.has(tag)) {
+      tag.dataset.cached = key;
+      _elementMap.set(tag, new Map());
+    }
+
+    const instanceMap = _elementMap.get(tag);
+    instanceMap.set(key, new (_pluginMap.get(key))({...settings, tag}));
+  }
+
+  // METHOD get()
+  static get(tag, key) {
+    return _elementMap.has(tag) ? _elementMap.get(tag).get(key) || null : null;
+  }
+
+  // METHOD getOrCreate()
+  static getOrCreate(tag, key, settings) {
+    if (!_elementMap.has(tag)) {
+      this.create(tag, key, settings);
+    }
+
+    return this.get(tag, key);
+  }
+
+  // METHOD remove()
+  static remove(tag, key) {
+    if (!_elementMap.has(tag)) return;
+
+    const instanceMap = _elementMap.get(tag);
+
+    instanceMap.delete(key);
+
+    if (instanceMap.size === 0) {
+      _elementMap.delete(tag);
+    }
+  }
+
+  // METHOD dump()
+/*
+  static dump(type) {
+    Array.from(_elementMap.keys()).forEach((el) => {
+      console.log(el.closest('.wall'));
+      if (el.dataset.id && el.dataset.id.startsWith(type)) {
+//      if (el.classList.contains('filters')) {
+ //       console.log(el.dataset.id);
+        console.log(el);
+      }
+    });
+  }
+*/
+}
+
 // CLASS WStorage
 class WStorage {
   // METHOD delete()
-  delete(name) {
+  static delete(name) {
     localStorage.removeItem(name);
   }
 
   // METHOD setNoDisplay()
-  noDisplay(name, value) {
+  static noDisplay(name, value) {
     const noDisplay = this.get('no-display') || {};
 
     if (value) {
@@ -292,12 +388,12 @@ class WStorage {
   }
 
   // METHOD set()
-  set(name, value) {
+  static set(name, value) {
     localStorage.setItem(name, JSON.stringify(value));
   }
 
   // METHOD get()
-  get(name) {
+  static get(name) {
     return JSON.parse(localStorage.getItem(name));
   }
 }
@@ -307,29 +403,30 @@ class WSharer {
   // METHOD constructor()
   constructor() {
     this.vars = {};
-    this.walls = [];
+    this.walls = null;
     this._fullReset();
   }
 
   // METHOD reset()
-  reset (type) {
+  reset(type) {
     if (!type) {
-      this._fullReset ();
+      this._fullReset();
     } else {
-      this[type] = typeof this[type] === 'string' ? '' : [];
+      this[type] = null;
     }
   }
 
   // METHOD _fullReset()
   _fullReset() {
-    this.wall = [];
-    this.chat = [];
-    this.filters = [];
-    this.wmenu = [];
-    this.postit = [];
-    this.pcomm = [];
-    this.header = [];
-    this.plugColor = '';
+    this.wall = null;
+    this.chat = null;
+    this.filters = null;
+    this.wmenu = null;
+    this.umsg = null;
+    this.postit = null;
+    this.pcomm = null;
+    this.header = null;
+    this.plugColor = null;
   }
 
   // METHOD set()
@@ -353,24 +450,24 @@ class WSharer {
 
   // METHOD getCurrent()
   getCurrent(item) {
-    if (!this.walls.length) {
-      this.walls = $(document.getElementById('walls'));
-      if (!this.walls.length) {
-        return $([]);
+    if (!this.walls) {
+      this.walls = document.getElementById('walls');
+      if (!this.walls) {
+        return null;
       }
     }
 
     switch (item) {
       case 'wall':
-        if (!this.wall.length) {
-          this.wall =
-            $(this.walls[0].querySelector('.tab-pane.active .wall') || []);
+        if (!this.wall) {
+          this.wall = P.get(this.walls
+            .querySelector('.tab-pane.active .wall'), 'wall');
         }
         return this.wall;
       case 'postit':
-        if (!this.postit.length) {
-          this.postit =
-            $(this.walls[0].querySelector('.tab-pane.active .postit.current'));
+        if (!this.postit) {
+          this.postit = P.get(this.walls
+            .querySelector('.tab-pane.active .postit.current'), 'postit');
         }
         return this.postit;
       case 'plugColor':
@@ -385,14 +482,28 @@ class WSharer {
         }
         return this.plugColor;
       case 'header':
-        if (!this.header.length) {
+        if (!this.header) {
           this.header =
-            $(this.walls[0].querySelector('.tab-pane.active th.wpt.current'));
+            P.get(this.walls.querySelector(
+              '.tab-pane.active th.wpt.current'), 'header');
         }
         return this.header;
+      case 'settings':
+        if (!this.settings) {
+          this.settings = P.getOrCreate(
+            document.getElementById('settingsPopup'),
+            'settings',
+            {locale: document.documentElement.getAttribute('lang')});
+        }
+        return this.settings;
+      case 'cpick':
+        if (!this.cpick) {
+          this.cpick = P.get(document.getElementById('cpick'), 'cpick');
+        }
+        return this.cpick;
       case 'tpick':
         if (!this.tpick) {
-          this.tpick = $(document.getElementById('tpick'));
+          this.tpick = P.get(document.getElementById('tpick'), 'tpick');
         }
         return this.tpick;
       case 'walls':
@@ -403,30 +514,37 @@ class WSharer {
         }
         return this.sandbox;
       case 'chat':
-        if (!this.chat.length) {
-          this.chat = $(this.walls[0].querySelector('.tab-pane.active .chat'));
+        if (!this.chat) {
+          this.chat = P.get(this.walls
+            .querySelector('.tab-pane.active .chat'), 'chat');
         }
         return this.chat;
       case 'filters':
-        if (!this.filters.length) {
-          this.filters =
-            $(this.walls[0].querySelector('.tab-pane.active .filters'));
+        if (!this.filters) {
+          this.filters = P.get(this.walls
+            .querySelector('.tab-pane.active .filters'), 'filters');
         }
         return this.filters;
       case 'wmenu':
-        if (!this.wmenu.length) {
-          this.wmenu =
-            $(this.walls[0].querySelector('.tab-pane.active .wall-menu'));
+        if (!this.wmenu) {
+          this.wmenu = P.get(this.walls
+            .querySelector('.tab-pane.active .wall-menu'), 'wmenu');
         }
         return this.wmenu;
+      case 'umsg':
+        if (!this.umsg) {
+          this.umsg = P.get(document.getElementById('umsg'), 'umsg');
+        }
+        return this.umsg;
       case 'mmenu':
         if (!this.mmenu) {
-          this.mmenu = $(document.getElementById('mmenu'));
+          this.mmenu = P.get(document.getElementById('mmenu'), 'mmenu');
         }
         return this.mmenu;
       case 'pcomm':
-        if (!this.pcomm.length) {
-          this.pcomm = $(this.getCurrent('postit')[0].querySelector('.pcomm'));
+        if (!this.pcomm) {
+          this.pcomm = P.get(this.getCurrent('postit').tag
+            .querySelector('.pcomm'), 'pcomm');
         }
         return this.pcomm;
     }
@@ -478,7 +596,7 @@ class WSocket {
     // EVENT "message"
     this.cnx.onmessage = (e) => {
       const data = JSON.parse(e.data || '{}');
-      const $wall = data.wall?.id ? $(`[data-id="wall-${data.wall.id}"]`) : [];
+      const wall = (data.wall && data.wall.id) ? P.get(document.querySelector(`[data-id="wall-${data.wall.id}"]`), 'wall') : null;
       const isResponse = (this.onSendCache[data.msgId] !== undefined);
       let el;
       let popup;
@@ -497,10 +615,10 @@ class WSocket {
           // userwriting
           case 'userwriting':
             el = document.querySelector(
-                `${data.item === 'postit' ? '.postit' : ''}`+
-                `[data-id="${data.item}-${data.itemId}"]`);
+              `${(data.item === 'postit') ? '.postit' : ''}`+
+              `[data-id="${data.item}-${data.itemId}"]`);
             if (el) {
-              $(el)[data.item]('showUserWriting', data.user);
+              P.get(el, data.item).showUserWriting(data.user);
             }
             break;
           // userstoppedwriting
@@ -518,7 +636,7 @@ class WSocket {
             H.openModal({item: popup, customClass: 'zindexmax'});
 
             // Close current popups if any
-            setTimeout(()=> (S.get('mstack') || []).forEach(
+            setTimeout(() => (S.get('mstack') || []).forEach(
                 (el) => bootstrap.Modal.getInstance(el).hide()), 3000);
             break;
           // refreshpcomm
@@ -527,14 +645,14 @@ class WSocket {
                      `[data-id="postit-${data.postitId}"] .pcomm`);
 
             if (el) {
-              $(el).pcomm('refresh', data);
+              P.get(el, 'pcomm').refresh(data);
             }
             break;
           // refreshwall
           case 'refreshwall':
-            if ($wall.length && data.wall) {
+            if (wall && data.wall) {
               data.wall.isResponse = isResponse;
-              $wall.wall('refresh', data.wall);
+              wall.refresh(data.wall);
 
               if (data.userstoppedwriting) {
                 // FIXME setTimeout() needed for walls having one cell
@@ -545,28 +663,30 @@ class WSocket {
             break;
           // viewcount
           case 'viewcount':
-            if ($wall.length) {
-              $wall.wall('refreshUsersview', data.count);
+            if (wall) {
+              wall.refreshUsersview(data.count);
             } else {
               WS.pushResponse(`viewcount-wall-${data.wall.id}`, data.count);
             }
             break;
           // chat
           case 'chat':
-            if ($wall.length) {
-              $(`#wall-${data.wall.id} .chat`).chat('addMsg', data);
+            if (wall) {
+              P.get(document.querySelector(
+                `#wall-${data.wall.id} .chat`), 'chat').addMsg(data);
             }
             break;
           // chatcount
           case 'chatcount':
-            if ($wall.length) {
-              $(`#wall-${data.wall.id} .chat`)
-                  .chat('refreshUserscount', data.count);
+            if (wall) {
+              P.get(document.querySelector(
+                `#wall-${data.wall.id} .chat`), 'chat')
+                  .refreshUserscount(data.count);
             }
             break;
           // have-msg
           case 'have-msg':
-            $('#umsg').umsg('addMsg', data);
+            S.getCurrent('umsg').addMsg(data);
             break;
           // unlinked
           // Either the wall has been deleted
@@ -577,8 +697,8 @@ class WSocket {
                 type: 'warning',
                 msg: `<?=_("Some walls are no longer available")?>`,
               });
-              $wall.wall('close');
-              $('#settingsPopup').settings('removeRecentWall', data.wall.id);
+              wall.close();
+              S.getCurrent('settings').removeRecentWall(data.wall.id);
             }
             break;
           // mainupgrade
@@ -634,10 +754,10 @@ class WSocket {
       if (this.retries < 15) {
         this.tryToReconnect({
           then: () => {
-            const $wall = S.getCurrent('wall');
+            const wall = S.getCurrent('wall');
 
-            if ($wall.length) {
-              $wall.wall('refresh');
+            if (wall) {
+              wall.refresh();
             }
           },
         });
@@ -667,7 +787,7 @@ class WSocket {
 
   // METHOD ready()
   ready() {
-    return (this.cnx?.readyState === WebSocket.OPEN);
+    return (this.cnx && (this.cnx.readyState === WebSocket.OPEN));
   }
 
   // METHOD send()
@@ -711,7 +831,7 @@ class WSocket {
   popResponse(type) {
     const rq = this.responseQueue[type];
 
-    return rq?.length ? rq.pop() : undefined;
+    return (rq && rq.length) ? rq.pop() : undefined;
   }
 
   displayNetworkErrorMsg() {
@@ -730,6 +850,22 @@ const entitiesMap = {
 
 // CLASS WHelper
 class WHelper {
+  // METHOD logout()
+  static logout(args = {}) {
+    // Clean all data only if the logout order come from the main user
+    // session.
+    if (args.auto) {
+      location.href = '/login.php';
+    } else {
+      H.fetch(
+        'POST',
+        'user/logout',
+        null,
+        // success cb
+        () => location.href = '/login.php');
+    }
+  }
+
   // METHOD displayNetworkErrorMsg()
   static displayNetworkErrorMsg() {
     const el = document.getElementById('popup-loader');
@@ -810,9 +946,8 @@ class WHelper {
       const parentNode = el.parentNode;
       // Unlock postit plugs
       if (parentNode.classList.contains('postit')) {
-        ($(parentNode).postit('getSettings').plugs || []).forEach((plug) => {
-          plug.labelObj[0].classList.remove('locked');
-        });
+        (P.get(parentNode, 'postit').settings.plugs || []).forEach(
+          (el) => el.labelObj[0].classList.remove('locked'));
       }
       parentNode.classList.remove('locked', 'main');
       el.remove();
@@ -822,7 +957,7 @@ class WHelper {
   // METHOD isLoginPage()
   static isLoginPage() {
     // Only the login page has an "id" attr
-    return Boolean(document.body?.id);
+    return Boolean(document.body && document.body.id);
   }
 
   // METHOD disabledEvent()
@@ -881,26 +1016,32 @@ class WHelper {
 
   // METHOD getFirstInputFields()
   static getFirstInputFields(el) {
-    return el.querySelector(
-        `input[type="text"]:not(:read-only),`+
-        `input[type="email"]:not(:read-only),`+
-        `input[type="password"]:not(:read-only),`+
-        `input[type="number"]:not(:read-only),`+
-        `textarea:not(:read-only)`);
+    const r = Array.from(el.querySelectorAll(
+      `input[type="text"]:not(:read-only),`+
+      `input[type="email"]:not(:read-only),`+
+      `input[type="password"]:not(:read-only),`+
+      `input[type="number"]:not(:read-only),`+
+      `textarea:not(:read-only),`+
+      `button.btn-primary`)).filter((item) => H.isVisible(item));
+
+    return r.length && r[0];
   }
 
   // METHOD setAutofocus ()
-  static setAutofocus(el, input) {
-    if (!input) {
-      input = this.getFirstInputFields(el);
+  static setAutofocus(main, el) {
+    if (!el) {
+      el = this.getFirstInputFields(main);
     }
 
-    if (input) {
-      const end = input.value.length; 
+    if (el) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        const end = el.value.length; 
 
-      // Set cursor at the end of the value
-      try {input.setSelectionRange(end, end)} catch(e) {}
-      input.focus();
+        // Set cursor at the end of the value
+        try {el.setSelectionRange(end, end)} catch(e) {}
+      }
+
+      el.focus();
     }
   }
 
@@ -1023,9 +1164,9 @@ class WHelper {
   
   // METHOD getAccess()
   static getAccess() {
-    const $wall = S.getCurrent('wall');
+    const wall = S.getCurrent('wall');
   
-    return $wall.length ? $wall[0].dataset.access : undefined;
+    return wall ? wall.tag.dataset.access : undefined;
   }
   
   // METHOD checkAccess()
@@ -1048,19 +1189,12 @@ class WHelper {
     return `<i class="fas fa-${icon} fa-fw"></i>`;
   }
   
-  // METHOD getUserDate()
-  static getUserDate(dt, tz, fmt) {
-    return moment.unix(dt).tz(
-      tz || wpt_userData.settings.timezone || moment.tz.guess())
-        .format(fmt || 'Y-MM-DD');
-  }
-
   // METHOD loader()
   // static loader(action, force = false, xhr = null) {
-  static loader(action, args) {
+  static loader(action, args = {}) {
     const layer = document.getElementById('popup-loader');
   
-    if (layer && (WS.ready() || args?.force)) {
+    if (layer && (WS.ready() || args.force)) {
       const progress = layer.querySelector('.progress');
       const button = layer.querySelector('button');
 
@@ -1068,21 +1202,21 @@ class WHelper {
   
       if (action === 'show') {
         layer.dataset.timeoutid = setTimeout(() => {
-          if (args?.xhr) {
+          if (args.xhr) {
             // Abort upload on user request
             button.addEventListener('click',
-                (e) => args?.xhr.abort(), {once: true});
+                (e) => args.xhr.abort(), {once: true});
             this.show(button);
             this.show(progress);
           }
   
           layer.querySelector('i').className =
-              args?.icon || 'fas fa-cog fa-spin fa-lg';
+              args.icon || 'fas fa-cog fa-spin fa-lg';
           layer.querySelector('span').innerHTML =
-              args?.text || `<?=_("Please wait")?>...`;
+              args.text || `<?=_("Please wait")?>...`;
 
           layer.classList.add('show');
-        }, args?.delay !== undefined ? args.delay : 500);
+        }, args.delay !== undefined ? args.delay : 500);
       } else {
         layer.classList.remove('show');
         this.hide(button);
@@ -1098,10 +1232,9 @@ class WHelper {
   static openUserview({about, picture, title}) {
     H.loadPopup('userView', {
       open: false,
-      cb: ($p) => {
-        const p = $p[0];
+      cb: (p) => {
         const div = p.querySelector('.user-picture');
-        const aboutEl = p.querySelector('.about');
+        const aboutTag = p.querySelector('.about');
 
         p.querySelector('.modal-title span').innerText = title;
         p.querySelector('.name dd').innerText = title;
@@ -1119,10 +1252,10 @@ class WHelper {
         }
 
         if (about) {
-          aboutEl.querySelector('dd').innerHTML = H.nl2br(about);
-          this.show(aboutEl);
+          aboutTag.querySelector('dd').innerHTML = H.nl2br(about);
+          this.show(aboutTag);
         } else {
-          this.hide(aboutEl);
+          this.hide(aboutTag);
         }
 
         H.openModal({item: p});
@@ -1251,7 +1384,7 @@ class WHelper {
         closeVKB = H.fixVKBScrollStart();
       // If no virtual keyboard, focus on the first input
       } else {
-        this.setAutofocus(null, input);
+        this.setAutofocus(bp.tip, input);
       }
     }
 
@@ -1259,7 +1392,7 @@ class WHelper {
     const _eventC = (e) => {
       if (e.target.classList.contains('btn-primary')) {
         bp.tip.dataset.btnclicked = btn.primary;
-        args.onConfirm && args.onConfirm($(bp.tip));
+        args.onConfirm && args.onConfirm(bp.tip);
       } else {
         bp.tip.dataset.btnclicked = btn.secondary;
       }
@@ -1287,7 +1420,7 @@ class WHelper {
       args.item.scrollIntoView(false);
     }
 
-    args.then && args.then($(bp.tip));
+    args.then && args.then(bp.tip);
 
     if (scroll) {
       window.dispatchEvent(new Event('resize'));
@@ -1295,17 +1428,17 @@ class WHelper {
   }
 
   // METHOD setViewToElement()
-  static setViewToElement ($el) {
-    const $view = S.getCurrent('walls');
-    const posE = $el[0].getBoundingClientRect();
-    const posV = $view[0].getBoundingClientRect();
+  static setViewToElement(el) {
+    const view = S.getCurrent('walls');
+    const posE = el.getBoundingClientRect();
+    const posV = view.getBoundingClientRect();
 
     if (posE.left > posV.width) {
-      $view.scrollLeft(posE.left - posE.width);
+      view.scrollLeft = posE.left - posE.width;
     }
 
     if (posE.top > posV.height) {
-      $view.scrollTop(posE.top - posE.height - 110);
+      view.scrollTop = posE.top - posE.height - 110;
     }
   }
   
@@ -1330,7 +1463,7 @@ class WHelper {
     } else {
       if (w !== 500) {
         w += this.checkAccess(<?=WPT_WRIGHTS_RW?>,
-               S.getCurrent('wall')[0].dataset.access) ? 70 : 30;
+               S.getCurrent('wall').tag.dataset.access) ? 70 : 30;
       }
   
       if (w > wW) {
@@ -1388,54 +1521,38 @@ class WHelper {
   // METHOD loadPopup()
   static async loadPopup(type, args = {open: true}) {
     const id = `${args.template||type}Popup`;
-    const popup = document.getElementById(id);
-
-    // LOCAL FUNCTION __exec()
-    const __exec = ($p) => {
-      const p = $p[0];
-
-      H.cleanPopupDataAttr(p);
-
-      args.cb && args.cb($p);
-
-      if (args.settings) {
-        $p[type]('setSettings', args.settings);
-      }
-
-      if (args.open) {
-        H.openModal({
-          item: p,
-          noeffect: Boolean(args.noeffect),
-        });
-      }
-    };
+    let popup = document.getElementById(id);
 
     if (args.open === undefined) {
       args.open = true;
     }
 
-    if (popup) {
-      __exec($(popup));
-    } else {
+    if (!popup) {
       const r = await fetch(`/ui/${args.template || type}.php`);
 
       if (r && r.ok) {
-        // TODO no jQuery
-        $('body').prepend (await r.text());
+       // FIXME
+       document.body.prepend(
+         H.createElement('div', null, null, await r.text()));
 
-        const $p = $(`#${id}`);
+        popup = document.getElementById(id);
 
-        if ($p[type] !== undefined) {
-          $p[type](args.settings || {});
-        }
-
-        args.init && args.init($p);
-
-        __exec($p);
+        args.init && args.init(popup);
       }
       else {
         this.manageUnknownError();
       }
+    }
+
+    H.cleanPopupDataAttr(popup);
+
+    args.cb && args.cb(popup);
+
+    if (args.open) {
+      H.openModal({
+        item: popup,
+        noeffect: Boolean(args.noeffect),
+      });
     }
   }
   
@@ -1483,7 +1600,7 @@ class WHelper {
     const t = args.type;
 
     // Blurs
-    setTimeout(()=> {
+    setTimeout(() => {
       // TinyEditor
       const ef = document.getElementById('postitUpdatePopupBody_ifr');
       if (ef && H.isVisible(ef)) {
@@ -1531,9 +1648,9 @@ class WHelper {
 
     document.querySelector('html').style.overflow = 'hidden';
 
-    S.getCurrent('walls')[0].style.height =
+    S.getCurrent('walls').style.height =
       `${window.innerHeight -
-         document.querySelector(".nav-tabs.walls").offsetHeight}px`;
+         document.querySelector('.nav-tabs.walls').offsetHeight}px`;
   }
 
   // METHOD setColorpickerColor()
@@ -1621,7 +1738,7 @@ class WHelper {
       msg = `<?=_("Unknown error.<br>Please try again later.")?>`;
     } else {
       msg = `<?=_("Unknown error.<br>You are about to be disconnected...<br>Sorry for the inconvenience.")?>`;
-      setTimeout(() => $("<div/>").login('logout', {auto: true}), 3000);
+      setTimeout(() => this.logout({auto: true}), 3000);
     }
 
     this.displayMsg({msg, type: d.msgtype || 'danger'});
@@ -1865,7 +1982,7 @@ class WHelper {
   static supportUs() {
     <?php if (WPT_SUPPORT_CAMPAIGN) {?>
 
-    if (wpt_userData.settings.theme &&
+    if (U.get('theme') &&
         !ST.noDisplay('support-msg') &&
         !document.querySelector('.modal.show,.popover.show')) {
       const popup = document.getElementById('infoPopup');
@@ -1891,16 +2008,15 @@ class WHelper {
   // METHOD checkForAppUpgrade()
   static async checkForAppUpgrade(version) {
     const html = document.querySelector('html');
-    const $popup = $("#infoPopup");
+    const popup = document.getElementById('infoPopup');
     const officialVersion = version ? version : html.dataset.version;
 
     if (!String(officialVersion).match(/^\d+$/)) {
-      const popup = $popup[0];
       const userVersion = ST.get('version');
 
       if (userVersion !== officialVersion) {
         ST.set('version', officialVersion);
-        $("#settingsPopup").settings('set', {version: officialVersion});
+        S.getCurrent('settings').set({version: officialVersion});
   
         if (userVersion) {
           // Close current popups if any
@@ -1969,7 +2085,7 @@ class WHelper {
 
   // METHOD fixVKBScrollStart()
   static fixVKBScrollStart() {
-    const walls = document.getElementById('walls');
+    const walls = S.getCurrent('walls');
 
     if (!walls) return;
 
@@ -1992,7 +2108,7 @@ class WHelper {
   // METHOD fixVKBScrollStop()
   static fixVKBScrollStop() {
     const {bodyComputedStyles} = S.get('vkbData');
-    const walls = document.getElementById('walls');
+    const walls = S.getCurrent('walls');
   
     document.body.style = bodyComputedStyles;
     walls.style.width = 'auto';
@@ -2001,8 +2117,81 @@ class WHelper {
   }
 }
 
+// CLASS WUserData
+class WUserData {
+  // METHOD getId()
+  static getId() {
+    return wpt_userData.id;
+  }
+
+  // METHOD getToken()
+  static getToken() {
+    return wpt_userData.token;
+  }
+
+  // METHOD formatDate()
+  static formatDate(dt, tz, fmt) {
+    return moment.unix(dt).tz(
+      tz || wpt_userData.settings.timezone || moment.tz.guess())
+        .format(fmt || 'Y-MM-DD');
+  }
+
+  // METHOD isVisible()
+  static isVisible() {
+    return (wpt_userData.settings && wpt_userData.settings.visible === 1);
+  }
+
+  // METHOD getWalls()
+  static getWalls() {
+    return wpt_userData.walls || [];
+  }
+
+  // METHOD getTheme()
+  static getTheme() {
+    return wpt_userData.settings.theme || 'theme-default';
+  }
+
+  // METHOD getSettings()
+  static getSettings() {
+    return wpt_userData.settings || {};
+  }
+
+  // METHOD setSettings()
+  static setSettings(settings) {
+    return wpt_userData.settings = settings;
+  }
+
+  // METHOD setWalls()
+  static setWalls(walls) {
+    return wpt_userData.walls = walls || [];
+  }
+
+  // METHOD getOpenedWalls()
+  static getOpenedWalls() {
+    return this.get('openedWalls') || [];
+  }
+
+  // METHOD getRecentWalls()
+  static getRecentWalls() {
+    return this.get('recentWalls') || [];
+  }
+
+  // METHOD get()
+  static get(prop) {
+    return wpt_userData.settings ? wpt_userData.settings[prop] : null;
+  }
+
+  // METHOD setSetting()
+  static set(prop, val) {
+    return wpt_userData.settings[prop] = val;
+  }
+
+};
+
 // GLOBAL VARS
 const H = WHelper;
+const P = WPlugin;
 const S = new WSharer()
-const ST = new WStorage()
+const ST = WStorage;
+const U = WUserData;
 const WS = new WSocket();

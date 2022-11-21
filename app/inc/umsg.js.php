@@ -3,36 +3,44 @@
 Javascript plugin - User's messages
 
 Scope: Wall
-Element: .umsg
+Name: umsg
 Description: Manage user's messages
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('umsg');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+(() => {
+'use strict';
 
-<?=$Plugin->getPublicSection()?>
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const $umsg = this.element;
+P.register('umsg', class extends Wpt_pluginBase {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+
+    this.badgeTag = this.tag.querySelector('.wpt-badge');
+    this.popoverBody = null;
+
+    const tag = this.tag;
 
     // Init counter
     H.fetch(
       'GET',
       'user/messages',
       null,
-      (d) => d.length && $umsg.find('.wpt-badge').show().text(d.length)
+      (d) => {
+        if (d.length) {
+          this.badgeTag.innerText = d.length;
+          H.show(this.badgeTag);
+        }
+      },
     );
 
     // EVENT "click" on messages count
-    $umsg[0].addEventListener('click', (e) => this.open());
+    tag.addEventListener('click', (e) => this.open());
 
     // EVENT "click"
     document.addEventListener('click', (e) => {
@@ -65,7 +73,9 @@ Plugin.prototype = {
             break;
         }
 
-        $('<div/>').wall('loadSpecific', infos, true);
+        const wallDiv = document.createElement('div');
+        P.getOrCreate(wallDiv, 'wall').loadSpecific(infos, true);
+        P.remove(wallDiv, 'wall');
 
       // EVENT "click" on message "delete" button
       } else if (el.matches('.msg-item .close *,.msg-item .close')) {
@@ -82,45 +92,61 @@ Plugin.prototype = {
         );
       }
     });
-  },
+  }
 
   // METHOD addMsg()
   addMsg(args) {
     // Refresh user's walls browser cache before adding message.
-    $('<div/>').wall('refreshUserWallsData', () => {
-      const $badge = this.element.find('.wpt-badge');
+    const wallDiv = document.createElement('div');
+    P.getOrCreate(wallDiv, 'wall').refreshUserWallsData(() => {
+      const badgeTag = this.badgeTag;
 
-      $badge.show().text(parseInt($badge.text()) + 1);
+      badgeTag.innerText = parseInt(badgeTag.innerText) + 1;
+      H.show(badgeTag);
 
-      // Refresh popover content if currently opened.
+      // Refresh popover content if currently opened
       if (document.querySelector('.msg-popover')) {
         this.open(true);
       }
 
       // Refresh wall if needed and if opened.
       if (args && args.wallId) {
-        const $wall = $(`.wall[data-id="wall-${args.wallId}"]`);
+        const wall = P.get(document.querySelector(
+          `.wall[data-id="wall-${args.wallId}"]`), 'wall');
 
-        if ($wall.length) {
-          $wall.wall('refresh');
+        if (wall) {
+          wall.refresh();
         }
       }
+
+      P.remove(wallDiv, 'wall');
     });
-  },
+  }
 
   // METHOD removeMsg()
   removeMsg(item) {
-    const $badge = this.element.find('.wpt-badge');
-    const count = parseInt($badge.text()) - 1;
+    const badgeTag = this.badgeTag;
+    const count = parseInt(badgeTag.innerText) - 1;
 
     item.remove();
-    $badge.text(count);
+    badgeTag.innerText = count;
 
     if (!count) {
-      $badge.hide();
+      H.hide(badgeTag);
       document.getElementById('popup-layer').click();
     }
-  },
+  }
+
+  // METHOD isPopoverVisible()
+  isPopoverVisible() {
+    return this.popoverBody && H.isVisible(this.popoverBody);
+  }
+
+  // METHOD fixHeight()
+  fixHeight() {
+    this.popoverBody.style.maxHeight = `${window.innerHeight - 80}px`;
+    bootstrap.Popover.getInstance(this.badgeTag).update();
+  }
 
   // METHOD open()
   open(refresh) {
@@ -131,39 +157,35 @@ Plugin.prototype = {
       (d) => {
         let body = '';
         d.forEach(({content, creationdate, id, title}) => {
-          body += `<div class="msg-item" data-id="${id}"><div class="msg-title">${title}<button type="button" class="close" title="<?=_("Delete this message")?>"><span><i class="fas fa-trash fa-xs"></i></span></button></div><div class="msg-date">${H.getUserDate(creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${content.replace(/\n+/g, "<br>")}</div></div>`;
+          body += `<div class="msg-item" data-id="${id}"><div class="msg-title">${title}<button type="button" class="close" title="<?=_("Delete this message")?>"><span><i class="fas fa-trash fa-xs"></i></span></button></div><div class="msg-date">${U.formatDate(creationdate, null, "Y-MM-DD H:mm")}</div><div class="msg-body">${content.replace(/\n+/g, '<br>')}</div></div>`;
         });
 
         if (refresh) {
-          $('.umsg-popover .popover-body').html(body);
+          this.popoverBody.innerHTML = body;
         } else {
           H.openConfirmPopover({
             type: 'info',
             customClass: 'msg-popover umsg-popover',
             placement: 'bottom',
-            item: this.element[0].querySelector('.wpt-badge'),
+            item: this.badgeTag,
             title: `<i class="fas fa-envelope fa-fw"></i> <?=_("Messages")?>`,
             content: body,
-            then: ($p) => {
-              const wH = window.innerHeight - 95;
-              const bH = $p.find('.popover-body').height();
-
-              if (bH > wH) {
-                $p.find('.popover-body').css('height', `${wH}px`);
-              }
-            }
+            then: (p) => {
+              this.popoverBody = p.querySelector('.popover-body');
+              this.fixHeight();
+            },
           });
         }
       });
   }
-};
+});
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!H.isLoginPage()) {
-    $('#umsg').umsg();
+    P.create(document.getElementById('umsg'), 'umsg');
   }
 });
 
-<?=$Plugin->getFooter()?>
+})();

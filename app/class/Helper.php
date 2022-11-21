@@ -296,7 +296,7 @@ class Helper {
   }
 
 //<WPTPROD-remove>
-  public static function buildPostitMenu() {
+  public static function getPostitMenuItems() {
     // Post-it menu definition
     $items = [
       ['delete', _('Remove'), 'trash'],
@@ -310,11 +310,10 @@ class Helper {
       ['add-plug', _('Add relation'), 'bezier-curve'],
     ];
 
-    $menu = '<div class="postit-menu right">';
+    $menu = '';
     foreach ($items as $d) {
       $menu .= "<span data-action=\"{$d[0]}\" class=\"btn btn-sm btn-secondary btn-circle\" title=\"{$d[1]}\"><i class=\"fa-{$d[2]} fas fa-fw\"></i></span>";
     }
-    $menu .= '</div>';
 
     return $menu;
   }

@@ -3,32 +3,24 @@
 Javascript plugin - Notes search
 
 Scope: Wall
-Elements: #psearchPopup
+Name: psearch
 Description: Search in wall's notes
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('psearch');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-let _smPlugin;
+P.register('psearch', class extends Wpt_pluginBase {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    const tag = this.tag;
+    const input = tag.querySelector('input');
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
-
-<?=$Plugin->getPublicSection()?>
-
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const search = this.element[0];
-    const input = search.querySelector('input');
-
-    _smPlugin = S.getCurrent('mmenu').mmenu('getClass');
+    this.mmenu = S.getCurrent('mmenu');
 
     // EVENT "keyup" on input
     input.addEventListener('keyup', (e) => {
@@ -51,89 +43,94 @@ Plugin.prototype = {
     });
 
       // EVENT "click" on input clear button
-    search.querySelector('.clear-input').addEventListener('click', (e) => {
+    tag.querySelector('.clear-input').addEventListener('click', (e) => {
       this.reset(true)
       input.focus();
     });
 
     // EVENT "hidden.bs.modal" on popup
-    search.addEventListener('hidden.bs.modal', (e) => {
-      if (H.isVisible(_smPlugin.element[0])) {
-        _smPlugin.showHelp();
+    tag.addEventListener('hidden.bs.modal', (e) => {
+      if (this.mmenu.isVisible()) {
+        this.mmenu.showHelp();
       }
     });
-  },
+  }
+
+  // METHOD isVisible()
+  isVisible() {
+    return H.isVisible(this.tag);
+  }
 
   // METHOD open()
   open() {
-    const f = S.getCurrent('filters')[0];
-    if (H.isVisible(f)) {
-      $(f).filters('reset');
+    const f = S.getCurrent('filters');
+    if (f.isVisible()) {
+      f.reset();
     }
 
-    H.openModal({item: this.element[0]});
+    H.openModal({item: this.tag});
     this.replay();
-  },
+  }
 
   // METHOD close()
   close() {
-    bootstrap.Modal.getInstance(this.element[0]).hide();
-  },
+    bootstrap.Modal.getInstance(this.tag).hide();
+  }
 
   // METHOD restore()
   restore(str) {
-    const input = this.element[0].querySelector('input');
+    const input = this.tag.querySelector('input');
 
     input.value = str;
     input.dispatchEvent (new Event('keyup'));
-  },
+  }
 
   // METHOD replay ()
   replay() {
-    const input = this.element[0].querySelector('input');
+    const input = this.tag.querySelector('input');
 
-    input.value = S.getCurrent('wall')[0].dataset.searchstring || '';
+    input.value = S.getCurrent('wall').tag.dataset.searchstring || '';
 
     if (input.value) {
       input.dispatchEvent(new Event('keyup'));
     } else {
       this.reset();
     }
-  },
+  }
 
   // METHOD reset()
   reset(full) {
-    const $wall = S.getCurrent('wall');
-    const search = this.element[0];
+    const wall = S.getCurrent('wall');
+    const tag = this.tag;
 
     if (full) {
-      search.querySelector('input').value = '';
+      tag.querySelector('input').value = '';
     }
 
-    _smPlugin.reset();
-    if ($wall.length) {
-      $wall[0].removeAttribute('data-searchstring');
+    this.mmenu.reset();
+    if (wall) {
+      wall.tag.removeAttribute('data-searchstring');
     }
-    search.querySelector('.result').innerHTML = '';
-  },
+    tag.querySelector('.result').innerHTML = '';
+  }
 
   // METHOD search()
   search(str) {
-    const wall = S.getCurrent('wall')[0];
+    const wallTag = S.getCurrent('wall').tag;
 
     this.reset();
 
-    wall.dataset.searchstring = str;
+    wallTag.dataset.searchstring = str;
 
     // Search in note title and body
-    wall.querySelectorAll('.postit-edit,.postit-header .title')
+    wallTag.querySelectorAll('.postit-edit,.postit-header .title')
       .forEach((el) => {
       if (el.innerText.match(new RegExp(H.quoteRegex(str), 'ig'))) {
-        _smPlugin.add($(el.closest('.postit')).postit('getClass'));
+        this.mmenu.add(P.get(el.closest('.postit'), 'postit'));
       }
     });
 
-    const count = wall.querySelectorAll('.postit.selected').length;
+    const count = wallTag.querySelectorAll('.postit.selected').length;
     let html;
 
     if (count) {
@@ -144,8 +141,6 @@ Plugin.prototype = {
       html = `<?=_("No result")?>`;
     }
 
-    this.element[0].querySelector('.result').innerHTML = html;
+    this.tag.querySelector('.result').innerHTML = html;
   }
-};
-
-<?=$Plugin->getFooter()?>
+});

@@ -3,42 +3,36 @@
 Javascript plugin - Notes attachments
 
 Scope: Note
-Element: .patt
+Name: patt
 Description: Manage notes attachments
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('patt');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+'use strict';
 
-let _$mainPopup;
-let _$editPopup;
+let _mainPopup;
+let _editPopup;
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
+P.register('patt', class extends Wpt_postitCountPlugin {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-// Inherit from Wpt_postitCountPlugin
-Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const settings = this.settings;
-
-    if (settings.readonly && !settings.count) {
-      this.element[0].classList.add('hidden');
+    if (this.settings.readonly && !this.settings.count) {
+      this.tag.classList.add('hidden');
     }
 
     // Create postit top attachments icon
     this.addTopIcon('fa-paperclip', 'patt');
 
     return this;
-  },
+  }
 
   // METHOD update()
   async update ({description, id, title}) {
@@ -57,7 +51,7 @@ Object.assign(Plugin.prototype, {
     else {
       this.display();
     }
-  },
+  }
 
   // METHOD delete()
   delete(id) {
@@ -72,36 +66,34 @@ Object.assign(Plugin.prototype, {
         if (d.error_msg) {
           H.raiseError(null, d.error_msg);
         } else {
-          const popup = _$mainPopup[0];
-
-          popup.querySelector(`.accordion-item[data-id="${id}"]`).remove();
+          _mainPopup.querySelector(`.accordion-item[data-id="${id}"]`).remove();
 
           this.decCount();
 
-          if (!popup.querySelector('.accordion-item')) {
-            popup.querySelector('.list-group').innerHTML =
+          if (!_mainPopup.querySelector('.accordion-item')) {
+            _mainPopup.querySelector('.list-group').innerHTML =
               `<?=_("The note has no attached file.")?>`;
           }
         }
       }
     );
-  },
+  }
 
   // METHOD getTemplate()
   getTemplate(item, noWriteAccess) {
-    const tz = wpt_userData.settings.timezone;
+    const tz = U.get('timezone');
     const d = `<button type="button" data-action="delete"><i class="fas fa-trash fa-xs fa-fw"></i></button>`;
     const owner =
-      (item.ownerid !== undefined && item.ownerid != wpt_userData.id) ?
+      (item.ownerid !== undefined && item.ownerid !== U.getId()) ?
         item.ownername || `<s><?=_("Former user")?></s>` : '';
 
-    return H.createElement('div', {className: 'accordion-item'}, {id: item.id, url: item.link, icon: item.icon, fname: H.htmlEscape(item.name), description: H.htmlEscape(item.description || ''), title: H.htmlEscape(item.title || ''), creationdate: H.getUserDate(item.creationdate), size: H.getHumanSize(item.size), owner: H.htmlEscape(owner)}, `<div class="accordion-header" id="hfile${item.id}"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#cfile${item.id}" aria-expanded="false" aria-controls="cfile${item.id}"><i class="fa fa-lg ${item.icon} fa-fw"></i> <span>${item.title || item.name}</div></div><div id="cfile${item.id}" class="accordion-collapse collapse" aria-labelledby="hfile${item.id}" data-bs-parent="#pa-accordion"><div class="accordion-body"></div></div></div>`);
-  },
+    return H.createElement('div', {className: 'accordion-item'}, {id: item.id, url: item.link, icon: item.icon, fname: H.htmlEscape(item.name), description: H.htmlEscape(item.description || ''), title: H.htmlEscape(item.title || ''), creationdate: U.formatDate(item.creationdate), size: H.getHumanSize(item.size), owner: H.htmlEscape(owner)}, `<div class="accordion-header" id="hfile${item.id}"><div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#cfile${item.id}" aria-expanded="false" aria-controls="cfile${item.id}"><i class="fa fa-lg ${item.icon} fa-fw"></i> <span>${item.title || item.name}</div></div><div id="cfile${item.id}" class="accordion-collapse collapse" aria-labelledby="hfile${item.id}" data-bs-parent="#pa-accordion"><div class="accordion-body"></div></div></div>`);
+  }
 
   // METHOD upload()
   upload() {
     document.getElementById('postit-attachment').click();
-  },
+  }
 
   // METHOD display()
   display() {
@@ -117,18 +109,17 @@ Object.assign(Plugin.prototype, {
     } else {
       this._display();
     }
-  },
+  }
 
   // METHOD _display()
   _display(d) {
     H.loadPopup('postitAttachments', {
       open: false,
-      init: ($p) => {
-        _$mainPopup = $p;
-        _$editPopup = $p.find('.edit-popup');
+      init: (p) => {
+        _mainPopup = p;
+        _editPopup = p.querySelector('.edit-popup');
       },
-      cb: ($p) => {
-        const p = $p[0];
+      cb: (p) => {
         const writeAccess = !this.settings.readonly;
         const body = p.querySelector('.modal-body .list-group');
 
@@ -170,20 +161,20 @@ Object.assign(Plugin.prototype, {
         }, {once: true});
       }
     });
-  },
+  }
 
   // METHOD _eventShownCollapse()
   _eventShownCollapse(e) {
     H.setAutofocus(e.target);
-  },
+  }
 
   // METHOD _eventShowCollapse()
   _eventShowCollapse(e) {
     const el = e.target;
     const li = el.closest('.accordion-item');
-    const popup = _$editPopup[0];
+    const popup = _editPopup;
     const body = li.querySelector('.accordion-body');
-    const liActive = _$mainPopup[0].querySelector('div.active');
+    const liActive = _mainPopup.querySelector('div.active');
     const fileVal = li.dataset.fname;
     const fileInfosVal = (li.dataset.owner ? li.dataset.owner + ', ' : '') +
                           li.dataset.creationdate + ', ' +
@@ -247,7 +238,7 @@ Object.assign(Plugin.prototype, {
     }
 
     $(body.appendChild(popup)).show('fade');
-  },
+  }
 
   // METHOD _eventHiddenCollapse()
   _eventHiddenCollapse(e) {
@@ -255,12 +246,12 @@ Object.assign(Plugin.prototype, {
 
     el.classList.remove('no-bottom-radius');
     el.classList.remove('active');
-  },
+  }
 
   // METHOD _eventClick()
   _eventClick (e) {
     const el = e.target;
-    const $postit = this.postit().element;
+    const postitTag = this.postit().tag;
 
     // EVENT "click" on attachment thumbnail to preview
     if (el.matches('.edit-popup img')) {
@@ -275,7 +266,7 @@ Object.assign(Plugin.prototype, {
 
     // EVENT "click" on edit attachment buttons
     } else if (el.matches('.edit-popup button,.edit-popup button *')) {
-      const btn = (el.tagName=== 'BUTTON') ? el : el.closest('button');
+      const btn = (el.tagName === 'BUTTON') ? el : el.closest('button');
       const action = btn.dataset.action;
       const item = btn.closest('.accordion-item');
 
@@ -284,7 +275,7 @@ Object.assign(Plugin.prototype, {
       switch (action) {
         // "Delete" button
         case 'delete':
-          const id = item.dataset.id;
+          const id = Number(item.dataset.id);
 
           item.classList.add('active');
           H.openConfirmPopover({
@@ -299,7 +290,8 @@ Object.assign(Plugin.prototype, {
                 active.classList.remove('active');
               }
             },
-            onConfirm: () => $postit.find('.patt').patt('delete', id),
+            onConfirm: () => P.get(
+              postitTag.querySelector('.patt'), 'patt').delete(id),
           });
           break;
         // "Download" button
@@ -308,17 +300,15 @@ Object.assign(Plugin.prototype, {
           break;
         // "Save" button
         case 'save':
-          const popup = _$editPopup[0];
-
-          $postit.find('.patt').patt('update', {
-            id: popup.dataset.id,
-            title: H.noHTML(popup.querySelector('input').value),
-            description: H.noHTML(popup.querySelector('textarea').value),
+          P.get(postitTag.querySelector('.patt'), 'patt').update({
+            id: Number(_editPopup.dataset.id),
+            title: H.noHTML(_editPopup.querySelector('input').value),
+            description: H.noHTML(_editPopup.querySelector('textarea').value),
           });
           break;
       }
     }
-  },
+  }
 
   // METHOD open()
   open(refresh) {
@@ -339,15 +329,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // EVENT "click" on attachment count
     if (el.matches('.patt,.patt *')) {
-      const $patt = $((el.tagName === 'DIV') ? el : el.parentNode);
+      const tag = (el.tagName === 'DIV') ? el : el.parentNode;
+      const patt = P.get(tag, 'patt');
 
       e.stopImmediatePropagation();
 
       if (H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
-        $patt.patt('open');
+        patt.open();
       } else {
-        $patt.closest('.postit').postit('setCurrent');
-        $patt.patt('display');
+        P.get(tag.closest('.postit'), 'postit').setCurrent();
+        patt.display();
       }
     }
   });
@@ -360,15 +351,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!el.files || !el.files.length) return;
 
-      const plugin = S.getCurrent('postit').postit('getClass');
-      const settings = plugin.settings;
+      const postit = S.getCurrent('postit');
+      const settings = postit.settings;
 
       H.getUploadedFiles(e.target.files, 'all', (e, file) => {
         el.value = '';
 
-        if (_$mainPopup.find(
-              `.list-group .accordion-item`+
-                 `[data-fname="${H.htmlEscape(file.name)}"]`).length) {
+        if (_mainPopup.querySelector(
+            `.list-group .accordion-item`+
+            `[data-fname="${H.htmlEscape(file.name)}"]`)) {
           H.displayMsg({
             type: 'warning',
             msg: `<?=_("The file is already linked to the note")?>`,
@@ -388,26 +379,33 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             // success cb
             (d) => {
-              const pa = plugin.getPlugin('patt');
-              const body = _$mainPopup[0].querySelector('.list-group');
+              const patt = postit.getPlugin('patt');
+              const body = _mainPopup.querySelector('.list-group');
+              const accordion = body.querySelector('.accordion-item');
 
-              _$mainPopup.find('.modal-body').scrollTop(0);
-              _$mainPopup.find('div.collapse.show').collapse('hide');
+              _mainPopup.querySelector('.modal-body').scrollTop = 0;
 
               if (d.error_msg) {
                 H.displayMsg({type: 'warning', msg: d.error_msg});
                 return;
               }
 
-              if (!body.querySelector('.accordion-item')) {
+              if (accordion) {
+                const current = _mainPopup.querySelector('div.collapse.show');
+
+                if (current) {
+                  bootstrap.Collapse.getInstance(current).hide();
+                }
+              } else {
                 body.innerHTML = '';
               }
 
-              body.prepend(pa.getTemplate(d));
-              pa.incCount();
+              body.prepend(patt.getTemplate(d));
+              patt.incCount();
 
-              H.waitForDOMUpdate(
-                () => body.querySelector('.accordion-item').click());
+              if (accordion) {
+                H.waitForDOMUpdate(() => accordion.click());
+              }
             });
         }
       });
@@ -415,4 +413,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-<?=$Plugin->getFooter()?>
+})();

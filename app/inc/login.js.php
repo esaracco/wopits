@@ -3,28 +3,27 @@
 Javascript plugin - User login & account creation
 
 Scope: Login page
-Elements: #login & #createAccountPopup
+Name: login
 Description: Login & User account creation
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('login');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+(() => {
+  'use strict';
 
-<?=$Plugin->getPublicSection()?>
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-// Inherit from Wpt_accountForms
-Plugin.prototype = Object.create(Wpt_accountForms.prototype);
-Object.assign (Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const $login = this.element;
-    const login = $login[0];
+P.register('login', class extends Wpt_accountForms {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.settings = settings;
+    this.tag = settings.tag;
+
+    const tag = this.tag;
 
     if (!ST.noDisplay('welcome-msg')) {
       const welcome = document.getElementById('desc-container');
@@ -33,38 +32,39 @@ Object.assign (Plugin.prototype, {
 
       // EVENT "closed.bs.alert" on alert
       welcome.querySelector('.alert').addEventListener('closed.bs.alert',
-          (e) => H.setAutofocus(login));
+          (e) => H.setAutofocus(tag));
 
       // EVENT "click" on "I get it!" button"
       welcome.querySelector('button.nowelcome').addEventListener('click',
-          (e)=> {
+          (e) => {
         ST.noDisplay('welcome-msg', true);
         e.target.closest('.alert').remove();
-        H.setAutofocus(login);
+        H.setAutofocus(tag);
       });
 
       welcome.focus();
     } else {
-      H.setAutofocus(login);
+      H.setAutofocus(tag);
     }
 
     // EVENT "click" on buttons and a links
-    login.addEventListener('click', (e) => {
+    tag.addEventListener('click', (e) => {
       const el = e.target;
       let popup;
 
       if (el.tagName === 'BUTTON' || el.tagName === 'A') {
         switch (el.dataset.type) {
           case 'login':
-            if (this.checkRequired(login.querySelectorAll('input'), false)) {
-              const du = login.querySelector(`input[name="_directURL"]`).value;
+            if (this.checkRequired(tag.querySelectorAll('input'), false)) {
+              const du = tag.querySelector(`input[name="_directURL"]`).value;
 
               this.login(H.trimObject({
                 directURL:
-                  du?.match(<?=WPT_DIRECTURL_REGEXP?>) ? `/?${du}` : null,
+                  (du && du.match(<?=WPT_DIRECTURL_REGEXP?>)) ?
+                    `/?${du}` : null,
                 remember: document.getElementById('remember').checked,
-                username: login.querySelector(`input[type="text"]`).value,
-                password: login.querySelector(`input[type="password"]`).value,
+                username: tag.querySelector(`input[type="text"]`).value,
+                password: tag.querySelector(`input[type="password"]`).value,
               }, ['password']));
             }
             break;
@@ -90,10 +90,10 @@ Object.assign (Plugin.prototype, {
     });
 
     // EVENT "keypress" on inputs
-    login.addEventListener('keypress', (e) => {
+    tag.addEventListener('keypress', (e) => {
       if (e.which === 13 && e.target.tagName === 'INPUT') {
         H.preventDefault(e);
-        login.querySelector('.btn-success').click();
+        tag.querySelector('.btn-success').click();
       }
     });
 
@@ -162,11 +162,11 @@ Object.assign (Plugin.prototype, {
       }
     });
 
-    if (login.querySelector(`input[name="_directURL"]`)
-            .value.includes('unsubscribe')) {
+    if (tag.querySelector(`input[name="_directURL"]`)
+          .value.includes('unsubscribe')) {
       H.infoPopup(`<?=_("Please log in to update your preferences")?>`);
     }
-  },
+  }
 
   // METHOD resetCreateUserForm()
   resetCreateUserForm() {
@@ -179,7 +179,7 @@ Object.assign (Plugin.prototype, {
     popup.querySelectorAll('.confirm,.btn-info').forEach((el) => el.remove());
     popup.querySelector('.btn-primary').innerHTML =
         `<?=_("Next")?> <i class="fas fa-caret-right"></i>`;
-  },
+  }
 
   // METHOD login()
   async login(args) {
@@ -191,23 +191,7 @@ Object.assign (Plugin.prototype, {
     } else {
       return location.href = args.directURL || '/';
     }
-  },
-
-  // METHOD logout()
-  logout(args = {}) {
-    // Clean all data only if the logout order come from the main user
-    // session.
-    if (args.auto) {
-      location.href = '/login.php';
-    } else {
-      H.fetch(
-        'POST',
-        'user/logout',
-        null,
-        // success cb
-        () => location.href = '/login.php');
-    }
-  },
+  }
 
   // METHOD createUser()
   async createUser(args) {
@@ -220,7 +204,7 @@ Object.assign (Plugin.prototype, {
     } else {
       return location.href = '/';
     }
-  },
+  }
 
   // METHOD resetPassword()
   async resetPassword(args) {
@@ -241,7 +225,10 @@ Object.assign (Plugin.prototype, {
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
-document.addEventListener('DOMContentLoaded',
-  () => H.isLoginPage() && $('#login').login());
+document.addEventListener('DOMContentLoaded', () => {
+  if (!H.isLoginPage()) return;
 
-<?=$Plugin->getFooter()?>
+  P.create(document.getElementById('login'), 'login');
+});
+
+})();

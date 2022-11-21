@@ -13,57 +13,73 @@ require_once(__DIR__.'/../prepend.php');
 
 use Wopits\DbCache;
 
-$Plugin = new Wopits\jQueryPlugin('postit', '', 'wallElement');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+'use strict';
 
-let _originalObject;
-const _defaultClassColor = `color-<?=WPT_POSTIT_COLOR_DEFAULT?>`;
 // TODO Class
 const _plugRabbit = {
   line: null,
+  // FUNCTION cancelPlugAction()
+  cancelPlugAction: () => {
+    if (_plugRabbit.line) {
+      document.removeEventListener('keydown', _plugRabbit.escapeEvent);
+      document.removeEventListener('mousedown', _plugRabbit.mousedownEvent);
+      document.removeEventListener('mousemove', _plugRabbit.mousemoveEvent);
+
+      _plugRabbit.line.remove();
+      _plugRabbit.line = null;
+
+      document.getElementById('plug-rabbit').remove();
+    }
+
+    // Unedit postit
+    S.get('link-from').obj.unedit();
+
+    // Prevents post-it editing events from being triggered during 500ms
+    // Sort of preventDefault() cross-type events
+    S.set('link-from', true, 500);
+  },
   // EVENT mousedown on destination postit for relation creation
   mousedownEvent: (e) => {
-    const $end = $(e.target.closest('.postit'));
+    const endTag = e.target.closest('.postit');
 
     e.stopImmediatePropagation();
     H.preventDefault(e);
 
-    if (!$end.length) return _cancelPlugAction();
+    if (!endTag) return _plugRabbit.cancelPlugAction();
 
     const from = S.get('link-from');
-    const $start = from.obj;
-    const endPlugin = $end.postit('getClass');
-    const endId = endPlugin.settings.id;
+    const start = from.obj;
+    const end = P.get(endTag, 'postit');
+    const endId = end.getId();
 
-    if (from.id !== endId && !endPlugin.plugExists(from.id)) {
-      endPlugin.edit({plugend: true}, () => {
-        $start.postit('addPlug', {
+    if (from.id !== endId && !end.plugExists(from.id)) {
+      end.edit({plugend: true}, () => {
+        start.addPlug({
           endId,
           startId: from.id,
           label: {name: '...'},
-          obj: endPlugin.getPlugTemplate({
-            start: $start[0],
-            end: $end[0],
+          obj: end.getPlugTemplate({
+            start: start.tag,
+            end: endTag,
             hide: true,
             label: '...',
           }),
         }, Boolean(S.get('zoom-level')));
 
-        _cancelPlugAction();
+        _plugRabbit.cancelPlugAction();
       });
     } else if (from.id !== endId) {
-      _cancelPlugAction();
+      _plugRabbit.cancelPlugAction();
 
       H.displayMsg({
         type: 'warning',
         msg: `<?=_("The relation already exists")?>`,
       });
     } else {
-      _cancelPlugAction();
+      _plugRabbit.cancelPlugAction();
     }
   },
   // EVENT mousemouve to track mouse pointer during relation creation
@@ -77,175 +93,47 @@ const _plugRabbit = {
   },
   escapeEvent: (e) => {
     if (e.which === 27) {
-      _cancelPlugAction();
+      _plugRabbit.cancelPlugAction();
     }
   },
-};
-
-// METHOD testImage()
-const _testImage = (url, timeout = 10000) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    let timer;
-
-    img.onerror = img.onabort = () => {
-      clearTimeout(timer);
-      reject('error');
-    };
-
-    img.onload = () => {
-      clearTimeout(timer);
-      resolve('success');
-    };
-
-    timer = setTimeout(() => {
-      // reset .src to invalid URL so it stops previous
-      // loading, but doesn't trigger new load
-      img.src = '//!!!!/test.jpg';
-      reject('timeout');
-    }, timeout);
-
-    img.src = url;
-  });
 };
 
 // EVENT focusin
 // To fix tinymce dialogs compatibility with bootstrap popups
 const _focusinInFilter = (e) =>
-    e.target.closest('.tox-dialog,.tox-tiered-menu') &&
-      e.stopImmediatePropagation();
-
-// METHOD _getMaxEditModalWidth()
-const _getMaxEditModalWidth = (content) => {
-  let maxW = 0;
-  let tmp;
-
-  (content.match(/<[a-z]+\s[^>]+>/g) || []).forEach((tag) => {
-    if ( (tmp = tag.match(/width\s*[=:]\s*"?(\d+)"?/)) ) {
-      const w = Number(tmp[1]);
-
-      if (w > maxW) {
-        maxW = w;
-      }
-    }
-  });
-
-  return maxW ? maxW + 5 : 0;
-};
-
-// METHOD _deleteRelatedPlugs()
-const _deleteRelatedPlugs = (plug) => {
-  plug.related.forEach((r) => r.remove());
-  plug.related = [];
-  plug.customPos = false;
-};
-
-// METHOD _removePlug()
-const _removePlug = (plug, toDefrag) => {
-  toDefrag[plug.startId] = plug.obj.start;
-  toDefrag[plug.endId] = plug.obj.end;
-
-  // Remove label
-  plug.labelObj.remove();
-  plug.labelObj = null;
-
-  // Remove related lines
-  if (plug.customPos) {
-    _deleteRelatedPlugs(plug);
-  }
-
-  plug.obj.remove();
-  plug.obj = null;
-};
-
-// METHOD _cancelPlugAction()
-const _cancelPlugAction = () => {
-  if (_plugRabbit.line) {
-    document.removeEventListener('keydown', _plugRabbit.escapeEvent);
-    document.removeEventListener('mousedown', _plugRabbit.mousedownEvent);
-    document.removeEventListener('mousemove', _plugRabbit.mousemoveEvent);
-
-    _plugRabbit.line.remove();
-    _plugRabbit.line = null;
-
-    document.getElementById('plug-rabbit').remove();
-  }
-
-  // Unedit postit
-  S.get('link-from').obj.postit('unedit');
-
-  // Prevents post-it editing events from being triggered during 500ms
-  // Sort of preventDefault() cross-type events
-  S.set('link-from', true, 500);
-};
-
-// METHOD _displayOpenLinkMenu()
-const _displayOpenLinkMenu = (e, args) => {
-  const el = e.target;
-  const link = (el.tagName === 'A') ? el : el.closest('a');
-  const canWrite = H.checkAccess(<?=WPT_WRIGHTS_RW?>);
-  const menu = H.createElement('div',
-    {className: 'dropdown submenu submenu-link'}, null,
-    `<ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li>${args?.noEditItem ? '' : `<li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite ? 'edit' : 'eye'}"></i> ${canWrite ? `<?=_("Edit note")?>` : `<?=_("Open note")?>`}</a></li>`}</ul>`);
-
-  H.preventDefault(e);
-
-  // EVENT "click" on content links menu
-  menu.addEventListener('click', (e) => {
-    const li = (e.target.tagName === 'LI') ?
-      e.target : e.target.closest('li');
-
-    document.getElementById('popup-layer').click();
-
-    if (li.dataset.action === 'open-link') {
-      window.open(link.href, '_blank', 'noopener');
-    } else {
-      $(el.closest('.postit')).postit('openPostit');
-    }
-  });
-
-  H.openPopupLayer(() => menu.remove());
-
-  document.body.appendChild(menu);
-
-  menu.style.top = `${e.clientY}px`;
-  menu.style.left = `${e.clientX}px`;
-};
+  e.target.closest('.tox-dialog,.tox-tiered-menu') &&
+    e.stopImmediatePropagation();
 
 // CLASS _Menu
-const _$menuTemplate = $(`<?=Wopits\Helper::buildPostitMenu()?>`);
 class _Menu {
   // METHOD constructor()
-  constructor(postitPlugin) {
-    const $currentMenu = postitPlugin.settings.wall.find('.postit-menu');
-    const postit = postitPlugin.element[0];
+  constructor(postit) {
+    const postitTag = postit.tag;
 
-    if ($currentMenu.length) {
-      $currentMenu.parent().postit('closeMenu');
-    }
-
-    this.header = postit.querySelector('.postit-header');
-    this.btn = postit.querySelector('.btn-menu i');
-    this.postitPlugin = postitPlugin;
-    this.$menu = _$menuTemplate;
+    this.header = postitTag.querySelector('.postit-header');
+    this.btn = postitTag.querySelector('.btn-menu i');
+    this.postit = postit;
+    this.tag = H.createElement('div',
+      {className: 'postit-menu right'},
+      null,
+      `<?=Wopits\Helper::getPostitMenuItems()?>`);
 
     this.init();
-    postit.insertBefore(this.$menu[0], postit.firstChild);
+    postitTag.insertBefore(this.tag, postitTag.firstChild);
   }
 
   // METHOD init()
   init() {
-    const pSettings = this.postitPlugin.settings;
+    const postitSettings = this.postit.settings;
 
-    if (!pSettings.wall.wall('isShared') || 
-        (!this.postitPlugin.canWrite() && !pSettings.attachmentscount)) {
-      H.hide(this.$menu[0].querySelector(`[data-action="pwork"]`));
+    if (!postitSettings.wall.isShared() || 
+        (!this.postit.canWrite() && !postitSettings.attachmentscount)) {
+      H.hide(this.tag.querySelector(`[data-action="pwork"]`));
     }
   }
 
   // METHOD show()
   show() {
-    const postit = this.postitPlugin.element[0];
     const coord = this.header.getBoundingClientRect();
 
     if ((coord.x || coord.left) + this.getWidth() > window.outerWidth) {
@@ -260,8 +148,8 @@ class _Menu {
     this.btn.classList.replace('far', 'fas');
 
     // FIXME z-index issue
-    // H.openPopupLayer(()=> this.btn.click());
-    this.$menu.show();
+    // H.openPopupLayer(() => this.btn.click());
+    H.show(this.tag);
   }
 
   // METHOD destroy()
@@ -270,12 +158,12 @@ class _Menu {
     this.btn.classList.replace(
         'fa-caret-square-left', 'fa-caret-square-down');
     this.btn.classList.replace('fas', 'far');
-    this.$menu.remove();
+    this.tag.remove();
   }
 
   // METHOD setPosition()
   setPosition(pos) {
-    const menuCls = this.$menu[0].classList;
+    const menuCls = this.tag.classList;
     if (pos === 'left') {
       menuCls.replace('right', 'left');
     } else {
@@ -285,50 +173,50 @@ class _Menu {
 
   // METHOD getWidth()
   getWidth() {
-    return this.$menu.width();
+    return this.tag.offsetWidth;
   }
 }
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
-
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const $postit = this.element;
-    const postit = $postit[0];
-    const settings = this.settings;
-    const $wall = settings.wall;
+P.register('postit', class extends Wpt_pluginWallElement {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    const tag = this.tag;
+    const wall = settings.wall;
+    const wallTag = wall.tag;
     const writeAccess = this.canWrite();
 
-    settings.plugs = [];
-    postit.dataset.id = `postit-${settings.id}`;
-    postit.dataset.order = settings.item_order;
-    postit.dataset.tags = settings.tags || '';
+    this.originalObject = null;
 
-    postit.className = settings.classes || 'postit';
+    settings.plugs = [];
+    tag.dataset.id = `postit-${settings.id}`;
+    tag.dataset.order = settings.item_order;
+    tag.dataset.tags = settings.tags || '';
+
+    tag.className = settings.classes || 'postit';
 
     // If the deadline has passed
     if (settings.obsolete) {
-      postit.classList.add('obsolete');
+      tag.classList.add('obsolete');
     }
 
-    postit.style.visibility = 'hidden';
-    postit.style.top = `${settings.item_top}px`;
-    postit.style.left = `${settings.item_left}px`;
-    postit.style.width = `${settings.width}px`;
-    postit.style.height = `${settings.height}px`;
+    tag.style.visibility = 'hidden';
+    tag.style.top = `${settings.item_top}px`;
+    tag.style.left = `${settings.item_left}px`;
+    tag.style.width = `${settings.width}px`;
+    tag.style.height = `${settings.height}px`;
 
     // Append if the user have write access
     if (writeAccess) {
-      postit.appendChild(H.createElement('div',
+      tag.appendChild(H.createElement('div',
         {className: 'btn-menu'}, null,
         `<i class="far fa-caret-square-down"></i>`));
     }
 
     // Append header, dates, attachment count and tags
-    postit.append(
+    tag.append(
       // Header
       H.createElement('div', {className: 'postit-header'}, null,
         `<span class="title">...</span>`),
@@ -339,52 +227,43 @@ Plugin.prototype = {
       H.createElement('div', {className: 'postit-edit'}),
       // Dates (creation and deadline)
       H.createElement('div', {className: 'dates'}, null,
-        `<div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(wpt_userData.settings.timezone).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div>`),
+        `<div class="creation" title="<?=_("Creation date")?>"><span>${moment.tz(U.get('timezone')).format("Y-MM-DD")}</span></div><div class="end" title="<?=_("Deadline")?>"><i class="fas fa-times-circle fa-lg"></i> <span>...</span></div>`),
       // Top icons
       H.createElement('div', {className: 'topicon'}, null,
         `<div class="pwork" title="<?=_("Users involved")?>"></div><div class="pcomm" title="<?=_("Comments")?>"></div><div class="patt" title="<?=_("Attached files")?>"></div>`),
       // Tags
       H.createElement('div', {className: 'postit-tags'}, null,
-        `${settings.tags ? S.getCurrent('tpick').tpick("getHTMLFromString", settings.tags) : ''}`)
+        `${settings.tags ? S.getCurrent('tpick').getHTMLFromString(settings.tags) : ''}`)
     );
 
-    postit.querySelector('.postit-edit')
+    tag.querySelector('.postit-edit')
       .style.maxHeight = `${settings.height - 40}px`;
 
     if (writeAccess) {
-      const postitEdit = postit.querySelector('.postit-edit');
+      const postitEdit = tag.querySelector('.postit-edit');
 
-      $postit  
-        // DRAGGABLE postit
+      $(tag)
+        // TODO Do not use jQuery here
         .draggable({
+          // If zoom is active, disable note dragging
+          disabled: Boolean(S.get('zoom-level')),
           distance: 10,
           appendTo: 'parent',
           revert: 'invalid',
           cursor: 'pointer',
           cancel: '.postit-tags',
-          containment: $wall.find('tbody.wpt'),
+          containment: $(wallTag.querySelector('tbody.wpt')),
           scrollSensitivity: 50,
-          opacity: .35,
           scope: 'dzone',
-          stack: '.postit',
-          drag: (e, ui) => {
-            if (S.get('revertData').revert) {
-              $(e.target).draggable('cancel');
-              return false;
-            }
-
-            // Refresh relations position
-            // this.repositionPlugs();
-          },
           start: (e, ui) => {
             S.set('revertData', {
               revert: false,
-              top: postit.offsetTop,
-              left: postit.offsetLeft,
+              top: tag.offsetTop,
+              left: tag.offsetLeft,
             });
 
-            this.hideSHowPlugs =
-              !S.getCurrent('filters')[0].classList.contains('plugs-hidden');
+            this.hideSHowPlugs = !S.getCurrent('filters').tag
+              .classList.contains('plugs-hidden');
 
             if (this.hideSHowPlugs) {
               this.hidePlugs();
@@ -393,6 +272,10 @@ Plugin.prototype = {
             this.edit({}, null, () => S.get('revertData').revert = true);
             },
           stop: (e, ui) => {
+            if (S.get('revertData').revert) {
+              $(e.target).draggable('cancel');
+            }
+
             if (this.hideSHowPlugs) {
               this.showPlugs();
             }
@@ -400,8 +283,10 @@ Plugin.prototype = {
             this.dropStop();
           }
         })
-        // RESIZABLE post-it
+        // TODO Do not use jQuery here
         .resizable({
+          // If zoom is active, disable note resizing
+          disabled: Boolean(S.get('zoom-level')),
           handles: H.haveMouse() ? 'all' : 'n, e, w, ne, se, sw, nw',
           autoHide: false,
           resize: (e, ui) => {
@@ -415,18 +300,18 @@ Plugin.prototype = {
             }
           },
           start: (e, ui) => {
-            const editable = $wall[0].querySelectorAll('.editable');
+            const editable = wallTag.querySelectorAll('.editable');
 
             // Cancel all editable
             // (because blur event is not triggered on resizing)
             if (editable.length) {
-              editable.forEach((el) => $(el).editable('cancel'));
+              editable.forEach((el) => P.get(el, 'editable').cancel());
             }
   
             S.set('revertData', {
               revert: false,
-              width: postit.clientWidth,
-              height: postit.clientHeight,
+              width: tag.clientWidth,
+              height: tag.clientHeight,
             });
 
             this.hidePlugs();
@@ -440,74 +325,83 @@ Plugin.prototype = {
             this.showPlugs();
 
             if (revertData.revert) {
-              postit.style.width = `${revertData.width}px`;
-              postit.style.height = `${revertData.height}px`;
+              tag.style.width = `${revertData.width}px`;
+              tag.style.height = `${revertData.height}px`;
 
               this.cancelEdit();
               this.repositionPlugs();
             }
             else {
               H.waitForDOMUpdate(() => {
-                ui.element.parent().cell('reorganize');
+                P.get(ui.element[0].parentNode, 'cell').reorganize();
                 this.unedit();
               });
             }
           }
         });
 
-      $(postitEdit)
-        // EVENT doubletap on content
-        .doubletap((e)=> {
-          if (e.target.tagName === 'A' || H.disabledEvent(e.ctrlKey)) {
-            return false;
-          }
-
-          this.openPostit();
-        });
-
-      // Make postit title editable
-      $postit.find('.title').editable({
-        wall: $wall,
-        container: $postit.find('.postit-header'),
-        maxLength: <?=DbCache::getFieldLength('postits', 'title')?>,
-        triggerTags: ['span', 'div'],
-        fontSize: '14px',
-        callbacks: {
-          before: (ed, v) => v === '...' && ed.setValue(''),
-          edit: (cb) => {
-            if (H.disabledEvent()) return false;
-
-            this.edit({}, cb);
-          },
-          unedit: () => this.unedit(),
-          update: (v) => {
-            this.setTitle(v);
-            this.unedit();
-          },
+      // LOCAL FUNCTION __dblclick()
+      const __dblclick = (e) => {
+        if (e.target.tagName === 'A' || H.disabledEvent(e.ctrlKey)) {
+          return false;
         }
+
+        this.openPostit();
+      }; 
+
+      if ($.support.touch) {
+        // EVENT dbltap on note content
+        postitEdit.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
+      } else {
+        // EVENT dblclick on note content
+        postitEdit.addEventListener('dblclick', __dblclick);
+      }
+
+      // Make note title editable
+      tag.querySelectorAll('.title').forEach((el) => {
+        P.create(el, 'editable', {
+          wall,
+          container: tag.querySelector('.postit-header'),
+          maxLength: <?=DbCache::getFieldLength('postits', 'title')?>,
+          triggerTags: ['span', 'div'],
+          fontSize: '14px',
+          callbacks: {
+            before: (ed, v) => v === '...' && ed.setValue(''),
+            edit: (cb) => {
+              if (H.disabledEvent()) return false;
+
+              this.edit({}, cb);
+            },
+            unedit: () => this.unedit(),
+            update: (v) => {
+              this.setTitle(v);
+              this.unedit();
+            },
+          }
+        });
       });
     }
 
     // Initialize topicons plugins
     const pluginArgs = {
-      postitPlugin: this,
+      postit: this,
       readonly: !writeAccess,
-      shared: $wall.wall('isShared'),
+      shared: wall.isShared(),
     };
 
     settings.plugins = {
       // Attachments
-      patt: $postit.find('.patt').patt({
+      patt: P.getOrCreate(tag.querySelector('.patt'), 'patt', {
         ...pluginArgs,
         count: settings.attachmentscount,
       }),
       // Workers
-      pwork: $postit.find('.pwork').pwork({
+      pwork: P.getOrCreate(tag.querySelector('.pwork'), 'pwork', {
         ...pluginArgs,
         count: settings.workerscount,
       }),
       // Comments
-      pcomm: $postit.find('.pcomm').pcomm({
+      pcomm: P.getOrCreate(tag.querySelector('.pcomm'), 'pcomm', {
         ...pluginArgs,
         count: settings.commentscount,
       }),
@@ -517,12 +411,12 @@ Plugin.prototype = {
     if (settings.creationdate) {
       this.update(settings);
     }
-  },
+  }
 
   // METHOD getPlugin()
   getPlugin(type) {
     return this.settings.plugins[type];
-  },
+  }
 
   // METHOD dropStop()
   dropStop() {
@@ -535,14 +429,14 @@ Plugin.prototype = {
       this.cancelEdit();
     } else {
       const settings = this.settings;
-      const postit = this.element[0];
+      const tag = this.tag;
 
-      if (settings.cell[0].dataset.id !== postit.parentNode.dataset.id) {
-        const postitEdit = postit.querySelector('.postit-edit');
+      if (settings.cell.tag.dataset.id !== tag.parentNode.dataset.id) {
+        const postitEdit = tag.querySelector('.postit-edit');
         const content = postitEdit.innerHTML;
 
         // If the postit has been dropped into another cell
-        settings.cell = $(postit.parentNode);
+        settings.cell = P.get(tag.parentNode, 'cell');
 
         // Update content cells references if any (i.e. pictures)
         if (content.includes('/cell/')) {
@@ -551,30 +445,30 @@ Plugin.prototype = {
         }
       }
 
-      S.getCurrent('mmenu').mmenu('update', settings.id, this);
+      S.getCurrent('mmenu').update(settings.id, this);
 
       this.unedit();
     }
 
     // Refresh relations position
     this.repositionPlugs();
-  },
+  }
 
   // METHOD openPlugProperties()
   openPlugProperties(plug) {
     this.edit({}, () => H.loadPopup('plugprop', {
       open: false,
-      cb: ($p) => $p.plugprop('open', this, plug),
+      cb: (p) => P.getOrCreate(p, 'plugprop').open(this, plug),
     }));
-  },
+  }
 
   // METHOD openDatePicker()
   openDatePicker() {
     this.edit({}, () => H.loadPopup('dpick', {
       open: false,
-      cb: ($p) => $p.dpick('open'),
+      cb: (p) => P.getOrCreate(p, 'dpick').open(),
     }));
-  },
+  }
 
   // METHOD openPostit()
   openPostit(item) {
@@ -586,22 +480,42 @@ Plugin.prototype = {
     } else {
       this.edit({}, () => {
         if (!this.openAskForExternalRefPopup({
-               item, onClose: (btn) => (btn !== 'yes') && this.unedit()})) {
+               item,
+               onClose: (btn) => (btn !== 'yes') && this.unedit(),
+             })) {
           this.open();
         }
       });
     }
-  },
+  }
 
   // METHOD open()
   open() {
-    const postit = this.element[0];
-    const progress = Number(postit.dataset.progress || 0);
+    const tag = this.tag;
+    const progress = Number(tag.dataset.progress || 0);
     const title = this.getTitle();
-    const content = postit.querySelector('.postit-edit').innerHTML || '';
+    const content = tag.querySelector('.postit-edit').innerHTML || '';
+
+    // LOCAL FUNCTION __getMaxEditModalWidth()
+    const __getMaxEditModalWidth = (content) => {
+      let maxW = 0;
+      let tmp;
+    
+      (content.match(/<[a-z]+\s[^>]+>/g) || []).forEach((tag) => {
+        if ( (tmp = tag.match(/width\s*[=:]\s*"?(\d+)"?/)) ) {
+          const w = Number(tmp[1]);
+    
+          if (w > maxW) {
+            maxW = w;
+          }
+        }
+      });
+    
+      return maxW ? maxW + 5 : 0;
+    };
 
     if (this.canWrite()) {
-      const $popup = $('#postitUpdatePopup');
+      const popup = document.getElementById('postitUpdatePopup');
 
       S.set('postit-data', {
         progress,
@@ -609,7 +523,7 @@ Plugin.prototype = {
       });
 
       // Set progress slider
-      $popup.find('.slider').slider('value', progress, true);
+      P.get(popup.querySelector('.slider'), 'slider').value(progress, true);
 
       // Set title
       document.getElementById('postitUpdatePopupTitle').value =
@@ -621,9 +535,9 @@ Plugin.prototype = {
 
       // Check if post-it content has pictures
       if (content.match(/\/postit\/\d+\/picture\/\d+/)) {
-        postit.dataset.hadpictures = true;
+        tag.dataset.hadpictures = true;
       } else {
-        postit.removeAttribute('data-hadpictures');
+        tag.removeAttribute('data-hadpictures');
       }
 
       // Filter the focusin event
@@ -633,49 +547,47 @@ Plugin.prototype = {
 
       H.openModal({
         item: document.getElementById('postitUpdatePopup'),
-        width: _getMaxEditModalWidth(content),
+        width: __getMaxEditModalWidth(content),
       });
     } else {
       this.setCurrent();
 
       H.loadPopup('postitView', {
         open: false,
-        cb: ($p) => {
-          const p = $p[0];
-
+        cb: (p) => {
           p.querySelector('.modal-body').innerHTML =
             content ? content : `<i><?=_("No content")?></i>`;
 
           p.querySelector('.modal-title').innerHTML =
             `<i class="fas fa-sticky-note"></i> ${title}`;
 
-          H.openModal({item: p, width: _getMaxEditModalWidth(content)});
+          H.openModal({item: p, width: __getMaxEditModalWidth(content)});
         }
       });
     }
-  },
+  }
 
   // METHOD getMin()
   getMin() {
-    return this.settings.cell[0].querySelector(
-               `.postit-min[data-id="postit-${this.settings.id}"]`);
-  },
+    return this.settings.cell.tag.querySelector(
+      `.postit-min[data-id="postit-${this.settings.id}"]`);
+  }
 
   // METHOD getNormal()
   getNormal() {
-    return this.settings.cell[0].querySelector(
-               `.postit[data-id="postit-${this.settings.id}"]`);
-  },
+    return this.settings.cell.tag.querySelector(
+      `.postit[data-id="postit-${this.settings.id}"]`);
+  }
 
   // METHOD displayAlert()
   displayAlert(type) {
-    const data = this.element[0].dataset;
+    const data = this.tag.dataset;
     let content;
 
-    // Scroll to the to the post-it if needed.
-    H.setViewToElement(this.element);
+    // Scroll to the note if needed
+    H.setViewToElement(this.tag);
 
-    H.waitForDOMUpdate(()=> {
+    H.waitForDOMUpdate(() => {
       let title;
       let content;
 
@@ -697,7 +609,7 @@ Plugin.prototype = {
 
           if (!data.deadlineepoch) {
             content =`<?=_("The deadline for this note has been removed")?>`;
-          } else if (this.element[0].classList.contains('obsolete')) {
+          } else if (this.tag.classList.contains('obsolete')) {
             content = `<?=_("This note has expired")?>`;
           } else {
             const a = moment.unix(data.deadlineepoch);
@@ -718,51 +630,36 @@ Plugin.prototype = {
       H.openConfirmPopover({
         type: 'info',
         scrollIntoView: true,
-        item: min || this.element[0],
+        item: min || this.tag,
         title, 
         content,
       });
     });
-  },
+  }
 
   // METHOD remove()
-  remove(noEffect) {
-    const postit = this.element[0];
+  remove() {
+    const tag = this.tag;
+    const min = this.getMin();
 
-    // LOCAL FUNCTION __remove()
-    const __remove = () => {
-      const min = this.getMin();
-
-      // Remove min postit (stack mode display) if needed
-      if (min) {
-        min.remove();
-        this.settings.cell.cell('decCount');
-      }
-
-      this.removePlugs(true);
-      postit.remove();
-    };
-
-    if (!noEffect) {
-      // Empty postit content to prevent effect to reload deleted embedded
-      // images
-      postit.querySelector('.postit-edit').innerHTML = '';
-      $(postit).hide('explode', __remove);
-
-    // The explode effect works poorly on mobile devices
-    } else {
-      __remove();
+    // Remove min postit (stack mode display) if needed
+    if (min) {
+      min.remove();
+      this.settings.cell.decCount();
     }
 
-    S.getCurrent('mmenu').mmenu('remove', this.settings.id);
+    this.removePlugs(true);
+    P.remove(tag, 'postit');
+    tag.remove();
+    S.getCurrent('mmenu').remove(this.settings.id);
 
     this.getPlugin('pcomm').close();
-  },
+  }
 
   // METHOD havePlugs()
   havePlugs() {
     return this.settings.plugs.length;
-  },
+  }
 
   // METHOD applyPlugLineType()
   applyPlugLineType(ll) {
@@ -777,12 +674,12 @@ Plugin.prototype = {
         ll.dash = {animation: true};
         break;
     }
-  },
+  }
 
   // METHOD getPlugDropShadowTemplate()
   getPlugDropShadowTemplate(color) {
     return {dy: 10, color: H.lightenDarkenColor(color, -20)};
-  },
+  }
 
   // METHOD getPlugTemplate()
   getPlugTemplate(args, ignoreZoom) {
@@ -811,39 +708,40 @@ Plugin.prototype = {
     this.applyPlugLineType(ll);
 
     return ll;
-  },
+  }
 
   // METHOD applyZoomToPlugs()
   applyZoomToPlugs(z) {
     const reset = (z === 1);
 
     this.settings.plugs.forEach((p) => {
+      const labelStyle = p.labelObj[0].style;
       const size = Math.trunc(p.obj.line_size * z) || 1;
       const gr = Math.trunc((100 * (size * 100 / p.obj.line_size)) / 100);
 
-      p.labelObj[0].style.transformOrigin = reset ? null : 'top left';
-      p.labelObj[0].style.transform = reset ? null : `scale(${z})`;
+      labelStyle.transformOrigin = reset ? null : 'top left';
+      labelStyle.transform = reset ? null : `scale(${z})`;
       p.obj.size = size;
 
       if (p.customPos) {
         const g = reset ? 'auto' : gr;
-        const opt = {
+
+        p.related.forEach((r) => r.setOptions({
           size,
           startSocketGravity: g,
           endSocketGravity: g,
-        };
-        p.related.forEach((r) => r.setOptions(opt));
+        }));
       }
     });
-  },
+  }
 
   // METHOD applyZoom()
   applyZoom() {
     const z = S.get('zoom-level') || 1;
 
-    S.getCurrent('wall')[0].querySelectorAll('.postit.with-plugs')
-      .forEach((p) => $(p).postit('applyZoomToPlugs', z));
-  },
+    S.getCurrent('wall').tag.querySelectorAll('.postit.with-plugs').forEach(
+      (el) => P.get(el, 'postit').applyZoomToPlugs(z));
+  }
 
   // METHOD applyThemeToPlugs()
   applyThemeToPlugs(color) {
@@ -862,7 +760,7 @@ Plugin.prototype = {
         p.related.forEach((r) => __apply(r));
       }
     });
-  },
+  }
 
   // METHOD applyTheme()
   applyTheme() {
@@ -870,16 +768,16 @@ Plugin.prototype = {
 
     const color = S.getCurrent('plugColor');
 
-    S.getCurrent('wall')[0].querySelectorAll('.postit.with-plugs')
-      .forEach((p) => $(p).postit('applyThemeToPlugs', color));
-  },
+    S.getCurrent('wall').tag.querySelectorAll('.postit.with-plugs')
+      .forEach((el) => P.get(el, 'postit').applyThemeToPlugs(color));
+  }
 
   // METHOD getWallHeadersShift()
   getWallHeadersShift() {
-    const hs = this.settings.wall[0].dataset.headersshift;
+    const hs = this.settings.wall.tag.dataset.headersshift;
 
     return hs ? JSON.parse(hs) : null;
-  },
+  }
 
   // METHOD repositionPlugLabel()
   repositionPlugLabel(label, top, left, wPos) {
@@ -896,7 +794,7 @@ Plugin.prototype = {
 
     label.style.top = `${ptop}px`;
     label.style.left = `${pleft}px`;
-  },
+  }
 
   // METHOD resetPlugLabelPosition()
   resetPlugLabelPosition(label) {
@@ -908,7 +806,7 @@ Plugin.prototype = {
       H.hide(label.querySelector('i.fa-thumbtack'));
       H.hide(label.querySelector(`li[data-action="position-auto"]`));
     }
-  },
+  }
 
   // METHOD updatePlugProperties()
   updatePlugProperties(ll) {
@@ -961,12 +859,19 @@ Plugin.prototype = {
         break;
       }
     }
-  },
+  }
+
+  // METHOD deleteRelatedPlugs()
+  deleteRelatedPlugs(plug) {
+    plug.related.forEach((r) => r.remove());
+    plug.related = [];
+    plug.customPos = false;
+  }
 
   // METHOD updatePlugLabel()
   updatePlugLabel(args) {
     const label = H.noHTML(args.label);
-    const wPos = this.settings.wall[0].getBoundingClientRect();
+    const wPos = this.settings.wall.tag.getBoundingClientRect();
     const canWrite = this.canWrite();
     const p = this.getPlugById(args.endId);
     const pl = p.labelObj[0];
@@ -999,13 +904,13 @@ Plugin.prototype = {
         }
       } else if (p.customPos) {
         this.resetPlugLabelPosition(pl);
-        _deleteRelatedPlugs(p);
+        this.deleteRelatedPlugs(p);
         p.obj.show();
       }
     }
 
     this.repositionPlugs();
-  },
+  }
 
   // METHOD createRelatedPlugs()
   createRelatedPlugs(plug) {
@@ -1033,11 +938,11 @@ Plugin.prototype = {
         start: pl,
       })
     ];
-  },
+  }
 
   // METHOD addPlugLabel()
   addPlugLabel(plug, svg, applyZoom) {
-    const wPos = this.settings.wall[0].getBoundingClientRect();
+    const wPos = this.settings.wall.tag.getBoundingClientRect();
     const canWrite = this.canWrite();
 
     svg = document.querySelector(`#_${plug.startId}-${plug.endId}`);
@@ -1047,7 +952,7 @@ Plugin.prototype = {
         top: plug.label.top + wPos.top,
         left: plug.label.left + wPos.left,
       } : svg.querySelector('text').getBoundingClientRect();
-    const $start = $(plug.obj.start);
+    const start = P.get(plug.obj.start, 'postit');
     const renameItem = H.haveMouse() ? `<li data-action="rename"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-edit"></i> <?=_("Rename")?></a></li>` : '';
     const menu = `<ul class="dropdown-menu shadow">${renameItem}<li data-action="delete"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-trash"></i> <?=_("Delete")?></a></li><li data-action="properties"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-cogs"></i> <?=_("Properties")?></a></li><li data-action="position-auto"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-magic"></i> <?=_("Auto position")?></a></li></ul>`;
     const label = H.createElement('div',
@@ -1081,10 +986,12 @@ Plugin.prototype = {
       label.style.transform = `scale(${S.get('zoom-level') || 1})`;
     }
 
-    if (canWrite)
+    if (canWrite) {
+      // TODO Do not use jQuery here
       plug.labelObj.draggable({
+        disabled: applyZoom,
         distance: 10,
-        containment: S.getCurrent('wall').find('tbody.wpt'),
+        containment: $(S.getCurrent('wall').tag.querySelector('tbody.wpt')),
         scroll: false,
         start: (e, ui) => {
           S.set('revertData', {
@@ -1093,7 +1000,7 @@ Plugin.prototype = {
             left: plug.labelObj[0].offsetLeft
           });
 
-          $start.postit('edit', {},
+          start.edit({},
             // success cb
             () => {
               if (!plug.customPos) {
@@ -1105,25 +1012,20 @@ Plugin.prototype = {
             // error cb
             () => S.get('revertData').revert = true);
         },
-        drag: function() {
-          if (S.get('revertData').revert) {
-            $(this).draggable('cancel');
-            return false;
-          }
-          // plug.related.forEach(r => r.position());
-        },
         stop: (e, ui) => {
+          const revertData = S.get('revertData');
+
           S.set('dragging', true, 500);
 
-          if (S.get('revertData').revert) {
-            const revertData = S.get('revertData');
+          if (revertData.revert) {
+            $(label).draggable('cancel');
 
-            plug.labelObj.style.top = `${revertData.top}px`;
-            plug.labelObj.style.left = `${revertData.left}px`;
+            plug.labelObj[0].style.top = `${revertData.top}px`;
+            plug.labelObj[0].style.left = `${revertData.left}px`;
 
-            $start.postit('cancelEdit');
+            start.cancelEdit();
           } else {
-            const wPos = S.getCurrent('wall')[0].getBoundingClientRect();
+            const wPos = S.getCurrent('wall').tag.getBoundingClientRect();
             const lbPos = label.getBoundingClientRect();
             const z = S.get('zoom-level') || 1;
             const toSave = {};
@@ -1137,23 +1039,24 @@ Plugin.prototype = {
             label.dataset.origtop = Number((lbPos.top - wPos.top) / z);
             label.dataset.origleft = Number((lbPos.left - wPos.left) / z);
 
-            toSave[plug.startId] = $(plug.obj.start);
-            toSave[plug.endId] = $(plug.obj.end);
+            toSave[plug.startId] = P.get(plug.obj.start, 'postit');
+            toSave[plug.endId] = P.get(plug.obj.end, 'postit');
 
             S.set('plugs-to-save', toSave);
-            $start.postit('unedit');
+            start.unedit();
           }
 
           setTimeout(() =>
-            plug.related.forEach((r) => r.position().show()), 150);
+            plug.related.forEach((el) => el.position().show()), 150);
         }
       });
-  },
+    }
+  }
 
   // METHOD addPlug()
   addPlug(plug, applyZoom) {
-    const $start = this.element;
-    const $end = $(plug.obj.end);
+    const startTag = this.tag;
+    const end = P.get(plug.obj.end, 'postit');
 
     // Associate SVG line to plug and set its label
     const svg = document.querySelector('.leader-line:last-child');
@@ -1162,11 +1065,11 @@ Plugin.prototype = {
 
     // Register plug on start point postit (current plugin)
     this.settings.plugs.push(plug);
-    $start[0].classList.add('with-plugs');
+    startTag.classList.add('with-plugs');
 
     // Register plug on end point postit
-    $end.postit('getSettings').plugs.push(plug);
-  },
+    end.settings.plugs.push(plug);
+  }
 
   // METHOD defragPlugsArray()
   defragPlugsArray() {
@@ -1180,9 +1083,9 @@ Plugin.prototype = {
     }
 
     if (!this.havePlugs()) {
-      this.element[0].classList.remove('with-plugs');
+      this.tag.classList.remove('with-plugs');
     }
-  },
+  }
 
   // METHOD plugExists()
   plugExists(plugId) {
@@ -1192,7 +1095,7 @@ Plugin.prototype = {
         return true;
       }
     }
-  },
+  }
 
   // METHOD getPlugById()
   getPlugById(plugId) {
@@ -1202,7 +1105,25 @@ Plugin.prototype = {
         return plug;
       }
     }
-  },
+  }
+
+  // METHOD _removePlug()
+  _removePlug(plug, toDefrag) {
+    toDefrag[plug.startId] = plug.obj.start;
+    toDefrag[plug.endId] = plug.obj.end;
+  
+    // Remove label
+    plug.labelObj.remove();
+    plug.labelObj = null;
+  
+    // Remove related lines
+    if (plug.customPos) {
+      this.deleteRelatedPlugs(plug);
+    }
+  
+    plug.obj.remove();
+    plug.obj = null;
+  }
 
   // METHOD removePlug()
   removePlug(plug, noedit) {
@@ -1212,27 +1133,27 @@ Plugin.prototype = {
       plug = this.getPlugById(plug);
     }
 
-    _removePlug(plug, toDefrag);
+    this._removePlug(plug, toDefrag);
 
     for (const id in toDefrag) {
-      $(toDefrag[id]).postit('defragPlugsArray');
+      P.get(toDefrag[id], 'postit').defragPlugsArray();
     }
 
     if (!noedit) {
       S.set('plugs-to-save', toDefrag);
     }
-  },
+  }
 
   // METHOD removePlugs()
   removePlugs(noedit) {
     const settings = this.settings;
     const toDefrag = {};
 
-    settings.plugs.forEach((p) => _removePlug(p, toDefrag));
+    settings.plugs.forEach((p) => this._removePlug(p, toDefrag));
 
     for (const id in toDefrag) {
-      if ($(toDefrag[id]).length) {
-        $(toDefrag[id]).postit('defragPlugsArray');
+      if (toDefrag[id]) {
+        P.get(toDefrag[id], 'postit').defragPlugsArray();
       }
     }
 
@@ -1241,8 +1162,8 @@ Plugin.prototype = {
     }
 
     settings.plugs = [];
-    this.element[0].classList.remove('with-plugs');
-  },
+    this.tag.classList.remove('with-plugs');
+  }
 
   // METHOD hidePlugs()
   hidePlugs(ignoreDisplayMode = false) {
@@ -1267,14 +1188,14 @@ Plugin.prototype = {
         p.related.forEach((r) => r.hide('none'));
       }
     });
-  },
+  }
 
   // METHOD showPlugs()
   showPlugs(ignoreDisplayMode = false) {
     if (!this.settings.wall) return;
 
     const postitId = this.settings.id;
-    const wPos = this.settings.wall[0].getBoundingClientRect();
+    const wPos = this.settings.wall.tag.getBoundingClientRect();
 
     // FIXME == ===
     this.settings.plugs.forEach((p) => {
@@ -1300,11 +1221,11 @@ Plugin.prototype = {
         }
       }
     });
-  },
+  }
 
   // METHOD repositionPlugs()
   repositionPlugs() {
-    const wPos = this.settings.wall[0].getBoundingClientRect();
+    const wPos = this.settings.wall.tag.getBoundingClientRect();
 
     this.settings.plugs.forEach((p) => {
       const pl = p.labelObj[0];
@@ -1324,12 +1245,12 @@ Plugin.prototype = {
         pl.style.left = `${pos.left}px`;
       }
     });
-  },
+  }
 
   // METHOD getCellId()
   getCellId() {
     return this.settings.cellId;
-  },
+  }
 
   // METHOD serializePlugs()
   serializePlugs() {
@@ -1380,59 +1301,62 @@ Plugin.prototype = {
     });
 
     return ret;
-  },
+  }
 
   // METHOD serialize()
   serialize(args = {}) {
     const postits = [];
-    const displayExternalRef = this.settings.wall.wall('displayExternalRef');
+    const displayExternalRef = this.settings.wall.displayExternalRef();
     const z = S.get('zoom-level') || 1;
 
-    this.element.each(function() {
-      const plugin = $(this).postit('getClass');
+    (args.postits || [this.tag]).forEach((el) => {
+      const postit = P.get(el, 'postit');
+      const tag = postit.tag;
+      const id = postit.getId();
       let data = {};
 
-      if (this.dataset.todelete) {
-        data = {id: plugin.settings.id, todelete: true};
+      if (tag.dataset.todelete) {
+        data = {id, todelete: true};
       } else {
-        const title = plugin.getTitle();
-        const content = this.querySelector('.postit-edit').innerHTML;
-        const classcolor = this.className.match(/(color\-[a-z]+)/);
-        const patt = this.querySelector('.patt span');
-        const pwork = this.querySelector('.pwork span');
-        const deadline = this.dataset.deadlineepoch ?
-                this.dataset.deadlineepoch :
-                this.querySelector('.dates .end span').innerText.trim();
-        const bbox = this.getBoundingClientRect();
+        const title = postit.getTitle();
+        const content = tag.querySelector('.postit-edit').innerHTML;
+        const classcolor = tag.className.match(/(color\-[a-z]+)/);
+        const pattSpan = tag.querySelector('.patt span');
+        const pworkSpan = tag.querySelector('.pwork span');
+        const deadline = tag.dataset.deadlineepoch ?
+                tag.dataset.deadlineepoch :
+                tag.querySelector('.dates .end span').innerText.trim();
+        const bbox = tag.getBoundingClientRect();
         const tags = [];
 
-        this.querySelectorAll('.postit-tags i').forEach(
+        tag.querySelectorAll('.postit-tags i').forEach(
           (el) => tags.push(el.dataset.tag));
 
         data = {
-          id: plugin.settings.id,
+          id,
           width: Math.trunc(bbox.width / z),
           height: Math.trunc(bbox.height / z),
-          item_top: this.offsetTop < 0 ? 0 : Math.trunc(this.offsetTop),
-          item_left: this.offsetLeft < 0 ? 0 : Math.trunc(this.offsetLeft),
-          item_order: parseInt(this.dataset.order),
-          classcolor: classcolor ? classcolor[0] : _defaultClassColor,
+          item_top: tag.offsetTop < 0 ? 0 : Math.trunc(tag.offsetTop),
+          item_left: tag.offsetLeft < 0 ? 0 : Math.trunc(tag.offsetLeft),
+          item_order: parseInt(tag.dataset.order),
+          classcolor: classcolor ?
+            classcolor[0] : `color-<?=WPT_POSTIT_COLOR_DEFAULT?>`,
           title: (title === '...') ? '' : title,
           content: args.noPostitContent ? null :
                      displayExternalRef ?
-                       content : plugin.unblockExternalRef(content),
+                       content : postit.unblockExternalRef(content),
           tags: tags.length ? `,${tags.join(',')},` : null,
           deadline: (deadline === '...') ? '' : deadline,
-          alertshift: (this.dataset.deadlinealertshift !== undefined) ?
-                        this.dataset.deadlinealertshift : null,
-          updatetz: this.dataset.updatetz || null,
-          obsolete: this.classList.contains('obsolete'),
-          attachmentscount: patt ? patt.innerText : 0,
-          workerscount: pwork ? pwork.innerText : 0,
-          plugs: plugin.serializePlugs(),
-          hadpictures: Boolean(this.dataset.hadpictures),
-          hasuploadedpictures: Boolean(this.dataset.hasuploadedpictures),
-          progress: parseInt(this.dataset.progress || 0),
+          alertshift: (tag.dataset.deadlinealertshift !== undefined) ?
+                        tag.dataset.deadlinealertshift : null,
+          updatetz: tag.dataset.updatetz || null,
+          obsolete: tag.classList.contains('obsolete'),
+          attachmentscount: pattSpan ? pattSpan.innerText : 0,
+          workerscount: pworkSpan ? pworkSpan.innerText : 0,
+          plugs: postit.serializePlugs(),
+          hadpictures: Boolean(tag.dataset.hadpictures),
+          hasuploadedpictures: Boolean(tag.dataset.hasuploadedpictures),
+          progress: parseInt(tag.dataset.progress || 0),
         };
       }
 
@@ -1440,13 +1364,12 @@ Plugin.prototype = {
     });
 
     return postits;
-  },
+  }
 
   // METHOD showUserWriting()
   showUserWriting(user, isRelated) {
-    const postit = this.element[0];
+    const tag = this.tag;
     const id = this.settings.id;
-    const $cell = this.settings.cell;
     const canWrite = this.canWrite();
 
     // LOCAL FUNCTION __lock()
@@ -1455,17 +1378,17 @@ Plugin.prototype = {
 
     // LOCAL FUNCTION __addMain()
     const __addMain = () =>
-      postit.insertBefore(
+      tag.insertBefore(
         H.createElement('div',
           {className: 'user-writing main'},
           {userid: user.id},
           `<i class="fas fa-user-edit blink"></i> ${user.name}`),
-        postit.firstChild);
+        tag.firstChild);
 
     this.closeMenu();
 
     // See cell::setPostitsUserWritingListMode()
-    if ($cell[0].classList.contains('list-mode')) {
+    if (this.settings.cell.tag.classList.contains('list-mode')) {
       const min = this.getMin();
 
       if (canWrite) {
@@ -1481,15 +1404,15 @@ Plugin.prototype = {
     }
 
     if (canWrite) {
-      __lock(postit);
+      __lock(tag);
 
       if (isRelated) {
-        postit.insertBefore(
+        tag.insertBefore(
           H.createElement('div',
             {className: 'user-writing'},
             {userid: user.id},
             `<i class="fas fa-user-lock"></i>`),
-          postit.firstChild);
+          tag.firstChild);
       } else {
         __addMain();
       }
@@ -1498,20 +1421,20 @@ Plugin.prototype = {
       this.settings.plugs.forEach((p) => {
         p.labelObj[0].classList.add('locked');
         if (!isRelated) {
-          $(p.obj[(p.startId !== id) ? 'start' : 'end'])
-            .postit('showUserWriting', user, true);
+          P.get(p.obj[(p.startId !== id) ? 'start' : 'end'], 'postit')
+            .showUserWriting(user, true);
         }
       });
     }
     else if (!isRelated) {
       __addMain();
     }
-  },
+  }
 
   // METHOD setDeadline()
   setDeadline(args) {
-    const postit = this.element[0];
-    const date = postit.querySelector('.dates .end');
+    const tag = this.tag;
+    const date = tag.querySelector('.dates .end');
     const {deadline, alertshift, timezone} = args;
     const reset = date.querySelector('i.fa-times-circle');
     let human;
@@ -1519,7 +1442,7 @@ Plugin.prototype = {
     if (!deadline || isNaN(deadline)) {
       human = deadline || '...';
     } else {
-      human = deadline ? H.getUserDate(deadline, timezone) : '...';
+      human = deadline ? U.formatDate(deadline, timezone) : '...';
     }
 
     date.querySelector('span').innerText = human;
@@ -1527,23 +1450,23 @@ Plugin.prototype = {
     H.hide(reset);
 
     if (human === '...') {
-      postit.classList.remove('obsolete');
+      tag.classList.remove('obsolete');
 
       ['deadline', 'deadlinealertshift', 'deadlineepoch', 'updatetz']
-        .forEach((k) => postit.removeAttribute(`data-${k}`));
+        .forEach((k) => tag.removeAttribute(`data-${k}`));
 
       date.classList.remove('with-alert');
       date.classList.remove('obsolete');
     } else {
-      postit.dataset.deadline = human;
-      postit.dataset.deadlineepoch = deadline;
+      tag.dataset.deadline = human;
+      tag.dataset.deadlineepoch = deadline;
 
       if (alertshift !== undefined) {
         if (alertshift !== null) {
-          postit.dataset.deadlinealertshift = alertshift;
+          tag.dataset.deadlinealertshift = alertshift;
           date.classList.add('with-alert');
         } else {
-          postit.removeAttribute('data-deadlinealertshift');
+          tag.removeAttribute('data-deadlinealertshift');
           date.classList.remove('with-alert');
         }
       }
@@ -1552,33 +1475,33 @@ Plugin.prototype = {
         H.show(reset, 'inline-block');
       }
     }
-  },
+  }
 
   // METHOD resetDeadline()
   resetDeadline() {
     this.setDeadline({deadline: '...'});
-  },
+  }
 
   // METHOD setCreationDate()
   setCreationDate(v) {
-    this.element[0].querySelector('.dates .creation span')
+    this.tag.querySelector('.dates .creation span')
       .innerText = v.trim();
-  },
+  }
 
   // METHOD setProgress()
   setProgress(v) {
-    const postit = this.element[0];
-    const container = postit.querySelector('.postit-progress-container');
+    const tag = this.tag;
+    const container = tag.querySelector('.postit-progress-container');
 
     v = Number(v);
 
     if (!v) {
-      postit.removeAttribute('data-progress');
+      tag.removeAttribute('data-progress');
       H.hide(container);
     } else {
       const progress = container.querySelector('.postit-progress');
 
-      postit.dataset.progress = v;
+      tag.dataset.progress = v;
 
       container.querySelector('span').innerText = `${v}%`;
       H.show(container);
@@ -1586,19 +1509,18 @@ Plugin.prototype = {
       progress.style.height = `${v}%`;
       progress.style.backgroundColor = H.getProgressbarColor(v);
     }
-  },
+  }
 
   // METHOD getTitle()
   getTitle() {
-    return this.element[0]
-      .querySelector('.postit-header span.title').innerHTML;
-  },
+    return this.tag.querySelector('.postit-header span.title').innerHTML;
+  }
 
   // METHOD setTitle()
   setTitle(v) {
-    this.element[0].querySelector('.postit-header span.title')
+    this.tag.querySelector('.postit-header span.title')
       .innerText = H.noHTML(v) || '...';
-  },
+  }
 
   // METHOD addExternalRefIcon()
   addExternalRefIcon(c) {
@@ -1614,7 +1536,7 @@ Plugin.prototype = {
           img);
       }
     });
-  },
+  }
 
   // METHOD removeExternalRefIcon()
   removeExternalRefIcon(c) {
@@ -1622,26 +1544,26 @@ Plugin.prototype = {
       el.parentNode.removeAttribute('title');
       el.remove();
     });
-  },
+  }
 
   // METHOD setContent()
   setContent(newContent) {
-    const postit = this.element[0];
-    const edit = postit.querySelector('.postit-edit');
+    const tag = this.tag;
+    const edit = tag.querySelector('.postit-edit');
     let setIcon = false;
 
     if (newContent !== edit.innerHTML) {
       const externalRef = this.getExternalRef(newContent);
 
       if (externalRef) {
-        postit.dataset.haveexternalref = 1;
+        tag.dataset.haveexternalref = 1;
 
-        if (!this.settings.wall.wall('displayExternalRef')) {
+        if (!this.settings.wall.displayExternalRef()) {
           setIcon = true;
           newContent = this.blockExternalRef(newContent, externalRef);
         }
       } else {
-        postit.removeAttribute('data-haveexternalref');
+        tag.removeAttribute('data-haveexternalref');
       }
 
       edit.innerHTML = newContent;
@@ -1652,39 +1574,39 @@ Plugin.prototype = {
         this.removeExternalRefIcon(edit);
       }
     }
-  },
+  }
 
   // METHOD openAskForExternalRefPopup()
   openAskForExternalRefPopup(args = {}) {
     let ask = (this.getExternalRef() &&
-               !this.settings.wall.wall('displayExternalRef'));
+               !this.settings.wall.displayExternalRef());
 
     if (ask) {
       H.openConfirmPopover({
-        item: args.item ? args.item[0] : this.element[0],
+        item: args.item ? args.item : this.tag,
         title: `<i class="fas fa-link fa-fw"></i> <?=_("External content")?>`,
         content: `<?=_("This note contains external images or videos.")?><br><?=_("Would you like to load all external content for the current wall?")?>`,
         onClose: args.onClose,
         onConfirm: () => {
-          this.settings.wall.wall('displayExternalRef', 1);
+          this.settings.wall.displayExternalRef(1);
           this.open();
         }
       });
     }
 
     return ask;
-  },
+  }
 
   // METHOD getExternalRef()
   getExternalRef(content) {
     return (content !== undefined) ?
              content.match(/(src\s*=\s*["']?http[^"'\s]+")/ig) :
-             this.element[0].dataset.haveexternalref;
-  },
+             this.tag.dataset.haveexternalref;
+  }
 
   // METHOD blockExternalRef()
   blockExternalRef(content, externalRef) {
-    const el = this.element[0].querySelector('.postit-edit');
+    const el = this.tag.querySelector('.postit-edit');
     let c = content || el.innerHTML;
 
     if (!externalRef) {
@@ -1703,125 +1625,124 @@ Plugin.prototype = {
         return c;
       }
     }
-  },
+  }
 
   // METHOD unblockExternalRef()
   unblockExternalRef(content) {
     if (content !== undefined) {
       return content.replace(/external\-src/g, 'src');
     } else {
-      const postit = this.element[0];
+      const tag = this.tag;
 
-      postit.querySelectorAll('[external-src]').forEach((el) => {
+      tag.querySelectorAll('[external-src]').forEach((el) => {
         el.setAttribute('src', el.getAttribute('external-src'));
         el.removeAttribute('external-src');
       });
 
-      this.removeExternalRefIcon(postit);
+      this.removeExternalRefIcon(tag);
     }
-  },
+  }
 
   // METHOD setPosition()
   setPosition({cellId, top, left}) {
-    const postit = this.element[0];
+    const tag = this.tag;
 
     if (cellId) {
       this.settings.cellId = cellId;
     }
 
-    postit.style.top = `${top}px`;
-    postit.style.left = `${left}px`;
-  },
+    tag.style.top = `${top}px`;
+    tag.style.left = `${left}px`;
+  }
 
   // METHOD fixEditHeight()
   fixEditHeight() {
-    const postit = this.element[0];
+    const tag = this.tag;
 
-    postit.querySelector('.postit-edit')
-      .style.maxHeight = `${postit.offsetHeight - 40}px`;
-  },
+    tag.querySelector('.postit-edit')
+      .style.maxHeight = `${tag.offsetHeight - 40}px`;
+  }
 
   // METHOD fixPosition()
   fixPosition(cPos) {
-    const postit = this.element[0];
+    const tag = this.tag;
     const phTop =
-      postit.querySelector('.postit-header').getBoundingClientRect().top;
-    const pW = postit.clientWidth;
-    const pH = postit.clientHeight;
+      tag.querySelector('.postit-header').getBoundingClientRect().top;
+    const pW = tag.clientWidth;
+    const pH = tag.clientHeight;
     const cH = cPos.height;
     const cW = cPos.width;
-    let pPos = postit.getBoundingClientRect();
+    let pPos = tag.getBoundingClientRect();
 
     // Postit is too high
     if (phTop < cPos.top) {
-      postit.style.top = '20px';
+      tag.style.top = '20px';
     }
  
     // Postit is too much on left
     if (pPos.left < cPos.left) {
-      postit.style.left = '1px';
+      tag.style.left = '1px';
     }
  
     // Postit is too much on right
     if (pPos.left + pW > cPos.left + cW + 1) {
-      postit.style.left = `${cW - pW - 4}px`;
+      tag.style.left = `${cW - pW - 4}px`;
     }
 
     // Postit is too large
     if (pW > cW) {
-      postit.style.left = '0';
-      postit.style.width = `${cW - 2}px`;
+      tag.style.left = 0;
+      tag.style.width = `${cW - 2}px`;
     }
  
-    pPos = postit.getBoundingClientRect();
+    pPos = tag.getBoundingClientRect();
  
     // Postit is too big
     if (pPos.top + pH > cPos.top + cH) {
       if (pH > cH) {
-        postit.style.height = `${cH - 22}px`;
+        tag.style.height = `${cH - 2}px`;
       }
  
-      postit.style.top = `${cH - postit.clientHeight - 4}px`;
+      tag.style.top = `${cH - tag.clientHeight - 4}px`;
     }
-  },
+  }
 
   // METHOD setClassColor()
   setClassColor(newClass, item) {
     if (item !== undefined && item === null) return;
 
-    const el = item ? item : this.element[0];
+    const el = item ? item : this.tag;
     const cls = el.className.replace(/color\-[a-z]+/, '');
 
     el.className = `${cls} ${newClass}`;
-  },
+  }
 
   // METHOD setPopupColor()
-  setPopupColor($popup) {
-    const popup = $popup[0];
-    const cls = this.element[0].className.match(/color\-[a-z]+/)[0];
+  setPopupColor(popup) {
+    const cls = this.tag.className.match(/color\-[a-z]+/)[0];
 
     this.setClassColor(cls, popup.querySelector('.modal-header'));
     this.setClassColor(cls, popup.querySelector('.modal-title'));
     this.setClassColor(cls, popup.querySelector('.modal-footer'));
-  },
+  }
 
   // METHOD setCurrent()
   setCurrent() {
     S.reset('postit');
-    this.element[0].classList.add('current');
-  },
+    this.tag.classList.add('current');
+  }
 
   // METHOD unsetCurrent()
   unsetCurrent() {
     S.reset('postit');
     S.reset('pcomm');
 
-    this.element[0].classList.remove('current');
-  },
+    this.tag.classList.remove('current');
+  }
 
   // METHOD insert()
   insert() {
-    const postit = this.element[0];
+    const tag = this.tag;
     const data = this.serialize()[0];
 
     H.request_ws(
@@ -1833,7 +1754,7 @@ Plugin.prototype = {
         if (d.error_msg) {
           H.displayMsg({type: 'warning', msg: d.error_msg});
         }
-        postit.remove();
+        tag.remove();
       },
       // error cb
       (d) => {
@@ -1843,9 +1764,9 @@ Plugin.prototype = {
           msg: isNaN(d.error) ?
             d.error : `<?=_("Unknown error.<br>Please try again later.")?>`,
         });
-        postit.remove();
+        tag.remove();
       });
-  },
+  }
 
   // METHOD save()
   save({content, progress, title}) {
@@ -1853,40 +1774,39 @@ Plugin.prototype = {
     this.setProgress(progress);
     this.setTitle(title);
 
-    this.element[0].removeAttribute('data-uploadedpictures');
+    this.tag.removeAttribute('data-uploadedpictures');
 
     S.unset('postit-data');
-  },
+  }
 
   // METHOD update()
   update(d, cell) {
-    const $postit = this.element;
-    const postit = $postit[0];
-    const $tpick = S.getCurrent('tpick');
+    const tag = this.tag;
+    const tpick = S.getCurrent('tpick');
 
     // Change postit cell
-    if (cell && cell.id !== Number(this.settings.cellId)) {
-      if (this.settings.cell[0].classList.contains('list-mode')) {
-        this.settings.cell.cell('decCount');
+    if (cell && cell.id !== this.settings.cellId) {
+      if (this.settings.cell.tag.classList.contains('list-mode')) {
+        this.settings.cell.decCount();
         this.getMin().remove();
       }
 
       this.settings.cell =
-        cell.obj ||  $(this.settings.wall[0]
-                       .querySelector(`td[data-id="cell-${cell.id}"]`));
+        cell.obj || P.get(this.settings.wall.tag
+                       .querySelector(`td[data-id="cell-${cell.id}"]`), 'cell');
       this.settings.cellId = cell.id;
 
-      this.settings.cell[0].append(postit);
+      this.settings.cell.tag.append(tag);
 
-      if (this.settings.cell[0].classList.contains('postit-mode')) {
-        postit.style.visibility = 'visible';
+      if (this.settings.cell.tag.classList.contains('postit-mode')) {
+        tag.style.visibility = 'visible';
       }
     }
 
-    postit.style.top = `${d.item_top}px`;
-    postit.style.left = `${d.item_left}px`;
-    postit.style.width = `${d.width}px`;
-    postit.style.height = `${d.height}px`;
+    tag.style.top = `${d.item_top}px`;
+    tag.style.left = `${d.item_left}px`;
+    tag.style.width = `${d.width}px`;
+    tag.style.height = `${d.height}px`;
 
     this.setClassColor(d.classcolor);
     this.setProgress(d.progress);
@@ -1902,35 +1822,35 @@ Plugin.prototype = {
       p.setCount(d.workerscount);
     }
 
-    this.setCreationDate(d.creationdate ? H.getUserDate(d.creationdate) : '');
+    this.setCreationDate(d.creationdate ? U.formatDate(d.creationdate) : '');
     this.setDeadline(d);
 
-    postit.dataset.order = d.item_order || 0;
+    tag.dataset.order = d.item_order || 0;
 
     if (d.obsolete) {
-      postit.classList.add('obsolete');
+      tag.classList.add('obsolete');
     } else {
-      postit.classList.remove('obsolete');
+      tag.classList.remove('obsolete');
     }
 
     if (!d.tags) {
       d.tags = '';
     }
-    postit.dataset.tags = d.tags;
+    tag.dataset.tags = d.tags;
 
-    postit.querySelector('.postit-tags').innerHTML =
-      $tpick.tpick('getHTMLFromString', d.tags);
+    tag.querySelector('.postit-tags').innerHTML =
+      tpick.getHTMLFromString(d.tags);
 
-    $tpick.tpick('refreshPostitDataTag', $postit);
+    tpick.refreshPostitDataTag(this);
 
    H.waitForDOMUpdate(() => this.fixEditHeight());
-  },
+  }
 
   // METHOD delete()
   delete() {
     S.reset();
-    this.element[0].dataset.todelete = true;
-  },
+    this.tag.dataset.todelete = true;
+  }
 
   // METHOD edit()
   edit(args = {}, then, onError) {
@@ -1938,10 +1858,10 @@ Plugin.prototype = {
 
     if (!args.plugend) {
       this.setCurrent();
-      _originalObject = this.serialize()[0];
+      this.originalObject = this.serialize()[0];
     }
 
-    if (!this.settings.wall.wall('isShared')) {
+    if (!this.settings.wall.isShared()) {
       then && then();
       return;
     }
@@ -1967,11 +1887,10 @@ Plugin.prototype = {
         this.cancelEdit(args);
       },
     );
-  },
+  }
 
   // METHOD unedit()
   unedit(args = {}) {
-    const $postit = this.element;
     const plugsToSave = S.get('plugs-to-save');
     let data = null;
 
@@ -1985,8 +1904,8 @@ Plugin.prototype = {
         data = {updateplugs: true, plugs: []};
 
         for (const id in plugsToSave) {
-          data.plugs.push($(plugsToSave[id])
-            .postit('serialize', {noPostitContent: true})[0]);
+          data.plugs.push(plugsToSave[id]
+            .serialize({noPostitContent: true})[0]);
         }
 
         S.unset('plugs-to-save');
@@ -1996,10 +1915,10 @@ Plugin.prototype = {
         data = this.serialize()[0];
 
         // Delete/update postit only if it has changed
-        if (data?.todelete ||
-            H.objectHasChanged(_originalObject, data, {hadpictures: 1})) {
+        if ((data && data.todelete) ||
+            H.objectHasChanged(this.originalObject, data, {hadpictures: 1})) {
           data.cellId = this.settings.cellId;
-        } else if (!this.settings.wall.wall('isShared')) {
+        } else if (!this.settings.wall.isShared()) {
           return this.cancelEdit();
         } else {
           data = null;
@@ -2013,49 +1932,51 @@ Plugin.prototype = {
       data,
       // success cb
       (d) => {
-        const postit = $postit[0];
+        const tag = this.tag;
 
         this.cancelEdit(args);
 
         if (d.error_msg) {
           H.displayMsg({type: 'warning', msg: d.error_msg});
-        } else if (data?.todelete && postit.classList.contains('selected')) {
-          S.getCurrent('mmenu').mmenu('remove', this.settings.id);
+        } else if (data && data.todelete &&
+                   tag.classList.contains('selected')) {
+          S.getCurrent('mmenu').remove(this.settings.id);
         } else if (data && data.updatetz) {
-          postit.removeAttribute('data-updatetz');
+          tag.removeAttribute('data-updatetz');
         }
       },
       // error cb
       () => this.cancelEdit(args));
-  },
+  }
 
   // METHOD cancelEdit()
   cancelEdit(args = {}) {
     document.body.style.cursor = 'auto';
 
     if (!args.plugend) {
-      const postit = this.element[0];
+      const tag = this.tag;
 
       this.unsetCurrent();
 
-      postit.removeAttribute('data-hasuploadedpictures');
-      postit.removeAttribute('data-hadpictures');
+      tag.removeAttribute('data-hasuploadedpictures');
+      tag.removeAttribute('data-hadpictures');
     }
 
     if (!this.settings.id) {
       setTimeout(() => H.raiseError(null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
     }
-  },
+  }
 
   // METHOD closeMenu()
   closeMenu() {
-    const postit = this.element[0];
+    const tag = this.tag;
 
-    if (postit.querySelector('.postit-menu')) {
-      postit.querySelector('.btn-menu').click();
+    if (tag.querySelector('.postit-menu')) {
+      this.settings.Menu.destroy();
+      delete this.settings.Menu;
     }
   }
-};
+});
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
@@ -2064,6 +1985,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const walls = document.querySelector('.tab-content.walls');
   const wallsId = document.getElementById('walls');
+
+  // LOCAL FUNCTION __displayOpenLinkMenu()
+  const __displayOpenLinkMenu = (e, args = {}) => {
+    const el = e.target;
+    const link = (el.tagName === 'A') ? el : el.closest('a');
+    const canWrite = H.checkAccess(<?=WPT_WRIGHTS_RW?>);
+    const menu = H.createElement('div',
+      {className: 'dropdown submenu submenu-link'}, null,
+      `<ul class="dropdown-menu shadow show"><li data-action="open-link"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-link"></i> <?=_("Open link")?></a></li>${args.noEditItem ? '' : `<li data-action="edit"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-${canWrite ? 'edit' : 'eye'}"></i> ${canWrite ? `<?=_("Edit note")?>` : `<?=_("Open note")?>`}</a></li>`}</ul>`);
+  
+    H.preventDefault(e);
+  
+    // EVENT "click" on content links menu
+    menu.addEventListener('click', (e) => {
+      const li = (e.target.tagName === 'LI') ?
+        e.target : e.target.closest('li');
+  
+      document.getElementById('popup-layer').click();
+  
+      if (li.dataset.action === 'open-link') {
+        window.open(link.href, '_blank', 'noopener');
+      } else {
+        P.get(el.closest('.postit'), 'postit').openPostit();
+      }
+    });
+  
+    H.openPopupLayer(() => menu.remove());
+  
+    document.body.appendChild(menu);
+  
+    menu.style.top = `${e.clientY}px`;
+    menu.style.left = `${e.clientX}px`;
+  };
 
   // FIXME polyfill for TinyMCE (old Safari iOS)
   Promise.allSettled = Promise.allSettled || ((promises) => Promise.all(
@@ -2094,15 +2048,42 @@ document.addEventListener('DOMContentLoaded', () => {
       'lists',
       'table',
     ],
-    setup: function(editor) {
+    setup: (editor) => {
       // "change" event can be triggered twice, we use this var to
       // avoir that
       let _current = false;
 
       // Trick to catch 404 not found error on just added images
       // -> Is there a TinyMCE callback for that?
-      editor.on('change', function(e) {
+      editor.on('change', (e) => {
         if (_current) return;
+
+        // LOCAL FUNCTION __testImage()
+        const __testImage = (url, timeout = 10000) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            let timer;
+        
+            img.onerror = img.onabort = () => {
+              clearTimeout(timer);
+              reject('error');
+            };
+        
+            img.onload = () => {
+              clearTimeout(timer);
+              resolve('success');
+            };
+        
+            timer = setTimeout(() => {
+              // reset .src to invalid URL so it stops previous
+              // loading, but doesn't trigger new load
+              img.src = '//!!!!/test.jpg';
+              reject('timeout');
+            }, timeout);
+        
+            img.src = url;
+          });
+        };
 
         _current = true;
 
@@ -2124,7 +2105,7 @@ document.addEventListener('DOMContentLoaded', () => {
               const src = tmp[1];
 
               H.loader('show');
-              _testImage(src)
+              __testImage(src)
                 .then(
                   // Needed for some Safari on iOS that do not support
                   // Promise finally() callback.
@@ -2144,7 +2125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                       msg: `<?=_("The image %s was not available! It has been removed from the note content.")?>`.replace("%s", `«&nbsp;<i>${src}</i>&nbsp;»`),
                     });
                   })
-                  .finally(()=> _current = false);
+                  .finally(() => _current = false);
               }
             });
         } else {
@@ -2161,8 +2142,8 @@ document.addEventListener('DOMContentLoaded', () => {
     image_description: false,
     automatic_uploads: true,
     file_picker_types: 'image',
-    file_picker_callback: function(callback, value, meta) {
-      S.set('tinymce-callback', callback);
+    file_picker_callback: (cb) => {
+      S.set('tinymce-callback', cb);
       document.getElementById('postit-picture').click();
     },
 
@@ -2186,49 +2167,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const __eventMOTS = (e) => {
     const el = e.target;
 
-    if (!el.matches('.postit *') ||
-        el.closest('.postit').classList.contains('hover')) {
-      return;
-    }
+    if (!el.matches('.postit *')) return;
 
-    const current = S.getCurrent('wall')[0].querySelector('.postit.hover');
+    const newP = el.closest('.postit');
 
-    if (current) {
-      current.classList.remove('hover');
-    }   
+    if (newP.classList.contains('hover')) return;
 
-    el.closest('.postit').classList.add('hover');
+    const oldP = S.getCurrent('wall').tag.querySelector('.postit.hover');
+
+    oldP && oldP.classList.remove('hover');
+    newP.classList.add('hover');
   };
-  wallsId.addEventListener('mouseover', __eventMOTS);
-  wallsId.addEventListener('touchstart', __eventMOTS);
+
+  if ($.support.touch) {
+    wallsId.addEventListener('touchstart', __eventMOTS);
+  } else {
+    wallsId.addEventListener('mouseover', __eventMOTS);
+  }
 
   // EVENT "click" on postit
   document.addEventListener('click', (e) => {
     const el = e.target;
 
     if (el.matches('.postit *')) {
-      const postit = el.closest('.postit');
-      const $postit = $(postit);
-      const plugin = $postit.postit('getClass');
+      const tag = el.closest('.postit');
+      const postit = P.get(tag, 'postit');
 
       // EVENT "click" ctrl+click on postit
       if (e.ctrlKey) {
-        const menu = S.getCurrent('mmenu').mmenu('getClass');
+        const mm = S.getCurrent('mmenu');
 
         e.stopImmediatePropagation();
         H.preventDefault(e);
 
-        if (postit.classList.contains('selected')) {
-          menu.remove(plugin.settings.id);
+        if (tag.classList.contains('selected')) {
+          mm.remove(postit.getId());
         } else {
-          menu.add(plugin);
+          mm.add(postit);
         }
 
       // EVENT "click" on postit content links
       } else if (el.matches('.postit-edit a[href],.postit-edit a[href] *')) {
         e.stopImmediatePropagation();
         if (e.ctrlKey || H.disabledEvent()) return;
-        _displayOpenLinkMenu(e);
+        __displayOpenLinkMenu(e);
 
       // EVENT "click" on postit for READ-ONLY mode
       } else if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
@@ -2238,7 +2220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!el.closest('.topicon')) {
-          plugin.openPostit();
+          postit.openPostit();
         }
 
       // EVENT "click" on postit menu button
@@ -2249,12 +2231,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btn = (el.tagName === 'DIV') ? el : el.closest('div');
         const ibtn = btn.querySelector('i');
-        const settings = plugin.settings;
+        const settings = postit.settings;
 
         // Create postit menu and show it
         if (!settings.Menu) {
-          settings.wall.wall('closeAllMenus');
-          settings.Menu = new _Menu(plugin);
+          settings.wall.closeAllMenus();
+          settings.Menu = new _Menu(postit);
           settings.Menu.show ();
         // Destroy postit menu
         } else {
@@ -2270,59 +2252,59 @@ document.addEventListener('DOMContentLoaded', () => {
         const action =
             (el.tagName === 'SPAN' ? el : el.closest('span')).dataset.action;
 
-        // To prevent race condition with draggable & resizable plugins
+        // To prevent race condition with draggable & resizable postits
         if (H.disabledEvent()) return;
 
         switch (action) {
           // OPEN postit edit popup
-          case 'edit': return plugin.openPostit();
+          case 'edit': return postit.openPostit();
           // OPEN deadline date picker popup
-          case 'dpick': return plugin.openDatePicker();
-          // OPEN popup for attachments, workers or comments
+          case 'dpick': return postit.openDatePicker();
+          // OPEN popup for attachments, comments or workers
           case 'patt':
-          case 'pwork':
           case 'pcomm':
-            return $(postit.querySelector(
-                `.topicon .${action}`))[action]('open');
+          case 'pwork':
+            return P.get(
+              tag.querySelector(`.topicon .${action}`), action).open();
         }
 
-        plugin.edit({}, () => {
+        postit.edit({}, () => {
           switch (action) {
             // DELETE postit
             case 'delete':
               H.openConfirmPopover({
-                item: postit.querySelector('.btn-menu'),
+                item: tag.querySelector('.btn-menu'),
                 placement: 'right',
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                 content: `<?=_("Delete this note?")?>`,
-                onClose: () => plugin.unedit(),
-                onConfirm: () => plugin.delete(),
+                onClose: () => postit.unedit(),
+                onConfirm: () => postit.delete(),
               });
               break;
             // OPEN tags picker
             case 'tpick':
-              return S.getCurrent('tpick').tpick('open', e);
+              return S.getCurrent('tpick').open(e);
             // OPEN color picker
             case 'cpick':
-              const cp = $('#cpick').cpick('getClass');
+              const cpick = S.getCurrent('cpick');
 
-              cp.open({
+              cpick.open({
                 event: e,
-                onClose: () => plugin.element.trigger('mouseleave'),
+                onClose: () =>
+                  tag.dispatchEvent(new MouseEvent('mouseleave')),
                 onSelect: (div) => {
-                  const el = plugin.element[0];
-                  cp.getColorsList().forEach((c) => el.classList.remove(c));
-                  el.classList.add(div.className);
+                  cpick.getColorsList().forEach((c) => tag.classList.remove(c));
+                  tag.classList.add(div.className);
                 },
               });
               break;
             // ADD plug
             case 'add-plug':
-              plugin.closeMenu();
+              postit.closeMenu();
 
               S.set('link-from', {
-                id: plugin.settings.id,
-                obj: $postit,
+                id: postit.getId(),
+                obj: postit,
               });
 
               const rabbit = H.createElement('div',
@@ -2336,7 +2318,7 @@ document.addEventListener('DOMContentLoaded', () => {
               document.body.prepend(rabbit);
 
               _plugRabbit.line = new LeaderLine(
-                postit,
+                tag,
                 rabbit,
                 {
                   path: `<?=WPT_PLUG_DEFAULTS['linePath']?>`,
@@ -2367,41 +2349,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (el.classList.contains('fa-times-circle')) {
-          plugin.edit({}, () => {
+          postit.edit({}, () => {
             H.openConfirmPopover({
               item: (el.tagName === 'DIV') ? el : el.closest('div'),
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Reset")?>`,
               content: `<?=_("Reset deadline?")?>`,
-              onClose: () => plugin.unedit(),
-              onConfirm: () => plugin.resetDeadline(),
+              onClose: () => postit.unedit(),
+              onConfirm: () => postit.resetDeadline(),
             });
           });
         } else {
-          plugin.openDatePicker();
+          postit.openDatePicker();
         }
       }
     } else if (el.matches('#postitViewPopup .modal-body *')) {
       if (el.tagName === 'A' || el.closest('A')) {
         e.stopImmediatePropagation();
-        _displayOpenLinkMenu(e, {noEditItem: true});
+        __displayOpenLinkMenu(e, {noEditItem: true});
       }
     }
   });
 
-// EVENT "click"
-document.addEventListener('click', (e) => {
+  // EVENT "click"
+  document.addEventListener('click', (e) => {
     const el = e.target;
 
     // EVENT "click" on plugs menu
     if (el.matches('.plug-label li,.plug-label li *')) {
       const item = (el.tagName === 'li') ? el : el.closest('li');
       const label = item.closest('div');
-      const $wall = S.getCurrent('wall');
+      const wallTag = S.getCurrent('wall').tag;
       const ids = label.previousSibling.id.match(/^_(\d+)\-(\d+)$/);
-      const startId = parseInt(ids[1]);
-      const endId = parseInt(ids[2]);
-      const startPlugin = $wall.find(
-        `.postit[data-id="postit-${startId}"]`).postit('getClass');
+      const startId = Number(ids[1]);
+      const endId = Number(ids[2]);
+      const start = P.get(wallTag.querySelector(
+        `.postit[data-id="postit-${startId}"]`), 'postit');
+      const end = P.get(wallTag.querySelector(
+        `.postit[data-id="postit-${endId}"]`), 'postit');
       const defaultLabel =
         H.htmlEscape(label.querySelector('span').innerText);
 
@@ -2409,58 +2393,58 @@ document.addEventListener('click', (e) => {
       const __unedit = () => {
         const toSave = {};
 
-        toSave[startId] = startPlugin.element;
-        toSave[endId] = $wall.find(`.postit[data-id="postit-${endId}"]`);
+        toSave[startId] = start;
+        toSave[endId] = end;
 
         S.set('plugs-to-save', toSave);
-        startPlugin.unedit();
+        start.unedit();
       };
 
       switch (item.dataset.action) {
         case 'rename':
-          startPlugin.edit({}, () => {
+          start.edit({}, () => {
             H.openConfirmPopover({
               type: 'update',
               item: label,
               title: `<i class="fas fa-bezier-curve fa-fw"></i> <?=_("Relation name")?>`,
               content: `<input type="text" class="form-control form-control-sm" value="${defaultLabel}" maxlength="<?=DbCache::getFieldLength('postits_plugs', 'label')?>">`,
               onClose: __unedit,
-              onConfirm: ($p) => {
-                const label = $p[0].querySelector('input').value.trim();
+              onConfirm: (p) => {
+                const label = p.querySelector('input').value.trim();
 
                 if (label !== defaultLabel) {
-                  startPlugin.updatePlugLabel({label, endId});
+                  start.updatePlugLabel({label, endId});
                 }
               },
             });
           });
           break;
         case 'delete':
-          startPlugin.edit({}, () => {
+          start.edit({}, () => {
             H.openConfirmPopover ({
               item: label,
               placement: 'left',
               title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
               content: `<?=_("Delete this relation?")?>`,
               onClose: __unedit,
-              onConfirm: () => startPlugin.removePlug(endId),
+              onConfirm: () => start.removePlug(endId),
             });
           });
           break;
         case 'position-auto':
-          startPlugin.edit({}, () => {
-              const p = startPlugin.getPlugById(endId);
+          start.edit({}, () => {
+              const p = start.getPlugById(endId);
 
-              _deleteRelatedPlugs(p);
+              start.deleteRelatedPlugs(p);
               p.obj.show();
 
-              startPlugin.resetPlugLabelPosition(label);
-              startPlugin.repositionPlugs();
+              start.resetPlugLabelPosition(label);
+              start.repositionPlugs();
               __unedit ();
             });
           break;
         case 'properties':
-          startPlugin.openPlugProperties(startPlugin.getPlugById(endId));
+          start.openPlugProperties(start.getPlugById(endId));
           break;
       }
     }
@@ -2479,8 +2463,8 @@ document.addEventListener('click', (e) => {
         return;
       }
 
-      $(el.closest('.postit')).postit('edit', {},
-        () => S.getCurrent('tpick').tpick('open', e));
+      P.get(el.closest('.postit'), 'postit')
+        .edit({}, () => S.getCurrent('tpick').open(e));
     }
   });
 
@@ -2505,10 +2489,10 @@ document.addEventListener('click', (e) => {
               size: e.total,
               onErrorMsg: __displayError,
             }) && e.target.result) {
-          const wallId = S.getCurrent('wall').wall('getId');
-          const $postit = S.getCurrent('postit');
-          const postitId = $postit.postit('getId');
-          const cellId = $postit.postit('getCellId');
+          const wallId = S.getCurrent('wall').getId();
+          const postit = S.getCurrent('postit');
+          const postitId = postit.getId();
+          const cellId = postit.getCellId();
 
           (async () => {
             const r = await H.fetch (
@@ -2527,7 +2511,7 @@ document.addEventListener('click', (e) => {
               const inputs = document.querySelector('.tox-dialog')
                 .querySelectorAll('input');
 
-              $postit[0].dataset.hasuploadedpictures = true;
+              postit.tag.dataset.hasuploadedpictures = true;
 
               //FIXME
               // If uploaded img is too large TinyMCE plugin
@@ -2564,8 +2548,9 @@ document.addEventListener('click', (e) => {
     if (data && data.closing) return;
 
     const popup = el;
-    const plugin = S.getCurrent('postit').postit('getClass');
-    const progress = Number($(popup).find('.slider').slider('value'));
+    const plugin = S.getCurrent('postit');
+    const progress =
+      Number(P.get(popup.querySelector('.slider'), 'slider').value());
     const title = document.getElementById('postitUpdatePopupTitle').value;
     const content = tinymce.activeEditor.getContent();
 
@@ -2618,4 +2603,4 @@ document.addEventListener('click', (e) => {
   });
 });
 
-<?=$Plugin->getFooter()?>
+})();

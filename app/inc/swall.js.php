@@ -3,76 +3,40 @@
 Javascript plugin - Sharing walls
 
 Scope: Wall
-Elements: #swallPopup
+Name: swall
 Description: Manage wall sharing
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('swall');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-let _$groupPopup;
-let _$groupAccessPopup;
+P.register('swall', class extends Wpt_forms {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.Settings = settings;
+    this.tag = settings.tag;
 
-// METHOD _displaySection()
-const _displaySection = (div, type, items) => {
-  const pClass = div.parentNode.classList;
-  const active = document.querySelector('.modal li.list-group-item.active');
+    this.groupPopup = null;
+    this.groupAccessPopup = null;
 
-  pClass.remove('scroll');
+    const tag = this.tag;
 
-  let html = '';
-  items.forEach((item) => {
-    if (item.item_type === type) {
-      html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-creator="1" class="list-group-item ${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="delete-group" type="button" class="close" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></div></li>`;
-    }
-  });
+    this.groupPopup = document.getElementById('groupPopup');
 
-  div.innerHTML = html;
-
-  if (html) {
-    pClass.add('scroll');
-
-    if (div.querySelector('li').length === 1) {
-      pClass.add('one');
-    } else {
-      pClass.remove('one');
-    }
-  }
-};
-
-/////////////////////////////////// PUBLIC ///////////////////////////////////
-
-<?=$Plugin->getPublicSection()?>
-
-// Inherit from Wpt_forms
-Plugin.prototype = Object.create(Wpt_forms.prototype);
-Object.assign(Plugin.prototype,
-{
-  // METHOD init()
-  init() {
-    const plugin = this;
-    const $share = plugin.element;
-    const share = $share[0];
-
-    _$groupPopup = $('#groupPopup');
-
-    share.addEventListener('hidden.bs.modal', (e) =>
-      S.getCurrent('wall').wall('menu', {from: 'wall', type: 'have-wall'}));
+    tag.addEventListener('hidden.bs.modal', (e) =>
+      S.getCurrent('wall').menu({from: 'wall', type: 'have-wall'}));
 
     // LOCAl FUNCTION __close()
     const __close = () =>
-      share.querySelector(
-        'li.list-group-item.active').classList.remove('active');
+      tag.querySelector('li.list-group-item.active').classList.remove('active');
 
 
     // EVENT "click"
-    plugin.element[0].addEventListener('click', (e) => {
+    tag.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on group list item buttons
@@ -80,10 +44,10 @@ Object.assign(Plugin.prototype,
                      '.list-group-item [data-action] *')) {
         const btn = el.getAttribute('data-action') ?
           el : el.closest('[data-action]');
-        const row = btn.closest('li');
-        const groupType = row.dataset.type;
         const action = btn.dataset.action;
-        const id = row.dataset.id;
+        const row = btn.closest('li');
+        const groupType = Number(row.dataset.type);
+        const id = Number(row.dataset.id);
 
         e.stopImmediatePropagation();
 
@@ -94,18 +58,20 @@ Object.assign(Plugin.prototype,
           case 'users-search':
             H.loadPopup('usearch', {
               open: false,
-              settings: {
-                caller: 'swall',
-                onAdd: () => plugin.displayGroups(),
-                onRemove: () => plugin.displayGroups(),
-                onClose: __close,
-              },
-              cb: ($p) => {
-                const p = $p[0];
-                const groupId = row.dataset.id;
-                const delegateAdminId = row.dataset.delegateadminid || 0;
+              cb: (p) => {
+                const groupId = Number(row.dataset.id);
+                const delegateAdminId =
+                  Number(row.dataset.delegateadminid || 0);
+                const usearch = P.getOrCreate(p, 'usearch');
 
-                $p.usearch('reset', {full: true});
+                usearch.setSettings({
+                  caller: 'swall',
+                  onAdd: () => this.displayGroups(),
+                  onRemove: () => this.displayGroups(),
+                  onClose: __close,
+                });
+
+                usearch.reset({full: true});
 
                 p.dataset.delegateadminid = delegateAdminId;
                 p.dataset.groupid = groupId;
@@ -117,10 +83,10 @@ Object.assign(Plugin.prototype,
 
                 p.querySelector('.desc').innerHTML = `<?=_("Add or remove users in the group « %s ».")?>`.replace('%s', `<b>${row.dataset.name}</b>`);
 
-                $p.usearch('displayUsers', {
+                usearch.displayUsers({
                   groupId,
                   groupType,
-                  wallId: S.getCurrent('wall').wall('getId'),
+                  wallId: S.getCurrent('wall').getId(),
                  });
 
                 H.openModal({item: p});
@@ -138,7 +104,7 @@ Object.assign(Plugin.prototype,
                    `<?=_("Delete this group?")?>`:
                    `<?=_("This group will no longer be available for the current wall or for your other walls.<br>Delete it anyway?")?>`,
                onClose: __close,
-               onConfirm: () => plugin.deleteGroup(),
+               onConfirm: () => this.deleteGroup(),
              });
             break;
           // unlink group
@@ -147,22 +113,22 @@ Object.assign(Plugin.prototype,
             // unlink.
             if (row.querySelector(
                   '.userscount .wpt-badge').innerText === '0') {
-              plugin.unlinkGroup({id}, groupType);
+              this.unlinkGroup({id}, groupType);
             } else {
               H.openConfirmPopover({
                  item: btn.closest('li').querySelector('.name'),
                  title: `<i class="fas fa-minus-circle fa-fw"></i> <?=_("Unshare")?>`,
                  content: `<?=_("Users will lose their access to the wall.<br>Unshare anyway?")?>`,
                  onClose: __close,
-                 onConfirm: () => plugin.unlinkGroup({id}, groupType)
+                 onConfirm: () => this.unlinkGroup({id}, groupType)
                });
             }
             break;
           // Link group
           case 'link-group':
             H.loadPopup('groupAccess', {
-              init: ($p) => {
-                $p[0].querySelector(`.send-msg input[type="checkbox"]`)
+              init: (p) => {
+                p.querySelector(`.send-msg input[type="checkbox"]`)
                     .addEventListener('change', (e) => {
                   const el = e.target;
                   const cls = el.closest('.send-msg').classList;
@@ -174,7 +140,7 @@ Object.assign(Plugin.prototype,
                   }
                 });
 
-                _$groupAccessPopup = $p;
+                this.groupAccessPopup = p;
               }
             });
             break;
@@ -189,33 +155,33 @@ Object.assign(Plugin.prototype,
         if (li.dataset.creator) {
           li.classList.add('active');
 
-          plugin.openUpdateGroup({
-            groupId: li.dataset.id,
+          this.openUpdateGroup({
+            groupId: Number(li.dataset.id),
             name: li.querySelector('.name').innerText,
             description: li.querySelector('.desc').innerText,
           });
         } else {
-          share.querySelector(`button[data-action="users-search"] i`).click();
+          tag.querySelector(`button[data-action="users-search"] i`).click();
         }
       }
     });
 
     // EVENT "click" on buttons
     const _eventCB = (e) => {
-      const action = e.target.dataset.action;
+      const action = e.currentTarget.dataset.action;
       if (action === `add-gtype-<?=WPT_GTYPES_GEN?>` ||
           action === `add-gtype-<?=WPT_GTYPES_DED?>`) {
-        plugin.openAddGroup(action.match(/add\-gtype\-([^\-]+)/)[1]);
+        this.openAddGroup(action.match(/add\-gtype\-([^\-]+)/)[1]);
       }
     };
-    share.querySelectorAll('button').forEach((el) =>
+    tag.querySelectorAll('button').forEach((el) =>
       el.addEventListener('click', _eventCB));
-  },
+  }
 
   // METHOD onSubmitGroup()
   onSubmitGroup(p, btn, e) {
     const type = btn.dataset.type;
-    const groupId = btn.dataset.groupid;
+    const groupId = Number(btn.dataset.groupid);
     const inputs = p.querySelectorAll('input');
 
     e.stopImmediatePropagation();
@@ -235,7 +201,7 @@ Object.assign(Plugin.prototype,
         description: H.noHTML(inputs[1].value),
       });
     }
-  },
+  }
 
   // METHOD openAddGroup()
   openAddGroup(type) {
@@ -252,16 +218,13 @@ Object.assign(Plugin.prototype,
 
     H.loadPopup('group', {
       open: false,
-      init: ($p) => {
-        const p = $p[0];
-
+      init: (p) => {
         p.querySelector('.btn-primary').addEventListener('click', (e) =>
-          this.onSubmitGroup(p, e.target, e));
+          this.onSubmitGroup(p, e.currentTarget, e));
 
-        _$groupPopup = $p;
+        this.groupPopup = p;
       },
-      cb: ($p) => {
-        const p = $p[0];
+      cb: (p) => {
         const btnPrimary = p.querySelector('.btn-primary');
 
         p.dataset.action = 'create';
@@ -277,22 +240,19 @@ Object.assign(Plugin.prototype,
         H.openModal({item: p});
       }
     });
-  },
+  }
 
   // METHOD openUpdateGroup()
   openUpdateGroup(args) {
     H.loadPopup('group', {
       open: false,
-      init: ($p) => {
-        const p = $p[0];
-        
+      init: (p) => {
         p.querySelector('.btn-primary').addEventListener('click', (e) =>
-          this.onSubmitGroup(p, e.target, e));
+          this.onSubmitGroup(p, e.currentTarget, e));
 
-        _$groupPopup = $p;
+        this.groupPopup = p;
       },
-      cb: ($p) => {
-        const p = $p[0];
+      cb: (p) => {
         const btnPrimary = p.querySelector('.btn-primary');
         const inputs = p.querySelectorAll('input');
 
@@ -311,32 +271,34 @@ Object.assign(Plugin.prototype,
         H.openModal({item: p});
       }
     });
-  },
+  }
 
   // METHOD open()
   open() {
     this.displayGroups();
-  },
+  }
 
   // METHOD linkGroup()
   linkGroup(args) {
-    const $wall = S.getCurrent('wall');
-    const group = this.element[0].querySelector('li.active');
+    const wall = S.getCurrent('wall');
+    const group = this.tag.querySelector('li.active');
 
     H.request_ws(
       'POST',
-      `wall/${$wall.wall('getId')}/group/${group.dataset.id}/link`,
+      `wall/${wall.getId()}/group/${group.dataset.id}/link`,
       {
         type: group.parentNode
                 .classList.contains(`gtype-<?=WPT_GTYPES_DED?>`) ?
                   <?=WPT_GTYPES_DED?> : <?=WPT_GTYPES_GEN?>,
-        access: _$groupAccessPopup[0].querySelector(
+        access: this.groupAccessPopup.querySelector(
           `input[name="access"]:checked`).value,
-        sendmail: _$groupAccessPopup[0]
+        sendmail: this.groupAccessPopup
           .querySelector(`.send-msg input[type="checkbox"]`).checked ?
             {
-              userFullname: $("#accountPopup").account('getProp', 'fullname'),
-              wallTitle: $wall.wall('getName'),
+              userFullname:
+                P.get(document.getElementById('accountPopup'), 'account')
+                  .getProp('fullname'),
+              wallTitle: wall.getName(),
             } : null,
       },
       // success cb
@@ -347,16 +309,16 @@ Object.assign(Plugin.prototype,
           this.displayGroups();
         }
       });
-  },
+  }
 
   // METHOD unlinkGroup()
   unlinkGroup(args, groupType) {
-    bootstrap.Tab.getOrCreateInstance(this.element[0].querySelector(
+    bootstrap.Tab.getOrCreateInstance(this.tag.querySelector(
       `a[href="#gtype-${groupType}"]`)).show();
 
     H.request_ws(
       'POST',
-      `wall/${S.getCurrent('wall').wall('getId')}/group/${args.id}/unlink`,
+      `wall/${S.getCurrent('wall').getId()}/group/${args.id}/unlink`,
       null,
       // success cb
       (d) => {
@@ -366,16 +328,16 @@ Object.assign(Plugin.prototype,
           this.displayGroups();
         }
       });
-  },
+  }
 
   // METHOD deleteGroup()
   deleteGroup() {
-    const group = this.element[0].querySelector('li.active');
+    const group = this.tag.querySelector('li.active');
 
     H.request_ws(
       'DELETE',
       (Number(group.dataset.type) === <?=WPT_GTYPES_DED?>) ?
-        `wall/${S.getCurrent('wall').wall('getId')}/`+
+        `wall/${S.getCurrent('wall').getId()}/`+
           `group/${group.dataset.id}` :
         `group/${group.dataset.id}`,
       null,
@@ -387,14 +349,14 @@ Object.assign(Plugin.prototype,
           this.displayGroups();
         }
       });
-  },
+  }
 
   // METHOD createGroup()
   createGroup(type, args) {
     H.request_ws(
       'PUT',
       (Number(type) === <?=WPT_GTYPES_DED?>) ?
-        `wall/${S.getCurrent('wall').wall('getId')}/group` :
+        `wall/${S.getCurrent('wall').getId()}/group` :
         `group`,
       args,
       // success cb
@@ -403,10 +365,10 @@ Object.assign(Plugin.prototype,
           H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           this.displayGroups();
-          bootstrap.Modal.getInstance(_$groupPopup[0]).hide();
+          bootstrap.Modal.getInstance(this.groupPopup).hide();
         }
       });
-  },
+  }
 
   // METHOD updateGroup()
   updateGroup(args) {
@@ -420,21 +382,21 @@ Object.assign(Plugin.prototype,
           H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           this.displayGroups();
-          bootstrap.Modal.getInstance(_$groupPopup[0]).hide();
+          bootstrap.Modal.getInstance(this.groupPopup).hide();
         }
       });
-  },
+  }
 
   // METHOD displayGroups()
   async displayGroups() {
-    const $share = this.element;
-    const wallPlugin = S.getCurrent('wall').wall('getClass');
-    const isOwner = (wallPlugin.settings.ownerid === wpt_userData.id);
-    const body = $share[0].querySelector('.modal-body');
+    const tag = this.tag;
+    const wall = S.getCurrent('wall');
+    const isOwner = (wall.settings.ownerid === U.getId());
+    const body = tag.querySelector('.modal-body');
 
     const r = await H.fetch(
       'GET',
-      `wall/${wallPlugin.settings.id}/group`);
+      `wall/${wall.getId()}/group`);
 
     if (r.error) {
       if (r.error_msg) {
@@ -453,10 +415,10 @@ Object.assign(Plugin.prototype,
         '.modal li.list-group-item.active');
 
       if (isOwner) {
-        wallPlugin.setShared(true);
+        wall.setShared(true);
       }
 
-      $share[0].querySelector('.grp-lb').innerText = `<?=_("Other available groups:")?>`;
+      tag.querySelector('.grp-lb').innerText = `<?=_("Other available groups:")?>`;
 
       pClass.add('scroll');
 
@@ -471,17 +433,13 @@ Object.assign(Plugin.prototype,
           html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" ${r.delegateAdminId ? '' : ` data-creator="1"`} data-delegateadminid=${r.delegateAdminId || 0} class="list-group-item${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>">${H.getAccessIcon(item.access)}<span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${typeIcon}${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button>${unlinkBtn}</div></li>`;
       });
 
-      if (r.in.length === 1) {
-        pClass.add('one');
-      } else {
-        pClass.remove('one');
-      }
+      pClass[r.in.length === 1 ? 'add' : 'remove']('one');
     } else {
       if (isOwner) {
-        wallPlugin.setShared(false);
+        wall.setShared(false);
       }
 
-      $share[0].querySelector('.grp-lb').innerText = `<?=_("Available groups:")?>`;
+      tag.querySelector('.grp-lb').innerText = `<?=_("Available groups:")?>`;
 
       pClass.remove('scroll');
 
@@ -496,13 +454,31 @@ Object.assign(Plugin.prototype,
     if (!r.delegateAdminId) {
       body.querySelectorAll('.delegate-admin-only').forEach((el) => H.hide(el));
 
-      _displaySection(
-        body.querySelector('.list-group.gtype-<?=WPT_GTYPES_DED?>.noattr'),
-        <?=WPT_GTYPES_DED?>, r.notin);
-
-      _displaySection(
-        body.querySelector('.list-group.gtype-<?=WPT_GTYPES_GEN?>.noattr'),
-        <?=WPT_GTYPES_GEN?>, r.notin);
+      // Display all groups (dedicated and generic)
+      [<?=WPT_GTYPES_DED?>, <?=WPT_GTYPES_GEN?>].forEach((type) => {
+        const div = body.querySelector(`.list-group.gtype-${type}.noattr`);
+        const items = r.notin;
+        const pClass = div.parentNode.classList;
+        const active = document.querySelector(
+          '.modal li.list-group-item.active');
+      
+        pClass.remove('scroll');
+      
+        let html = '';
+        items.forEach((item) => {
+          if (item.item_type === type) {
+            html += `<li data-id="${item.id}" data-type="${item.item_type}" data-name="${H.htmlEscape(item.name)}" data-creator="1" class="list-group-item ${active && Number(active.dataset.id) === item.id ? ' active' : ''}"><div class="userscount" data-action="users-search" title="${item.userscount} <?=_("user(s) in this group")?>"><i class="fas fa-layer-group fa-fw"></i> <span class="wpt-badge inset">${item.userscount}</span></div> <span class="name">${item.name}</span> <span class="desc">${item.description || ''}</span><div class="float-end"><button data-action="delete-group" type="button" class="close" title="<?=_("Delete this group")?>"><i class="fas fa-trash fa-fw fa-xs"></i></button><button data-action="users-search" type="button" class="close" title="<?=_("Manage users")?>"><i class="fas fa-user-friends fa-fw fa-xs"></i></button><button data-action="link-group" type="button" class="btn btn-secondary btn-xs btn-share" title="<?=_("Share with this group")?>"><i class="fas fa-plus-circle"></i><?=_("Share")?></button></div></li>`;
+          }
+        });
+      
+        div.innerHTML = html;
+      
+        if (html) {
+          pClass.add('scroll');
+          pClass[
+            div.querySelectorAll('li').length === 1 ? 'add' : 'remove']('one');
+        }
+      });
 
       body.querySelectorAll('.creator-only').forEach((el) => H.show(el));
     }
@@ -512,8 +488,6 @@ Object.assign(Plugin.prototype,
       body.querySelectorAll('.delegate-admin-only').forEach((el) => H.show(el));
     }
 
-    H.openModal({item: $share[0]});
+    H.openModal({item: tag});
   }
 });
-
-<?=$Plugin->getFooter()?>

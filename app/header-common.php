@@ -53,9 +53,6 @@ if (!empty($_SESSION['upgradeDone'])) {
     <?php foreach (WPT_JS_NODE_MODULES as $mod):?>
       <script src="/libs/node_modules/<?=$mod?>?<?=$version?>"></script>
     <?php endforeach?>
-    <?php foreach (WPT_JS_LOCAL_MODULES as $mod):?>
-      <script src="/libs/<?=$mod?>?<?=$version?>"></script>
-    <?php endforeach?>
   <?php else:?>
 <!--//</WPTPROD-remove>-->
     <script src="/libs/modules.js?<?=$version?>"></script>

@@ -3,25 +3,24 @@
 Javascript plugin - Settings
 
 Scope: Global
-Elements: #settings
+Name: settings
 Description: Manage user's settings
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('settings');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+(() => {
+'use strict';
 
-<?=$Plugin->getPublicSection()?>
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const $settings = this.element;
+P.register('settings', class extends Wpt_pluginBase {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    const tag = this.tag;
     const head = document.head;
 
     [`<?=implode('`,`', WPT_THEMES)?>`].forEach((color) => {
@@ -47,7 +46,7 @@ Plugin.prototype = {
       (el) => el.addEventListener('click', _eventCC));
 
     // EVENT "change" on timezone select
-    $settings[0].querySelector('.timezone').addEventListener('change',
+    tag.querySelector('.timezone').addEventListener('change',
       (e) => {
         const el = e.target;
 
@@ -79,7 +78,7 @@ Plugin.prototype = {
         });
       }
     };
-    $settings[0].querySelectorAll('.locale-picker div').forEach((el) => {
+    tag.querySelectorAll('.locale-picker div').forEach((el) => {
       const locale = el.dataset.locale;
 
       if (this.settings.locale && this.settings.locale === locale) {
@@ -90,21 +89,21 @@ Plugin.prototype = {
 
       el.addEventListener('click', _eventCL);
     });
-  },
+  }
 
   // METHOD applyLocale()
   applyLocale(locale) {
     this.set({locale}, () => location.href = `/r.php?l=${locale}`);
-  },
+  }
 
   // METHOD applyTimezone()
   applyTimezone(timezone) {
     this.set({timezone}, () => location.href = '/r.php');
-  },
+  }
 
   // METHOD applyTheme()
   applyTheme() {
-    const theme = wpt_userData.settings.theme || 'theme-default';
+    const theme = U.getTheme();
     const current =
         document.querySelector(`link[id^="theme-"]:not([media="none"])`);
 
@@ -116,19 +115,19 @@ Plugin.prototype = {
 
       // Apply theme to postits
       if (postit) {
-        setTimeout(() => $(postit).postit('applyTheme'), 250);
+        setTimeout(() => P.get(postit, 'postit').applyTheme(), 250);
       }
     }
-  },
+  }
 
   // METHOD saveOpenedWalls()
   saveOpenedWalls(activeWallId, updateRecent = true) {
     const openedWalls = [];
-    const recentWalls = wpt_userData.settings.recentWalls || [];
+    const recentWalls = U.getRecentWalls();
     let args = {};
 
     document.querySelectorAll('.nav-tabs.walls a.nav-link').forEach((tab) => {
-      const wallId = tab.getAttribute('href').split('-')[1];
+      const wallId = Number(tab.getAttribute('href').split('-')[1]);
 
       openedWalls.push(wallId);
 
@@ -138,7 +137,7 @@ Plugin.prototype = {
     });
 
     args.openedWalls = openedWalls;
-    args.activeWall = openedWalls.length ? activeWallId : '';
+    args.activeWall = openedWalls.length ? activeWallId : null;
 
     if (openedWalls.length && updateRecent) {
       const idx = recentWalls.indexOf(activeWallId);
@@ -157,29 +156,50 @@ Plugin.prototype = {
     }
 
     this.set(args);
-  },
+  }
+
+  // METHOD removeWall()
+  removeWall(id) {
+    this.removeOpenedWall(id);
+    this.removeRecentWall(id);
+    this.removeWallBackground(id);
+    if (U.get('activeWall') === id) {
+      U.set('activeWall', null);
+    }
+  }
 
   // METHOD removeRecentWall()
   removeRecentWall(wallId) {
-    const recentWalls = wpt_userData.settings.recentWalls || [];
-    const idx = recentWalls.indexOf(String(wallId));
+    const recentWalls = U.getRecentWalls();
+    const idx = recentWalls.indexOf(wallId);
 
     if (idx > -1) {
       recentWalls.splice(idx, 1);
       this.set({recentWalls});
     }
-  },
+  }
+
+  // METHOD removeOpenedWall()
+  removeOpenedWall(wallId) {
+    const openedWalls = U.getOpenedWalls();
+    const idx = openedWalls.indexOf(wallId);
+
+    if (idx > -1) {
+      openedWalls.splice(idx, 1);
+      this.set({openedWalls});
+    }
+  }
 
   // METHOD set()
   set(keyVal, cb) {
-    wpt_userData.settings = {...wpt_userData.settings, ...keyVal};
+    U.setSettings({...U.getSettings(), ...keyVal});
 
     // If registered user (not login page)
     if (!H.isLoginPage()) {
       H.request_ws(
         'POST',
         'user/settings',
-        {settings: JSON.stringify(wpt_userData.settings)},
+        {settings: JSON.stringify(U.getSettings())},
         // success cb
         cb
       );
@@ -192,11 +212,11 @@ Plugin.prototype = {
     } else if (keyVal.theme) {
       ST.set('theme', keyVal.theme);
     }
-  },
+  }
 
   // METHOD getVersion()
   get(key, wallId) {
-    const settings = wpt_userData.settings;
+    const settings = U.getSettings();
 
     // version
     if (key === 'version') {
@@ -215,21 +235,21 @@ Plugin.prototype = {
     } else if (key === 'openedWalls') {
       return settings.openedWalls;
     }
-  },
+  }
 
   // METHOD removeWallBackground()
   removeWallBackground(wallId) {
-    const walls = wpt_userData.settings.walls;
+    const walls = U.get('walls');
 
     if (walls && walls.specific[wallId]) {
       delete walls.specific[wallId];
       this.set({walls});
     }
-  },
+  }
 
   // METHOD setWallBackground ()
   setWallBackground(data, wallId) {
-    const settings = wpt_userData.settings;
+    const settings = U.getSettings();
 
     if (!settings.walls) {
       settings.walls = {
@@ -245,18 +265,16 @@ Plugin.prototype = {
     }
 
     this.set({walls: settings.walls});
-  },
+  }
 
   // METHOD openThemeChooser()
   openThemeChooser() {
     H.loadPopup('themeChooser', {
       noeffect: true,
-      init: ($p) => {
-        const p = $p[0];
-
+      init: (p) => {
         // TODO Factorization
         // EVENT "click" on theme color button chooser
-        const _eventCC = (e)=> {
+        const _eventCC = (e) => {
             this.set({theme: e.target.dataset.theme});
             this.applyTheme();
         };
@@ -277,28 +295,28 @@ Plugin.prototype = {
         });
       }
     });
-  },
+  }
 
   // METHOD open()
   async open(args) {
-    const $settings = this.element;
-    const settings = $settings[0];
-    const $wall = S.getCurrent('wall');
-    const wallId = $wall.length ? $wall.wall('getId') : null;
-    const $cp = $settings.find('.cp');
-    const wcContent = $settings[0].querySelector('.wall-color');
-    const loaded = settings.dataset.loaded;
+    const tag = this.tag;
+    const $settings = $(tag);
+    const wall = S.getCurrent('wall');
+    const wallId = wall ? wall.getId() : null;
+    const $cp = $(tag.querySelector('.cp'));
+    const wcContent = tag.querySelector('.wall-color');
+    const loaded = tag.dataset.loaded;
     const ww = window.outerWidth;
     //FIXME
     const swatchesWidth = ww < 435 ? ww - 90 : 435;
 
     if (!loaded) {
-      H.hide(settings.querySelector('.modal-body'));
+      H.hide(tag.querySelector('.modal-body'));
     }
 
-    if ($wall.length) {
+    if (wall) {
       wcContent.innerHTML = `<?=_("Color of the wall «&nbsp;%s&nbsp;»:")?>`
-        .replace('%s', $wall.wall('getName'));
+        .replace('%s', wall.getName());
     } else {
       wcContent.innerHTML = `<?=_("Default walls color:")?>`;
     }
@@ -308,29 +326,30 @@ Plugin.prototype = {
       $cp[0].querySelector('.ui-colorpicker-swatches').style.width = 
         `${swatchesWidth}px`;
     } else {
-      const userTz = wpt_userData.settings.timezone;
+      const userTz = U.get('timezone');
       // Load timezones
       const r = await H.fetch('GET', 'common/timezones');
       let html = '';
 
       r.forEach((tz) => html += `<option name="${tz}"${(tz === userTz) ? ' selected="selected"' : ''}>${tz}</option>`);
-      settings.querySelector('.timezone').innerHTML = html;
+      tag.querySelector('.timezone').innerHTML = html;
 
       // Load color picker
+      // TODO Do not use jQuery here
       $settings.find('.cp').colorpicker({
         swatchesWidth,
         parts: ['swatches'],
         select: (e, color) => {
-          const $wall = S.getCurrent('wall');
-          const wallId = $wall.length ? $wall.wall('getId') : null;
+          const wall = S.getCurrent('wall');
+          const wallId = wall ? wall.getId() : null;
+          const wallTag = wall && wall.tag;
 
           if (color.css !== this.get('wall-background', wallId)) {
-            const style = {'background-color': color.css};
             if (wallId) {
-              $wall.css(style);
+              wallTag.style.backgroundColor = color.css;
             }
             H.setColorpickerColor($cp, color.css, false);
-            this.setWallBackground(style, wallId);
+            this.setWallBackground({'background-color': color.css}, wallId);
           }
         }
       });
@@ -338,25 +357,21 @@ Plugin.prototype = {
       H.setColorpickerColor($cp, this.get('wall-background', wallId));
     }
 
-    H.openModal({item: settings});
+    H.openModal({item: tag});
 
     if (!loaded) {
-      settings.dataset.loaded = 1;
+      tag.dataset.loaded = 1;
       $settings.find('.modal-body').show('fade');
     }
   }
-};
+});
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!H.isLoginPage()) return;
 
-  const $plugin = $("#settingsPopup");
-
-  if ($plugin.length) {
-    $plugin.settings();
-  }
+  P.create(document.getElementById('settingsPopup'), 'settings');
 });
 
-<?=$Plugin->getFooter()?>
+})();

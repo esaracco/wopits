@@ -3,55 +3,52 @@
 Javascript plugin - Display filters
 
 Scope: Wall
-Element: .filters
+Name: filters
 Description: Manage filtering of notes display
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-use Wopits\jQueryPlugin;
-
-$Plugin = new jQueryPlugin('filters');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+  'use strict';
 
 let _body;
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
+P.register('filters', class extends Wpt_toolbox {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.settings = settings;
+    this.tag = settings.tag;
 
-// Inherit from Wpt_toolbox
-Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const filters = this.element[0];
+    const tag = this.tag;
 
     if (!_body) {
       let tags = '';
       let colors = '';
 
-      S.getCurrent('tpick').tpick('getTagsList').forEach((el) =>
-          tags +=
-            `<div><i class="fa-${el} fa-fw fas" data-tag="${el}"></i></div>`);
+      S.getCurrent('tpick').getTagsList().forEach((el) => tags +=
+        `<div><i class="fa-${el} fa-fw fas" data-tag="${el}"></i></div>`);
 
-      $('#cpick').cpick('getColorsList').forEach((el) =>
-          colors += `<div class="${el}">&nbsp;</div>`);
+      S.getCurrent('cpick').getColorsList().forEach((el) => colors +=
+        `<div class="${el}">&nbsp;</div>`);
 
       _body = `<button type="button" class="btn-close"></button><h2><?=_("Filters")?></h2><div class="filters-items"><div class="tags"><h3><?=_("Tags:")?></h3>${tags}</div><div class="colors"><h3><?=_("Colors:")?></h3>${colors}</div></div>`;
     }
 
-    $(filters)
+    $(tag)
+      // TODO Do not use jQuery here
       .draggable({
         distance: 10,
         cursor: 'move',
         drag: (e, ui) => this.fixDragPosition(ui),
         stop: () => S.set('dragging', true, 500),
       })
+      // TODO Do not use jQuery here
       .resizable({
         handles: 'all',
         autoHide: !$.support.touch,
@@ -59,11 +56,11 @@ Object.assign(Plugin.prototype, {
       .append(_body);
 
     // EVENT "click" on close button
-    filters.querySelector('.btn-close').addEventListener('click',
+    tag.querySelector('.btn-close').addEventListener('click',
       (e) => this.hide());
 
     // EVENT "click" on tags
-    filters.querySelector('.tags').addEventListener('click', (e) => {
+    tag.querySelector('.tags').addEventListener('click', (e) => {
       const el = e.target;
 
       if (el.tagName === 'I') {
@@ -76,7 +73,7 @@ Object.assign(Plugin.prototype, {
     });
 
     // EVENT "click" on colors
-    filters.querySelector('.colors').addEventListener('click', (e) => {
+    tag.querySelector('.colors').addEventListener('click', (e) => {
       const el = e.target;
 
       if (el.tagName === 'DIV') {
@@ -87,28 +84,28 @@ Object.assign(Plugin.prototype, {
         this.apply();
       }
     });
-  },
+  }
 
   // METHOD hide()
   hide() {
-    if (H.isVisible(this.element[0])) {
+    if (this.isVisible()) {
       document.querySelector(`#main-menu li[data-action="filters"]`).click();
     }
-  },
+  }
 
   // METHOD hidePlugs()
   hidePlugs() {
-    this.element[0].classList.add('plugs-hidden');
-    S.getCurrent('wall').wall('hidePostitsPlugs'); 
-  },
+    this.tag.classList.add('plugs-hidden');
+    S.getCurrent('wall').hidePostitsPlugs(); 
+  }
 
   // METHOD showPlugs()
   showPlugs() {
-    const wall = S.getCurrent('wall').wall('getClass');
+    const wall = S.getCurrent('wall');
 
-    this.element[0].classList.remove('plugs-hidden');
+    this.tag.classList.remove('plugs-hidden');
 
-    H.waitForDOMUpdate(()=> {
+    H.waitForDOMUpdate(() => {
       wall.showPostitsPlugs();
       if (wall.isShared()) {
         wall.refresh();
@@ -116,40 +113,40 @@ Object.assign(Plugin.prototype, {
         wall.refreshPostitsPlugs(true);
       }
     });
-  },
+  }
 
   // METHOD toggle()
   toggle() {
-    const filters = this.element[0];
+    const tag = this.tag;
 
-    if (H.isVisible(filters)) {
-      H.hide(filters);
-      filters.querySelectorAll(
+    if (this.isVisible()) {
+      H.hide(tag);
+      tag.querySelectorAll(
           '.tags div.selected,.colors div.selected').forEach(
               (el) => el.classList.remove('selected'));
       this.apply();
     } else {
-      filters.style.top = '60px';
-      filters.style.left = '5px';
-      H.show(filters, 'table');
+      tag.style.top = '60px';
+      tag.style.left = '5px';
+      H.show(tag, 'table');
       this.apply({norefresh: true});
     }
-  },
+  }
 
   // METHOD reset()
   reset() {
-    this.element[0].querySelectorAll('.selected').forEach(
+    this.tag.querySelectorAll('.selected').forEach(
         (el) => el.classList.remove('selected'));
 
     this.apply();
-  },
+  }
 
   // METHOD apply()
   apply(args = {}) {
-    const filters = this.element[0];
-    const wall = S.getCurrent('wall')[0];
-    const tags = filters.querySelectorAll('.tags .selected');
-    const colors = filters.querySelectorAll('.colors .selected');
+    const tag = this.tag;
+    const wallTag = S.getCurrent('wall').tag;
+    const tags = tag.querySelectorAll('.tags .selected');
+    const colors = tag.querySelectorAll('.colors .selected');
 
     // LOCAL FUNCTION __setVisible()
     const __setVisible = (cell) => {
@@ -166,9 +163,9 @@ Object.assign(Plugin.prototype, {
 
     if (tags.length || colors.length) {
       this.hidePlugs();
-      S.getCurrent('mmenu').mmenu('reset');
+      S.getCurrent('mmenu').reset();
 
-      wall.querySelectorAll('td.wpt').forEach((cell) => {
+      wallTag.querySelectorAll('td.wpt').forEach((cell) => {
         const pclass = __setVisible(cell);
 
         tags.forEach((el) => {
@@ -188,7 +185,7 @@ Object.assign(Plugin.prototype, {
             .forEach((el) => el.style.visibility = 'hidden');
       });
     } else {
-      wall.querySelectorAll('td.wpt').forEach(__setVisible);
+      wallTag.querySelectorAll('td.wpt').forEach(__setVisible);
 
       if (!args.norefresh) {
         this.showPlugs();
@@ -197,4 +194,4 @@ Object.assign(Plugin.prototype, {
   }
 });
 
-<?=$Plugin->getFooter()?>
+})();

@@ -23,11 +23,11 @@ if (count($options)) {
   }
 }
 
-// Broadcast reload order.
+// Broadcast reload order
 if (isset($options['r'])) {
   $client->send(json_encode(['action' => 'reload']));
 
-// Broadcast new release announce.
+// Broadcast new release announce
 } elseif (isset($options['n'])) {
   $client->send(json_encode([
     'action' => 'mainupgrade',

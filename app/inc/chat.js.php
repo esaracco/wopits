@@ -3,56 +3,64 @@
 Javascript plugin - Chat
 
 Scope: Wall
-Element: .chat
+Name: .chat
 Description: Manage chat
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('chat');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
+P.register('chat', class extends Wpt_toolbox {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.settings = settings;
+    this.tag = settings.tag;
 
-// Inherit from Wpt_toolbox
-Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-Object.assign(Plugin.prototype, {
-  closeVKB: false,
-  // METHOD init()
-  init() {
-    const $chat = this.element;
-    const chat = $chat[0];
+    const tag = this.tag;
 
-    $chat
+   this.closeVKB = false;
+
+    $(tag)
+      // TODO Do not use jQuery here
       .draggable({
         distance: 10,
+        cancel: '.textarea,input',
         cursor: 'move',
         drag: (e, ui) => this.fixDragPosition(ui),
-        stop: ()=> S.set('dragging', true, 500)
+        stop: () => S.set('dragging', true, 500),
       })
+      // TODO Do not use jQuery here
       .resizable({
         handles: 'all',
         autoHide: !$.support.touch,
         minHeight: 200,
         minWidth: 200,
         resize: (e, ui) =>
-          chat.querySelector('.textarea')
+          tag.querySelector('.textarea')
             .style.height = `${ui.size.height - 100}px`,
       })
-      .append(`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge inset"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"><button type="button" class="btn btn-xs btn-primary">Envoyer</button></div>`);
+      // TODO Do not use jQuery here
+      .append(`<button type="button" class="btn-close"></button><h2><i class="fas fa-fw fa-comments"></i> <?=_("Chat room")?> <div class="usersviewcounts"><i class="fas fa-user-friends"></i> <span class="wpt-badge inset"></span></div></h2><div><div class="textarea form-control"><span class="btn btn-sm btn-secondary btn-circle btn-clear" title="<?=_("Clear history")?>"><i class="fa fa-broom"></i></span><ul></ul></div></div><div class="console"><input type="text" name="msg" value="" class="form-control form-control-sm"></div>`);
 
-    const input = chat.querySelector('input');
+    const input = tag.querySelector('input');
 
     // EVENT "keypress" in main input
     input.addEventListener('keypress', (e) => {
       if (e.which !== 13) return;
 
-      H.preventDefault (e);
-      chat.querySelector('.btn-primary').click();
+      const msg = H.noHTML(input.value);
+
+      if (!msg) return;
+
+      H.preventDefault(e);
+
+      this.sendMsg(msg);
+      this.setFocus();
+      input.value = '';
     });
 
     // EVENT "focus" in main input
@@ -75,104 +83,91 @@ Object.assign(Plugin.prototype, {
     input.addEventListener('click', (e) => e.target.focus());
 
     // EVENT "click" on close button
-    chat.querySelector('.btn-close').addEventListener('click',
+    tag.querySelector('.btn-close').addEventListener('click',
       (e) => this.hide());
 
     // EVENT "click" on "clear" button
-    chat.querySelector('.btn-clear').addEventListener('click', (e) => {
+    tag.querySelector('.btn-clear').addEventListener('click', (e) => {
       if (H.disabledEvent()) return false;
 
       e.target.closest('.form-control').querySelectorAll('li').forEach(
         (el) => el.remove());
 
-        input.focus();
+      input.focus();
     });
-
-    // EVENT "click" on "send" button
-    chat.querySelector('button.btn-primary').addEventListener('click',
-      (e) => {
-      const msg = H.noHTML(input.value);
-
-      if (!msg) return;
-
-      this.sendMsg (msg);
-      this.setFocus();
-      input.value = '';
-    });
-  },
+  }
 
   // METHOD hide()
   hide() {
-    if (H.isVisible(this.element[0])) {
+    if (H.isVisible(this.tag)) {
       document.querySelector(`#main-menu li[data-action="chat"]`).click();
     }
-  },
+  }
 
   // METHOD join()
   join() {
     H.request_ws('PUT', `wall/${this.settings.wallId}/chat`);
-  },
+  }
 
   // METHOD leave()
   leave() {
     H.request_ws('DELETE', `wall/${this.settings.wallId}/chat`);
-  },
+  }
 
   // METHOD setFocus()
   setFocus() {
-    H.setAutofocus(this.element[0]);
-  },
+    H.setAutofocus(this.tag);
+  }
 
   // METHOD toggle()
   toggle() {
-    const $chat = this.element;
-    const chat = $chat[0];
+    const tag = this.tag;
     const wallId = this.settings.wallId;
 
-    if (H.isVisible(chat)) {
+    if (H.isVisible(tag)) {
       H.request_ws('DELETE', `wall/${wallId}/chat`);
-      H.hide(chat);
+      H.hide(tag);
     } else {
       const el =
         document.querySelector(`#wall-${wallId} .wall-menu .chat-alert`);
 
-      el && el.remove ();
+      el && el.remove();
 
-      chat.style.bottom = '15px';
-      chat.style.left = '5px';
-      H.show(chat, 'table');
+      tag.style.bottom = '15px';
+      tag.style.left = '5px';
+      H.show(tag, 'table');
 
       this.setFocus();
 
       H.request_ws('PUT', `wall/${wallId}/chat`);
     }
-  },
+  }
 
   // METHOD removeAlert()
   removeAlert() {
     const el = document.querySelector(
       `#wall-${this.settings.wallId} .wall-menu .chat-alert`);
 
-    el && el.remove ();
-  },
+    el && el.remove();
+  }
 
   // METHOD refreshUserscount()
   refreshUserscount(args = {userscount: 0, userslist: []}) {
-    const chat = this.element[0];
-    const userId = wpt_userData.id;
+    const tag = this.tag;
+    const userId = U.getId();
 
-    chat.querySelector('.wpt-badge').innerHTML = args.userscount;
+    tag.querySelector('.wpt-badge').innerHTML = args.userscount;
 
     let title = '';
      args.userslist.forEach(
        (el) => (el.id !== userId) ? title += `, ${el.name}` : '');
-     chat.querySelector('.usersviewcounts').title = title.substring(1);
-  },
+     tag.querySelector('.usersviewcounts').title = title.substring(1);
+  }
 
   // METHOD addMsg()
   addMsg(args) {
-    const $chat = this.element;
-    const isHidden = $chat.is(':hidden');
+    const tag = this.tag;
+    const isHidden = !this.isVisible();
     let node;
 
     if (args.internal !== undefined) {
@@ -190,7 +185,7 @@ Object.assign(Plugin.prototype, {
       node = H.createElement('li', {className: `${ args.msgId ? 'current' : ''}`}, null, `<span>${args.msgId ? '<i class="fas fa-user fa-sm"></i>' : args.username}</span> ${args.msg}`);
     }
 
-    $chat[0].querySelector('.textarea').querySelector('ul').appendChild(node);
+    tag.querySelector('.textarea').querySelector('ul').appendChild(node);
 
     if (isHidden && args.method !== 'DELETE') {
       const el = document.querySelector(`#wall-${this.settings.wallId} .wall-menu .chat-alert .wpt-badge`);
@@ -210,28 +205,25 @@ Object.assign(Plugin.prototype, {
     }
 
     this.setCursorToEnd();
-  },
+  }
 
   // METHOD setCursorToEnd()
   setCursorToEnd() {
-    const el = this.element[0].querySelector('.textarea');
+    const el = this.tag.querySelector('.textarea');
 
     el.scrollTop = el.scrollHeight;
-  },
+  }
 
   // METHOD sendMsg()
   sendMsg(msg) {
     H.request_ws("POST", `wall/${this.settings.wallId}/chat`, {msg});
-  },
+  }
 
   // METHOD reset()
   reset() {
-    const $chat = this.element[0];
+    const tag = this.tag;
 
-    chat.querySelector('.textarea').innerText = '';
-    chat.querySelector('input').value = '';
+    tag.querySelector('.textarea').innerText = '';
+    tag.querySelector('input').value = '';
   }
-
 });
-
-<?=$Plugin->getFooter()?>

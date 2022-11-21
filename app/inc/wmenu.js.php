@@ -3,30 +3,25 @@
 Javascript plugin - Wall menu
 
 Scope: Wall
-Elements: .wall-menu
+Name: wmenu
 Description: Manage wall's floating menu
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-use Wopits\jQueryPlugin;
-
-$Plugin = new jQueryPlugin('wmenu');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
+P.register('wmenu', class extends Wpt_toolbox {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.settings = settings;
+    this.tag = settings.tag;
 
-// Inherit from Wpt_toolbox
-Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const menu = this.element[0];
-    const wallPlugin = this.settings.wallPlugin;
+    const tag = this.tag;
+    const wall = this.settings.wall;
     const adminAccess =
       H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, this.settings.access);
     const menuItems = [
@@ -106,22 +101,27 @@ Object.assign(Plugin.prototype, {
       },
     ];
 
-    menu.classList.add('toolbox');
+    tag.classList.add('toolbox');
 
     menuItems.forEach((args) => {
       if (!args) return;
       const {action, title, icon, className, cls, content} = args;
-      menu.appendChild(action ?
+      const options = {title};
+      if (className) {
+        options.className = className;
+      }
+      tag.appendChild(action ?
         // Menu item
         H.createElement('li',
-          {title, className},
+          options,
           {action},
           `<i class="fa-fw fas fa-${icon} fa-lg ${cls || ''}"></i> ${content ? content : ''}`) :
         // Divider
         H.createElement('li', {className: `divider ${cls || ''}`})); 
     });
 
-    $(menu).draggable({
+    // TODO Do not use jQuery here
+    $(tag).draggable({
       distance: 10,
       cursor: 'move',
       drag: (e, ui) => this.fixDragPosition(ui),
@@ -129,7 +129,7 @@ Object.assign(Plugin.prototype, {
     });
 
     // EVENT "click" on wall menu
-    menu.addEventListener('click', (e) => {
+    tag.addEventListener('click', (e) => {
       const el = e.target;
 
       if (el.matches('li,li *')) {
@@ -142,55 +142,53 @@ Object.assign(Plugin.prototype, {
           case 'share':
             H.loadPopup('swall', {
               open: false,
-              cb: ($p) => $p.swall('open'),
+              cb: (p) => P.getOrCreate(p, 'swall').open(),
             });
             break;
           case 'add-col':
           case 'add-row':
-            wallPlugin.createColRow(action.split('-')[1]);
+            wall.createColRow(action.split('-')[1]);
             break;
           case 'search':
-            H.loadPopup ("psearch", {
+            H.loadPopup('psearch', {
               open: false,
-              cb: ($p)=> $p.psearch ("open")
+              cb: (p) => P.getOrCreate(p, 'psearch').open(),
             });
             break
           case 'postit-mode':
-            wallPlugin.setPostitsDisplayMode(action);
-            H.waitForDOMUpdate(() => wallPlugin.refreshPostitsPlugs(true));
+            wall.setPostitsDisplayMode(action);
+            H.waitForDOMUpdate(() => wall.refreshPostitsPlugs(true));
             break;
           case 'list-mode':
-            S.getCurrent('mmenu').mmenu('close');
-            wallPlugin.setPostitsDisplayMode(action);
+            S.getCurrent('mmenu').close();
+            wall.setPostitsDisplayMode(action);
             break;
           case 'unblock-externalref':
-            wallPlugin.displayExternalRef(1, true);
+            wall.displayExternalRef(1, true);
             H.displayMsg({
               type: 'info',
               msg: `<?=_("External contents are no longer filtered")?>`,
             });
             break;
           case 'block-externalref':
-            wallPlugin.displayExternalRef(0, true);
+            wall.displayExternalRef(0, true);
             H.displayMsg({
               type: 'info',
               msg: `<?=_("External contents are now filtered")?>`,
             });
             break;
           case 'show-headers':
-            wallPlugin.displayHeaders(1);
-            H.waitForDOMUpdate(() => wallPlugin.refreshPostitsPlugs(true));
+            wall.displayHeaders(1);
+            H.waitForDOMUpdate(() => wall.refreshPostitsPlugs(true));
             break;
           case 'hide-headers':
-            wallPlugin.displayHeaders(0);
+            wall.displayHeaders(0);
             break;
           case 'show-users':
-            wallPlugin.displayWallUsersview();
+            wall.displayWallUsersview();
             break;
         }
       }
     });
-  },
+  }
 });
-
-<?=$Plugin->getFooter()?>

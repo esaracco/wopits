@@ -3,116 +3,111 @@
 Javascript plugin - Notes relations properties
 
 Scope: Note
-Element: .plugprop
+Name: plugprop
 Description: Set notes relations properties
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('plugprop');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-let _forceHide = false;
-let _ll;
-let _postitPlugin;
-let _plug;
-
-/////////////////////////////////// PUBLIC ///////////////////////////////////
-
-<?=$Plugin->getPublicSection()?>
-
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const ra = this.element[0];
+P.register('plugprop', class extends Wpt_pluginBase {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    const tag = this.tag;
     const ww = window.outerWidth;
 
-    // FIXME
-    const _eventSP = (e) => _ll && _ll.position();
+    this.forceHide = false;
+    this.ll = null;
+    this.postit = null;
+    this.plug = null;
 
     // EVENT "hide.bs.modal" plug's settings popup
-    ra.addEventListener('hide.bs.modal', (e) => {
-      if (_forceHide || S.get('plugs-to-save')) return;
+    tag.addEventListener('hide.bs.modal', (e) => {
+      if (this.forceHide || S.get('plugs-to-save')) return;
 
        const newLabel =
-          ra.querySelector(`input[name="label"]`).value || '...';
+          tag.querySelector(`input[name="label"]`).value || '...';
 
-       if (newLabel !== _plug.label.name ||
-           _ll.size !== _plug.obj.line_size ||
-           _ll.path !== _plug.obj.path ||
-           _ll.line_type !== _plug.obj.line_type ||
-           _ll.color !== _plug.obj.color) {
+       if (newLabel !== this.plug.label.name ||
+           this.ll.size !== this.plug.obj.line_size ||
+           this.ll.path !== this.plug.obj.path ||
+           this.ll.line_type !== this.plug.obj.line_type ||
+           this.ll.color !== this.plug.obj.color) {
          H.preventDefault (e);
 
          H.openConfirmPopup ({
            type: 'save-plugs-changes',
            icon: 'save',
            content: `<?=_("Save changes?")?>`,
-           onConfirm: () => ra.querySelector('.btn-primary').click(),
+           onConfirm: () => tag.querySelector('.btn-primary').click(),
            onClose: () => {
-             _forceHide = true;
-             bootstrap.Modal.getInstance(ra).hide();
+             this.forceHide = true;
+             bootstrap.Modal.getInstance(tag).hide();
            },
          });
        }
     });
 
+    // LOCAL FUNCTION _eventSP()
+    // FIXME
+    const _eventSP = (e) => this.ll && this.ll.position();
+
     // EVENT "hidden.bs.modal" plug's settings popup
-    ra.addEventListener('hidden.bs.modal', (e) => {
+    tag.addEventListener('hidden.bs.modal', (e) => {
       // FIXME
-      ra.removeEventListener('scroll', _eventSP);
+      tag.removeEventListener('scroll', _eventSP);
 
       // Remove leader line sample
       this.removeSample();
-      _postitPlugin.unedit();
+      this.postit.unedit();
     });
 
     // EVENT "show.bs.modal" plug's settings popup
-    ra.addEventListener('show.bs.modal', (e) => {
+    tag.addEventListener('show.bs.modal', (e) => {
       // EVENT "scroll" on popup body
       // FIXME
-      ra.addEventListener('scroll', _eventSP);
+      tag.addEventListener('scroll', _eventSP);
 
       document.getElementById('plugprop-sample').style.backgroundColor =
-          S.getCurrent('wall')[0].style.backgroundColor || '#fff';
+          S.getCurrent('wall').tag.style.backgroundColor || '#fff';
     });
 
     // EVENT "click" on plug's settings reset button
-    ra.querySelector('button.reset').addEventListener('click', (e) => {
+    tag.querySelector('button.reset').addEventListener('click', (e) => {
       this.removeSample();
       this.createSample(true);
 
-      ra.querySelector(`input[name="size"]`).value = _ll.size;
-      ra.querySelector(`input[value="${_ll.path}"]`).checked = true;
-      ra.querySelector(`input[value="${_ll.line_type}"]`).checked = true;
+      tag.querySelector(`input[name="size"]`).value = this.ll.size;
+      tag.querySelector(`input[value="${this.ll.path}"]`).checked = true;
+      tag.querySelector(`input[value="${this.ll.line_type}"]`).checked = true;
     });
 
     // EVENT "click" on plug's settings "line type" options
     const _eventLineType = (e) => {
-      _ll.line_type = e.target.value;
-      _postitPlugin.applyPlugLineType(_ll);
+      this.ll.line_type = e.target.value;
+      this.postit.applyPlugLineType(this.ll);
     };
-    ra.querySelectorAll(`input[name="type"]`)
+    tag.querySelectorAll(`input[name="type"]`)
         .forEach((el) => el.addEventListener('click', _eventLineType));
 
     // EVENT "click" on plug's settings "line path" options
-    const _eventLinePath = (e) => _ll.path = e.target.value;
-    ra.querySelectorAll(`input[name="path"]`)
+    const _eventLinePath = (e) => this.ll.path = e.target.value;
+    tag.querySelectorAll(`input[name="path"]`)
         .forEach((el) => el.addEventListener('click', _eventLinePath));
 
     // Load color picker
-    $(ra.querySelector('.cp')).colorpicker({
+    $(tag.querySelector('.cp')).colorpicker({
       parts: ['swatches'],
       swatchesWidth: ww < 435 ? ww - 90 : 435,
       color: '#fff',
       select: (e, color) => {
-        _ll.color = color.css;
-        _ll.setOptions ({
-          dropShadow: _postitPlugin.getPlugDropShadowTemplate(color.css),
+        this.ll.color = color.css;
+        this.ll.setOptions ({
+          dropShadow: this.postit.getPlugDropShadowTemplate(color.css),
         });
       },
     });
@@ -128,26 +123,26 @@ Plugin.prototype = {
 
       el.classList.add ('cp-selected');
     };
-    ra.querySelectorAll('.cp .ui-colorpicker-swatch')
+    tag.querySelectorAll('.cp .ui-colorpicker-swatch')
         .forEach (el=> el.addEventListener('click', _eventColor));
 
     // EVENT "click" on plug's settings "save" button
-    ra.querySelector('.btn-primary').addEventListener('click', (e) => {
+    tag.querySelector('.btn-primary').addEventListener('click', (e) => {
       let toSave = {};
 
-      toSave[_plug.startId] = $(_plug.obj.start);
-      toSave[_plug.endId] = $(_plug.obj.end);
+      toSave[this.plug.startId] = P.get(this.plug.obj.start, 'postit');
+      toSave[this.plug.endId] = P.get(this.plug.obj.end, 'postit');
 
       S.set('plugs-to-save', toSave);
 
-      _postitPlugin.updatePlugProperties ({
-        label: ra.querySelector(`input[name="label"]`).value,
-        startId: _plug.startId,
-        endId: _plug.endId,
-        size: _ll.size,
-        path: _ll.path,
-        color: _ll.color,
-        line_type: _ll.line_type,
+      this.postit.updatePlugProperties ({
+        label: tag.querySelector(`input[name="label"]`).value,
+        startId: this.plug.startId,
+        endId: this.plug.endId,
+        size: this.ll.size,
+        path: this.ll.path,
+        color: this.ll.color,
+        line_type: this.ll.line_type,
       });
 
       this.removeSample();
@@ -155,7 +150,7 @@ Plugin.prototype = {
 
     /// EVENTS "keyup & change" on plug's settings "line size" option
     const _eventKC = (e) => {
-      if (_ll) {
+      if (this.ll) {
         const el = e.target;
         const max = parseInt(el.getAttribute('max'));
 
@@ -169,69 +164,66 @@ Plugin.prototype = {
           }
         }
 
-        _ll.size = parseInt(el.value);
+        this.ll.size = parseInt(el.value);
       }
     };
-    ra.querySelector(`input[name="size"]`)
+    tag.querySelector(`input[name="size"]`)
         .addEventListener('keyup', _eventKC);
-    ra.querySelector(`input[name="size"]`)
+    tag.querySelector(`input[name="size"]`)
         .addEventListener('change', _eventKC);
-  },
+  }
 
   // METHOD createSample()
   createSample(reset) {
     const els = document.querySelectorAll('#plugprop-sample div');
 
-    _ll = _postitPlugin.getPlugTemplate({
+    this.ll = this.postit.getPlugTemplate({
       start: els[0],
       end: els[1],
-      line_size: reset ? undefined : _plug.obj.line_size,
-      line_path: reset ? undefined : _plug.obj.path,
-      line_type: reset ? undefined : _plug.obj.line_type,
-      line_color: reset ? undefined : _plug.obj.color
+      line_size: reset ? undefined : this.plug.obj.line_size,
+      line_path: reset ? undefined : this.plug.obj.path,
+      line_type: reset ? undefined : this.plug.obj.line_type,
+      line_color: reset ? undefined : this.plug.obj.color
     }, true);
 
-    this.element[0].appendChild(
-        document.querySelector('.leader-line:last-child'));
-  },
+    this.tag.appendChild(document.querySelector('.leader-line:last-child'));
+  }
 
   // METHOD removeSample()
   removeSample() {
-    const s = this.element[0].querySelector('.leader-line');
+    const s = this.tag.querySelector('.leader-line');
 
     if (s) {
       document.body.appendChild(s);
-      _ll.remove();
-      _ll = null;
+      this.ll.remove();
+      this.ll = null;
     }
-  },
+  }
 
   // METHOD open()
-  open (postitPlugin, plug) {
-    const ra = this.element[0];
+  open(postit, plug) {
+    const tag = this.tag;
 
-    H.openModal({item: ra});
+    H.openModal({item: tag});
 
-    _forceHide = false;
-    _plug = plug;
-    _postitPlugin = postitPlugin;
+    this.forceHide = false;
+    this.plug = plug;
+    this.postit = postit;
 
+    // FIXME setTimeout()
     setTimeout (() => {
-        const label = _plug.label.name;
+      const label = this.plug.label.name;
 
-        this.createSample();
+      this.createSample();
 
-        H.setColorpickerColor($(ra.querySelector('.cp')), _plug.obj.color);
-        ra.querySelector(`input[name="label"]`).value =
-            (label === '...') ? '' : label;
-        ra.querySelector(`input[name="size"]`).value = _plug.obj.line_size;
-        ra.querySelector(`input[value="${_plug.obj.path}"]`)
-            .checked = true;
-        ra.querySelector(`input[value="${_plug.obj.line_type}"]`)
-            .checked = true;
-
-      }, 350);
-  },
-};
-
-<?=$Plugin->getFooter()?>
+      H.setColorpickerColor($(tag.querySelector('.cp')), this.plug.obj.color);
+      tag.querySelector(`input[name="label"]`).value =
+        (label === '...') ? '' : label;
+      tag.querySelector(`input[name="size"]`).value = this.plug.obj.line_size;
+      tag.querySelector(`input[value="${this.plug.obj.path}"]`)
+        .checked = true;
+      tag.querySelector(`input[value="${this.plug.obj.line_type}"]`)
+        .checked = true;
+    }, 350);
+  }
+});

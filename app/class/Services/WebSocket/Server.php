@@ -678,7 +678,7 @@ class Server {
       $ret['msgId'] = $msg->msgId ?? null;
       $server->push($fd, json_encode($ret));
 
-    // Internal wopits communication.
+    // Internal wopits communication
     } else {
       switch ($msg->action ?? null) {
         // ping
@@ -710,10 +710,11 @@ class Server {
           break;
         // reload & mainupgrade
         //FIXME TODO If a user has something being edited, wait for him to
-        //           finish.
+        //           finish
         case 'reload':
         case 'mainupgrade':
-          // Purge SQL editing queue.
+          // FIXME Still useful?
+          // Purge SQL editing queue
           (new EditQueue())->purge();
 
           $_json = json_encode($msg);
@@ -835,7 +836,7 @@ class Server {
 
         $sessionsCount = count($sessions);
 
-        // Close all user's sessions.
+        // Close all user's sessions
         if (!$client->final && $sessionsCount > 1) {
           $_json = json_encode(['action' => 'exitsession']);
 

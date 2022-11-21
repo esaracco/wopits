@@ -3,61 +3,54 @@
 Javascript plugin - Notes comments
 
 Scope: Note
-Element: .pcomm
+Name: pcomm
 Description: Manage notes comments
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('pcomm');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+'use strict';
 
-let _$popup;
+let _popup;
 let _textarea;
 
 // METHOD _getEventSelector()
 const _getEventSelector = (s) =>
   H.haveMouse() ? `.pcomm-popover ${s}` : `#postitCommentsPopup ${s}`;
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-<?=$Plugin->getPublicSection()?>
+P.register('pcomm', class extends Wpt_postitCountPlugin {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-// Inherit from Wpt_postitCountPlugin
-Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
-Object.assign(Plugin.prototype, {
-  readonly: true,
-  // METHOD init()
-  init() {
-    const settings = this.settings;
+    this.readonly = this.settings.readonly;
 
-    this.readonly = settings.readonly;
-
-    if (this.readonly && !settings.count) {
-      this.element[0].classList.add('hidden');
+    if (this.readonly && !this.settings.count) {
+      this.tag.classList.add('hidden');
     }
 
     // Create postit top comments icon
     this.addTopIcon('fa-comments', 'pcomm');
 
-    this.settings._cache = settings.count ? [] : null;
+    this.settings._cache = this.settings.count ? [] : null;
 
     return this;
-  },
+  }
 
   // METHOD refresh()
   refresh(d) {
     this.settings._cache = d.comments;
     this.setCount(d.comments.length);
 
-    if (_$popup) {
+    if (_popup) {
       this.open(true);
     }
-  },
+  }
 
   // METHOD injectUserRef()
   injectUserRef(s) {
@@ -70,16 +63,16 @@ Object.assign(Plugin.prototype, {
 
     _textarea.focus();
     _textarea.selectionStart = _textarea.selectionEnd = prev.length;
-  },
+  }
 
   // METHOD search()
   search(args, force) {
-    const pc = _$popup[0];
+    const pc = _popup;
     const el = pc.querySelector('.result-container');
     const {wallId} = this.getIds();
 
-    // LOCAL FUNCTION __resize()
-    const __resize = () => {
+    // LOCAL FUNCTION __fixHeight()
+    const __fixHeight = () => {
       const wH = window.innerHeight - 30;
       const elB = el.getBoundingClientRect().bottom;
       if (elB > wH) {
@@ -111,7 +104,7 @@ Object.assign(Plugin.prototype, {
           pc.querySelector('.search').classList.add('shadow');
           _textarea.classList.add('autocomplete');
 
-          setTimeout(__resize, 50);
+          setTimeout(__fixHeight, 50);
         } else {
           if (!args.str) {
             _textarea.value = _textarea.value.replace(/@/, '');
@@ -126,12 +119,10 @@ Object.assign(Plugin.prototype, {
         pc.querySelector('.result').innerHTML = html;
       }
     );
-  },
+  }
 
   // METHOD reset()
   reset(args = {}) {
-    const pc = _$popup[0];
-
     if (args.full) {
       args.field = true;
       args.users = true;
@@ -141,14 +132,14 @@ Object.assign(Plugin.prototype, {
       _textarea.value = '';
     }
 
-    H.hide(pc.querySelector('.result-container'));
-    pc.querySelector('.result').innerHTML = '';
+    H.hide(_popup.querySelector('.result-container'));
+    _popup.querySelector('.result').innerHTML = '';
 
     _textarea.classList.remove('autocomplete');
 
-    pc.querySelectorAll('.shadow').forEach(
+    _popup.querySelectorAll('.shadow').forEach(
       (el) => el.classList.remove('shadow'));
-  },
+  }
 
   // METHOD add()
   add(content) {
@@ -160,23 +151,25 @@ Object.assign(Plugin.prototype, {
       {
         content,
         postitTitle: this.postit().getTitle(),
-        userFullname: $('#accountPopup').account('getProp', 'fullname'),
+        userFullname:
+          P.get(document.getElementById('accountPopup'), 'account')
+            .getProp('fullname'),
       },
       // success cb
       () => H.waitForDOMUpdate(
         () => window.dispatchEvent(new Event('resize'))));
-  },
+  }
 
   // METHOD close()
   close() {
-    if (_$popup) {
+    if (_popup) {
       if (!H.haveMouse()) {
-        bootstrap.Modal.getInstance(_$popup[0]).hide();
+        bootstrap.Modal.getInstance(_popup).hide();
       } else {
         document.getElementById('popup-layer').click();
       }
     }
-  },
+  }
 
   // METHOD open()
   open(refresh) {
@@ -191,36 +184,39 @@ Object.assign(Plugin.prototype, {
         null,
         // success cb
         (d) => {
-          this.settings._cache = d;
-          this._open(d, refresh);
+          if (this.readonly && !d.length) {
+            this.close();
+          } else {
+            this.settings._cache = d;
+            this._open(d, refresh);
+          }
         });
     }
-  },
+  }
 
   // METHOD open()
   _open(d, refresh) {
-    const userId = wpt_userData.id;
+    const userId = U.getId();
     const {wallId, cellId, postitId} = this.getIds();
     let content = '';
 
-    // LOCAL FUNCTION __resize()
-    const __resize = () => {
-      const popup = _$popup[0];
-      const body = popup.querySelector('.popover-body');
+    // LOCAL FUNCTION __fixHeight()
+    const __fixHeight = () => {
+      const body = _popup.querySelector('.popover-body');
 
       if (body.clientHeight > body.querySelector('.content').clientHeight) {
         body.style.height = 'auto';
-        popup.classList.remove('have-scroll');
+        _popup.classList.remove('have-scroll');
       }
 
-      if (popup.classList.contains('have-scroll')) return;
+      if (_popup.classList.contains('have-scroll')) return;
 
       const wH = window.innerHeight - 30;
-      const bb = popup.getBoundingClientRect();
+      const bb = _popup.getBoundingClientRect();
 
       if (bb.bottom > wH) {
-        const h = popup.clientHeight - (bb.bottom - window.innerHeight);
-        popup.classList.add('have-scroll');
+        const h = _popup.clientHeight - (bb.bottom - window.innerHeight);
+        _popup.classList.add('have-scroll');
         body.style.height = `${h-60}px`;
       }
     };
@@ -228,33 +224,33 @@ Object.assign(Plugin.prototype, {
     this.postit().setCurrent();
 
     (d || []).forEach((c) => {
-      content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${(!this.readonly && c.ownerid === userId) ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${H.getUserDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
+      content += `<div class="msg-item" data-id="${c.id}" data-userid="${c.ownerid}"><div class="msg-title"><i class="far fa-user"></i> ${c.ownername || `<s><?=_("deleted")?></s>`}${(!this.readonly && c.ownerid === userId) ? `<button type="button" class="close" title="<?=_("Delete my comment")?>"><span><i class="fas fa-trash fa-xs"></i></span></button>` : ''}<div class="msg-date">${U.formatDate(c.creationdate, null, 'Y-MM-DD H:mm')}</div></div><div class="msg-body">${c.content.replace(/\n/g, '<br>')}</div></div>`;
     });
 
     content = content.replace(
         /(@[^\s\?\.:!,;"<@]+)/g, `<span class="msg-userref">$1</span>`);
 
     if (refresh) {
-      _$popup[0].querySelector('.content').innerHTML = content;
+      _popup.querySelector('.content').innerHTML = content;
 
       // Resize only if popover
-      if (_$popup[0].classList.contains('popover')) {
-        H.waitForDOMUpdate(__resize);
+      if (_popup.classList.contains('popover')) {
+        H.waitForDOMUpdate(__fixHeight);
       }
     } else if (content || !this.readonly) {
-      const editing = this.readonly ? '' : `<div class="search mb-1"><button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall')[0].dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
+      const editing = this.readonly ? '' : `<div class="search mb-1"><button class="btn clear-textarea" type="button"><i class="fa fa-times"></i></button><textarea class="form-control" maxlength="<?=Wopits\DbCache::getFieldLength('postits_comments', 'content')?>"></textarea><div class="result-container"><ul class="result autocomplete list-group"></ul></div></div><div class="tip">${S.getCurrent('wall').tag.dataset.shared ? `<i class="far fa-lightbulb"></i> <?=_("Use @ to refer to another user.")?>` : `<?=_("Since the wall is not shared, you are the only one to see these comments.")?>`}</div><button type="button" class="btn btn-primary btn-xs"><?=_("Send")?></button>`;
 
       // Device without mouse: open a POPUP
       if (!H.haveMouse()) {
         H.loadPopup('postitComments', {
-          cb: ($p) => {
-            const c = $p[0].querySelector('.content');
+          cb: (p) => {
+            const c = p.querySelector('.content');
 
-            _$popup = $p;
+            _popup = p;
 
             if (editing) {
-              $p[0].querySelector('.editing').innerHTML = editing;
-              _textarea = $p[0].querySelector('textarea');
+              p.querySelector('.editing').innerHTML = editing;
+              _textarea = p.querySelector('textarea');
             }
 
             c.dataset.wallid = wallId;
@@ -264,12 +260,12 @@ Object.assign(Plugin.prototype, {
             c.innerHTML = content;
 
             // EVENT "hidden.bs.modal" on popup 
-            $p[0].addEventListener('hidden.bs.modal', (e) => {
+            p.addEventListener('hidden.bs.modal', (e) => {
               if (!this.readonly) {
                 _textarea.value = '';
-                _$popup.pcomm('reset');
+                this.reset();
               }
-               _$popup = undefined;
+               _popup = undefined;
                this.postit().unsetCurrent();
             }, {once: true});
           }
@@ -282,10 +278,10 @@ Object.assign(Plugin.prototype, {
           html_header: editing,
           customClass: 'msg-popover pcomm-popover',
           noclosure: true,
-          item: this.element[0].querySelector('i'),
+          item: this.tag.querySelector('i'),
           title: `<i class="fas fa-comments fa-fw"></i> <?=_("Comments")?>`,
           content: `<div class="content" data-wallid="${wallId}" data-cellid="${cellId}" data-postitid="${postitId}">${content}</div>`,
-          onConfirm: ($p) => {
+          onConfirm: () => {
             const content = H.noHTML(_textarea.value);
             if (content) {
               this.add(content);
@@ -294,13 +290,13 @@ Object.assign(Plugin.prototype, {
             }
           },
           onClose: () => {
-            _$popup = undefined;
+            _popup = undefined;
             this.postit().unsetCurrent();
           },
-          then: ($p) => {
-            _$popup = $p;
-            _textarea = $p[0].querySelector('textarea');
-            __resize();
+          then: (p) => {
+            _popup = p;
+            _textarea = p.querySelector('textarea');
+            __fixHeight();
           }
       });
     }
@@ -308,7 +304,7 @@ Object.assign(Plugin.prototype, {
   }
 });
 
-/////////////////////////// AT LOAD INIT //////////////////////////////
+//////////////////////////////////// INIT ////////////////////////////////////
 
 document.addEventListener('DOMContentLoaded', () => {
   if (H.isLoginPage()) return;
@@ -321,19 +317,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // EVENT "click" on postit comments button
     if (el.matches('.pcomm,.pcomm *')) {
-      $((el.tagName === 'DIV') ? el : el.parentNode).pcomm('open');
+      P.get((el.tagName === 'DIV') ? el : el.parentNode, 'pcomm').open();
     } else if (el.matches(_getEventSelector('*'))) {
       // EVENT "click" on comments "clear textarea" button
       if (el.matches('.clear-textarea,.clear-textarea *')) {
         _textarea.value = '';
-        S.getCurrent('pcomm').pcomm('reset');
+        S.getCurrent('pcomm').reset();
         _textarea.focus();
 
       // EVENT "click" on comments "submit" button
       } else if (el.matches('.btn-primary')) {
         const content = H.noHTML(_textarea.value);
         if (content) {
-          S.getCurrent('pcomm').pcomm('add', content);
+          S.getCurrent('pcomm').add(content);
           _textarea.value = '';
           _textarea.focus();
         }
@@ -341,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // EVENT "click" on comments users list
       } else if (el.matches('.result .list-group-item,'+
                             '.result .list-group-item *')) {
-        const pcomm = S.getCurrent('pcomm').pcomm('getClass');
+        const pcomm = S.getCurrent('pcomm');
 
         // Selected the current item in users search list and close the
         // list
@@ -368,8 +364,8 @@ document.addEventListener('DOMContentLoaded', () => {
             `${data.postitid}/comment/${item.dataset.id}`,
           null,
           // success cb
-          () => H.waitForDOMUpdate(
-                 () => window.dispatchEvent(new Event('resize'))));
+          () => H.waitForDOMUpdate(() =>
+                  window.dispatchEvent(new Event('resize'))));
       }
     }
   });
@@ -378,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const _textareaEventK = (e) => {
     const el = e.target;
 
-    if (!_$popup) return;
+    if (!_popup) return;
 
     // EVENTS "keyup & keydown" on comments textarea
     if (el.matches(_getEventSelector('textarea'))) {
@@ -387,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!list.length) return;
 
       const k = e.which;
-      const pcomm = S.getCurrent('pcomm').pcomm('getClass');
+      const pcomm = S.getCurrent('pcomm');
 
       // If ESC, close the users search
       if (k === 27) {
@@ -466,12 +462,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Nothing if we must ignore the key
-      if (S.getCurrent('wall')[0].dataset.shared && !ignore) {
+      if (S.getCurrent('wall').tag.dataset.shared && !ignore) {
         // Display users search list if needed
         if ( (m = prev.match(/(^|\s)@([^\s]+)?$/)) ) {
-          S.getCurrent('pcomm').pcomm('search', {str: m[2] || ''});
+          S.getCurrent('pcomm').search({str: m[2] || ''});
         } else if (el.classList.contains('autocomplete')) {
-          S.getCurrent('pcomm').pcomm('reset');
+          S.getCurrent('pcomm').reset();
         }
       }
     }
@@ -497,4 +493,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-<?=$Plugin->getFooter()?>
+})();

@@ -3,44 +3,32 @@
 Javascript plugin - Main menu & walls
 
 Scope: Global
-Elements: .wall
+Name: wall
 Description: Manage main menu & walls
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('wall', '', 'wallElement');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+  'use strict';
 
-let _originalObject;
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-// METHOD _getNextActiveTab()
-const _getNextActiveTab = (current) =>
-  current.previousElementSibling ?
-    current.previousElementSibling : current.nextElementSibling ?
-      current.nextElementSibling : null;
+P.register('wall', class extends Wpt_pluginWallElement {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-// METHOD _getCellTemplate()
-const _getCellTemplate = ({id, width, height}) => {
-  return `<td scope="dzone" class="wpt" style="width:${width}px;height:${height}px" data-id="cell-${id}"></td>`;
-};
+    this.originalObject = null;
+  }
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
-
-<?=$Plugin->getPublicSection()?>
-
-// Inherit from Wpt_accountForms
-Plugin.prototype = Object.create(Wpt_accountForms.prototype);
-Object.assign(Plugin.prototype, {
   // METHOD init()
   async init() {
-    const $wall = this.element;
-    const wall = $wall[0];
-    const settings = this.settings;
+    const settings= this.settings;
+    const tag = this.tag;
+    const $wall = $(tag);
     const wallId = settings.id;
     const access = settings.access;
     const writeAccess = this.canWrite();
@@ -52,10 +40,10 @@ Object.assign(Plugin.prototype, {
     settings.plugs = [];
 
     // Display mode (list-mode, postit-mode)
-    wall.dataset.displaymode = settings.displaymode;
+    tag.dataset.displaymode = settings.displaymode;
 
     // If headers are displayed (1) or hidden (0)
-    wall.dataset.displayheaders = displayHeaders;
+    tag.dataset.displayheaders = displayHeaders;
 
     // Wall title tab link
     settings.tabLink = document.querySelector(
@@ -63,7 +51,7 @@ Object.assign(Plugin.prototype, {
 
     // If wa are restoring a previous session
     if (settings.restoring) {
-      wall.dataset.restoring = 1;
+      tag.dataset.restoring = 1;
     }
 
     // If wall is shared
@@ -78,13 +66,15 @@ Object.assign(Plugin.prototype, {
     this.setDescription(settings.description);
 
     // Add wall floating menu
-    $(`#wall-${wallId}`).find('.wall-menu').wmenu({access, wallPlugin: this});
+    P.create(document.querySelector(
+      `#wall-${wallId} .wall-menu`), 'wmenu', {access, wall: this});
 
-    wall.style.width = settings.width ? `${settings.width}px` : 'auto';
-    wall.style.backgroundColor = settings['background-color'] || 'auto';
-    wall.innerHTML = `<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`
+    tag.style.width = settings.width ? `${settings.width}px` : 'auto';
+    tag.style.backgroundColor = settings['background-color'] || 'auto';
+    tag.innerHTML = `<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`
 
     if (H.haveMouse()) {
+      // TODO Do not use jQuery here
       $wall.draggable({
         distance: 10,
         cursor: 'grab',
@@ -96,8 +86,9 @@ Object.assign(Plugin.prototype, {
         },
         stop: () => {
           S.set('dragging', true, 500);
-          const f = S.getCurrent('filters')[0];
-          if (!f || !f.classList.contains('plugs-hidden')) {
+          const filtersTag =
+            S.getCurrent('filters') && S.getCurrent('filters').tag;
+          if (!filtersTag || !filtersTag.classList.contains('plugs-hidden')) {
             this.showPostitsPlugs();
           }
           S.unset('wall-dragging');
@@ -107,21 +98,21 @@ Object.assign(Plugin.prototype, {
 
     // Create columns headers
     const hcols = settings.headers.cols;
-    const tr = wall.querySelector('thead.wpt tr.wpt');
-    wall.dataset.cols = hcols.length;
+    const tr = tag.querySelector('thead.wpt tr.wpt');
+    tag.dataset.cols = hcols.length;
     hcols.forEach((header) => {
       const th = H.createElement('th', {
         className: `wpt ${displayHeaders ? 'display' : 'hide'}`,
       });
       tr.appendChild(th);
-      $(th).header({
+      P.create(th, 'header', {
         access,
         wallId,
+        wall: this,
         item_type: 'col',
         id: header.id,
         title: header.title,
         picture: header.picture,
-        wall: $wall,
       });
     });
 
@@ -137,16 +128,17 @@ Object.assign(Plugin.prototype, {
 
     // Create rows with cells and postits
     const hrows = settings.headers.rows;
-    wall.dataset.rows = hrows.length;
+    tag.dataset.rows = hrows.length;
     rows.forEach((row, rowIdx) => {
       this.addRow(hrows[rowIdx], row);
-      row.forEach((cell) => {
-        const $cell = $(wall.querySelector(`[data-id="cell-${cell.id}"]`));
-        cell.postits.forEach((postit) => {
+      row.forEach((cellData) => {
+        const cell =
+          P.get(tag.querySelector(`[data-id="cell-${cellData.id}"]`), 'cell');
+        cellData.postits.forEach((postit) => {
           // No perf killer spread operator here!
           postit.init = true;
           postit.access = access;
-          $cell.cell('addPostit', postit, true);
+          cell.addPostit(postit, true);
         });
       })
     });
@@ -156,30 +148,30 @@ Object.assign(Plugin.prototype, {
 
     if (settings.restoring) {
       delete settings.restoring;
-      wall.removeAttribute('data-restoring');
+      tag.removeAttribute('data-restoring');
     }
 
-    return $wall;
-  },
+    return this;
+  }
 
   // METHOD displayPostitAlert()
   displayPostitAlert({postitId, type}) {
-    const postit = S.getCurrent('wall')[0].querySelector(
+    const postitTag = S.getCurrent('wall').tag.querySelector(
       `.postit[data-id="postit-${postitId}"]`);
 
-    if (postit) {
-      $(postit).postit('displayAlert', type);
+    if (postitTag) {
+      P.get(postitTag, 'postit').displayAlert(type);
     } else {
       H.displayMsg({
         type: 'warning',
         msg: `<?=_("The note has been deleted")?>`,
       });
     }
-  },
+  }
 
   // METHOD displayShareAlert()
   displayShareAlert(wallId) {
-    const walls = wpt_userData.walls.list;
+    const walls = U.getWalls();
     let owner;
 
     for (const k in walls) {
@@ -195,7 +187,7 @@ Object.assign(Plugin.prototype, {
       title: `<i class="fas fa-share fa-fw"></i> <?=_("Sharing")?>`,
       content: owner ? `<?=_("%s shared this wall with you")?>`.replace("%s", owner) : `<?=_("This wall has been shared with you")?>`,
     });
-  },
+  }
 
   // METHOD setActive()
   setActive() {
@@ -204,7 +196,7 @@ Object.assign(Plugin.prototype, {
     document.getElementById(`wall-${this.settings.id}`)
       .classList.add('active');
     this.menu({from: 'wall', type: 'have-wall'});
-  },
+  }
 
   // METHOD ctrlMenu()
   ctrlMenu(action, type) {
@@ -216,12 +208,13 @@ Object.assign(Plugin.prototype, {
     } else {
       m.remove('disabled');
     }
-  },
+  }
 
   // METHOD menu()
   menu(args) {
-    const $wall = S.getCurrent('wall');
-    const wmenu = $wall[0].parentNode.querySelector('.wall-menu');
+    const wall = S.getCurrent('wall');
+    const tag = wall && wall.tag;
+    const wmenu = tag ? tag.parentNode.querySelector('.wall-menu') : null;
     const menu = document.getElementById('main-menu');
     const menuNormal =
       menu.querySelector(`.dropdown-menu li[data-action="zoom-normal"] a`);
@@ -239,9 +232,8 @@ Object.assign(Plugin.prototype, {
         switch (args.type) {
           case 'no-wall':
             H.hide(document.querySelector('.nav.walls'));
-            document.getElementById('dropdownView')
-              .classList.add('disabled');
-            $('#welcome').show(S.get('closing-all') ? null : 'fade');
+            document.getElementById('dropdownView').classList.add('disabled');
+            H.show(document.getElementById('welcome'));
             menu.querySelectorAll(
                 '[data-action="delete"] a,'+
                 '[data-action="close-walls"] a,'+
@@ -252,24 +244,24 @@ Object.assign(Plugin.prototype, {
               H.hide(wmenu.querySelector('[data-action="share"]'));
             break;
           case 'have-wall':
-            if ($wall.length) {
+            if (tag) {
               H.show(document.querySelector('.nav.walls'));
               document.getElementById('dropdownView')
                 .classList.remove('disabled');
               this.menu({
                 from: 'display',
-                type: $wall[0].dataset.displaymode,
+                type: tag.dataset.displaymode,
               });
             }
 
-            if ($wall.length && $wall[0].dataset.shared) {
+            if (tag && tag.dataset.shared) {
               menu.querySelector('[data-action="chat"] a')
                 .classList.remove('disabled');
             } else {
-              const $chat = S.getCurrent('chat');
+              const chat = S.getCurrent('chat');
 
-              if ($chat.length) {
-                $chat.chat('hide');
+              if (chat) {
+                chat.hide();
               }
 
               menu.querySelector('[data-action="chat"] a')
@@ -340,7 +332,7 @@ Object.assign(Plugin.prototype, {
             menuNormal.classList.add('disabled');
             this.ctrlMenu('zoom-screen', 'on');
             if (adminAccess) {
-              if ($wall[0].dataset.shared) {
+              if (tag.dataset.shared) {
                 menu.querySelector(`[data-action="chat"] a`)
                   .classList.remove('disabled');
               }
@@ -352,26 +344,24 @@ Object.assign(Plugin.prototype, {
       } 
 
       // If the user has decided to be invisible
-      if (!wpt_userData.settings?.visible) {
-        menu.querySelector('[data-action="chat"] a')
-          .classList.add('disabled');
+      if (!U.isVisible()) {
+        menu.querySelector('[data-action="chat"] a').classList.add('disabled');
         H.hide(wmenu.querySelector(`[data-action="share"]`));
       }
-  },
+  }
 
   // METHOD closeAllMenus()
   closeAllMenus() {
-    const menu = S.getCurrent('walls')[0].querySelector('.postit-menu');
+    const menu = S.getCurrent('walls').querySelector('.postit-menu');
 
     if (menu) {
-      $(menu.parentNode).postit('closeMenu');
+      P.get(menu.parentNode, 'postit').closeMenu();
     }
-  },
+  }
 
   // METHOD refreshUsersview()
   refreshUsersview(count) {
-    const el =
-      this.element[0].parentNode.querySelectorAll('.usersviewcounts')[0];
+    const el = this.tag.parentNode.querySelectorAll('.usersviewcounts')[0];
     const divider = el.previousSibling;
 
     if (count) {
@@ -386,48 +376,53 @@ Object.assign(Plugin.prototype, {
 
       document.title = 'wopits';
     }
-  },
+  }
 
   // METHOD UIPluginCtrl()
   UIPluginCtrl(selector, plugin, option, value, forceHandle = false) {
     const isDisabled = (option === 'disabled');
+    const items = (typeof selector === 'string') ?
+      this.tag.querySelectorAll(selector) :
+        (selector.length > 1) ? selector : [selector];
 
-    this.element[0].querySelectorAll(selector).forEach((el) => {
-      if (!el.classList.contains(`ui-${plugin}`)) return;
+    items.forEach((el) => {
+      // FIXME
+      const cls = el && el.classList || el[0] && el[0].classList;
 
+      if (!cls || !cls.contains(`ui-${plugin}`)) return;
       if (forceHandle && isDisabled) {
         el.querySelectorAll(`.ui-${plugin}-handle`).forEach((el1) =>
           el1.style.visibility = value ? 'hidden' : 'visible');
       }
       $(el)[plugin]('option', option, value);
     });
-  },
+  }
 
   // METHOD repositionPostitsPlugs()
   repositionPostitsPlugs() {
-    this.element[0].querySelectorAll('.postit.with-plugs').forEach((p) =>
-        $(p).postit('repositionPlugs'));
-  },
+    this.tag.querySelectorAll('.postit.with-plugs').forEach(
+      (el) => P.get(el, 'postit').repositionPlugs());
+  }
 
   // METHOD removePostitsPlugs()
   removePostitsPlugs() {
-    this.element[0].querySelectorAll('.postit.with-plugs').forEach((p) =>
-        $(p).postit('removePlugs', true));
-  },
+    this.tag.querySelectorAll('.postit.with-plugs').forEach(
+      (el) => P.get(el, 'postit').removePlugs(true));
+  }
 
   // METHOD refreshPostitsPlugs()
   refreshPostitsPlugs(partial) {
-    const wall = this.element[0];
-    const f = S.getCurrent('filters')[0];
+    const tag = this.tag;
+    const filtersTag = S.getCurrent('filters') && S.getCurrent('filters').tag;
 
-    if (f && f.classList.contains('plugs-hidden')) return;
+    if (filtersTag && filtersTag.classList.contains('plugs-hidden')) return;
 
     const applyZoom = Boolean(S.get('zoom-level'));
     const idsNew = {};
     const postits = {};
 
     // Retrieve all postits to optimize search
-    wall.querySelectorAll('.postit').forEach((postit) =>
+    tag.querySelectorAll('.postit').forEach((postit) =>
       postits[postit.dataset.id.split('-')[1]] = postit);
 
     (this.settings.plugs || []).forEach((plug) => {
@@ -443,20 +438,20 @@ Object.assign(Plugin.prototype, {
         line_type,
       } = plug;
       const startId = item_start;
-      const start = postits[startId];
+      const startTag = postits[startId];
 
-      if (start) {
-        const endId = item_end;
-        const startPlugin = $(start).postit('getClass');
+      if (startTag) {
+        const start = P.get(startTag, 'postit');
         const label = originalLabel || '...';
+        const endId = item_end;
 
         idsNew[`${startId}${endId}`] = 1;
 
-        if (!startPlugin.plugExists(endId)) {
-          const end = postits[endId];
+        if (!start.plugExists(endId)) {
+          const endTag = postits[endId];
 
-          if (end) {
-            startPlugin.addPlug({
+          if (endTag) {
+            start.addPlug({
               startId,
               endId,
               label: {
@@ -464,10 +459,10 @@ Object.assign(Plugin.prototype, {
                 top: item_top,
                 left: item_left,
               },
-              obj: startPlugin.getPlugTemplate({
+              obj: start.getPlugTemplate({
                 hide: true,
-                start,
-                end,
+                start: startTag,
+                end: endTag,
                 label,
                 line_size,
                 line_path,
@@ -477,13 +472,13 @@ Object.assign(Plugin.prototype, {
             }, applyZoom);
           }
         } else {
-          startPlugin.updatePlugLabel({
+          start.updatePlugLabel({
             endId,
             label,
             top: item_top,
             left: item_left,
           });
-          startPlugin.updatePlugProperties({
+          start.updatePlugProperties({
             endId,
             line_type,
             size: line_size,
@@ -496,30 +491,30 @@ Object.assign(Plugin.prototype, {
 
     // Remove obsolete plugs
     if (partial === false) {
-      wall.querySelectorAll('.postit.with-plugs').forEach((postit) => {
-        $(postit).postit('getSettings').plugs.forEach((plug) => {
+      tag.querySelectorAll('.postit.with-plugs').forEach((el) => {
+        P.get(el, 'postit').settings.plugs.forEach((plug) => {
           if (!idsNew[`${plug.startId}${plug.endId}`]) {
-            $(wall.querySelector(
-              `.postit[data-id="postit-${plug.endId}"]`))
-                .postit('removePlug', plug, true);
+            P.get(tag.querySelector(
+              `.postit[data-id="postit-${plug.endId}"]`), 'postit')
+                .removePlug(plug, true);
           }
         });
       });
     }
-  },
+  }
 
   // METHOD hidePostitsPlugs()
   hidePostitsPlugs() {
-    this.element[0].querySelectorAll('.postit').forEach(
-      (el) => $(el).postit('hidePlugs', true));
-  },
+    this.tag.querySelectorAll('.postit').forEach(
+      (el) => P.get(el, 'postit').hidePlugs(true));
+  }
 
   // METHOD showPostitsPlugs()
   showPostitsPlugs() {
     this.repositionPostitsPlugs();
-    this.element[0].querySelectorAll('.postit').forEach(
-      (el) => $(el).postit('showPlugs', true));
-  },
+    this.tag.querySelectorAll('.postit').forEach(
+      (el) => P.get(el, 'postit').showPlugs(true));
+  }
 
   // METHOD showUserWriting()
   // FIXME
@@ -533,7 +528,7 @@ Object.assign(Plugin.prototype, {
       {userid: user.id},
       `<i class="fas fa-user-edit blink"></i> ${user.name}`),
       tab.firstChild);
-  },
+  }
 
   // METHOD refresh()
   async refresh(d) {
@@ -546,13 +541,12 @@ Object.assign(Plugin.prototype, {
     } else {
       H.displayNetworkErrorMsg();
     }
-  },
+  }
 
   // METHOD _refresh()
   async _refresh(d) {
-    const $wall = this.element;
-    const wall = $wall[0];
-    const wallIsVisible = H.isVisible(wall);
+    const tag = this.tag;
+    const wallIsVisible = H.isVisible(tag);
 
     // LOCAL FUNCTION __refreshWallBasicProperties()
     const __refreshWallBasicProperties = (d) => {
@@ -568,37 +562,29 @@ Object.assign(Plugin.prototype, {
       switch (d.partial) {
         // Postits
         case 'postit':
-          const $postit = $(wall.querySelector(
-                  `.postit[data-id="postit-${d.postit.id}"]`));
-          const cell = wall.querySelector(
-                  `td[data-id="cell-${d.postit.cells_id}"]`);
+          const postitTag = tag.querySelector(
+            `.postit[data-id="postit-${d.postit.id}"]`);
 
-          // Rare case, when user have multiple sessions opened
-          if (d.action !== 'insert' && !$postit.length)
+          // Case when user have multiple sessions opened
+          if (!postitTag && d.action !== 'insert')
             return;
+
+          const cellTag = tag.querySelector(
+                  `td[data-id="cell-${d.postit.cells_id}"]`);
 
           switch (d.action) {
             // Insert postit
             case 'insert':
-              $(cell).cell('addPostit', d.postit, true);
+              P.get(cellTag, 'cell').addPostit(d.postit, true);
               break;
             // Update postit
             case 'update':
-              if (d.isResponse ||
-                  cell.classList.contains('list-mode') ||
-                  H.isVisible(S.getCurrent('filters')[0])) {
-                $postit.postit('update', d.postit, {id: d.postit.cells_id});
-              } else {
-                $postit.hide('fade', 250, () => {
-                  $postit.postit('update', d.postit, {id: d.postit.cells_id});
-                  $postit.show('fade', 250,
-                    ()=> $postit.postit('repositionPlugs'));
-                });
-              }
+              P.get(postitTag, 'postit')
+                .update(d.postit, {id: d.postit.cells_id});
               break;
             // Remove postit
             case 'delete':
-              $postit.postit('remove');
+              P.get(postitTag, 'postit').remove();
               break;
           }
           break;
@@ -607,8 +593,9 @@ Object.assign(Plugin.prototype, {
           // Col/row has been moved
           if (d.action === 'movecolrow') {
             if (!d.isResponse) {
-              $wall.find(`th[data-id="header-${d.header.id}"]`)
-                .header('moveColRow', d.move, true);
+              P.get(tag.querySelector(
+                `th[data-id="header-${d.header.id}"]`), 'header')
+                  .moveColRow(d.move, true);
             }
           } else {
             __refreshWallBasicProperties(d.wall);
@@ -627,55 +614,67 @@ Object.assign(Plugin.prototype, {
       const rows = [];
       const displayHeaders = this.settings.displayheaders;
 
-      wall.dataset.cols = d.headers.cols.length;
-      wall.dataset.rows = d.headers.rows.length;
-      wall.dataset.oldwidth = d.width;
+      tag.dataset.cols = d.headers.cols.length;
+      tag.dataset.rows = d.headers.rows.length;
+      tag.dataset.oldwidth = d.width;
 
       __refreshWallBasicProperties(d);
 
       // Refresh headers
       d.headers.cols.forEach((header) => {
-        let th = wall.querySelector(
+        let th = tag.querySelector(
           `thead.wpt th.wpt[data-id="header-${header.id}"]`);
 
         if (!th) {
           th = H.createElement('th',
             {className: `wpt ${displayHeaders ? 'display' : 'hide'}`});
 
-          wall.querySelectorAll('thead.wpt tr.wpt').forEach(
+          tag.querySelectorAll('thead.wpt tr.wpt').forEach(
             (el) => el.appendChild(th));
 
-          $(th).header({
+          P.create(th, 'header', {
+            wall: this,
             item_type: 'col',
             id: header.id,
-            wall: $wall,
             wallId: wallId,
             title: header.title,
             picture: header.picture
           });
         } else {
-          $(th).header('update', header);
+          P.get(th, 'header').update(header);
         }
       });
 
       // Remove deleted rows
       const rowsHeadersIds = d.headers.rows.map((el) => el.id);
-      wall.querySelectorAll('tbody.wpt th.wpt').forEach((th) => {
-        if (!rowsHeadersIds.includes($(th).header('getId'))) {
-          $(wall.querySelectorAll(
-            `tbody.wpt tr.wpt`)[th.parentNode.rowIndex - 1]).cell('remove');
+      tag.querySelectorAll('tbody.wpt th.wpt').forEach((th) => {
+        if (!rowsHeadersIds.includes(P.get(th, 'header').getId())) {
+          const tr = tag.querySelectorAll(
+            `tbody.wpt tr.wpt`)[th.parentNode.rowIndex - 1];
+
+          // Remove TH
+          P.get(tr.querySelector('th.wpt'), 'header').remove();
+
+          // Remove TDs
+          tr.querySelectorAll('td.wpt').forEach(
+            (el) => P.get(el, 'cell').remove());
+
+          // Remove TR
+          tr.remove();
         }
       });
 
       // Remove deleted columns
       const colsHeadersIds = d.headers.cols.map((el) => el.id);
-      wall.querySelectorAll('thead.wpt th.wpt').forEach((th) => {
+      tag.querySelectorAll('thead.wpt th.wpt').forEach((th) => {
         const idx = th.cellIndex;
 
-        if (idx > 0 && !colsHeadersIds.includes($(th).header('getId'))) {
-          wall.querySelectorAll('thead.wpt th.wpt')[idx].remove();
-          wall.querySelectorAll('tbody.wpt tr.wpt').forEach((tr) =>
-            $(tr).find(`td.wpt:eq(${idx - 1})`).cell('remove'));
+        if (idx > 0 && !colsHeadersIds.includes(P.get(th, 'header').getId())) {
+          P.get(tag.querySelectorAll(
+            'thead.wpt th.wpt')[idx], 'header').remove();
+
+          tag.querySelectorAll('tbody.wpt tr.wpt').forEach((tr) =>
+            P.get(tr.querySelectorAll('td.wpt')[idx - 1], 'cell').remove());
         }
       });
 
@@ -696,53 +695,63 @@ Object.assign(Plugin.prototype, {
       rows.forEach((row, i) => {
         const header = d.headers.rows[i];
 
-        if (!wall.querySelector(`td.wpt[data-id="cell-${row[0].id}"]`)) {
+        if (!tag.querySelector(`td.wpt[data-id="cell-${row[0].id}"]`)) {
           this.addRow(header, row);
         } else {
-          $wall.find(`tbody.wpt th.wpt[data-id="header-${header.id}"]`)
-            .header('update', header);
+          P.get(tag.querySelector(
+            `tbody.wpt th.wpt[data-id="header-${header.id}"]`), 'header')
+              .update(header);
         }
 
-        row.forEach((cell) => {
-          let $cell = $wall.find(`td.wpt[data-id="cell-${cell.id}"]`);
+        row.forEach((cellData) => {
+          let cellTag = tag.querySelector(
+            `td.wpt[data-id="cell-${cellData.id}"]`);
+          let cell;
 
           // If new cell, add it
-          if (!$cell.length) {
-            const cellId = cell.id;
+          if (!cellTag) {
+            const cellId = cellData.id;
 
-            $cell = $(_getCellTemplate(cell));
-            wall.querySelectorAll(
-              `tbody.wpt tr.wpt`)[cell.item_row].appendChild($cell[0]);
+            cellTag = this.getCellTemplate(cellData, true);
+            tag.querySelectorAll(`tbody.wpt tr.wpt`)[cellData.item_row]
+              .appendChild(cellTag);
 
-            // Init cell
-            $cell.cell({
+            // Create cell
+            cell = P.getOrCreate(cellTag, 'cell', {
+              wall: this,
               wallId,
               id: cellId,
               access: access,
               usersettings: userSettings[`cell-${cellId}`] || {},
-              wall: $wall,
             });
 
           // else update cell
           } else {
-            $cell.cell('update', cell);
+            cell = P.get(cellTag, 'cell');
 
-            // Remove deleted post-its
-            $cell[0].querySelectorAll('.postit').forEach((p) => {
-              if (!postitsIds.includes($(p).postit('getId'))) {
-                $(p).postit('remove');
+            cell.update(cellData);
+
+            // Remove deleted notes
+            cellTag.querySelectorAll('.postit').forEach((postitTag) => {
+              const postit = P.get(postitTag, 'postit');
+
+              if (!postitsIds.includes(postit.getId())) {
+                postit.remove();
               }
             });
           }
 
-          cell.postits.forEach((postit) => {
-            const p = wall.querySelector(
-              `.postit[data-id="postit-${postit.id}"]`);
+          cellData.postits.forEach((postitData) => {
+            const postitTag = tag.querySelector(
+              `.postit[data-id="postit-${postitData.id}"]`);
 
-            if (!p) {
-              $cell.cell('addPostit', postit, true);
+            if (!postitTag) {
+              cell.addPostit(postitData, true);
             } else {
-              $(p).postit('update', postit, {id: cell.id, obj: $cell});
+              P.get(postitTag, 'postit').update(postitData, {
+                id: cellData.id,
+                obj: cell,
+              });
             }
           });
         });
@@ -750,7 +759,7 @@ Object.assign(Plugin.prototype, {
     }
 
     // Set wall menu visible
-    S.getCurrent('wmenu')[0].style.visibility = 'visible';
+    S.getCurrent('wmenu').tag.style.visibility = 'visible';
 
     this.fixSize();
 
@@ -768,44 +777,47 @@ Object.assign(Plugin.prototype, {
     }
 
     // Show locks
-    if (d.locks) {
+    if (d.lock && d.locks.length) {
       d.locks.forEach(({item, item_id, user_id, user_name}) => {
         const el = document.querySelector(
           `${item === 'postit' ? '.postit' : ''}`+
           `[data-id="${item}-${item_id}"]`);
         if (el) {
-          $(el)[item]('showUserWriting', {id: user_id, name: user_name});
+          P.get(el, item).showUserWriting({id: user_id, name: user_name});
         }
       });
     }
 
-    if (wallIsVisible && d.postits_plugs) {
-      // Refresh postits relations
-      this.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
-    } else {
-      this.repositionPostitsPlugs();
-    }
+    H.waitForDOMUpdate(() => {
+      if (wallIsVisible && d.postits_plugs) {
+        // Refresh postits relations
+        this.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
 
-    this.refreshCellsToggleDisplayMode();
+        if (!this.settings.displayheaders) {
+          this.repositionPostitsPlugs();
+        }
+      }
 
-    // Re-apply filters
-    const $f = S.getCurrent('filters');
-    if (H.isVisible($f[0])) {
-      $f.filters('apply', {norefresh: true});
-    }
-  },
+      this.refreshCellsToggleDisplayMode();
+
+      // Re-apply filters
+      const f = S.getCurrent('filters');
+      if (f.isVisible()) {
+        f.apply({norefresh: true});
+      }
+    });
+  }
 
   // METHOD refreshCellsToggleDisplayMode()
   refreshCellsToggleDisplayMode() {
-    this.element[0].querySelectorAll('td.wpt.list-mode').forEach((cell) => {
-      $(cell).cell('toggleDisplayMode', true);
-    });
+    this.tag.querySelectorAll('td.wpt.list-mode').forEach(
+      (el) => P.get(el, 'cell').toggleDisplayMode(true));
 
     if (S.get('zoom-level')) {
       this.UIPluginCtrl(
         '.cell-list-mode ul', 'sortable', 'disabled', true, true);
     }
-  },
+  }
 
   // METHOD openCloseAllWallsPopup()
   openCloseAllWallsPopup() {
@@ -814,53 +826,70 @@ Object.assign(Plugin.prototype, {
       content: `<?=_("Close the walls?")?>`,
       onConfirm: () => this.closeAllWalls(),
     });
-  },
+  }
 
   // METHOD closeAllWalls()
   closeAllWalls(saveSession = true) {
     // Tell the other methods that we are massively closing the walls
     S.set('closing-all', true);
-    document.querySelectorAll('table.wall').forEach((wall) =>
-      $(wall).wall('close'));
+    document.querySelectorAll('table.wall').forEach(
+      (el) => P.get(el, 'wall').close());
     S.unset('closing-all');
 
     if (saveSession) {
-      $('#settingsPopup').settings('saveOpenedWalls', null, false);
+      S.getCurrent('settings').saveOpenedWalls(null, false);
     }
 
     S.reset();
-  },
+  }
+
+  // METHOD getNextActiveTab()
+  getNextActiveTab(current) {
+    return current.previousElementSibling ?
+      current.previousElementSibling : current.nextElementSibling ?
+        current.nextElementSibling : null;
+  }
 
   // METHOD close()
   close() {
     const activeTabId = `wall-${this.settings.id}`;
     const activeTab = document.querySelector(`a[href="#${activeTabId}"]`);
-    const newActiveTab = _getNextActiveTab(activeTab);
-    const $chat = S.getCurrent('chat');
+    const wallDiv = document.getElementById(activeTabId);
+    const newActiveTab = this.getNextActiveTab(activeTab);
+    const chat = S.getCurrent('chat');
+    const haveZoom = Boolean(S.get('zoom-level'));
 
-    if (S.get('zoom-level')) {
+    if (haveZoom) {
       this.zoom({type: 'normal'});
     }
 
-    S.getCurrent('mmenu').mmenu('close');
+    S.getCurrent('mmenu').close();
 
-    if (H.isVisible($chat[0])) {
-      $chat.chat('leave');
+    if (chat.isVisible()) {
+      chat.leave();
     }
 
     // If account popup is opened, do not close it: we are dealing with the
     // "invisible mode" option.
-    document.querySelectorAll('.modal.show:not(#accountPopup)')
-      .forEach((m) => bootstrap.Modal.getInstance(m).hide());
+    document.querySelectorAll('.modal.show:not(#accountPopup)').forEach(
+      (el) => bootstrap.Modal.getInstance(el).hide());
 
     this.removePostitsPlugs();
 
+    // Clean plugins cache
+    H.waitForDOMUpdate(() =>
+      wallDiv.querySelectorAll('[data-cached]').forEach(
+        (el) => P.remove(el, el.dataset.cached)));
+
     activeTab.remove();
-    document.getElementById(activeTabId).remove();
+    wallDiv.remove();
+    P.remove(this.tag, 'wall');
 
     // No more wall to display
     if (!document.querySelector('.wall')) {
-      this.zoom({type: 'normal', noalert: true});
+      if (haveZoom) {
+        this.zoom({type: 'normal', noalert: true});
+      }
       this.menu({from: 'wall', type: 'no-wall'});
     // Active another tabs after deletion
     } else {
@@ -870,10 +899,10 @@ Object.assign(Plugin.prototype, {
     // If we are not massively closing all walls
     if (!S.get('closing-all')) {
       H.fixHeight();
-      $('#settingsPopup').settings('saveOpenedWalls');
+      S.getCurrent('settings').saveOpenedWalls();
       S.reset();
     }
-  },
+  }
 
   // METHOD openDeletePopup()
   openDeletePopup() {
@@ -899,29 +928,29 @@ Object.assign(Plugin.prototype, {
         });
       }
     }, null, true);
-  },
+  }
 
   // METHOD delete()
   delete() {
-    this.element[0].dataset.todelete = true;
+    this.tag.dataset.todelete = true;
 
     this.unedit(() => {
-      const sPlugin = $('#settingsPopup').settings('getClass');
+      const settings = S.getCurrent('settings');
       const wallId = this.settings.id;
 
       this.close();
 
-      sPlugin.removeWallBackground(wallId);
-      sPlugin.removeRecentWall(wallId);
+      settings.removeWallBackground(wallId);
+      settings.removeRecentWall(wallId);
     });
-  },
+  }
 
   // METHOD createColRow()
   createColRow(type) {
-    const wall = this.element[0];
+    const tag = this.tag;
 
-    if (Number(wall.dataset.rows) *
-        Number(wall.dataset.cols) >= <?=WPT_MAX_CELLS?>) {
+    if (Number(tag.dataset.rows) *
+        Number(tag.dataset.cols) >= <?=WPT_MAX_CELLS?>) {
       H.displayMsg({
         type: 'warning',
         msg: `<?=_("For performance reasons, a wall cannot contain more than %s cells")?>`.replace('%s', <?=WPT_MAX_CELLS?>),
@@ -934,20 +963,29 @@ Object.assign(Plugin.prototype, {
       `wall/${this.settings.id}/${type}`,
       null,
       // TODO Scroll to the exact ending of the new added col or row
-      () => S.getCurrent('walls')[(type=== 'col') ?
-              'scrollLeft' : 'scrollTop'](30000),
+      () => S.getCurrent('walls')[(type === 'col') ?
+              'scrollLeft' : 'scrollTop'] = 30000,
     );
-  },
+  }
+
+  // METHOD getCellTemplate()
+  getCellTemplate({id, width, height}, createEl) {
+    return createEl ?
+      H.createElement('td',
+        {scope: 'dzone', className: 'wpt', style: `width:${width}px;height:${height}px`},
+        {id: `cell-${id}`}) :
+     `<td scope="dzone" class="wpt" style="width:${width}px;height:${height}px" data-id="cell-${id}"></td>`;
+  }
 
   // METHOD addRow()
   addRow(header, cols) {
+    const tag = this.tag;
     const settings = this.settings;
-    const $wall = this.element;
     const wallId = settings.id;
     const displayHeaders = settings.displayheaders;
     let tds = '';
 
-    cols.forEach((col) => tds += _getCellTemplate(col));
+    cols.forEach((col) => tds += this.getCellTemplate(col));
 
     const row = H.createElement('tr',
       {className: `wpt`},
@@ -955,70 +993,71 @@ Object.assign(Plugin.prototype, {
       `<th class="wpt ${displayHeaders ? 'display' : 'hide'}"></th>${tds}`);
 
     // Add row
-    $wall[0].querySelector('tbody.wpt').appendChild(row);
-    $(row).find('th.wpt:eq(0)').header({
+    tag.querySelector('tbody.wpt').appendChild(row);
+    P.create(row.querySelector('th.wpt'), 'header', {
       wallId,
+      wall: this,
       access: settings.access,
       item_type: 'row',
       id: header.id,
-      wall: $wall,
       title: header.title,
       picture: header.picture
     });
 
-    // Init cells
+    // Create cells
     const userSettings = settings.usersettings || {};
     row.querySelectorAll('td.wpt').forEach((cell) => {
-      const cellId = cell.dataset.id.substring(5);
-      $(cell).cell({
-          wallId,
-          id: cellId,
-          access: settings.access,
-          usersettings: userSettings[`cell-${cellId}`] || {},
-          wall: $wall,
-        });
+      const cellId = Number(cell.dataset.id.substring(5));
+
+      P.create(cell, 'cell', {
+        wallId,
+        wall: this,
+        id: cellId,
+        access: settings.access,
+        usersettings: userSettings[`cell-${cellId}`] || {},
+      });
     });
-  },
+  }
 
   // METHOD deleteRow()
   deleteRow(rowIdx) {
-    const th = this.element[0]
+    const headerTag = this.tag
       .querySelectorAll(`tbody.wpt tr.wpt`)[rowIdx]
       .querySelector(`th.wpt`);
 
-    $(th).header('removeContentKeepingWallSize', {
-      oldW: th.offsetWidth,
+    P.get(headerTag, 'header').removeContentKeepingWallSize({
+      oldW: headerTag.offsetWidth,
       cb: () => {
-        th.querySelectorAll('.img').forEach((el) => el.remove());
-        th.querySelector('.title').innerHTML = '&nbsp;';
+        headerTag.querySelectorAll('.img').forEach((el) => el.remove());
+        headerTag.querySelector('.title').innerHTML = '&nbsp;';
       },
     });
 
     H.request_ws(
       'DELETE',
       `wall/${this.settings.id}/row/${rowIdx}`,
-      {wall: {width: Math.trunc(this.element.outerWidth())}});
-  },
+      {wall: {width: Math.trunc(this.tag.offsetWidth)}});
+
+  }
 
   // METHOD deleteCol()
   deleteCol(idx) {
-    const wall = this.element[0];
+    const tag = this.tag;
 
     H.request_ws(
       'DELETE',
       `wall/${this.settings.id}/col/${idx-1}`,
       {
-        wall: {width: Math.trunc(wall.clientWidth - 1)},
+        wall: {width: Math.trunc(tag.clientWidth - 1)},
         width: Math.trunc(
-          wall.querySelectorAll(`thead.wpt tr.wpt th.wpt`)[idx]
+          tag.querySelectorAll(`thead.wpt tr.wpt th.wpt`)[idx]
             .getBoundingClientRect().width),
       });
-  },
+  }
 
   // METHOD addNew()
   async addNew(args) {
     const tabs = document.querySelector('.nav-tabs.walls');
-    const $tabs = $(tabs);
     const load = (args.type === 'load');
     const service = load ? `wall/${args.wallId}` : 'wall';
     const data = load ? null : {name: args.name, grid: Boolean(args.grid)};
@@ -1069,8 +1108,7 @@ Object.assign(Plugin.prototype, {
 
       tmp && tmp.remove();
 
-      if (args.restoring &&
-          wpt_userData.settings.activeWall === args.wallId) {
+      if (args.restoring && U.get('activeWall') === args.wallId) {
         const el = tabs.querySelector('.nav-item');
 
         if (el) {
@@ -1088,7 +1126,7 @@ Object.assign(Plugin.prototype, {
         type: 'warning',
         msg: `<?=_("Some walls are no longer available")?>`,
       });
-
+      S.getCurrent('settings').removeWall(args.wallId);
       return;
     }
 
@@ -1124,18 +1162,19 @@ Object.assign(Plugin.prototype, {
     ), wallTab.firstChild);
 
     r['background-color'] =
-      $("#settingsPopup").settings('get', 'wall-background', r.id);
+      S.getCurrent('settings').get('wall-background', r.id);
 
-    $(wallDiv.querySelector('.chat')).chat({wallId: r.id});
-    $(wallDiv.querySelector('.filters')).filters();
+    P.create(wallDiv.querySelector('.chat'), 'chat', {wallId: r.id});
+    P.create(wallDiv.querySelector('.filters'), 'filters');
 
-    return await $(wallDiv.querySelector('.wall')).wall({...args, ...r});
-  },
+    return await P.getOrCreate(
+      wallDiv.querySelector('.wall'), 'wall', {...args, ...r}).init();
+  }
 
   // METHOD create()
   async create(args) {
     return await this.open({...args, type: 'create', noPostProcess: true});
-  },
+  }
 
   // METHOD open()
   async open(args) {
@@ -1144,38 +1183,38 @@ Object.assign(Plugin.prototype, {
       // "load" or "create". "load" by default
       type: (args.type !== undefined) ? args.type : 'load',
     };
-    const $wall = await this.addNew(options);
+    const wall = await this.addNew(options);
 
-    if ($wall && !args.noPostProcess) {
-      $wall.wall('postProcessLastWall', options);
+    if (wall && !args.noPostProcess) {
+      wall.postProcessLastWall(options);
     }
 
-    return $wall;
-  },
+    return wall;
+  }
 
   // METHOD postProcessLastWall()
   async postProcessLastWall(args = {}) {
-    const wall = this.element[0];
-    const awSettingsId = Number(wpt_userData.settings.activeWall);
-    let activeWall;
+    const wallTag = this.tag;
+    const awSettingsId = U.get('activeWall');
+    let activeWallTag;
 
     if (!args.restoring || args.then || S.get('save-opened-walls')) {
-      activeWall = wall;
+      activeWallTag = wallTag;
     } else {
-      activeWall = document.querySelector(
-        `[data-id="wall-${wpt_userData.settings.activeWall}"]`) || wall;
+      activeWallTag = document.querySelector(
+        `[data-id="wall-${U.get('activeWall')}"]`) || wallTag;
     }
 
-    const awPlugin = $(activeWall).wall('getClass');
-    const awId = awPlugin.getId();
-    awPlugin.setActive();
-    await awPlugin.refresh();
-    awPlugin.displayExternalRef();
-    awPlugin.displayHeaders();
+    const activeWall = P.get(activeWallTag, 'wall');
+    const awId = activeWall.getId();
+    activeWall.setActive();
+    await activeWall.refresh();
+    activeWall.displayExternalRef();
+    activeWall.displayHeaders();
 
     if (S.get('save-opened-walls') || awSettingsId !== awId) {
       S.unset('save-opened-walls');
-      $('#settingsPopup').settings('saveOpenedWalls');
+      S.getCurrent('settings').saveOpenedWalls();
     }
 
     H.fixHeight();
@@ -1186,9 +1225,9 @@ Object.assign(Plugin.prototype, {
     // Set wall users view count if needed
     const viewcount = WS.popResponse(`viewcount-wall-${awId}`);
     if (viewcount) {
-      awPlugin.refreshUsersview(viewcount);
+      activeWall.refreshUsersview(viewcount);
     }
-  },
+  }
 
   // METHOD clone()
   async clone() {
@@ -1204,20 +1243,22 @@ Object.assign(Plugin.prototype, {
     }
 
     // try / catch
-    const $wall = await $('<div/>').wall('open', {wallId: r.wallId});
+    const wallDiv = document.createElement('div');
+    const wall = await P.getOrCreate(wallDiv, 'wall').open({wallId: r.wallId});
 
-    if ($wall) {
+    if (wall) {
+      P.remove(wallDiv, 'wall');
       H.displayMsg({
         type: 'success',
         msg: `<?=_("The wall has been successfully cloned")?>`,
       });
     }
-  },
+  }
 
   // METHOD export()
   // Format: wopits_export-{wall_name}-{ymd}_{hms}.zip
   export() {
-    const now = H.getUserDate(moment().unix(), null, 'YMMDD_HHmmss');
+    const now = U.formatDate(moment().unix(), null, 'YMMDD_HHmmss');
     const wallName = this.getName().replace(/\s+/g, '_');
 
     H.download({
@@ -1225,38 +1266,41 @@ Object.assign(Plugin.prototype, {
       fname: `wopits_export-${wallName}-${now}.zip`,
       msg: `<?=_("An error occurred during the export")?>`,
     });
-  },
+  }
 
   // METHOD import()
   import () {
     document.querySelector('.upload.import-wall').click();
-  },
+  }
 
   // METHOD restorePreviousSession()
   async restorePreviousSession() {
-    const walls = wpt_userData.settings.openedWalls || [];
+    const walls = U.getOpenedWalls();
 
     if (walls.length) {
-      let $wall;
+      let wall;
 
       await Promise.all(walls.reverse().map(async (wallId) => {
-        $wall = await this.open({
+        wall = await this.open({
           wallId,
           restoring: true,
           noPostProcess: true,
         });
       }));
 
-      if ($wall) {
-        $wall.wall('postProcessLastWall', {restoring: true});
+      if (wall) {
+        wall.postProcessLastWall({restoring: true});
+      } else if (S.get('save-opened-walls')) {
+        S.unset('save-opened-walls');
+        S.getCurrent('settings').saveOpenedWalls();
       }
     }
-  },
+  }
 
   // METHOD isOpened()
   isOpened(wallId) {
-    return (wpt_userData.settings.openedWalls || []).includes(String(wallId));
-  },
+    return U.getOpenedWalls().includes(wallId);
+  }
 
   // METHOD loadSpecific()
   async loadSpecific(args, noDelay) {
@@ -1280,13 +1324,14 @@ Object.assign(Plugin.prototype, {
     };
 
     if (!this.isOpened(wallId)) {
-      const $wall = await this.open({wallId, noPostProcess: true});
-      if ($wall) {
-        $wall.wall('postProcessLastWall', {then: __displayAlert});
+      const wall = await this.open({wallId, noPostProcess: true});
+
+      if (wall) {
+        wall.postProcessLastWall({then: __displayAlert});
       }
     } else {
       // Set wall current if needed
-      if (wallId !== S.getCurrent('wall').wall('getId')) {
+      if (wallId !== S.getCurrent('wall').getId()) {
         const el = document.querySelector(`a[href="#wall-${wallId}"]`);
         el.dispatchEvent(new Event('mousedown', {bubbles: true}));
         el.dispatchEvent(new Event('click', {bubbles: true}));
@@ -1297,37 +1342,37 @@ Object.assign(Plugin.prototype, {
 
     // Remove special alert URL
     history.pushState(null, null, '/');
-  },
+  }
 
   // METHOD refreshUserWallsData()
   async refreshUserWallsData(then) {
     const r = await H.fetch('GET', 'wall');
     if (r && !r.error) {
-      wpt_userData.walls = {list: r.list || []};
+      U.setWalls(r.list);
       then && then();
     }
-  },
+  }
 
   // METHOD openOpenWallPopup()
   openOpenWallPopup() {
     this.refreshUserWallsData(() => {
       H.loadPopup ('owall', {
-        cb: ($p) => {
-          $p.owall('reset');
-          $p.owall('displayWalls');
-          $p.owall('controlFiltersButtons');
+        cb: (p) => {
+          const owall = P.getOrCreate(p, 'owall');
+
+          owall.reset();
+          owall.displayWalls();
+          owall.controlFiltersButtons();
         }
       });
     });
-  },
+  }
 
   // METHOD openCreatePopup()
   openCreatePopup() {
     H.closeMainMenu();
     H.loadPopup('createWall', {
-      init: ($p) => {
-        const p = $p[0];
-
+      init: (p) => {
         // EVENT change on wall dimension in wall creation popup
         p.querySelector('#w-grid').addEventListener('change', (e) => {
           const btn = e.target;
@@ -1350,46 +1395,43 @@ Object.assign(Plugin.prototype, {
             'flex');
         });
       },
-      cb: ($p) => $p[0].dataset.noclosure = true,
+      cb: (p) => p.dataset.noclosure = true,
     });
-  },
+  }
 
   // METHOD displayWallUsersview()
-  displayWallUsersview ()
-  {
-    H.request_ws (
-      "GET",
+  displayWallUsersview() {
+    H.request_ws(
+      'GET',
       `wall/${this.settings.id}/usersview`,
       null,
-      (d) =>
-      {
-        H.loadPopup ("wallUsersview", {
+      (d) => {
+        H.loadPopup('wallUsersview', {
           open: false,
-          cb: ($p)=>
-          {
-            const userId = wpt_userData.id;
+          cb: (p) => {
+            const userId = U.getId();
 
-            let html = "";
-            d.list.forEach (item =>
-            {
-              if (item.id != userId)
-                html += `<li class="list-group-item" data-id="${item.id}" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture||""}" data-about="${H.htmlEscape(item.about||"")}"><div class="label">${H.getAccessIcon(item.access)} ${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div>`;
+            let html = '';
+            d.list.forEach((item) => {
+              if (item.id !== userId) {
+                html += `<li class="list-group-item" data-id="${item.id}" data-title="${H.htmlEscape(item.fullname)}" data-picture="${item.picture || ''}" data-about="${H.htmlEscape(item.about || '')}"><div class="label">${H.getAccessIcon(item.access)} ${item.fullname}</div><div class="item-infos"><span>${item.username}</span></div>`;
+              }
             });
-            $p.find(".list-group").html (html);
+            p.querySelector('.list-group').innerHTML = html;
 
-            H.openModal ({item: $p[0]});
+            H.openModal ({item: p});
           }
         });
       }
     );
-  },
+  }
 
   // METHOD openPropertiesPopup()
-  openPropertiesPopup (args = {}) {
+  openPropertiesPopup(args = {}) {
     const __open = () => {
       H.loadPopup('wprop', {
         open: false,
-        cb: ($p) => $p.wprop('open', {...args, wall: this.element}),
+        cb: (p) => P.getOrCreate(p, 'wprop').open({...args, wall: this}),
       });
     };
 
@@ -1398,13 +1440,12 @@ Object.assign(Plugin.prototype, {
     } else {
       __open();
     }
-  },
+  }
 
   // METHOD saveProperties()
-  // FIXME Issues with walls having one cell
+  // FIXME Issues with walls without grid
   saveProperties() {
     const popup = document.getElementById('wpropPopup');
-    const $popup = $(popup);
     const inputs = Array.from(popup.querySelectorAll('input'))
       .filter((el) => H.isVisible(el));
     const Form = new Wpt_accountForms();
@@ -1431,29 +1472,30 @@ Object.assign(Plugin.prototype, {
           this.edit();
         });
 
-      // If wall width & height
+      // If wall without grid
       if (inputs.length > 1) {
-        const $wall = this.element;
-        const wall = $wall[0];
-        const cell = wall.querySelector('td.wpt');
-        const oldW = cell.offsetWidth;
+        const tag = this.tag;
+        const cellTag = tag.querySelector('td.wpt');
+        const oldW = cellTag.offsetWidth;
         const w = parseInt(inputs[1].value);
         const h = parseInt(inputs[2].value);
 
-        if (w !== oldW || h !== cell.offsetHeight) {
-          const cellPlugin = $(cell).cell('getClass');
+        if (w !== oldW || h !== cellTag.offsetHeight) {
+          const cell = P.get(cellTag, 'cell');
 
           // LOCAL FUNCTION __resize()
           const __resize = (args) => {
-            $wall.find('thead.wpt th.wpt:eq(1),td.wpt')
-                .css('width', args.newW);
-            wall.querySelector('td.wpt .ui-resizable-s')
-                .style.width = `${args.newW + 2}px`;
+            tag.querySelectorAll(`thead.wpt th.wpt`)[1]
+              .style.width = `${args.newW}px`;
+            cellTag.style.width = `${args.newW}px`;
+            cellTag.querySelector('.ui-resizable-s')
+              .style.width = `${args.newW + 2}px`;
 
             if (args.newH) {
-             $wall.find('tbody.wpt th.wpt,td.wpt').css('height', args.newH);
-             wall.querySelector('td.wpt .ui-resizable-e')
-                 .style.height = `${args.newH + 2}px`;
+             tag.querySelectorAll(`tbody.wpt th.wpt,td.wpt`).forEach(
+               (el) => el.style.height = `${args.newH}px`);
+             cellTag.querySelector('.ui-resizable-e')
+               .style.height = `${args.newH + 2}px`;
             }
 
             this.fixSize(args.oldW, args.newW);
@@ -1461,14 +1503,14 @@ Object.assign(Plugin.prototype, {
 
           __resize({newW: w, oldW: oldW, newH: h});
 
-          const tmp = wall.querySelector('td.wpt').offsetWidth;
+          const tmp = tag.querySelector('td.wpt').offsetWidth;
           if (tmp !== w) {
             __resize({newW: tmp, oldW: w});
           }
 
-          cellPlugin.edit();
-          cellPlugin.reorganize();
-          cellPlugin.unedit();
+          cell.edit();
+          cell.reorganize();
+          cell.unedit();
         }
       }
     } else {
@@ -1476,17 +1518,17 @@ Object.assign(Plugin.prototype, {
     }
 
     return ret;
-  },
+  }
 
   // METHOD getName()
   getName() {
     return this.settings.tabLink.querySelector('span.val').innerText;
-  },
+  }
 
   // METHOD setName()
   setName(name, noIcon) {
     const div = this.settings.tabLink;
-    const notOwner = (this.settings.ownerid !== wpt_userData.id);
+    const notOwner = (this.settings.ownerid !== U.getId());
 
     let html = noIcon ?
         `<i class="fas fa-cog fa-spin fa-fw"></i>` :
@@ -1501,43 +1543,43 @@ Object.assign(Plugin.prototype, {
     if (!noIcon) {
       this.refreshSharedIcon();
     }
-  },
+  }
 
   // METHOD isShared()
   isShared() {
-    return Boolean(this.element[0].dataset.shared);
-  },
+    return Boolean(this.tag.dataset.shared);
+  }
 
   // METHOD setShared()
   setShared(isShared) {
-    const wall = this.element[0];
+    const tag = this.tag;
 
     if (isShared) {
-      wall.dataset.shared = 1;
+      tag.dataset.shared = 1;
     } else {
-      wall.removeAttribute('data-shared');
+      tag.removeAttribute('data-shared');
     }
 
     this.refreshPostitsWorkersIcon();
     this.refreshSharedIcon();
-  },
+  }
 
   // METHOD refreshPostitsWorkersIcon()
   refreshPostitsWorkersIcon() {
     const display = this.isShared();
 
-    this.element[0].querySelectorAll('.postit').forEach((p) => {
-      const pMenu = $(p).postit('getSettings').Menu;
+    this.tag.querySelectorAll('.postit').forEach((p) => {
+      const pMenu = P.get(p, 'postit').settings.Menu;
 
       p.querySelector('.pwork').style.display =
         display ? 'inline-block' : 'none';
 
       if (pMenu) {
-        pMenu.$menu[0].querySelector(`[data-action="pwork"]`)
+        pMenu.tag.querySelector(`[data-action="pwork"]`)
           .style.display = display ? 'inline-block' : 'none';
       }
     });
-  },
+  }
 
   // METHOD refreshSharedIcon()
   refreshSharedIcon() {
@@ -1554,28 +1596,28 @@ Object.assign(Plugin.prototype, {
     } else if (wIcon) {
       wIcon.remove();
     }
-  },
+  }
 
   // METHOD getDescription()
   getDescription() {
     return this.settings.tabLink.getAttribute('title');
-  },
+  }
 
   // METHOD setDescription()
   setDescription(description) {
     this.settings.tabLink.setAttribute('title', H.noHTML(description || ''));
-  },
+  }
 
   // METHOD fixSize()
   fixSize(oldW, newW) {
-    const wall = this.element[0];
+    const tag = this.tag;
     let w;
 
     // If no header, substract header width from wall width
     if (!this.settings.displayheaders) {
       w = this.getTDsWidth();
-    } else if (!(w = Number(wall.dataset.oldwidth))) {
-      w = wall.offsetWidth;
+    } else if (!(w = Number(tag.dataset.oldwidth))) {
+      w = tag.offsetWidth;
     }
 
     if (newW) {
@@ -1586,40 +1628,39 @@ Object.assign(Plugin.prototype, {
       }
     }
 
-    wall.dataset.oldwidth = w;
-    wall.style.width = `${w}px`;
-    wall.style.maxWidth = `${w}px`;
-  },
+    tag.dataset.oldwidth = w;
+    tag.style.width = `${w}px`;
+    tag.style.maxWidth = `${w}px`;
+  }
 
   // METHOD setPostitsDisplayMode()
   setPostitsDisplayMode(type) {
+    const tag = this.tag;
+
     this.menu({from: 'display', type: type});
 
-    this.element[0].dataset.displaymode = type;
+    tag.dataset.displaymode = type;
 
-    this.element.find('td.wpt').each(function() {
-      $(this).cell('setPostitsDisplayMode', type);
-    });
+    tag.querySelectorAll('td.wpt').forEach(
+      (el) => P.get(el, 'cell').setPostitsDisplayMode(type));
 
     // Re-apply filters
-    const $f = S.getCurrent('filters');
-    if (H.isVisible($f[0])) {
-      $f.filters('apply', {norefresh: true});
+    const f = S.getCurrent('filters');
+    if (f.isVisible()) {
+      f.apply({norefresh: true});
     }
 
     H.fetch(
       'POST',
       `user/wall/${this.settings.id}/displaymode`,
       {value: type});
-  },
+  }
 
-//FIXME TODO
   // METHOD zoom()
   zoom(args) {
-    const $zoom = $('.tab-content.walls');
-    const zoom0 = $zoom[0];
-    const $wall = this.element;
-    const wall = $wall[0];
+    const zoom = document.querySelector('.tab-content.walls');
+    const tag = this.tag;
+    const $wall = $(tag);
     const from = args.from;
     const type = args.type;
     const noalert = Boolean(args.noalert);
@@ -1627,23 +1668,23 @@ Object.assign(Plugin.prototype, {
     const writeAccess = this.canWrite();
 
     if (!args.step) {
-      wall.style.top = 0;
-      wall.style.left = '15px';
+      tag.style.top = 0;
+      tag.style.left = '15px';
     }
 
     if (type === 'screen') {
       return this.screen();
     }
 
-    let level = zoom0.style.transform;
+    let level = zoom.style.transform;
     level = (!level || level === 'none') ?
       1 : Number(level.match(/[0-9\.]+/)[0]);
 
-    if (!zoom0.dataset.zoomlevelorigin) {
+    if (!zoom.dataset.zoomlevelorigin) {
       if (!S.get('old-width')) {
         S.set('old-styles', {
-          width: zoom0.style.width,
-          transform: zoom0.style.transform,
+          width: zoom.style.width,
+          transform: zoom.style.transform,
         });
       }
 
@@ -1654,35 +1695,42 @@ Object.assign(Plugin.prototype, {
         });
       }
 
-      zoom0.dataset.zoomlevelorigin = level;
+      zoom.dataset.zoomlevelorigin = level;
 
-      zoom0.style.width = '30000px';
+      zoom.style.width = '30000px';
 
-      zoom0.querySelectorAll('th.wpt').forEach ((th) => {
+      // Disable headers
+      zoom.querySelectorAll('th.wpt').forEach ((th) => {
         th.style.pointerEvents = 'none';
 
         if (writeAccess) {
           th.style.opacity = .6;
         }
       });
-
-      // Deactivate some features
-      if (wall.classList.contains('ui-draggable')) {
+      // Disable wall dragging
+      if (tag.classList.contains('ui-draggable')) {
         $wall.draggable('disable');
       }
-      wall.querySelectorAll('.cell-menu').forEach((el) => H.hide(el));
+      // Hide cell menu
+      tag.querySelectorAll('.cell-menu').forEach((el) => H.hide(el));
+      // Disable note sorting in stack mode
       this.UIPluginCtrl('.cell-list-mode ul',
-                        'sortable', 'disabled', true, true);
+        'sortable', 'disabled', true, true);
+      // Disable note & cell resizing
       this.UIPluginCtrl('td,.postit',
-                        'resizable', 'disabled', true);
-      this.UIPluginCtrl('.wall,.postit',
-                        'draggable', 'disabled', true);
+        'resizable', 'disabled', true);
+      // Disable note dragging
+      this.UIPluginCtrl('.postit',
+        'draggable', 'disabled', true);
+      // Disable plug label dragging
+      this.UIPluginCtrl(document.body.querySelectorAll('.plug-label'),
+        'draggable', 'disabled', true);
     }
 
     if (from) {
-      zoom0.dataset.zoomtype = from;
+      zoom.dataset.zoomtype = from;
     } else {
-      zoom0.removeAttribute('data-zoomtype');
+      zoom.removeAttribute('data-zoomtype');
     }
 
     if (type !== 'normal') {
@@ -1692,7 +1740,7 @@ Object.assign(Plugin.prototype, {
     switch (type) {
       case '+': level += zoomStep; break;
       case '-': level -= zoomStep; break;
-      case 'normal': level = Number(zoom0.dataset.zoomlevelorigin); break;
+      case 'normal': level = Number(zoom.dataset.zoomlevelorigin); break;
     }
 
     if (level <= 0) {
@@ -1704,23 +1752,26 @@ Object.assign(Plugin.prototype, {
 
     S.set('zoom-level', level);
 
-    // FIXME level == zoom0.dataset.zoomlevelorigin
-    if (from !== 'screen' && level == zoom0.dataset.zoomlevelorigin) {
-      const $walls = S.getCurrent('walls');
+    const postitDiv = document.createElement('div');
+    const postit = P.getOrCreate(postitDiv, 'postit', {wall: this});
+    const walls = S.getCurrent('walls');
+
+    // FIXME level == zoom.dataset.zoomlevelorigin
+    if (from !== 'screen' && level == zoom.dataset.zoomlevelorigin) {
 
       S.unset('zoom-level');
 
-      $walls[0].style.overflow = 'auto';
+      walls.style.overflow = 'auto';
 
       this.hidePostitsPlugs();
 
       setTimeout(() => {
-        $('#normal-display-btn').hide();
-        S.getCurrent('mmenu').mmenu('checkAllowedActions');
+        H.hide(document.getElementById('normal-display-btn'));
+        S.getCurrent('mmenu').checkAllowedActions();
       }, 150);
 
-      zoom0.removeAttribute('data-zoomtype');
-      zoom0.removeAttribute('data-zoomlevelorigin');
+      zoom.removeAttribute('data-zoomtype');
+      zoom.removeAttribute('data-zoomlevelorigin');
 
       this.menu({from: 'display', type: 'zoom-normal-off'});
 
@@ -1731,92 +1782,104 @@ Object.assign(Plugin.prototype, {
         });
       }
 
-      zoom0.style.width = S.get('old-styles').width;
-      zoom0.style.transform = S.get('old-styles').transform;
+      zoom.style.width = S.get('old-styles').width;
+      zoom.style.transform = S.get('old-styles').transform;
       S.unset('old-styles');
 
-      zoom0.querySelectorAll('th.wpt').forEach ((th) => {
+      // Reactivate headers
+      zoom.querySelectorAll('th.wpt').forEach((th) => {
         th.style.pointerEvents = 'auto';
 
         if (writeAccess) {
           th.style.opacity = 1;
         }
       });
-
-      // Reavtivate some previously deactivated features
-      if (wall.classList.contains('ui-draggable')) {
+      // Reactivate wall dragging
+      if (tag.classList.contains('ui-draggable')) {
         $wall.draggable('enable');
       }
-      wall.querySelectorAll('.cell-menu').forEach((el) => H.show(el));
+      // Show cell menu
+      tag.querySelectorAll('.cell-menu').forEach((el) => H.show(el));
+      // Reactivate note sorting in stack mode
       this.UIPluginCtrl('.cell-list-mode ul',
-                        'sortable', 'disabled', false, true);
+        'sortable', 'disabled', false, true);
+      // Reactivate note & cell resizing
       this.UIPluginCtrl('td,.postit',
-                        'resizable', 'disabled', false);
-      this.UIPluginCtrl('.wall,.postit',
-                        'draggable', 'disabled', false);
+        'resizable', 'disabled', false);
+      // Reactivate note dragging
+      this.UIPluginCtrl('.postit',
+        'draggable', 'disabled', false);
+      // Disable plug label dragging
+      this.UIPluginCtrl(document.body.querySelectorAll('.plug-label'),
+        'draggable', 'disabled', false);
 
-      $walls.scrollLeft(0).scrollTop(0);
+      walls.scrollLeft = 0;
+      walls.scrollTop = 0;
 
-      $('<div/>').postit('applyZoom');
+      postit.applyZoom();
     } else {
       if (from !== 'screen') {
         this.hidePostitsPlugs();
 
-        $('<div/>').postit('applyZoom');
-        $('#normal-display-btn').show();
-        S.getCurrent('mmenu').mmenu('checkAllowedActions');
+        postit.applyZoom();
+        H.show(document.getElementById('normal-display-btn'));
+        S.getCurrent('mmenu').checkAllowedActions();
       }
 
-      zoom0.style.transformOrigin = 'top left';
-      zoom0.style.transform = `scale(${level})`;
+      zoom.style.transformOrigin = 'top left';
+      zoom.style.transform = `scale(${level})`;
 
-      $('#walls').scrollLeft(
-        ((30000 * level) / 2 - window.innerWidth / 2) + 20);
+      walls.scrollLeft = ((30000 * level) / 2 - window.innerWidth / 2) + 20;
     }
-  },
+
+    P.remove(postitDiv, 'postit');
+  }
 
   // METHOD screen()
   // TODO optimization
   screen() {
+    const tag = this.tag;
     const step = .005;
-    const wall = this.element[0];
-    const walls = S.getCurrent('walls')[0];
-    let position = wall.getBoundingClientRect();
+    const walls = S.getCurrent('walls');
+    let position = this.tag.getBoundingClientRect();
 
     this.hidePostitsPlugs();
 
-    $(walls).scrollLeft(0).scrollTop(0);
+    walls.scrollLeft = 0;
+    walls.scrollTop = 0;
 
     if (position.bottom - position.top < walls.clientHeight &&
         position.right < walls.clientWidth) {
       do { 
         this.zoom({from: 'screen', type: '+', step: step});
-        position = wall.getBoundingClientRect();
+        position = tag.getBoundingClientRect();
       } while (position.bottom - position.top < walls.clientHeight - 20 &&
                position.right < walls.clientWidth - 5);
     } else {
       do { 
-        this.zoom ({from: 'screen', type: '-', step: step});
-        position = wall.getBoundingClientRect();
+        this.zoom({from: 'screen', type: '-', step: step});
+        position = tag.getBoundingClientRect();
       } while (!(position.bottom - position.top < walls.clientHeight - 20 &&
                  position.right < walls.clientWidth - 5));
     }
 
-    $('#normal-display-btn').show();
+    H.show(document.getElementById('normal-display-btn'));
     this.ctrlMenu('zoom-screen', 'off');
-    S.getCurrent('mmenu').mmenu('checkAllowedActions');
+    S.getCurrent('mmenu').checkAllowedActions();
 
-    $('#walls').scrollLeft (
-      ((30000 * S.get('zoom-level')) / 2 - window.innerWidth / 2) + 20);
+    walls.scrollLeft =
+      ((30000 * S.get('zoom-level')) / 2 - window.innerWidth / 2) + 20;
 
-    $('<div/>').postit('applyZoom');
+    const postit = document.createElement('div');
+    P.getOrCreate(postit, 'postit', {wall: this}).applyZoom();
+    P.remove(postit, 'postit');
 
     walls.style.overflow = 'hidden';
-  },
+  }
 
   // METHOD edit()
   edit(then, onError, todelete = false) {
-    _originalObject = this.serialize();
+    this.originalObject = this.serialize();
 
     if (!this.isShared()) {
       then && then();
@@ -1836,7 +1899,7 @@ Object.assign(Plugin.prototype, {
         }
       }
     );
-  },
+  }
 
   // METHOD serialize()
   serialize() {
@@ -1844,19 +1907,19 @@ Object.assign(Plugin.prototype, {
       name: this.getName(),
       description: this.getDescription(),
     };
-  },
+  }
 
   // METHOD unedit()
   unedit(then, onError) {
     let data = null;
 
-    if (this.element[0].dataset.todelete) {
+    if (this.tag.dataset.todelete) {
       data = {todelete: true};
     // Update wall only if it has changed
     } else {
       data = this.serialize();
 
-      if (!H.objectHasChanged(_originalObject, data)) {
+      if (!H.objectHasChanged(this.originalObject, data)) {
         if (!this.isShared()) {
           then && then();
           return;
@@ -1883,7 +1946,7 @@ Object.assign(Plugin.prototype, {
       // error cb
       onError,
     );
-  },
+  }
 
   // METHOD displayExternalRef()
   displayExternalRef(v) {
@@ -1894,8 +1957,8 @@ Object.assign(Plugin.prototype, {
     if (update) {
       this.settings.displayexternalref = val;
 
-      this.element[0].querySelectorAll('.postit').forEach((p) =>
-        $(p).postit(`${type}ExternalRef`));
+      this.tag.querySelectorAll('.postit').forEach(
+        (el) => P.get(el, 'postit')[`${type}ExternalRef`]());
 
       H.fetch(
         'POST',
@@ -1903,52 +1966,52 @@ Object.assign(Plugin.prototype, {
         {value: val});
     }
 
-    if (H.isVisible(this.element[0])) {
+    if (H.isVisible(this.tag)) {
       this.menu({from: 'display', type: `${type}-externalref`});
     }
 
     return val;
-  },
+  }
 
   // METHOD haveExternalRef()
   haveExternalRef() {
-    return this.element[0].querySelector('.postit[data-haveexternalref]');
-  },
+    return this.tag.querySelector('.postit[data-haveexternalref]');
+  }
 
   // METHOD getTDsWidth()
   getTDsWidth() {
     let w = 0;
 
-    this.element[0].querySelector('tbody.wpt tr.wpt')
-        .querySelectorAll('td.wpt').forEach(
-            (td) => w += parseFloat(td.style.width));
+    this.tag.querySelector('tbody.wpt tr.wpt')
+      .querySelectorAll('td.wpt').forEach(
+        (td) => w += parseFloat(td.style.width));
 
     return w;
-  },
+  }
 
   // METHOD showHeaders()
   showHeaders() {
-    this.element[0].querySelectorAll('th.wpt').forEach(
+    this.tag.querySelectorAll('th.wpt').forEach(
         (el) => el.classList.replace('hide', 'display'));
-  },
+  }
 
   // METHOD hideHeaders()
   hideHeaders() {
-    this.element[0].querySelectorAll('th.wpt').forEach(
+    this.tag.querySelectorAll('th.wpt').forEach(
         (el) => el.classList.replace('display', 'hide'));
-  },
+  }
 
   // METHOD displayHeaders()
   displayHeaders(v) {
-    const wall = this.element[0];
+    const tag = this.tag;
     const update = (v !== undefined);
     const val = update ? v : this.settings.displayheaders;
     const type = (val === 1) ? 'show' : 'hide';
 
     if (type === 'show') {
-      if(wall.dataset.headersshift) {
-        const hshift = JSON.parse(wall.dataset.headersshift);
-        wall.removeAttribute('data-headersshift');
+      if(tag.dataset.headersshift) {
+        const hshift = JSON.parse(tag.dataset.headersshift);
+        tag.removeAttribute('data-headersshift');
         this.showHeaders();
         this.fixSize (0, hshift.width);
       }
@@ -1958,31 +2021,31 @@ Object.assign(Plugin.prototype, {
       // Required to obtain the headers dimensions?
       this.showHeaders ();
       const bbox =
-        wall.querySelector('thead.wpt th.wpt').getBoundingClientRect();
+        tag.querySelector('thead.wpt th.wpt').getBoundingClientRect();
       if (bbox.width) {
-        wall.dataset.headersshift = JSON.stringify({
+        tag.dataset.headersshift = JSON.stringify({
           width: parseInt(bbox.width),
           height: parseInt(bbox.height),
         });
       }
       this.hideHeaders();
-      wall.style.width = `${this.getTDsWidth()}px`;
+      tag.style.width = `${this.getTDsWidth()}px`;
     }
 
-    if (H.isVisible(this.element[0])) {
+    if (H.isVisible(tag)) {
       this.menu({from: 'display', type: `${type}-headers`});
     }
 
     if (update) {
       this.settings.displayheaders = val;
-      wall.dataset.displayheaders = val;
+      tag.dataset.displayheaders = val;
       this.repositionPostitsPlugs();
       H.fetch(
         'POST',
         `user/wall/${this.settings.id}/displayheaders`,
         {value: val});
     }
-  },
+  }
 });
 
 //////////////////////////////////// INIT ////////////////////////////////////
@@ -2011,63 +2074,66 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    WS.connect(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/app/ws?token=${wpt_userData.token}`,
-      () => {
-        const $settings = $('#settingsPopup');
+    WS.connect(`${location.protocol === 'https:' ?
+      'wss' : 'ws'}://${location.host}/app/ws?token=${U.getToken()}`, () => {
+      // Heartbeat (every 15mn)
+      setInterval(() => fetch('/api/user/ping'), 60 * 1000 * 15);
 
-        // Heartbeat (every 15mn)
-        setInterval(() => fetch('/api/user/ping'), 60 * 1000 * 15);
+      const settings = S.getCurrent('settings');
 
-        $settings.settings({
-          locale: document.documentElement.getAttribute('lang'),
-        });
+      // If a theme exists from the login page, apply it once the user is
+      // logged
+      const loginTheme = ST.get('theme');
+      if (loginTheme) {
+        ST.delete('theme');
+        settings.set({theme: loginTheme});
+      }
 
-        // If a theme exists from the login page, apply it once the user is
-        // logged
-        const loginTheme = ST.get('theme');
-        if (loginTheme) {
-          ST.delete('theme');
-          $settings.settings('set', {theme: loginTheme});
-        }
+      settings.applyTheme();
 
-        $settings.settings('applyTheme');
+      // Check if wopits has been upgraded
+      H.checkForAppUpgrade();
 
-        // Check if wopits has been upgraded
-        H.checkForAppUpgrade();
-
+      (async () => {
         const directURLData = __getDirectURLData();
         const loadSpecific = (directURLData && directURLData.type !== 'u');
         const displayAccount = (directURLData && directURLData.type === 'u');
-        const $wall = $('<div/>');
+        const wallDiv = document.createElement('div');
+        const wall = P.getOrCreate(wallDiv, 'wall');
 
-        (async () => {
-          // Load previously opened walls
-          await $wall.wall('restorePreviousSession');
+        // Load previously opened walls
+        await wall.restorePreviousSession();
 
-          // Check if we must display a postit alert or a specific wall
-          // (from direct URL).
-          if (loadSpecific) {
-            $wall.wall('loadSpecific', directURLData);
-          // Display account popup and highlight emails settings field
-          // (from direct URL).
-          } else if (displayAccount) {
-            // Remove special alert URL.
-            history.pushState(null, null, '/');
+        // Check if we must display a postit alert or a specific wall
+        // (from direct URL).
+        if (loadSpecific) {
+          wall.loadSpecific(directURLData);
+        // Display account popup and highlight emails settings field
+        // (from direct URL).
+        } else if (displayAccount) {
+          // Remove special alert URL.
+          history.pushState(null, null, '/');
 
-            H.loadPopup('account', {
-              cb: ($p) => {
-                $p.find(`[name="allow_emails"]`)
-                  .parent().effect("highlight", {duration: 5000});
-              },
-            });
-          }
+          H.loadPopup('account', {
+            cb: (p) => {
+              const el = p.querySelector(`[name="allow_emails"]`).parentNode;
 
-          // Display theme chooser if needed.
-          if (!wpt_userData.settings.theme) {
-            $settings.settings('openThemeChooser');
-          }
-        })();
-      });
+              // TODO Helper for transitions
+              el.style.transition = '2s';
+              el.style.backgroundColor = 'var(--modal-1-theme-bg-color)';
+              setTimeout(() => el.style.backgroundColor = '', 2000);
+            },
+          });
+        }
+
+        P.remove(wallDiv, 'wall');
+
+        // Display theme chooser if needed
+        if (!U.get('theme')) {
+          settings.openThemeChooser();
+        }
+      })();
+    });
 
     H.fixHeight();
 
@@ -2076,7 +2142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {id: 'normal-display-btn'}, null, `<i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span>`);
     // EVENT "click" on back to standard view button
     displayBtn.addEventListener('click',
-      (e) => S.getCurrent('wall').wall('zoom', {type: 'normal'}));
+      (e) => S.getCurrent('wall').zoom({type: 'normal'}));
     document.body.insertBefore(displayBtn, document.body.firstChild);
 
     // Create input to upload wall file import
@@ -2107,7 +2173,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
               }
 
-              $('<div/>').wall('open', {wallId: d.wallId});
+              const wallDiv = document.createElement('div');
+              P.getOrCreate(wallDiv, 'wall').open({wallId: d.wallId});
+              P.remove(wallDiv, 'wall');
 
               H.displayMsg({
                 type: 'success',
@@ -2120,8 +2188,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // EVENT "click" on main content wopits icon
-    document.getElementById('welcome').addEventListener('click',
-      (e) => $('<div/>').wall('openCreatePopup'));
+    document.getElementById('welcome').addEventListener('click', (e) => {
+      const wallDiv = document.createElement('div');
+
+      P.getOrCreate(wallDiv, 'wall').openCreatePopup();
+      P.remove(wallDiv, 'wall');
+    });
 
     // EVENT "click" on walls tab
     document.querySelector('.nav-tabs.walls').addEventListener('click',
@@ -2137,11 +2209,14 @@ document.addEventListener('DOMContentLoaded', () => {
           placement: 'left',
           title: `<i class="fas fa-times fa-fw"></i> <?=_("Close")?>`,
           content: `<?=_("Close this wall?")?>`,
-          onConfirm: () => S.getCurrent('wall').wall ('close'),
+          onConfirm: () => S.getCurrent('wall').close(),
         });
       // EVENT "click" on "new wall" tab button
       } else if (el.parentNode.dataset.action === 'new') {
-        $('<div/>').wall('openCreatePopup');
+        const wallDiv = document.createElement('div');
+
+        P.getOrCreate(wallDiv, 'wall').openCreatePopup();
+        P.remove(wallDiv, 'wall');
       }
     });
 
@@ -2168,9 +2243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // EVENT "click" on main menu items
     document.getElementById('main-menu').addEventListener('click', (e) => {
       const el = e.target;
-      const $wall = S.getCurrent('wall');
-      const wallPlugin = $wall.length ?
-        $wall.wall('getClass') : $('<div/>').wall('getClass');
       const li = (el.tagName === 'LI') ? el : el.closest('li');
       const action = li ? li.dataset.action : null;
 
@@ -2183,33 +2255,41 @@ document.addEventListener('DOMContentLoaded', () => {
           const input = li.querySelector('input');
           input.checked = !input.checked;
         }
-        S.getCurrent(type)[type]('toggle');
+        S.getCurrent(type).toggle();
       };
+
+      let wall = S.getCurrent('wall');
+      let wallDiv;
+
+      if (!wall) {
+        wallDiv = document.createElement('div');
+        wall = P.getOrCreate(wallDiv, 'wall');
+      }
 
       switch (action) {
         case 'zoom+':
-          wallPlugin.zoom({type: '+'});
-          wallPlugin.ctrlMenu('zoom-screen', 'on');
+          wall.zoom({type: '+'});
+          wall.ctrlMenu('zoom-screen', 'on');
           break;
         case 'zoom-':
-          wallPlugin.zoom({type: '-'});
-          wallPlugin.ctrlMenu('zoom-screen', 'on');
+          wall.zoom({type: '-'});
+          wall.ctrlMenu('zoom-screen', 'on');
           break;
         case 'zoom-screen':
-          wallPlugin.zoom({type: 'screen'});
+          wall.zoom({type: 'screen'});
           break;
         case 'zoom-normal':
-          wallPlugin.zoom({type: 'normal'});
+          wall.zoom({type: 'normal'});
           break;
         case 'chat':
         case 'filters':
           __manageCheckbox(el, li, action);
           break;
         case 'settings':
-          $('#settingsPopup').settings('open');
+          S.getCurrent('settings').open();
           break;
         case 'new':
-          wallPlugin.openCreatePopup();
+          wall.openCreatePopup();
           break;
         case 'about':
           H.loadPopup('about');
@@ -2218,26 +2298,30 @@ document.addEventListener('DOMContentLoaded', () => {
           H.loadPopup('userGuide');
           break;
         case 'open':
-          wallPlugin.openOpenWallPopup();
+          wall.openOpenWallPopup();
           break;
         case 'close-walls':
-          wallPlugin.openCloseAllWallsPopup();
+          wall.openCloseAllWallsPopup();
           break;
         case 'delete':
-          wallPlugin.openDeletePopup();
+          wall.openDeletePopup();
           break;
         case 'clone':
-          wallPlugin.clone();
+          wall.clone();
           break;
         case 'export':
-          wallPlugin.export();
+          wall.export();
           break;
         case 'import':
-          wallPlugin.import();
+          wall.import();
           break;
+      }
+
+      if (wallDiv) {
+        P.remove(wallDiv, 'wall');
       }
     });
   }
 });
 
-<?=$Plugin->getFooter()?>
+})();

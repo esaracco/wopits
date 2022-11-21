@@ -9,24 +9,45 @@ document.addEventListener('DOMContentLoaded', () => {
   let _closeVKB = false;
 
   if (!H.isLoginPage()) {
+    // CREATE CUSTOM EVENT dbltap
+    if ($.support.touch) {
+      let _timeoutTouch = null;
+      document.addEventListener('touchstart', (e) => {
+        if (!_timeoutTouch) {
+          _timeoutTouch = setTimeout(() => _timeoutTouch = null, 300);
+        } else {
+          clearTimeout(_timeoutTouch), _timeoutTouch = null;
+  
+          // Dispatch dbltap event with touchstart properties in "detail"
+          e.target.dispatchEvent(new CustomEvent('dbltap', {
+            detail: e,
+            bubbles: true,
+          }));
+        }
+      });
+    }
+
     // EVENTS resize & orientationchange on window
-    let _timeoutResize;
+    let _timeoutResize = null;
     window.addEventListener('resize', (e) => {
       clearTimeout(_timeoutResize);
       _timeoutResize = setTimeout(() =>  {
-        const $wall = S.getCurrent('wall');
+        const wall = S.getCurrent('wall');
         const mstack = S.get('mstack') || [];
+        let tmp;
  
         // FIXME
         if (S.get('zoom-level') && mstack.length > 0) return;
 
         H.fixHeight();
 
-        if ($wall.length) {
-          let tmp;
+        // Fix user msg popover scroll
+        tmp = S.getCurrent('umsg');
+        tmp.isPopoverVisible() && tmp.fixHeight();
 
+        if (wall) {
           // Refresh relations position
-          $wall.wall('repositionPostitsPlugs');
+          wall.repositionPostitsPlugs();
 
           if ( (tmp = document.querySelector(
                     '.modal.show.m-fullscreen[data-customwidth]')) ) {
@@ -35,50 +56,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Reposition chat popup if it is out of bounds
           tmp = S.getCurrent('chat');
-          if (H.isVisible(tmp[0])) {
-            tmp.chat('fixPosition');
-          }
+          tmp.isVisible() && tmp.fixPosition();
 
           // Reposition filters popup if it is out of bounds
           tmp = S.getCurrent('filters');
-          if (H.isVisible(tmp[0])) {
-            tmp.filters('fixPosition');
-          }
+          tmp.isVisible() && tmp.fixPosition();
 
           if ( (tmp = document.querySelector('.tab-content.walls')) &&
               tmp.dataset.zoomlevelorigin) {
-            $wall.wall('zoom',
-              {type: (tmp.dataset.zoomtype === 'screen') ? 'screen' : '='});
+            wall.zoom({
+              type: (tmp.dataset.zoomtype === 'screen') ? 'screen' : '=',
+            });
           }
 
           // Reposition wall menu if it is out of bounds
-          const $wmenu = S.getCurrent('wmenu');
-          Object.keys($wmenu).length && $wmenu.wmenu('fixPosition');
+          const wmenu = S.getCurrent('wmenu');
+          wmenu.isVisible() && wmenu.fixPosition();
         }
       }, 150);
     });
 
     // EVENT "scroll" on walls
-    let _timeoutScroll;
+    let _timeoutScroll = null;
     let _plugsHidden = false;
     _walls.addEventListener('scroll', () => {
-      const $wall = S.getCurrent('wall');
+      const wall = S.getCurrent('wall');
       const mstack = S.get('mstack') || [];
 
-      if (!$wall.length) return;
+      if (!wall) return;
   
       if (!S.get('wall-dragging') && !S.get('still-closing') &&
           !mstack.length) {
         if (!_plugsHidden) {
-          $wall.wall('hidePostitsPlugs');
+          wall.hidePostitsPlugs();
           _plugsHidden = true;
         }
 
         // Refresh relations position
-        if (!S.getCurrent('filters')[0].classList.contains('plugs-hidden')) {
+        if (!S.getCurrent('filters').tag.classList.contains('plugs-hidden')) {
           clearTimeout(_timeoutScroll);
           _timeoutScroll = setTimeout(() => {
-            $wall.wall('showPostitsPlugs');
+            wall.showPostitsPlugs();
             _plugsHidden = false;
           }, 150);
         }
@@ -103,22 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (share) {
           return H.loadPopup('swall', {
             open: false,
-            cb: ($p) => $p.swall('open'),
+            cb: (p) => P.getOrCreate(p, 'swall').open(),
           });
         }
 
         // Open the wall popup properties
         if (rename) {
           if (!isLocked) {
-            S.getCurrent('wall').wall('openPropertiesPopup', {renaming: true});
+            S.getCurrent('wall').openPropertiesPopup({renaming: true});
           }
           return;
         }
 
         // Save new current wall ID
         if (!close) {
-          $('#settingsPopup').settings(
-            'saveOpenedWalls', a.getAttribute('href').split('-')[1]);
+          S.getCurrent('settings')
+            .saveOpenedWalls(Number(a.getAttribute('href').split('-')[1]));
         }
       }
     });
@@ -129,14 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
       // EVENT "hide.bs.tab" on walls tabs
       if (el.matches(`.walls a[data-bs-toggle="tab"]`)) {
-        const $wall = S.getCurrent('wall');
+        const wall = S.getCurrent('wall');
 
         // Cancel zoom mode
         if (S.get('zoom-level')) {
-          $wall.wall('zoom', {type: 'normal', noalert: true});
+          wall.zoom({type: 'normal', noalert: true});
         }
   
-        $wall.wall('removePostitsPlugs', false);
+        wall.removePostitsPlugs(false);
       }
     });
   
@@ -155,42 +173,45 @@ document.addEventListener('DOMContentLoaded', () => {
         S.reset();
     
         // The new wall
-        const $wall = S.getCurrent('wall');
+        const wall = S.getCurrent('wall');
     
         // Need a wall to continue
-        if (!$wall.length) return;
+        if (!wall) return;
     
         _walls.scrollTop = 0;
         _walls.scrollLeft = 0;
     
         const menu = document.getElementById('main-menu');
-        const $chat = S.getCurrent('chat');
-        const $filters = S.getCurrent('filters');
+        const mmenu = S.getCurrent('mmenu');
+        const chat = S.getCurrent('chat');
+        const filters = S.getCurrent('filters');
     
         // Show/hide super menu actions menu depending on user wall rights
-        S.getCurrent('mmenu').mmenu('checkAllowedActions');
+        if (mmenu) {
+          S.getCurrent('mmenu').checkAllowedActions();
+        }
     
         // Manage chat checkbox menu
         if ( (menu.querySelector(`li[data-action="chat"] input`)
-                 .checked = H.isVisible($chat[0])) ) {
-          $chat.chat('removeAlert');
-          $chat.chat('setCursorToEnd');
+                 .checked = chat && chat.isVisible()) ) {
+          chat.removeAlert();
+          chat.setCursorToEnd();
         }
     
         // Manage filters checkbox menu
         menu.querySelector(`li[data-action="filters"] input`)
-            .checked = H.isVisible($filters[0]);
+            .checked = filters && filters.isVisible();
     
         // Refresh wall if it has not just been opened
         if (!S.get('newWall')) {
           (async () => {
-            await $wall.wall('refresh');
-            $wall.wall('displayExternalRef');
-            $wall.wall('displayHeaders');
+            await wall.refresh();
+            wall.displayExternalRef();
+            wall.displayHeaders();
           })();
         }
 
-        $wall.wall('menu', {from: 'wall', type: 'have-wall'});
+        wall.menu({from: 'wall', type: 'have-wall'});
       }
     });
 
@@ -202,18 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'logout',
         icon: 'power-off',
         content: `<?=_("Do you really want to logout from wopits?")?>`,
-        onConfirm: () => $("<div/>").login('logout'),
+        onConfirm: () => H.logout(),
       });
     });
   }
 
   // EVENT "online"
   window.addEventListener('online', (e) => {
-    const $wall = S.getCurrent('wall');
+    const wall = S.getCurrent('wall');
 
-    if ($wall.length) {
+    if (wall) {
       H.loader('hide');
-      $wall.wall('refresh');
+      wall.refresh();
     } else {
       location.reload();
     }
@@ -248,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         H.preventDefault(e);
         bootstrap.Modal.getInstance(mstack[0]).hide();
       } else if (S.get('zoom-level')) {
-        S.getCurrent('wall').wall('zoom', {type: 'normal'});
+        S.getCurrent('wall').zoom({type: 'normal'});
       }
     }
   });
@@ -262,27 +283,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // EVENT "hidden.bs.toast" on alert messages
-  document.addEventListener('hidden.bs.toast', (e) => {
-    const el = e.target;
-
-    bootstrap.Toast.getInstance(el).dispose();
-    el.remove();
-  });
+  document.addEventListener('hidden.bs.toast', (e) => e.target.remove());
 
   // EVENT "keypress" on popups and popovers to catch <enter> key
   document.addEventListener('keypress', (e) => {
-    if (e.which !== 13 || e.target.tagName !== 'INPUT') return;
+    const el = e.target;
 
-    const popup = e.target.closest('.popover,.modal');
+    if (e.which !== 13 || el.tagName === 'TEXTAREA') return;
+
+    const popup = document.querySelector('.popover') ||
+                  el.classList.contains('.modal') ||
+                  el.closest('.popover,.modal');
 
     if (!popup) return;
 
-    const btn = popup.querySelector(
-        '.btn-primary.btn-sm,.btn-primary,.btn-success');
+    const r = Array.from(popup.querySelectorAll(
+      '.btn-primary.btn-sm,.btn-primary,.btn-success')).filter(
+        (item) => H.isVisible(item));
 
-    if (btn) {
+    if (r.length) {
       H.preventDefault(e);
-      btn.click();
+      r[0].click();
     }
   });
 
@@ -303,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dialog.querySelectorAll('button.btn')
           .forEach((b) => b.classList.add('btn-sm'));
     } else {
-      const $ps = S.getCurrent('postit');
+      const ps = S.getCurrent('postit');
 
       if (dialog.dataset.toclean) {
         el.classList.remove('modal-sm');
@@ -313,8 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Get postit color and set modal header color the same
-      if ($ps.length) {
-        $ps.postit('setPopupColor', $(el));
+      if (ps) {
+        ps.setPopupColor(el);
       }
     }
   });
@@ -376,16 +397,16 @@ document.addEventListener('DOMContentLoaded', () => {
           case 'app-reload':
             return location.href = '/r.php?u';
           case 'app-logout':
-            $('<div/>').login('logout', {auto: true});
+            H.logout({auto: true});
             break;
         }
         break;
       case 'postitViewPopup':
-        S.getCurrent('postit').postit('unsetCurrent');
+        S.getCurrent('postit').unsetCurrent();
         break;
       case 'postitAttachmentsPopup':
       case 'dpickPopup':
-        S.getCurrent('postit').postit('unedit');
+        S.getCurrent('postit').unedit();
         break;
       case 'confirmPopup':
         S.get('confirmPopup').onClose();
@@ -409,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = (el.tagName === 'BUTTON') ? el : el.closest('button');
       const popup = btn.closest('.modal');
       const closePopup = !Boolean(popup.dataset.noclosure);
-      const $postit = S.getCurrent('postit');
+      const postit = S.getCurrent('postit');
 
       e.stopImmediatePropagation();
 
@@ -418,22 +439,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btn.classList.contains('btn-primary')) {
         switch (popup.id) {
           case 'dpickPopup':
-            $(popup).dpick('save');
+            P.get(popup, 'dpick').save();
             break;
           case 'postitUpdatePopup':
-            $postit.postit('save', {
+            postit.save({
               content: tinymce.activeEditor.getContent(),
-              progress: $(popup.querySelector('.slider')).slider('value'),
+              progress: P.get(popup.querySelector('.slider'), 'slider').value(),
               title: $('#postitUpdatePopupTitle').val(),
             });
             break;
           // Upload postit attachment
           case 'postitAttachmentsPopup':
             popup.dataset.noclosure = true;
-            $postit.find('.patt').patt('upload');
+            P.get(postit.tag.querySelector('.patt'), 'patt').upload();
             break;
           case 'groupAccessPopup':
-            $('#swallPopup').swall('linkGroup');
+            P.get(document.getElementById('swallPopup'), 'swall').linkGroup();
             break;
           case'groupPopup':
             if (popup.dataset.action === 'update') {
@@ -469,10 +490,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 )};
               }
               (async () => {
-                const $wall = await $('<div/>').wall('create', data);
-                if ($wall) {
-                  $wall.wall('postProcessLastWall');
+                const wallDiv = document.createElement('div');
+                const wall = await P.getOrCreate(wallDiv, 'wall').create(data);
+
+                if (wall) {
+                  wall.postProcessLastWall();
                   bootstrap.Modal.getInstance(popup).hide();
+                  P.remove(wallDiv, 'wall');
                 }
               })();
             }
@@ -484,8 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bootstrap.Modal.getInstance(popup).hide();
       }
     // EVENT "click" on main menu and list items
-    } else if (el.matches('.nav-link:not(.dropdown-toggle),'+
-                          '.dropdown-item')) {
+    } else if (el.matches('.nav-link:not(.dropdown-toggle),.dropdown-item')) {
       H.closeMainMenu();
     }
   });

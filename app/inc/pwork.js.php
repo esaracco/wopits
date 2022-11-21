@@ -3,66 +3,59 @@
 Javascript plugin - Notes workers
 
 Scope: Note
-Element: .pwork
+Name: pwork
 Description: Manage notes workers
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('pwork');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+'use strict';
 
-let _$mainPopup;
-let _$editPopup;
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+P.register('pwork', class extends Wpt_postitCountPlugin {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-<?=$Plugin->getPublicSection()?>
-
-// Inherit from Wpt_postitCountPlugin
-Plugin.prototype = Object.create(Wpt_postitCountPlugin.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init(args) {
-    const settings = this.settings;
-
-    if (!args.shared || settings.readonly && !settings.count) {
-      this.element[0].classList.add('hidden');
+    if (!this.settings.shared || this.settings.readonly &&
+        !this.settings.count) {
+      this.tag.classList.add('hidden');
     }
 
     // Create postit top workers icon
     this.addTopIcon('fa-users-cog', 'pwork');
 
     return this;
-  },
+  }
 
   // METHOD display()
   display() {
-    const $postit = S.getCurrent ('postit');
+    const postit = S.getCurrent ('postit');
     const readonly = this.settings.readonly;
 
     H.loadPopup('usearch', {
       open: false,
       template: 'pwork',
-      settings: {
-        caller: 'pwork',
-        onAdd: () => this.incCount(),
-        onRemove: () => this.decCount(),
-      },
-      cb: ($p) => {
-        const p = $p[0];
+      cb: (p) => {
+        const usearch = P.getOrCreate(p, 'usearch');
 
-        $p.usearch('reset', {
+        usearch.setSettings({
+          caller: 'pwork',
+          onAdd: () => this.incCount(),
+          onRemove: () => this.decCount(),
+        });
+
+        usearch.reset({
           full: true,
           readonly: Boolean(this.settings.readonly),
         });
 
-        $p.usearch('displayUsers', {
-          ...$p.usearch('getIds'),
+        usearch.displayUsers({
+          ...usearch.getIds(),
           // Refresh counter (needed when some users have been deleted)
           then: (c) => this.setCount(c),
         });
@@ -75,11 +68,11 @@ Object.assign(Plugin.prototype, {
 
           // LOCAL FUNCTION __close ()
           const __close = () =>
-            $postit.postit(H.checkAccess(<?=WPT_WRIGHTS_RW?>) ?
-              'unedit' : 'unsetCurrent');
+            H.checkAccess(<?=WPT_WRIGHTS_RW?>) ?
+              postit.unedit() : postit.unsetCurrent();
 
-          const pwork = $postit.postit('getPlugin', 'pwork');
-          const newUsers = $p.usearch('getNewUsers');
+          const pwork = postit.getPlugin('pwork');
+          const newUsers = usearch.getNewUsers();
 
           e.stopImmediatePropagation();
 
@@ -103,7 +96,7 @@ Object.assign(Plugin.prototype, {
         }, {once: true});
       }
     });
-  },
+  }
 
   // METHOD notifyNewUsers()
   notifyNewUsers(ids) {
@@ -113,12 +106,12 @@ Object.assign(Plugin.prototype, {
       'PUT',
       `wall/${wallId}/cell/${cellId}/postit/${postitId}/notifyWorkers`,
       {ids, postitTitle: this.postit().getTitle()});
-  },
+  }
 
   // METHOD open()
   open(refresh) {
     this.postit().edit({}, () => this.display());
-  },
+  }
 });
 
 //////////////////////////////////// INIT ////////////////////////////////////
@@ -134,18 +127,19 @@ document.addEventListener ('DOMContentLoaded', () => {
 
     // EVENT "click" on workers count
     if (el.matches('.pwork,.pwork *')) {
-      const $pwork = $((el.tagName === 'DIV') ? el : el.parentNode);
+      const pworkTag = (el.tagName === 'DIV') ? el : el.parentNode;
+      const pwork = P.get(pworkTag, 'pwork');
 
       e.stopImmediatePropagation();
 
       if (H.checkAccess (<?=WPT_WRIGHTS_RW?>)) {
-        $pwork.pwork('open');
+        pwork.open();
       } else {
-        $pwork.closest('.postit').postit('setCurrent');
-        $pwork.pwork('display');
+        P.get(pworkTag.closest('.postit'), 'postit').setCurrent();
+        pwork.display();
       }
     }
   });
 });
 
-<?=$Plugin->getFooter()?>
+})();

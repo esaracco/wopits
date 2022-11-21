@@ -3,57 +3,57 @@
 Javascript plugin - Meta menu
 
 Scope: Global
-Elements: #mmenu
+Name: mmenu
 Description: Manage notes Meta menu
 */
 
 require_once(__DIR__.'/../prepend.php');
 
-$Plugin = new Wopits\jQueryPlugin('mmenu');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+  'use strict';
 
-const _noDisplayBtn = `<div class="mt-2"><button type="button" class="btn btn-xs btn-primary nodisplay"><?=_("I get it!")?></button></div>`;
-let _data = {postits: {}, dest: null};
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+P.register('mmenu', class extends Wpt_toolbox {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-<?=$Plugin->getPublicSection()?>
+    this.settings = settings;
+    this.tag = settings.tag;
 
-// Inherit from Wpt_toolbox
-Plugin.prototype = Object.create(Wpt_toolbox.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const $sm = this.element;
+    this.NO_DISPLAY_BTN = `<div class="mt-2"><button type="button" class="btn btn-xs btn-primary nodisplay"><?=_("I get it!")?></button></div>`;
+    this.data = {postits: {}, dest: null};
+
+    const tag = this.tag;
 
     this.boundMousemoveEventHandler = this.mousemoveEventHandler.bind(this);
     this.boundKeydownEventHandler = this.keydownEventHandler.bind(this);
 
     this.reset();
 
-    $sm.draggable({
+    // TODO Do not use jQuery here
+    $(tag).draggable({
       distance: 10,
       cursor: 'move',
       drag: (e, ui) => this.fixDragPosition(ui),
-      stop: ()=> S.set('dragging', true, 500),
+      stop: () => S.set('dragging', true, 500),
     });
 
     // EVENT "click" on "close" button
-    $sm[0].querySelector('button.btn-close').addEventListener('click',
+    tag.querySelector('button.btn-close').addEventListener('click',
       (e) => this.close());
 
     // EVENT "click" on menu
-    $sm[0].addEventListener('click', (e) => {
+    tag.addEventListener('click', (e) => {
       const el = e.target;
       const li = (el.tagName === 'LI') ? el : el.closest('li');
 
       if (!li || H.disabledEvent(
             !H.checkAccess(<?=WPT_WRIGHTS_RW?>) ||
-            Array.from($sm[0].querySelectorAll('li'))
+            Array.from(tag.querySelectorAll('li'))
               .filter((el) => H.isVisible(el)).length === 1)) {
         return false;
       }
@@ -62,8 +62,7 @@ Object.assign(Plugin.prototype, {
       const set = icon.classList.contains('set');
       const args = {};
 
-      $sm[0].querySelectorAll('i').forEach(
-        (el) => el.classList.remove('set'));
+      tag.querySelectorAll('i').forEach((el) => el.classList.remove('set'));
 
       if (set) return;
 
@@ -76,14 +75,14 @@ Object.assign(Plugin.prototype, {
         case 'copy':
           if (!ST.noDisplay('mmenu-copy-help')) {
             args.title = `<i class="fas fa-paste fa-fw"></i> <?=_("Copy")?>`;
-            args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${_noDisplayBtn}`;
+            args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to copy the selected notes")?>${this.NO_DISPLAY_BTN}`;
             args.onConfirm = () => ST.noDisplay('mmenu-copy-help', true);
           }
           break;
         case 'move':
           if (!ST.noDisplay('mmenu-move-help')) {
             args.title = `<i class="fas fa-cut fa-fw"></i> <?=_("Move")?>`;
-            args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${_noDisplayBtn}`;
+            args.content = `<?=_("<kbd>ctrl+click</kbd> on the destination cell to move the selected notes")?>${this.NO_DISPLAY_BTN}`;
             args.onConfirm = () => ST.noDisplay('mmenu-move-help', true);
           }
           break
@@ -98,14 +97,14 @@ Object.assign(Plugin.prototype, {
         });
       }
     });
-  },
+  }
 
   // METHOD getAction()
   getAction() {
-    const el = this.element[0].querySelector('.set');
+    const el = this.tag.querySelector('.set');
 
     return el ? el.parentNode.dataset.action : null;
-  },
+  }
 
   // METHOD apply()
   apply(args = {}) {
@@ -116,7 +115,6 @@ Object.assign(Plugin.prototype, {
       });
     }
 
-    const wall = S.getCurrent('wall')[0];
     let ok = true;
     let item;
     let type;
@@ -124,7 +122,7 @@ Object.assign(Plugin.prototype, {
     let content;
     let placement = 'left';
 
-    _data.dest = args.cellPlugin;
+    this.data.dest = args.cell;
 
     switch (this.getAction()) {
       case 'copy':
@@ -136,7 +134,7 @@ Object.assign(Plugin.prototype, {
         content = `<?=_("Do you want to move the selected notes here (comments and workers will be reset)?")?>`;
         break;
       case 'delete':
-        item = this.element[0].querySelector(`[data-action='delete']`);
+        item = this.tag.querySelector(`[data-action='delete']`);
         title = `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`;
         content = `<?=_("Delete selected notes?")?>`;
         break;
@@ -145,19 +143,20 @@ Object.assign(Plugin.prototype, {
       default:
         ok = false;
         type = 'info';
-        item = this.element[0].querySelector('li');
+        item = this.tag.querySelector('li');
         title = `<?=_("Copy/Move")?>`;
         content = `<?=_("Please, select the type of action first")?>`;
     }
 
     if (title) {
       const e = args.event;
+      const cellTag = this.data.dest && this.data.dest.tag;
       let tmpDiv;
 
       S.set('noDefaultEscape', true);
 
-      if (ok && _data.dest) {
-        _data.dest.element[0].classList.add('selected');
+      if (ok && cellTag) {
+        cellTag.classList.add('selected');
 
         tmpDiv = H.createElement('div', {
           id: `copy-paste-target`,
@@ -180,16 +179,16 @@ Object.assign(Plugin.prototype, {
 
           (e.target.querySelector('i') || e.target).classList.remove('set');
 
-          if (_data.dest) {
-            _data.dest.element[0].classList.remove('selected');
-            _data.dest = null;
+          if (cellTag) {
+            cellTag.classList.remove('selected');
+            this.data.dest = null;
           }
         },
         onConfirm: () => {
           let position;
 
-          if (_data.dest) {
-            const cellPos = _data.dest.element[0].getBoundingClientRect();
+          if (cellTag) {
+            const cellPos = cellTag.getBoundingClientRect();
 
             if (cellPos.top && cellPos.left) {
               position = {
@@ -210,7 +209,7 @@ Object.assign(Plugin.prototype, {
         },
       });
     }
-  },
+  }
 
   // METHOD send()
   send(args = {}) {
@@ -219,7 +218,7 @@ Object.assign(Plugin.prototype, {
     // Color picker
     switch (action) {
       case 'cpick':
-        $('#cpick').cpick('open', {
+        S.getCurrent('cpick').open({
           event: args.event,
           onClose: () => args.event.target.classList.remove('set'),
           onSelect: (c) => {
@@ -228,7 +227,7 @@ Object.assign(Plugin.prototype, {
               'postits/color',
               {
                 color: c.className,
-                postits: Object.keys(_data.postits),
+                postits: Object.keys(this.data.postits),
               }
             );
           }
@@ -237,8 +236,8 @@ Object.assign(Plugin.prototype, {
       // Delete
       case 'delete':
         // FIXME race condition with edit/unedit
-        Object.keys(_data.postits).forEach((id) => {
-          const p = _data.postits[id];
+        Object.keys(this.data.postits).forEach((id) => {
+          const p = this.data.postits[id];
           p.edit({}, () => {
             p.delete();
             p.unedit();
@@ -249,9 +248,9 @@ Object.assign(Plugin.prototype, {
       case 'copy':
       // Move
       case 'move':
-        const cellSettings = _data.dest.settings;
-        const cellPos = _data.dest.element[0].getBoundingClientRect();
-        const postits = Object.keys(_data.postits);
+        const cellSettings = this.data.dest.settings;
+        const cellPos = this.data.dest.tag.getBoundingClientRect();
+        const postits = Object.keys(this.data.postits);
         const dims = {};
         const tmp = [];
 
@@ -259,8 +258,7 @@ Object.assign(Plugin.prototype, {
         // before inserting it in database
         let lastPos;
         postits.forEach((id) => {
-          const pPlugin = _data.postits[id];
-          const postit = pPlugin.element[0];
+          const {tag} = this.data.postits[id];
 
           if (!lastPos) {
             lastPos = args.position;
@@ -269,19 +267,19 @@ Object.assign(Plugin.prototype, {
             lastPos.left += 10;
           }
 
-          const $newP = _data.dest.addPostit({
-            width: parseInt(postit.style.width),
-            height: parseInt(postit.style.height),
+          const newP = this.data.dest.addPostit({
+            width: parseInt(tag.style.width),
+            height: parseInt(tag.style.height),
             item_top: lastPos.top,
             item_left: lastPos.left,
           }, true);
 
-          tmp.push($newP[0]);
+          tmp.push(newP.tag);
 
           H.waitForDOMUpdate(() => {
-            $newP.postit('fixPosition', cellPos);
+            newP.fixPosition(cellPos);
 
-            const newPos = $newP[0].getBoundingClientRect();
+            const newPos = newP.tag.getBoundingClientRect();
             const item_top = newPos.top - cellPos.top;
             const item_left = newPos.left - cellPos.left;
 
@@ -296,7 +294,10 @@ Object.assign(Plugin.prototype, {
 
         H.waitForDOMUpdate(() => {
           // Remove temporary notes
-          tmp.forEach((el) => el.remove());
+          tmp.forEach((el) => {
+            P.remove(el, 'postit');
+            el.remove();
+          });
 
           // Create real note in database with fixed dimensions
           H.request_ws(
@@ -309,21 +310,21 @@ Object.assign(Plugin.prototype, {
         });
         break;
     }
-  },
+  }
 
   // METHOD isEmpty()
   isEmpty() {
     return !this.itemsCount();
-  },
+  }
 
   // METHOD reset()
   reset() {
     this.removeAll();
-    this.element[0].querySelectorAll('.set').forEach(
+    this.tag.querySelectorAll('.set').forEach(
       (el) => el.classList.remove('set'));
 
-    _data = {postits: {}, dest: null};
-  },
+    this.data = {postits: {}, dest: null};
+  }
 
   // METHOD add()
   add(p) {
@@ -331,34 +332,33 @@ Object.assign(Plugin.prototype, {
       this.open();
     }
 
-    p.settings.cell[0].querySelectorAll(
-      `[data-id="${p.element[0].dataset.id}"]`)
-         .forEach((el)=> el.classList.add('selected'));
+    p.settings.cell.tag.querySelectorAll(`[data-id="${p.getId(true)}"]`)
+      .forEach((el) => el.classList.add('selected'));
 
-    _data.postits[p.settings.id] = p;
+    this.data.postits[p.settings.id] = p;
 
     this.refreshItemsCount();
     this.checkAllowedActions();
-  },
+  }
 
   // METHOD update()
   update(id, p) {
-    if (_data.postits[id]) {
-      _data.postits[id] = p;
+    if (this.data.postits[id]) {
+      this.data.postits[id] = p;
     }
-  },
+  }
 
   // METHOD remove()
   remove(id) {
-    const p = _data.postits[id];
+    const p = this.data.postits[id];
 
     if (p) {
-      p.settings.cell[0].querySelectorAll(
-        `.selected[data-id="${p.element[0].dataset.id}"]`)
-           .forEach((el)=> el.classList.remove('selected'));
+      p.settings.cell.tag.querySelectorAll(
+        `.selected[data-id="${p.getId(true)}"]`).forEach(
+          (el) => el.classList.remove('selected'));
     }
 
-    delete _data.postits[id];
+    delete this.data.postits[id];
 
     this.refreshItemsCount();
 
@@ -367,31 +367,31 @@ Object.assign(Plugin.prototype, {
     } else {
       this.checkAllowedActions();
     }
-  },
+  }
 
   // METHOD removeAll()
   removeAll() {
-    Object.keys(_data.postits).forEach((id) => this.remove(id));
-  },
+    Object.keys(this.data.postits).forEach((id) => this.remove(id));
+  }
 
   // METHOD itemsCount()
   itemsCount() {
-    return Object.keys(_data.postits).length;
-  },
+    return Object.keys(this.data.postits).length;
+  }
 
   // METHOD refreshItemsCount()
   refreshItemsCount() {
-    this.element[0].querySelector('.wpt-badge').innerText = this.itemsCount();
-  },
+    this.tag.querySelector('.wpt-badge').innerText = this.itemsCount();
+  }
 
   // METHOD mousemoveEventHandler()
   mousemoveEventHandler(e) {
     S.set('mousepos', {x: e.pageX, y: e.pageY});
-  },
+  }
 
   // METHOD keydownEventHandler()
   keydownEventHandler(e) {
-    const menu = this.element[0];
+    const tag = this.tag;
 
     // Nothing if modal was opened and is closing
     if (S.get('still-closing') || S.get('zoom-level')) return;
@@ -413,11 +413,15 @@ Object.assign(Plugin.prototype, {
           document.getElementById('popup-layer').click() : this.close();
       // DEL
       case 46:
-        return menu.querySelector(`li[data-action="delete"]`).click();
+        const del = tag.querySelector(`li[data-action="delete"]`);
+        if (!del.querySelector('i.set')) {
+          del.click();
+        }
+        break;
       // CTRL+C
       case 67:
         if (e.ctrlKey) {
-          return menu.querySelector(`li[data-action="copy"]`).click();
+          return tag.querySelector(`li[data-action="copy"]`).click();
         }
         break;
       // CTRL+V
@@ -447,20 +451,20 @@ Object.assign(Plugin.prototype, {
       // CTRL+X
       case 88:
         if (e.ctrlKey) {
-          return menu.querySelector(`li[data-action="move"]`).click();
+          return tag.querySelector(`li[data-action="move"]`).click();
         }
         break;
     }
-  },
+  }
 
   // METHOD open()
   open() {
-    if (H.isVisible(this.element[0])) return;
+    if (this.isVisible()) return;
 
-    this.element.show();
+    H.show(this.tag);
 
     // EVENT mousemove
-    S.getCurrent('walls')[0].addEventListener('mousemove',
+    S.getCurrent('walls').addEventListener('mousemove',
       this.boundMousemoveEventHandler);
     // EVENT keydown
     document.addEventListener('keydown', this.boundKeydownEventHandler);
@@ -468,36 +472,36 @@ Object.assign(Plugin.prototype, {
     if (!S.get('mstack')) {
       this.showHelp();
     }
-  },
+  }
 
   // METHOD checkAllowedActions()
   checkAllowedActions() {
-    const menu = this.element[0];
+    const tag = this.tag;
 
     // No meta menu if full view and readonly wall
     if (S.get('zoom-level') && !H.checkAccess(<?=WPT_WRIGHTS_RW?>)) {
       this.close();
     }
 
-    menu.style.opacity = 1;
-    menu.querySelectorAll('li').forEach((el) => H.show(el));
+    tag.style.opacity = 1;
+    tag.querySelectorAll('li').forEach((el) => H.show(el));
 
     //FIXME No copy or cut with full view
     if (S.get('zoom-level') || !H.haveMouse()) {
-      menu.querySelectorAll(`[data-action="copy"] i,[data-action="move"] i`)
+      tag.querySelectorAll(`[data-action="copy"] i,[data-action="move"] i`)
         .forEach((el) => el.classList.remove('set'));
-      menu.querySelectorAll(
+      tag.querySelectorAll(
           `[data-action="copy"],[data-action="move"], .divider`).forEach(
         (el) => H.hide(el));
     }
 
-    for (const id in _data.postits) {
+    for (const id in this.data.postits) {
       if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>,
-             _data.postits[id].settings.wall[0].dataset.access)) {
+             this.data.postits[id].settings.wall.tag.dataset.access)) {
 
         //TODO Trigger on btn copy menu item
-        menu.querySelector(`[data-action="copy"] i`).classList.add('set');
-        menu.querySelectorAll(`li:not([data-action="copy"])`).forEach(
+        tag.querySelector(`[data-action="copy"] i`).classList.add('set');
+        tag.querySelectorAll(`li:not([data-action="copy"])`).forEach(
           (el) => H.hide(el));
 
         return;
@@ -505,11 +509,11 @@ Object.assign(Plugin.prototype, {
     };
 
     if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>))  {
-      menu.querySelectorAll(`[data-action="copy"] i.set`).forEach(
+      tag.querySelectorAll(`[data-action="copy"] i.set`).forEach(
         (el) => el.classList.remove('set'));
-      menu.style.opacity = .3;
+      tag.style.opacity = .3;
     }
-  },
+  }
 
   // METHOD showHelp()
   showHelp() {
@@ -526,31 +530,32 @@ Object.assign(Plugin.prototype, {
     }
 
     H.openConfirmPopover({
-      item: this.element[0],
+      item: this.tag,
       type: 'info',
       title: `<i class="fas fa-bolt fa-fw"></i> <?=_("Meta menu")?>`,
       placement: 'right',
-      content: content + _noDisplayBtn,
+      content: content + this.NO_DISPLAY_BTN,
       onConfirm: () => ST.noDisplay(`mmenu-help-${writeAccess}`, true),
     });
-  },
+  }
 
   // METHOD close()
   close() {
-    const $ps = $('#psearchPopup');
+    const psearch = P.get(document.getElementById('psearchPopup'), 'psearch');
 
     document.removeEventListener('keydown', this.boundKeydownEventHandler);
-    S.getCurrent('walls')[0]
+    S.getCurrent('walls')
       .removeEventListener('mousemove', this.boundMousemoveEventHandler);
     S.unset('mousepos');
 
     document.querySelectorAll('.postit.selected').forEach(
       (el) => el.classList.remove('selected'));
 
-    setTimeout(() => $ps.is(':hidden') && $ps.psearch('reset', true), 250);
+    setTimeout(() =>
+      psearch && !psearch.isVisible() && psearch.reset(true), 250);
 
     this.reset();
-    this.element.hide();
+    H.hide(this.tag);
   }
 });
 
@@ -564,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null,
     `<button type="button" class="btn-close"></button><span class="wpt-badge inset">0</span><li title="<?=_("Copy notes")?>" data-action="copy"><i class="fas fa-paste fa-fw fa-lg"></i></li><li title="<?=_("Move notes")?>" data-action="move"><i class="fas fa-cut fa-fw fa-lg"></i></li><li class="divider"></li><li title="<?=_("Change notes color")?>" data-action="cpick"><i class="fas fa-palette fa-fw fa-lg"></i></li><li title="<?=_("Delete notes")?>" data-action="delete"><i class="fas fa-trash fa-fw fa-lg"></i></li>`));
 
-  S.getCurrent('mmenu').mmenu();
+  P.create(document.getElementById('mmenu'), 'mmenu');
 });
 
-<?=$Plugin->getFooter()?>
+})();

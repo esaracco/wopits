@@ -3,7 +3,7 @@
 Javascript plugin - Account
 
 Scope: Global
-Element: #accountPopup
+Name: account
 Description: User account management
 */
 
@@ -11,33 +11,26 @@ require_once(__DIR__.'/../prepend.php');
 
 use Wopits\DbCache;
 
-$Plugin = new Wopits\jQueryPlugin('account');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+  'use strict';
 
-const _getUserPictureTemplate = (src) => {
-  return src ? `<button type="button" class="btn-close img-delete"></button><img src="${src}">` : `<i class="fas fa-camera-retro fa-3x"></i>`;
-};
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+P.register('account', class extends Wpt_accountForms {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    this.settings = settings;
+    this.tag = settings.tag;
 
-<?=$Plugin->getPublicSection()?>
-
-// Inherit from Wpt_accountForms
-Plugin.prototype = Object.create(Wpt_accountForms.prototype);
-Object.assign(Plugin.prototype, {
-  // METHOD init()
-  init() {
-    const $account = this.element;
-    const account = $account[0];
-    const deleteBtn = account.querySelector(`[data-action="delete-account"]`);
+    const tag = this.tag;
+    const deleteBtn = tag.querySelector(`[data-action="delete-account"]`);
 
     // EVENT "click" on "delete" button (only if no LDAP mode)
     if (deleteBtn) {
-      deleteBtn.addEventListener('click', (e)=> {
+      deleteBtn.addEventListener('click', (e) => {
         H.openConfirmPopup({
           icon: 'sad-tear',
           content: `<?=_("Do you really want to permanently delete your wopits account?")?>`,
@@ -72,16 +65,16 @@ Object.assign(Plugin.prototype, {
                 },
                 // success cb
                 (d) => {
-                   account.querySelector('.user-picture').innerHTML =
-                       _getUserPictureTemplate(d.src)
+                   tag.querySelector('.user-picture').innerHTML =
+                     this.getUserPictureTemplate(d.src)
                 });
             }
           });
-      },
+      }
     });
 
     // EVENT "click" on user profil picture
-    account.querySelector('.user-picture').addEventListener('click', (e) => {
+    tag.querySelector('.user-picture').addEventListener('click', (e) => {
       e.stopImmediatePropagation();
 
       // If delete img
@@ -99,17 +92,17 @@ Object.assign(Plugin.prototype, {
     });
 
     // EVENT "hide.bs.modal" on account popup
-    account.addEventListener('hide.bs.modal', (e) => {
+    tag.addEventListener('hide.bs.modal', (e) => {
       const about = e.target.querySelector(`[name="about"]`);
       const val = H.noHTML(about.value);
 
       if (val !== about.dataset.oldvalue) {
-        this.updateField({about: val}, account.querySelector('.modal-body'));
+        this.updateField({about: val}, tag.querySelector('.modal-body'));
       }
     });
 
     // EVENT "click" on account popup
-    account.addEventListener('click', (e) => {
+    tag.addEventListener('click', (e) => {
       const el = e.target;
 
       // EVENT "click" on account popup user data
@@ -121,9 +114,8 @@ Object.assign(Plugin.prototype, {
         const name = field.getAttribute('name');
         const value = field.value;
         let title;
-        let $popup;
 
-        if (account.querySelector('.ldap-msg') &&
+        if (tag.querySelector('.ldap-msg') &&
             btn.tagName === 'INPUT' &&
             !name.match(/^fullname|visible|allow_emails$/)) {
           return;
@@ -169,12 +161,10 @@ Object.assign(Plugin.prototype, {
             case 'password':
               H.loadPopup('changePassword', {
                 open: false,
-                init: ($p) =>
-                  $p[0].querySelector('.btn-primary').addEventListener(
-                      'click', (e) => this.onSubmit($p, e)),
-                cb: ($p) => {
-                  const p = $p[0];
-
+                init: (p) =>
+                  p.querySelector('.btn-primary').addEventListener('click',
+                    (e) => this.onSubmit(p, e)),
+                cb: (p) => {
                   p.querySelectorAll('input').forEach((el) => el.value = '');
                   p.dataset.field = 'password';
                   p.dataset.noclosure = true;
@@ -188,11 +178,10 @@ Object.assign(Plugin.prototype, {
             case 'email':
               H.loadPopup('updateOneInput', {
                 open: false,
-                init: ($p) =>
-                  $p[0].querySelector('.btn-primary').addEventListener(
-                      'click', (e) => this.onSubmit($p, e)),
-                cb: ($p) => {
-                  const p = $p[0];
+                init: (p) =>
+                  p.querySelector('.btn-primary').addEventListener('click',
+                    (e) => this.onSubmit(p, e)),
+                cb: (p) => {
                   const input = H.createElement('input', {
                     className: 'form-control',
                     type: 'text',
@@ -256,11 +245,14 @@ Object.assign(Plugin.prototype, {
       });
 
     this.updateMainMenu();
-  },
+  }
+
+  getUserPictureTemplate(src) {
+    return src ? `<button type="button" class="btn-close img-delete"></button><img src="${src}">` : `<i class="fas fa-camera-retro fa-3x"></i>`;
+  }
 
   // METHOD onSubmit()
-  onSubmit($popup, e) {
-    const popup = $popup[0];
+  onSubmit(popup, e) {
     const field = popup.dataset.field;
 
     e.stopImmediatePropagation();
@@ -275,7 +267,7 @@ Object.assign(Plugin.prototype, {
         const value = input.value.trim();
 
         if (value === popup.dataset.oldvalue) {
-          return bootstrap.Modal.getInstance($popup).hide();
+          return bootstrap.Modal.getInstance(popup).hide();
         }
 
         if (this.checkRequired(input) && this.validForm(input)) {
@@ -296,24 +288,22 @@ Object.assign(Plugin.prototype, {
         }
         break;
     }
-  },
+  }
 
   // METHOD updateMainMenu()
   updateMainMenu() {
     // Update "invisible mode" icon in main menu.
     document.querySelector('.invisible-mode').style.display =
-        (wpt_userData.settings.visible === 1) ? 'none' : 'inline-block';
-  },
+      U.isVisible() ? 'none' : 'inline-block';
+  }
 
   // METHOD getProp()
   getProp(prop) {
-    return this.element[0].querySelector(`input[name="${prop}"]`).value;
-  },
+    return this.tag.querySelector(`input[name="${prop}"]`).value;
+  }
 
   // METHOD deletePicture()
   deletePicture() {
-    const $account = this.element;
-
     H.request_ws(
       'DELETE',
       'user/picture',
@@ -323,12 +313,12 @@ Object.assign(Plugin.prototype, {
         if (d.error_msg) {
           H.raiseError(null, d.error_msg);
         } else {
-          this.element[0].querySelector('.user-picture').innerHTML =
-              _getUserPictureTemplate();
+          this.tag.querySelector('.user-picture').innerHTML =
+            this.getUserPictureTemplate();
         }
       }
     );
-  },
+  }
 
   // METHOD delete()
   async delete() {
@@ -340,12 +330,10 @@ Object.assign(Plugin.prototype, {
     } else {
       return location.href = '/r.php';
     }
-  },
+  }
 
   // METHOD updateField()
   updateField(args, noclosure) {
-    const $account = this.element;
-
     H.request_ws(
       'POST',
       'user/update',
@@ -356,28 +344,26 @@ Object.assign(Plugin.prototype, {
           H.displayMsg({type: 'warning', msg: d.error_msg});
         } else {
           for (const k in d) {
-            const field = $account[0].querySelector(`[name="${k}"]`);
+            const field = this.tag.querySelector(`[name="${k}"]`);
 
             if (field) {
-              if (k === 'visible' &&
-                  wpt_userData.settings.visible !== d[k]) {
-                const $wall = S.getCurrent('wall');
+              if (k === 'visible' && U.get('visible') !== d[k]) {
+                const wall = S.getCurrent('wall');
 
-                wpt_userData.settings.visible = d[k];
+                U.set('visible', d[k]);
 
                 if (d[k] !== 1) {
                   // Close all current opened walls and reload session.
-                  if ($wall.length) {
-                    S.getCurrent('chat').chat('hide');
-                    $wall.wall('closeAllWalls', false);
+                  if (wall) {
+                    S.getCurrent('chat').hide();
+                    wall.closeAllWalls(false);
                     (async () => {
-                      await $wall.wall('restorePreviousSession');
-                      $('#settingsPopup')
-                        .settings('saveOpenedWalls', null, false);
+                      await wall.restorePreviousSession();
+                      S.getCurrent('settings').saveOpenedWalls(null, false);
                     })();
                   }
-                } else if ($wall.length) {
-                  $wall.wall('menu', {from: 'wall', type: 'have-wall'});
+                } else if (wall) {
+                  wall.menu({from: 'wall', type: 'have-wall'});
                 }
 
                 // Update "invisible mode" icon in main menu.
@@ -416,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     H.loadPopup('account');
   });
 
-  $('#accountPopup').account();
+  P.create(document.getElementById('accountPopup'), 'account');
 });
 
-<?=$Plugin->getFooter()?>
+})();

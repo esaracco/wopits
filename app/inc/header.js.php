@@ -3,7 +3,7 @@
 Javascript plugin - Wall's header
 
 Scope: Wall
-Element: th
+Name: header
 Description: Wall's headers
 */
 
@@ -11,68 +11,58 @@ require_once(__DIR__.'/../prepend.php');
 
 use Wopits\DbCache;
 
-$Plugin = new Wopits\jQueryPlugin('header', '', 'wallElement');
-echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+  'use strict';
 
-let _realEdit = false;
-let _originalObject;
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-// METHOD serializeOne()
-const _serializeOne = (th) => {
-    const img = th.querySelector('img');
+P.register('header', class extends Wpt_pluginWallElement {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
+    const tag = this.tag;
 
-    return {
-      id: th.dataset.id.substring(7),
-      width: Math.trunc(th.offsetWidth),
-      height: Math.trunc(th.offsetHeight),
-      title: th.querySelector('.title').innerText,
-      picture: img ? img.getAttribute('src') : null,
-    };
-  };
+    this.realEdit = false;
+    this.originalObject = null;
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
-
-<?=$Plugin->getPublicSection()?>
-
-Plugin.prototype = {
-  // METHOD init()
-  init() {
-    const header = this.element[0];
-    const settings = this.settings;
-
-    settings._timeoutEditing = 0;
-    header.dataset.id = `header-${settings.id}`;
+    tag.dataset.id = `header-${settings.id}`;
 
     this.appendTitle();
     this.appendMenu();
 
     if (settings.picture) {
-      header.appendChild(this.getImgTemplate(settings.picture));
+      tag.appendChild(this.getImgTemplate(settings.picture));
     }
-  },
+
+    // Disable header if zoom is enabled
+    if (S.get('zoom-level')) {
+      tag.style.pointerEvents = 'none';
+      if (this.canWrite()) {
+        tag.style.opacity = .6;
+      }
+    }
+  }
 
   // METHOD appendTitle()
   appendTitle() {
     const title = this.settings.title;
 
-    this.element[0].appendChild(
+    this.tag.appendChild(
       H.createElement('div', 
         {className: 'title'},
         null,
         (title !== ' ') ? title : '&nbsp;',
     ));
-  },
+  }
 
   // METHOD appendMenu()
   appendMenu() {
-    const $header = this.element;
-    const header = $header[0];
+    const tag = this.tag;
     const settings = this.settings;
-    const $wall = settings.wall;
+    const wall = settings.wall;
+    const wallTag = wall.tag;
     const isCol = (settings.item_type === 'col');
     const adminAccess =
         H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, settings.access);
@@ -87,10 +77,8 @@ Plugin.prototype = {
       // EVENT "show.bs.dropdown" on header menu
       menu.addEventListener('show.bs.dropdown', (e) => {
         const el = e.target;
-        const $menu = $(el.closest('ul'));
-        const menu = $menu[0];
-        const wall = $wall[0];
-        const tr = header.closest('tr.wpt');
+        const menu = el.closest('ul');
+        const tr = tag.closest('tr.wpt');
         const deleteItem =
             menu.querySelector(`[data-action="delete"] a`);
         const moveUpItem =
@@ -109,9 +97,9 @@ Plugin.prototype = {
 
         // If column menu
         if (isCol) {
-          const thIdx = header.cellIndex;
+          const thIdx = tag.cellIndex;
 
-          if (wall.querySelectorAll('thead.wpt th.wpt').length <= 2) {
+          if (wallTag.querySelectorAll('thead.wpt th.wpt').length <= 2) {
             H.hide(deleteItem);
           }
 
@@ -126,7 +114,7 @@ Plugin.prototype = {
         } else {
           const trIdx = tr.rowIndex - 1;
 
-          if (wall.querySelectorAll('tbody.wpt th.wpt').length === 1) {
+          if (wallTag.querySelectorAll('tbody.wpt th.wpt').length === 1) {
             H.hide(deleteItem);
           }
 
@@ -134,17 +122,17 @@ Plugin.prototype = {
             H.hide(moveUpItem);
           }
 
-          if (trIdx === wall.querySelectorAll('tr.wpt').length - 2) {
+          if (trIdx === wallTag.querySelectorAll('tr.wpt').length - 2) {
             H.hide(moveDownItem);
           }
         }
 
-        if (isCol && wall.dataset.cols === '1') {
+        if (isCol && wallTag.dataset.cols === '1') {
           H.hide(moveLeftItem);
           H.hide(moveRightItem);
         }
 
-        if (!isCol && wall.dataset.rows === '1') {
+        if (!isCol && wallTag.dataset.rows === '1') {
           H.hide(moveUpItem);
           H.hide(moveDownItem);
         }
@@ -159,13 +147,13 @@ Plugin.prototype = {
       menu.querySelector('.dropdown-menu').addEventListener('click', (e) => {
         const el = e.target;
         const li = el.closest('li');
-        const $cell = $(li.closest('th.wpt'));
+        const cell = li.closest('th.wpt');
         const action = li.dataset.action;
 
         switch (action) {
           case 'add-picture':
             const upload = document.querySelector('.upload.header-picture');
-            if (settings.wall.wall('isShared')) {
+            if (wall.isShared()) {
               // we need this to cancel edit if no img is selected by user
               // (touch device version)
               this.addUploadLayer();
@@ -178,7 +166,7 @@ Plugin.prototype = {
           case 'delete':
             this.edit(() => {
               H.openConfirmPopover({
-                item: $cell[0].querySelector('i.btn-menu'),
+                item: cell.querySelector('i.btn-menu'),
                 placement: isCol ? 'left' : 'right',
                 title: `<i class="fas fa-trash fa-fw"></i> <?=_("Delete")?>`,
                 content: isCol ?
@@ -189,10 +177,9 @@ Plugin.prototype = {
                   // Wait for the popover to be closed
                   setTimeout(() => {
                     if (isCol) {
-                      $wall.wall('deleteCol', header.cellIndex);
+                      wall.deleteCol(tag.cellIndex);
                     } else {
-                      $wall.wall('deleteRow',
-                          header.closest('tr.wpt').rowIndex - 1);
+                      wall.deleteRow(tag.closest('tr.wpt').rowIndex - 1);
                     }
                   }, 250);
                 },
@@ -207,16 +194,16 @@ Plugin.prototype = {
                 scrollIntoView: isCol,
                 item: li.parentNode.parentNode.querySelector('.btn-menu'),
                 title: `<i class="fas fa-grip-lines${isCol ? '-vertical' : ''} fa-fw"></i> ${(isCol)?`<?=_("Column name")?>`:`<?=_("Row name")?>`}`,
-                content: `<input type="text" class="form-control form-control-sm" value="${header.querySelector('.title').innerText}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
+                content: `<input type="text" class="form-control form-control-sm" value="${tag.querySelector('.title').innerText}" maxlength="<?=DbCache::getFieldLength('headers', 'title')?>">`,
                 onClose: () => {
                   if (!S.get('no-unedit')) {
                     this.unedit();
                   }
                   S.unset('no-unedit');
                 },
-                onConfirm: ($p) => {
+                onConfirm: (p) => {
                   S.set('no-unedit', true);
-                  this.setTitle($p[0].querySelector('input').value, true);
+                  this.setTitle(p.querySelector('input').value, true);
                 }
               });
             });
@@ -230,33 +217,35 @@ Plugin.prototype = {
         }
       });
 
-      $header.find('.title').editable({
-        wall: $wall,
-        container: $header,
-        maxLength: <?=DbCache::getFieldLength('headers', 'title')?>,
-        triggerTags: ['th', 'div'],
-        fontSize: '14px',
-        callbacks: {
-          before: () => this.saveCurrentWidth(),
-          edit: (cb) => {
-            if (H.disabledEvent()) return false;
-            this.edit(cb);
+      tag.querySelectorAll('.title').forEach((el) => {
+        P.create(el, 'editable', {
+          wall: wall,
+          container: tag,
+          maxLength: <?=DbCache::getFieldLength('headers', 'title')?>,
+          triggerTags: ['th', 'div'],
+          fontSize: '14px',
+          callbacks: {
+            before: () => this.saveCurrentWidth(),
+            edit: (cb) => {
+              if (H.disabledEvent()) return false;
+              this.edit(cb);
+            },
+            unedit: () => this.unedit(),
+            update: (v) => this.setTitle(v, true),
           },
-          unedit: () => this.unedit(),
-          update: (v) => this.setTitle(v, true),
-        },
+        })
       });
     }
 
-    header.prepend(menu);
-  },
+    tag.prepend(menu);
+  }
 
   // METHOD moveRow()
   moveColRow(move, noSynchro) {
-    const th = this.element[0];
-    const tr = th.closest('tr.wpt');
-    const wall = this.settings.wall[0];
-    const idx = th.cellIndex - 1;
+    const tag = this.tag;
+    const tr = tag.closest('tr.wpt');
+    const wallTag = this.settings.wall.tag;
+    const idx = tag.cellIndex - 1;
 
     switch (move) {
       case 'move-up':
@@ -266,8 +255,8 @@ Plugin.prototype = {
         H.insertAfter(tr, tr.nextSibling);
         break;
       case 'move-left':
-        H.insertBefore(th, th.previousSibling);
-        wall.querySelectorAll('tr.wpt').forEach((el) => {
+        H.insertBefore(tag, tag.previousSibling);
+        wallTag.querySelectorAll('tr.wpt').forEach((el) => {
           const td = el.querySelectorAll(`td.wpt`)[idx];
           if (td && td.previousSibling) {
             H.insertBefore(td, td.previousSibling);
@@ -275,8 +264,8 @@ Plugin.prototype = {
         });
         break;
       case 'move-right':
-        H.insertAfter(th, th.nextSibling);
-        wall.querySelectorAll('tr.wpt').forEach((el) => {
+        H.insertAfter(tag, tag.nextSibling);
+        wallTag.querySelectorAll('tr.wpt').forEach((el) => {
           const td = el.querySelectorAll(`td.wpt`)[idx];
           if (td && td.nextSibling) {
             H.insertAfter(td, td.nextSibling);
@@ -286,60 +275,70 @@ Plugin.prototype = {
     }
 
     if (!noSynchro) {
-      $(wall.querySelector('td.wpt')).cell('unedit', false, {
+      P.get(wallTag.querySelector('td.wpt'), 'cell').unedit(false, {
         move,
         headerId: this.settings.id,
       });
     }
-  },
+  }
 
   // METHOD showUserWriting()
   showUserWriting(user) {
-    const header = this.element[0];
+    const tag = this.tag;
 
-    header.prepend(H.createElement('div',
+    tag.prepend(H.createElement('div',
       {className: 'user-writing main'},
       {userid: user.id},
       `<i class="fas fa-user-edit blink"></i> ${user.name}`,
     ));
-    header.classList.add('locked');
-  },
+    tag.classList.add('locked');
+  }
 
   // METHOD useFocusTrick()
   useFocusTrick() {
     return (
-      this.settings.wall.wall('isShared') &&
+      this.settings.wall.isShared() &&
       H.haveMouse() &&
       !H.navigatorIsEdge()
     );
-  },
+  }
 
   // METHOD saveCurrentWidth()
   saveCurrentWidth() {
     // Save current TH width
-    this.settings.thwidth = this.element[0].offsetWidth;
-  },
+    this.settings.thwidth = this.tag.offsetWidth;
+  }
 
   // METHOD addUploadLayer()
   addUploadLayer() {
     if (!this.useFocusTrick()) {
       const layer = document.getElementById('upload-layer');
 
-      ['mousedown', 'touchstart'].forEach((type) =>
-        layer.addEventListener(type, (e) => this.unedit(), {once: true}));
+      if ($.support.touch) {
+        layer.addEventListener('touchstart',
+          (e) => this.unedit(), {once: true});
+      } else {
+        layer.addEventListener('mousedown',
+          (e) => this.unedit(), {once: true});
+      }
 
       H.show(layer);
     }
-  },
+  }
+
+  // METHOD remove()
+  remove() {
+    P.remove(this.tag, 'header');
+    this.tag.remove();
+  }
 
   // METHOD removeUploadLayer()
   removeUploadLayer() {
     H.hide(document.getElementById('upload-layer'));
-  },
+  }
 
   // METHOD getImgTemplate()
   getImgTemplate(src) {
-    const $header = this.element;
     const adminAccess =
         H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>, this.settings.access);
     const img = H.createElement('div',
@@ -351,7 +350,7 @@ Plugin.prototype = {
     // EVENT "load" on header picture
     // Refresh postits plugs once picture has been fully loaded
     img.querySelector('img').addEventListener('load',
-      (e) => this.settings.wall.wall('repositionPostitsPlugs'));
+      (e) => this.settings.wall.repositionPostitsPlugs());
 
     if (!adminAccess) {
       return img;
@@ -363,7 +362,7 @@ Plugin.prototype = {
 
       e.stopImmediatePropagation();
 
-      if (this.settings.wall.wall('isShared')) {
+      if (this.settings.wall.isShared()) {
         //FIXME
         // we need this to cancel edit if no img is selected by user
         // (touch device version)
@@ -409,28 +408,30 @@ Plugin.prototype = {
     img.prepend(deleteBtn);
 
     return img;
-  },
+  }
 
   // METHOD setImg()
   setImg(src) {
-    const header = this.element[0];
-    const img = header.querySelector('.img img');
+    const tag = this.tag;
+    const img = tag.querySelector('.img img');
 
     this.settings.picture = src;
 
     if (src) {
       if (!img) {
-        header.appendChild(this.getImgTemplate(src));
+        tag.appendChild(this.getImgTemplate(src));
       } else if (src !== img.getAttribute('src')) {
         img.setAttribute('src', src);
       }
     }  else if (img) {
-      header.querySelector('.img').remove();
+      tag.querySelector('.img').remove();
     }
-  },
+  }
 
   // METHOD deleteImg()
   deleteImg() {
+    const tag = this.tag;
+
     H.request_ws(
       'DELETE',
       `wall/${this.settings.wallId}/header/${this.settings.id}/picture`,
@@ -440,9 +441,8 @@ Plugin.prototype = {
         if (d.error_msg) {
           H.raiseError(null, d.error_msg);
         } else {
-          const header = this.element[0];
-          const oldW = header.getBoundingClientRect().width;
-          const img = header.querySelector('.img');
+          const oldW = tag.getBoundingClientRect().width;
+          const img = tag.querySelector('.img');
 
           if (this.settings.item_type === 'col') {
             img.remove();
@@ -456,20 +456,21 @@ Plugin.prototype = {
           this.unedit();
         }
       });
-  },
+  }
 
   // METHOD removeContentKeepingWallSize()
   removeContentKeepingWallSize(args) {
-    const $wall = this.settings.wall;
-    const th1 = $wall[0].querySelector('thead.wpt th.wpt');
+    const wall = this.settings.wall;
+    const wallTag = wall.tag;
+    const th1 = wallTag.querySelector('thead.wpt th.wpt');
 
     args.cb();
 
-    $wall[0].style.width = 'auto';
+    wallTag.style.width = 'auto';
     th1.style.width = 0;
 
-    $wall.wall('fixSize', args.oldW, th1.offsetWidth);
-  },
+    wall.fixSize(args.oldW, th1.offsetWidth);
+  }
 
   // METHOD update()
   update(header) {
@@ -480,59 +481,59 @@ Plugin.prototype = {
     if (header.picture !== this.settings.picture) {
       this.setImg(header.picture);
     }
-  },
+  }
 
   // METHOD setTitle()
   setTitle(title, resize) {
-    const header = this.element[0];
+    const tag = this.tag;
 
     title = H.noHTML(title);
 
     this.settings.title = title || '&nbsp;';
 
-    header.querySelector('.title').innerHTML = this.settings.title;
+    tag.querySelector('.title').innerHTML = this.settings.title;
 
     if (resize) {
-      const $wall = this.settings.wall;
+      const wall = this.settings.wall;
+      const wallTag = wall.tag;
       const oldW = this.settings.thwidth;
       const isRow = (this.settings.item_type === 'row');
 
       if (isRow) {
-        $wall[0].style.width = 'auto';
-        header.style.width = 0;
+        wallTag.style.width = 'auto';
+        tag.style.width = 0;
       }
 
       H.waitForDOMUpdate(() => {
-        const newW = header.getBoundingClientRect().width;
+        const newW = tag.getBoundingClientRect().width;
 
         if (isRow || newW > oldW) {
-          $wall.wall('fixSize', oldW, newW);
+          wall.fixSize(oldW, newW);
 
           if (!isRow) {
-            $wall.find('tbody.wpt tr.wpt')
-                .find(`td.wpt:eq(${(header.cellIndex-1)})`).each(function() {
-              this.style.width = `${newW}px`;
-              this.querySelector('.ui-resizable-s')
-                  .style.width = `${newW+2}px`;
+            wallTag.querySelectorAll('tbody.wpt tr.wpt').forEach((tr) => {
+              const td = tr.querySelectorAll('td.wpt')[tag.cellIndex - 1];
+              td.style.width = `${newW}px`;
+              td.querySelector('.ui-resizable-s').style.width = `${newW + 2}px`;
             });
           }
         }
         else {
-          $wall.wall('fixSize');
+          wall.fixSize();
         }
 
         this.unedit();
       });
     }
-  },
+  }
 
   // METHOD edit()
   edit(then, onError) {
     this.setCurrent();
 
-    _originalObject = _serializeOne(this.element[0]);
+    this.originalObject = this.serializeOne(this.tag);
 
-    if (!this.settings.wall.wall('isShared')) {
+    if (!this.settings.wall.isShared()) {
       then && then();
       return;
     }
@@ -556,45 +557,59 @@ Plugin.prototype = {
       // error cb
       (d) => this.cancelEdit(),
     );
-  },
+  }
 
   // METHOD setCurrent()
   setCurrent() {
-    this.element[0].classList.add('current');
-  },
+    this.tag.classList.add('current');
+  }
 
   // METHOD unsetCurrent()
   unsetCurrent() {
     S.reset('header');
-    this.element[0].classList.remove('current');
-  },
+    this.tag.classList.remove('current');
+  }
 
   // METHOD cancelEdit()
   cancelEdit() {
-    _realEdit = false;
+    this.realEdit = false;
     this.unsetCurrent();
-  },
+  }
+
+  // METHOD serializeOne()
+  serializeOne(th) {
+    const img = th.querySelector('img');
+
+    return {
+      id: Number(th.dataset.id.substring(7)),
+      width: Math.trunc(th.offsetWidth),
+      height: Math.trunc(th.offsetHeight),
+      title: th.querySelector('.title').innerText,
+      picture: img ? img.getAttribute('src') : null,
+    };
+  }
 
   // METHOD serialize()
   serialize() {
-    const wall = this.settings.wall[0];
+    const wallTag = this.settings.wall.tag;
     const headers = {cols: [], rows: []};
 
-    wall.querySelectorAll('thead.wpt th.wpt').forEach((th) => {
+    wallTag.querySelectorAll('thead.wpt th.wpt').forEach((th) => {
       if (th.cellIndex > 0) {
-        headers.cols.push(_serializeOne(th));
+        headers.cols.push(this.serializeOne(th));
       };
     });
 
-    wall.querySelectorAll('tbody.wpt th.wpt').forEach(
-      (th) => headers.rows.push(_serializeOne(th)));
+    wallTag.querySelectorAll('tbody.wpt th.wpt').forEach(
+      (th) => headers.rows.push(this.serializeOne(th)));
 
     return headers;
-  },
+  }
 
   // METHOD unedit()
   unedit(args = {}) {
-    const $wall = this.settings.wall;
+    const wall = this.settings.wall;
+    const wallTag = wall.tag;
     let data = null;
 
     this.removeUploadLayer();
@@ -610,14 +625,16 @@ Plugin.prototype = {
     }
 
     // Update header only if it has changed
-    if (H.objectHasChanged(_originalObject, _serializeOne(this.element[0]))) {
+    if (H.objectHasChanged(this.originalObject, this.serializeOne(this.tag))) {
+      const cells = wallTag.querySelectorAll('tbody.wpt td.wpt');
+      const cell = P.get(cells[0], 'cell');
       data = {
         headers: this.serialize(),
-        cells: $('<div/>').cell('serialize', {noPostits: true}),
-        wall: {width: Math.trunc($wall[0].clientWidth)},
+        cells: cell.serialize({noPostits: true}),
+        wall: {width: Math.trunc(wallTag.clientWidth)},
       };
-      $wall.find('tbody.wpt td.wpt').cell('reorganize');
-    } else if (!$wall.wall('isShared')) {
+      cell.reorganize(cells);
+    } else if (!wall.isShared()) {
       return this.cancelEdit();
     }
 
@@ -631,7 +648,7 @@ Plugin.prototype = {
       () => this.cancelEdit(),
     );
   }
-};
+});
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
@@ -646,16 +663,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!el.files || !el.files.length) return;
 
-      const $header = S.getCurrent('header');
-      const settings = $header.header('getSettings');
+      const header = S.getCurrent('header');
+      const tag = header.tag;
+      const settings = header.settings;
 
-      _realEdit = true;
+      this.realEdit = true;
 
       H.getUploadedFiles(e.target.files, '\.(jpe?g|gif|png)$', (e, file) => {
         el.value = '';
 
         if (H.checkUploadFileSize({size: e.total}) && e.target.result) {
-          const oldW = $header.outerWidth();
+          const oldW = tag.getBoundingClientRect().width;
 
           H.fetchUpload(
             `wall/${settings.wallId}/header/${settings.id}/picture`,
@@ -668,34 +686,34 @@ document.addEventListener('DOMContentLoaded', () => {
             // success cb
             (d) => {
               if (d.error_msg) {
-                return $header.header('unedit', {data: d});
+                return header.unedit({data: d});
               }
 
-              $header.header('setImg', d.img);
+              header.setImg(d.img);
               setTimeout(() => {
-                settings.wall.wall('fixSize', oldW, $header.outerWidth());
-                $header.header('unedit');
+                settings.wall.fixSize(oldW, tag.getBoundingClientRect().width);
+                header.unedit();
               }, 500);
             },
             // error cb
-            (d) => $header.header('unedit', {data: d}));
+            (d) => header.unedit({data: d}));
           }
         },
         // error cb
-        () => $header.header('unedit'));
+        () => header.unedit());
     },
     onClick: (e) => {
-      const $header = S.getCurrent('header');
+      const header = S.getCurrent('header');
 
       //FIXME
       // we need this to cancel edit if no img is selected by user
       // (desktop version)
-      if ($header.header('useFocusTrick')) {
+      if (header.useFocusTrick()) {
         window.addEventListener('focus',
-          (e) => !_realEdit && $header.header('unedit'), {once: true});
+          () => !header.realEdit && header.unedit(), {once: true});
       }
     },
   });
 });
 
-<?=$Plugin->getFooter()?>
+})();

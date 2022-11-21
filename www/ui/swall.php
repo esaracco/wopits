@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="delegate-admin-only">(<?=_("not being the creator of this wall, you have a restricted administration of access groups")?>)</div>
+        <div class="delegate-admin-only"><i><?=_("Not being the creator of this wall, you have a restricted administration of access groups.")?></i></div>
         <div class="scroll mb-3">
           <span></span>
           <ul class="list-group attr"></ul>

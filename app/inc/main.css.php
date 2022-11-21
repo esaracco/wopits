@@ -9,6 +9,8 @@
 
 :root {
   --modal-zindex: 5017;
+  --postit-zindex: 1010;
+  --postit-hover-zindex: 5000;
 }
 
 /* Disable user zoom on safari (meta are not efficient here) */
@@ -577,7 +579,7 @@ form span.required {
 }
 
 #accountPopup .user-picture {
-  cursor:pointer;
+  cursor: pointer;
 }
 
 #accountPopup .delete {
@@ -1102,7 +1104,7 @@ th.wpt .editable.editing input {
   display: inline-block;
   visibility: hidden;
   position: fixed;
-  overflow:auto;
+  overflow: auto;
   font-weight: bold;
 }
 
@@ -1280,15 +1282,16 @@ kbd,
 
 .cell-menu {
   position: absolute;
-  right: -2px;
-  top: -4px;
+  z-index: calc(var(--postit-hover-zindex) + 1);
+  left: -12px;
+  top: -14px;
   color: var(--menubar-bg-color);
   cursor: pointer;
   padding: 5px;
 }
 
 .cell-menu .wpt-badge {
-  transform: translate(-65%, -5%);
+  transform: translate(-85%, -5%);
 }
 
 .cell-menu .btn-circle {
@@ -1398,7 +1401,7 @@ th.wpt .submenu .dropdown-menu {
   position: absolute !important;
   border: 1px solid #ccc;
   box-shadow: 6px 6px 7px -6px rgba(0,0,0,.8);
-  z-index: 1010;
+  z-index: var(--postit-zindex);
   min-height: 50px;
   min-width: 160px;
   height: 120px;
@@ -1412,7 +1415,7 @@ th.wpt .submenu .dropdown-menu {
 }
 
 .postit.hover {
-  z-index: 5000;
+  z-index: var(--postit-hover-zindex) !important;
 }
 
 .postit .btn-menu {

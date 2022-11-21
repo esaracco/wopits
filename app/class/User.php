@@ -112,9 +112,10 @@ class User extends Base {
 
     return json_encode($userId ?
       [
-        'id' => $userId,
+        'id' => intval($userId),
         'settings' => $this->getSettings(false),
-        'walls' => (new Wall(['userId' => $userId], $this->ws))->getWall(),
+        'walls' =>
+          (new Wall(['userId' => $userId], $this->ws))->getWall()['list'],
         'token' => $_SESSION['userToken'] ?? '',
       ]
       :
@@ -516,7 +517,7 @@ class User extends Base {
   }
 
   public function getTimezone():string {
-    return (empty( $ret = $this->getSetting ('timezone') )) ?
+    return (empty( $ret = $this->getSetting('timezone') )) ?
               WPT_LOCALES[$this->slocale] : $ret;
   }
 

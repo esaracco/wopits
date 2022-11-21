@@ -3,60 +3,48 @@
   Javascript plugin - Slider
 
   Scope: Note update popup
-  Element: .slider
+  Name: slider
   Description: Custom slider
 */
 
   require_once(__DIR__.'/../prepend.php');
 
-  $Plugin = new Wopits\jQueryPlugin('slider');
-  echo $Plugin->getHeader();
-
 ?>
 
-/////////////////////////////////// PRIVATE //////////////////////////////////
+(() => {
+'use strict';
 
-// DOM element
-let _el = null;
-// Input field
-let _input =  null;
+/////////////////////////////////// PLUGIN ////////////////////////////////////
 
-/////////////////////////////////// PUBLIC ///////////////////////////////////
+P.register('slider', class extends Wpt_pluginBase {
+  // METHOD constructor()
+  constructor(settings) {
+    super(settings);
 
-<?=$Plugin->getPublicSection()?>
+    this.input = this.tag.querySelector('input');
 
-  Plugin.prototype = {
-    // METHOD init()
-    init() {
-      _el = this.element[0];
-      _input = _el.querySelector('input');
+    this.input.addEventListener('input', (e) => this.value(e.target.value));
+  }
 
-      _input.addEventListener('input', (e) => this.value(e.target.value));
-    },
-
-    // METHOD value()
-    value(v, setcomp) {
-      if (v === undefined) {
-        return _input.value;
-      } else {
-        _el.querySelector('label span').innerHTML = v + '%';
-        if (setcomp) {
-          _input.value = v;
-        }
+  // METHOD value()
+  value(v, setcomp) {
+    if (v === undefined) {
+      return this.input.value;
+    } else {
+      this.tag.querySelector('label span').innerHTML = v + '%';
+      if (setcomp) {
+        this.input.value = v;
       }
     }
-  };
+  }
+});
 
 //////////////////////////////////// INIT ////////////////////////////////////
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (H.isLoginPage()) return;
+document.addEventListener('DOMContentLoaded', () => {
+  if (H.isLoginPage()) return;
 
-    const plugin = document.querySelector('#postitUpdatePopup .slider');
+  P.create(document.querySelector('#postitUpdatePopup .slider'), 'slider');
+});
 
-    if (plugin) {
-      $(plugin).slider();
-    }
-  });
-
-<?=$Plugin->getFooter()?>
+})();

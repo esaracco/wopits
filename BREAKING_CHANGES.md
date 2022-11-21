@@ -1,5 +1,12 @@
 # Breaking Changes
 
+### 0.66-alpha.0
+
+* Stop the vhost to make sure all users are disconnected.
+* Deploy the new release.
+* Execute `upgrade/0.66-alpha.0/upgrade.php` **from the app DocumentRoot directory** (not from the Git source).
+* Start the vhost.
+
 ### 0.64-alpha.0
 
 * Upgrade your DB with the SQL script available in `upgrade/0.64-alpha.0/`.

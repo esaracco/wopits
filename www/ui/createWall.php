@@ -22,7 +22,7 @@
             <div class="input-group input-group-sm width-height">
               <span class="input-group-text"><?=_("Width/Height")?>:</span>
               <input type="number" name="wall-width" step="50" min="300" max="20000" class="form-control">
-              <input type="number" name="wall-height" step="50" min="300" max="20000" class="form-control">
+              <input type="number" name="wall-height" step="50" min="200" max="20000" class="form-control">
             </div>
           </div>
         </form>
