@@ -156,57 +156,6 @@ P.register('cell', class extends Wpt_pluginWallElement {
         this.unedit();
       }
     });
-
-    if (writeAccess) {
-      // LOCAL FUNCTION __dblclick()
-      const __dblclick = (e) => {
-        if (S.get('action-mmenu')) return;
-        if (S.get('zoom-level') ||
-            S.get('postit-creating') ||
-            (
-              (
-                e.target.tagName !== 'TD' ||
-                !e.target.classList.contains('wpt')
-              ) &&
-              !e.target.classList.contains('cell-list-mode')
-            )) {
-          return e.stopImmediatePropagation();
-        }
-
-        S.set('postit-creating', true, 500);
-
-        const tCoords = e && e.changedTouches && e.changedTouches[0];
-        const cellPos = tag.getBoundingClientRect();
-        const pTop = (tCoords ? tCoords.clientY : e.pageY) - cellPos.top;
-        const pLeft = (tCoords ? tCoords.clientX : e.pageX) - cellPos.left;
-
-         wall.closeAllMenus();
-
-         const f = S.getCurrent('filters');
-         if (f.isVisible()) {
-           f.reset();
-         }
-
-         this.addPostit({
-           access: settings.access,
-           item_top: pTop,
-           item_left: pLeft - 15,
-         });
-      };
-
-      if ($.support.touch) {
-        // EVENT dbltap on cell
-        tag.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
-        // Fixes issue with some touch devices
-        tag.addEventListener('touchstart', (e) => {
-          document.querySelectorAll('#main-menu.show').forEach(
-            (el) => bootstrap.Collapse.getInstance(el).hide());
-        });
-      } else {
-        // EVENT dblclick on cell
-        tag.addEventListener('dblclick', __dblclick);
-      }
-    }
   }
 
   // METHOD showUserWriting()
@@ -590,6 +539,58 @@ P.register('cell', class extends Wpt_pluginWallElement {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (H.isLoginPage()) return;
+
+  // LOCAL FUNCTION __dblclick()
+  const __dblclick = (e) => {
+    const tag = e.target;
+    const wall = S.getCurrent('wall');
+
+    if (S.get('action-mmenu') ||
+        S.get('zoom-level') ||
+        S.get('postit-creating') ||
+        (
+          (
+            tag.tagName !== 'TD' ||
+            !tag.classList.contains('wpt')
+          ) &&
+          !tag.classList.contains('cell-list-mode')
+        ) ||
+        !wall.canWrite()) {
+      return e.stopImmediatePropagation();
+    }
+
+    S.set('postit-creating', true, 500);
+
+    const cell = P.get(tag, 'cell');
+    const tCoords = e && e.changedTouches && e.changedTouches[0];
+    const cellPos = tag.getBoundingClientRect();
+    const pTop = (tCoords ? tCoords.clientY : e.pageY) - cellPos.top;
+    const pLeft = (tCoords ? tCoords.clientX : e.pageX) - cellPos.left;
+
+    wall.closeAllMenus();
+
+    const f = S.getCurrent('filters');
+    f.isVisible() && f.reset();
+
+    cell.addPostit({
+      access: cell.settings.access,
+      item_top: pTop,
+      item_left: pLeft - 15,
+    });
+  };
+
+  if ($.support.touch) {
+    // EVENT dbltap on cell
+    document.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
+    // Fixes issue with some touch devices
+    document.addEventListener('touchstart', (e) => {
+      document.querySelectorAll('#main-menu.show').forEach(
+        (el) => bootstrap.Collapse.getInstance(el).hide());
+    });
+  } else {
+    // EVENT dblclick on cell
+    document.addEventListener('dblclick', __dblclick);
+  }
 
   // EVENT "click"
   document.querySelector('.tab-content.walls')
