@@ -4,8 +4,11 @@ require_once(__DIR__.'/prepend.php');
 
 $version = \Wopits\Helper::getWopitsVersion();
 $theme = 'theme-default';
+$isLogin = ($scriptName === '/login.php');
 
-if (!empty($_SESSION['userId'])) {
+if ($isLogin) {
+  $_SESSION = [];
+} elseif (!empty($_SESSION['userId'])) {
   $User->userId = $_SESSION['userId'];
   $theme = $User->getSettings(false)->theme ?? 'theme-default';
 }
@@ -36,11 +39,12 @@ if (!empty($_SESSION['upgradeDone'])) {
   <title>wopits - <?=_("Let ideas shine!")?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no">
   <?php 
-    // Useful for robots only
-    if ($scriptName === '/login.php'):?>
+    if ($isLogin) { ?>
     <meta name="description" lang="<?=$slocale?>" content="<?=_("wopits is a multilingual application that can manage all kinds of projects using sticky notes to share and collaborate with other users simultaneously.")?>">
-  <?php endif?>
-  <script>const wpt_userData=<?=$User->getUserDataJson()?></script>
+    <script>const wpt_userData={"id":0,"settings":[],"walls":[]}</script>
+  <?php } else {?>
+    <script>const wpt_userData=<?=$User->getUserDataJson()?></script>
+  <?php } ?>
   <link rel="manifest" href="/manifest.json?<?=$version?>">
   <link rel="stylesheet" href="/libs/node_modules/bootstrap/dist/css/bootstrap.min.css?<?=$version?>">
   <link rel="stylesheet" href="/libs/node_modules/@fortawesome/fontawesome-free/css/all.min.css?<?=$version?>">

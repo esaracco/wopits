@@ -19,6 +19,7 @@ class User extends Base {
 
       @session_destroy();
       @session_start();
+      $_SESSION = [];
 
       Helper::deleteCookie();
 
