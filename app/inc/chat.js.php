@@ -36,7 +36,7 @@ P.register('chat', class extends Wpt_toolbox {
       // TODO Do not use jQuery here
       .resizable({
         handles: 'all',
-        autoHide: !$.support.touch,
+        autoHide: H.haveMouse(),
         minHeight: 200,
         minWidth: 200,
         resize: (e, ui) =>

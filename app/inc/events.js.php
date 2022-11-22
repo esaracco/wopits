@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!H.isLoginPage()) {
     // CREATE CUSTOM EVENT dbltap
-    if ($.support.touch) {
+    if (H.haveTouch()) {
       let _timeoutTouch = null;
       document.addEventListener('touchstart', (e) => {
         if (!_timeoutTouch) {

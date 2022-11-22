@@ -51,7 +51,7 @@ P.register('filters', class extends Wpt_toolbox {
       // TODO Do not use jQuery here
       .resizable({
         handles: 'all',
-        autoHide: !$.support.touch,
+        autoHide: H.haveMouse(),
       })
       .append(_body);
 

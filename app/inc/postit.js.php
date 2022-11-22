@@ -288,19 +288,16 @@ P.register('postit', class extends Wpt_pluginWallElement {
           // If zoom is active, disable note resizing
           disabled: Boolean(S.get('zoom-level')),
           handles: H.haveMouse() ? 'all' : 'n, e, w, ne, se, sw, nw',
-          autoHide: false,
+          autoHide: H.haveMouse(),
           resize: (e, ui) => {
             // Refresh relations position
             this.repositionPlugs();
-
             this.fixEditHeight();
-
-            if (S.get('revertData').revert) {
-              return false;
-            }
           },
           start: (e, ui) => {
             const editable = wallTag.querySelectorAll('.editable');
+
+            S.set('resizing', true);
 
             // Cancel all editable
             // (because blur event is not triggered on resizing)
@@ -308,26 +305,24 @@ P.register('postit', class extends Wpt_pluginWallElement {
               editable.forEach((el) => P.get(el, 'editable').cancel());
             }
   
-            S.set('revertData', {
-              revert: false,
-              width: tag.clientWidth,
-              height: tag.clientHeight,
-            });
-
             this.hidePlugs();
-            this.edit({}, null, () => S.get('revertData').revert = true);
+            this.edit({}, null, () => S.set('revertData', true));
           },
           stop: (e, ui) => {
-            const revertData = S.get('revertData');
-
             S.set('dragging', true, 500);
+            S.set('resizing', true, 500);
 
             this.showPlugs();
 
-            if (revertData.revert) {
-              tag.style.width = `${revertData.width}px`;
-              tag.style.height = `${revertData.height}px`;
+            if (S.get('revertData')) {
+              S.unset('revertData');
 
+              tag.style.top = `${ui.originalPosition.top}px`;
+              tag.style.left = `${ui.originalPosition.left}px`;
+              tag.style.width = `${ui.originalSize.width}px`;
+              tag.style.height = `${ui.originalSize.height}px`;
+
+              this.fixEditHeight();
               this.cancelEdit();
               this.repositionPlugs();
             }
@@ -349,12 +344,14 @@ P.register('postit', class extends Wpt_pluginWallElement {
         this.openPostit();
       }; 
 
-      if ($.support.touch) {
-        // EVENT dbltap on note content
-        postitEdit.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
-      } else {
+      if (H.haveMouse()) {
         // EVENT dblclick on note content
         postitEdit.addEventListener('dblclick', __dblclick);
+      }
+
+      if (H.haveTouch()) {
+        // EVENT dbltap on note content
+        postitEdit.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
       }
 
       // Make note title editable
@@ -417,7 +414,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
   displayOnTop() {
     const tag = this.tag;
 
-    if (tag.classList.contains('hover')) return;
+    if (S.get('resizing') || tag.classList.contains('hover')) return;
 
     const old = S.getCurrent('wall').tag.querySelector('.postit.hover');
     old && old.classList.remove('hover');
@@ -1009,12 +1006,6 @@ P.register('postit', class extends Wpt_pluginWallElement {
         containment: $(S.getCurrent('wall').tag.querySelector('tbody.wpt')),
         scroll: false,
         start: (e, ui) => {
-          S.set('revertData', {
-            revert: false,
-            top: plug.labelObj[0].offsetTop,
-            left: plug.labelObj[0].offsetLeft
-          });
-
           start.edit({},
             // success cb
             () => {
@@ -1025,18 +1016,18 @@ P.register('postit', class extends Wpt_pluginWallElement {
               plug.related.forEach((r) => r.hide('none'));
             },
             // error cb
-            () => S.get('revertData').revert = true);
+            () => S.set('revertData', true));
         },
         stop: (e, ui) => {
-          const revertData = S.get('revertData');
-
           S.set('dragging', true, 500);
 
-          if (revertData.revert) {
+          if (S.get('revertData')) {
+            S.unset('revertData');
+
             $(label).draggable('cancel');
 
-            plug.labelObj[0].style.top = `${revertData.top}px`;
-            plug.labelObj[0].style.left = `${revertData.left}px`;
+            plug.labelObj[0].style.top = `${ui.originalPosition.top}px`;
+            plug.labelObj[0].style.left = `${ui.originalPosition.left}px`;
 
             start.cancelEdit();
           } else {
@@ -2179,14 +2170,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENTS "mouseover" &  "touchstart" on postit
   // Sort of CSS ":hover", but with z-index persistence
-  const __eventMOTS = (e) =>
-    e.target.matches('.postit *') &&
-      P.get(e.target.closest('.postit'), 'postit').displayOnTop();
+  const __eventMOTS = (e) => {
+    const el = e.target;
 
-  if ($.support.touch) {
-    wallsId.addEventListener('touchstart', __eventMOTS);
-  } else {
+    if (el.matches('.postit *')) {
+      P.get(el.closest('.postit'), 'postit').displayOnTop();
+    }
+  };
+
+  if (H.haveMouse()) {
     wallsId.addEventListener('mouseover', __eventMOTS);
+  }
+
+  if (H.haveTouch()) {
+    wallsId.addEventListener('touchstart', __eventMOTS, {passive: true});
   }
 
   // EVENT "click" on postit

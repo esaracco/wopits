@@ -88,24 +88,14 @@ P.register('cell', class extends Wpt_pluginWallElement {
           editable.forEach((el) => P.get(el, 'editable').cancel());
         }
  
-        S.set('revertData', {
-          revert: false,
-          size: {
-            width: tag.offsetWidth,
-            height: tag.offsetHeight,
-          }
-        });
- 
-        this.edit(() => S.get('revertData').revert = true);
+        this.edit(() => S.set('revertData', true));
       },
       stop: (e, ui) => {
-        const revertData = S.get('revertData');
- 
-        S.unset('revertData');
- 
-        if (revertData.revert) {
-          tag.style.width = `${revertData.size.width}px`;
-          tag.style.height = `${revertData.size.height}px`;
+        if (S.get('revertData')) {
+          S.unset('revertData');
+
+          tag.style.width = `${ui.originalSize.width}px`;
+          tag.style.height = `${ui.originalSize.height}px`;
         } else {
           const absH = Math.abs(ui.size.height - ui.originalSize.height);
           const absW = Math.abs(ui.size.width - ui.originalSize.width);
@@ -272,15 +262,12 @@ P.register('cell', class extends Wpt_pluginWallElement {
           handle: '>span',
           cursor: 'move',
           start: () => {
-            S.set('revertData', {revert: false});
-            this.edit(() => S.get('revertData').revert = true, true);
+            this.edit(() => S.set('revertData', true), true);
           },
           stop: (e, ui) => {
-            const revertData = S.get('revertData');
-
-            if (revertData.revert) {
-              $(e.target).sortable('cancel');
+            if (S.get('revertData')) {
               S.unset('revertData');
+              $(e.target).sortable('cancel');
               this.unedit(true);
             } else {
               ui.item[0].parentNode.querySelectorAll('li').forEach((li, i) =>
@@ -579,17 +566,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  if ($.support.touch) {
+  if (H.haveMouse()) {
+    // EVENT dblclick on cell
+    document.addEventListener('dblclick', __dblclick);
+  }
+
+  if (H.haveTouch()) {
+    const walls = S.getCurrent('walls');
     // EVENT dbltap on cell
-    document.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
+    walls.addEventListener('dbltap', ({detail: e}) => __dblclick(e));
     // Fixes issue with some touch devices
-    document.addEventListener('touchstart', (e) => {
+    walls.addEventListener('touchstart', (e) => {
       document.querySelectorAll('#main-menu.show').forEach(
         (el) => bootstrap.Collapse.getInstance(el).hide());
     });
-  } else {
-    // EVENT dblclick on cell
-    document.addEventListener('dblclick', __dblclick);
   }
 
   // EVENT "click"

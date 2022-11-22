@@ -1050,6 +1050,11 @@ class WHelper {
     return (window.matchMedia('(hover: hover)').matches);
   }
 
+  // METHOD haveTouch()
+  static haveTouch() {
+    return (window.matchMedia('(pointer: coarse)').matches);
+  }
+
   // METHOD isMainMenuCollapsed()
   static isMainMenuCollapsed() {
     return this.isVisible(

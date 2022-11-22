@@ -154,7 +154,7 @@ P.register('header', class extends Wpt_pluginWallElement {
           case 'add-picture':
             const upload = document.querySelector('.upload.header-picture');
             if (wall.isShared()) {
-              // we need this to cancel edit if no img is selected by user
+              // We need this to cancel edit if no img is selected by user
               // (touch device version)
               this.addUploadLayer();
               this.edit();
@@ -314,11 +314,13 @@ P.register('header', class extends Wpt_pluginWallElement {
     if (!this.useFocusTrick()) {
       const layer = document.getElementById('upload-layer');
 
-      if ($.support.touch) {
-        layer.addEventListener('touchstart',
-          (e) => this.unedit(), {once: true});
-      } else {
+      if (H.haveMouse()) {
         layer.addEventListener('mousedown',
+          (e) => this.unedit(), {once: true});
+      }
+
+      if (H.haveTouch()) {
+        layer.addEventListener('touchstart',
           (e) => this.unedit(), {once: true});
       }
 
