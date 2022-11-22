@@ -73,28 +73,25 @@ P.register('wall', class extends Wpt_pluginWallElement {
     tag.style.backgroundColor = settings['background-color'] || 'auto';
     tag.innerHTML = `<thead class="wpt"><tr class="wpt"><th class="wpt ${displayHeaders ? 'display' : 'hide'}">&nbsp;</th></tr></thead><tbody class="wpt"></tbody>`
 
-    if (H.haveMouse()) {
-      // TODO Do not use jQuery here
-      $wall.draggable({
-        distance: 10,
-        cursor: 'grab',
-//          cancel: writeAccess ? 'span,.title,.postit-edit' : null,
-        cancel: writeAccess ? '.postit-tags' : null,
-        start: () => {
-          S.set('wall-dragging', true);
-          this.hidePostitsPlugs();
-        },
-        stop: () => {
-          S.set('dragging', true, 500);
-          const filtersTag =
-            S.getCurrent('filters') && S.getCurrent('filters').tag;
-          if (!filtersTag || !filtersTag.classList.contains('plugs-hidden')) {
-            this.showPostitsPlugs();
-          }
-          S.unset('wall-dragging');
-        },
-      });
-    }
+    // TODO Do not use jQuery here
+    $wall.draggable({
+      distance: 10,
+      cursor: 'grab',
+      cancel: writeAccess ? '.postit-tags' : null,
+      start: () => {
+        S.set('wall-dragging', true);
+        this.hidePostitsPlugs();
+      },
+      stop: () => {
+        S.set('dragging', true, 500);
+        const filtersTag =
+          S.getCurrent('filters') && S.getCurrent('filters').tag;
+        if (!filtersTag || !filtersTag.classList.contains('plugs-hidden')) {
+          this.showPostitsPlugs();
+        }
+        S.unset('wall-dragging');
+      },
+    });
 
     // Create columns headers
     const hcols = settings.headers.cols;
