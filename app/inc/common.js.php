@@ -637,7 +637,7 @@ class WSocket {
 
             // Close current popups if any
             setTimeout(() => (S.get('mstack') || []).forEach(
-                (el) => bootstrap.Modal.getInstance(el).hide()), 3000);
+              (el) => bootstrap.Modal.getInstance(el).hide()), 3000);
             break;
           // refreshpcomm
           case 'refreshpcomm':
