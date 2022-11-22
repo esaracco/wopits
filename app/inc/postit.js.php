@@ -413,6 +413,18 @@ P.register('postit', class extends Wpt_pluginWallElement {
     }
   }
 
+  // METHOD displayOnTop()
+  displayOnTop() {
+    const tag = this.tag;
+
+    if (tag.classList.contains('hover')) return;
+
+    const old = S.getCurrent('wall').tag.querySelector('.postit.hover');
+    old && old.classList.remove('hover');
+
+    tag.classList.add('hover');
+  }
+
   // METHOD getPlugin()
   getPlugin(type) {
     return this.settings.plugins[type];
@@ -583,6 +595,9 @@ P.register('postit', class extends Wpt_pluginWallElement {
   displayAlert(type) {
     const data = this.tag.dataset;
     let content;
+
+    // Display note on top of the others
+    this.displayOnTop();
 
     // Scroll to the note if needed
     H.setViewToElement(this.tag);
@@ -2164,20 +2179,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // EVENTS "mouseover" &  "touchstart" on postit
   // Sort of CSS ":hover", but with z-index persistence
-  const __eventMOTS = (e) => {
-    const el = e.target;
-
-    if (!el.matches('.postit *')) return;
-
-    const newP = el.closest('.postit');
-
-    if (newP.classList.contains('hover')) return;
-
-    const oldP = S.getCurrent('wall').tag.querySelector('.postit.hover');
-
-    oldP && oldP.classList.remove('hover');
-    newP.classList.add('hover');
-  };
+  const __eventMOTS = (e) =>
+    e.target.matches('.postit *') &&
+      P.get(e.target.closest('.postit'), 'postit').displayOnTop();
 
   if ($.support.touch) {
     wallsId.addEventListener('touchstart', __eventMOTS);
