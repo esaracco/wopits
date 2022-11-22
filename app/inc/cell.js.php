@@ -3,7 +3,7 @@
 Javascript plugin - Cell
 
 Scope: Wall
-Element: td
+Name: cell
 Description: Wall's cell
 */
 

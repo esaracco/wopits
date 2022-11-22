@@ -3,7 +3,7 @@
 Javascript plugin - Smart input field
 
 Scope: Wall & Note
-Element: .editable
+Name: editable
 Description: Manage inputs editing
 */
 

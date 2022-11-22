@@ -7,7 +7,7 @@ require_once(__DIR__.'/../config.php');
 class DB {
   protected static $instance;
 
-  public static function getInstance() {
+  public static function getInstance():\PDO {
     if (empty(self::$instance)) {
       self::$instance = new \PDO(
       WPT_DSN, WPT_DB_USER, WPT_DB_PASSWORD, [

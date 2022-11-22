@@ -5,7 +5,7 @@ namespace Wopits;
 require_once(__DIR__.'/../config.php');
 
 class Wall extends Base {
-  protected function buildAccessRightsSQL(int $requiredRole) {
+  protected function buildAccessRightsSQL(int $requiredRole):string {
     // Wall admin has full access
     $in = WPT_WRIGHTS_ADMIN;
 
