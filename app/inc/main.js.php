@@ -76,7 +76,7 @@ P.register('wall', class extends Wpt_pluginWallElement {
     // TODO Do not use jQuery here
     $wall.draggable({
       distance: 10,
-      cursor: 'grab',
+      cursor: 'move',
       cancel: writeAccess ? '.postit-tags' : null,
       start: () => {
         S.set('wall-dragging', true);

@@ -250,7 +250,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
           distance: 10,
           appendTo: 'parent',
           revert: 'invalid',
-          cursor: 'pointer',
+          cursor: 'move',
           cancel: '.postit-tags',
           containment: $(wallTag.querySelector('tbody.wpt')),
           scrollSensitivity: 50,
