@@ -315,8 +315,6 @@ P.register('postit', class extends Wpt_pluginWallElement {
             this.showPlugs();
 
             if (S.get('revertData')) {
-              S.unset('revertData');
-
               tag.style.top = `${ui.originalPosition.top}px`;
               tag.style.left = `${ui.originalPosition.left}px`;
               tag.style.width = `${ui.originalSize.width}px`;
@@ -332,6 +330,8 @@ P.register('postit', class extends Wpt_pluginWallElement {
                 this.unedit();
               });
             }
+
+            S.unset('revertData');
           }
         });
 
@@ -457,6 +457,8 @@ P.register('postit', class extends Wpt_pluginWallElement {
       S.getCurrent('mmenu').update(settings.id, this);
 
       this.unedit();
+
+      S.unset('revertData');
     }
 
     // Refresh relations position
@@ -1022,8 +1024,6 @@ P.register('postit', class extends Wpt_pluginWallElement {
           S.set('dragging', true, 500);
 
           if (S.get('revertData')) {
-            S.unset('revertData');
-
             $(label).draggable('cancel');
 
             plug.labelObj[0].style.top = `${ui.originalPosition.top}px`;
@@ -1054,6 +1054,8 @@ P.register('postit', class extends Wpt_pluginWallElement {
 
           setTimeout(() =>
             plug.related.forEach((el) => el.position().show()), 150);
+
+          S.unset('revertData');
         }
       });
     }

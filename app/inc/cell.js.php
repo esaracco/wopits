@@ -92,8 +92,6 @@ P.register('cell', class extends Wpt_pluginWallElement {
       },
       stop: (e, ui) => {
         if (S.get('revertData')) {
-          S.unset('revertData');
-
           tag.style.width = `${ui.originalSize.width}px`;
           tag.style.height = `${ui.originalSize.height}px`;
         } else {
@@ -144,6 +142,8 @@ P.register('cell', class extends Wpt_pluginWallElement {
         }
 
         this.unedit();
+
+        S.unset('revertData');
       }
     });
   }
@@ -266,7 +266,6 @@ P.register('cell', class extends Wpt_pluginWallElement {
           },
           stop: (e, ui) => {
             if (S.get('revertData')) {
-              S.unset('revertData');
               $(e.target).sortable('cancel');
               this.unedit(true);
             } else {
@@ -275,6 +274,8 @@ P.register('cell', class extends Wpt_pluginWallElement {
                   .dataset.order = i + 1);
               this.unedit();
             }
+
+            S.unset('revertData');
           }
         });
       }
