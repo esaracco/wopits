@@ -1124,7 +1124,9 @@ class WHelper {
   static cleanPopupDataAttr(popup) {
     // Remove all popup data custom attributes
     Array.from(popup.attributes).forEach(({name}) => {
-      if (name.indexOf('data-') === 0 && !name.includes('-bs-')) {
+      if (name.indexOf('data-') === 0 &&
+          name !== 'data-cached' &&
+          !name.includes('-bs-')) {
         popup.removeAttribute(name);
       }
     });
