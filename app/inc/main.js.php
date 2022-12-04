@@ -828,9 +828,8 @@ P.register('wall', class extends Wpt_pluginWallElement {
     const wallDiv = document.getElementById(activeTabId);
     const newActiveTab = this.getNextActiveTab(activeTab);
     const chat = S.getCurrent('chat');
-    const haveZoom = Boolean(S.get('zoom-level'));
 
-    if (haveZoom) {
+    if (S.get('zoom-level')) {
       this.zoom(false);
     }
 
@@ -858,9 +857,6 @@ P.register('wall', class extends Wpt_pluginWallElement {
 
     // No more wall to display
     if (!document.querySelector('.wall')) {
-      if (haveZoom) {
-        this.zoom(false);
-      }
       this.menu({from: 'wall', type: 'no-wall'});
     // Active another tabs after deletion
     } else {
