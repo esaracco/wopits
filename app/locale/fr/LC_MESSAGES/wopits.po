@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wopits\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-21 10:25+0100\n"
+"POT-Creation-Date: 2022-12-04 13:31+0100\n"
 "PO-Revision-Date: 2022-11-21 10:26+0100\n"
 "Last-Translator: Emmanuel Saracco <contact@wopits.com>\n"
 "Language-Team: French <contact@wopits.com>\n"
@@ -1731,12 +1731,6 @@ msgstr "Votre compte wopits"
 
 msgid "Your wopits account has been deleted"
 msgstr "Votre compte wopits a été supprimé"
-
-msgid "Zoom +"
-msgstr "Zoom +"
-
-msgid "Zoom -"
-msgstr "Zoom -"
 
 msgid "current password"
 msgstr "mot de passe actuel"

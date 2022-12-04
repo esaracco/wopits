@@ -36,9 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const mstack = S.get('mstack') || [];
         let tmp;
  
-        // FIXME
-        if (S.get('zoom-level') && mstack.length > 0) return;
-
         H.fixHeight();
 
         // Fix user msg popover scroll
@@ -62,11 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
           tmp = S.getCurrent('filters');
           tmp.isVisible() && tmp.fixPosition();
 
-          if ( (tmp = document.querySelector('.tab-content.walls')) &&
-              tmp.dataset.zoomlevelorigin) {
-            wall.zoom({
-              type: (tmp.dataset.zoomtype === 'screen') ? 'screen' : '=',
-            });
+          if (S.get('zoom-level')) {
+            wall.zoom(true, {noalert: true});
           }
 
           // Reposition wall menu if it is out of bounds
@@ -151,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cancel zoom mode
         if (S.get('zoom-level')) {
-          wall.zoom({type: 'normal', noalert: true});
+          wall.zoom(false);
         }
   
         wall.removePostitsPlugs(false);
@@ -269,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         H.preventDefault(e);
         bootstrap.Modal.getInstance(mstack[0]).hide();
       } else if (S.get('zoom-level')) {
-        S.getCurrent('wall').zoom({type: 'normal'});
+        S.getCurrent('wall').zoom(false);
       }
     }
   });

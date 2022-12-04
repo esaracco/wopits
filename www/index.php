@@ -46,10 +46,8 @@
         <li class="nav-item dropdown">
           <div id="dropdownView" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle disabled"><i class="fa-fw fas fa-desktop display"></i> <?=_("Display")?></div>
           <ul class="dropdown-menu border-0 shadow display-section">
-            <li data-action="zoom+"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-plus"></i> <?=_("Zoom +")?></a></li>
-            <li data-action="zoom-"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-search-minus"></i> <?=_("Zoom -")?></a></li>
-            <li data-action="zoom-screen"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
-            <li data-action="zoom-normal"><a class="dropdown-item disabled" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
+            <li data-action="zoom-on"><a class="dropdown-item" href="#"><i class="fa-fw fas fa-vector-square"></i> <?=_("Full view")?></a></li>
+            <li data-action="zoom-off"><a class="dropdown-item hidden" href="#"><i class="fa-fw fas fa-crosshairs"></i> <?=_("Standard view")?></a></li>
             <li class="dropdown-divider"></li>
             <li data-action="chat"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-comments"></i> <?=_("Chat room")?></a></li>
             <li data-action="filters"><a class="dropdown-item" href="#"><input type="checkbox" class="form-check-input"> <i class="fa-fw fas fa-filter"></i> <?=_("Filters")?></a></li>

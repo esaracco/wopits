@@ -498,7 +498,6 @@ P.register('mmenu', class extends Wpt_toolbox {
     for (const id in this.data.postits) {
       if (!H.checkAccess(<?=WPT_WRIGHTS_RW?>,
              this.data.postits[id].settings.wall.tag.dataset.access)) {
-
         //TODO Trigger on btn copy menu item
         tag.querySelector(`[data-action="copy"] i`).classList.add('set');
         tag.querySelectorAll(`li:not([data-action="copy"])`).forEach(

@@ -725,6 +725,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
   }
 
   // METHOD applyZoomToPlugs()
+  // FIXME
   applyZoomToPlugs(z) {
     const reset = (z === 1);
 
@@ -732,14 +733,18 @@ P.register('postit', class extends Wpt_pluginWallElement {
       const labelStyle = p.labelObj[0].style;
       const size = Math.trunc(p.obj.line_size * z) || 1;
       const gr = Math.trunc((100 * (size * 100 / p.obj.line_size)) / 100);
+      const g = reset ? 'auto' : gr;
 
       labelStyle.transformOrigin = reset ? null : 'top left';
       labelStyle.transform = reset ? null : `scale(${z})`;
-      p.obj.size = size;
+
+      p.obj.setOptions({
+        size,
+        startSocketGravity: g,
+        endSocketGravity: g,
+      });
 
       if (p.customPos) {
-        const g = reset ? 'auto' : gr;
-
         p.related.forEach((r) => r.setOptions({
           size,
           startSocketGravity: g,
@@ -754,7 +759,12 @@ P.register('postit', class extends Wpt_pluginWallElement {
     const z = S.get('zoom-level') || 1;
 
     S.getCurrent('wall').tag.querySelectorAll('.postit.with-plugs').forEach(
-      (el) => P.get(el, 'postit').applyZoomToPlugs(z));
+        (el) => {
+      const postit = P.get(el, 'postit');
+
+      postit.repositionPlugs();
+      postit.applyZoomToPlugs(z);
+     });
   }
 
   // METHOD applyThemeToPlugs()

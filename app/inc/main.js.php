@@ -22,6 +22,8 @@ P.register('wall', class extends Wpt_pluginWallElement {
     super(settings);
 
     this.originalObject = null;
+    this.width = 0;
+    this.height = 0;
   }
 
   // METHOD init()
@@ -197,14 +199,19 @@ P.register('wall', class extends Wpt_pluginWallElement {
 
   // METHOD ctrlMenu()
   ctrlMenu(action, type) {
-    const m = document.querySelector(
-      `.dropdown-menu li[data-action="${action}"] a`).classList;
-
-    if (type === 'off') {
-      m.add('disabled');
-    } else {
-      m.remove('disabled');
-    }
+    document.querySelectorAll(
+      `.dropdown-menu li[data-action="${action}"] a`).forEach((el) => {
+      switch (type) {
+        case 'enable':
+        case 'disable':
+          el.classList[type === 'enable' ? 'remove' : 'add']('disabled');
+          break;
+        case 'show':
+        case 'hide':
+          H[type](el);
+          break;
+      }
+    });
   }
 
   // METHOD menu()
@@ -213,16 +220,13 @@ P.register('wall', class extends Wpt_pluginWallElement {
     const tag = wall && wall.tag;
     const wmenu = tag ? tag.parentNode.querySelector('.wall-menu') : null;
     const menu = document.getElementById('main-menu');
-    const menuNormal =
-      menu.querySelector(`.dropdown-menu li[data-action="zoom-normal"] a`);
     const adminAccess = H.checkAccess(<?=WPT_WRIGHTS_ADMIN?>);
 
     switch (args.from) {
       // WALL menu
       case 'wall':
         if (!adminAccess) {
-          menu.querySelector('[data-action="delete"] a')
-            .classList.add('disabled');
+          this.ctrlMenu('delete', 'disable');
           H.hide(wmenu.querySelector('[data-action="share"]'));
         }
 
@@ -231,14 +235,13 @@ P.register('wall', class extends Wpt_pluginWallElement {
             H.hide(document.querySelector('.nav.walls'));
             document.getElementById('dropdownView').classList.add('disabled');
             H.show(document.getElementById('welcome'));
-            menu.querySelectorAll(
-                '[data-action="delete"] a,'+
-                '[data-action="close-walls"] a,'+
-                '[data-action="clone"] a,'+
-                '[data-action="export"] a').forEach(
-              (el) => el.classList.add('disabled'));
 
-              H.hide(wmenu.querySelector('[data-action="share"]'));
+            this.ctrlMenu('delete', 'disable');
+            this.ctrlMenu('close-walls', 'disable');
+            this.ctrlMenu('clone', 'disable');
+            this.ctrlMenu('export', 'disable');
+           
+            H.hide(wmenu.querySelector('[data-action="share"]'));
             break;
           case 'have-wall':
             if (tag) {
@@ -251,29 +254,13 @@ P.register('wall', class extends Wpt_pluginWallElement {
               });
             }
 
-            if (tag && tag.dataset.shared) {
-              menu.querySelector('[data-action="chat"] a')
-                .classList.remove('disabled');
-            } else {
-              const chat = S.getCurrent('chat');
-
-              if (chat) {
-                chat.hide();
-              }
-
-              menu.querySelector('[data-action="chat"] a')
-                .classList.add('disabled');
-            }
-
-            menu.querySelectorAll(
-                '[data-action="clone"] a,'+
-                '[data-action="export"] a,'+
-                '[data-action="close-walls"] a').forEach(
-              (el) => el.classList.remove('disabled'));
-
+            this.ctrlMenu('clone', 'enable');
+            this.ctrlMenu('export', 'enable');
+            this.ctrlMenu('close-walls', 'enable');
+            this.ctrlMenu('chat',
+              (tag && tag.dataset.shared) ? 'enable' : 'disable');
             if (adminAccess) {
-              menu.querySelector('[data-action="delete"] a')
-                .classList.remove('disabled');
+              this.ctrlMenu('delete', 'enable');
               H.show(wmenu.querySelector('[data-action="share"]'),
                 'inline-block');
             }
@@ -314,35 +301,26 @@ P.register('wall', class extends Wpt_pluginWallElement {
             H.show(wmenu.querySelector(`li[data-action="list-mode"]`),
               'inline-block');
             break;
-          // Activate normal view item
-          case 'zoom-normal-on':
-            menuNormal.classList.remove('disabled');
-            if (adminAccess) {
-              menu.querySelectorAll(
-                  '[data-action="chat"] a,'+
-                  '[data-action="filters"] a').forEach(
-                (el) => el.classList.add('disabled'));
-            }
+          case 'zoom-on':
+            H.show(document.getElementById('normal-display-btn'));
+            H.show(menu.querySelector(`[data-action="zoom-off"] a`));
+            H.hide(menu.querySelector(`[data-action="zoom-on"] a`));
+            this.ctrlMenu('chat', 'disable');
+            this.ctrlMenu('filters', 'disable');
             break;
-          // Deactivate normal view item
-          case 'zoom-normal-off':
-            menuNormal.classList.add('disabled');
-            this.ctrlMenu('zoom-screen', 'on');
-            if (adminAccess) {
-              if (tag.dataset.shared) {
-                menu.querySelector(`[data-action="chat"] a`)
-                  .classList.remove('disabled');
-              }
-              menu.querySelector(`[data-action="filters"] a`)
-                .classList.remove('disabled');
-            }
+          case 'zoom-off':
+            H.hide(document.getElementById('normal-display-btn'));
+            H.hide(menu.querySelector(`[data-action="zoom-off"] a`));
+            H.show(menu.querySelector(`[data-action="zoom-on"] a`));
+            this.ctrlMenu('chat', tag.dataset.shared ? 'enable' : 'disable');
+            this.ctrlMenu('filters', 'enable');
             break;
         }
       } 
 
       // If the user has decided to be invisible
       if (!U.isVisible()) {
-        menu.querySelector('[data-action="chat"] a').classList.add('disabled');
+        this.ctrlMenu('chat', 'disable');
         H.hide(wmenu.querySelector(`[data-action="share"]`));
       }
   }
@@ -764,12 +742,8 @@ P.register('wall', class extends Wpt_pluginWallElement {
     this.refreshCellsToggleDisplayMode();
 
     if (!d.isResponse && !d.partial && S.get('zoom-level')) {
-      const zoom = document.querySelector('.tab-content.walls');
-
-      if (zoom &&
-          zoom.dataset.zoomlevelorigin &&
-          zoom.dataset.zoomtype === 'screen') {
-        this.zoom({type: 'screen'});
+      if (S.get('zoom-level')) {
+        this.zoom(true, {noalert: true});
       }
     }
 
@@ -857,7 +831,7 @@ P.register('wall', class extends Wpt_pluginWallElement {
     const haveZoom = Boolean(S.get('zoom-level'));
 
     if (haveZoom) {
-      this.zoom({type: 'normal'});
+      this.zoom(false);
     }
 
     S.getCurrent('mmenu').close();
@@ -885,7 +859,7 @@ P.register('wall', class extends Wpt_pluginWallElement {
     // No more wall to display
     if (!document.querySelector('.wall')) {
       if (haveZoom) {
-        this.zoom({type: 'normal', noalert: true});
+        this.zoom(false);
       }
       this.menu({from: 'wall', type: 'no-wall'});
     // Active another tabs after deletion
@@ -1628,6 +1602,12 @@ P.register('wall', class extends Wpt_pluginWallElement {
     tag.dataset.oldwidth = w;
     tag.style.width = `${w}px`;
     tag.style.maxWidth = `${w}px`;
+
+    const {width, height} = tag.getBoundingClientRect();
+    const z = S.get('zoom-level') || 1;
+
+    this.width = Math.ceil(width / z);
+    this.height = Math.ceil(height / z);
   }
 
   // METHOD setPostitsDisplayMode()
@@ -1654,139 +1634,41 @@ P.register('wall', class extends Wpt_pluginWallElement {
   }
 
   // METHOD zoom()
-  zoom(args) {
+  zoom(enable, args = {}) {
     const zoom = document.querySelector('.tab-content.walls');
     const tag = this.tag;
     const $wall = $(tag);
-    const from = args.from;
-    const type = args.type;
-    const noalert = Boolean(args.noalert);
-    const zoomStep = (Boolean(args.step)) ? args.step : 0.2;
-    const writeAccess = this.canWrite();
-
-    if (!args.step) {
-      tag.style.top = 0;
-      tag.style.left = '15px';
-    }
-
-    if (type === 'screen') {
-      return this.screen();
-    }
-
-    let level = zoom.style.transform;
-    level = (!level || level === 'none') ?
-      1 : Number(level.match(/[0-9\.]+/)[0]);
-
-    if (!zoom.dataset.zoomlevelorigin) {
-      if (!S.get('old-width')) {
-        S.set('old-styles', {
-          width: zoom.style.width,
-          transform: zoom.style.transform,
-        });
-      }
-
-      if (writeAccess && !noalert) {
-        H.displayMsg({
-          type: 'info',
-          msg: `<?=_("Some features are not available when zoom is enabled")?>`,
-        });
-      }
-
-      zoom.dataset.zoomlevelorigin = level;
-
-      zoom.style.width = '30000px';
-
-      // Disable headers
-      zoom.querySelectorAll('th.wpt').forEach ((th) => {
-        th.style.pointerEvents = 'none';
-
-        if (writeAccess) {
-          th.style.opacity = .6;
-        }
-      });
-      // Disable wall dragging
-      if (tag.classList.contains('ui-draggable')) {
-        $wall.draggable('disable');
-      }
-      // Hide cell menu
-      tag.querySelectorAll('.cell-menu').forEach((el) => H.hide(el));
-      // Disable note sorting in stack mode
-      this.UIPluginCtrl('.cell-list-mode ul',
-        'sortable', 'disabled', true, true);
-      // Disable note & cell resizing
-      this.UIPluginCtrl('td,.postit',
-        'resizable', 'disabled', true);
-      // Disable note dragging
-      this.UIPluginCtrl('.postit',
-        'draggable', 'disabled', true);
-      // Disable plug label dragging
-      this.UIPluginCtrl(document.body.querySelectorAll('.plug-label'),
-        'draggable', 'disabled', true);
-    }
-
-    if (from) {
-      zoom.dataset.zoomtype = from;
-    } else {
-      zoom.removeAttribute('data-zoomtype');
-    }
-
-    if (type !== 'normal') {
-      this.menu({from: 'display', type: 'zoom-normal-on'});
-    }
-
-    switch (type) {
-      case '+': level += zoomStep; break;
-      case '-': level -= zoomStep; break;
-      case 'normal': level = Number(zoom.dataset.zoomlevelorigin); break;
-    }
-
-    if (level <= 0) {
-      return H.displayMsg({
-        type: 'warning',
-        msg: `<?=_("The minimum zoom has been reached")?>`,
-      });
-    }
-
-    S.set('zoom-level', level);
-
-    const postitDiv = document.createElement('div');
-    const postit = P.getOrCreate(postitDiv, 'postit', {wall: this});
     const walls = S.getCurrent('walls');
+    const writeAccess = this.canWrite();
+    const postitDiv = document.createElement('div');
 
-    // FIXME level == zoom.dataset.zoomlevelorigin
-    if (from !== 'screen' && level == zoom.dataset.zoomlevelorigin) {
+    tag.style.top = 0;
+    tag.style.left = 0;
 
+    walls.scrollLeft = 0;
+    walls.scrollTop = 0;
+
+    // Normal view
+    if (!enable) {
+      const level = Number(zoom.dataset.zoomlevelorigin);
+
+      zoom.removeAttribute('data-zoomlevelorigin');
       S.unset('zoom-level');
 
       walls.style.overflow = 'auto';
+      this.menu({from: 'display', type: 'zoom-off'});
 
-      this.hidePostitsPlugs();
-
-      setTimeout(() => {
-        H.hide(document.getElementById('normal-display-btn'));
-        S.getCurrent('mmenu').checkAllowedActions();
-      }, 150);
-
-      zoom.removeAttribute('data-zoomtype');
-      zoom.removeAttribute('data-zoomlevelorigin');
-
-      this.menu({from: 'display', type: 'zoom-normal-off'});
-
-      if (writeAccess && !noalert) {
-        H.displayMsg({
-          type: 'info',
-          msg: `<?=_("All features are available again")?>`,
-        });
+      if (S.get('old-styles')) {
+        zoom.style.width = S.get('old-styles').width;
+        zoom.style.transform = S.get('old-styles').transform;
+        S.unset('old-styles');
       }
 
-      zoom.style.width = S.get('old-styles').width;
-      zoom.style.transform = S.get('old-styles').transform;
-      S.unset('old-styles');
+      walls.style.overflow = 'auto';
 
       // Reactivate headers
       zoom.querySelectorAll('th.wpt').forEach((th) => {
         th.style.pointerEvents = 'auto';
-
         if (writeAccess) {
           th.style.opacity = 1;
         }
@@ -1810,68 +1692,94 @@ P.register('wall', class extends Wpt_pluginWallElement {
       this.UIPluginCtrl(document.body.querySelectorAll('.plug-label'),
         'draggable', 'disabled', false);
 
-      walls.scrollLeft = 0;
-      walls.scrollTop = 0;
-
-      postit.applyZoom();
+    // Screen view
     } else {
-      if (from !== 'screen') {
-        this.hidePostitsPlugs();
+      const wallsW = walls.clientWidth - 20;
+      const wallsH = walls.clientHeight - 20;
+      let ratioW;
+      let ratioH;
+      let level = zoom.style.transform;
+      level = (!level || level === 'none') ?
+        1 : Number(level.match(/[0-9\.]+/)[0]);
 
-        postit.applyZoom();
-        H.show(document.getElementById('normal-display-btn'));
+      if (!S.get('zoom-level')) {
+        zoom.dataset.zoomlevelorigin = level;
+
+        this.menu({from: 'display', type: 'zoom-on'});
+
+        S.set('old-styles', {
+          width: zoom.style.width,
+          transform: zoom.style.transform,
+        });
+
+        if (writeAccess && !args.noalert) {
+          H.displayMsg({
+            type: 'info',
+            msg: `<?=_("Some features are not available when zoom is enabled")?>`,
+          });
+        }
+
+        // Disable headers
+        zoom.querySelectorAll('th.wpt').forEach ((th) => {
+          th.style.pointerEvents = 'none';
+          if (writeAccess) {
+            th.style.opacity = .6;
+          }
+        });
+        // Disable wall dragging
+        if (tag.classList.contains('ui-draggable')) {
+          $wall.draggable('disable');
+        }
+        // Hide cell menu
+        tag.querySelectorAll('.cell-menu').forEach((el) => H.hide(el));
+        // Disable note sorting in stack mode
+        this.UIPluginCtrl('.cell-list-mode ul',
+          'sortable', 'disabled', true, true);
+        // Disable note & cell resizing
+        this.UIPluginCtrl('td,.postit',
+          'resizable', 'disabled', true);
+        // Disable note dragging
+        this.UIPluginCtrl('.postit',
+          'draggable', 'disabled', true);
+        // Disable plug label dragging
+        this.UIPluginCtrl(document.body.querySelectorAll('.plug-label'),
+          'draggable', 'disabled', true);
+
         S.getCurrent('mmenu').checkAllowedActions();
       }
 
+      if (wallsW < this.width) {
+        ratioW = (wallsW < this.width) ?
+          wallsW / this.width : this.width / wallsW;
+      } else if (wallsW > this.width) {
+        ratioW = (wallsW > this.width) ?
+          wallsW / this.width : this.width / wallsW;
+      }
+
+      if (wallsH < this.height) {
+        ratioH = (wallsH < this.height) ?
+          wallsH / this.height : this.height / wallsH;
+      } else if (wallsH > this.height) {
+        ratioH = (wallsH > this.height) ?
+          wallsH / this.height : this.height / wallsH;
+      }
+
+      level = Math.abs(ratioH < ratioW ? ratioH : ratioW);
+
       zoom.style.transformOrigin = 'top left';
       zoom.style.transform = `scale(${level})`;
+      zoom.style.width = '30000px';
 
       walls.scrollLeft = ((30000 * level) / 2 - window.innerWidth / 2) + 20;
+      walls.style.overflow = 'hidden';
+
+      S.set('zoom-level', level);
+
+      S.getCurrent('mmenu').checkAllowedActions();
     }
 
+    P.getOrCreate(postitDiv, 'postit', {wall: this}).applyZoom();
     P.remove(postitDiv, 'postit');
-  }
-
-  // METHOD screen()
-  // TODO optimization
-  screen() {
-    const tag = this.tag;
-    const step = .005;
-    const walls = S.getCurrent('walls');
-    let position = this.tag.getBoundingClientRect();
-
-    this.hidePostitsPlugs();
-
-    walls.scrollLeft = 0;
-    walls.scrollTop = 0;
-
-    if (position.bottom - position.top < walls.clientHeight &&
-        position.right < walls.clientWidth) {
-      do { 
-        this.zoom({from: 'screen', type: '+', step: step});
-        position = tag.getBoundingClientRect();
-      } while (position.bottom - position.top < walls.clientHeight - 20 &&
-               position.right < walls.clientWidth - 5);
-    } else {
-      do { 
-        this.zoom({from: 'screen', type: '-', step: step});
-        position = tag.getBoundingClientRect();
-      } while (!(position.bottom - position.top < walls.clientHeight - 20 &&
-                 position.right < walls.clientWidth - 5));
-    }
-
-    H.show(document.getElementById('normal-display-btn'));
-    this.ctrlMenu('zoom-screen', 'off');
-    S.getCurrent('mmenu').checkAllowedActions();
-
-    walls.scrollLeft =
-      ((30000 * S.get('zoom-level')) / 2 - window.innerWidth / 2) + 20;
-
-    const postit = document.createElement('div');
-    P.getOrCreate(postit, 'postit', {wall: this}).applyZoom();
-    P.remove(postit, 'postit');
-
-    walls.style.overflow = 'hidden';
   }
 
   // METHOD edit()
@@ -2139,7 +2047,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {id: 'normal-display-btn'}, null, `<i class="fas fa-crosshairs fa-2x"></i> <span><?=_("Back to standard view")?></span>`);
     // EVENT "click" on back to standard view button
     displayBtn.addEventListener('click',
-      (e) => S.getCurrent('wall').zoom({type: 'normal'}));
+      (e) => S.getCurrent('wall').zoom(false));
     document.body.insertBefore(displayBtn, document.body.firstChild);
 
     // Create input to upload wall file import
@@ -2264,19 +2172,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       switch (action) {
-        case 'zoom+':
-          wall.zoom({type: '+'});
-          wall.ctrlMenu('zoom-screen', 'on');
+        case 'zoom-on':
+          wall.zoom(true);
           break;
-        case 'zoom-':
-          wall.zoom({type: '-'});
-          wall.ctrlMenu('zoom-screen', 'on');
-          break;
-        case 'zoom-screen':
-          wall.zoom({type: 'screen'});
-          break;
-        case 'zoom-normal':
-          wall.zoom({type: 'normal'});
+        case 'zoom-off':
+          wall.zoom(false);
           break;
         case 'chat':
         case 'filters':
