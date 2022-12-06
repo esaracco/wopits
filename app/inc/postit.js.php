@@ -759,12 +759,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
     const z = S.get('zoom-level') || 1;
 
     S.getCurrent('wall').tag.querySelectorAll('.postit.with-plugs').forEach(
-        (el) => {
-      const postit = P.get(el, 'postit');
-
-      postit.repositionPlugs();
-      postit.applyZoomToPlugs(z);
-     });
+      (el) => P.get(el, 'postit').applyZoomToPlugs(z));
   }
 
   // METHOD applyThemeToPlugs()

@@ -33,9 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
       clearTimeout(_timeoutResize);
       _timeoutResize = setTimeout(() =>  {
         const wall = S.getCurrent('wall');
-        const mstack = S.get('mstack') || [];
         let tmp;
- 
+
         H.fixHeight();
 
         // Fix user msg popover scroll
@@ -43,29 +42,29 @@ document.addEventListener('DOMContentLoaded', () => {
         tmp.isPopoverVisible() && tmp.fixHeight();
 
         if (wall) {
-          // Refresh relations position
-          wall.repositionPostitsPlugs();
-
           if ( (tmp = document.querySelector(
                     '.modal.show.m-fullscreen[data-customwidth]')) ) {
             H.resizeModal(tmp);
           }
 
-          // Reposition chat popup if it is out of bounds
-          tmp = S.getCurrent('chat');
-          tmp.isVisible() && tmp.fixPosition();
-
-          // Reposition filters popup if it is out of bounds
-          tmp = S.getCurrent('filters');
-          tmp.isVisible() && tmp.fixPosition();
-
           if (S.get('zoom-level')) {
             wall.zoom(true, {noalert: true});
+          } else {
+            // Reposition chat popup if it is out of bounds
+            tmp = S.getCurrent('chat');
+            tmp.isVisible() && tmp.fixPosition();
+
+            // Reposition filters popup if it is out of bounds
+            tmp = S.getCurrent('filters');
+            tmp.isVisible() && tmp.fixPosition();
+
+            // Reposition wall menu if it is out of bounds
+            const wmenu = S.getCurrent('wmenu');
+            wmenu.isVisible() && wmenu.fixPosition();
           }
 
-          // Reposition wall menu if it is out of bounds
-          const wmenu = S.getCurrent('wmenu');
-          wmenu.isVisible() && wmenu.fixPosition();
+          // Refresh relations position
+          wall.repositionPostitsPlugs();
         }
       }, 150);
     });
