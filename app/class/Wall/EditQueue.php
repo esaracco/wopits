@@ -288,6 +288,12 @@ class EditQueue extends Wall {
                   if (!empty($plugs)) {
                     $Postit->addRemovePlugs($plugs);
                     $ret['wall']['postits_plugs'] = $Postit->getPlugs();
+                  } else {
+                    // FIXME
+                    $plugs = $Postit->getPlugs();
+                    if (count($plugs)) {
+                      $ret['wall']['postits_plugs'] = $plugs;
+                    }
                   }
                 }
               }

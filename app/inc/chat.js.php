@@ -185,7 +185,9 @@ P.register('chat', class extends Wpt_toolbox {
       node = H.createElement('li', {className: `${ args.msgId ? 'current' : ''}`}, null, `<span>${args.msgId ? '<i class="fas fa-user fa-sm"></i>' : args.username}</span> ${args.msg}`);
     }
 
-    tag.querySelector('.textarea').querySelector('ul').appendChild(node);
+    if (node) {
+      tag.querySelector('.textarea').querySelector('ul').appendChild(node);
+    }
 
     if (isHidden && args.method !== 'DELETE') {
       const el = document.querySelector(`#wall-${this.settings.wallId} .wall-menu .chat-alert .wpt-badge`);

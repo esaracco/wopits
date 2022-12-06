@@ -23,9 +23,16 @@ class Wpt_pluginBase {
 
 // CLASS Wpt_pluginWallElement
 class Wpt_pluginWallElement extends Wpt_pluginBase {
+  constructor(settings) {
+    settings.id = Number(settings.id);
+    super(settings);
+  }
+
   // METHOD getId()
   getId(fromData) {
-    return fromData ? this.tag.dataset.id : Number(this.settings.id);
+    // this.tag.dataset.id is string
+    // this.settings.id is number
+    return fromData ? this.tag.dataset.id : this.settings.id;
   }
 
   // METHOD canWrite()

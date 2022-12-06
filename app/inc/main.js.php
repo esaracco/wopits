@@ -759,24 +759,21 @@ P.register('wall', class extends Wpt_pluginWallElement {
       });
     }
 
-    H.waitForDOMUpdate(() => {
-      if (wallIsVisible && d.postits_plugs) {
+    if (wallIsVisible) {
+      H.waitForDOMUpdate(() => {
         // Refresh postits relations
         this.refreshPostitsPlugs(d.partial && d.partial !== 'plugs');
 
-        if (!this.settings.displayheaders) {
-          this.repositionPostitsPlugs();
+        this.repositionPostitsPlugs();
+        this.refreshCellsToggleDisplayMode();
+
+        // Re-apply filters
+        const f = S.getCurrent('filters');
+        if (f.isVisible()) {
+          f.apply({norefresh: true});
         }
-      }
-
-      this.refreshCellsToggleDisplayMode();
-
-      // Re-apply filters
-      const f = S.getCurrent('filters');
-      if (f.isVisible()) {
-        f.apply({norefresh: true});
-      }
-    });
+      });
+    }
   }
 
   // METHOD refreshCellsToggleDisplayMode()
@@ -1524,7 +1521,13 @@ P.register('wall', class extends Wpt_pluginWallElement {
     if (isShared) {
       tag.dataset.shared = 1;
     } else {
+      const chat = S.getCurrent('chat');
+
       tag.removeAttribute('data-shared');
+      if (chat.isVisible()) {
+        chat.leave();
+        chat.hide();
+      }
     }
 
     this.refreshPostitsWorkersIcon();

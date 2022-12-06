@@ -191,7 +191,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
     this.originalObject = null;
 
     settings.plugs = [];
-    tag.dataset.id = `postit-${settings.id}`;
+    tag.dataset.id = `postit-${this.getId()}`;
     tag.dataset.order = settings.item_order;
     tag.dataset.tags = settings.tags || '';
 
@@ -454,7 +454,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
         }
       }
 
-      S.getCurrent('mmenu').update(settings.id, this);
+      S.getCurrent('mmenu').update(this.getId(), this);
 
       this.unedit();
 
@@ -581,13 +581,13 @@ P.register('postit', class extends Wpt_pluginWallElement {
   // METHOD getMin()
   getMin() {
     return this.settings.cell.tag.querySelector(
-      `.postit-min[data-id="postit-${this.settings.id}"]`);
+      `.postit-min[data-id="postit-${this.getId()}"]`);
   }
 
   // METHOD getNormal()
   getNormal() {
     return this.settings.cell.tag.querySelector(
-      `.postit[data-id="postit-${this.settings.id}"]`);
+      `.postit[data-id="postit-${this.getId()}"]`);
   }
 
   // METHOD displayAlert()
@@ -665,7 +665,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
     this.removePlugs(true);
     P.remove(tag, 'postit');
     tag.remove();
-    S.getCurrent('mmenu').remove(this.settings.id);
+    S.getCurrent('mmenu').remove(this.getId());
 
     this.getPlugin('pcomm').close();
   }
@@ -829,13 +829,13 @@ P.register('postit', class extends Wpt_pluginWallElement {
 
   // METHOD updatePlugProperties()
   updatePlugProperties(ll) {
-    const id = ll.endId || this.settings.id;
+    const postitId = this.getId();
     const defaultLineColor = S.getCurrent('plugColor');
 
     for (const plug of this.settings.plugs) {
       //FIXME == ===
       if ((ll.endId && plug.endId == ll.endId) ||
-          (!ll.endId && plug.startId == this.settings.id)) {
+          (!ll.endId && plug.startId == postitId)) {
         const customCol = (ll.color && ll.color !== defaultLineColor);
         const lineColor = customCol ? ll.color : defaultLineColor;
         const lineType = (
@@ -1182,7 +1182,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
   hidePlugs(ignoreDisplayMode = false) {
     if (!this.settings.wall) return;
 
-    const postitId = this.settings.id;
+    const postitId = this.getId();
 
     /// FIXME == ===
     this.settings.plugs.forEach((p) => {
@@ -1207,7 +1207,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
   showPlugs(ignoreDisplayMode = false) {
     if (!this.settings.wall) return;
 
-    const postitId = this.settings.id;
+    const postitId = this.getId();
     const wPos = this.settings.wall.tag.getBoundingClientRect();
 
     // FIXME == ===
@@ -1267,16 +1267,16 @@ P.register('postit', class extends Wpt_pluginWallElement {
 
   // METHOD serializePlugs()
   serializePlugs() {
-    const settings = this.settings;
     const defaultLineColor = S.getCurrent('plugColor');
     // Shift for plugs if headers are hidden
     const hs = this.getWallHeadersShift();
+    const postitId = this.getId();
     let ret = {};
 
     // FIXME == ===
-    settings.plugs.forEach((p) => {
+    this.settings.plugs.forEach((p) => {
       // Take in account only plugs from this postit
-      if (p.startId == settings.id) {
+      if (p.startId == postitId) {
         const pl = p.labelObj[0];
 
         ret[p.endId] = {
@@ -1382,7 +1382,6 @@ P.register('postit', class extends Wpt_pluginWallElement {
   // METHOD showUserWriting()
   showUserWriting(user, isRelated) {
     const tag = this.tag;
-    const id = this.settings.id;
     const canWrite = this.canWrite();
 
     // LOCAL FUNCTION __lock()
@@ -1417,6 +1416,8 @@ P.register('postit', class extends Wpt_pluginWallElement {
     }
 
     if (canWrite) {
+      const postitId = this.getId();
+
       __lock(tag);
 
       if (isRelated) {
@@ -1434,7 +1435,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
       this.settings.plugs.forEach((p) => {
         p.labelObj[0].classList.add('locked');
         if (!isRelated) {
-          P.get(p.obj[(p.startId !== id) ? 'start' : 'end'], 'postit')
+          P.get(p.obj[(p.startId !== postitId) ? 'start' : 'end'], 'postit')
             .showUserWriting(user, true);
         }
       });
@@ -1881,7 +1882,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
 
     H.request_ws(
       'PUT',
-      `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
+      `wall/${this.settings.wallId}/editQueue/postit/${this.getId()}`,
       data,
       // success cb
       (d) => {
@@ -1907,7 +1908,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
     const plugsToSave = S.get('plugs-to-save');
     let data = null;
 
-    if (!this.settings.id || !this.canWrite()) {
+    if (!this.getId() || !this.canWrite()) {
       return this.cancelEdit(args);
     }
 
@@ -1941,7 +1942,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
 
     H.request_ws(
       'DELETE',
-      `wall/${this.settings.wallId}/editQueue/postit/${this.settings.id}`,
+      `wall/${this.settings.wallId}/editQueue/postit/${this.getId()}`,
       data,
       // success cb
       (d) => {
@@ -1952,8 +1953,8 @@ P.register('postit', class extends Wpt_pluginWallElement {
         if (d.error_msg) {
           H.displayMsg({type: 'warning', msg: d.error_msg});
         } else if (data && data.todelete &&
-                   tag.classList.contains('selected')) {
-          S.getCurrent('mmenu').remove(this.settings.id);
+            tag.classList.contains('selected')) {
+          S.getCurrent('mmenu').remove(this.getId());
         } else if (data && data.updatetz) {
           tag.removeAttribute('data-updatetz');
         }
@@ -1975,7 +1976,7 @@ P.register('postit', class extends Wpt_pluginWallElement {
       tag.removeAttribute('data-hadpictures');
     }
 
-    if (!this.settings.id) {
+    if (!this.getId()) {
       setTimeout(() => H.raiseError(null, `<?=_("The entire column/row was deleted while you were editing the note")?>`), 150);
     }
   }

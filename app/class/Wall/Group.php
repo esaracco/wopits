@@ -2,33 +2,30 @@
 
 namespace Wopits\Wall;
 
-require_once (__DIR__.'/../../config.php');
+require_once(__DIR__.'/../../config.php');
 
 use Wopits\{Helper, User, Wall, Services\Task, Wall\Worker};
 
-class Group extends Wall
-{
+class Group extends Wall {
   public $groupId;
 
-  public function __construct (array $args = null, object $ws = null)
-  {
-    parent::__construct ($args, $ws);
+  public function __construct(array $args = null, object $ws = null) {
+    parent::__construct($args, $ws);
 
-    $this->groupId = $args['groupId']??null;
+    $this->groupId = $args['groupId'] ?? null;
   }
 
-  public function searchUser (array $args):array
-  {
+  public function searchUser(array $args):array {
     $ret = ['users' => null];
 
     // user must be logged to view users
-    if (empty ($this->userId))
+    if (empty($this->userId)) {
       return ['error' => _("Access forbidden")];
+    }
 
-    if ( ($search = Helper::unaccent ($args['search'])) )
-    {
+    if ( ($search = Helper::unaccent($args['search'])) ) {
       //FIXME SQL optimization
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT id, username, fullname
         FROM users
         WHERE id <> :users_id
@@ -45,217 +42,207 @@ class Group extends Wall
             WHERE id = :groups_id_2
           )
         LIMIT 10'))
-         ->execute ([
+         ->execute([
            ':users_id' => $this->userId,
            ':search' => "%$search%",
            ':groups_id_1' => $this->groupId,
-           ':groups_id_2' => $this->groupId
+           ':groups_id_2' => $this->groupId,
          ]);
 
-      $ret['users'] = $stmt->fetchAll ();
+      $ret['users'] = $stmt->fetchAll();
     }
 
     return $ret;
   }
 
-  public function getWallsByGroup (int $groupId = null):array
-  {
+  public function getWallsByGroup(int $groupId = null):array {
     $ret = [];
 
-    if (!$this->_checkGroupAccess ())
+    if (!$this->_checkGroupAccess()) {
       return ['error' => _("Access forbidden")];
+    }
 
-    ($stmt = $this->db->prepare ('
+    ($stmt = $this->db->prepare('
       SELECT walls_id FROM walls_groups WHERE walls_groups.groups_id = ?'))
-       ->execute ([$groupId??$this->groupId]);
+       ->execute([$groupId ?? $this->groupId]);
 
-    while ($item = $stmt->fetch ())
+    while ($item = $stmt->fetch()) {
       $ret[] = $item['walls_id'];
+    }
 
     return $ret;
   }
 
-  public function getUsers (bool $withEmail = false):array
-  {
-    if (!$this->_checkGroupAccess ())
+  public function getUsers(bool $withEmail = false):array {
+    if (!$this->_checkGroupAccess()) {
       return ['error' => _("Access forbidden")];
+    }
 
-    ($stmt = $this->db->prepare ('
-      SELECT id, '.($withEmail?'email,allow_emails,':'').'username, fullname
+    ($stmt = $this->db->prepare('
+      SELECT id, '.($withEmail ? 'email,allow_emails,' : '').'username, fullname
       FROM users
         INNER JOIN users_groups ON users_groups.users_id = users.id
       WHERE users_groups.groups_id = ?
       ORDER BY fullname'))
-       ->execute ([$this->groupId]);
+       ->execute([$this->groupId]);
 
-    return ['users' => $stmt->fetchAll ()];
+    return ['users' => $stmt->fetchAll()];
   }
 
-  public function addUser (array $args):array
-  {
+  public function addUser(array $args):array {
     $ret = [];
     $groupUserId = $args['userId'];
     
-    if (!$this->_checkGroupAccess ())
+    if (!$this->_checkGroupAccess()) {
       return ['error' => _("Access forbidden")];
+    }
 
     // If user does not exists anymore.
-    if (!(new User([], $this->ws))->exists ($groupUserId))
+    if (!(new User([], $this->ws))->exists($groupUserId)) {
       return ['notfound' => 1];
+    }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
-      $this->executeQuery ('INSERT INTO users_groups', [
+      $this->executeQuery('INSERT INTO users_groups', [
         'groups_id' => $this->groupId,
-        'users_id' => $groupUserId
+        'users_id' => $groupUserId,
       ]);
 
       // Performance helper:
       // Link user to group's walls with specific access.
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT walls_id, access FROM walls_groups WHERE groups_id = ?'))
-         ->execute ([$this->groupId]);
-      while ( ($item = $stmt->fetch ()) )
-      {
-        $this->executeQuery ('INSERT INTO _perf_walls_users', [
+         ->execute([$this->groupId]);
+      while ( ($item = $stmt->fetch()) ) {
+        $this->executeQuery('INSERT INTO _perf_walls_users', [
           'groups_id' => $this->groupId,
           'walls_id' => $item['walls_id'],
           'users_id' => $groupUserId,
-          'access' => $item['access']
+          'access' => $item['access'],
         ]);
       }
 
       $this
         ->db->prepare('
             UPDATE groups SET userscount = userscount + 1 WHERE id = ?')
-        ->execute ([$this->groupId]);
+        ->execute([$this->groupId]);
 
-      $this->db->commit ();
-    }
-    catch (\Exception $e) 
-    {
-      $this->db->rollBack ();
+      $this->db->commit();
+    } catch(\Exception $e) {
+      $this->db->rollBack();
 
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 
     return $ret;
   }
 
-  public function removeMe (array $groupIds):array
-  {
-    foreach ($groupIds as $groupId)
-    {
+  public function removeMe(array $groupIds):array {
+    foreach ($groupIds as $groupId) {
       $this->groupId = $groupId;
-      $ret = $this->removeUser (['userId' => $this->userId], true);
-      if (isset ($ret['error']))
+      $ret = $this->removeUser(['userId' => $this->userId], true);
+      if (isset($ret['error'])) {
         return $ret;
+      }
     }
 
     return [];
   }
 
-  public function removeUser (array $args, bool $me = false):array
-  {
+  public function removeUser(array $args, bool $me = false):array {
     $ret = [];
     $groupUserId = $args['userId'];
     // For generic groups
     $wallIds = $args['wallIds'] ?? null;
 
-    if (!$me)
-    {
-      if (!$this->_checkGroupAccess ())
+    if (!$me) {
+      if (!$this->_checkGroupAccess()) {
         return ['error' => _("Access forbidden")];
+      }
 
       // If user does not exists anymore.
-      if (!(new User([], $this->ws))->exists ($groupUserId))
+      if (!(new User([], $this->ws))->exists($groupUserId)) {
         return ['notfound' => 1];
+      }
     }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
       $params = [$this->groupId, $groupUserId];
 
       // Unlink user from group
       ($stmt = $this->db->prepare('
         DELETE FROM users_groups WHERE groups_id = ? AND users_id = ?'))
-          ->execute ($params);
+          ->execute($params);
 
-      if (!$stmt->rowCount ())
+      if (!$stmt->rowCount()) {
         return ['error' => 1];
+      }
 
        // Decrement group users count
       $this
         ->db->prepare('
             UPDATE groups SET userscount = userscount - 1 WHERE id = ?')
-        ->execute ([$this->groupId]);
+        ->execute([$this->groupId]);
 
-      $this->removeUserDependencies ([
+      $this->removeUserDependencies([
         'userId' => $groupUserId,
         'wallIds' => $wallIds,
       ]);
 
-      $this->db->commit ();
+      $this->db->commit();
 
       if (!$me && ($this->wallId || $wallIds)) {
         $ret['wall'] = [];
       }
-    }
-    catch (\Exception $e) 
-    {
-      $this->db->rollBack ();
+    } catch(\Exception $e) {
+      $this->db->rollBack();
 
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 
     return $ret;
   }
 
-  public function create (array $args):array
-  {
+  public function create(array $args):array {
     $ret = [];
     $type = $args['type'];
     $isDed = ($type == WPT_GTYPES_DED);
 
     // Only wall creator can create dedicated group
     // and a user must be logged to create generic group.
-    if ($isDed &&
-        !$this->isWallCreator ($this->userId) || empty ($this->userId))
+    if (($isDed && !$this->isWallCreator($this->userId)) ||
+        empty($this->userId)) {
       return ['error' => _("Access forbidden")];
+    }
 
     $sql = 'SELECT name FROM groups WHERE users_id = ? AND name = ?';
     $data = [$this->userId, $this->data->name];
 
-    if ($isDed)
-    {
+    if ($isDed) {
       $sql .= ' AND walls_id = ?';
       $data[] = $this->wallId;
     }
 
-    ($stmt = $this->db->prepare ($sql))->execute ($data);
-    if ($stmt->fetch ())
+    ($stmt = $this->db->prepare($sql))->execute($data);
+    if ($stmt->fetch()) {
       $ret['error_msg'] = _("The group already exists");
-    else
-    {
-      try
-      {
-        $this->executeQuery ('INSERT INTO groups', array_merge ([
+    } else {
+      try {
+        $this->executeQuery('INSERT INTO groups', array_merge([
           'item_type' => $type,
           'name' => $this->data->name,
-          'description' => ($this->data->description) ?
+          'description' => $this->data->description ?
             $this->data->description : null,
-          'users_id' => $this->userId
-        ], ($isDed) ? ['walls_id' => $this->wallId] : []));
-      }
-      catch (\Exception $e)
-      {
-        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+          'users_id' => $this->userId,
+        ], $isDed ? ['walls_id' => $this->wallId] : []));
+      } catch(\Exception $e) {
+        error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
         $ret['error'] = 1;
       }
     }
@@ -263,34 +250,30 @@ class Group extends Wall
     return $ret;
   }
 
-  public function update ():array
-  {
+  public function update():array {
     $ret = [];
 
-    // no need to check rights here (users_id = users_id in WHERE clause)
+    // No need to check rights here (users_id = users_id in WHERE clause)
 
-    ($stmt = $this->db->prepare ('
+    ($stmt = $this->db->prepare('
       SELECT name FROM groups WHERE id <> ? AND users_id = ? AND name = ?'))
-       ->execute ([$this->groupId, $this->userId, $this->data->name]);
-    if ($stmt->fetch ())
+       ->execute([$this->groupId, $this->userId, $this->data->name]);
+    if ($stmt->fetch()) {
       $ret['error_msg'] = _("The group already exists");
-    else
-    {
-      try
-      {
-        $this->executeQuery ('UPDATE groups', [
+    } else {
+      try {
+        $this->executeQuery('UPDATE groups', [
           'name' => $this->data->name,
-          'description' => ($this->data->description) ?
-            $this->data->description : null
+          'description' => $this->data->description ?
+            $this->data->description : null,
         ],
         [
           'id' => $this->groupId,
-          'users_id' => $this->userId
+          'users_id' => $this->userId,
         ]);
       }
-      catch (\Exception $e)
-      {
-        error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      catch(\Exception $e) {
+        error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
         $ret['error'] = 1;
       }
     }
@@ -298,17 +281,15 @@ class Group extends Wall
     return $ret;
   }
 
-  public function getGroup ():array
-  {
-    $isCreator = $this->isWallCreator ($this->userId);
+  public function getGroup():array {
+    $isCreator = $this->isWallCreator($this->userId);
     $ret = [];
 
     // wall creator can view all groups
  
-    if ($isCreator)
-    {
+    if ($isCreator) {
       // IN
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT
           groups.userscount,
           groups.item_type,
@@ -323,12 +304,12 @@ class Group extends Wall
         WHERE groups.users_id = ?
           AND walls_groups.walls_id = ?
         ORDER BY name, access'))
-         ->execute ([$this->userId, $this->wallId]);
+         ->execute([$this->userId, $this->wallId]);
 
-      $ret['in'] = $stmt->fetchAll ();
+      $ret['in'] = $stmt->fetchAll();
 
       // NOT INT
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT
           userscount,
           item_type,
@@ -359,26 +340,25 @@ class Group extends Wall
               AND walls_groups.walls_id = :walls_id_2
           )
         ORDER BY name'))
-         ->execute ([
+         ->execute([
              ':users_id_1' => $this->userId,
              ':users_id_2' => $this->userId,
              ':walls_id_1' => $this->wallId,
              ':users_id_3' => $this->userId,
-             ':walls_id_2' => $this->wallId
+             ':walls_id_2' => $this->wallId,
          ]);
 
-      $ret['notin'] = $stmt->fetchAll ();
-    }
+      $ret['notin'] = $stmt->fetchAll();
+
     // deletegate admins can view only wall dedicated groups
-    elseif ($this->isWallDelegateAdmin ($this->userId))
-    {
+    } elseif ($this->isWallDelegateAdmin($this->userId)) {
       $ret = [
         'delegateAdminId' => $this->userId,
-        'notin' => []
+        'notin' => [],
       ];
 
       // IN
-      ($stmt = $this->db->prepare ('
+      ($stmt = $this->db->prepare('
         SELECT
           groups.userscount,
           groups.item_type,
@@ -393,14 +373,15 @@ class Group extends Wall
         WHERE walls_groups.walls_id = ?
           AND groups.item_type = '.WPT_GTYPES_DED.'
         ORDER BY name, access'))
-         ->execute ([$this->wallId]);
+         ->execute([$this->wallId]);
 
-      $ret['in'] = $stmt->fetchAll ();
-    }
+      $ret['in'] = $stmt->fetchAll();
+
     // only wall creator and wall delegate admin can view groups
-    else
+    } else {
       $ret = ['error_msg' =>
-                _("You must have admin access to perform this action")];
+        _("You must have admin access to perform this action")];
+    }
 
     return $ret;
   }
@@ -445,7 +426,7 @@ class Group extends Wall
              AND groups_id <> ?
              AND walls_id IN ('.$wallIds.') '.
              ($userId ? ' AND users_id = ?' : '')))
-         ->execute (array_merge([$this->groupId], $userId ? [$userId] : []));
+         ->execute(array_merge([$this->groupId], $userId ? [$userId] : []));
       $tmp = [];
       while ($el = $stmt->fetch()) {
         $tmp[$this->_RUD_getKey($el)] = $el;
@@ -511,71 +492,68 @@ class Group extends Wall
     return $this->_RUD_extractUserIds($users);
   }
 
-  public function unlink ():array
-  {
+  public function unlink():array {
     $ret = [];
 
     // only wall creator can unlink a group
-    if (!$this->isWallCreator ($this->userId))
+    if (!$this->isWallCreator($this->userId)) {
       return ['error' => _("Access forbidden")];
+    }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
       // Unlink group from wall
       $this
         ->db->prepare('
           DELETE FROM walls_groups WHERE walls_id = ? AND groups_id = ?')
-        ->execute ([$this->wallId, $this->groupId]);
+        ->execute([$this->wallId, $this->groupId]);
 
-      $users = $this->removeUserDependencies ();
+      $users = $this->removeUserDependencies();
 
       // Take creator in account if no groups remain
       ($stmt = $this->db
          ->prepare('SELECT 1 FROM walls_groups WHERE walls_id = ?'))
-         ->execute ([$this->wallId]);
+         ->execute([$this->wallId]);
       if (!$stmt->rowCount()) {
-        $this->removeUserDependencies ([
+        $this->removeUserDependencies([
           'userId' => $this->userId,
           'force' => true,
         ]);
       }
 
-      if (isset ($users['error']))
-        throw \Exception ("Error deleting user's dependencies");
+      if (isset($users['error'])) {
+        throw \Exception("Error deleting user's dependencies");
+      }
 
-      $this->db->commit ();
+      $this->db->commit();
 
       $ret['wall'] = [
         'id' => $this->wallId,
-        'unlinked' => $this->getWallName (),
+        'unlinked' => $this->getWallName(),
         'usersIds' => $users,
       ];
-    }
-    catch (\Exception $e)
-    {
-      $this->db->rollBack ();
+    } catch(\Exception $e) {
+      $this->db->rollBack();
 
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 
     return $ret;
   }
 
-  public function unlinkUserFromOthersGroups ():void
-  {
-    // Decrement userscount from user's groups.
+  public function unlinkUserFromOthersGroups():void {
+    // Decrement userscount from user's groups
     $this->db
        ->prepare('
         UPDATE groups SET userscount = userscount - 1
         WHERE id IN (SELECT groups_id FROM users_groups WHERE users_id = ?)')
-      ->execute ([$this->userId]);
+      ->execute([$this->userId]);
 
     $this->db
       ->prepare('DELETE FROM users_groups WHERE users_id = ?')
-      ->execute ([$this->userId]);
+      ->execute([$this->userId]);
 
     $this->db
       ->prepare('
@@ -583,13 +561,13 @@ class Group extends Wall
         WHERE groups_id IS NOT NULL
           AND walls_id IN (
             SELECT walls_id FROM _perf_walls_users WHERE users_id = ?)')
-      ->execute ([$this->userId]);
+      ->execute([$this->userId]);
 
     $this->db
       ->prepare('
         DELETE FROM _perf_walls_users
         WHERE users_id = ? AND groups_id IS NOT NULL')
-      ->execute ([$this->userId]);
+      ->execute([$this->userId]);
 
     $this->db
       ->prepare('
@@ -599,33 +577,32 @@ class Group extends Wall
           INNER JOIN groups ON groups.id = walls_groups.groups_id
           INNER JOIN users ON users.id = groups.users_id
         WHERE users.id = ?)')
-      ->execute ([$this->userId]);
+      ->execute([$this->userId]);
   }
 
-  public function link ():array
-  {
+  public function link():array {
     $ret = [];
 
     // Only wall creator can link a group
-    if (!$this->isWallCreator ($this->userId))
+    if (!$this->isWallCreator($this->userId)) {
       return ['error' => _("Access forbidden")];
+    }
 
-    try
-    {
-      $this->db->beginTransaction ();
+    try {
+      $this->db->beginTransaction();
 
       // Link group to wall with specific access
-      $this->executeQuery ('INSERT INTO walls_groups', [
+      $this->executeQuery('INSERT INTO walls_groups', [
         'groups_id' => $this->groupId,
         'walls_id' => $this->wallId,
-        'access' => $this->data->access
+        'access' => $this->data->access,
       ]);
 
       // Performance helper:
       // Link group's users to wall with specific access.
-      $this->checkDBValue ('_perf_walls_users', 'groups_id', $this->groupId);
-      $this->checkDBValue ('_perf_walls_users', 'walls_id', $this->wallId);
-      $this->checkDBValue ('_perf_walls_users', 'access', $this->data->access);
+      $this->checkDBValue('_perf_walls_users', 'groups_id', $this->groupId);
+      $this->checkDBValue('_perf_walls_users', 'walls_id', $this->wallId);
+      $this->checkDBValue('_perf_walls_users', 'access', $this->data->access);
       $this
         ->db->prepare("
           INSERT INTO _perf_walls_users (
@@ -640,10 +617,9 @@ class Group extends Wall
             users_id,
             {$this->data->access} AS access
           FROM users_groups WHERE groups_id = ?")
-        ->execute ([$this->groupId]);
+        ->execute([$this->groupId]);
 
-      if ($this->data->sendmail)
-      {
+      if ($this->data->sendmail) {
         $sharerName = $this->data->sendmail->userFullname;
         $wallTitle = $this->data->sendmail->wallTitle;
         $access = $this->data->access;
@@ -653,86 +629,78 @@ class Group extends Wall
         $ret = ['wallId' => $this->wallId, 'users' => []];
 
         // Only return users ids
-        foreach ($users as $user)
+        foreach ($users as $user) {
           $ret['users'][] = $user['id'];
+        }
 
         $_args = [
           'users' => $users,
           'wallId' => $this->wallId,
           'sharerName' => $sharerName,
           'wallTitle' => $wallTitle,
-          'access' => $access
-       ];
+          'access' => $access,
+        ];
 
-       // Use async Coroutine to safely use sleep in order to relieve SMTP.
-       go (function () use ($_args)
-       {
-         $Task = new Task ();
+        // Use async Coroutine to safely use sleep in order to relieve SMTP
+        go(function() use ($_args) {
+          $Task = new Task();
 
-         foreach ($_args['users'] as $user)
-         {
-           $Task->execute ([
-             'event' => Task::EVENT_TYPE_SEND_MESSAGE,
-             'method' => 'wallSharing',
-             'sendmail' => $user['allow_emails'],
-             'userId' => $user['id'],
-             'email' => $user['email'],
-             'wallId' => $_args['wallId'],
-             'recipientName' => $user['fullname'],
-             'sharerName' => $_args['sharerName'],
-             'wallTitle' => $_args['wallTitle'],
-             'access' => $_args['access']
-           ]);
+          foreach ($_args['users'] as $user) {
+            $Task->execute([
+              'event' => Task::EVENT_TYPE_SEND_MESSAGE,
+              'method' => 'wallSharing',
+              'sendmail' => $user['allow_emails'],
+              'userId' => $user['id'],
+              'email' => $user['email'],
+              'wallId' => $_args['wallId'],
+              'recipientName' => $user['fullname'],
+              'sharerName' => $_args['sharerName'],
+              'wallTitle' => $_args['wallTitle'],
+              'access' => $_args['access'],
+            ]);
 
-           \Swoole\Coroutine::sleep (2);
-         }
-       });
+            \Swoole\Coroutine::sleep(2);
+          }
+        });
       }
 
-      $this->db->commit ();
-    }
-    catch (\Exception $e)
-    {
-      $this->db->rollBack ();
+      $this->db->commit();
+    } catch(\Exception $e) {
+      $this->db->rollBack();
 
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret = ['error' => 1];
     }
 
     return $ret;
   }
 
-  public function delete ():array
-  {
+  public function delete():array {
     $ret = [];
 
-    // no need to check rights here (users_id = users_id in WHERE clause)
+    // No need to check rights here (users_id = users_id in WHERE clause)
 
-    try
-    {
+    try {
       $this
         ->db->prepare('
           DELETE FROM groups
           WHERE id = ? AND users_id = ?')
-        ->execute ([$this->groupId, $this->userId]);
-    }
-    catch (\Exception $e)
-    {
-      error_log (__METHOD__.':'.__LINE__.':'.$e->getMessage ());
+        ->execute([$this->groupId, $this->userId]);
+    } catch(\Exception $e) {
+      error_log(__METHOD__.':'.__LINE__.':'.$e->getMessage());
       $ret['error'] = 1;
     }
 
     return $ret;
   }
 
-  private function _checkGroupAccess ():int
-  {
-    ($stmt = $this->db->prepare ('
+  private function _checkGroupAccess():int {
+    ($stmt = $this->db->prepare('
       SELECT 1 FROM _perf_walls_users
       WHERE access = '.WPT_WRIGHTS_ADMIN.' AND users_id = ?
       LIMIT 1'))
-       ->execute ([$this->userId]);
+       ->execute([$this->userId]);
 
-    return $stmt->rowCount ();
+    return $stmt->rowCount();
   }
 }
