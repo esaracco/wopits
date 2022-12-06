@@ -37,35 +37,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         H.fixHeight();
 
-        // Fix user msg popover scroll
-        tmp = S.getCurrent('umsg');
-        tmp.isPopoverVisible() && tmp.fixHeight();
-
-        if (wall) {
-          if ( (tmp = document.querySelector(
-                    '.modal.show.m-fullscreen[data-customwidth]')) ) {
-            H.resizeModal(tmp);
+        H.waitForDOMUpdate(() => {
+          // Fix user msg popover scroll
+          tmp = S.getCurrent('umsg');
+          tmp.isPopoverVisible() && tmp.fixHeight();
+  
+          if (wall) {
+            if ( (tmp = document.querySelector(
+                      '.modal.show.m-fullscreen[data-customwidth]')) ) {
+              H.resizeModal(tmp);
+            }
+  
+            if (S.get('zoom-level')) {
+              wall.zoom(true, {noalert: true});
+            } else {
+              // Reposition chat popup if it is out of bounds
+              tmp = S.getCurrent('chat');
+              tmp.isVisible() && tmp.fixPosition();
+  
+              // Reposition filters popup if it is out of bounds
+              tmp = S.getCurrent('filters');
+              tmp.isVisible() && tmp.fixPosition();
+  
+              // Reposition wall menu if it is out of bounds
+              const wmenu = S.getCurrent('wmenu');
+              wmenu.isVisible() && wmenu.fixPosition();
+            }
+  
+            // Refresh relations position
+            wall.repositionPostitsPlugs();
           }
-
-          if (S.get('zoom-level')) {
-            wall.zoom(true, {noalert: true});
-          } else {
-            // Reposition chat popup if it is out of bounds
-            tmp = S.getCurrent('chat');
-            tmp.isVisible() && tmp.fixPosition();
-
-            // Reposition filters popup if it is out of bounds
-            tmp = S.getCurrent('filters');
-            tmp.isVisible() && tmp.fixPosition();
-
-            // Reposition wall menu if it is out of bounds
-            const wmenu = S.getCurrent('wmenu');
-            wmenu.isVisible() && wmenu.fixPosition();
-          }
-
-          // Refresh relations position
-          wall.repositionPostitsPlugs();
-        }
+        });
       }, 150);
     });
 
