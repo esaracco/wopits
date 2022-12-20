@@ -44,8 +44,6 @@ class Server {
       $server->on($e, [$this, "on$e"]);
     }
 
-    array_map();
-
     $this->_server = $server;
   }
 
@@ -62,7 +60,7 @@ class Server {
   public function onWorkerStart(SwooleServer $server, int $id):void {
     // TICK
     // Server process heartbeat (every 15mn)
-    $server->tick(60 * 15 * 1000, function($id) {
+    Timer::tick(60 * 15 * 1000, function($id) {
       $this->_ping();
     });
   }
@@ -103,9 +101,9 @@ class Server {
 
         // TICK
         // WebSocket heartbeat (every 30s)
-        $server->tick(30 * 1000, function($id) use ($server, $fd) {
+        Timer::tick(30 * 1000, function($id) use ($server, $fd) {
           if (!$server->isEstablished($fd)) {
-            $server->clearTimer($id);
+            Timer::clear($id);
             $this->onClose($server, $fd);
           }
         });
