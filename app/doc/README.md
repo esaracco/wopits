@@ -1,19 +1,10 @@
 wopits - _A world of post-its_
 ==============================
 
-[Project homepage](https://wopits.esaracco.fr) | [wopits homepage](https://www.wopits.com)
-
-<table>
-  <tr>
-    <td><img src="https://www.wopits.com/img/wopits.png"></td>
-    <td>A app for managing projects online using sticky notes to share and collaborate.</td>
-  </tr>
-</table>
+**A app for managing projects online using sticky notes to share and collaborate.**
 
 You can edit several walls of notes at the same time, add attachments, insert images, create relationships etc.
 Groups management makes it possible to finely control the sharing of data, and a chat is available for each wall.
-
-If you don't want to bother installing wopits yourself, just create an account on the [official wopits website](https://www.wopits.com)!
 
 *wopits uses [Swoole](https://www.swoole.co.uk) as a WebSocket & Task server.*
 
