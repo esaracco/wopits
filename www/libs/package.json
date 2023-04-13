@@ -12,7 +12,7 @@
     "minify": "^9",
     "moment": "^2",
     "moment-timezone": "^0",
-    "tinymce": "^6",
+    "tinymce": "^6.3.1",
     "vanderlee-colorpicker": "^1"
   }
 }
