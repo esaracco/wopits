@@ -1,3 +1,10 @@
+⚠️ This project has been archived
+
+wopits is no longer maintained.
+
+This repository remains available for historical reference.
+---------------------------------
+
 wopits - _A world of post-its_
 ==============================
 
